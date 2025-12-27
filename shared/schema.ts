@@ -46,10 +46,16 @@ export const missingInfoSchema = z.object({
 
 export type MissingInfo = z.infer<typeof missingInfoSchema>;
 
+// Confidence level for analysis
+export const confidenceLevelSchema = z.enum(["HIGH", "MEDIUM", "LOW"]);
+export type ConfidenceLevel = z.infer<typeof confidenceLevelSchema>;
+
 // Analysis response schema
 export const analysisResponseSchema = z.object({
   dealScore: z.enum(["GREEN", "YELLOW", "RED"]),
-  goNoGo: z.enum(["GO", "NO-GO"]),
+  confidenceLevel: confidenceLevelSchema,
+  verdictLabel: z.string(),
+  goNoGo: z.enum(["GO", "NO-GO", "NEED-MORE-INFO"]),
   summary: z.string(),
   detectedFields: detectedFieldsSchema,
   missingInfo: z.array(missingInfoSchema),

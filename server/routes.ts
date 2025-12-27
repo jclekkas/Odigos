@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import OpenAI from "openai";
 import { analysisRequestSchema, analysisResponseSchema, type AnalysisResponse } from "@shared/schema";
+import { applyRuleEngine } from "./ruleEngine";
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
@@ -31,18 +32,27 @@ export async function registerRoutes(
 
       const systemPrompt = `You are an expert car buying advisor helping consumers evaluate car purchase offers. Your job is to analyze dealer quotes, texts, and emails to help buyers understand if they're getting a good deal.
 
+CRITICAL LANGUAGE RULES (MUST FOLLOW):
+1. NEVER say "all key terms are clear" if MSRP, sale price, OR out-the-door price is missing.
+2. If information is missing, ALWAYS say: "Major terms look good, but confirm X, Y, Z."
+3. Praise positive signals explicitly:
+   - If out-the-door price is provided: "Providing an out-the-door price upfront is a positive transparency signal."
+   - If low APR (under 5%): "Low APR meaningfully reduces total cost."
+4. Be skeptical of payment-only quotes without total cost breakdowns.
+
 CRITICAL REQUIREMENTS:
 1. If key information is missing or ambiguous, you MUST explicitly state what's missing and provide the exact questions the buyer should ask the dealer.
-2. Be decisive - give a clear GREEN/YELLOW/RED score and GO/NO-GO recommendation.
-3. Extract all pricing information you can find (sale price, MSRP, fees, monthly payments, etc.)
-4. Be skeptical of deals that only show monthly payments without total cost breakdowns.
-5. Flag any suspicious fees or unclear terms.
+2. Extract all pricing information you can find (sale price, MSRP, fees, monthly payments, etc.)
+3. Flag any suspicious fees or unclear terms like market adjustments, dealer add-ons, protection packages.
+4. Never invent numbers or make claims about "market averages" without data.
 
 You must respond with a valid JSON object with this exact structure:
 {
   "dealScore": "GREEN" | "YELLOW" | "RED",
-  "goNoGo": "GO" | "NO-GO",
-  "summary": "Plain English explanation of what this deal means for the buyer",
+  "confidenceLevel": "HIGH" | "MEDIUM" | "LOW",
+  "verdictLabel": "Short action-oriented label like 'PROCEED — CONFIRM DETAILS' or 'PAUSE — GET OTD BREAKDOWN'",
+  "goNoGo": "GO" | "NO-GO" | "NEED-MORE-INFO",
+  "summary": "Plain English explanation following this structure: (1) What we know - facts only, (2) Why it's good/bad, (3) What's missing + next questions. Keep to 4-6 sentences max.",
   "detectedFields": {
     "salePrice": number or null,
     "msrp": number or null,
@@ -63,13 +73,16 @@ You must respond with a valid JSON object with this exact structure:
 }
 
 SCORING GUIDELINES:
-- GREEN: Good deal - clear pricing, reasonable fees, transparent terms, competitive price
-- YELLOW: Needs more information - missing key details, some concerns but not dealbreakers
-- RED: Poor deal - excessive fees, unclear terms, pressure tactics, or significantly overpriced
+- GREEN + HIGH confidence: Out-the-door price present, APR/term clear, no red flags
+- GREEN + MEDIUM confidence: Good deal but missing MSRP or some details
+- YELLOW + MEDIUM confidence: Missing out-the-door price or payment-only quote
+- YELLOW + LOW confidence: Vague fees or add-ons detected
+- RED + LOW confidence: Market adjustment, multiple high-cost add-ons, contradictory numbers
 
-GO/NO-GO DECISION:
-- GO: Buyer has enough information and the deal is reasonable enough to visit dealership
-- NO-GO: Buyer should get more information or look elsewhere before visiting`;
+GO/NO-GO/NEED-MORE-INFO:
+- GO: Has enough information and reasonable terms to visit dealership
+- NEED-MORE-INFO: Missing critical details, buyer should ask questions first
+- NO-GO: Red flags detected, look elsewhere`;
 
       let userMessage = `Analyze this dealer communication:\n\n${data.dealerText}`;
 
@@ -140,8 +153,20 @@ GO/NO-GO DECISION:
         });
       }
       
-      console.log("Analysis successful - Deal Score:", validationResult.data.dealScore);
-      res.json(validationResult.data);
+      const llmResult = validationResult.data;
+      
+      const ruleEngineAdjustments = applyRuleEngine(llmResult, llmResult.detectedFields);
+      
+      const finalResult: AnalysisResponse = {
+        ...llmResult,
+        dealScore: ruleEngineAdjustments.dealScore,
+        confidenceLevel: ruleEngineAdjustments.confidenceLevel,
+        verdictLabel: ruleEngineAdjustments.verdictLabel,
+        goNoGo: ruleEngineAdjustments.goNoGo,
+      };
+      
+      console.log("Analysis successful - Deal Score:", finalResult.dealScore, "Confidence:", finalResult.confidenceLevel);
+      res.json(finalResult);
     } catch (error) {
       console.error("Analysis error:", error);
       
