@@ -11,8 +11,6 @@ const VAGUE_FEE_KEYWORDS = [
   "dealer fee",
   "doc fee",
   "documentation fee",
-  "market adjustment",
-  "markup",
   "protection package",
   "nitrogen",
   "etch",
@@ -24,9 +22,24 @@ const VAGUE_FEE_KEYWORDS = [
   "window tint",
   "wheel locks",
   "pinstripe",
+  "fabric protection",
+  "undercoating",
+  "clear coat",
+  "gap insurance",
+  "extended warranty",
 ];
 
-const HIGH_FEE_THRESHOLD = 1000;
+const MARKET_ADJUSTMENT_KEYWORDS = [
+  "market adjustment",
+  "markup",
+  "adm",
+  "additional dealer markup",
+  "dealer markup",
+  "market value adjustment",
+];
+
+const ADD_ON_THRESHOLD = 300;
+const HIGH_ADD_ON_THRESHOLD = 500;
 
 function hasVagueFees(fees: Fee[]): boolean {
   return fees.some((fee) => {
@@ -34,19 +47,15 @@ function hasVagueFees(fees: Fee[]): boolean {
     const isVagueName = VAGUE_FEE_KEYWORDS.some((keyword) =>
       nameLower.includes(keyword.toLowerCase())
     );
-    const hasHighAmount = fee.amount !== null && fee.amount > HIGH_FEE_THRESHOLD;
-    return isVagueName && (fee.amount === null || hasHighAmount);
+    return isVagueName && (fee.amount === null || fee.amount > ADD_ON_THRESHOLD);
   });
 }
 
 function hasMarketAdjustment(fees: Fee[]): boolean {
   return fees.some((fee) => {
     const nameLower = fee.name.toLowerCase();
-    return (
-      nameLower.includes("market adjustment") ||
-      nameLower.includes("markup") ||
-      nameLower.includes("adm") ||
-      nameLower.includes("additional dealer markup")
+    return MARKET_ADJUSTMENT_KEYWORDS.some((keyword) =>
+      nameLower.includes(keyword.toLowerCase())
     );
   });
 }
@@ -57,8 +66,18 @@ function countHighCostAddOns(fees: Fee[]): number {
     const isAddOn = VAGUE_FEE_KEYWORDS.some((keyword) =>
       nameLower.includes(keyword.toLowerCase())
     );
-    return isAddOn && fee.amount !== null && fee.amount > 500;
+    return isAddOn && fee.amount !== null && fee.amount >= HIGH_ADD_ON_THRESHOLD;
   }).length;
+}
+
+function hasSingleSignificantAddOn(fees: Fee[]): boolean {
+  return fees.some((fee) => {
+    const nameLower = fee.name.toLowerCase();
+    const isAddOn = VAGUE_FEE_KEYWORDS.some((keyword) =>
+      nameLower.includes(keyword.toLowerCase())
+    );
+    return isAddOn && fee.amount !== null && fee.amount >= ADD_ON_THRESHOLD;
+  });
 }
 
 function isPaymentOnlyQuote(fields: DetectedFields): boolean {
@@ -114,6 +133,15 @@ export function applyRuleEngine(
   }
 
   if (highCostAddOnCount >= 2) {
+    return {
+      dealScore: "RED",
+      confidenceLevel: "LOW",
+      verdictLabel: "NO-GO — TOO MANY ADD-ONS",
+      goNoGo: "NO-GO",
+    };
+  }
+
+  if (highCostAddOnCount === 1) {
     return {
       dealScore: "YELLOW",
       confidenceLevel: "LOW",

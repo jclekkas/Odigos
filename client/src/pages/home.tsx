@@ -46,7 +46,7 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import type { AnalysisResponse, DetectedFields, MissingInfo } from "@shared/schema";
+import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel } from "@shared/schema";
 
 const formSchema = z.object({
   dealerText: z.string().min(1, "Please paste dealer text to analyze"),
@@ -71,48 +71,68 @@ function formatCurrency(value: number | null | undefined): string {
   }).format(value);
 }
 
-function DealScoreBadge({ score, goNoGo }: { score: "GREEN" | "YELLOW" | "RED"; goNoGo: "GO" | "NO-GO" }) {
+interface DealScoreBadgeProps {
+  score: "GREEN" | "YELLOW" | "RED";
+  goNoGo: "GO" | "NO-GO" | "NEED-MORE-INFO";
+  confidenceLevel: ConfidenceLevel;
+  verdictLabel: string;
+}
+
+function DealScoreBadge({ score, goNoGo, confidenceLevel, verdictLabel }: DealScoreBadgeProps) {
   const scoreConfig = {
     GREEN: {
       bg: "bg-emerald-500/10 dark:bg-emerald-500/20",
       border: "border-emerald-500/30",
       text: "text-emerald-700 dark:text-emerald-400",
       icon: CheckCircle2,
-      label: "Good Deal",
     },
     YELLOW: {
       bg: "bg-amber-500/10 dark:bg-amber-500/20",
       border: "border-amber-500/30",
       text: "text-amber-700 dark:text-amber-400",
       icon: AlertTriangle,
-      label: "Needs Review",
     },
     RED: {
       bg: "bg-red-500/10 dark:bg-red-500/20",
       border: "border-red-500/30",
       text: "text-red-700 dark:text-red-400",
       icon: XCircle,
-      label: "Poor Deal",
     },
   };
 
+  const confidenceConfig = {
+    HIGH: { label: "High Confidence", color: "text-emerald-600 dark:text-emerald-400" },
+    MEDIUM: { label: "Medium Confidence", color: "text-amber-600 dark:text-amber-400" },
+    LOW: { label: "Low Confidence", color: "text-red-600 dark:text-red-400" },
+  };
+
+  const goNoGoMessages = {
+    "GO": "This deal appears reasonable. Consider visiting the dealership.",
+    "NO-GO": "Red flags detected. We recommend looking elsewhere.",
+    "NEED-MORE-INFO": "Get answers to the questions below before visiting.",
+  };
+
   const config = scoreConfig[score];
+  const confConfig = confidenceConfig[confidenceLevel];
   const Icon = config.icon;
 
   return (
     <div className={`rounded-xl border-2 ${config.border} ${config.bg} p-8 text-center`}>
-      <div className="flex items-center justify-center gap-3 mb-4">
+      <div className="flex items-center justify-center gap-3 mb-2">
         <Icon className={`w-12 h-12 ${config.text}`} />
         <span className={`text-5xl font-bold ${config.text}`}>{score}</span>
       </div>
-      <p className={`text-xl font-semibold ${config.text} mb-2`}>{config.label}</p>
-      <div className={`inline-block px-4 py-2 rounded-lg ${config.bg} border ${config.border}`}>
-        <span className={`text-2xl font-bold ${config.text}`}>{goNoGo}</span>
+      <p className={`text-lg font-semibold ${config.text} mb-3`}>{verdictLabel}</p>
+      <div className="flex items-center justify-center gap-4 mb-3">
+        <div className={`inline-block px-4 py-2 rounded-lg ${config.bg} border ${config.border}`}>
+          <span className={`text-xl font-bold ${config.text}`}>{goNoGo}</span>
+        </div>
+        <span className={`text-sm font-medium ${confConfig.color}`}>
+          {confConfig.label}
+        </span>
       </div>
-      <p className="text-sm text-muted-foreground mt-3">
-        {goNoGo === "GO" 
-          ? "This deal appears reasonable. Consider visiting the dealership."
-          : "We recommend getting more information before visiting."}
+      <p className="text-sm text-muted-foreground">
+        {goNoGoMessages[goNoGo]}
       </p>
     </div>
   );
@@ -174,33 +194,45 @@ function DetectedFieldsCard({ fields }: { fields: DetectedFields }) {
   );
 }
 
-function MissingInfoCard({ items, onCopy }: { items: MissingInfo[]; onCopy: () => void }) {
+interface MissingInfoCardProps {
+  items: MissingInfo[];
+  confidenceLevel: ConfidenceLevel;
+  verdictLabel: string;
+  onCopy: () => void;
+}
+
+function MissingInfoCard({ items, confidenceLevel, verdictLabel, onCopy }: MissingInfoCardProps) {
   const [copied, setCopied] = useState(false);
 
+  const isProceedVerdict = verdictLabel.includes("PROCEED");
+  const displayItems = isProceedVerdict ? items.slice(0, 3) : items;
+
   const handleCopy = () => {
-    const questions = items.map((item) => item.question).join("\n\n");
+    const questions = displayItems.map((item) => item.question).join("\n\n");
     navigator.clipboard.writeText(questions);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
     onCopy();
   };
 
-  if (items.length === 0) return null;
+  if (displayItems.length === 0 || confidenceLevel === "HIGH") return null;
 
   return (
     <Card className="border-amber-500/30 bg-amber-500/5">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-lg text-amber-700 dark:text-amber-400">
           <HelpCircle className="w-5 h-5" />
-          Missing Information
+          {isProceedVerdict ? "Confirm These Details" : "Missing Information"}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <p className="text-sm text-muted-foreground mb-4">
-          Ask the dealer these questions to get the full picture:
+          {isProceedVerdict 
+            ? "Before you visit, quickly confirm these points:"
+            : "Ask the dealer these questions to get the full picture:"}
         </p>
         <ul className="space-y-3 mb-4">
-          {items.map((item, idx) => (
+          {displayItems.map((item, idx) => (
             <li key={idx} className="flex gap-3">
               <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-bold flex items-center justify-center">
                 {idx + 1}
@@ -212,6 +244,11 @@ function MissingInfoCard({ items, onCopy }: { items: MissingInfo[]; onCopy: () =
             </li>
           ))}
         </ul>
+        {items.length > displayItems.length && (
+          <p className="text-xs text-muted-foreground mb-3">
+            + {items.length - displayItems.length} more questions available in full analysis
+          </p>
+        )}
         <Button
           variant="outline"
           size="sm"
@@ -572,7 +609,12 @@ With your trade-in worth $8,000 and $2,000 down, your monthly payment would be a
             <div className="border-t border-border/50 pt-8">
               <h2 className="text-xl font-semibold mb-6 text-center">Analysis Results</h2>
               
-              <DealScoreBadge score={result.dealScore} goNoGo={result.goNoGo} />
+              <DealScoreBadge 
+                score={result.dealScore} 
+                goNoGo={result.goNoGo}
+                confidenceLevel={result.confidenceLevel}
+                verdictLabel={result.verdictLabel}
+              />
             </div>
 
             <Card>
@@ -592,7 +634,9 @@ With your trade-in worth $8,000 and $2,000 down, your monthly payment would be a
             <DetectedFieldsCard fields={result.detectedFields} />
 
             <MissingInfoCard 
-              items={result.missingInfo} 
+              items={result.missingInfo}
+              confidenceLevel={result.confidenceLevel}
+              verdictLabel={result.verdictLabel}
               onCopy={() => toast({ title: "Questions copied to clipboard" })}
             />
 
