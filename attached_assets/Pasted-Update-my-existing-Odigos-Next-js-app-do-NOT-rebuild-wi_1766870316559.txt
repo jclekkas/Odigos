@@ -1,0 +1,116 @@
+Update my existing Odigos Next.js app (do NOT rebuild) with these upgrades:
+
+GOALS
+1) Landing page improvements:
+   - Tighten the landing page copy to ~50% length (mobile-first, high converting, not fluffy)
+   - Add one real anonymized example below the fold (a short “Deal Review Example” card)
+   - Add a “Try a sample bad deal” button that pre-fills the analyze textarea and runs analysis (or navigates to /analyze with the sample prefilled)
+
+2) Add “Try a sample bad deal” UX:
+   - On /analyze, include a small row of buttons above the textarea:
+     - “Try a good deal example”
+     - “Try a bad deal example”
+   - Clicking a button populates the textarea with sample text (provided below).
+   - Optional: auto-run analysis after populating if easy; otherwise just fill text.
+
+3) Stripe paywall microcopy on results page:
+   - Wherever the results page shows locked sections (Suggested Reply + Analysis Reasoning), add conversion-optimized copy:
+     - Headline, 1–2 sentence value prop, bullet list, trust note, and CTA button label.
+   - Do not change pricing logic (still $79).
+   - Do not add new Stripe features.
+
+————————————————————————
+A) LANDING PAGE (/) — Replace content with the following tighter, mobile-first copy + sections.
+Make it clean and scannable. Use Tailwind. Keep sections short.
+
+HERO
+Headline: “Know your car deal before you go in.”
+Subheadline: “Paste dealer texts or quotes. Get a clear verdict, what’s missing, and what to say next.”
+Buttons (side-by-side on desktop, stacked on mobile):
+Primary: “Analyze my deal” -> /analyze
+Secondary: “Try a bad deal example” -> /analyze?example=bad
+Small note under buttons: “No account required. Not affiliated with any dealership.”
+
+SECTION: What you get (short bullets)
+Title: “In minutes, you’ll know:”
+Bullets:
+- “Green / Yellow / Red verdict”
+- “What’s missing (OTD, APR, fees, term)”
+- “Red flags & dealer add-ons”
+- “Copy-paste reply to send the dealer (paid)”
+
+SECTION: Why it matters
+One paragraph:
+“Dealers often quote monthly payments, add packages later, or ask you to ‘come in to talk numbers.’ Odigos turns the messages you already have into a clear next step.”
+
+SECTION: Deal Review Example (anonymized)
+Title: “Real example (anonymized)”
+Card content:
+- Input (1–2 lines): “Dealer: ‘All-in price is $32,245.18. Approved 1.99% for 60 months.’”
+- Output (bullets):
+  - “Verdict: GREEN — Proceed, confirm buyer’s order”
+  - “What to verify: buyer’s order reflects OTD + APR + term”
+  - “Reply provided: asks dealer to have buyer’s order ready”
+Small note: “Example edited for privacy.”
+
+SECTION: Pricing (simple)
+Title: “Simple pricing”
+Row 1: “Free Preview”
+- “Verdict + what we detected”
+Row 2: “Negotiation Pack — $79 (one-time)”
+- “Copy-paste dealer reply”
+- “Full reasoning + next questions”
+Footer line: “No subscription. No upsells.”
+
+FINAL CTA
+Title: “Don’t walk into a $30–$60k decision blind.”
+Button: “Analyze my deal” -> /analyze
+
+————————————————————————
+B) SAMPLE EXAMPLES — Use these exact strings.
+
+GOOD EXAMPLE TEXT (for “Try a good deal example”):
+Hey! Confirming we can do $32,245.18 out-the-door on a 2026 Kia Sportage LX AWD with 1.99% APR for 60 months (tier 1 credit). Taxes and fees included. Let me know what time you can come in and we’ll have the buyer’s order ready.
+
+BAD EXAMPLE TEXT (for “Try a bad deal example”):
+Hey my friend!! Great news!!!
+We can get you driving TODAY for only $589/month 😎🔥
+No worries about price details, we’ll explain everything when you get here.
+APR depends on credit but it will be competitive!
+Low down payment options available.
+We added some protection packages that everyone gets, but we can talk about that later.
+Let me know what time you’re coming in today!!!
+
+Implementation details:
+- On /analyze, if URL has ?example=bad or ?example=good, pre-fill the textarea accordingly.
+- Add the two buttons near the textarea to populate it.
+- Make sure this works on mobile.
+
+————————————————————————
+C) RESULTS PAGE PAYWALL MICROCOPY (locked sections)
+Where Suggested Reply and/or Analysis Reasoning are locked, add:
+
+Locked header: “Unlock your Negotiation Pack”
+Body: “Get a copy-paste message to send the dealer + the reasoning behind your verdict so you know exactly what to ask for (or avoid).”
+Bullets:
+- “Copy-paste reply tailored to this deal”
+- “Exact questions to get an itemized out-the-door price”
+- “Red-flag callouts (fees, add-ons, payment-only tactics)”
+Trust note (small): “One-time payment. Not affiliated with any dealership.”
+CTA button text: “Unlock for $79”
+
+Also add a tiny reassurance line under the button:
+“Most people use this right before they go in — or to avoid going in at all.”
+
+Do NOT change:
+- Stripe routes
+- Stripe verification logic
+- The price amount
+- Scoring logic
+
+————————————————————————
+Deliverables:
+- Landing page updated with tightened copy + anonymized example card + “Try a bad deal example” button.
+- /analyze supports example prefill via buttons + query param.
+- Results page locked sections include the new paywall microcopy and CTA label.
+- Everything remains mobile-first and readable.

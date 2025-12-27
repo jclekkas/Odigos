@@ -1,0 +1,95 @@
+Update the existing Odigos app to add a second pricing tier ($49) without rebuilding the app.
+
+Current state:
+- $79 Stripe Checkout unlocks:
+  - Suggested Reply to Dealer
+  - Full Analysis Reasoning
+- Verdict + What We Detected are free
+
+Goal:
+Add a $49 “Deal Clarity Pack” tier that unlocks intermediate value, while keeping $79 as the full upgrade.
+
+———————————————————
+PRICING TIERS
+
+Tier 1 — Free (unchanged):
+- Deal Score
+- Verdict Label + Confidence
+- What We Detected
+
+Tier 2 — $49 “Deal Clarity Pack” (new):
+Unlock:
+- Red Flags / Risks section
+- Missing Information / Next Questions section
+- Short explanation of why the deal is Green / Yellow / Red
+Do NOT unlock:
+- Suggested Reply
+- Full Analysis Reasoning
+
+Tier 3 — $79 “Negotiation Pack” (existing):
+Unlock everything:
+- Suggested Reply
+- Full Analysis Reasoning
+- All Tier 2 content
+
+———————————————————
+STRIPE SETUP
+
+Add environment variable:
+- STRIPE_PRICE_ID_49   (Price ID for $49 product)
+
+Keep existing:
+- STRIPE_PRICE_ID     (for $79)
+
+———————————————————
+IMPLEMENTATION DETAILS
+
+A) Gating logic on results page:
+- Default (free): show only Tier 1 content
+- If user has paid $49:
+  - Unlock Tier 2 sections
+  - Keep Tier 3 sections locked
+- If user has paid $79:
+  - Unlock everything
+
+B) Checkout behavior:
+- In locked Tier 2 sections, show button:
+  “Unlock Deal Clarity — $49”
+- In locked Tier 3 sections, show button:
+  “Unlock Negotiation Pack — $79”
+- Each button calls /api/create-checkout-session with a parameter indicating price tier (49 or 79)
+
+C) Update POST /api/create-checkout-session:
+- Accept input: { analysisId: string, tier: "49" | "79" }
+- Use:
+  - STRIPE_PRICE_ID_49 when tier === "49"
+  - STRIPE_PRICE_ID when tier === "79"
+- success_url and cancel_url remain the same pattern
+
+D) Verification logic:
+- /api/verify-session must return:
+  { paid: boolean, tier: "49" | "79" }
+- Determine tier based on the Stripe session line item price ID
+
+E) UI copy (keep concise):
+- Tier 2 lock copy:
+  Title: “Unlock Deal Clarity”
+  Body: “See what’s missing, what’s risky, and what to ask before you go in.”
+  Button: “Unlock for $49”
+
+- Tier 3 lock copy (already present, keep it):
+  “Unlock Negotiation Pack — $79”
+
+———————————————————
+RULES
+
+- Do NOT add subscriptions
+- Do NOT add a pricing page
+- Do NOT ask the user to choose a plan upfront
+- Do NOT change existing Stripe verification security rules
+- Preserve mobile-first layout
+
+Deliverables:
+- Results page supports Free → $49 → $79 progressive unlock
+- Stripe test mode works for both tiers
+- App behavior remains stable if Stripe env vars are missing

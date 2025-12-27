@@ -274,58 +274,72 @@ function MissingInfoCard({ items, confidenceLevel, verdictLabel, onCopy }: Missi
   );
 }
 
+const SAMPLE_GOOD_DEAL = `Hey! Confirming we can do $32,245.18 out-the-door on a 2026 Kia Sportage LX AWD with 1.99% APR for 60 months (tier 1 credit). Taxes and fees included. Let me know what time you can come in and we'll have the buyer's order ready.`;
+
+const SAMPLE_BAD_DEAL = `Hey my friend!! Great news!!!
+We can get you driving TODAY for only $589/month
+No worries about price details, we'll explain everything when you get here.
+APR depends on credit but it will be competitive!
+Low down payment options available.
+We added some protection packages that everyone gets, but we can talk about that later.
+Let me know what time you're coming in today!!!`;
+
 interface LockedSectionProps {
-  title: string;
-  icon: typeof MessageSquare;
-  teaser: string;
   onUnlock: () => void;
   isLoading: boolean;
   stripeConfigured: boolean;
 }
 
-function LockedSection({ title, icon: Icon, teaser, onUnlock, isLoading, stripeConfigured }: LockedSectionProps) {
+function LockedSection({ onUnlock, isLoading, stripeConfigured }: LockedSectionProps) {
   return (
-    <Card className="relative overflow-hidden">
+    <Card className="border-amber-500/30 bg-amber-500/5">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Icon className="w-5 h-5 text-muted-foreground" />
-          {title}
-          <Lock className="w-4 h-4 text-amber-500 ml-auto" />
+          <Lock className="w-5 h-5 text-amber-500" />
+          Unlock your Negotiation Pack
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="bg-muted/30 rounded-lg p-4 mb-4 relative">
-          <p className="text-sm text-muted-foreground/60 blur-[2px] select-none leading-relaxed">
-            {teaser}
-          </p>
-          <div className="absolute inset-0 flex items-center justify-center bg-background/60 rounded-lg">
-            <div className="text-center p-4">
-              <Lock className="w-8 h-8 text-amber-500 mx-auto mb-2" />
-              <p className="text-sm font-medium mb-1">Premium Content</p>
-              <p className="text-xs text-muted-foreground">Unlock to view full content</p>
-            </div>
-          </div>
-        </div>
+        <p className="text-sm text-muted-foreground mb-4">
+          Get a copy-paste message to send the dealer + the reasoning behind your verdict so you know exactly what to ask for (or avoid).
+        </p>
+        <ul className="space-y-2 mb-4">
+          {[
+            "Copy-paste reply tailored to this deal",
+            "Exact questions to get an itemized out-the-door price",
+            "Red-flag callouts (fees, add-ons, payment-only tactics)"
+          ].map((item, idx) => (
+            <li key={idx} className="flex items-start gap-2 text-sm">
+              <Check className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+              <span className="text-muted-foreground">{item}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="text-xs text-muted-foreground mb-4">
+          One-time payment. Not affiliated with any dealership.
+        </p>
         {stripeConfigured ? (
-          <Button
-            variant="default"
-            onClick={onUnlock}
-            className="w-full bg-amber-500 hover:bg-amber-600 text-white"
-            disabled={isLoading}
-            data-testid="button-unlock"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              <>
-                <Lock className="w-4 h-4 mr-2" />
-                Unlock for $79
-              </>
-            )}
-          </Button>
+          <>
+            <Button
+              variant="default"
+              onClick={onUnlock}
+              className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+              disabled={isLoading}
+              data-testid="button-unlock"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                "Unlock for $79"
+              )}
+            </Button>
+            <p className="text-xs text-center text-muted-foreground mt-3">
+              Most people use this right before they go in — or to avoid going in at all.
+            </p>
+          </>
         ) : (
           <p className="text-sm text-center text-muted-foreground">
             Payments not configured
@@ -396,11 +410,38 @@ export default function Home() {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const { toast } = useToast();
 
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      dealerText: "",
+      condition: "unknown",
+      vehicle: "",
+      zipCode: "",
+      purchaseType: "unknown",
+      apr: "",
+      termMonths: "",
+      downPayment: "",
+    },
+  });
+
   const { data: stripeStatus } = useQuery({
     queryKey: ["/api/stripe-status"],
   });
 
   const stripeConfigured = stripeStatus?.configured ?? false;
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const example = params.get("example");
+    
+    if (example === "good") {
+      form.setValue("dealerText", SAMPLE_GOOD_DEAL);
+      window.history.replaceState({}, "", window.location.pathname);
+    } else if (example === "bad") {
+      form.setValue("dealerText", SAMPLE_BAD_DEAL);
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, [form]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -475,20 +516,6 @@ export default function Home() {
     }
   };
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      dealerText: "",
-      condition: "unknown",
-      vehicle: "",
-      zipCode: "",
-      purchaseType: "unknown",
-      apr: "",
-      termMonths: "",
-      downPayment: "",
-    },
-  });
-
   const purchaseType = form.watch("purchaseType");
 
   const analyzeMutation = useMutation({
@@ -545,6 +572,26 @@ export default function Home() {
                 <CardTitle className="text-lg">Paste Dealer Communication</CardTitle>
               </CardHeader>
               <CardContent>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => form.setValue("dealerText", SAMPLE_GOOD_DEAL)}
+                    data-testid="button-sample-good"
+                  >
+                    Try a good deal example
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => form.setValue("dealerText", SAMPLE_BAD_DEAL)}
+                    data-testid="button-sample-bad"
+                  >
+                    Try a bad deal example
+                  </Button>
+                </div>
                 <FormField
                   control={form.control}
                   name="dealerText"
@@ -554,11 +601,7 @@ export default function Home() {
                       <FormControl>
                         <Textarea
                           {...field}
-                          placeholder="Paste dealer texts, emails, or quotes here...
-
-Example:
-'Hey! Great news - I can offer you the 2024 Camry XLE for $32,500 including destination. 
-With your trade-in worth $8,000 and $2,000 down, your monthly payment would be around $485/month for 60 months.'"
+                          placeholder="Paste dealer texts, emails, or quotes here..."
                           className="min-h-48 text-base resize-y"
                           data-testid="input-dealer-text"
                         />
@@ -794,37 +837,24 @@ With your trade-in worth $8,000 and $2,000 down, your monthly payment would be a
             />
 
             {isUnlocked ? (
-              <SuggestedReplyCard reply={result.suggestedReply} />
+              <>
+                <SuggestedReplyCard reply={result.suggestedReply} />
+                <Card className="bg-muted/20">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Info className="w-4 h-4" />
+                      Analysis Reasoning
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-reasoning">
+                      {result.reasoning}
+                    </p>
+                  </CardContent>
+                </Card>
+              </>
             ) : (
               <LockedSection
-                title="Suggested Reply to Dealer"
-                icon={MessageSquare}
-                teaser="Unlock to get a personalized, copy-paste reply crafted specifically for your deal. This message is designed to protect your interests while maintaining a professional tone with the dealer..."
-                onUnlock={handleUnlock}
-                isLoading={checkoutLoading || isCheckingPayment}
-                stripeConfigured={stripeConfigured}
-              />
-            )}
-
-            {isUnlocked ? (
-              <Card className="bg-muted/20">
-                <CardHeader className="pb-4">
-                  <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Info className="w-4 h-4" />
-                    Analysis Reasoning
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-reasoning">
-                    {result.reasoning}
-                  </p>
-                </CardContent>
-              </Card>
-            ) : (
-              <LockedSection
-                title="Analysis Reasoning"
-                icon={Info}
-                teaser="See the detailed step-by-step reasoning behind this deal analysis. Understand exactly how we evaluated each aspect of the offer and why we reached this conclusion..."
                 onUnlock={handleUnlock}
                 isLoading={checkoutLoading || isCheckingPayment}
                 stripeConfigured={stripeConfigured}
