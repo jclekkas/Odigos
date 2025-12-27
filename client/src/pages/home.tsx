@@ -284,30 +284,32 @@ Low down payment options available.
 We added some protection packages that everyone gets, but we can talk about that later.
 Let me know what time you're coming in today!!!`;
 
-interface LockedSectionProps {
+type UnlockTier = "free" | "49" | "79";
+
+interface LockedTier2Props {
   onUnlock: () => void;
   isLoading: boolean;
   stripeConfigured: boolean;
 }
 
-function LockedSection({ onUnlock, isLoading, stripeConfigured }: LockedSectionProps) {
+function LockedTier2Section({ onUnlock, isLoading, stripeConfigured }: LockedTier2Props) {
   return (
     <Card className="border-amber-500/30 bg-amber-500/5">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Lock className="w-5 h-5 text-amber-500" />
-          Unlock your Negotiation Pack
+          Unlock Deal Clarity
         </CardTitle>
       </CardHeader>
       <CardContent>
         <p className="text-sm text-muted-foreground mb-4">
-          Get a copy-paste message to send the dealer + the reasoning behind your verdict so you know exactly what to ask for (or avoid).
+          See what's missing, what's risky, and what to ask before you go in.
         </p>
         <ul className="space-y-2 mb-4">
           {[
-            "Copy-paste reply tailored to this deal",
-            "Exact questions to get an itemized out-the-door price",
-            "Red-flag callouts (fees, add-ons, payment-only tactics)"
+            "Red flags and risks in this deal",
+            "Missing information to request",
+            "Why this deal scored Green/Yellow/Red"
           ].map((item, idx) => (
             <li key={idx} className="flex items-start gap-2 text-sm">
               <Check className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
@@ -319,27 +321,82 @@ function LockedSection({ onUnlock, isLoading, stripeConfigured }: LockedSectionP
           One-time payment. Not affiliated with any dealership.
         </p>
         {stripeConfigured ? (
-          <>
-            <Button
-              variant="default"
-              onClick={onUnlock}
-              className="w-full bg-amber-500 hover:bg-amber-600 text-white"
-              disabled={isLoading}
-              data-testid="button-unlock"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                "Unlock for $79"
-              )}
-            </Button>
-            <p className="text-xs text-center text-muted-foreground mt-3">
-              Most people use this right before they go in — or to avoid going in at all.
-            </p>
-          </>
+          <Button
+            variant="default"
+            onClick={onUnlock}
+            className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+            disabled={isLoading}
+            data-testid="button-unlock-49"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              "Unlock for $49"
+            )}
+          </Button>
+        ) : (
+          <p className="text-sm text-center text-muted-foreground">
+            Payments not configured
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+interface LockedTier3Props {
+  onUnlock: () => void;
+  isLoading: boolean;
+  stripeConfigured: boolean;
+}
+
+function LockedTier3Section({ onUnlock, isLoading, stripeConfigured }: LockedTier3Props) {
+  return (
+    <Card className="border-amber-500/30 bg-amber-500/5">
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Lock className="w-5 h-5 text-amber-500" />
+          Unlock Negotiation Pack
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground mb-4">
+          Get a copy-paste reply to send the dealer + the full reasoning behind this analysis.
+        </p>
+        <ul className="space-y-2 mb-4">
+          {[
+            "Copy-paste reply tailored to this deal",
+            "Full analysis reasoning and methodology"
+          ].map((item, idx) => (
+            <li key={idx} className="flex items-start gap-2 text-sm">
+              <Check className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+              <span className="text-muted-foreground">{item}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="text-xs text-muted-foreground mb-4">
+          One-time payment. Not affiliated with any dealership.
+        </p>
+        {stripeConfigured ? (
+          <Button
+            variant="default"
+            onClick={onUnlock}
+            className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+            disabled={isLoading}
+            data-testid="button-unlock-79"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              "Unlock for $79"
+            )}
+          </Button>
         ) : (
           <p className="text-sm text-center text-muted-foreground">
             Payments not configured
@@ -394,18 +451,23 @@ function SuggestedReplyCard({ reply }: { reply: string }) {
   );
 }
 
-const UNLOCK_KEY = "odigos_premium_unlocked";
+const UNLOCK_KEY = "odigos_unlock_tier";
+
+function getStoredTier(): UnlockTier {
+  try {
+    const stored = localStorage.getItem(UNLOCK_KEY);
+    if (stored === "79" || stored === "49") return stored;
+    if (localStorage.getItem("odigos_premium_unlocked") === "true") return "79";
+    return "free";
+  } catch {
+    return "free";
+  }
+}
 
 export default function Home() {
   const [isOptionalOpen, setIsOptionalOpen] = useState(false);
   const [result, setResult] = useState<AnalysisResponse | null>(null);
-  const [isUnlocked, setIsUnlocked] = useState(() => {
-    try {
-      return localStorage.getItem(UNLOCK_KEY) === "true";
-    } catch {
-      return false;
-    }
-  });
+  const [unlockTier, setUnlockTier] = useState<UnlockTier>(getStoredTier);
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const { toast } = useToast();
@@ -444,6 +506,8 @@ export default function Home() {
   }, [form]);
 
   useEffect(() => {
+    setCheckoutLoading(false);
+    
     const params = new URLSearchParams(window.location.search);
     const sessionId = params.get("session_id");
     const canceled = params.get("canceled");
@@ -461,15 +525,23 @@ export default function Home() {
       setIsCheckingPayment(true);
       fetch(`/api/verify-session?session_id=${sessionId}`)
         .then((res) => res.json())
-        .then((data) => {
-          if (data.paid) {
-            setIsUnlocked(true);
-            try {
-              localStorage.setItem(UNLOCK_KEY, "true");
-            } catch {}
+        .then((data: { paid: boolean; tier: "49" | "79" | null }) => {
+          if (data.paid && data.tier) {
+            const newTier = data.tier;
+            const currentTier = unlockTier;
+            const shouldUpgrade = newTier === "79" || (newTier === "49" && currentTier === "free");
+            
+            if (shouldUpgrade) {
+              const finalTier = newTier === "79" ? "79" : (currentTier === "79" ? "79" : newTier);
+              setUnlockTier(finalTier);
+              try {
+                localStorage.setItem(UNLOCK_KEY, finalTier);
+              } catch {}
+            }
+            
             toast({
               title: "Payment Successful",
-              description: "Premium features are now unlocked!",
+              description: newTier === "79" ? "Negotiation Pack unlocked!" : "Deal Clarity unlocked!",
             });
           } else {
             toast({
@@ -491,14 +563,14 @@ export default function Home() {
           window.history.replaceState({}, "", window.location.pathname);
         });
     }
-  }, [toast]);
+  }, [toast, unlockTier]);
 
-  const handleUnlock = async () => {
+  const handleUnlockTier = async (tier: "49" | "79") => {
     const analysisId = Date.now().toString();
     setCheckoutLoading(true);
     
     try {
-      const response = await apiRequest("POST", "/api/create-checkout-session", { analysisId });
+      const response = await apiRequest("POST", "/api/create-checkout-session", { analysisId, tier });
       const data = await response.json();
       
       if (data.url) {
@@ -829,14 +901,22 @@ export default function Home() {
 
             <DetectedFieldsCard fields={result.detectedFields} />
 
-            <MissingInfoCard 
-              items={result.missingInfo}
-              confidenceLevel={result.confidenceLevel}
-              verdictLabel={result.verdictLabel}
-              onCopy={() => toast({ title: "Questions copied to clipboard" })}
-            />
+            {unlockTier === "free" ? (
+              <LockedTier2Section
+                onUnlock={() => handleUnlockTier("49")}
+                isLoading={checkoutLoading || isCheckingPayment}
+                stripeConfigured={stripeConfigured}
+              />
+            ) : (
+              <MissingInfoCard 
+                items={result.missingInfo}
+                confidenceLevel={result.confidenceLevel}
+                verdictLabel={result.verdictLabel}
+                onCopy={() => toast({ title: "Questions copied to clipboard" })}
+              />
+            )}
 
-            {isUnlocked ? (
+            {unlockTier === "79" ? (
               <>
                 <SuggestedReplyCard reply={result.suggestedReply} />
                 <Card className="bg-muted/20">
@@ -854,8 +934,8 @@ export default function Home() {
                 </Card>
               </>
             ) : (
-              <LockedSection
-                onUnlock={handleUnlock}
+              <LockedTier3Section
+                onUnlock={() => handleUnlockTier("79")}
                 isLoading={checkoutLoading || isCheckingPayment}
                 stripeConfigured={stripeConfigured}
               />

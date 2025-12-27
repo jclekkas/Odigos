@@ -237,10 +237,12 @@ GO/NO-GO/NEED-MORE-INFO:
         return res.status(503).json({ error: "Payments not configured" });
       }
 
-      const { analysisId } = req.body;
+      const { analysisId, tier } = req.body;
       if (!analysisId) {
         return res.status(400).json({ error: "Missing analysisId" });
       }
+      
+      const selectedTier = tier === "49" ? "49" : "79";
 
       const stripe = await getStripeClient();
       
@@ -248,23 +250,55 @@ GO/NO-GO/NEED-MORE-INFO:
         ? `https://${process.env.REPLIT_DOMAINS.split(",")[0]}`
         : "http://localhost:5000";
 
-      const products = await stripe.products.list({ active: true, limit: 10 });
-      let product = products.data.find(p => p.name === "Odigos Premium Analysis");
-      
-      if (!product) {
-        product = await stripe.products.create({
-          name: "Odigos Premium Analysis",
-          description: "Unlock suggested dealer reply and detailed analysis reasoning",
-        });
-        await stripe.prices.create({
-          product: product.id,
-          unit_amount: 7900,
-          currency: "usd",
-        });
-      }
+      let priceId: string | undefined;
 
-      const prices = await stripe.prices.list({ product: product.id, active: true, limit: 1 });
-      const priceId = prices.data[0]?.id;
+      if (selectedTier === "49") {
+        if (process.env.STRIPE_PRICE_ID_49) {
+          priceId = process.env.STRIPE_PRICE_ID_49;
+        } else {
+          const products = await stripe.products.list({ active: true, limit: 20 });
+          let product = products.data.find(p => p.name === "Odigos Deal Clarity Pack");
+          
+          if (!product) {
+            product = await stripe.products.create({
+              name: "Odigos Deal Clarity Pack",
+              description: "Unlock red flags, missing info, and deal explanation",
+            });
+            const price = await stripe.prices.create({
+              product: product.id,
+              unit_amount: 4900,
+              currency: "usd",
+            });
+            priceId = price.id;
+          } else {
+            const prices = await stripe.prices.list({ product: product.id, active: true, limit: 1 });
+            priceId = prices.data[0]?.id;
+          }
+        }
+      } else {
+        if (process.env.STRIPE_PRICE_ID) {
+          priceId = process.env.STRIPE_PRICE_ID;
+        } else {
+          const products = await stripe.products.list({ active: true, limit: 20 });
+          let product = products.data.find(p => p.name === "Odigos Negotiation Pack");
+          
+          if (!product) {
+            product = await stripe.products.create({
+              name: "Odigos Negotiation Pack",
+              description: "Unlock suggested dealer reply and detailed analysis reasoning",
+            });
+            const price = await stripe.prices.create({
+              product: product.id,
+              unit_amount: 7900,
+              currency: "usd",
+            });
+            priceId = price.id;
+          } else {
+            const prices = await stripe.prices.list({ product: product.id, active: true, limit: 1 });
+            priceId = prices.data[0]?.id;
+          }
+        }
+      }
 
       if (!priceId) {
         return res.status(500).json({ error: "No price configured" });
@@ -273,8 +307,9 @@ GO/NO-GO/NEED-MORE-INFO:
       const session = await stripe.checkout.sessions.create({
         mode: "payment",
         line_items: [{ price: priceId, quantity: 1 }],
-        success_url: `${baseUrl}/?session_id={CHECKOUT_SESSION_ID}&analysisId=${analysisId}`,
-        cancel_url: `${baseUrl}/?canceled=1&analysisId=${analysisId}`,
+        success_url: `${baseUrl}/analyze?session_id={CHECKOUT_SESSION_ID}&analysisId=${analysisId}`,
+        cancel_url: `${baseUrl}/analyze?canceled=1&analysisId=${analysisId}`,
+        metadata: { tier: selectedTier },
       });
 
       res.json({ url: session.url });
@@ -289,21 +324,39 @@ GO/NO-GO/NEED-MORE-INFO:
       const { session_id } = req.query;
       
       if (!session_id || typeof session_id !== "string") {
-        return res.json({ paid: false });
+        return res.json({ paid: false, tier: null });
       }
 
       const configured = await isStripeConfigured();
       if (!configured) {
-        return res.json({ paid: false });
+        return res.json({ paid: false, tier: null });
       }
 
       const stripe = await getStripeClient();
-      const session = await stripe.checkout.sessions.retrieve(session_id);
+      const session = await stripe.checkout.sessions.retrieve(session_id, {
+        expand: ["line_items.data.price"],
+      });
       
-      res.json({ paid: session.payment_status === "paid" });
+      if (session.payment_status !== "paid") {
+        return res.json({ paid: false, tier: null });
+      }
+
+      let tier: "49" | "79" = "79";
+      
+      if (session.metadata?.tier) {
+        tier = session.metadata.tier === "49" ? "49" : "79";
+      } else {
+        const lineItems = session.line_items?.data || [];
+        const priceAmount = (lineItems[0]?.price as any)?.unit_amount;
+        if (priceAmount === 4900) {
+          tier = "49";
+        }
+      }
+      
+      res.json({ paid: true, tier });
     } catch (error) {
       console.error("Session verification error:", error);
-      res.json({ paid: false });
+      res.json({ paid: false, tier: null });
     }
   });
 
