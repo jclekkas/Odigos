@@ -230,6 +230,53 @@ GO/NO-GO/NEED-MORE-INFO:
     }
   });
 
+  app.post("/api/checkout", async (req, res) => {
+    try {
+      const { product } = req.body;
+      
+      if (!product || !["deal_clarity", "negotiation_pack"].includes(product)) {
+        return res.status(400).json({ error: "INVALID_PRODUCT" });
+      }
+
+      const secretKey = process.env.STRIPE_SECRET_KEY;
+      if (!secretKey) {
+        return res.status(400).json({ error: "PAYMENTS_NOT_CONFIGURED" });
+      }
+
+      let priceId: string | undefined;
+      
+      if (product === "deal_clarity") {
+        priceId = process.env.STRIPE_PRICE_ID_49;
+        if (!priceId) {
+          return res.status(400).json({ error: "PAYMENTS_NOT_CONFIGURED" });
+        }
+      } else {
+        priceId = process.env.STRIPE_PRICE_ID_79;
+        if (!priceId) {
+          return res.status(400).json({ error: "PAYMENTS_NOT_CONFIGURED" });
+        }
+      }
+
+      const stripe = await getStripeClient();
+      
+      const baseUrl = process.env.REPLIT_DOMAINS
+        ? `https://${process.env.REPLIT_DOMAINS.split(",")[0]}`
+        : "http://localhost:5000";
+
+      const session = await stripe.checkout.sessions.create({
+        mode: "payment",
+        line_items: [{ price: priceId, quantity: 1 }],
+        success_url: `${baseUrl}/analyze?paid=1&product=${product}`,
+        cancel_url: `${baseUrl}/analyze?paid=0`,
+      });
+
+      res.json({ url: session.url });
+    } catch (error) {
+      console.error("Checkout error:", error);
+      res.status(500).json({ error: "CHECKOUT_FAILED" });
+    }
+  });
+
   app.post("/api/create-checkout-session", async (req, res) => {
     try {
       const configured = await isStripeConfigured();

@@ -451,12 +451,12 @@ function SuggestedReplyCard({ reply }: { reply: string }) {
   );
 }
 
-const UNLOCK_KEY = "odigos_unlock_tier";
-
 function getStoredTier(): UnlockTier {
   try {
-    const stored = localStorage.getItem(UNLOCK_KEY);
-    if (stored === "79" || stored === "49") return stored;
+    if (localStorage.getItem("paid_negotiation_pack") === "true") return "79";
+    if (localStorage.getItem("paid_deal_clarity") === "true") return "49";
+    if (localStorage.getItem("odigos_unlock_tier") === "79") return "79";
+    if (localStorage.getItem("odigos_unlock_tier") === "49") return "49";
     if (localStorage.getItem("odigos_premium_unlocked") === "true") return "79";
     return "free";
   } catch {
@@ -486,7 +486,7 @@ export default function Home() {
     },
   });
 
-  const { data: stripeStatus } = useQuery({
+  const { data: stripeStatus } = useQuery<{ configured: boolean }>({
     queryKey: ["/api/stripe-status"],
   });
 
@@ -509,69 +509,60 @@ export default function Home() {
     setCheckoutLoading(false);
     
     const params = new URLSearchParams(window.location.search);
-    const sessionId = params.get("session_id");
+    const paid = params.get("paid");
+    const product = params.get("product");
     const canceled = params.get("canceled");
 
-    if (canceled) {
-      toast({
-        title: "Payment Canceled",
-        description: "You can try again anytime.",
-      });
+    if (canceled === "0" || canceled === "1") {
+      if (canceled === "0" || paid === "0") {
+        toast({
+          title: "Payment Canceled",
+          description: "You can try again anytime.",
+        });
+      }
       window.history.replaceState({}, "", window.location.pathname);
       return;
     }
 
-    if (sessionId) {
-      setIsCheckingPayment(true);
-      fetch(`/api/verify-session?session_id=${sessionId}`)
-        .then((res) => res.json())
-        .then((data: { paid: boolean; tier: "49" | "79" | null }) => {
-          if (data.paid && data.tier) {
-            const newTier = data.tier;
-            const currentTier = unlockTier;
-            const shouldUpgrade = newTier === "79" || (newTier === "49" && currentTier === "free");
-            
-            if (shouldUpgrade) {
-              const finalTier = newTier === "79" ? "79" : (currentTier === "79" ? "79" : newTier);
-              setUnlockTier(finalTier);
-              try {
-                localStorage.setItem(UNLOCK_KEY, finalTier);
-              } catch {}
-            }
-            
-            toast({
-              title: "Payment Successful",
-              description: newTier === "79" ? "Negotiation Pack unlocked!" : "Deal Clarity unlocked!",
-            });
-          } else {
-            toast({
-              title: "Payment Not Verified",
-              description: "Please try again or contact support.",
-              variant: "destructive",
-            });
-          }
-        })
-        .catch(() => {
+    if (paid === "1" && product) {
+      try {
+        if (product === "deal_clarity") {
+          localStorage.setItem("paid_deal_clarity", "true");
+          setUnlockTier((current) => current === "79" ? "79" : "49");
           toast({
-            title: "Verification Error",
-            description: "Could not verify payment. Please try again.",
-            variant: "destructive",
+            title: "Payment Successful",
+            description: "Deal Clarity Pack unlocked!",
           });
-        })
-        .finally(() => {
-          setIsCheckingPayment(false);
-          window.history.replaceState({}, "", window.location.pathname);
-        });
+        } else if (product === "negotiation_pack") {
+          localStorage.setItem("paid_negotiation_pack", "true");
+          setUnlockTier("79");
+          toast({
+            title: "Payment Successful", 
+            description: "Negotiation Pack unlocked!",
+          });
+        }
+      } catch {}
+      window.history.replaceState({}, "", window.location.pathname);
     }
-  }, [toast, unlockTier]);
+  }, [toast]);
 
   const handleUnlockTier = async (tier: "49" | "79") => {
-    const analysisId = Date.now().toString();
     setCheckoutLoading(true);
     
     try {
-      const response = await apiRequest("POST", "/api/create-checkout-session", { analysisId, tier });
+      const product = tier === "49" ? "deal_clarity" : "negotiation_pack";
+      const response = await apiRequest("POST", "/api/checkout", { product });
       const data = await response.json();
+      
+      if (data.error === "PAYMENTS_NOT_CONFIGURED") {
+        toast({
+          title: "Payments Not Configured",
+          description: "Please check STRIPE_SECRET_KEY and price IDs.",
+          variant: "destructive",
+        });
+        setCheckoutLoading(false);
+        return;
+      }
       
       if (data.url) {
         window.location.href = data.url;
