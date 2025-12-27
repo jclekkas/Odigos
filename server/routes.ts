@@ -176,6 +176,20 @@ GO/NO-GO/NEED-MORE-INFO:
         throw new Error("AI returned invalid JSON format");
       }
       
+      // Handle missing reasoning field with logging
+      if (!rawResult.reasoning) {
+        console.warn("AI response missing 'reasoning' field - using summary as fallback");
+        if (rawResult.summary) {
+          rawResult.reasoning = rawResult.summary;
+        } else {
+          console.error("AI response missing both 'reasoning' and 'summary' fields");
+          return res.status(502).json({
+            error: "Incomplete AI response",
+            message: "The AI did not provide sufficient analysis. Please try again."
+          });
+        }
+      }
+      
       const validationResult = analysisResponseSchema.safeParse(rawResult);
       
       if (!validationResult.success) {
