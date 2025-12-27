@@ -190,6 +190,16 @@ GO/NO-GO/NEED-MORE-INFO:
         }
       }
       
+      // Fix null arrays - AI sometimes returns null instead of empty arrays
+      if (rawResult.detectedFields) {
+        if (rawResult.detectedFields.fees === null) {
+          rawResult.detectedFields.fees = [];
+        }
+      }
+      if (rawResult.missingInfo === null) {
+        rawResult.missingInfo = [];
+      }
+      
       const validationResult = analysisResponseSchema.safeParse(rawResult);
       
       if (!validationResult.success) {
