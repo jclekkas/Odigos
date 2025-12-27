@@ -1,0 +1,628 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { z } from "zod";
+import { 
+  Car, 
+  ChevronDown, 
+  ChevronUp, 
+  Loader2, 
+  Copy, 
+  Check, 
+  AlertTriangle,
+  CheckCircle2,
+  XCircle,
+  HelpCircle,
+  DollarSign,
+  FileText,
+  MessageSquare,
+  Info
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import type { AnalysisResponse, DetectedFields, MissingInfo } from "@shared/schema";
+
+const formSchema = z.object({
+  dealerText: z.string().min(1, "Please paste dealer text to analyze"),
+  condition: z.enum(["unknown", "new", "used"]),
+  vehicle: z.string().optional(),
+  zipCode: z.string().optional(),
+  purchaseType: z.enum(["unknown", "cash", "finance", "lease"]),
+  apr: z.string().optional(),
+  termMonths: z.string().optional(),
+  downPayment: z.string().optional(),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
+function formatCurrency(value: number | null | undefined): string {
+  if (value == null) return "Not specified";
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function DealScoreBadge({ score, goNoGo }: { score: "GREEN" | "YELLOW" | "RED"; goNoGo: "GO" | "NO-GO" }) {
+  const scoreConfig = {
+    GREEN: {
+      bg: "bg-emerald-500/10 dark:bg-emerald-500/20",
+      border: "border-emerald-500/30",
+      text: "text-emerald-700 dark:text-emerald-400",
+      icon: CheckCircle2,
+      label: "Good Deal",
+    },
+    YELLOW: {
+      bg: "bg-amber-500/10 dark:bg-amber-500/20",
+      border: "border-amber-500/30",
+      text: "text-amber-700 dark:text-amber-400",
+      icon: AlertTriangle,
+      label: "Needs Review",
+    },
+    RED: {
+      bg: "bg-red-500/10 dark:bg-red-500/20",
+      border: "border-red-500/30",
+      text: "text-red-700 dark:text-red-400",
+      icon: XCircle,
+      label: "Poor Deal",
+    },
+  };
+
+  const config = scoreConfig[score];
+  const Icon = config.icon;
+
+  return (
+    <div className={`rounded-xl border-2 ${config.border} ${config.bg} p-8 text-center`}>
+      <div className="flex items-center justify-center gap-3 mb-4">
+        <Icon className={`w-12 h-12 ${config.text}`} />
+        <span className={`text-5xl font-bold ${config.text}`}>{score}</span>
+      </div>
+      <p className={`text-xl font-semibold ${config.text} mb-2`}>{config.label}</p>
+      <div className={`inline-block px-4 py-2 rounded-lg ${config.bg} border ${config.border}`}>
+        <span className={`text-2xl font-bold ${config.text}`}>{goNoGo}</span>
+      </div>
+      <p className="text-sm text-muted-foreground mt-3">
+        {goNoGo === "GO" 
+          ? "This deal appears reasonable. Consider visiting the dealership."
+          : "We recommend getting more information before visiting."}
+      </p>
+    </div>
+  );
+}
+
+function DetectedFieldsCard({ fields }: { fields: DetectedFields }) {
+  const items = [
+    { label: "Sale Price", value: fields.salePrice, format: formatCurrency },
+    { label: "MSRP", value: fields.msrp, format: formatCurrency },
+    { label: "Rebates/Incentives", value: fields.rebates, format: formatCurrency },
+    { label: "Out-the-Door Price", value: fields.outTheDoorPrice, format: formatCurrency },
+    { label: "Monthly Payment", value: fields.monthlyPayment, format: formatCurrency },
+    { label: "Trade-In Value", value: fields.tradeInValue, format: formatCurrency },
+    { label: "APR", value: fields.apr, format: (v: number | null) => v != null ? `${v}%` : "Not specified" },
+    { label: "Term", value: fields.termMonths, format: (v: number | null) => v != null ? `${v} months` : "Not specified" },
+    { label: "Down Payment", value: fields.downPayment, format: formatCurrency },
+  ];
+
+  return (
+    <Card>
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <FileText className="w-5 h-5 text-muted-foreground" />
+          What We Detected
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {items.map((item) => (
+            <div key={item.label} className="flex justify-between items-center py-2 border-b border-border/50 last:border-0">
+              <span className="text-sm text-muted-foreground">{item.label}</span>
+              <span className={`text-sm font-medium font-mono ${item.value != null ? "text-foreground" : "text-muted-foreground/60"}`}>
+                {item.format(item.value)}
+              </span>
+            </div>
+          ))}
+        </div>
+        
+        {fields.fees && fields.fees.length > 0 && (
+          <div className="mt-6">
+            <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+              <DollarSign className="w-4 h-4 text-muted-foreground" />
+              Itemized Fees
+            </h4>
+            <div className="space-y-2">
+              {fields.fees.map((fee, idx) => (
+                <div key={idx} className="flex justify-between items-center py-2 bg-muted/30 rounded-md px-3">
+                  <span className="text-sm">{fee.name}</span>
+                  <span className="text-sm font-mono font-medium">
+                    {fee.amount != null ? formatCurrency(fee.amount) : "Amount unclear"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function MissingInfoCard({ items, onCopy }: { items: MissingInfo[]; onCopy: () => void }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    const questions = items.map((item) => item.question).join("\n\n");
+    navigator.clipboard.writeText(questions);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    onCopy();
+  };
+
+  if (items.length === 0) return null;
+
+  return (
+    <Card className="border-amber-500/30 bg-amber-500/5">
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center gap-2 text-lg text-amber-700 dark:text-amber-400">
+          <HelpCircle className="w-5 h-5" />
+          Missing Information
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground mb-4">
+          Ask the dealer these questions to get the full picture:
+        </p>
+        <ul className="space-y-3 mb-4">
+          {items.map((item, idx) => (
+            <li key={idx} className="flex gap-3">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-bold flex items-center justify-center">
+                {idx + 1}
+              </span>
+              <div>
+                <p className="text-sm font-medium">{item.field}</p>
+                <p className="text-sm text-muted-foreground">{item.question}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleCopy}
+          className="w-full"
+          data-testid="button-copy-questions"
+        >
+          {copied ? (
+            <>
+              <Check className="w-4 h-4 mr-2" />
+              Copied!
+            </>
+          ) : (
+            <>
+              <Copy className="w-4 h-4 mr-2" />
+              Copy Questions to Send to Dealer
+            </>
+          )}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SuggestedReplyCard({ reply }: { reply: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(reply);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <Card>
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <MessageSquare className="w-5 h-5 text-muted-foreground" />
+          Suggested Reply to Dealer
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="bg-muted/30 rounded-lg p-4 mb-4">
+          <p className="text-sm whitespace-pre-wrap leading-relaxed">{reply}</p>
+        </div>
+        <Button
+          variant="default"
+          onClick={handleCopy}
+          className="w-full"
+          data-testid="button-copy-reply"
+        >
+          {copied ? (
+            <>
+              <Check className="w-4 h-4 mr-2" />
+              Copied!
+            </>
+          ) : (
+            <>
+              <Copy className="w-4 h-4 mr-2" />
+              Copy Reply
+            </>
+          )}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default function Home() {
+  const [isOptionalOpen, setIsOptionalOpen] = useState(false);
+  const [result, setResult] = useState<AnalysisResponse | null>(null);
+  const { toast } = useToast();
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      dealerText: "",
+      condition: "unknown",
+      vehicle: "",
+      zipCode: "",
+      purchaseType: "unknown",
+      apr: "",
+      termMonths: "",
+      downPayment: "",
+    },
+  });
+
+  const purchaseType = form.watch("purchaseType");
+
+  const analyzeMutation = useMutation({
+    mutationFn: async (data: FormValues) => {
+      const payload = {
+        dealerText: data.dealerText,
+        condition: data.condition,
+        vehicle: data.vehicle || undefined,
+        zipCode: data.zipCode || undefined,
+        purchaseType: data.purchaseType,
+        apr: data.apr ? parseFloat(data.apr) : undefined,
+        termMonths: data.termMonths ? parseInt(data.termMonths) : undefined,
+        downPayment: data.downPayment ? parseFloat(data.downPayment) : undefined,
+      };
+      const response = await apiRequest("POST", "/api/analyze", payload);
+      return response.json() as Promise<AnalysisResponse>;
+    },
+    onSuccess: (data) => {
+      setResult(data);
+    },
+    onError: (error) => {
+      toast({
+        title: "Analysis Failed",
+        description: error instanceof Error ? error.message : "Something went wrong",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmit = (data: FormValues) => {
+    setResult(null);
+    analyzeMutation.mutate(data);
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+        <div className="max-w-4xl mx-auto px-6 py-6 flex items-center gap-3">
+          <div className="p-2 bg-primary/10 rounded-lg">
+            <Car className="w-6 h-6 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Odigos</h1>
+            <p className="text-sm text-muted-foreground">Know your car deal before you go in</p>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-4xl mx-auto px-6 py-8 space-y-8">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Paste Dealer Communication</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <FormField
+                  control={form.control}
+                  name="dealerText"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="sr-only">Dealer text</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          placeholder="Paste dealer texts, emails, or quotes here...
+
+Example:
+'Hey! Great news - I can offer you the 2024 Camry XLE for $32,500 including destination. 
+With your trade-in worth $8,000 and $2,000 down, your monthly payment would be around $485/month for 60 months.'"
+                          className="min-h-48 text-base resize-y"
+                          data-testid="input-dealer-text"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+
+            <Collapsible open={isOptionalOpen} onOpenChange={setIsOptionalOpen}>
+              <Card>
+                <CollapsibleTrigger asChild>
+                  <CardHeader className="cursor-pointer hover-elevate active-elevate-2 rounded-t-xl">
+                    <div className="flex items-center justify-between gap-2">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Info className="w-5 h-5 text-muted-foreground" />
+                        Optional Details
+                        <span className="text-sm font-normal text-muted-foreground">(improves accuracy)</span>
+                      </CardTitle>
+                      {isOptionalOpen ? (
+                        <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                      )}
+                    </div>
+                  </CardHeader>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <CardContent className="pt-0 space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="condition"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Condition</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger data-testid="select-condition">
+                                  <SelectValue placeholder="Select condition" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="unknown">Unknown</SelectItem>
+                                <SelectItem value="new">New</SelectItem>
+                                <SelectItem value="used">Used</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="vehicle"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Vehicle</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="e.g., 2024 Toyota Camry XLE"
+                                data-testid="input-vehicle"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="zipCode"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>ZIP Code</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="e.g., 90210"
+                                maxLength={5}
+                                data-testid="input-zip"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="purchaseType"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Purchase Type</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger data-testid="select-purchase-type">
+                                  <SelectValue placeholder="Select type" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="unknown">Unknown</SelectItem>
+                                <SelectItem value="cash">Cash</SelectItem>
+                                <SelectItem value="finance">Finance</SelectItem>
+                                <SelectItem value="lease">Lease</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {purchaseType === "finance" && (
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                        <FormField
+                          control={form.control}
+                          name="apr"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>APR (%)</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  type="number"
+                                  step="0.01"
+                                  placeholder="e.g., 5.99"
+                                  data-testid="input-apr"
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="termMonths"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Term (months)</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  type="number"
+                                  placeholder="e.g., 60"
+                                  data-testid="input-term"
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="downPayment"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Down Payment ($)</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  type="number"
+                                  placeholder="e.g., 5000"
+                                  data-testid="input-down-payment"
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    )}
+                  </CardContent>
+                </CollapsibleContent>
+              </Card>
+            </Collapsible>
+
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full"
+              disabled={analyzeMutation.isPending}
+              data-testid="button-analyze"
+            >
+              {analyzeMutation.isPending ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Analyzing Deal...
+                </>
+              ) : (
+                <>
+                  <Car className="w-5 h-5 mr-2" />
+                  Analyze Deal
+                </>
+              )}
+            </Button>
+          </form>
+        </Form>
+
+        {result && (
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="border-t border-border/50 pt-8">
+              <h2 className="text-xl font-semibold mb-6 text-center">Analysis Results</h2>
+              
+              <DealScoreBadge score={result.dealScore} goNoGo={result.goNoGo} />
+            </div>
+
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <FileText className="w-5 h-5 text-muted-foreground" />
+                  What This Deal Likely Means
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-base leading-relaxed text-muted-foreground" data-testid="text-summary">
+                  {result.summary}
+                </p>
+              </CardContent>
+            </Card>
+
+            <DetectedFieldsCard fields={result.detectedFields} />
+
+            <MissingInfoCard 
+              items={result.missingInfo} 
+              onCopy={() => toast({ title: "Questions copied to clipboard" })}
+            />
+
+            <SuggestedReplyCard reply={result.suggestedReply} />
+
+            <Card className="bg-muted/20">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Info className="w-4 h-4" />
+                  Analysis Reasoning
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-reasoning">
+                  {result.reasoning}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </main>
+
+      <footer className="border-t border-border/50 mt-12">
+        <div className="max-w-4xl mx-auto px-6 py-6 text-center">
+          <p className="text-sm text-muted-foreground">
+            Odigos provides estimates based on the information you share. 
+            Always verify details directly with the dealership.
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+}
