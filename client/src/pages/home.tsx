@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { 
   Car, 
@@ -17,7 +17,8 @@ import {
   DollarSign,
   FileText,
   MessageSquare,
-  Info
+  Info,
+  Lock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -273,6 +274,68 @@ function MissingInfoCard({ items, confidenceLevel, verdictLabel, onCopy }: Missi
   );
 }
 
+interface LockedSectionProps {
+  title: string;
+  icon: typeof MessageSquare;
+  teaser: string;
+  onUnlock: () => void;
+  isLoading: boolean;
+  stripeConfigured: boolean;
+}
+
+function LockedSection({ title, icon: Icon, teaser, onUnlock, isLoading, stripeConfigured }: LockedSectionProps) {
+  return (
+    <Card className="relative overflow-hidden">
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Icon className="w-5 h-5 text-muted-foreground" />
+          {title}
+          <Lock className="w-4 h-4 text-amber-500 ml-auto" />
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="bg-muted/30 rounded-lg p-4 mb-4 relative">
+          <p className="text-sm text-muted-foreground/60 blur-[2px] select-none leading-relaxed">
+            {teaser}
+          </p>
+          <div className="absolute inset-0 flex items-center justify-center bg-background/60 rounded-lg">
+            <div className="text-center p-4">
+              <Lock className="w-8 h-8 text-amber-500 mx-auto mb-2" />
+              <p className="text-sm font-medium mb-1">Premium Content</p>
+              <p className="text-xs text-muted-foreground">Unlock to view full content</p>
+            </div>
+          </div>
+        </div>
+        {stripeConfigured ? (
+          <Button
+            variant="default"
+            onClick={onUnlock}
+            className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+            disabled={isLoading}
+            data-testid="button-unlock"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                <Lock className="w-4 h-4 mr-2" />
+                Unlock for $79
+              </>
+            )}
+          </Button>
+        ) : (
+          <p className="text-sm text-center text-muted-foreground">
+            Payments not configured
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 function SuggestedReplyCard({ reply }: { reply: string }) {
   const [copied, setCopied] = useState(false);
 
@@ -320,7 +383,86 @@ function SuggestedReplyCard({ reply }: { reply: string }) {
 export default function Home() {
   const [isOptionalOpen, setIsOptionalOpen] = useState(false);
   const [result, setResult] = useState<AnalysisResponse | null>(null);
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isCheckingPayment, setIsCheckingPayment] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
   const { toast } = useToast();
+
+  const { data: stripeStatus } = useQuery({
+    queryKey: ["/api/stripe-status"],
+  });
+
+  const stripeConfigured = stripeStatus?.configured ?? false;
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("session_id");
+    const canceled = params.get("canceled");
+
+    if (canceled) {
+      toast({
+        title: "Payment Canceled",
+        description: "You can try again anytime.",
+      });
+      window.history.replaceState({}, "", window.location.pathname);
+      return;
+    }
+
+    if (sessionId) {
+      setIsCheckingPayment(true);
+      fetch(`/api/verify-session?session_id=${sessionId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.paid) {
+            setIsUnlocked(true);
+            toast({
+              title: "Payment Successful",
+              description: "Premium features are now unlocked!",
+            });
+          } else {
+            toast({
+              title: "Payment Not Verified",
+              description: "Please try again or contact support.",
+              variant: "destructive",
+            });
+          }
+        })
+        .catch(() => {
+          toast({
+            title: "Verification Error",
+            description: "Could not verify payment. Please try again.",
+            variant: "destructive",
+          });
+        })
+        .finally(() => {
+          setIsCheckingPayment(false);
+          window.history.replaceState({}, "", window.location.pathname);
+        });
+    }
+  }, [toast]);
+
+  const handleUnlock = async () => {
+    const analysisId = Date.now().toString();
+    setCheckoutLoading(true);
+    
+    try {
+      const response = await apiRequest("POST", "/api/create-checkout-session", { analysisId });
+      const data = await response.json();
+      
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL returned");
+      }
+    } catch (error) {
+      toast({
+        title: "Checkout Error",
+        description: "Could not start checkout. Please try again.",
+        variant: "destructive",
+      });
+      setCheckoutLoading(false);
+    }
+  };
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -640,21 +782,43 @@ With your trade-in worth $8,000 and $2,000 down, your monthly payment would be a
               onCopy={() => toast({ title: "Questions copied to clipboard" })}
             />
 
-            <SuggestedReplyCard reply={result.suggestedReply} />
+            {isUnlocked ? (
+              <SuggestedReplyCard reply={result.suggestedReply} />
+            ) : (
+              <LockedSection
+                title="Suggested Reply to Dealer"
+                icon={MessageSquare}
+                teaser="Unlock to get a personalized, copy-paste reply crafted specifically for your deal. This message is designed to protect your interests while maintaining a professional tone with the dealer..."
+                onUnlock={handleUnlock}
+                isLoading={checkoutLoading || isCheckingPayment}
+                stripeConfigured={stripeConfigured}
+              />
+            )}
 
-            <Card className="bg-muted/20">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Info className="w-4 h-4" />
-                  Analysis Reasoning
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-reasoning">
-                  {result.reasoning}
-                </p>
-              </CardContent>
-            </Card>
+            {isUnlocked ? (
+              <Card className="bg-muted/20">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Info className="w-4 h-4" />
+                    Analysis Reasoning
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-reasoning">
+                    {result.reasoning}
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <LockedSection
+                title="Analysis Reasoning"
+                icon={Info}
+                teaser="See the detailed step-by-step reasoning behind this deal analysis. Understand exactly how we evaluated each aspect of the offer and why we reached this conclusion..."
+                onUnlock={handleUnlock}
+                isLoading={checkoutLoading || isCheckingPayment}
+                stripeConfigured={stripeConfigured}
+              />
+            )}
           </div>
         )}
       </main>

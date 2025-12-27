@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import OpenAI from "openai";
 import { analysisRequestSchema, analysisResponseSchema, type AnalysisResponse } from "@shared/schema";
 import { applyRuleEngine } from "./ruleEngine";
+import { getStripeClient, isStripeConfigured } from "./stripeClient";
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
@@ -217,6 +218,92 @@ GO/NO-GO/NEED-MORE-INFO:
         error: "Failed to analyze deal",
         message: errorMessage
       });
+    }
+  });
+
+  app.get("/api/stripe-status", async (req, res) => {
+    try {
+      const configured = await isStripeConfigured();
+      res.json({ configured });
+    } catch {
+      res.json({ configured: false });
+    }
+  });
+
+  app.post("/api/create-checkout-session", async (req, res) => {
+    try {
+      const configured = await isStripeConfigured();
+      if (!configured) {
+        return res.status(503).json({ error: "Payments not configured" });
+      }
+
+      const { analysisId } = req.body;
+      if (!analysisId) {
+        return res.status(400).json({ error: "Missing analysisId" });
+      }
+
+      const stripe = await getStripeClient();
+      
+      const baseUrl = process.env.REPLIT_DOMAINS
+        ? `https://${process.env.REPLIT_DOMAINS.split(",")[0]}`
+        : "http://localhost:5000";
+
+      const products = await stripe.products.list({ active: true, limit: 10 });
+      let product = products.data.find(p => p.name === "Odigos Premium Analysis");
+      
+      if (!product) {
+        product = await stripe.products.create({
+          name: "Odigos Premium Analysis",
+          description: "Unlock suggested dealer reply and detailed analysis reasoning",
+        });
+        await stripe.prices.create({
+          product: product.id,
+          unit_amount: 7900,
+          currency: "usd",
+        });
+      }
+
+      const prices = await stripe.prices.list({ product: product.id, active: true, limit: 1 });
+      const priceId = prices.data[0]?.id;
+
+      if (!priceId) {
+        return res.status(500).json({ error: "No price configured" });
+      }
+
+      const session = await stripe.checkout.sessions.create({
+        mode: "payment",
+        line_items: [{ price: priceId, quantity: 1 }],
+        success_url: `${baseUrl}/?session_id={CHECKOUT_SESSION_ID}&analysisId=${analysisId}`,
+        cancel_url: `${baseUrl}/?canceled=1&analysisId=${analysisId}`,
+      });
+
+      res.json({ url: session.url });
+    } catch (error) {
+      console.error("Checkout session error:", error);
+      res.status(500).json({ error: "Failed to create checkout session" });
+    }
+  });
+
+  app.get("/api/verify-session", async (req, res) => {
+    try {
+      const { session_id } = req.query;
+      
+      if (!session_id || typeof session_id !== "string") {
+        return res.json({ paid: false });
+      }
+
+      const configured = await isStripeConfigured();
+      if (!configured) {
+        return res.json({ paid: false });
+      }
+
+      const stripe = await getStripeClient();
+      const session = await stripe.checkout.sessions.retrieve(session_id);
+      
+      res.json({ paid: session.payment_status === "paid" });
+    } catch (error) {
+      console.error("Session verification error:", error);
+      res.json({ paid: false });
     }
   });
 
