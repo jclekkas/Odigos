@@ -111,29 +111,82 @@ export default function Landing() {
         </section>
 
         <section className="py-12 px-6">
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-3xl mx-auto">
             <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
               Simple pricing
             </h2>
-            <div className="grid md:grid-cols-2 gap-4">
-              <Card>
+            <div className="grid md:grid-cols-3 gap-4">
+              <Card data-testid="card-pricing-tier1">
                 <CardContent className="pt-6">
-                  <h3 className="font-semibold mb-3">Free Preview</h3>
-                  <p className="text-sm text-muted-foreground">Verdict + what we detected</p>
+                  <h3 className="font-semibold mb-2">Free Preview</h3>
+                  <p className="text-2xl font-bold mb-3">$0</p>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span>Verdict (Green/Yellow/Red)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span>Deal score & confidence</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span>Detected pricing details</span>
+                    </li>
+                  </ul>
                 </CardContent>
               </Card>
-              <Card className="border-primary/30 bg-primary/5">
+              <Card className="border-accent/50 bg-accent/5" data-testid="card-pricing-tier2">
                 <CardContent className="pt-6">
-                  <h3 className="font-semibold mb-3">Negotiation Pack — $79 <span className="text-xs font-normal text-muted-foreground">(one-time)</span></h3>
-                  <ul className="space-y-1 text-sm text-muted-foreground">
-                    <li>Copy-paste dealer reply</li>
-                    <li>Full reasoning + next questions</li>
+                  <h3 className="font-semibold mb-2">Deal Clarity Pack</h3>
+                  <p className="text-2xl font-bold mb-3">$49 <span className="text-xs font-normal text-muted-foreground">(one-time)</span></p>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span>Everything in Free</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span>Red flags & hidden fees</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span>Missing info checklist</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span>Detailed explanation</span>
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+              <Card className="border-primary/50 bg-primary/5" data-testid="card-pricing-tier3">
+                <CardContent className="pt-6">
+                  <h3 className="font-semibold mb-2">Negotiation Pack</h3>
+                  <p className="text-2xl font-bold mb-3">$79 <span className="text-xs font-normal text-muted-foreground">(one-time)</span></p>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span>Everything in Deal Clarity</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span>Copy-paste dealer reply</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span>Full negotiation reasoning</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span>Strategic next questions</span>
+                    </li>
                   </ul>
                 </CardContent>
               </Card>
             </div>
             <p className="text-center text-sm text-muted-foreground mt-4">
-              No subscription. No upsells.
+              No subscription. No upsells. One-time purchase per analysis.
             </p>
           </div>
         </section>
