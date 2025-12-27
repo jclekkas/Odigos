@@ -380,10 +380,18 @@ function SuggestedReplyCard({ reply }: { reply: string }) {
   );
 }
 
+const UNLOCK_KEY = "odigos_premium_unlocked";
+
 export default function Home() {
   const [isOptionalOpen, setIsOptionalOpen] = useState(false);
   const [result, setResult] = useState<AnalysisResponse | null>(null);
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(() => {
+    try {
+      return localStorage.getItem(UNLOCK_KEY) === "true";
+    } catch {
+      return false;
+    }
+  });
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const { toast } = useToast();
@@ -415,6 +423,9 @@ export default function Home() {
         .then((data) => {
           if (data.paid) {
             setIsUnlocked(true);
+            try {
+              localStorage.setItem(UNLOCK_KEY, "true");
+            } catch {}
             toast({
               title: "Payment Successful",
               description: "Premium features are now unlocked!",

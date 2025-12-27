@@ -1,0 +1,79 @@
+Update my existing Odigos Next.js app to add a high-converting landing page at route “/” (homepage). Do NOT rebuild the project.
+
+What I want:
+- Replace the current homepage content (if any) with a simple landing page that converts.
+- The primary call-to-action button should route to /analyze.
+- Mobile-first, clean layout, readable spacing, no fancy animations.
+- Keep it fast and minimal.
+
+Landing page copy (use exactly this wording unless you need small edits for formatting):
+
+HERO
+Headline: “Know if your car deal is good — before you go to the dealership.”
+Subheadline: “Paste your dealer texts or quotes. Odigos tells you if the deal is clean, what’s missing, and what to say next — in minutes.”
+Primary button: “Analyze my deal” -> links to /analyze
+Small note under button: “No account required. Not affiliated with any dealership.”
+
+SECTION: Problem
+Title: “Buying a car shouldn’t feel like a guessing game.”
+Bullets:
+- “Monthly payment quotes instead of real prices”
+- “Fees and ‘packages’ added later”
+- “Pressure to ‘come in and talk numbers’”
+- “Terms changing between text and paperwork”
+Closing line: “Most buyers don’t want to ‘win’ negotiations — they just want to avoid a bad deal.”
+
+SECTION: What Odigos Does
+Title: “Odigos reviews your deal like an experienced buyer would.”
+Bullets:
+- “A clear verdict (Green / Yellow / Red)”
+- “A plain-English explanation of what the deal really means”
+- “What’s missing or risky”
+- “Exact copy-paste messages to send the dealer”
+- “A simple answer to: Should I go in or not?”
+Closing line: “No math. No forums. No second-guessing.”
+
+SECTION: Examples
+Title: “Example outcomes”
+Example 1 (good): “The core terms are clear and competitive. Proceed — confirm final paperwork.”
+Example 2 (bad): “Pause. This is a payment-only quote with add-ons. Ask for an itemized out-the-door price before visiting.”
+Closing line: “Odigos doesn’t hype deals. It tells you the truth.”
+
+SECTION: Why Odigos
+Title: “Odigos isn’t a chatbot. It’s judgment.”
+Short paragraph:
+“Generic AI tools hedge, say ‘it depends,’ and don’t enforce buyer rules. Odigos is opinionated by design: it flags common dealership tactics, refuses to guess missing numbers, and gives you a decision—not a discussion.”
+
+SECTION: Pricing
+Title: “Simple pricing”
+Row 1:
+“Deal Review — Free Preview”
+- “Deal score”
+- “What we detected”
+- “What’s missing”
+Row 2:
+“Negotiation Pack — $79”
+- “Everything above”
+- “Copy-paste dealer reply”
+- “Full reasoning behind the verdict”
+Footer line: “One-time payment. No subscriptions. No upsells.”
+
+SECTION: Trust
+Lines:
+“Odigos is not affiliated with any dealership. It does not sell leads. It does not negotiate on your behalf.”
+“It helps you walk in informed — or avoid walking in at all.”
+
+FINAL CTA
+Title: “Don’t walk into a $30–$60k decision blind.”
+Button: “Analyze my deal” -> /analyze
+Small note: “Most analyses take under 2 minutes.”
+
+Implementation details:
+- Use Tailwind for styling.
+- Use a centered container with good spacing, readable font sizes, and simple sections.
+- Keep it accessible (good contrast, button states).
+- If there is already a /analyze page, don’t change it.
+- If routing differs, ensure the CTA links to the correct analysis intake route used by the app.
+
+Deliverable:
+- After changes, the homepage should be a polished landing page and the CTA should navigate to the analysis flow.
