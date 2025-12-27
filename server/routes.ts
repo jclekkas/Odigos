@@ -8,6 +8,9 @@ const openai = new OpenAI({
   baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
 });
 
+console.log("OpenAI configured with base URL:", process.env.AI_INTEGRATIONS_OPENAI_BASE_URL ? "set" : "not set");
+console.log("OpenAI API key:", process.env.AI_INTEGRATIONS_OPENAI_API_KEY ? "set" : "not set");
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -92,40 +95,69 @@ GO/NO-GO DECISION:
         userMessage += `\nDown payment: $${data.downPayment}`;
       }
 
+      console.log("Making OpenAI API call with model: gpt-4o");
+      console.log("User message length:", userMessage.length);
+      
       const response = await openai.chat.completions.create({
-        model: "gpt-5",
+        model: "gpt-4o",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userMessage }
         ],
         response_format: { type: "json_object" },
-        max_completion_tokens: 4096,
+        max_tokens: 4096,
       });
 
+      console.log("OpenAI API response received");
+      console.log("Response choices count:", response.choices?.length || 0);
+      console.log("Finish reason:", response.choices[0]?.finish_reason);
+      
       const content = response.choices[0]?.message?.content;
       
       if (!content) {
-        throw new Error("No response from AI");
+        console.error("Empty content in response. Full response:", JSON.stringify(response, null, 2));
+        throw new Error("No response from AI - empty content received");
       }
 
-      const rawResult = JSON.parse(content);
+      console.log("Response content length:", content.length);
+      
+      let rawResult;
+      try {
+        rawResult = JSON.parse(content);
+      } catch (parseError) {
+        console.error("Failed to parse JSON response:", content.substring(0, 500));
+        throw new Error("AI returned invalid JSON format");
+      }
       
       const validationResult = analysisResponseSchema.safeParse(rawResult);
       
       if (!validationResult.success) {
         console.error("AI response validation failed:", validationResult.error.flatten());
+        console.error("Raw result keys:", Object.keys(rawResult));
         return res.status(502).json({
           error: "Invalid AI response",
           message: "The AI returned an unexpected response format. Please try again."
         });
       }
       
+      console.log("Analysis successful - Deal Score:", validationResult.data.dealScore);
       res.json(validationResult.data);
     } catch (error) {
       console.error("Analysis error:", error);
+      
+      let errorMessage = "Unknown error occurred";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        if (error.message.includes("timeout") || error.message.includes("ETIMEDOUT")) {
+          errorMessage = "Request timed out. Please try again.";
+        } else if (error.message.includes("rate limit")) {
+          errorMessage = "Too many requests. Please wait a moment and try again.";
+        }
+      }
+      
       res.status(500).json({ 
         error: "Failed to analyze deal",
-        message: error instanceof Error ? error.message : "Unknown error"
+        message: errorMessage
       });
     }
   });
