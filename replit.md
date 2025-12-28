@@ -7,6 +7,8 @@ Odigos is a web application that helps users evaluate car purchase offers before
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Owner email: jclekkas@gmail.com
+Email notifications: Deferred (user opted to use deployment logs for now; can add Resend integration later)
 
 ## System Architecture
 
