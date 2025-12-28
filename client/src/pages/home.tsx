@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { 
-  Car, 
   ChevronDown, 
   ChevronUp, 
   Loader2, 
@@ -20,6 +19,7 @@ import {
   Info,
   Lock
 } from "lucide-react";
+import logoImage from "@assets/image_1766893961497.png";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -607,14 +607,10 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-6 py-6 flex items-center gap-3">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <Car className="w-6 h-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Odigos</h1>
-            <p className="text-sm text-muted-foreground">Know your car deal before you go in</p>
-          </div>
+        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center gap-2">
+          <a href="/">
+            <img src={logoImage} alt="Odigos" className="h-10 w-auto cursor-pointer" data-testid="link-logo-home" />
+          </a>
         </div>
       </header>
 
@@ -845,10 +841,7 @@ export default function Home() {
                   Analyzing Deal...
                 </>
               ) : (
-                <>
-                  <Car className="w-5 h-5 mr-2" />
-                  Analyze Deal
-                </>
+                "Analyze Deal"
               )}
             </Button>
           </form>

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Car } from "lucide-react";
+import logoImage from "@assets/image_1766893961497.png";
 
 export default function OutTheDoorPrice() {
   useEffect(() => {
@@ -14,12 +14,7 @@ export default function OutTheDoorPrice() {
       <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center gap-3">
           <Link href="/">
-            <div className="flex items-center gap-3 cursor-pointer">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Car className="w-5 h-5 text-primary" />
-              </div>
-              <span className="text-xl font-bold tracking-tight">Odigos</span>
-            </div>
+            <img src={logoImage} alt="Odigos" className="h-8 w-auto cursor-pointer" data-testid="link-logo-home" />
           </Link>
         </div>
       </header>
