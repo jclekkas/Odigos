@@ -31,6 +31,14 @@ export async function registerRoutes(
 
       const data = parseResult.data;
 
+      console.log("=== NEW DEAL SUBMISSION ===");
+      console.log("Timestamp:", new Date().toISOString());
+      console.log("Vehicle:", data.vehicle || "Not specified");
+      console.log("Condition:", data.condition);
+      console.log("Purchase Type:", data.purchaseType);
+      console.log("Dealer Text:", data.dealerText);
+      console.log("===========================");
+
       const systemPrompt = `You are an expert car buying advisor helping consumers evaluate car purchase offers. Your job is to analyze dealer quotes, texts, and emails to help buyers understand if they're getting a good deal.
 
 LANGUAGE SAFETY & CERTAINTY RULES (STRICT - MUST FOLLOW):
