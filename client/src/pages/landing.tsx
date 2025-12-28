@@ -19,15 +19,15 @@ export default function Landing() {
         <section className="py-12 md:py-20 px-6">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 leading-tight" data-testid="text-hero-headline">
-              Know your car deal before you go in.
+              Know your car deal before you go to the dealership
             </h1>
             <p className="text-lg text-muted-foreground mb-8" data-testid="text-hero-subheadline">
-              Paste dealer texts or quotes. Get a clear verdict, what's missing, and what to say next.
+              Paste the dealer text or email. Odigos flags what's missing, risky, or unclear before you commit.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
               <Link href="/analyze">
                 <Button size="lg" className="w-full sm:w-auto" data-testid="button-cta-hero">
-                  Analyze my deal
+                  Paste dealer message → Analyze
                 </Button>
               </Link>
               <Link href="/analyze?example=bad">
