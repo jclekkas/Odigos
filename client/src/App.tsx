@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Landing from "@/pages/landing";
 import Analyze from "@/pages/home";
+import OutTheDoorPrice from "@/pages/out-the-door-price";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -12,6 +13,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Landing} />
       <Route path="/analyze" component={Analyze} />
+      <Route path="/out-the-door-price" component={OutTheDoorPrice} />
       <Route component={NotFound} />
     </Switch>
   );
