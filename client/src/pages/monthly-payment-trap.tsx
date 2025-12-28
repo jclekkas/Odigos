@@ -3,9 +3,9 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import logoImage from "@assets/image_1766893961497.png";
 
-export default function OutTheDoorPrice() {
+export default function MonthlyPaymentTrap() {
   useEffect(() => {
-    document.title = "What Is an Out-the-Door Price? | Odigos";
+    document.title = "The Monthly Payment Trap in Car Buying | Odigos";
   }, []);
 
   return (
@@ -21,40 +21,40 @@ export default function OutTheDoorPrice() {
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-otd-headline">
-            What is an out-the-door price in car buying?
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-monthly-headline">
+            Why monthly payment quotes hide the real cost of a car
           </h1>
           
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">
-              An out-the-door (OTD) price is the total cost of a car including taxes, dealer fees, and any add-ons.
+              When a dealer focuses on a monthly payment instead of the total price, it's impossible to know what you're actually agreeing to.
             </p>
             
             <p className="text-lg text-muted-foreground mb-4">
-              If a dealer only gives you a monthly payment, you don't actually know:
+              A "$589/month" quote can hide:
             </p>
             
             <ul className="space-y-2 mb-6 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span>the real price of the vehicle</span>
+                <span>the real sale price of the vehicle</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span>the interest rate</span>
+                <span>the APR and loan term</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span>how long the loan is</span>
+                <span>added fees and protection packages</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span>what fees or packages were added</span>
+                <span>extended financing that increases total cost</span>
               </li>
             </ul>
             
             <p className="text-lg text-muted-foreground mb-8">
-              Before visiting a dealership, you should always ask for the full out-the-door price in writing.
+              Before visiting a dealership, you should always ask for the full out-the-door price and financing terms in writing.
             </p>
           </div>
           
@@ -63,7 +63,7 @@ export default function OutTheDoorPrice() {
               Already have a dealer quote? Find out if it's a good deal.
             </p>
             <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-otd">
+              <Button size="lg" data-testid="button-cta-monthly">
                 Paste your dealer message → Analyze
               </Button>
             </Link>

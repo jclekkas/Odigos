@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Landing from "@/pages/landing";
 import Analyze from "@/pages/home";
 import OutTheDoorPrice from "@/pages/out-the-door-price";
+import MonthlyPaymentTrap from "@/pages/monthly-payment-trap";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -14,6 +15,7 @@ function Router() {
       <Route path="/" component={Landing} />
       <Route path="/analyze" component={Analyze} />
       <Route path="/out-the-door-price" component={OutTheDoorPrice} />
+      <Route path="/monthly-payment-trap" component={MonthlyPaymentTrap} />
       <Route component={NotFound} />
     </Switch>
   );
