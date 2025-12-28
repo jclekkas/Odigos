@@ -7,6 +7,9 @@ import Landing from "@/pages/landing";
 import Analyze from "@/pages/home";
 import OutTheDoorPrice from "@/pages/out-the-door-price";
 import MonthlyPaymentTrap from "@/pages/monthly-payment-trap";
+import IsThisAGoodCarDeal from "@/pages/is-this-a-good-car-deal";
+import DealerWontGiveOtd from "@/pages/dealer-wont-give-otd";
+import CarDealerFeesExplained from "@/pages/car-dealer-fees-explained";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -16,6 +19,9 @@ function Router() {
       <Route path="/analyze" component={Analyze} />
       <Route path="/out-the-door-price" component={OutTheDoorPrice} />
       <Route path="/monthly-payment-trap" component={MonthlyPaymentTrap} />
+      <Route path="/is-this-a-good-car-deal" component={IsThisAGoodCarDeal} />
+      <Route path="/dealer-wont-give-otd" component={DealerWontGiveOtd} />
+      <Route path="/car-dealer-fees-explained" component={CarDealerFeesExplained} />
       <Route component={NotFound} />
     </Switch>
   );

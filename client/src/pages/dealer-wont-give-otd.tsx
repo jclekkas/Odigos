@@ -3,9 +3,9 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import logoImage from "@assets/image_1766893961497.png";
 
-export default function OutTheDoorPrice() {
+export default function DealerWontGiveOtd() {
   useEffect(() => {
-    document.title = "What Is an Out-the-Door Price? | Odigos";
+    document.title = "Why Dealers Avoid Giving Out-the-Door Prices | Odigos";
   }, []);
 
   return (
@@ -21,40 +21,21 @@ export default function OutTheDoorPrice() {
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-otd-headline">
-            What is an out-the-door price in car buying?
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-dealer-otd-headline">
+            Why dealers hesitate to share out-the-door prices
           </h1>
           
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">
-              An out-the-door (OTD) price is the total cost of a car, including taxes, dealer fees, and any add-ons.
+              Some dealers avoid giving out-the-door prices because it limits flexibility in pricing and add-ons.
             </p>
             
-            <p className="text-lg text-muted-foreground mb-4">
-              If a dealer only shares a monthly payment, you don't actually know:
+            <p className="text-lg text-muted-foreground mb-6">
+              Without an OTD price, buyers can't easily compare offers or understand total cost.
             </p>
-            
-            <ul className="space-y-2 mb-6 text-muted-foreground">
-              <li className="flex items-start gap-2">
-                <span className="text-muted-foreground">•</span>
-                <span>the real vehicle price</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-muted-foreground">•</span>
-                <span>the interest rate</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-muted-foreground">•</span>
-                <span>the loan term</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-muted-foreground">•</span>
-                <span>what fees or packages were added</span>
-              </li>
-            </ul>
             
             <p className="text-lg text-muted-foreground mb-8">
-              Before visiting a dealership, you should always ask for the full out-the-door price in writing.
+              Requesting the full out-the-door price in writing helps ensure transparency before you step inside the showroom.
             </p>
           </div>
           
@@ -63,7 +44,7 @@ export default function OutTheDoorPrice() {
               Already have a dealer quote? Find out if it's a good deal.
             </p>
             <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-otd">
+              <Button size="lg" data-testid="button-cta-dealer-otd">
                 Paste your dealer message → Analyze
               </Button>
             </Link>

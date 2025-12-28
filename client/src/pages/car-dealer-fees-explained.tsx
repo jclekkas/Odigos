@@ -3,9 +3,9 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import logoImage from "@assets/image_1766893961497.png";
 
-export default function OutTheDoorPrice() {
+export default function CarDealerFeesExplained() {
   useEffect(() => {
-    document.title = "What Is an Out-the-Door Price? | Odigos";
+    document.title = "Common Car Dealer Fees Explained | Odigos";
   }, []);
 
   return (
@@ -21,40 +21,40 @@ export default function OutTheDoorPrice() {
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-otd-headline">
-            What is an out-the-door price in car buying?
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-fees-headline">
+            Common car dealer fees you should understand
           </h1>
           
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">
-              An out-the-door (OTD) price is the total cost of a car, including taxes, dealer fees, and any add-ons.
+              Dealer fees can vary widely and are often poorly explained.
             </p>
             
             <p className="text-lg text-muted-foreground mb-4">
-              If a dealer only shares a monthly payment, you don't actually know:
+              Common examples include:
             </p>
             
             <ul className="space-y-2 mb-6 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span>the real vehicle price</span>
+                <span>documentation fees</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span>the interest rate</span>
+                <span>dealer services fees</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span>the loan term</span>
+                <span>protection or appearance packages</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span>what fees or packages were added</span>
+                <span>administrative add-ons</span>
               </li>
             </ul>
             
             <p className="text-lg text-muted-foreground mb-8">
-              Before visiting a dealership, you should always ask for the full out-the-door price in writing.
+              Understanding which fees are required versus optional helps you avoid overpaying.
             </p>
           </div>
           
@@ -63,7 +63,7 @@ export default function OutTheDoorPrice() {
               Already have a dealer quote? Find out if it's a good deal.
             </p>
             <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-otd">
+              <Button size="lg" data-testid="button-cta-fees">
                 Paste your dealer message → Analyze
               </Button>
             </Link>

@@ -27,34 +27,34 @@ export default function MonthlyPaymentTrap() {
           
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">
-              When a dealer focuses on a monthly payment instead of the total price, it's impossible to know what you're actually agreeing to.
+              Monthly payment–focused quotes make it hard to understand what you're actually agreeing to.
             </p>
             
             <p className="text-lg text-muted-foreground mb-4">
-              A "$589/month" quote can hide:
+              A "$589/month" offer can hide:
             </p>
             
             <ul className="space-y-2 mb-6 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span>the real sale price of the vehicle</span>
+                <span>extended loan terms</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span>the APR and loan term</span>
+                <span>higher APRs</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span>added fees and protection packages</span>
+                <span>dealer-installed add-ons</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span>extended financing that increases total cost</span>
+                <span>inflated vehicle pricing</span>
               </li>
             </ul>
             
             <p className="text-lg text-muted-foreground mb-8">
-              Before visiting a dealership, you should always ask for the full out-the-door price and financing terms in writing.
+              Always request the full out-the-door price and financing terms before committing.
             </p>
           </div>
           
@@ -68,6 +68,10 @@ export default function MonthlyPaymentTrap() {
               </Button>
             </Link>
           </div>
+
+          <p className="text-xs text-muted-foreground mt-12">
+            Not affiliated with any dealership. Optimized for U.S. car purchases.
+          </p>
         </article>
       </main>
     </div>
