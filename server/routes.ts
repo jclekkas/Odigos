@@ -431,5 +431,10 @@ GO/NO-GO/NEED-MORE-INFO:
     }
   });
 
+  app.get("/sitemap.xml", (_req, res) => {
+    res.type("application/xml");
+    res.sendFile("sitemap.xml", { root: "." });
+  });
+
   return httpServer;
 }
