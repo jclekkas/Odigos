@@ -19,7 +19,7 @@ import {
   Info,
   Lock
 } from "lucide-react";
-import logoImage from "@assets/image_1766893961497.png";
+import logoImage from "@assets/odigos_logo.png";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -609,7 +609,7 @@ export default function Home() {
       <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center gap-2">
           <a href="/">
-            <img src={logoImage} alt="Odigos" className="h-16 w-auto cursor-pointer" data-testid="link-logo-home" />
+            <img src={logoImage} alt="Odigos" className="h-20 w-auto cursor-pointer" data-testid="link-logo-home" />
           </a>
         </div>
       </header>
