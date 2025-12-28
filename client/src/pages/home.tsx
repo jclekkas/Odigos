@@ -284,7 +284,7 @@ Low down payment options available.
 We added some protection packages that everyone gets, but we can talk about that later.
 Let me know what time you're coming in today!!!`;
 
-type UnlockTier = "free" | "49" | "79";
+type UnlockTier = "free" | "49";
 
 interface LockedTier2Props {
   onUnlock: () => void;
@@ -298,18 +298,19 @@ function LockedTier2Section({ onUnlock, isLoading, stripeConfigured }: LockedTie
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Lock className="w-5 h-5 text-amber-500" />
-          Unlock Deal Clarity
+          Unlock Full Deal Review
         </CardTitle>
       </CardHeader>
       <CardContent>
         <p className="text-sm text-muted-foreground mb-4">
-          See what's missing, what's risky, and what to ask before you go in.
+          See what's missing, what's risky, and exactly what to ask the dealer.
         </p>
         <ul className="space-y-2 mb-4">
           {[
             "Red flags and risks in this deal",
             "Missing information to request",
-            "Why this deal scored Green/Yellow/Red"
+            "Copy-paste reply for the dealer",
+            "Full analysis reasoning"
           ].map((item, idx) => (
             <li key={idx} className="flex items-start gap-2 text-sm">
               <Check className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
@@ -320,33 +321,30 @@ function LockedTier2Section({ onUnlock, isLoading, stripeConfigured }: LockedTie
         <p className="text-xs text-muted-foreground mb-4">
           One-time payment. Not affiliated with any dealership.
         </p>
-        {stripeConfigured ? (
-          <Button
-            variant="default"
-            onClick={onUnlock}
-            className="w-full bg-amber-500 hover:bg-amber-600 text-white"
-            disabled={isLoading}
-            data-testid="button-unlock-49"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              "Unlock for $49"
-            )}
-          </Button>
-        ) : (
-          <p className="text-sm text-center text-muted-foreground">
-            Payments not configured
-          </p>
-        )}
+        <Button
+          variant="default"
+          onClick={onUnlock}
+          className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+          disabled={isLoading || !stripeConfigured}
+          data-testid="button-unlock-49"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Processing...
+            </>
+          ) : !stripeConfigured ? (
+            "Checkout unavailable"
+          ) : (
+            "Unlock Full Deal Review — $49 (one-time)"
+          )}
+        </Button>
       </CardContent>
     </Card>
   );
 }
 
+/* $79 Negotiation Pack - Hidden for single-tier pricing
 interface LockedTier3Props {
   onUnlock: () => void;
   isLoading: boolean;
@@ -406,6 +404,7 @@ function LockedTier3Section({ onUnlock, isLoading, stripeConfigured }: LockedTie
     </Card>
   );
 }
+*/
 
 function SuggestedReplyCard({ reply }: { reply: string }) {
   const [copied, setCopied] = useState(false);
@@ -453,11 +452,11 @@ function SuggestedReplyCard({ reply }: { reply: string }) {
 
 function getStoredTier(): UnlockTier {
   try {
-    if (localStorage.getItem("paid_negotiation_pack") === "true") return "79";
+    if (localStorage.getItem("paid_negotiation_pack") === "true") return "49";
     if (localStorage.getItem("paid_deal_clarity") === "true") return "49";
-    if (localStorage.getItem("odigos_unlock_tier") === "79") return "79";
+    if (localStorage.getItem("odigos_unlock_tier") === "79") return "49";
     if (localStorage.getItem("odigos_unlock_tier") === "49") return "49";
-    if (localStorage.getItem("odigos_premium_unlocked") === "true") return "79";
+    if (localStorage.getItem("odigos_premium_unlocked") === "true") return "49";
     return "free";
   } catch {
     return "free";
@@ -526,19 +525,12 @@ export default function Home() {
 
     if (paid === "1" && product) {
       try {
-        if (product === "deal_clarity") {
+        if (product === "deal_clarity" || product === "negotiation_pack") {
           localStorage.setItem("paid_deal_clarity", "true");
-          setUnlockTier((current) => current === "79" ? "79" : "49");
+          setUnlockTier("49");
           toast({
             title: "Payment Successful",
-            description: "Deal Clarity Pack unlocked!",
-          });
-        } else if (product === "negotiation_pack") {
-          localStorage.setItem("paid_negotiation_pack", "true");
-          setUnlockTier("79");
-          toast({
-            title: "Payment Successful", 
-            description: "Negotiation Pack unlocked!",
+            description: "Full Deal Review unlocked!",
           });
         }
       } catch {}
@@ -546,12 +538,11 @@ export default function Home() {
     }
   }, [toast]);
 
-  const handleUnlockTier = async (tier: "49" | "79") => {
+  const handleUnlockTier = async () => {
     setCheckoutLoading(true);
     
     try {
-      const product = tier === "49" ? "deal_clarity" : "negotiation_pack";
-      const response = await apiRequest("POST", "/api/checkout", { product });
+      const response = await apiRequest("POST", "/api/checkout", { product: "deal_clarity" });
       const data = await response.json();
       
       if (data.error === "PAYMENTS_NOT_CONFIGURED") {
@@ -894,21 +885,18 @@ export default function Home() {
 
             {unlockTier === "free" ? (
               <LockedTier2Section
-                onUnlock={() => handleUnlockTier("49")}
+                onUnlock={() => handleUnlockTier()}
                 isLoading={checkoutLoading || isCheckingPayment}
                 stripeConfigured={stripeConfigured}
               />
             ) : (
-              <MissingInfoCard 
-                items={result.missingInfo}
-                confidenceLevel={result.confidenceLevel}
-                verdictLabel={result.verdictLabel}
-                onCopy={() => toast({ title: "Questions copied to clipboard" })}
-              />
-            )}
-
-            {unlockTier === "79" ? (
               <>
+                <MissingInfoCard 
+                  items={result.missingInfo}
+                  confidenceLevel={result.confidenceLevel}
+                  verdictLabel={result.verdictLabel}
+                  onCopy={() => toast({ title: "Questions copied to clipboard" })}
+                />
                 <SuggestedReplyCard reply={result.suggestedReply} />
                 <Card className="bg-muted/20">
                   <CardHeader className="pb-4">
@@ -924,12 +912,6 @@ export default function Home() {
                   </CardContent>
                 </Card>
               </>
-            ) : (
-              <LockedTier3Section
-                onUnlock={() => handleUnlockTier("79")}
-                isLoading={checkoutLoading || isCheckingPayment}
-                stripeConfigured={stripeConfigured}
-              />
             )}
           </div>
         )}
