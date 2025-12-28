@@ -7,17 +7,17 @@ import logoImage from "@assets/odigos_logo.png";
 export default function Landing() {
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center gap-2">
-          <Link href="/">
-            <img src={logoImage} alt="Odigos" className="h-20 w-auto cursor-pointer" data-testid="link-logo-home" />
-          </Link>
-        </div>
-      </header>
-
       <main>
-        <section className="py-12 md:py-20 px-6">
+        <section className="py-16 md:py-24 px-6">
           <div className="max-w-3xl mx-auto text-center">
+            <Link href="/">
+              <img 
+                src={logoImage} 
+                alt="Odigos" 
+                className="h-32 md:h-40 w-auto mx-auto mb-8 cursor-pointer" 
+                data-testid="link-logo-home" 
+              />
+            </Link>
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 leading-tight" data-testid="text-hero-headline">
               Know your car deal before you go to the dealership
             </h1>
