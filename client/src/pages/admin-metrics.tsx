@@ -1,21 +1,46 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "wouter";
 import { 
   ArrowLeft, 
   DollarSign, 
   Users, 
   TrendingUp, 
+  TrendingDown,
   BarChart3, 
   Activity,
   RefreshCw,
   CheckCircle,
-  AlertTriangle,
-  XCircle,
-  Eye
+  Eye,
+  Download,
+  Clock,
+  Zap,
+  Target,
+  ArrowUpRight,
+  ArrowDownRight,
+  Minus
 } from "lucide-react";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  Legend,
+} from "recharts";
 
 interface EventMetadata {
   dealScore?: "GREEN" | "YELLOW" | "RED";
@@ -27,8 +52,10 @@ interface EventMetadata {
 interface MetricsSummary {
   totalSubmissions: number;
   totalPayments: number;
+  totalCheckouts: number;
   revenue: number;
   conversionRate: number;
+  checkoutToPaymentRate: number;
   scoreDistribution: {
     green: number;
     yellow: number;
@@ -43,25 +70,68 @@ interface MetricsSummary {
     date: string;
     count: number;
   }>;
+  revenueByDay: Array<{
+    date: string;
+    revenue: number;
+  }>;
+  hourlyActivity: Array<{
+    hour: number;
+    count: number;
+  }>;
   pageViews: Array<{
     page: string;
     count: number;
   }>;
+  referrers: Array<{
+    source: string;
+    count: number;
+  }>;
+  trends: {
+    submissionsToday: number;
+    submissionsYesterday: number;
+    revenueToday: number;
+    revenueYesterday: number;
+    submissionsThisWeek: number;
+    submissionsLastWeek: number;
+    revenueThisWeek: number;
+    revenueLastWeek: number;
+  };
+  funnel: {
+    submissions: number;
+    checkouts: number;
+    payments: number;
+  };
+}
+
+function TrendBadge({ current, previous, suffix = "" }: { current: number; previous: number; suffix?: string }) {
+  if (previous === 0 && current === 0) {
+    return <span className="text-xs text-muted-foreground flex items-center gap-1"><Minus className="h-3 w-3" /> No change</span>;
+  }
+  if (previous === 0) {
+    return <span className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1"><ArrowUpRight className="h-3 w-3" /> New{suffix}</span>;
+  }
+  const change = ((current - previous) / previous) * 100;
+  if (change > 0) {
+    return <span className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1"><ArrowUpRight className="h-3 w-3" /> +{change.toFixed(0)}%{suffix}</span>;
+  } else if (change < 0) {
+    return <span className="text-xs text-red-600 dark:text-red-400 flex items-center gap-1"><ArrowDownRight className="h-3 w-3" /> {change.toFixed(0)}%{suffix}</span>;
+  }
+  return <span className="text-xs text-muted-foreground flex items-center gap-1"><Minus className="h-3 w-3" /> No change</span>;
 }
 
 function MetricCard({ 
   title, 
   value, 
-  subtitle, 
-  icon: Icon,
+  subtitle,
   trend,
+  icon: Icon,
   color = "default"
 }: { 
   title: string; 
   value: string | number; 
   subtitle?: string;
+  trend?: { current: number; previous: number; label: string };
   icon: typeof DollarSign;
-  trend?: "up" | "down" | "neutral";
   color?: "default" | "success" | "warning" | "danger";
 }) {
   const colorClasses = {
@@ -72,7 +142,7 @@ function MetricCard({
   };
 
   return (
-    <Card className="relative overflow-visible">
+    <Card>
       <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
         <div className="p-2 rounded-md bg-muted">
@@ -83,72 +153,128 @@ function MetricCard({
         <div className={`text-3xl font-bold ${colorClasses[color]}`} data-testid={`stat-${title.toLowerCase().replace(/\s/g, '-')}`}>
           {value}
         </div>
-        {subtitle && (
-          <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
-            {trend === "up" && <TrendingUp className="h-3 w-3 text-green-500" />}
-            {trend === "down" && <TrendingUp className="h-3 w-3 text-red-500 rotate-180" />}
-            {subtitle}
-          </p>
-        )}
+        <div className="flex items-center justify-between mt-1">
+          {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
+          {trend && <TrendBadge current={trend.current} previous={trend.previous} suffix={` vs ${trend.label}`} />}
+        </div>
       </CardContent>
     </Card>
   );
 }
 
-function HealthIndicator({ status }: { status: "healthy" | "warning" | "error" }) {
-  const config = {
-    healthy: { icon: CheckCircle, label: "All Systems Operational", color: "text-green-500", bg: "bg-green-500/10" },
-    warning: { icon: AlertTriangle, label: "Degraded Performance", color: "text-yellow-500", bg: "bg-yellow-500/10" },
-    error: { icon: XCircle, label: "System Issues", color: "text-red-500", bg: "bg-red-500/10" },
-  };
-  const { icon: Icon, label, color, bg } = config[status];
-  
+function LivePulse() {
   return (
-    <div className={`flex items-center gap-3 p-4 rounded-lg ${bg}`}>
-      <Icon className={`h-6 w-6 ${color}`} />
-      <div>
-        <p className={`font-semibold ${color}`}>{label}</p>
-        <p className="text-sm text-muted-foreground">Last checked: just now</p>
-      </div>
+    <div className="flex items-center gap-2">
+      <span className="relative flex h-3 w-3">
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+        <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+      </span>
+      <span className="text-xs text-muted-foreground">Live</span>
     </div>
   );
 }
 
-function ScoreDistributionChart({ green, yellow, red }: { green: number; yellow: number; red: number }) {
-  const total = green + yellow + red;
+function ConversionFunnel({ funnel }: { funnel: { submissions: number; checkouts: number; payments: number } }) {
+  const stages = [
+    { name: "Submissions", value: funnel.submissions, color: "hsl(var(--primary))" },
+    { name: "Checkouts", value: funnel.checkouts, color: "hsl(var(--chart-2))" },
+    { name: "Payments", value: funnel.payments, color: "hsl(142, 71%, 45%)" },
+  ];
+
+  const maxValue = Math.max(...stages.map(s => s.value), 1);
+
+  return (
+    <div className="space-y-4">
+      {stages.map((stage, idx) => {
+        const width = (stage.value / maxValue) * 100;
+        const conversionFromPrev = idx > 0 && stages[idx - 1].value > 0
+          ? ((stage.value / stages[idx - 1].value) * 100).toFixed(1)
+          : null;
+        
+        return (
+          <div key={stage.name} className="space-y-1">
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-medium">{stage.name}</span>
+              <div className="flex items-center gap-2">
+                <span className="font-bold">{stage.value}</span>
+                {conversionFromPrev && (
+                  <Badge variant="secondary" className="text-xs">{conversionFromPrev}%</Badge>
+                )}
+              </div>
+            </div>
+            <div className="h-8 bg-muted rounded-md overflow-hidden">
+              <div 
+                className="h-full rounded-md transition-all duration-500"
+                style={{ width: `${Math.max(width, 2)}%`, backgroundColor: stage.color }}
+              />
+            </div>
+          </div>
+        );
+      })}
+      {funnel.submissions > 0 ? (
+        <div className="pt-2 border-t">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Overall Conversion</span>
+            <span className="font-bold text-green-600 dark:text-green-400">
+              {((funnel.payments / funnel.submissions) * 100).toFixed(1)}%
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="pt-2 border-t">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Overall Conversion</span>
+            <span className="font-bold text-muted-foreground">0%</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ScoreDistributionPie({ data }: { data: { green: number; yellow: number; red: number } }) {
+  const total = data.green + data.yellow + data.red;
   if (total === 0) {
     return (
-      <div className="flex items-center justify-center h-32 text-muted-foreground">
-        No deal scores recorded yet
+      <div className="flex items-center justify-center h-48 text-muted-foreground">
+        No scores recorded yet
       </div>
     );
   }
-  
-  const data = [
-    { label: "GREEN", value: green, color: "bg-green-500", percent: ((green / total) * 100).toFixed(0) },
-    { label: "YELLOW", value: yellow, color: "bg-yellow-500", percent: ((yellow / total) * 100).toFixed(0) },
-    { label: "RED", value: red, color: "bg-red-500", percent: ((red / total) * 100).toFixed(0) },
-  ];
-  
+
+  const chartData = [
+    { name: "GREEN", value: data.green, color: "#22c55e" },
+    { name: "YELLOW", value: data.yellow, color: "#eab308" },
+    { name: "RED", value: data.red, color: "#ef4444" },
+  ].filter(d => d.value > 0);
+
   return (
-    <div className="space-y-4">
-      <div className="flex h-4 w-full overflow-hidden rounded-full bg-muted">
-        {data.map((d, i) => (
-          <div 
-            key={i}
-            className={`${d.color} transition-all duration-500`} 
-            style={{ width: `${d.percent}%` }} 
-          />
-        ))}
-      </div>
-      <div className="grid grid-cols-3 gap-4">
-        {data.map((d, i) => (
-          <div key={i} className="text-center">
-            <div className="flex items-center justify-center gap-2">
-              <div className={`h-3 w-3 rounded-full ${d.color}`} />
-              <span className="text-2xl font-bold">{d.value}</span>
-            </div>
-            <p className="text-xs text-muted-foreground">{d.label} ({d.percent}%)</p>
+    <div className="h-64">
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={chartData}
+            cx="50%"
+            cy="50%"
+            innerRadius={60}
+            outerRadius={90}
+            paddingAngle={2}
+            dataKey="value"
+            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+            labelLine={false}
+          >
+            {chartData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.color} />
+            ))}
+          </Pie>
+          <Tooltip />
+        </PieChart>
+      </ResponsiveContainer>
+      <div className="flex justify-center gap-4 -mt-4">
+        {chartData.map(d => (
+          <div key={d.name} className="flex items-center gap-1">
+            <div className="h-3 w-3 rounded-full" style={{ backgroundColor: d.color }} />
+            <span className="text-xs text-muted-foreground">{d.name}: {d.value}</span>
           </div>
         ))}
       </div>
@@ -156,36 +282,152 @@ function ScoreDistributionChart({ green, yellow, red }: { green: number; yellow:
   );
 }
 
-function ActivityChart({ data }: { data: Array<{ date: string; count: number }> }) {
+function ActivityAreaChart({ data }: { data: Array<{ date: string; count: number }> }) {
   if (data.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-40 text-muted-foreground">
-        No activity data yet
-      </div>
-    );
+    return <div className="flex items-center justify-center h-64 text-muted-foreground">No activity data yet</div>;
   }
-  
+
+  const chartData = data.map(d => ({
+    date: d.date.slice(5),
+    submissions: d.count,
+  }));
+
+  return (
+    <div className="h-64">
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={chartData}>
+          <defs>
+            <linearGradient id="colorSubmissions" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+          <XAxis dataKey="date" className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
+          <YAxis className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
+          <Tooltip 
+            contentStyle={{ 
+              backgroundColor: 'hsl(var(--card))', 
+              border: '1px solid hsl(var(--border))',
+              borderRadius: '8px'
+            }} 
+          />
+          <Area 
+            type="monotone" 
+            dataKey="submissions" 
+            stroke="hsl(var(--primary))" 
+            fillOpacity={1} 
+            fill="url(#colorSubmissions)" 
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+function RevenueLineChart({ data }: { data: Array<{ date: string; revenue: number }> }) {
+  if (data.length === 0) {
+    return <div className="flex items-center justify-center h-64 text-muted-foreground">No revenue data yet</div>;
+  }
+
+  const chartData = data.map(d => ({
+    date: d.date.slice(5),
+    revenue: d.revenue,
+  }));
+
+  return (
+    <div className="h-64">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={chartData}>
+          <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+          <XAxis dataKey="date" className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
+          <YAxis className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `$${v}`} />
+          <Tooltip 
+            contentStyle={{ 
+              backgroundColor: 'hsl(var(--card))', 
+              border: '1px solid hsl(var(--border))',
+              borderRadius: '8px'
+            }}
+            formatter={(value: number) => [`$${value}`, 'Revenue']}
+          />
+          <Line 
+            type="monotone" 
+            dataKey="revenue" 
+            stroke="#22c55e" 
+            strokeWidth={2}
+            dot={{ fill: '#22c55e', strokeWidth: 2 }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+function HourlyHeatmap({ data }: { data: Array<{ hour: number; count: number }> }) {
   const maxCount = Math.max(...data.map(d => d.count), 1);
   
   return (
     <div className="space-y-2">
-      <div className="flex items-end gap-1 h-32">
-        {data.map((d, i) => (
-          <div key={i} className="flex-1 flex flex-col items-center group relative">
+      <div className="grid grid-cols-12 gap-1">
+        {data.map(d => {
+          const intensity = d.count / maxCount;
+          const bg = intensity === 0 
+            ? 'bg-muted' 
+            : intensity < 0.33 
+            ? 'bg-primary/20' 
+            : intensity < 0.66 
+            ? 'bg-primary/50' 
+            : 'bg-primary';
+          
+          return (
             <div 
-              className="w-full bg-primary/80 hover:bg-primary rounded-t transition-all duration-200 cursor-pointer"
-              style={{ height: `${Math.max((d.count / maxCount) * 100, 4)}%` }}
-            />
-            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-popover border rounded px-2 py-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-              {d.count} submissions
+              key={d.hour}
+              className={`h-8 rounded ${bg} flex items-center justify-center text-xs font-medium transition-colors`}
+              title={`${d.hour}:00 - ${d.count} events`}
+            >
+              {d.count > 0 && d.count}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <div className="flex justify-between text-xs text-muted-foreground px-1">
-        <span>{data[0]?.date.slice(5)}</span>
-        <span>{data[data.length - 1]?.date.slice(5)}</span>
+        <span>12AM</span>
+        <span>6AM</span>
+        <span>12PM</span>
+        <span>6PM</span>
+        <span>11PM</span>
       </div>
+    </div>
+  );
+}
+
+function ReferrerChart({ data }: { data: Array<{ source: string; count: number }> }) {
+  if (data.length === 0) {
+    return <div className="flex items-center justify-center h-48 text-muted-foreground">No referrer data yet</div>;
+  }
+
+  const chartData = data.slice(0, 6).map(d => ({
+    source: d.source.length > 20 ? d.source.slice(0, 20) + '...' : d.source,
+    visits: d.count,
+  }));
+
+  return (
+    <div className="h-48">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={chartData} layout="vertical">
+          <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+          <XAxis type="number" className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
+          <YAxis type="category" dataKey="source" className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} width={100} />
+          <Tooltip 
+            contentStyle={{ 
+              backgroundColor: 'hsl(var(--card))', 
+              border: '1px solid hsl(var(--border))',
+              borderRadius: '8px'
+            }} 
+          />
+          <Bar dataKey="visits" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   );
 }
@@ -196,7 +438,6 @@ function LiveActivityFeed({ events }: { events: Array<{ eventType: string; creat
       <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
         <Activity className="h-8 w-8 mb-2 opacity-50" />
         <p>No activity recorded yet</p>
-        <p className="text-xs">Events will appear here in real-time</p>
       </div>
     );
   }
@@ -205,6 +446,7 @@ function LiveActivityFeed({ events }: { events: Array<{ eventType: string; creat
     switch (type) {
       case "payment_completed": return <DollarSign className="h-4 w-4 text-green-500" />;
       case "submission": return <Users className="h-4 w-4 text-blue-500" />;
+      case "checkout_started": return <Target className="h-4 w-4 text-orange-500" />;
       case "submission_score": return <BarChart3 className="h-4 w-4 text-purple-500" />;
       case "page_view": return <Eye className="h-4 w-4 text-gray-500" />;
       default: return <Activity className="h-4 w-4 text-gray-500" />;
@@ -225,7 +467,7 @@ function LiveActivityFeed({ events }: { events: Array<{ eventType: string; creat
   };
 
   return (
-    <div className="space-y-1 max-h-[320px] overflow-y-auto pr-2">
+    <div className="space-y-1 max-h-[400px] overflow-y-auto">
       {events.map((event, idx) => (
         <div 
           key={idx} 
@@ -268,11 +510,37 @@ function LiveActivityFeed({ events }: { events: Array<{ eventType: string; creat
   );
 }
 
+function exportToCSV(metrics: MetricsSummary) {
+  const rows = [
+    ["Metric", "Value"],
+    ["Total Submissions", metrics.totalSubmissions],
+    ["Total Payments", metrics.totalPayments],
+    ["Total Revenue", `$${metrics.revenue}`],
+    ["Conversion Rate", `${metrics.conversionRate.toFixed(1)}%`],
+    ["Green Scores", metrics.scoreDistribution.green],
+    ["Yellow Scores", metrics.scoreDistribution.yellow],
+    ["Red Scores", metrics.scoreDistribution.red],
+    [],
+    ["Date", "Submissions"],
+    ...metrics.submissionsByDay.map(d => [d.date, d.count]),
+  ];
+  
+  const csvContent = rows.map(r => r.join(",")).join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `odigos-metrics-${new Date().toISOString().split("T")[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function AdminMetrics() {
+  const [activeTab, setActiveTab] = useState("overview");
   const urlParams = new URLSearchParams(window.location.search);
   const adminKey = urlParams.get("key") || "odigos-admin-2024";
   
-  const { data: metrics, isLoading, error, refetch, isFetching } = useQuery<MetricsSummary>({
+  const { data: metrics, isLoading, error, refetch, isFetching, dataUpdatedAt } = useQuery<MetricsSummary>({
     queryKey: ["/api/metrics", adminKey],
     queryFn: async () => {
       const res = await fetch(`/api/metrics?key=${encodeURIComponent(adminKey)}`);
@@ -289,13 +557,7 @@ export default function AdminMetrics() {
           <div className="animate-pulse space-y-6">
             <div className="h-10 bg-muted rounded w-64" />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map(i => (
-                <div key={i} className="h-32 bg-muted rounded-lg" />
-              ))}
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="h-64 bg-muted rounded-lg" />
-              <div className="h-64 bg-muted rounded-lg" />
+              {[1, 2, 3, 4].map(i => <div key={i} className="h-32 bg-muted rounded-lg" />)}
             </div>
           </div>
         </div>
@@ -308,7 +570,6 @@ export default function AdminMetrics() {
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
         <Card className="max-w-md w-full">
           <CardContent className="pt-6 text-center">
-            <XCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
             <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
             <p className="text-muted-foreground mb-4">Unable to load metrics. Please check your access key.</p>
             <Link href="/">
@@ -323,7 +584,7 @@ export default function AdminMetrics() {
     );
   }
 
-  const systemStatus = (metrics?.totalSubmissions ?? 0) > 0 ? "healthy" : "healthy";
+  const lastUpdated = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString() : "Never";
 
   return (
     <div className="min-h-screen bg-background">
@@ -337,14 +598,26 @@ export default function AdminMetrics() {
                 </Button>
               </Link>
               <div>
-                <h1 className="text-2xl font-bold">Observability Dashboard</h1>
-                <p className="text-sm text-muted-foreground">Real-time metrics and analytics</p>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-2xl font-bold">Analytics Dashboard</h1>
+                  <LivePulse />
+                </div>
+                <p className="text-sm text-muted-foreground flex items-center gap-2">
+                  <Clock className="h-3 w-3" />
+                  Last updated: {lastUpdated}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Badge variant="outline" className="text-xs">
-                Auto-refresh: 30s
-              </Badge>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => metrics && exportToCSV(metrics)}
+                data-testid="button-export-csv"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Export CSV
+              </Button>
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -360,107 +633,284 @@ export default function AdminMetrics() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
-        <HealthIndicator status={systemStatus} />
+      <div className="max-w-7xl mx-auto p-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
+            <TabsTrigger value="overview" data-testid="tab-overview">Overview</TabsTrigger>
+            <TabsTrigger value="revenue" data-testid="tab-revenue">Revenue</TabsTrigger>
+            <TabsTrigger value="users" data-testid="tab-users">Users</TabsTrigger>
+            <TabsTrigger value="activity" data-testid="tab-activity">Activity</TabsTrigger>
+          </TabsList>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <MetricCard
-            title="Total Submissions"
-            value={metrics?.totalSubmissions ?? 0}
-            subtitle="Deals analyzed"
-            icon={Users}
-          />
-          <MetricCard
-            title="Paid Customers"
-            value={metrics?.totalPayments ?? 0}
-            subtitle="Full reviews purchased"
-            icon={TrendingUp}
-            color="success"
-          />
-          <MetricCard
-            title="Total Revenue"
-            value={`$${metrics?.revenue ?? 0}`}
-            subtitle="Lifetime earnings"
-            icon={DollarSign}
-            color="success"
-          />
-          <MetricCard
-            title="Conversion Rate"
-            value={`${(metrics?.conversionRate ?? 0).toFixed(1)}%`}
-            subtitle="Submission to payment"
-            icon={BarChart3}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5" />
-                Deal Score Distribution
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ScoreDistributionChart 
-                green={metrics?.scoreDistribution.green ?? 0}
-                yellow={metrics?.scoreDistribution.yellow ?? 0}
-                red={metrics?.scoreDistribution.red ?? 0}
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <MetricCard
+                title="Total Submissions"
+                value={metrics?.totalSubmissions ?? 0}
+                subtitle="All time"
+                trend={metrics ? { current: metrics.trends.submissionsToday, previous: metrics.trends.submissionsYesterday, label: "yesterday" } : undefined}
+                icon={Users}
               />
-            </CardContent>
-          </Card>
+              <MetricCard
+                title="Total Revenue"
+                value={`$${metrics?.revenue ?? 0}`}
+                subtitle="Lifetime earnings"
+                trend={metrics ? { current: metrics.trends.revenueToday, previous: metrics.trends.revenueYesterday, label: "yesterday" } : undefined}
+                icon={DollarSign}
+                color="success"
+              />
+              <MetricCard
+                title="Conversion Rate"
+                value={`${(metrics?.conversionRate ?? 0).toFixed(1)}%`}
+                subtitle="Submissions to payment"
+                icon={Target}
+              />
+              <MetricCard
+                title="Paid Customers"
+                value={metrics?.totalPayments ?? 0}
+                subtitle="Full reviews"
+                icon={CheckCircle}
+                color="success"
+              />
+            </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
-                Submissions (Last 30 Days)
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ActivityChart data={metrics?.submissionsByDay ?? []} />
-            </CardContent>
-          </Card>
-        </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    Submissions Trend (30 Days)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ActivityAreaChart data={metrics?.submissionsByDay ?? []} />
+                </CardContent>
+              </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5" />
-                Live Activity Feed
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <LiveActivityFeed events={metrics?.recentEvents ?? []} />
-            </CardContent>
-          </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="h-5 w-5" />
+                    Conversion Funnel
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ConversionFunnel funnel={metrics?.funnel ?? { submissions: 0, checkouts: 0, payments: 0 }} />
+                </CardContent>
+              </Card>
+            </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Eye className="h-5 w-5" />
-                Page Views
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {metrics?.pageViews && metrics.pageViews.length > 0 ? (
-                <div className="space-y-3">
-                  {metrics.pageViews.slice(0, 8).map((pv) => (
-                    <div key={pv.page} className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground truncate max-w-[180px]">{pv.page}</span>
-                      <Badge variant="secondary">{pv.count}</Badge>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5" />
+                    Deal Score Distribution
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ScoreDistributionPie data={metrics?.scoreDistribution ?? { green: 0, yellow: 0, red: 0 }} />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="h-5 w-5" />
+                    Hourly Activity
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <HourlyHeatmap data={metrics?.hourlyActivity ?? []} />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Eye className="h-5 w-5" />
+                    Top Pages
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {metrics?.pageViews && metrics.pageViews.length > 0 ? (
+                    <div className="space-y-3">
+                      {metrics.pageViews.slice(0, 6).map((pv) => (
+                        <div key={pv.page} className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground truncate max-w-[160px]">{pv.page}</span>
+                          <Badge variant="secondary">{pv.count}</Badge>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
-                  <Eye className="h-6 w-6 mb-2 opacity-50" />
-                  <p className="text-sm">No page views yet</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
+                      <Eye className="h-6 w-6 mb-2 opacity-50" />
+                      <p className="text-sm">No page views yet</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="revenue" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <MetricCard
+                title="Today's Revenue"
+                value={`$${metrics?.trends.revenueToday ?? 0}`}
+                trend={metrics ? { current: metrics.trends.revenueToday, previous: metrics.trends.revenueYesterday, label: "yesterday" } : undefined}
+                icon={DollarSign}
+                color="success"
+              />
+              <MetricCard
+                title="This Week"
+                value={`$${metrics?.trends.revenueThisWeek ?? 0}`}
+                trend={metrics ? { current: metrics.trends.revenueThisWeek, previous: metrics.trends.revenueLastWeek, label: "last week" } : undefined}
+                icon={TrendingUp}
+                color="success"
+              />
+              <MetricCard
+                title="Avg per Sale"
+                value={`$${metrics?.totalPayments ? Math.round((metrics.revenue || 0) / metrics.totalPayments) : 0}`}
+                subtitle="Average order value"
+                icon={Zap}
+              />
+              <MetricCard
+                title="Checkout Rate"
+                value={`${(metrics?.checkoutToPaymentRate ?? 0).toFixed(1)}%`}
+                subtitle="Checkout to payment"
+                icon={Target}
+              />
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <DollarSign className="h-5 w-5" />
+                  Revenue Over Time
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <RevenueLineChart data={metrics?.revenueByDay ?? []} />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Conversion Funnel Details</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ConversionFunnel funnel={metrics?.funnel ?? { submissions: 0, checkouts: 0, payments: 0 }} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="users" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <MetricCard
+                title="Today's Users"
+                value={metrics?.trends.submissionsToday ?? 0}
+                trend={metrics ? { current: metrics.trends.submissionsToday, previous: metrics.trends.submissionsYesterday, label: "yesterday" } : undefined}
+                icon={Users}
+              />
+              <MetricCard
+                title="This Week"
+                value={metrics?.trends.submissionsThisWeek ?? 0}
+                trend={metrics ? { current: metrics.trends.submissionsThisWeek, previous: metrics.trends.submissionsLastWeek, label: "last week" } : undefined}
+                icon={TrendingUp}
+              />
+              <MetricCard
+                title="Total Page Views"
+                value={metrics?.pageViews.reduce((sum, pv) => sum + pv.count, 0) ?? 0}
+                icon={Eye}
+              />
+              <MetricCard
+                title="Green Deals"
+                value={metrics?.scoreDistribution.green ?? 0}
+                subtitle="High quality deals"
+                icon={CheckCircle}
+                color="success"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Score Distribution</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ScoreDistributionPie data={metrics?.scoreDistribution ?? { green: 0, yellow: 0, red: 0 }} />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Traffic Sources</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ReferrerChart data={metrics?.referrers ?? []} />
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>User Activity Timeline</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ActivityAreaChart data={metrics?.submissionsByDay ?? []} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="activity" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <Card className="lg:col-span-2">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="h-5 w-5" />
+                    Live Activity Feed
+                    <LivePulse />
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <LiveActivityFeed events={metrics?.recentEvents ?? []} />
+                </CardContent>
+              </Card>
+
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Peak Hours</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <HourlyHeatmap data={metrics?.hourlyActivity ?? []} />
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Quick Stats</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Events Today</span>
+                      <Badge>{metrics?.trends.submissionsToday ?? 0}</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Revenue Today</span>
+                      <Badge variant="secondary">${metrics?.trends.revenueToday ?? 0}</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Checkouts</span>
+                      <Badge variant="outline">{metrics?.totalCheckouts ?? 0}</Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

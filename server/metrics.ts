@@ -99,8 +99,10 @@ export async function trackEvent(eventType: EventType, metadata?: EventMetadata)
 export interface MetricsSummary {
   totalSubmissions: number;
   totalPayments: number;
+  totalCheckouts: number;
   revenue: number;
   conversionRate: number;
+  checkoutToPaymentRate: number;
   scoreDistribution: {
     green: number;
     yellow: number;
@@ -115,10 +117,37 @@ export interface MetricsSummary {
     date: string;
     count: number;
   }>;
+  revenueByDay: Array<{
+    date: string;
+    revenue: number;
+  }>;
+  hourlyActivity: Array<{
+    hour: number;
+    count: number;
+  }>;
   pageViews: Array<{
     page: string;
     count: number;
   }>;
+  referrers: Array<{
+    source: string;
+    count: number;
+  }>;
+  trends: {
+    submissionsToday: number;
+    submissionsYesterday: number;
+    revenueToday: number;
+    revenueYesterday: number;
+    submissionsThisWeek: number;
+    submissionsLastWeek: number;
+    revenueThisWeek: number;
+    revenueLastWeek: number;
+  };
+  funnel: {
+    submissions: number;
+    checkouts: number;
+    payments: number;
+  };
 }
 
 export async function getMetricsSummary(): Promise<MetricsSummary> {
@@ -131,6 +160,7 @@ export async function getMetricsSummary(): Promise<MetricsSummary> {
   
   const submissions = allEvents.filter(e => e.eventType === "submission");
   const payments = allEvents.filter(e => e.eventType === "payment_completed");
+  const checkouts = allEvents.filter(e => e.eventType === "checkout_started");
   const scores = allEvents.filter(e => e.eventType === "submission_score");
   const pageViewEvents = allEvents.filter(e => e.eventType === "page_view");
   
@@ -140,15 +170,32 @@ export async function getMetricsSummary(): Promise<MetricsSummary> {
     red: scores.filter(e => e.metadata?.dealScore === "RED").length,
   };
   
-  const revenue = payments.reduce((sum, p) => {
+  const getRevenue = (evts: typeof payments) => evts.reduce((sum, p) => {
     const tier = p.metadata?.tier;
-    return sum + (tier === "49" ? 49 : tier === "79" ? 79 : 0);
+    return sum + (tier === "49" ? 49 : tier === "79" ? 79 : 49);
   }, 0);
+  
+  const revenue = getRevenue(payments);
   
   const submissionsByDay: Record<string, number> = {};
   submissions.forEach(s => {
     const date = s.createdAt.toISOString().split("T")[0];
     submissionsByDay[date] = (submissionsByDay[date] || 0) + 1;
+  });
+  
+  const revenueByDayMap: Record<string, number> = {};
+  payments.forEach(p => {
+    const date = p.createdAt.toISOString().split("T")[0];
+    const tier = p.metadata?.tier;
+    const amount = tier === "49" ? 49 : tier === "79" ? 79 : 49;
+    revenueByDayMap[date] = (revenueByDayMap[date] || 0) + amount;
+  });
+  
+  const hourlyActivityMap: Record<number, number> = {};
+  for (let i = 0; i < 24; i++) hourlyActivityMap[i] = 0;
+  allEvents.forEach(e => {
+    const hour = e.createdAt.getHours();
+    hourlyActivityMap[hour] = (hourlyActivityMap[hour] || 0) + 1;
   });
   
   const pageViewCounts: Record<string, number> = {};
@@ -157,13 +204,37 @@ export async function getMetricsSummary(): Promise<MetricsSummary> {
     pageViewCounts[page] = (pageViewCounts[page] || 0) + 1;
   });
   
+  const referrerCounts: Record<string, number> = {};
+  pageViewEvents.forEach(e => {
+    const referrer = e.metadata?.referrer || "direct";
+    referrerCounts[referrer] = (referrerCounts[referrer] || 0) + 1;
+  });
+  
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterdayStart = new Date(todayStart.getTime() - 24 * 60 * 60 * 1000);
+  const thisWeekStart = new Date(todayStart.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const lastWeekStart = new Date(todayStart.getTime() - 14 * 24 * 60 * 60 * 1000);
+  
+  const submissionsToday = submissions.filter(s => s.createdAt >= todayStart).length;
+  const submissionsYesterday = submissions.filter(s => s.createdAt >= yesterdayStart && s.createdAt < todayStart).length;
+  const submissionsThisWeek = submissions.filter(s => s.createdAt >= thisWeekStart).length;
+  const submissionsLastWeek = submissions.filter(s => s.createdAt >= lastWeekStart && s.createdAt < thisWeekStart).length;
+  
+  const paymentsToday = payments.filter(p => p.createdAt >= todayStart);
+  const paymentsYesterday = payments.filter(p => p.createdAt >= yesterdayStart && p.createdAt < todayStart);
+  const paymentsThisWeek = payments.filter(p => p.createdAt >= thisWeekStart);
+  const paymentsLastWeek = payments.filter(p => p.createdAt >= lastWeekStart && p.createdAt < thisWeekStart);
+  
   return {
     totalSubmissions: submissions.length,
     totalPayments: payments.length,
+    totalCheckouts: checkouts.length,
     revenue,
     conversionRate: submissions.length > 0 ? (payments.length / submissions.length) * 100 : 0,
+    checkoutToPaymentRate: checkouts.length > 0 ? (payments.length / checkouts.length) * 100 : 0,
     scoreDistribution,
-    recentEvents: allEvents.slice(0, 20).map(e => ({
+    recentEvents: allEvents.slice(0, 30).map(e => ({
       eventType: e.eventType,
       createdAt: e.createdAt,
       metadata: e.metadata,
@@ -172,8 +243,33 @@ export async function getMetricsSummary(): Promise<MetricsSummary> {
       .map(([date, count]) => ({ date, count }))
       .sort((a, b) => a.date.localeCompare(b.date))
       .slice(-30),
+    revenueByDay: Object.entries(revenueByDayMap)
+      .map(([date, rev]) => ({ date, revenue: rev }))
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .slice(-30),
+    hourlyActivity: Object.entries(hourlyActivityMap)
+      .map(([hour, count]) => ({ hour: parseInt(hour), count }))
+      .sort((a, b) => a.hour - b.hour),
     pageViews: Object.entries(pageViewCounts)
       .map(([page, count]) => ({ page, count }))
       .sort((a, b) => b.count - a.count),
+    referrers: Object.entries(referrerCounts)
+      .map(([source, count]) => ({ source, count }))
+      .sort((a, b) => b.count - a.count),
+    trends: {
+      submissionsToday,
+      submissionsYesterday,
+      revenueToday: getRevenue(paymentsToday),
+      revenueYesterday: getRevenue(paymentsYesterday),
+      submissionsThisWeek,
+      submissionsLastWeek,
+      revenueThisWeek: getRevenue(paymentsThisWeek),
+      revenueLastWeek: getRevenue(paymentsLastWeek),
+    },
+    funnel: {
+      submissions: submissions.length,
+      checkouts: checkouts.length,
+      payments: payments.length,
+    },
   };
 }
