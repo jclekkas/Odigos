@@ -273,6 +273,27 @@ GO/NO-GO/NEED-MORE-INFO:
     }
   });
 
+  app.post("/api/track", async (req, res) => {
+    try {
+      const { eventType, metadata } = req.body;
+      
+      const validTypes = ["page_view", "cta_click", "form_start", "form_focus"];
+      if (!eventType || !validTypes.includes(eventType)) {
+        return res.status(400).json({ error: "Invalid event type" });
+      }
+      
+      await trackEvent(eventType, {
+        ...metadata,
+        referrer: req.headers.referer || metadata?.referrer,
+      });
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Track error:", error);
+      res.status(500).json({ error: "Failed to track event" });
+    }
+  });
+
   app.post("/api/checkout", async (req, res) => {
     try {
       const { product } = req.body;

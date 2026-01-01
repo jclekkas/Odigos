@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
+import { trackPageView, trackFormStart, trackFormFocus } from "@/lib/tracking";
 import { 
   ChevronDown, 
   ChevronUp, 
@@ -469,7 +470,19 @@ export default function Home() {
   const [unlockTier, setUnlockTier] = useState<UnlockTier>(getStoredTier);
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [formStartTracked, setFormStartTracked] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    trackPageView("/analyze");
+  }, []);
+
+  const handleFormStart = () => {
+    if (!formStartTracked) {
+      trackFormStart("/analyze");
+      setFormStartTracked(true);
+    }
+  };
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -651,6 +664,7 @@ export default function Home() {
                       <FormControl>
                         <Textarea
                           {...field}
+                          onFocus={() => handleFormStart()}
                           placeholder="Paste dealer texts, emails, or quotes here..."
                           className="min-h-48 text-base resize-y"
                           data-testid="input-dealer-text"

@@ -23,7 +23,10 @@ import {
   Target,
   ArrowUpRight,
   ArrowDownRight,
-  Minus
+  Minus,
+  MousePointer,
+  FileText,
+  Percent
 } from "lucide-react";
 import {
   AreaChart,
@@ -101,6 +104,17 @@ interface MetricsSummary {
     submissions: number;
     checkouts: number;
     payments: number;
+  };
+  engagement: {
+    totalPageViews: number;
+    landingPageViews: number;
+    analyzePageViews: number;
+    ctaClicks: number;
+    formStarts: number;
+    landingToAnalyzeCtr: number;
+    analyzeToSubmissionRate: number;
+    formStartToSubmissionRate: number;
+    ctaClicksByButton: Array<{ ctaId: string; label: string; count: number }>;
   };
 }
 
@@ -677,8 +691,9 @@ export default function AdminMetrics() {
           </div>
         )}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
             <TabsTrigger value="overview" data-testid="tab-overview">Overview</TabsTrigger>
+            <TabsTrigger value="engagement" data-testid="tab-engagement">Engagement</TabsTrigger>
             <TabsTrigger value="revenue" data-testid="tab-revenue">Revenue</TabsTrigger>
             <TabsTrigger value="users" data-testid="tab-users">Users</TabsTrigger>
             <TabsTrigger value="activity" data-testid="tab-activity">Activity</TabsTrigger>
@@ -790,6 +805,147 @@ export default function AdminMetrics() {
                       <p className="text-sm">No page views yet</p>
                     </div>
                   )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="engagement" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <MetricCard
+                title="Total Page Views"
+                value={metrics?.engagement?.totalPageViews ?? 0}
+                subtitle="All pages"
+                icon={Eye}
+              />
+              <MetricCard
+                title="CTA Clicks"
+                value={metrics?.engagement?.ctaClicks ?? 0}
+                subtitle="Button clicks"
+                icon={MousePointer}
+              />
+              <MetricCard
+                title="Form Starts"
+                value={metrics?.engagement?.formStarts ?? 0}
+                subtitle="Users who began typing"
+                icon={FileText}
+              />
+              <MetricCard
+                title="Landing CTR"
+                value={`${(metrics?.engagement?.landingToAnalyzeCtr ?? 0).toFixed(1)}%`}
+                subtitle="Landing → CTA click"
+                icon={Percent}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="h-5 w-5" />
+                    Full Engagement Funnel
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {[
+                      { label: "Landing Page Views", value: metrics?.engagement?.landingPageViews ?? 0, color: "bg-blue-500" },
+                      { label: "CTA Clicks", value: metrics?.engagement?.ctaClicks ?? 0, color: "bg-indigo-500" },
+                      { label: "Analyze Page Views", value: metrics?.engagement?.analyzePageViews ?? 0, color: "bg-purple-500" },
+                      { label: "Form Starts", value: metrics?.engagement?.formStarts ?? 0, color: "bg-violet-500" },
+                      { label: "Submissions", value: metrics?.funnel?.submissions ?? 0, color: "bg-amber-500" },
+                      { label: "Checkouts", value: metrics?.funnel?.checkouts ?? 0, color: "bg-orange-500" },
+                      { label: "Payments", value: metrics?.funnel?.payments ?? 0, color: "bg-green-500" },
+                    ].map((step, idx, arr) => {
+                      const maxVal = Math.max(...arr.map(s => s.value), 1);
+                      const pct = (step.value / maxVal) * 100;
+                      const dropoff = idx > 0 && arr[idx - 1].value > 0
+                        ? ((arr[idx - 1].value - step.value) / arr[idx - 1].value * 100).toFixed(0)
+                        : null;
+                      return (
+                        <div key={step.label}>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm font-medium">{step.label}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-bold">{step.value}</span>
+                              {dropoff && <span className="text-xs text-muted-foreground">(-{dropoff}%)</span>}
+                            </div>
+                          </div>
+                          <div className="h-3 bg-muted rounded-full overflow-hidden">
+                            <div className={`h-full ${step.color} rounded-full transition-all`} style={{ width: `${pct}%` }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MousePointer className="h-5 w-5" />
+                    CTA Click Breakdown
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {metrics?.engagement?.ctaClicksByButton && metrics.engagement.ctaClicksByButton.length > 0 ? (
+                    <div className="space-y-3">
+                      {metrics.engagement.ctaClicksByButton.map((cta) => (
+                        <div key={cta.ctaId} className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground truncate max-w-[200px]">{cta.label}</span>
+                          <Badge variant="secondary">{cta.count}</Badge>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
+                      <MousePointer className="h-6 w-6 mb-2 opacity-50" />
+                      <p className="text-sm">No CTA clicks tracked yet</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Analyze Page Rate</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">{(metrics?.engagement?.analyzeToSubmissionRate ?? 0).toFixed(1)}%</div>
+                  <p className="text-sm text-muted-foreground">Visitors who submit after reaching analyze page</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Form Completion Rate</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">{(metrics?.engagement?.formStartToSubmissionRate ?? 0).toFixed(1)}%</div>
+                  <p className="text-sm text-muted-foreground">Users who submit after starting to type</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Page Distribution</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Landing (/)</span>
+                      <span className="font-medium">{metrics?.engagement?.landingPageViews ?? 0}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Analyze (/analyze)</span>
+                      <span className="font-medium">{metrics?.engagement?.analyzePageViews ?? 0}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Other pages</span>
+                      <span className="font-medium">{(metrics?.engagement?.totalPageViews ?? 0) - (metrics?.engagement?.landingPageViews ?? 0) - (metrics?.engagement?.analyzePageViews ?? 0)}</span>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>

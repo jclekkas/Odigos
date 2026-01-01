@@ -4,6 +4,9 @@ export type EventType =
   | "checkout_started"
   | "payment_completed"
   | "page_view"
+  | "cta_click"
+  | "form_start"
+  | "form_focus"
   | "api_request"
   | "api_error"
   | "system_health";
@@ -22,6 +25,10 @@ export interface EventMetadata {
   errorMessage?: string;
   memoryUsageMb?: number;
   stripeSessionId?: string;
+  ctaId?: string;
+  ctaLabel?: string;
+  fieldName?: string;
+  sessionId?: string;
   [key: string]: unknown;
 }
 
@@ -196,6 +203,17 @@ export interface MetricsSummary {
     checkouts: number;
     payments: number;
   };
+  engagement: {
+    totalPageViews: number;
+    landingPageViews: number;
+    analyzePageViews: number;
+    ctaClicks: number;
+    formStarts: number;
+    landingToAnalyzeCtr: number;
+    analyzeToSubmissionRate: number;
+    formStartToSubmissionRate: number;
+    ctaClicksByButton: Array<{ ctaId: string; label: string; count: number }>;
+  };
 }
 
 export async function getMetricsSummary(): Promise<MetricsSummary> {
@@ -211,6 +229,8 @@ export async function getMetricsSummary(): Promise<MetricsSummary> {
   const checkouts = allEvents.filter(e => e.eventType === "checkout_started");
   const scores = allEvents.filter(e => e.eventType === "submission_score");
   const pageViewEvents = allEvents.filter(e => e.eventType === "page_view");
+  const ctaClickEvents = allEvents.filter(e => e.eventType === "cta_click");
+  const formStartEvents = allEvents.filter(e => e.eventType === "form_start");
   
   const scoreDistribution = {
     green: scores.filter(e => e.metadata?.dealScore === "GREEN").length,
@@ -319,5 +339,63 @@ export async function getMetricsSummary(): Promise<MetricsSummary> {
       checkouts: checkouts.length,
       payments: payments.length,
     },
+    engagement: (() => {
+      const landingPageViews = pageViewEvents.filter(e => e.metadata?.page === "/").length;
+      const analyzePageViews = pageViewEvents.filter(e => e.metadata?.page === "/analyze").length;
+      const totalPageViews = pageViewEvents.length;
+      const ctaClicks = ctaClickEvents.length;
+      const formStarts = formStartEvents.length;
+      
+      const sessionsWithLandingView = new Set(
+        pageViewEvents.filter(e => e.metadata?.page === "/" && e.metadata?.sessionId)
+          .map(e => e.metadata!.sessionId)
+      );
+      const sessionsWithCtaClick = new Set(
+        ctaClickEvents.filter(e => e.metadata?.sessionId)
+          .map(e => e.metadata!.sessionId)
+      );
+      const sessionsWithAnalyzeView = new Set(
+        pageViewEvents.filter(e => e.metadata?.page === "/analyze" && e.metadata?.sessionId)
+          .map(e => e.metadata!.sessionId)
+      );
+      const sessionsWithFormStart = new Set(
+        formStartEvents.filter(e => e.metadata?.sessionId)
+          .map(e => e.metadata!.sessionId)
+      );
+      const sessionsWithSubmission = new Set(
+        submissions.filter(e => e.metadata?.sessionId)
+          .map(e => e.metadata!.sessionId)
+      );
+      
+      const uniqueLandingVisitors = sessionsWithLandingView.size || landingPageViews;
+      const uniqueCtaClickers = sessionsWithCtaClick.size || ctaClicks;
+      const uniqueAnalyzeVisitors = sessionsWithAnalyzeView.size || analyzePageViews;
+      const uniqueFormStarters = sessionsWithFormStart.size || formStarts;
+      const uniqueSubmitters = sessionsWithSubmission.size || submissions.length;
+      
+      const ctaClicksByButtonMap: Record<string, { label: string; count: number }> = {};
+      ctaClickEvents.forEach(e => {
+        const ctaId = e.metadata?.ctaId || "unknown";
+        const label = e.metadata?.ctaLabel || ctaId;
+        if (!ctaClicksByButtonMap[ctaId]) {
+          ctaClicksByButtonMap[ctaId] = { label, count: 0 };
+        }
+        ctaClicksByButtonMap[ctaId].count++;
+      });
+      
+      return {
+        totalPageViews,
+        landingPageViews,
+        analyzePageViews,
+        ctaClicks,
+        formStarts,
+        landingToAnalyzeCtr: uniqueLandingVisitors > 0 ? (uniqueCtaClickers / uniqueLandingVisitors) * 100 : 0,
+        analyzeToSubmissionRate: uniqueAnalyzeVisitors > 0 ? (uniqueSubmitters / uniqueAnalyzeVisitors) * 100 : 0,
+        formStartToSubmissionRate: uniqueFormStarters > 0 ? (uniqueSubmitters / uniqueFormStarters) * 100 : 0,
+        ctaClicksByButton: Object.entries(ctaClicksByButtonMap)
+          .map(([ctaId, data]) => ({ ctaId, label: data.label, count: data.count }))
+          .sort((a, b) => b.count - a.count),
+      };
+    })(),
   };
 }

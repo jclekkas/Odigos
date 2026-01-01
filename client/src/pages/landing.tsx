@@ -1,10 +1,16 @@
+import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, CheckCircle2 } from "lucide-react";
 import logoImage from "@assets/odigos_logo.png";
+import { trackPageView, trackCtaClick } from "@/lib/tracking";
 
 export default function Landing() {
+  useEffect(() => {
+    trackPageView("/");
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <main>
@@ -26,12 +32,23 @@ export default function Landing() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
               <Link href="/analyze">
-                <Button size="lg" className="w-full sm:w-auto" data-testid="button-cta-hero">
+                <Button 
+                  size="lg" 
+                  className="w-full sm:w-auto" 
+                  data-testid="button-cta-hero"
+                  onClick={() => trackCtaClick("hero-analyze", "Paste dealer message → Analyze")}
+                >
                   Paste dealer message → Analyze
                 </Button>
               </Link>
               <Link href="/analyze?example=bad">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto" data-testid="button-try-bad">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="w-full sm:w-auto" 
+                  data-testid="button-try-bad"
+                  onClick={() => trackCtaClick("hero-bad-example", "Try a bad deal example")}
+                >
                   Try a bad deal example
                 </Button>
               </Link>
