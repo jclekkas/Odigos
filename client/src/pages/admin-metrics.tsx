@@ -17,6 +17,7 @@ import {
   CheckCircle,
   Eye,
   Download,
+  Upload,
   Clock,
   Zap,
   Target,
@@ -537,8 +538,31 @@ function exportToCSV(metrics: MetricsSummary) {
 
 export default function AdminMetrics() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [isImporting, setIsImporting] = useState(false);
+  const [importResult, setImportResult] = useState<{ success: boolean; message: string } | null>(null);
   const urlParams = new URLSearchParams(window.location.search);
   const adminKey = urlParams.get("key") || "odigos-admin-2024";
+  
+  const handleImportStripeHistory = async () => {
+    setIsImporting(true);
+    setImportResult(null);
+    try {
+      const res = await fetch(`/api/admin/import-stripe-history?key=${encodeURIComponent(adminKey)}`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setImportResult({ success: true, message: data.message || `Imported ${data.imported} payments` });
+        refetch();
+      } else {
+        setImportResult({ success: false, message: data.error || "Import failed" });
+      }
+    } catch (err: any) {
+      setImportResult({ success: false, message: err.message || "Import failed" });
+    } finally {
+      setIsImporting(false);
+    }
+  };
   
   const { data: metrics, isLoading, error, refetch, isFetching, dataUpdatedAt } = useQuery<MetricsSummary>({
     queryKey: ["/api/metrics", adminKey],
@@ -608,7 +632,17 @@ export default function AdminMetrics() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleImportStripeHistory}
+                disabled={isImporting}
+                data-testid="button-import-stripe"
+              >
+                <Upload className={`h-4 w-4 mr-2 ${isImporting ? 'animate-pulse' : ''}`} />
+                {isImporting ? "Importing..." : "Import Stripe History"}
+              </Button>
               <Button 
                 variant="outline" 
                 size="sm"
@@ -634,6 +668,14 @@ export default function AdminMetrics() {
       </div>
 
       <div className="max-w-7xl mx-auto p-6">
+        {importResult && (
+          <div className={`mb-4 p-4 rounded-md ${importResult.success ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200'}`}>
+            <div className="flex items-center justify-between gap-4">
+              <span>{importResult.message}</span>
+              <Button variant="ghost" size="sm" onClick={() => setImportResult(null)}>Dismiss</Button>
+            </div>
+          </div>
+        )}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
             <TabsTrigger value="overview" data-testid="tab-overview">Overview</TabsTrigger>

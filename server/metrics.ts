@@ -21,6 +21,7 @@ export interface EventMetadata {
   responseTimeMs?: number;
   errorMessage?: string;
   memoryUsageMb?: number;
+  stripeSessionId?: string;
   [key: string]: unknown;
 }
 
@@ -93,6 +94,53 @@ export async function trackEvent(eventType: EventType, metadata?: EventMetadata)
     await saveMetrics(events, nextId + 1);
   } catch (error) {
     console.error("Failed to track event:", error);
+  }
+}
+
+export async function getImportedSessionIds(): Promise<Set<string>> {
+  try {
+    const { events } = await loadMetrics();
+    const sessionIds = new Set<string>();
+    
+    for (const event of events) {
+      const sessionId = event.metadata?.stripeSessionId;
+      if (sessionId && typeof sessionId === 'string') {
+        sessionIds.add(sessionId);
+      }
+    }
+    
+    return sessionIds;
+  } catch (error) {
+    console.error("Failed to get imported session IDs:", error);
+    return new Set();
+  }
+}
+
+export async function importHistoricalEvents(newEvents: Array<{
+  eventType: EventType;
+  createdAt: string;
+  metadata: EventMetadata;
+}>): Promise<void> {
+  try {
+    const { events, nextId } = await loadMetrics();
+    let currentId = nextId;
+    
+    for (const evt of newEvents) {
+      events.push({
+        id: currentId++,
+        eventType: evt.eventType,
+        createdAt: evt.createdAt,
+        metadata: evt.metadata,
+      });
+    }
+    
+    events.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    
+    await saveMetrics(events, currentId);
+    console.log(`Imported ${newEvents.length} historical events`);
+  } catch (error) {
+    console.error("Failed to import historical events:", error);
+    throw error;
   }
 }
 
