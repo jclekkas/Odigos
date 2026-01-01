@@ -3,7 +3,10 @@ export type EventType =
   | "submission_score"
   | "checkout_started"
   | "payment_completed"
-  | "page_view";
+  | "page_view"
+  | "api_request"
+  | "api_error"
+  | "system_health";
 
 export interface EventMetadata {
   dealScore?: "GREEN" | "YELLOW" | "RED";
@@ -12,6 +15,12 @@ export interface EventMetadata {
   tier?: "49" | "79";
   page?: string;
   referrer?: string;
+  endpoint?: string;
+  method?: string;
+  statusCode?: number;
+  responseTimeMs?: number;
+  errorMessage?: string;
+  memoryUsageMb?: number;
   [key: string]: unknown;
 }
 
@@ -110,6 +119,29 @@ export interface MetricsSummary {
     page: string;
     count: number;
   }>;
+  observability: {
+    systemHealth: "healthy" | "degraded" | "down";
+    uptimeSeconds: number;
+    totalApiRequests: number;
+    totalApiErrors: number;
+    errorRate: number;
+    avgResponseTimeMs: number;
+    endpointStats: Array<{
+      endpoint: string;
+      requests: number;
+      errors: number;
+      avgResponseMs: number;
+    }>;
+    recentErrors: Array<{
+      timestamp: Date;
+      endpoint: string;
+      errorMessage: string;
+    }>;
+    requestsPerHour: Array<{
+      hour: string;
+      count: number;
+    }>;
+  };
 }
 
 export async function getMetricsSummary(): Promise<MetricsSummary> {
