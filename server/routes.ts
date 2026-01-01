@@ -468,7 +468,8 @@ GO/NO-GO/NEED-MORE-INFO:
       console.error("Metrics error:", error?.message || error);
       res.status(500).json({ 
         error: "Failed to fetch metrics",
-        details: process.env.NODE_ENV === "development" ? error?.message : undefined
+        message: error?.message,
+        hasDbUrl: !!process.env.DATABASE_URL
       });
     }
   });
