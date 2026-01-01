@@ -19,12 +19,28 @@ export interface EventMetadata {
   [key: string]: unknown;
 }
 
+async function withRetry<T>(fn: () => Promise<T>, retries = 3, delay = 1000): Promise<T> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn();
+    } catch (error: any) {
+      if (i === retries - 1) throw error;
+      if (error?.code === 'EAI_AGAIN' || error?.message?.includes('EAI_AGAIN')) {
+        await new Promise(r => setTimeout(r, delay * (i + 1)));
+        continue;
+      }
+      throw error;
+    }
+  }
+  throw new Error('Retry failed');
+}
+
 export async function trackEvent(eventType: EventType, metadata?: EventMetadata): Promise<void> {
   try {
-    await db.insert(metricsEvents).values({
+    await withRetry(() => db.insert(metricsEvents).values({
       eventType,
       metadata: metadata || {},
-    });
+    }));
   } catch (error) {
     console.error("Failed to track event:", error);
   }
@@ -56,7 +72,9 @@ export interface MetricsSummary {
 }
 
 export async function getMetricsSummary(): Promise<MetricsSummary> {
-  const allEvents: MetricsEvent[] = await db.select().from(metricsEvents).orderBy(desc(metricsEvents.createdAt));
+  const allEvents: MetricsEvent[] = await withRetry(() => 
+    db.select().from(metricsEvents).orderBy(desc(metricsEvents.createdAt))
+  );
   
   const submissions = allEvents.filter((e: MetricsEvent) => e.eventType === "submission");
   const payments = allEvents.filter((e: MetricsEvent) => e.eventType === "payment_completed");
