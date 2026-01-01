@@ -464,9 +464,12 @@ GO/NO-GO/NEED-MORE-INFO:
       const { getMetricsSummary } = await import("./metrics");
       const summary = await getMetricsSummary();
       res.json(summary);
-    } catch (error) {
-      console.error("Metrics error:", error);
-      res.status(500).json({ error: "Failed to fetch metrics" });
+    } catch (error: any) {
+      console.error("Metrics error:", error?.message || error);
+      res.status(500).json({ 
+        error: "Failed to fetch metrics",
+        details: process.env.NODE_ENV === "development" ? error?.message : undefined
+      });
     }
   });
 
