@@ -119,29 +119,6 @@ export interface MetricsSummary {
     page: string;
     count: number;
   }>;
-  observability: {
-    systemHealth: "healthy" | "degraded" | "down";
-    uptimeSeconds: number;
-    totalApiRequests: number;
-    totalApiErrors: number;
-    errorRate: number;
-    avgResponseTimeMs: number;
-    endpointStats: Array<{
-      endpoint: string;
-      requests: number;
-      errors: number;
-      avgResponseMs: number;
-    }>;
-    recentErrors: Array<{
-      timestamp: Date;
-      endpoint: string;
-      errorMessage: string;
-    }>;
-    requestsPerHour: Array<{
-      hour: string;
-      count: number;
-    }>;
-  };
 }
 
 export async function getMetricsSummary(): Promise<MetricsSummary> {
