@@ -1,7 +1,3 @@
-import { db } from "./db";
-import { metricsEvents, type MetricsEvent } from "@shared/schema";
-import { desc } from "drizzle-orm";
-
 export type EventType = 
   | "submission"
   | "submission_score"
@@ -19,34 +15,75 @@ export interface EventMetadata {
   [key: string]: unknown;
 }
 
-let dbAvailable = true;
+interface StoredEvent {
+  id: number;
+  eventType: EventType;
+  createdAt: string;
+  metadata: EventMetadata;
+}
 
-async function checkDbConnection(): Promise<boolean> {
-  if (!dbAvailable) return false;
+const REPLIT_DB_URL = process.env.REPLIT_DB_URL;
+
+async function kvGet(key: string): Promise<string | null> {
+  if (!REPLIT_DB_URL) return null;
   try {
-    await db.select().from(metricsEvents).limit(1);
-    return true;
+    const res = await fetch(`${REPLIT_DB_URL}/${encodeURIComponent(key)}`);
+    if (res.status === 404) return null;
+    return await res.text();
   } catch {
-    dbAvailable = false;
-    console.warn("Metrics database unavailable - tracking disabled");
-    return false;
+    return null;
+  }
+}
+
+async function kvSet(key: string, value: string): Promise<void> {
+  if (!REPLIT_DB_URL) return;
+  try {
+    await fetch(REPLIT_DB_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+    });
+  } catch (error) {
+    console.error("KV set failed:", error);
+  }
+}
+
+const METRICS_KEY = "odigos_metrics_v1";
+
+async function loadMetrics(): Promise<{ events: StoredEvent[]; nextId: number }> {
+  try {
+    const data = await kvGet(METRICS_KEY);
+    if (data) {
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.warn("Could not load metrics, starting fresh");
+  }
+  return { events: [], nextId: 1 };
+}
+
+async function saveMetrics(events: StoredEvent[], nextId: number): Promise<void> {
+  try {
+    const trimmed = events.length > 5000 ? events.slice(-5000) : events;
+    await kvSet(METRICS_KEY, JSON.stringify({ events: trimmed, nextId }));
+  } catch (error) {
+    console.error("Failed to save metrics:", error);
   }
 }
 
 export async function trackEvent(eventType: EventType, metadata?: EventMetadata): Promise<void> {
-  if (!dbAvailable) return;
   try {
-    await db.insert(metricsEvents).values({
+    const { events, nextId } = await loadMetrics();
+    const event: StoredEvent = {
+      id: nextId,
       eventType,
+      createdAt: new Date().toISOString(),
       metadata: metadata || {},
-    });
-  } catch (error: any) {
-    if (error?.message?.includes('EAI_AGAIN') || error?.code === 'EAI_AGAIN') {
-      dbAvailable = false;
-      console.warn("Metrics database unavailable - tracking disabled");
-    } else {
-      console.error("Failed to track event:", error);
-    }
+    };
+    events.push(event);
+    await saveMetrics(events, nextId + 1);
+  } catch (error) {
+    console.error("Failed to track event:", error);
   }
 }
 
@@ -75,50 +112,39 @@ export interface MetricsSummary {
   }>;
 }
 
-const emptyMetrics: MetricsSummary = {
-  totalSubmissions: 0,
-  totalPayments: 0,
-  revenue: 0,
-  conversionRate: 0,
-  scoreDistribution: { green: 0, yellow: 0, red: 0 },
-  recentEvents: [],
-  submissionsByDay: [],
-  pageViews: [],
-};
-
 export async function getMetricsSummary(): Promise<MetricsSummary> {
-  const isAvailable = await checkDbConnection();
-  if (!isAvailable) {
-    return { ...emptyMetrics, error: "Database unavailable in production. Create a production database in the Database pane." } as MetricsSummary & { error?: string };
-  }
+  const { events } = await loadMetrics();
   
-  const allEvents: MetricsEvent[] = await db.select().from(metricsEvents).orderBy(desc(metricsEvents.createdAt));
+  const allEvents = events.map(e => ({
+    ...e,
+    createdAt: new Date(e.createdAt),
+  })).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   
-  const submissions = allEvents.filter((e: MetricsEvent) => e.eventType === "submission");
-  const payments = allEvents.filter((e: MetricsEvent) => e.eventType === "payment_completed");
-  const scores = allEvents.filter((e: MetricsEvent) => e.eventType === "submission_score");
-  const pageViewEvents = allEvents.filter((e: MetricsEvent) => e.eventType === "page_view");
+  const submissions = allEvents.filter(e => e.eventType === "submission");
+  const payments = allEvents.filter(e => e.eventType === "payment_completed");
+  const scores = allEvents.filter(e => e.eventType === "submission_score");
+  const pageViewEvents = allEvents.filter(e => e.eventType === "page_view");
   
   const scoreDistribution = {
-    green: scores.filter((e: MetricsEvent) => (e.metadata as EventMetadata)?.dealScore === "GREEN").length,
-    yellow: scores.filter((e: MetricsEvent) => (e.metadata as EventMetadata)?.dealScore === "YELLOW").length,
-    red: scores.filter((e: MetricsEvent) => (e.metadata as EventMetadata)?.dealScore === "RED").length,
+    green: scores.filter(e => e.metadata?.dealScore === "GREEN").length,
+    yellow: scores.filter(e => e.metadata?.dealScore === "YELLOW").length,
+    red: scores.filter(e => e.metadata?.dealScore === "RED").length,
   };
   
-  const revenue = payments.reduce((sum: number, p: MetricsEvent) => {
-    const tier = (p.metadata as EventMetadata)?.tier;
+  const revenue = payments.reduce((sum, p) => {
+    const tier = p.metadata?.tier;
     return sum + (tier === "49" ? 49 : tier === "79" ? 79 : 0);
   }, 0);
   
   const submissionsByDay: Record<string, number> = {};
-  submissions.forEach((s: MetricsEvent) => {
+  submissions.forEach(s => {
     const date = s.createdAt.toISOString().split("T")[0];
     submissionsByDay[date] = (submissionsByDay[date] || 0) + 1;
   });
   
   const pageViewCounts: Record<string, number> = {};
-  pageViewEvents.forEach((e: MetricsEvent) => {
-    const page = (e.metadata as EventMetadata)?.page || "unknown";
+  pageViewEvents.forEach(e => {
+    const page = e.metadata?.page || "unknown";
     pageViewCounts[page] = (pageViewCounts[page] || 0) + 1;
   });
   
@@ -128,7 +154,7 @@ export async function getMetricsSummary(): Promise<MetricsSummary> {
     revenue,
     conversionRate: submissions.length > 0 ? (payments.length / submissions.length) * 100 : 0,
     scoreDistribution,
-    recentEvents: allEvents.slice(0, 20).map((e: MetricsEvent) => ({
+    recentEvents: allEvents.slice(0, 20).map(e => ({
       eventType: e.eventType,
       createdAt: e.createdAt,
       metadata: e.metadata,
