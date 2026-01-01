@@ -19,30 +19,34 @@ export interface EventMetadata {
   [key: string]: unknown;
 }
 
-async function withRetry<T>(fn: () => Promise<T>, retries = 3, delay = 1000): Promise<T> {
-  for (let i = 0; i < retries; i++) {
-    try {
-      return await fn();
-    } catch (error: any) {
-      if (i === retries - 1) throw error;
-      if (error?.code === 'EAI_AGAIN' || error?.message?.includes('EAI_AGAIN')) {
-        await new Promise(r => setTimeout(r, delay * (i + 1)));
-        continue;
-      }
-      throw error;
-    }
+let dbAvailable = true;
+
+async function checkDbConnection(): Promise<boolean> {
+  if (!dbAvailable) return false;
+  try {
+    await db.select().from(metricsEvents).limit(1);
+    return true;
+  } catch {
+    dbAvailable = false;
+    console.warn("Metrics database unavailable - tracking disabled");
+    return false;
   }
-  throw new Error('Retry failed');
 }
 
 export async function trackEvent(eventType: EventType, metadata?: EventMetadata): Promise<void> {
+  if (!dbAvailable) return;
   try {
-    await withRetry(() => db.insert(metricsEvents).values({
+    await db.insert(metricsEvents).values({
       eventType,
       metadata: metadata || {},
-    }));
-  } catch (error) {
-    console.error("Failed to track event:", error);
+    });
+  } catch (error: any) {
+    if (error?.message?.includes('EAI_AGAIN') || error?.code === 'EAI_AGAIN') {
+      dbAvailable = false;
+      console.warn("Metrics database unavailable - tracking disabled");
+    } else {
+      console.error("Failed to track event:", error);
+    }
   }
 }
 
@@ -71,10 +75,24 @@ export interface MetricsSummary {
   }>;
 }
 
+const emptyMetrics: MetricsSummary = {
+  totalSubmissions: 0,
+  totalPayments: 0,
+  revenue: 0,
+  conversionRate: 0,
+  scoreDistribution: { green: 0, yellow: 0, red: 0 },
+  recentEvents: [],
+  submissionsByDay: [],
+  pageViews: [],
+};
+
 export async function getMetricsSummary(): Promise<MetricsSummary> {
-  const allEvents: MetricsEvent[] = await withRetry(() => 
-    db.select().from(metricsEvents).orderBy(desc(metricsEvents.createdAt))
-  );
+  const isAvailable = await checkDbConnection();
+  if (!isAvailable) {
+    return { ...emptyMetrics, error: "Database unavailable in production. Create a production database in the Database pane." } as MetricsSummary & { error?: string };
+  }
+  
+  const allEvents: MetricsEvent[] = await db.select().from(metricsEvents).orderBy(desc(metricsEvents.createdAt));
   
   const submissions = allEvents.filter((e: MetricsEvent) => e.eventType === "submission");
   const payments = allEvents.filter((e: MetricsEvent) => e.eventType === "payment_completed");
