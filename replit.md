@@ -47,7 +47,14 @@ The backend exposes a single primary endpoint `/api/analyze` that receives deale
 - **Schema Location**: `shared/schema.ts` and `shared/models/`
 - **Migrations**: Managed via `drizzle-kit push`
 
-Note: The database is used for optional features like chat history. The core deal analysis is stateless.
+Note: The database is used for metrics tracking and optional features. The core deal analysis is stateless.
+
+### Metrics System
+- **Table**: `metrics_events` stores all tracked events with type, timestamp, and JSON metadata
+- **Event Types**: submission, submission_score, checkout_started, payment_completed, page_view
+- **API Endpoint**: `GET /api/metrics` returns aggregated statistics
+- **Admin Dashboard**: `/admin/metrics` displays key business metrics (private, not in sitemap)
+- **Tracked Data**: Submissions, payments, revenue, conversion rate, score distribution, activity timeline
 
 ### Development vs Production
 - **Development**: Vite dev server with HMR, proxied through Express

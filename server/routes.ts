@@ -4,6 +4,7 @@ import OpenAI from "openai";
 import { analysisRequestSchema, analysisResponseSchema, type AnalysisResponse } from "@shared/schema";
 import { applyRuleEngine } from "./ruleEngine";
 import { getStripeClient, isStripeConfigured } from "./stripeClient";
+import { trackEvent } from "./metrics";
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
@@ -232,6 +233,16 @@ GO/NO-GO/NEED-MORE-INFO:
       };
       
       console.log("Analysis successful - Deal Score:", finalResult.dealScore, "Confidence:", finalResult.confidenceLevel);
+      
+      trackEvent("submission", {
+        vehicle: data.vehicle,
+        zipCode: data.zipCode,
+      });
+      trackEvent("submission_score", {
+        dealScore: finalResult.dealScore,
+        vehicle: data.vehicle,
+      });
+      
       res.json(finalResult);
     } catch (error) {
       console.error("Analysis error:", error);
@@ -432,10 +443,30 @@ GO/NO-GO/NEED-MORE-INFO:
         }
       }
       
+      trackEvent("payment_completed", { tier });
+      
       res.json({ paid: true, tier });
     } catch (error) {
       console.error("Session verification error:", error);
       res.json({ paid: false, tier: null });
+    }
+  });
+
+  app.get("/api/metrics", async (req, res) => {
+    const adminKey = req.query.key;
+    const expectedKey = process.env.ADMIN_KEY || "odigos-admin-2024";
+    
+    if (adminKey !== expectedKey) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    
+    try {
+      const { getMetricsSummary } = await import("./metrics");
+      const summary = await getMetricsSummary();
+      res.json(summary);
+    } catch (error) {
+      console.error("Metrics error:", error);
+      res.status(500).json({ error: "Failed to fetch metrics" });
     }
   });
 
