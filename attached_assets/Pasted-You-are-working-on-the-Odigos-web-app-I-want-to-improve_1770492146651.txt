@@ -1,0 +1,90 @@
+You are working on the Odigos web app. I want to improve SEO + conversion by making ONE page undeniably useful: /out-the-door-price.
+
+GOAL
+- Make /out-the-door-price the best “Out-the-Door Price (OTD) explained” page on the internet for a car buyer.
+- Keep it fast, scannable, and practical.
+- Do NOT add new pages. Do NOT change pricing. Do NOT change any other routes unless necessary for links/navigation.
+
+DELIVERABLES
+1) Update the /out-the-door-price page content with the exact structure below.
+2) Ensure correct SEO tags for this page (title + meta description) without breaking existing app routing.
+3) Add one soft CTA linking back to the main analyzer (/) near the bottom (not pushy).
+4) Keep styling consistent with the site.
+
+PAGE CONTENT STRUCTURE (use these headings in this order)
+
+H1:
+Out-the-Door Price (OTD): What It Means & What It Should Include
+
+Intro (2 short paragraphs, very direct):
+- Define OTD price as the total you pay including taxes/fees/add-ons.
+- Explain that if it’s not in writing, you don’t know the real cost.
+
+Section 1 (H2):
+What an Out-the-Door Price Includes
+- Bullet list:
+  - Vehicle sale price
+  - Sales tax
+  - Title & registration
+  - Dealer documentation fee
+  - Mandatory state/local fees
+
+Section 2 (H2):
+What’s Often NOT Included (But Should Be)
+- Bullet list:
+  - Dealer add-ons (paint protection, nitrogen, VIN etching, etc.)
+  - Dealer-installed accessories
+  - Extended warranty / service contract
+  - GAP insurance
+  - “Protection packages” or “dealer services”
+
+Section 3 (H2):
+Why Dealers Avoid Giving OTD Prices
+- 4–6 bullets explaining common tactics:
+  - Focus on monthly payment instead of total price
+  - “Come in and we’ll work it out”
+  - Add-ons introduced later in F&I
+  - Confusing rebates / conditional incentives
+  - “Doc fee” + misc fees not stated upfront
+
+Section 4 (H2):
+Red Flags to Watch For
+- Bullet list:
+  - Payment-only quote
+  - APR “depends on credit” with no tier specified
+  - “Mandatory” packages with unclear price
+  - OTD won’t be provided in writing
+  - Fees labeled “market adjustment”, “dealer services”, “reconditioning” on a new car
+
+Section 5 (H2):
+Copy-Paste Message to Ask for an Itemized OTD
+- Put in a styled callout box with a copy button if easy; if not, just a clear blockquote:
+“Before I come in, can you confirm the out-the-door price in writing, including the sale price, all taxes, title/registration, doc fee, and any dealer add-ons? If there are add-ons, please itemize them with prices. I’m ready to proceed once I can review the full OTD breakdown.”
+
+Section 6 (H2):
+Example: Itemized OTD Breakdown (Sample)
+- Provide a simple example table with fake numbers (clearly labeled “sample”):
+  - Sale price
+  - Tax
+  - Title/registration
+  - Doc fee
+  - Add-ons
+  - Total OTD
+- Add a sentence: “Your numbers will differ by state and dealer.”
+
+Soft CTA (near bottom):
+- Heading: “Already have dealer texts or a quote?”
+- 1–2 sentences: Odigos can flag what’s missing/risky from real dealer messages.
+- Button: “Analyze My Dealer Messages” linking to /
+
+SEO REQUIREMENTS
+- Set page <title> to: “Out-the-Door Price: What It Means & What It Should Include | Odigos”
+- Set meta description to: “Out-the-door price (OTD) is the total cost to buy a car. Learn what it includes, what dealers leave out, red flags to avoid, and a copy-paste message to request an itemized OTD quote.”
+
+IMPLEMENTATION NOTES
+- Determine how routes are implemented (React Router, etc.) and modify only the /out-the-door-price component/page.
+- If the app is a SPA with a single index.html, also ensure the document title/description update when navigating to this route (use react-helmet-async or a simple effect that sets document.title + meta[name=description]).
+- Keep the design consistent and mobile-friendly.
+
+After making changes:
+- Tell me exactly which files you edited and a short checklist of how I can verify it in preview + after publish.
