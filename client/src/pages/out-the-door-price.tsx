@@ -21,10 +21,13 @@ export default function OutTheDoorPrice() {
 
   useEffect(() => {
     document.title = "Out-the-Door Price: What It Means & What It Should Include | Odigos";
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta) {
-      meta.setAttribute("content", "Out-the-door price (OTD) is the total cost to buy a car. Learn what it includes, what dealers leave out, red flags to avoid, and a copy-paste message to request an itemized OTD quote.");
+    let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.setAttribute("name", "description");
+      document.head.appendChild(meta);
     }
+    meta.setAttribute("content", "Out-the-door price (OTD) is the total cost to buy a car. Learn what it includes, what dealers leave out, red flags to avoid, and a copy-paste message to request an itemized OTD quote.");
     return () => {
       document.title = "Is This a Good Car Deal? | Odigos";
       if (meta) {
