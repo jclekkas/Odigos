@@ -20,21 +20,21 @@ export default function Landing() {
               <img 
                 src={logoImage} 
                 alt="Odigos" 
-                className="h-32 md:h-40 w-auto mx-auto mb-8 cursor-pointer" 
+                className="h-32 md:h-40 w-auto mx-auto mb-10 cursor-pointer" 
                 data-testid="link-logo-home" 
               />
             </Link>
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 leading-tight" data-testid="text-hero-headline">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-5 leading-[1.15]" data-testid="text-hero-headline">
               Know your car deal before you go to the dealership
             </h1>
-            <p className="text-lg text-muted-foreground mb-8" data-testid="text-hero-subheadline">
+            <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto" data-testid="text-hero-subheadline">
               Paste the dealer text or email. Odigos flags what's missing, risky, or unclear before you commit.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center mb-5">
               <Link href="/analyze">
                 <Button 
                   size="lg" 
-                  className="w-full sm:w-auto" 
+                  className="w-full sm:w-auto text-base rounded-lg" 
                   data-testid="button-cta-hero"
                   onClick={() => trackCtaClick("hero-analyze", "Check My Dealer Messages")}
                 >
@@ -45,7 +45,7 @@ export default function Landing() {
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="w-full sm:w-auto" 
+                  className="w-full sm:w-auto text-sm rounded-lg" 
                   data-testid="button-try-bad"
                   onClick={() => trackCtaClick("hero-bad-example", "Try a bad deal example")}
                 >
@@ -53,34 +53,38 @@ export default function Landing() {
                 </Button>
               </Link>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              No account required. Not affiliated with any dealership. No personal data stored. Secure Stripe checkout.
+            <p className="text-xs text-muted-foreground mt-3" data-testid="text-trust-strip">
+              Independent · No account required · Paste only what you're comfortable sharing · Secure Stripe checkout
             </p>
           </div>
         </section>
 
-        <section className="py-14 px-6">
+        <section className="py-16 px-6">
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
-              What Odigos checks before you go in
-            </h2>
-            <ul className="space-y-3">
-              {[
-                "Missing out-the-door (OTD) price details",
-                "Hidden fees, add-ons, and protection packages",
-                "APR / term inconsistencies",
-                "Payment-focused tactics that hide total cost",
-              ].map((item, idx) => (
-                <li key={idx} className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <span className="text-base text-muted-foreground">{item}</span>
-                </li>
-              ))}
-            </ul>
+            <Card>
+              <CardContent className="pt-6 pb-6">
+                <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
+                  What Odigos checks before you go in
+                </h2>
+                <ul className="space-y-3">
+                  {[
+                    "Missing out-the-door (OTD) price details",
+                    "Hidden fees, add-ons, and protection packages",
+                    "APR / term inconsistencies",
+                    "Payment-focused tactics that hide total cost",
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-center gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <span className="text-base text-muted-foreground">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
           </div>
         </section>
 
-        <section className="py-14 px-6 bg-muted/30">
+        <section className="py-16 px-6 bg-muted/30">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
               In minutes, you'll know:
@@ -101,7 +105,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-14 px-6">
+        <section className="py-16 px-6">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-xl md:text-2xl font-bold mb-4">
               Why it matters
@@ -112,7 +116,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-14 px-6 bg-muted/30">
+        <section className="py-16 px-6 bg-muted/30">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
               Real example (anonymized)
@@ -145,7 +149,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-14 px-6">
+        <section className="py-16 px-6">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
               Simple pricing
@@ -232,13 +236,13 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-14 md:py-18 px-6 bg-muted/30">
+        <section className="py-16 px-6 bg-muted/30">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-xl md:text-2xl font-bold mb-6">
               Don't walk into a $30–$60k decision blind.
             </h2>
             <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-final">
+              <Button size="lg" className="text-base rounded-lg" data-testid="button-cta-final">
                 Check This Deal
               </Button>
             </Link>
