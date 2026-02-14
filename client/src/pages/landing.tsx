@@ -14,7 +14,7 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-background">
       <main>
-        <section className="py-16 md:py-24 px-6">
+        <section className="py-20 md:py-28 px-6">
           <div className="max-w-3xl mx-auto text-center">
             <Link href="/">
               <img 
@@ -36,9 +36,9 @@ export default function Landing() {
                   size="lg" 
                   className="w-full sm:w-auto" 
                   data-testid="button-cta-hero"
-                  onClick={() => trackCtaClick("hero-analyze", "Paste dealer message → Analyze")}
+                  onClick={() => trackCtaClick("hero-analyze", "Check My Dealer Messages")}
                 >
-                  Paste dealer message → Analyze
+                  Check My Dealer Messages
                 </Button>
               </Link>
               <Link href="/analyze?example=bad">
@@ -53,13 +53,34 @@ export default function Landing() {
                 </Button>
               </Link>
             </div>
-            <p className="text-sm text-muted-foreground">
-              No account required. Not affiliated with any dealership.
+            <p className="text-xs text-muted-foreground mt-2">
+              No account required. Not affiliated with any dealership. No personal data stored. Secure Stripe checkout.
             </p>
           </div>
         </section>
 
-        <section className="py-12 px-6 bg-muted/30">
+        <section className="py-14 px-6">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
+              What Odigos checks before you go in
+            </h2>
+            <ul className="space-y-3">
+              {[
+                "Missing out-the-door (OTD) price details",
+                "Hidden fees, add-ons, and protection packages",
+                "APR / term inconsistencies",
+                "Payment-focused tactics that hide total cost",
+              ].map((item, idx) => (
+                <li key={idx} className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                  <span className="text-base text-muted-foreground">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <section className="py-14 px-6 bg-muted/30">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
               In minutes, you'll know:
@@ -80,7 +101,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-12 px-6">
+        <section className="py-14 px-6">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-xl md:text-2xl font-bold mb-4">
               Why it matters
@@ -91,43 +112,40 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-12 px-6 bg-muted/30">
+        <section className="py-14 px-6 bg-muted/30">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
               Real example (anonymized)
             </h2>
             <Card>
               <CardContent className="pt-6">
-                <div className="mb-4">
-                  <p className="text-sm font-medium text-muted-foreground mb-2">Dealer message:</p>
-                  <p className="text-sm italic bg-muted/50 p-3 rounded-md">
-                    "All-in price is $32,245.18. Approved 1.99% for 60 months."
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">Odigos output:</p>
-                  <ul className="space-y-2">
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm"><span className="font-medium text-green-600 dark:text-green-400">GREEN</span> — Proceed, confirm buyer's order</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-muted-foreground">What to verify: buyer's order reflects OTD + APR + term</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-muted-foreground">Reply provided: asks dealer to have buyer's order ready</span>
-                    </li>
-                  </ul>
-                </div>
-                <p className="text-xs text-muted-foreground mt-4">Example edited for privacy.</p>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Dealer quoted <span className="font-medium text-foreground">$589/month</span> for a 2025 SUV.
+                </p>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Odigos flagged:</p>
+                <ul className="space-y-2 mb-4">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-muted-foreground">No out-the-door price provided</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-muted-foreground">APR not specified</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-muted-foreground">Protection package added without cost</span>
+                  </li>
+                </ul>
+                <p className="text-sm text-muted-foreground italic">
+                  Small gaps like these can cost thousands.
+                </p>
               </CardContent>
             </Card>
           </div>
         </section>
 
-        <section className="py-12 px-6">
+        <section className="py-14 px-6">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
               Simple pricing
@@ -214,14 +232,14 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-12 md:py-16 px-6 bg-muted/30">
+        <section className="py-14 md:py-18 px-6 bg-muted/30">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-xl md:text-2xl font-bold mb-6">
               Don't walk into a $30–$60k decision blind.
             </h2>
             <Link href="/analyze">
               <Button size="lg" data-testid="button-cta-final">
-                Analyze my deal
+                Check This Deal
               </Button>
             </Link>
           </div>
@@ -229,7 +247,10 @@ export default function Landing() {
       </main>
 
       <footer className="border-t border-border/50 py-6">
-        <div className="max-w-5xl mx-auto px-6 text-center">
+        <div className="max-w-5xl mx-auto px-6 text-center space-y-2">
+          <p className="text-xs text-muted-foreground">
+            Built for U.S. car buyers. Independent. No dealer partnerships.
+          </p>
           <p className="text-sm text-muted-foreground">
             Odigos provides estimates based on the information you share. Always verify details directly with the dealership.
           </p>
