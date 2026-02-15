@@ -5,6 +5,7 @@ import path from "path";
 const PRERENDERED_ROUTES = [
   "/dealer-pricing-tactics",
   "/dealer-wont-give-otd-price",
+  "/are-dealer-add-ons-mandatory",
 ];
 
 export function serveStatic(app: Express) {

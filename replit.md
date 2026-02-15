@@ -76,7 +76,7 @@ Note: The database is used for metrics tracking and optional features. The core 
 - **Meta Tags**: `react-helmet-async` renders title/description/OG/Twitter/canonical at render time (not useEffect)
 - **Component**: `<SeoHead>` in `client/src/components/SeoHead.tsx` wraps Helmet for consistent meta tags
 - **HelmetProvider**: Wraps `<App>` in `client/src/main.tsx`
-- **Prerendered Routes**: `/dealer-pricing-tactics`, `/dealer-wont-give-otd-price`
+- **Prerendered Routes**: `/dealer-pricing-tactics`, `/dealer-wont-give-otd-price`, `/are-dealer-add-ons-mandatory`
 - **Output**: `dist/public/<route>/index.html` (generated after `vite build` by running `node scripts/prerender.mjs`)
 - **Express Serving**: `server/static.ts` checks for prerendered route HTML before SPA fallback
 - **Build Flow**: `npx vite build` → `node scripts/prerender.mjs` → deploy

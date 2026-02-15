@@ -9,6 +9,7 @@ const CHROMIUM_PATH = process.env.CHROMIUM_PATH || "/nix/store/zi4f80l169xlmivz8
 const ROUTES = [
   "/dealer-pricing-tactics",
   "/dealer-wont-give-otd-price",
+  "/are-dealer-add-ons-mandatory",
 ];
 
 const PORT = 4173;

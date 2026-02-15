@@ -12,6 +12,12 @@ const tactics = [
       "If a dealer refuses to give you an out-the-door price in writing, it's usually strategic. Learn the four most common reasons — and exactly what to say back.",
     href: "/dealer-wont-give-otd-price",
   },
+  {
+    title: "Are Dealer Add-Ons Mandatory? Here's What You Can Refuse",
+    summary:
+      "Most dealer add-ons are optional profit items — not requirements. Learn what's negotiable, what's legally required, and exactly what to say to get them removed.",
+    href: "/are-dealer-add-ons-mandatory",
+  },
 ];
 
 export default function DealerPricingTactics() {
