@@ -78,7 +78,7 @@ export default function OutTheDoorPrice() {
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What an Out-the-Door Price Includes</h2>
-            <ul className="space-y-2 mb-8 text-muted-foreground">
+            <ul className="space-y-2 mb-4 text-muted-foreground">
               {[
                 "Vehicle sale price",
                 "Sales tax",
@@ -92,14 +92,20 @@ export default function OutTheDoorPrice() {
                 </li>
               ))}
             </ul>
+            <p className="text-muted-foreground mb-8">
+              Not sure whether your <Link href="/dealer-doc-fee" className="underline text-foreground">dealer documentation fees</Link> are normal? We break down what's typical by state and how to push back.
+            </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What's Often NOT Included (But Should Be)</h2>
             <p className="text-muted-foreground mb-3">
               These items frequently get added after the initial price is quoted. If you don't ask, they'll show up in the finance office:
             </p>
             <ul className="space-y-2 mb-8 text-muted-foreground">
+              <li className="flex items-start gap-2">
+                <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
+                <span>Dealer add-ons (paint protection, nitrogen-filled tires, VIN etching, etc.) — learn which <Link href="/mandatory-dealer-add-ons" className="underline text-foreground">mandatory dealer add-ons</Link> are actually optional</span>
+              </li>
               {[
-                "Dealer add-ons (paint protection, nitrogen-filled tires, VIN etching, etc.)",
                 "Dealer-installed accessories",
                 "Extended warranty / service contract",
                 "GAP insurance",

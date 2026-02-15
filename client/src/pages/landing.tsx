@@ -15,12 +15,12 @@ export default function Landing() {
       <main>
         <section className="pt-16 pb-20 md:pt-24 md:pb-28 px-6">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-foreground" data-testid="text-hero-headline">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-foreground max-w-4xl mx-auto" data-testid="text-hero-headline">
               Know Your Real OTD Price.<br />
-              Before You Sign Anything.
+              Before You Sign.
             </h1>
             <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed" data-testid="text-hero-subheadline">
-              We expose hidden fees, APR traps, and missing OTD details before they cost you thousands.
+              We expose hidden fees, APR traps, dealer add-ons, and missing out-the-door details before they cost you thousands.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
               <Link href="/analyze">
@@ -45,7 +45,7 @@ export default function Landing() {
                 </Button>
               </Link>
             </div>
-            <p className="mt-6 text-sm text-muted-foreground/80 leading-relaxed" data-testid="text-trust-strip">
+            <p className="mt-6 text-sm font-medium tracking-wide text-muted-foreground leading-relaxed" data-testid="text-trust-strip">
               Independent · No account required · We don't store your text · Secure Stripe checkout
             </p>
           </div>

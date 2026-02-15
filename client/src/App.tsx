@@ -10,6 +10,8 @@ import MonthlyPaymentTrap from "@/pages/monthly-payment-trap";
 import IsThisAGoodCarDeal from "@/pages/is-this-a-good-car-deal";
 import DealerWontGiveOtd from "@/pages/dealer-wont-give-otd";
 import CarDealerFeesExplained from "@/pages/car-dealer-fees-explained";
+import DealerDocFee from "@/pages/dealer-doc-fee";
+import MandatoryDealerAddOns from "@/pages/mandatory-dealer-add-ons";
 import AdminMetrics from "@/pages/admin-metrics";
 import NotFound from "@/pages/not-found";
 
@@ -23,6 +25,8 @@ function Router() {
       <Route path="/is-this-a-good-car-deal" component={IsThisAGoodCarDeal} />
       <Route path="/dealer-wont-give-otd" component={DealerWontGiveOtd} />
       <Route path="/car-dealer-fees-explained" component={CarDealerFeesExplained} />
+      <Route path="/dealer-doc-fee" component={DealerDocFee} />
+      <Route path="/mandatory-dealer-add-ons" component={MandatoryDealerAddOns} />
       <Route path="/admin/metrics" component={AdminMetrics} />
       <Route component={NotFound} />
     </Switch>
