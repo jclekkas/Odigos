@@ -212,6 +212,10 @@ export default function OutTheDoorPrice() {
             <p className="text-sm text-muted-foreground mb-8">
               Your numbers will differ by state and dealer. What matters is that every line item is visible before you sign anything.
             </p>
+
+            <p className="text-muted-foreground mb-8">
+              Want to estimate your own OTD before contacting a dealer? Try our <Link href="/out-the-door-price-calculator" className="underline text-foreground">out-the-door price calculator</Link> to see what a basic estimate covers — and what it can't.
+            </p>
           </div>
 
           <div className="mt-12 pt-8 border-t border-border">

@@ -1,0 +1,68 @@
+Create a new SEO page targeting the keyword “out the door price calculator”.
+
+HARD RULES
+- Do NOT touch Stripe, pricing, backend, or any business logic.
+- Keep routing changes minimal: only add the new route.
+- Match the styling pattern used in client/src/pages/out-the-door-price.tsx (same header, max width, prose, soft CTA).
+- No fake metrics, no testimonials, no animations.
+
+DELIVERABLES
+1) Create: client/src/pages/out-the-door-price-calculator.tsx
+2) Add route: /out-the-door-price-calculator in App.tsx (without changing any existing routes)
+3) Add internal links:
+   - From /out-the-door-price page: add a natural link to /out-the-door-price-calculator
+   - From the new calculator page: add links to /out-the-door-price, /dealer-doc-fee, and /mandatory-dealer-add-ons (natural anchor text)
+
+PAGE REQUIREMENTS (content + structure)
+- H1: “Out-the-Door Price Calculator: Estimate Your Real Cost”
+- Intro (2 short paragraphs):
+  - Define out-the-door (OTD) in plain English (“total price including taxes/fees/add-ons”)
+  - Explain why most online calculators miss dealer-specific fees and add-ons
+
+- Section: “What an OTD Calculator Can (and Can’t) Do”
+  - Bullet list of what it can estimate (tax, title/reg, typical fees)
+  - Bullet list of what it can’t know (doc fee, dealer add-ons, market adjustments, F&I products)
+
+- Section: “A Simple OTD Estimate (Example)”
+  - Include a clean table like the one on out-the-door-price.tsx (sale price, tax, title/reg, doc fee placeholder, add-ons placeholder, total)
+  - Use placeholders where dealer-specific numbers vary (e.g., “Doc fee: $0–$800+ (varies)”)
+  - Add a short note: “Your dealer quote is the source of truth.”
+
+- Section: “The 3 Numbers to Ask the Dealer For”
+  - 1) Sale price (before taxes/fees)
+  - 2) Itemized out-the-door price (OTD) in writing
+  - 3) APR + term (with credit tier assumptions)
+
+- Section: “Copy-Paste Message to Request an Itemized OTD”
+  - Reuse the OTD_MESSAGE pattern (include a copy button)
+  - Keep it polite and direct
+  - Do not claim legal requirements—focus on “in writing” + itemization
+
+- Section: “When to Use Odigos Instead of a Calculator”
+  - 4–6 bullets:
+    - You have dealer texts/emails
+    - You’re being quoted monthly payments only
+    - Add-ons are mentioned but not priced
+    - APR “depends on credit” without tier/term
+    - You want a reply you can send before visiting
+
+- Soft CTA block at bottom (same pattern):
+  - Heading: “Already have a dealer quote?”
+  - Body: “Paste it into Odigos and we’ll flag what’s missing and what to ask before you sign.”
+  - Button linking to “/” with text: “Analyze My Dealer Quote”
+
+SEO TAGS (must be implemented)
+- Use useEffect to set:
+  - document.title = “Out-the-Door Price Calculator | Odigos”
+  - meta description: “Estimate your out-the-door (OTD) price and learn what calculators miss—doc fees, dealer add-ons, and hidden costs. Get a copy-paste message to request an itemized OTD quote.”
+
+CONSISTENCY
+- Keep the same header logo linking to “/”
+- Keep the same footer disclaimer: “Not affiliated with any dealership. Optimized for U.S. car purchases.”
+- Ensure mobile readability: short paragraphs, scannable bullets, max-w-2xl
+
+AFTER YOU IMPLEMENT
+- Paste the full contents of the new file
+- Show the routing diff in App.tsx
+- Show the internal link snippets you added to out-the-door-price.tsx
+- Confirm only the intended files were modified
