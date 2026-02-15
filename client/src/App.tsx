@@ -13,6 +13,9 @@ import CarDealerFeesExplained from "@/pages/car-dealer-fees-explained";
 import DealerDocFee from "@/pages/dealer-doc-fee";
 import MandatoryDealerAddOns from "@/pages/mandatory-dealer-add-ons";
 import OutTheDoorPriceCalculator from "@/pages/out-the-door-price-calculator";
+import DealerPricingTactics from "@/pages/dealer-pricing-tactics";
+import DealerWontGiveOtdPrice from "@/pages/dealer-wont-give-otd-price";
+import GuidesRedirect from "@/pages/guides-redirect";
 import AdminMetrics from "@/pages/admin-metrics";
 import NotFound from "@/pages/not-found";
 
@@ -29,6 +32,9 @@ function Router() {
       <Route path="/dealer-doc-fee" component={DealerDocFee} />
       <Route path="/mandatory-dealer-add-ons" component={MandatoryDealerAddOns} />
       <Route path="/out-the-door-price-calculator" component={OutTheDoorPriceCalculator} />
+      <Route path="/dealer-pricing-tactics" component={DealerPricingTactics} />
+      <Route path="/dealer-wont-give-otd-price" component={DealerWontGiveOtdPrice} />
+      <Route path="/guides" component={GuidesRedirect} />
       <Route path="/admin/metrics" component={AdminMetrics} />
       <Route component={NotFound} />
     </Switch>

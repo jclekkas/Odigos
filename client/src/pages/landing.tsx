@@ -274,6 +274,9 @@ export default function Landing() {
 
       <footer className="border-t border-border/50 py-6">
         <div className="max-w-5xl mx-auto px-6 text-center space-y-2">
+          <p className="text-sm text-muted-foreground">
+            <Link href="/dealer-pricing-tactics" className="underline text-foreground" data-testid="link-guides">Guides: Dealer Pricing Tactics</Link>
+          </p>
           <p className="text-xs text-muted-foreground">
             Built for U.S. car buyers. Independent. No dealer partnerships.
           </p>
