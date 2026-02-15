@@ -1,0 +1,79 @@
+We are doing a visual hierarchy cleanup only.
+Do NOT touch:
+Stripe logic
+Pricing logic
+Routing
+Backend
+Copy wording
+Any functionality
+Only update: client/src/pages/landing.tsx
+1) Remove Large Hero Logo
+Delete the large centered logo block inside the hero section.
+Remove the entire <div> that centers the large <img src={logoImage} /> above the headline.
+Do NOT remove the header logo in the top navigation.
+Keep the logoImage import if it’s used in the header.
+Goal: The headline should be the first visual element in the hero.
+2) Tighten Hero Layout Spacing
+Find hero container padding:
+Change:
+py-20 md:py-28
+To:
+pt-16 pb-20 md:pt-24 md:pb-28
+This reduces excessive top space and improves hierarchy.
+3) Strengthen Headline Hierarchy
+Do NOT change the wording.
+Update the H1 styles to:
+className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-foreground"
+Requirements:
+No gradient text
+No glow effects
+No decorative spans
+Clean and serious SaaS look
+4) Improve Subheadline Readability
+Do NOT change the wording.
+Update subheadline styling to:
+className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto"
+Ensure:
+Proper spacing under headline
+Good contrast
+Centered alignment
+5) Upgrade Primary CTA Styling
+Keep wording:
+"Check My Dealer Messages"
+Update button styling to:
+size="lg"
+className="mt-8 px-8 py-6 text-lg font-semibold rounded-xl"
+Requirements:
+Solid button (not outline)
+High contrast
+Clear hover state
+No animation
+Feels premium but minimal
+6) Trust Strip (Minimal + Professional)
+Ensure trust strip text reads exactly:
+"Independent · No account required · We don’t store your text · Secure Stripe checkout"
+Style:
+className="mt-4 text-sm text-muted-foreground"
+No icons. No extra decoration.
+7) Remove Over-Designed Elements
+If hero contains:
+Large decorative badges
+Tech jargon labels
+Flashy pills
+“Strategic Terminal” language
+Unnecessary UI noise
+Remove them.
+We are aiming for:
+Simple
+Professional
+Trustworthy
+Calm
+Conversion-focused
+Not flashy.
+Final Confirmation
+After edits, confirm:
+Only client/src/pages/landing.tsx was modified
+No other files were changed
+No routing or Stripe logic was touched
+No copy wording was altered
+Then show the updated hero section code.
