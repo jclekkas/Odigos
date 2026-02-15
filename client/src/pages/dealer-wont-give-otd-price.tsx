@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import logoImage from "@assets/odigos_logo.png";
 import { setSeoMeta } from "@/lib/seo";
@@ -69,36 +68,37 @@ export default function DealerWontGiveOtdPrice() {
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
           <p className="text-sm text-muted-foreground mb-4">
-            <Link href="/dealer-pricing-tactics" className="underline text-foreground">Dealer Pricing Tactics</Link> &rsaquo; This Article
+            <Link href="/dealer-pricing-tactics" className="underline text-foreground" data-testid="link-breadcrumb-hub">Dealer Pricing Tactics</Link> &rsaquo; This Article
           </p>
 
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-otd-refuse-headline">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3 leading-[1.15]" data-testid="text-otd-refuse-headline">
             Dealer Won't Give OTD Price? Here's What That Means
           </h1>
 
+          <p className="text-sm text-muted-foreground mb-8" data-testid="text-last-updated">Last updated: Feb 2026</p>
+
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-4">
-              If a dealer won't give you an out-the-door (OTD) price, that's not random.
-            </p>
-            <p className="text-lg text-muted-foreground mb-4">
-              It's usually strategic.
+              If a dealer won't give you an out-the-door (OTD) price, that's not random. It's usually one of several <Link href="/dealer-pricing-tactics" className="underline text-foreground" data-testid="link-inline-hub">common dealer pricing tactics</Link>.
             </p>
             <p className="text-muted-foreground mb-3">
               An out-the-door price includes:
             </p>
-            <ul className="space-y-2 mb-4 text-muted-foreground">
-              {["Vehicle price", "Taxes", "Registration", "Dealer fees", "Add-ons"].map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                  <span>{item}</span>
-                </li>
-              ))}
+            <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
+              <li>Vehicle price</li>
+              <li>Taxes</li>
+              <li>Registration</li>
+              <li>Dealer fees</li>
+              <li>Add-ons</li>
             </ul>
             <p className="text-muted-foreground mb-4">
               In other words: the real total.
             </p>
+            <p className="text-muted-foreground mb-4">
+              When a dealer avoids giving it, they're keeping leverage. You can <Link href="/analyze" className="underline text-foreground" data-testid="link-inline-analyze">paste any dealer quote into Odigos</Link> to see exactly what's missing — before you respond.
+            </p>
             <p className="text-muted-foreground mb-10">
-              When a dealer avoids giving it, they're keeping leverage. Here's why that happens — and what you should do next.
+              Here's why dealers avoid OTD pricing — and what you should do next.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why Dealers Avoid Giving OTD Prices</h2>
@@ -110,18 +110,11 @@ export default function DealerWontGiveOtdPrice() {
             <p className="text-muted-foreground mb-3">
               It's easier to negotiate in person. Once you're sitting at a desk:
             </p>
-            <ul className="space-y-2 mb-4 text-muted-foreground">
-              {[
-                "Time pressure increases",
-                "Emotional commitment rises",
-                "Trade-in conversations begin",
-                "Financing gets layered in",
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                  <span>{item}</span>
-                </li>
-              ))}
+            <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
+              <li>Time pressure increases</li>
+              <li>Emotional commitment rises</li>
+              <li>Trade-in conversations begin</li>
+              <li>Financing gets layered in</li>
             </ul>
             <p className="text-muted-foreground mb-8">
               Refusing to give OTD pricing forces you to come in.
@@ -131,13 +124,10 @@ export default function DealerWontGiveOtdPrice() {
             <p className="text-muted-foreground mb-3">
               Dealers often break pricing into pieces:
             </p>
-            <ul className="space-y-2 mb-4 text-muted-foreground">
-              {['"Sale price"', '"Monthly payment"', '"Estimated fees"'].map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                  <span>{item}</span>
-                </li>
-              ))}
+            <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
+              <li>"Sale price"</li>
+              <li>"Monthly payment"</li>
+              <li>"Estimated fees"</li>
             </ul>
             <p className="text-muted-foreground mb-4">
               If you only see parts, you can't compare deals properly.
@@ -150,19 +140,12 @@ export default function DealerWontGiveOtdPrice() {
             <p className="text-muted-foreground mb-3">
               Common surprise fees include:
             </p>
-            <ul className="space-y-2 mb-4 text-muted-foreground">
-              {[
-                "Protection packages",
-                "Nitrogen tires",
-                "VIN etching",
-                '"Market adjustments"',
-                "High doc fees",
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                  <span>{item}</span>
-                </li>
-              ))}
+            <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
+              <li>Protection packages</li>
+              <li>Nitrogen tires</li>
+              <li>VIN etching</li>
+              <li>"Market adjustments"</li>
+              <li>High doc fees</li>
             </ul>
             <p className="text-muted-foreground mb-8">
               Without OTD pricing in writing, these get introduced later.
@@ -172,18 +155,11 @@ export default function DealerWontGiveOtdPrice() {
             <p className="text-muted-foreground mb-3">
               Sometimes pricing changes based on:
             </p>
-            <ul className="space-y-2 mb-4 text-muted-foreground">
-              {[
-                "Whether you finance with them",
-                "Your credit profile",
-                "Whether you mention competing quotes",
-                "How serious you seem",
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                  <span>{item}</span>
-                </li>
-              ))}
+            <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
+              <li>Whether you finance with them</li>
+              <li>Your credit profile</li>
+              <li>Whether you mention competing quotes</li>
+              <li>How serious you seem</li>
             </ul>
             <p className="text-muted-foreground mb-8">
               OTD pricing limits that flexibility.
@@ -207,33 +183,19 @@ export default function DealerWontGiveOtdPrice() {
             <p className="text-muted-foreground mb-3">
               Not always. Some dealerships:
             </p>
-            <ul className="space-y-2 mb-4 text-muted-foreground">
-              {[
-                "Have strict policies about in-person quotes",
-                "Require a stock number first",
-                'Avoid "price shopping" scenarios',
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                  <span>{item}</span>
-                </li>
-              ))}
+            <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
+              <li>Have strict policies about in-person quotes</li>
+              <li>Require a stock number first</li>
+              <li>Avoid "price shopping" scenarios</li>
             </ul>
             <p className="text-muted-foreground mb-3">
               But it becomes concerning when:
             </p>
-            <ul className="space-y-2 mb-4 text-muted-foreground">
-              {[
-                "They refuse after you provide VIN and ZIP code",
-                "They won't itemize fees",
-                'They say "we\'ll figure that out when you come in"',
-                "They shift conversation to monthly payments",
-              ].map((item, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <span className="text-amber-500 mt-1.5 shrink-0">•</span>
-                  <span>{item}</span>
-                </li>
-              ))}
+            <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground marker:text-amber-500">
+              <li>They refuse after you provide VIN and ZIP code</li>
+              <li>They won't itemize fees</li>
+              <li>They say "we'll figure that out when you come in"</li>
+              <li>They shift conversation to monthly payments</li>
             </ul>
             <p className="text-muted-foreground mb-8">
               That's when caution is warranted.
@@ -244,7 +206,7 @@ export default function DealerWontGiveOtdPrice() {
               <p className="text-sm text-muted-foreground mb-3">
                 Paste it into Odigos and we'll flag what's missing, risky, or unclear — before you visit.
               </p>
-              <Link href="/">
+              <Link href="/analyze">
                 <Button size="sm" data-testid="button-cta-mid-article">
                   Analyze My Dealer Quote
                 </Button>
@@ -255,45 +217,43 @@ export default function DealerWontGiveOtdPrice() {
             <p className="text-muted-foreground mb-3">
               Keep it simple and neutral. You can reply with:
             </p>
-            <Card className="relative p-5 bg-muted/50 mb-4">
-              <blockquote className="text-sm md:text-base text-foreground leading-relaxed italic pr-10">
+            <div className="relative my-4 rounded-lg border border-border bg-muted/40 p-5 pr-14" data-testid="block-otd-request">
+              <blockquote className="text-sm md:text-base text-foreground leading-relaxed italic">
                 {OTD_REQUEST}
               </blockquote>
-              <Button
-                variant="outline"
-                size="icon"
-                className="absolute top-3 right-3"
+              <button
+                type="button"
+                className="absolute top-3 right-3 inline-flex items-center justify-center rounded-md border border-border bg-background p-2"
                 onClick={() => handleCopy(OTD_REQUEST, 0)}
                 data-testid="button-copy-otd-request"
                 aria-label="Copy message"
               >
                 {copiedIdx === 0 ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
-              </Button>
+              </button>
               {copiedIdx === 0 && (
                 <span className="absolute top-3 right-14 text-xs text-green-600 dark:text-green-400 font-medium">Copied</span>
               )}
-            </Card>
+            </div>
             <p className="text-muted-foreground mb-3">
               If they still refuse:
             </p>
-            <Card className="relative p-5 bg-muted/50 mb-8">
-              <blockquote className="text-sm md:text-base text-foreground leading-relaxed italic pr-10">
+            <div className="relative my-4 rounded-lg border border-border bg-muted/40 p-5 pr-14" data-testid="block-walkaway">
+              <blockquote className="text-sm md:text-base text-foreground leading-relaxed italic">
                 {WALKAWAY_MSG}
               </blockquote>
-              <Button
-                variant="outline"
-                size="icon"
-                className="absolute top-3 right-3"
+              <button
+                type="button"
+                className="absolute top-3 right-3 inline-flex items-center justify-center rounded-md border border-border bg-background p-2"
                 onClick={() => handleCopy(WALKAWAY_MSG, 1)}
                 data-testid="button-copy-walkaway"
                 aria-label="Copy message"
               >
                 {copiedIdx === 1 ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
-              </Button>
+              </button>
               {copiedIdx === 1 && (
                 <span className="absolute top-3 right-14 text-xs text-green-600 dark:text-green-400 font-medium">Copied</span>
               )}
-            </Card>
+            </div>
             <p className="text-muted-foreground mb-8">
               No hostility. Just clarity.
             </p>
@@ -302,18 +262,11 @@ export default function DealerWontGiveOtdPrice() {
             <p className="text-muted-foreground mb-3">
               If you decide to visit anyway:
             </p>
-            <ol className="space-y-3 mb-4 text-muted-foreground list-none">
-              {[
-                "Bring printed competitor quotes",
-                "Ask for full itemization before signing anything",
-                "Refuse to discuss monthly payments first",
-                "Do not let them combine trade-in and vehicle price into one number",
-              ].map((step, idx) => (
-                <li key={idx} className="flex items-start gap-3">
-                  <span className="bg-muted text-foreground font-semibold text-sm rounded-full h-6 w-6 flex items-center justify-center shrink-0 mt-0.5">{idx + 1}</span>
-                  <span>{step}</span>
-                </li>
-              ))}
+            <ol className="list-decimal pl-6 space-y-2 mb-4 text-muted-foreground">
+              <li>Bring printed competitor quotes</li>
+              <li>Ask for full itemization before signing anything</li>
+              <li>Refuse to discuss monthly payments first</li>
+              <li>Do not let them combine trade-in and vehicle price into one number</li>
             </ol>
             <p className="text-muted-foreground mb-8">
               And most importantly: never agree verbally without seeing the full breakdown.
@@ -326,17 +279,10 @@ export default function DealerWontGiveOtdPrice() {
             <p className="text-muted-foreground mb-3">
               That hides:
             </p>
-            <ul className="space-y-2 mb-4 text-muted-foreground">
-              {[
-                "Extended loan terms",
-                "Marked-up interest rates",
-                "Add-ons rolled into financing",
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                  <span>{item}</span>
-                </li>
-              ))}
+            <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
+              <li>Extended loan terms</li>
+              <li>Marked-up interest rates</li>
+              <li>Add-ons rolled into financing</li>
             </ul>
             <p className="text-muted-foreground mb-8">
               OTD pricing forces transparency. Monthly payments obscure it.
@@ -346,18 +292,11 @@ export default function DealerWontGiveOtdPrice() {
             <p className="text-muted-foreground mb-3">
               Walk if:
             </p>
-            <ul className="space-y-2 mb-4 text-muted-foreground">
-              {[
-                "They won't itemize fees",
-                "They introduce new add-ons at signing",
-                "They increase price after agreement",
-                "They pressure you to sign quickly",
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <span className="text-amber-500 mt-1.5 shrink-0">•</span>
-                  <span>{item}</span>
-                </li>
-              ))}
+            <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground marker:text-amber-500">
+              <li>They won't itemize fees</li>
+              <li>They introduce new add-ons at signing</li>
+              <li>They increase price after agreement</li>
+              <li>They pressure you to sign quickly</li>
             </ul>
             <p className="text-muted-foreground mb-8">
               There are always other dealerships. Leverage is your biggest asset as a buyer.
@@ -378,14 +317,14 @@ export default function DealerWontGiveOtdPrice() {
             <div className="space-y-6 mb-8">
               {faqs.map((faq, idx) => (
                 <div key={idx}>
-                  <h3 className="text-base font-semibold text-foreground mb-1">{faq.q}</h3>
+                  <h3 className="text-base font-semibold text-foreground mb-1" data-testid={`text-faq-q-${idx}`}>{faq.q}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
                 </div>
               ))}
             </div>
 
             <p className="text-muted-foreground mb-8">
-              Back to <Link href="/dealer-pricing-tactics" className="underline text-foreground">all dealer pricing tactics</Link>.
+              Back to <Link href="/dealer-pricing-tactics" className="underline text-foreground" data-testid="link-back-hub">all dealer pricing tactics</Link>.
             </p>
           </div>
 
@@ -396,17 +335,10 @@ export default function DealerWontGiveOtdPrice() {
             <p className="text-muted-foreground mb-3">
               Paste your dealer's quote into Odigos and see:
             </p>
-            <ul className="space-y-2 mb-4 text-muted-foreground">
-              {[
-                "Hidden fee flags",
-                "Common pricing tactics",
-                "Negotiation leverage points",
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                  <span>{item}</span>
-                </li>
-              ))}
+            <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
+              <li>Hidden fee flags</li>
+              <li>Common pricing tactics</li>
+              <li>Negotiation leverage points</li>
             </ul>
             <p className="text-muted-foreground mb-4">
               Know what's negotiable before you walk into the showroom.
