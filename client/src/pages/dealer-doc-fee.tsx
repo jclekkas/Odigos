@@ -69,12 +69,12 @@ export default function DealerDocFee() {
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How Much Is Normal? (By State)</h2>
             <p className="text-muted-foreground mb-4">
-              Doc fee norms vary significantly by state. Here's a general guide:
+              Doc fee norms vary significantly by state. Here are a few examples to illustrate how much rules vary by state (always confirm locally):
             </p>
             <ul className="space-y-2 mb-8 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                <span><strong className="text-foreground">States with caps ($75–$200):</strong> California ($85), New York ($175), Washington ($200), Maryland ($500 cap), and several others limit how much dealers can charge.</span>
+                <span><strong className="text-foreground">States with caps ($75–$200):</strong> California ($85), New York ($175), Washington ($200), Maryland ($800 cap as of July 1, 2024), and several others limit how much dealers can charge.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
@@ -82,7 +82,7 @@ export default function DealerDocFee() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                <span><strong className="text-foreground">Average range nationally:</strong> Most doc fees fall between $300 and $700, though outliers exist on both ends.</span>
+                <span><strong className="text-foreground">Wide range:</strong> In many states, doc fees are a few hundred dollars, but in no-cap states it can be $700–$1,000+.</span>
               </li>
             </ul>
             <p className="text-muted-foreground mb-8">
