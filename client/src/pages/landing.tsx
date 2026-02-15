@@ -15,12 +15,11 @@ export default function Landing() {
       <main>
         <section className="pt-16 pb-20 md:pt-24 md:pb-28 px-6">
           <div className="max-w-3xl mx-auto text-center">
-            <p className="text-sm tracking-widest uppercase text-muted-foreground mb-6" data-testid="text-brand-mark">Odigos</p>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-foreground" data-testid="text-hero-headline">
-              Know your car deal before you go to the dealership
+              Know Your Real Out-The-Door Price Before You Step Into a Dealership
             </h1>
-            <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto" data-testid="text-hero-subheadline">
-              Paste the dealer text or email. Odigos flags what's missing, risky, or unclear before you commit.
+            <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed" data-testid="text-hero-subheadline">
+              See hidden fees, APR traps, dealer add-ons, and missing OTD details before they cost you thousands.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
               <Link href="/analyze">
@@ -45,7 +44,7 @@ export default function Landing() {
                 </Button>
               </Link>
             </div>
-            <p className="mt-4 text-sm text-muted-foreground" data-testid="text-trust-strip">
+            <p className="mt-6 text-sm text-muted-foreground leading-relaxed" data-testid="text-trust-strip">
               Independent · No account required · We don't store your text · Secure Stripe checkout
             </p>
           </div>
