@@ -71,6 +71,17 @@ Note: The database is used for metrics tracking and optional features. The core 
 - **PostgreSQL**: Connection via `DATABASE_URL` environment variable
 - **Session Store**: `connect-pg-simple` for session persistence
 
+### Prerendering (SEO)
+- **Tool**: `puppeteer-core` + system Chromium via `scripts/prerender.mjs`
+- **Meta Tags**: `react-helmet-async` renders title/description/OG/Twitter/canonical at render time (not useEffect)
+- **Component**: `<SeoHead>` in `client/src/components/SeoHead.tsx` wraps Helmet for consistent meta tags
+- **HelmetProvider**: Wraps `<App>` in `client/src/main.tsx`
+- **Prerendered Routes**: `/dealer-pricing-tactics`, `/dealer-wont-give-otd-price`
+- **Output**: `dist/public/<route>/index.html` (generated after `vite build` by running `node scripts/prerender.mjs`)
+- **Express Serving**: `server/static.ts` checks for prerendered route HTML before SPA fallback
+- **Build Flow**: `npx vite build` → `node scripts/prerender.mjs` → deploy
+- **Adding New Routes**: Add route to `ROUTES` array in `scripts/prerender.mjs` and `PRERENDERED_ROUTES` in `server/static.ts`
+
 ### Key NPM Packages
 - `openai`: OpenAI SDK for LLM calls
 - `drizzle-orm` / `drizzle-kit`: Database ORM and migrations
@@ -78,3 +89,5 @@ Note: The database is used for metrics tracking and optional features. The core 
 - `@tanstack/react-query`: Async state management
 - `@radix-ui/*`: Accessible UI primitives
 - `tailwindcss`: Utility-first CSS framework
+- `react-helmet-async`: Render-time SEO meta tags for prerendered pages
+- `puppeteer-core`: Headless browser for post-build prerendering
