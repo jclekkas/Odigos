@@ -74,15 +74,15 @@ export default function DealerDocFee() {
             <ul className="space-y-2 mb-8 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                <span><strong className="text-foreground">States with caps ($75–$200):</strong> California ($85), New York ($175), Washington ($200), Maryland ($800 cap as of July 1, 2024), and several others limit how much dealers can charge.</span>
+                <span><strong className="text-foreground">Caps (examples):</strong> California ($85), New York ($175), Washington ($200), Maryland ($800 cap as of July 1, 2024).</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                <span><strong className="text-foreground">States with no caps:</strong> Florida, Texas, Georgia, Colorado, and others have no legal maximum. Doc fees of $700–$1,000+ are common in these states.</span>
+                <span><strong className="text-foreground">No caps (examples):</strong> Florida, Texas, Georgia, Colorado — dealers can charge what they want, and $700–$1,000+ isn't unusual.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                <span><strong className="text-foreground">Wide range:</strong> In many states, doc fees are a few hundred dollars, but in no-cap states it can be $700–$1,000+.</span>
+                <span><strong className="text-foreground">Rule of thumb:</strong> Treat the doc fee as part of your total out-the-door price and compare dealers on the full itemized OTD.</span>
               </li>
             </ul>
             <p className="text-muted-foreground mb-8">
