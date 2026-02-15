@@ -51,6 +51,24 @@ export default function Landing() {
           </div>
         </section>
 
+        <section className="py-12 px-6">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center" data-testid="text-how-it-works-heading">How it works</h2>
+            <ol className="space-y-4">
+              {[
+                "Paste the dealer text or quote",
+                "Odigos flags what's missing or risky",
+                "Send the copy-paste reply before you go in",
+              ].map((step, idx) => (
+                <li key={idx} className="flex items-start gap-3">
+                  <span className="bg-muted text-foreground font-semibold text-sm rounded-full h-6 w-6 flex items-center justify-center shrink-0 mt-0.5">{idx + 1}</span>
+                  <span className="text-base text-muted-foreground">{step}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
         <section className="py-16 px-6">
           <div className="max-w-2xl mx-auto">
             <Card>
@@ -73,6 +91,9 @@ export default function Landing() {
                 </ul>
               </CardContent>
             </Card>
+            <p className="text-xs text-muted-foreground text-center mt-4" data-testid="text-privacy-note">
+              Privacy: Your messages are analyzed in real time. We don't store or share them.
+            </p>
           </div>
         </section>
 
@@ -241,6 +262,15 @@ export default function Landing() {
           </div>
         </section>
       </main>
+
+      <section className="py-12 px-6">
+          <div className="max-w-2xl mx-auto">
+            <h3 className="text-base font-semibold mb-2 text-foreground" data-testid="text-scope-heading">What Odigos does NOT do</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Odigos analyzes pricing transparency and financing terms. It does not evaluate vehicle condition, mechanical reliability, or accident history.
+            </p>
+          </div>
+        </section>
 
       <footer className="border-t border-border/50 py-6">
         <div className="max-w-5xl mx-auto px-6 text-center space-y-2">
