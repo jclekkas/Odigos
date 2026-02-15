@@ -136,7 +136,7 @@ async function prerender() {
       await page.close();
     }
 
-    console.log("\nPrerendering complete!");
+    console.log(`\nPrerender complete: wrote ${ROUTES.length} routes`);
   } finally {
     await browser.close();
     server.close();
