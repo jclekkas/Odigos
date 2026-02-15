@@ -66,7 +66,7 @@ export default function OutTheDoorPrice() {
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-otd-headline">
-            Out-the-Door Price (OTD): What It Means & What It Should Include
+            What Is an Out-the-Door Price (OTD)? What It Includes
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
