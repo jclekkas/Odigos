@@ -3,7 +3,6 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, CheckCircle2 } from "lucide-react";
-import logoImage from "@assets/odigos_logo.png";
 import { trackPageView, trackCtaClick } from "@/lib/tracking";
 
 export default function Landing() {
@@ -14,27 +13,19 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-background">
       <main>
-        <section className="py-20 md:py-28 px-6">
+        <section className="pt-16 pb-20 md:pt-24 md:pb-28 px-6">
           <div className="max-w-3xl mx-auto text-center">
-            <Link href="/">
-              <img 
-                src={logoImage} 
-                alt="Odigos" 
-                className="h-32 md:h-40 w-auto mx-auto mb-10 cursor-pointer" 
-                data-testid="link-logo-home" 
-              />
-            </Link>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-5 leading-[1.15]" data-testid="text-hero-headline">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-foreground" data-testid="text-hero-headline">
               Know your car deal before you go to the dealership
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto" data-testid="text-hero-subheadline">
+            <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto" data-testid="text-hero-subheadline">
               Paste the dealer text or email. Odigos flags what's missing, risky, or unclear before you commit.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center mb-5">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
               <Link href="/analyze">
                 <Button 
                   size="lg" 
-                  className="w-full sm:w-auto text-base rounded-lg" 
+                  className="w-full sm:w-auto px-8 py-6 text-lg font-semibold rounded-xl" 
                   data-testid="button-cta-hero"
                   onClick={() => trackCtaClick("hero-analyze", "Check My Dealer Messages")}
                 >
@@ -53,8 +44,8 @@ export default function Landing() {
                 </Button>
               </Link>
             </div>
-            <p className="text-xs text-muted-foreground mt-3" data-testid="text-trust-strip">
-              Independent · No account required · Paste only what you're comfortable sharing · Secure Stripe checkout
+            <p className="mt-4 text-sm text-muted-foreground" data-testid="text-trust-strip">
+              Independent · No account required · We don't store your text · Secure Stripe checkout
             </p>
           </div>
         </section>
