@@ -1,0 +1,223 @@
+We are doing a controlled polish + SEO expansion.
+
+DO NOT touch:
+	•	Stripe logic
+	•	Backend/API routes
+	•	Pricing logic
+	•	Routing architecture
+	•	Existing business logic
+
+We will only:
+	1.	Refine hero section conversion hierarchy
+	2.	Improve trust strip visibility
+	3.	Add two new SEO long-tail content pages
+	4.	Add internal links appropriately
+
+No feature changes. No animations. No redesign.
+
+⸻
+
+PART 1 — Final Hero Polish (landing page only)
+
+File:
+client/src/pages/landing.tsx
+
+1. Headline Tightening
+
+Update the H1 to:
+
+Know Your Real OTD Price.
+Before You Sign.
+
+Keep styling:
+	•	lg:text-6xl
+	•	tracking-tight
+	•	font-bold
+	•	max-w-4xl
+	•	centered
+
+Do NOT change layout structure.
+
+⸻
+
+2. Subheadline Refinement
+
+Replace subheadline with:
+
+We expose hidden fees, APR traps, dealer add-ons, and missing out-the-door details before they cost you thousands.
+
+Keep:
+	•	text-muted-foreground
+	•	max-w-2xl
+	•	good line height
+	•	balanced spacing under H1
+
+⸻
+
+3. Trust Strip Visibility Upgrade
+
+Current text stays exactly:
+
+Independent · No account required · We don’t store your text · Secure Stripe checkout
+
+But visually improve it:
+	•	Slightly increase opacity (less muted)
+	•	Slightly increase font weight (font-medium)
+	•	Add tracking-wide
+	•	Ensure it does NOT look faded
+
+It should feel like reinforcement — not a disclaimer.
+
+Do not add icons. Keep clean.
+
+⸻
+
+4. Primary CTA Styling Check
+
+Ensure primary CTA:
+	•	px-8 py-6
+	•	text-lg
+	•	font-semibold
+	•	rounded-xl
+	•	clear hover state
+	•	strong contrast against background
+
+Do not change wording:
+Analyze My Dealer Quote
+
+⸻
+
+PART 2 — Add Two Long-Tail SEO Pages
+
+We are adding content pages to capture high-intent search traffic.
+
+Create two new files in:
+
+client/src/pages/
+
+⸻
+
+Page 1: dealer-doc-fee.tsx
+
+Route:
+/dealer-doc-fee
+
+Title tag:
+Are Dealer Documentation Fees Legit? | Odigos
+
+Meta description:
+Learn what dealer doc fees are, whether they’re negotiable, how much is normal by state, and how to challenge inflated documentation fees before signing.
+
+Content structure:
+
+H1:
+Are Dealer Documentation Fees Legit?
+
+Sections:
+	1.	What Is a Dealer Doc Fee?
+	2.	Are Doc Fees Mandatory?
+	3.	How Much Is Normal? (Explain ranges by state)
+	4.	Can You Negotiate a Doc Fee?
+	5.	Red Flags to Watch For
+	6.	What To Say to Push Back (short script block)
+	7.	Soft CTA to homepage
+
+Tone:
+Clear, authoritative, neutral.
+
+Length:
+~900–1200 words.
+
+Use same styling pattern as out-the-door-price.tsx:
+	•	max-w-2xl
+	•	prose styling
+	•	clean H2 hierarchy
+	•	no gimmicks
+
+At bottom include CTA:
+
+“Have a dealer quote already?”
+Button linking to “/”
+Text: Analyze My Dealer Quote
+
+⸻
+
+Page 2: mandatory-dealer-add-ons.tsx
+
+Route:
+/mandatory-dealer-add-ons
+
+Title tag:
+Mandatory Dealer Add-Ons Explained | Odigos
+
+Meta description:
+Dealers often claim add-ons are mandatory. Learn what’s legally required, what’s optional, and how to avoid paying for unnecessary dealer-installed products.
+
+Content structure:
+
+H1:
+Are Dealer Add-Ons Really Mandatory?
+
+Sections:
+	1.	What Counts as a Dealer Add-On?
+	2.	What’s Actually Required by Law?
+	3.	Common Add-Ons to Watch For
+	•	Paint protection
+	•	Nitrogen tires
+	•	VIN etching
+	•	Protection packages
+	4.	When Dealers Say “It’s Already Installed”
+	5.	How to Push Back (short script)
+	6.	Why Getting a Written OTD Price Matters
+	7.	Soft CTA to homepage
+
+Length:
+~1000–1300 words.
+
+Match styling of other content pages.
+
+⸻
+
+PART 3 — Internal Linking
+
+On existing page:
+out-the-door-price.tsx
+
+Add contextual internal links inside content to:
+	•	/dealer-doc-fee
+	•	/mandatory-dealer-add-ons
+
+Use natural anchor text like:
+	•	“dealer documentation fees”
+	•	“mandatory dealer add-ons”
+
+Do not overlink.
+
+⸻
+
+PART 4 — Routing
+
+Add routes for both new pages in your routing config.
+
+Do NOT modify existing route behavior.
+
+⸻
+
+PART 5 — Do NOT Add
+	•	No fake statistics
+	•	No fake testimonials
+	•	No animations
+	•	No layout redesign
+	•	No new components
+	•	No dependency changes
+
+⸻
+
+Final Check
+
+After implementation:
+	•	All pages render cleanly
+	•	No broken links
+	•	Meta tags set correctly
+	•	Styling consistent
+	•	Homepage unchanged except specified polish
