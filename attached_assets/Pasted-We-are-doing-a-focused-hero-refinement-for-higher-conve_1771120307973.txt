@@ -1,0 +1,113 @@
+We are doing a focused hero refinement for higher conversion clarity.
+
+Only edit:
+client/src/pages/landing.tsx
+
+Do NOT touch:
+- Stripe logic
+- Pricing logic
+- Routing
+- Backend
+- Other pages
+- Global CSS
+
+This is purely a copy + visual hierarchy optimization of the hero section.
+
+-----------------------
+HERO CHANGES
+-----------------------
+
+1) Update the H1 headline to:
+
+Know Your Real OTD Price.
+Before You Sign Anything.
+
+• Break into two lines exactly as written.
+• Use strong hierarchy:
+  - text-4xl md:text-5xl lg:text-6xl
+  - font-bold
+  - tracking-tight
+  - leading-tight
+• Add slightly tighter max-width so it doesn’t stretch too wide on desktop (max-w-3xl or similar).
+• Center align on mobile, maintain current alignment behavior otherwise.
+
+2) Update the subheadline to:
+
+We expose hidden fees, APR traps, and missing OTD details before they cost you thousands.
+
+• Use:
+  - text-lg md:text-xl
+  - text-muted-foreground
+  - mt-6
+  - max-w-2xl
+  - leading-relaxed
+
+3) Primary CTA button:
+
+Change label to:
+Analyze My Dealer Quote
+
+Keep routing exactly as it currently is.
+No logic changes.
+
+Upgrade styling slightly:
+- px-8
+- py-6
+- text-lg
+- font-semibold
+- rounded-xl
+- maintain existing primary color
+- keep hover state
+- ensure strong contrast
+
+4) Secondary CTA ("Try a bad deal example"):
+
+Do not change wording.
+Increase spacing above it slightly (mt-4 or mt-6).
+Keep styling subtle and secondary.
+
+5) Trust strip (leave wording as is):
+
+Independent · No account required · We don't store your text · Secure Stripe checkout
+
+Increase contrast slightly (use text-sm and slightly brighter muted-foreground if needed).
+Add mt-6 spacing below buttons.
+
+-----------------------
+REMOVE
+-----------------------
+
+• Ensure there is NO large centered hero logo.
+• Keep only the small header logo in the navbar.
+• Remove any decorative hero badges or unnecessary visual elements.
+• No gradients added.
+• No animations.
+• No fake metrics.
+
+-----------------------
+SPACING
+-----------------------
+
+Hero container padding:
+pt-16 pb-20 md:pt-24 md:pb-28
+
+Keep layout clean and minimal.
+Avoid over-design.
+
+-----------------------
+IMPORTANT
+-----------------------
+
+Do not alter:
+- Page structure
+- Pricing cards
+- Other sections
+- Feature list
+- Footer
+- Stripe integration
+
+This is a focused hero clarity and conversion optimization pass only.
+
+After implementation, summarize:
+- Exact lines changed
+- Confirm no other files were edited

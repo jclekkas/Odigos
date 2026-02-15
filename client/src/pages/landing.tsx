@@ -16,10 +16,11 @@ export default function Landing() {
         <section className="pt-16 pb-20 md:pt-24 md:pb-28 px-6">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-foreground" data-testid="text-hero-headline">
-              Know Your Real Out-The-Door Price Before You Step Into a Dealership
+              Know Your Real OTD Price.<br />
+              Before You Sign Anything.
             </h1>
             <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed" data-testid="text-hero-subheadline">
-              See hidden fees, APR traps, dealer add-ons, and missing OTD details before they cost you thousands.
+              We expose hidden fees, APR traps, and missing OTD details before they cost you thousands.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
               <Link href="/analyze">
@@ -27,16 +28,16 @@ export default function Landing() {
                   size="lg" 
                   className="w-full sm:w-auto px-8 py-6 text-lg font-semibold rounded-xl" 
                   data-testid="button-cta-hero"
-                  onClick={() => trackCtaClick("hero-analyze", "Check My Dealer Messages")}
+                  onClick={() => trackCtaClick("hero-analyze", "Analyze My Dealer Quote")}
                 >
-                  Check My Dealer Messages
+                  Analyze My Dealer Quote
                 </Button>
               </Link>
               <Link href="/analyze?example=bad">
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="w-full sm:w-auto text-sm rounded-lg" 
+                  className="w-full sm:w-auto text-sm rounded-lg mt-4" 
                   data-testid="button-try-bad"
                   onClick={() => trackCtaClick("hero-bad-example", "Try a bad deal example")}
                 >
@@ -44,7 +45,7 @@ export default function Landing() {
                 </Button>
               </Link>
             </div>
-            <p className="mt-6 text-sm text-muted-foreground leading-relaxed" data-testid="text-trust-strip">
+            <p className="mt-6 text-sm text-muted-foreground/80 leading-relaxed" data-testid="text-trust-strip">
               Independent · No account required · We don't store your text · Secure Stripe checkout
             </p>
           </div>
