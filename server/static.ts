@@ -15,18 +15,31 @@ export function serveStatic(app: Express) {
     );
   }
 
-  app.use(express.static(distPath));
+  app.use((req, res, next) => {
+    const rawPath = req.path;
 
-  app.use("*", (req, res) => {
-    const rawPath = req.originalUrl.split("?")[0].replace(/\/+$/, "") || "/";
+    for (const route of PRERENDERED_ROUTES) {
+      if (rawPath === `${route}/`) {
+        const qs = req.originalUrl.includes("?")
+          ? req.originalUrl.slice(req.originalUrl.indexOf("?"))
+          : "";
+        return res.redirect(301, `${route}${qs}`);
+      }
 
-    if (PRERENDERED_ROUTES.includes(rawPath)) {
-      const prerenderedFile = path.join(distPath, rawPath, "index.html");
-      if (fs.existsSync(prerenderedFile)) {
-        return res.sendFile(prerenderedFile);
+      if (rawPath === route) {
+        const prerenderedFile = path.join(distPath, route, "index.html");
+        if (fs.existsSync(prerenderedFile)) {
+          return res.sendFile(prerenderedFile);
+        }
       }
     }
 
+    next();
+  });
+
+  app.use(express.static(distPath, { redirect: false }));
+
+  app.use("*", (_req, res) => {
     res.sendFile(path.resolve(distPath, "index.html"));
   });
 }

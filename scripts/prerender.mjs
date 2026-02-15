@@ -13,6 +13,18 @@ const ROUTES = [
 
 const PORT = 4173;
 
+const REQUIRED_META = [
+  { selector: "title", label: "title" },
+  { selector: 'meta[name="description"]', attr: "content", label: "description" },
+  { selector: 'link[rel="canonical"]', attr: "href", label: "canonical" },
+  { selector: 'meta[property="og:title"]', attr: "content", label: "og:title" },
+  { selector: 'meta[property="og:description"]', attr: "content", label: "og:description" },
+  { selector: 'meta[property="og:url"]', attr: "content", label: "og:url" },
+  { selector: 'meta[name="twitter:card"]', attr: "content", label: "twitter:card" },
+  { selector: 'meta[name="twitter:title"]', attr: "content", label: "twitter:title" },
+  { selector: 'meta[name="twitter:description"]', attr: "content", label: "twitter:description" },
+];
+
 function createStaticServer() {
   return new Promise((resolvePromise) => {
     const server = createServer((req, res) => {
@@ -96,7 +108,19 @@ async function prerender() {
       });
 
       await page.waitForSelector("h1", { timeout: 10000 });
-      await new Promise((r) => setTimeout(r, 1000));
+
+      try {
+        await page.waitForFunction(
+          () => {
+            const el = document.querySelector('meta[property="og:title"]');
+            return el && el.getAttribute("content") && el.getAttribute("content").length > 0;
+          },
+          { timeout: 10000 }
+        );
+        console.log(`  og:title meta tag detected in DOM`);
+      } catch (err) {
+        console.error(`  WARNING: Timed out waiting for og:title meta tag on ${route}. Helmet may not have rendered. Error: ${err.message}`);
+      }
 
       await page.evaluate(() => {
         const dedup = (attr, val) => {
@@ -126,12 +150,25 @@ async function prerender() {
 
       console.log(`  -> Written to ${outFile}`);
 
-      const hasTitle = html.includes("<title>");
-      const hasOgTitle = html.includes('property="og:title"');
-      const hasCanonical = html.includes('rel="canonical"');
-      const hasDescription = html.includes('name="description"');
+      const results = await page.evaluate((checks) => {
+        return checks.map(({ selector, attr, label }) => {
+          const el = document.querySelector(selector);
+          if (!el) return { label, value: null, ok: false };
+          const value = attr ? el.getAttribute(attr) : el.textContent;
+          return { label, value: value || "", ok: !!value && value.trim().length > 0 };
+        });
+      }, REQUIRED_META);
 
-      console.log(`  Checks: title=${hasTitle} og:title=${hasOgTitle} canonical=${hasCanonical} description=${hasDescription}`);
+      let allOk = true;
+      for (const r of results) {
+        const status = r.ok ? "OK" : "MISSING";
+        console.log(`  ${status}: ${r.label} = ${r.value ?? "(not found)"}`);
+        if (!r.ok) allOk = false;
+      }
+
+      if (!allOk) {
+        console.error(`  ERROR: Route ${route} is missing required meta tags!`);
+      }
 
       await page.close();
     }
