@@ -1,0 +1,222 @@
+You are working on the Odigos marketing site (Next.js). Implement the first SEO article + a hub page and make them visible on the site.
+
+GOALS
+1) Create a hub page:
+   - URL: /dealer-pricing-tactics
+   - Title (H1): Dealer Pricing Tactics: Complete Guide (2026)
+   - Intro paragraph (2–4 sentences) explaining Odigos helps buyers defend against dealer pricing tactics
+   - A list of tactic articles (for now, just one) with:
+     - Title
+     - 1–2 sentence summary
+     - Link to the article page
+   - Include a prominent CTA button: "Analyze My Dealer Quote" linking to the existing analyzer route (use the current CTA destination in the codebase)
+
+2) Create the first article page:
+   - URL: /dealer-wont-give-otd-price
+   - Use the exact article content below (do not rewrite wording unless needed for formatting)
+   - Add internal links:
+     - Link back to hub page: /dealer-pricing-tactics (near top and near bottom)
+     - Link to analyzer CTA in at least 2 places (mid-article and bottom)
+   - Include metadata:
+     - meta title: "Dealer Won’t Give OTD Price? What To Do"
+     - meta description: "If a dealer refuses to give an out-the-door price, here’s what it means and how to respond before visiting the dealership."
+     - canonical URL based on site domain
+     - OpenGraph + Twitter metadata
+   - Add FAQ section at the bottom with 4 FAQs (questions + short answers) derived from the article.
+   - If the codebase supports JSON-LD, add FAQPage schema for those FAQs.
+
+3) Site visibility
+   - Add a “Guides” or “Tactics” link in the main navigation (whichever matches existing nav tone), pointing to /dealer-pricing-tactics.
+   - Ensure the hub page is linked from the homepage somewhere (small section is fine).
+
+4) SEO plumbing
+   - Ensure both new routes are included in sitemap (if sitemap exists).
+   - Ensure they are indexable (no noindex).
+   - Add basic breadcrumbs (Home → Dealer Pricing Tactics → Article) if the site already uses breadcrumbs; otherwise skip.
+
+IMPLEMENTATION NOTES
+- Use the existing design system/styles/components used on other marketing pages.
+- Keep it clean: readable typography, max-width container, good spacing, and clear CTA buttons.
+- Do not create a complex blog CMS. Hardcode the article(s) in code or MDX, whichever is already used in this repo.
+- If there is already a pattern for content pages, follow it.
+
+ARTICLE CONTENT (paste into the article body exactly)
+
+# Dealer Won’t Give OTD Price? Here’s What That Means
+
+If a dealer won’t give you an out-the-door (OTD) price, that’s not random.
+
+It’s usually strategic.
+
+An out-the-door price includes:
+- Vehicle price
+- Taxes
+- Registration
+- Dealer fees
+- Add-ons
+
+In other words: the real total.
+
+When a dealer avoids giving it, they’re keeping leverage.
+
+Here’s why that happens — and what you should do next.
+
+## Why Dealers Avoid Giving OTD Prices
+
+There are four common reasons.
+
+### 1. They Want You In the Showroom
+
+It’s easier to negotiate in person.
+
+Once you’re sitting at a desk:
+- Time pressure increases
+- Emotional commitment rises
+- Trade-in conversations begin
+- Financing gets layered in
+
+Refusing to give OTD pricing forces you to come in.
+
+### 2. They Want to Separate the Numbers
+
+Dealers often break pricing into pieces:
+- “Sale price”
+- “Monthly payment”
+- “Estimated fees”
+
+If you only see parts, you can’t compare deals properly.
+
+OTD pricing removes ambiguity.
+
+That’s why some avoid it.
+
+### 3. They Plan to Add Fees Later
+
+Common surprise fees include:
+- Protection packages
+- Nitrogen tires
+- VIN etching
+- “Market adjustments”
+- High doc fees
+
+Without OTD pricing in writing, these get introduced later.
+
+### 4. They Want Flexibility to Adjust Based on You
+
+Sometimes pricing changes based on:
+- Whether you finance with them
+- Your credit profile
+- Whether you mention competing quotes
+- How serious you seem
+
+OTD pricing limits that flexibility.
+
+## Is It Legal for a Dealer to Refuse?
+
+In most states, yes.
+
+Dealers are not legally required to provide a written OTD quote by email.
+
+However:
+
+Once a number is agreed upon in writing, changing it later can become a deceptive practice issue depending on state law.
+
+The bigger issue isn’t legality.
+
+It’s transparency.
+
+If a dealer refuses to give full pricing in writing, you lose negotiation clarity.
+
+## Is This a Red Flag?
+
+Not always.
+
+Some dealerships:
+- Have strict policies about in-person quotes
+- Require a stock number first
+- Avoid “price shopping” scenarios
+
+But it becomes concerning when:
+- They refuse after you provide VIN and ZIP code
+- They won’t itemize fees
+- They say “we’ll figure that out when you come in”
+- They shift conversation to monthly payments
+
+That’s when caution is warranted.
+
+## What You Should Say Back (Copy This)
+
+Keep it simple and neutral.
+
+You can reply with:
+
+“I’m ready to move forward if the numbers make sense. Can you please send the full out-the-door price including all fees, taxes, and add-ons so I can review before coming in?”
+
+If they still refuse:
+
+“I’m comparing multiple dealerships. I’ll prioritize the one that provides full pricing transparency.”
+
+No hostility. Just clarity.
+
+## How to Protect Yourself If They Won’t Send It
+
+If you decide to visit anyway:
+
+1. Bring printed competitor quotes
+2. Ask for full itemization before signing anything
+3. Refuse to discuss monthly payments first
+4. Do not let them combine trade-in and vehicle price into one number
+
+And most importantly:
+
+Never agree verbally without seeing the full breakdown.
+
+## Why OTD Pricing Matters More Than Monthly Payments
+
+Dealers often redirect to:
+
+“What monthly payment are you comfortable with?”
+
+That hides:
+- Extended loan terms
+- Marked-up interest rates
+- Add-ons rolled into financing
+
+OTD pricing forces transparency.
+
+Monthly payments obscure it.
+
+## When You Should Walk Away
+
+Walk if:
+- They won’t itemize fees
+- They introduce new add-ons at signing
+- They increase price after agreement
+- They pressure you to sign quickly
+
+There are always other dealerships.
+
+Leverage is your biggest asset as a buyer.
+
+## The Bottom Line
+
+If a dealer won’t give you an OTD price, it’s usually about control.
+
+It doesn’t automatically mean fraud.
+
+But it does mean: you’re negotiating in the dark.
+
+Before responding — or before visiting — run the numbers through a structured review.
+
+### Analyze Your Dealer Quote Before You Go In
+
+Paste your dealer’s quote into Odigos and see:
+- Hidden fee flags
+- Common pricing tactics
+- Negotiation leverage points
+
+Know what’s negotiable before you walk into the showroom.
+
+[Analyze My Dealer Quote]
+
+END ARTICLE CONTENT
