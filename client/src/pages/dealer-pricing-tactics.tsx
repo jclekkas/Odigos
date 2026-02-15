@@ -1,10 +1,9 @@
-import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import logoImage from "@assets/odigos_logo.png";
-import { setSeoMeta } from "@/lib/seo";
+import SeoHead from "@/components/SeoHead";
 
 const tactics = [
   {
@@ -16,17 +15,14 @@ const tactics = [
 ];
 
 export default function DealerPricingTactics() {
-  useEffect(() => {
-    return setSeoMeta({
-      title: "Dealer Pricing Tactics: Complete Guide (2026) | Odigos",
-      description:
-        "Learn how car dealers use pricing tactics to hide costs. Odigos breaks down common strategies and shows you how to defend yourself before visiting the dealership.",
-      path: "/dealer-pricing-tactics",
-    });
-  }, []);
-
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead
+        title="Dealer Pricing Tactics: Complete Guide (2026) | Odigos"
+        description="Learn how car dealers use pricing tactics to hide costs. Odigos breaks down common strategies and shows you how to defend yourself before visiting the dealership."
+        path="/dealer-pricing-tactics"
+      />
+
       <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-3">
           <Link href="/">

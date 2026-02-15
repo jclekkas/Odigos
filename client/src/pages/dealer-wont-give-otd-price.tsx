@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Check, Copy } from "lucide-react";
 import logoImage from "@assets/odigos_logo.png";
-import { setSeoMeta } from "@/lib/seo";
+import SeoHead from "@/components/SeoHead";
 
 const OTD_REQUEST = `I'm ready to move forward if the numbers make sense. Can you please send the full out-the-door price including all fees, taxes, and add-ons so I can review before coming in?`;
 
@@ -31,15 +31,6 @@ const faqs = [
 export default function DealerWontGiveOtdPrice() {
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
-  useEffect(() => {
-    return setSeoMeta({
-      title: "Dealer Won't Give OTD Price? What To Do | Odigos",
-      description:
-        "If a dealer refuses to give an out-the-door price, here's what it means and how to respond before visiting the dealership.",
-      path: "/dealer-wont-give-otd-price",
-    });
-  }, []);
-
   const handleCopy = async (text: string, idx: number) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -57,6 +48,12 @@ export default function DealerWontGiveOtdPrice() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead
+        title="Dealer Won't Give OTD Price? What To Do | Odigos"
+        description="If a dealer refuses to give an out-the-door price, here's what it means and how to respond before visiting the dealership."
+        path="/dealer-wont-give-otd-price"
+      />
+
       <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-3">
           <Link href="/">
