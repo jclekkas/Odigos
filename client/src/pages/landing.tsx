@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, CheckCircle2 } from "lucide-react";
+import logoImage from "@assets/odigos_logo.png";
 import { trackPageView, trackCtaClick } from "@/lib/tracking";
 
 export default function Landing() {
@@ -15,6 +16,15 @@ export default function Landing() {
       <main>
         <section className="pt-16 pb-20 md:pt-24 md:pb-28 px-6">
           <div className="max-w-3xl mx-auto text-center">
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <img
+                src={logoImage}
+                alt="Odigos"
+                className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-white/5 p-2 ring-1 ring-white/10 drop-shadow-sm"
+                data-testid="img-brand-mark"
+              />
+              <span className="text-sm tracking-widest uppercase text-muted-foreground">Odigos</span>
+            </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-foreground" data-testid="text-hero-headline">
               Know your car deal before you go to the dealership
             </h1>
