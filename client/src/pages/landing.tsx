@@ -16,14 +16,13 @@ export default function Landing() {
       <main>
         <section className="pt-16 pb-20 md:pt-24 md:pb-28 px-6">
           <div className="max-w-3xl mx-auto text-center">
-            <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="flex items-center justify-center mb-6">
               <img
                 src={logoImage}
                 alt="Odigos"
-                className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-white/5 p-2 ring-1 ring-white/10 drop-shadow-sm"
+                className="h-14 md:h-16 w-auto drop-shadow-sm"
                 data-testid="img-brand-mark"
               />
-              <span className="text-sm tracking-widest uppercase text-muted-foreground">Odigos</span>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-foreground" data-testid="text-hero-headline">
               Know your car deal before you go to the dealership
