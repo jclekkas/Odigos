@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import logoImage from "@assets/odigos_logo.png";
 
-const OTD_MESSAGE = `Hi, I'm interested in [vehicle]. Before I come in, could you send me the full out-the-door price in writing? I'd like to see the sale price, taxes, title/registration, doc fee, and any dealer-installed add-ons itemized separately. Thanks!`;
+const OTD_MESSAGE = `Hi, I'm interested in [YEAR MAKE MODEL TRIM]. Before I come in, could you send me the full out-the-door price in writing? I'd like to see the sale price, taxes, title/registration, doc fee, and any dealer-installed add-ons itemized separately. Thanks!`;
 
 const estimateBreakdown = [
   { label: "Vehicle sale price", value: "$32,500" },
@@ -13,7 +13,7 @@ const estimateBreakdown = [
   { label: "Title & registration", value: "$285" },
   { label: "Doc fee", value: "$0–$800+ (varies)", isVariable: true },
   { label: "Dealer add-ons", value: "$0–$2,500+ (varies)", isVariable: true },
-  { label: "Estimated OTD total", value: "$34,816 + dealer fees", isTotal: true },
+  { label: "Estimated OTD subtotal (before dealer fees/add-ons)", value: "$34,816+", isTotal: true },
 ];
 
 export default function OutTheDoorPriceCalculator() {
@@ -58,7 +58,7 @@ export default function OutTheDoorPriceCalculator() {
       <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-3">
           <Link href="/">
-            <img src={logoImage} alt="Odigos" className="h-28 w-auto cursor-pointer" data-testid="link-logo-home" />
+            <img src={logoImage} alt="Odigos" className="h-12 md:h-14 w-auto cursor-pointer" data-testid="link-logo-home" />
           </Link>
         </div>
       </header>
@@ -86,7 +86,7 @@ export default function OutTheDoorPriceCalculator() {
               {[
                 "Sales tax based on your state/county rate",
                 "Title and registration fees (state-published amounts)",
-                "Typical documentation fee ranges for your state",
+                "State rules (caps vs no caps) that influence doc fee ranges",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2">
                   <span className="text-green-500 mt-1.5 shrink-0">•</span>
