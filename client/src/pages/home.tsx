@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { trackPageView, trackFormStart, trackFormFocus } from "@/lib/tracking";
+import { setSeoMeta } from "@/lib/seo";
 import { 
   ChevronDown, 
   ChevronUp, 
@@ -475,6 +476,11 @@ export default function Home() {
 
   useEffect(() => {
     trackPageView("/analyze");
+    return setSeoMeta({
+      title: "Analyze Your Car Deal | Odigos",
+      description: "Paste dealer texts, emails, or quotes into Odigos. Get an instant GO/NO-GO recommendation with hidden fee detection and suggested questions for the dealer.",
+      path: "/analyze",
+    });
   }, []);
 
   const handleFormStart = () => {

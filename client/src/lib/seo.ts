@@ -45,7 +45,7 @@ export function setSeoMeta({ title, description, path }: SeoMeta) {
   const canonical = upsertCanonical(url);
 
   return () => {
-    document.title = "Is This a Good Car Deal? | Odigos";
+    document.title = "Free Car Deal Analyzer — Check Hidden Fees Before You Sign | Odigos";
     descEl.setAttribute("content", "Paste dealer texts or emails. Odigos flags what's missing, risky, or unclear before you go to the dealership.");
     [ogTitle, ogDesc, ogUrl, ogType, twCard, twTitle, twDesc].forEach((el) => el.remove());
     canonical.remove();

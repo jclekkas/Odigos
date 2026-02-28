@@ -2,23 +2,15 @@ import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import logoImage from "@assets/odigos_logo.png";
+import { setSeoMeta } from "@/lib/seo";
 
 export default function MandatoryDealerAddOns() {
   useEffect(() => {
-    document.title = "Mandatory Dealer Add-Ons Explained | Odigos";
-    let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
-    if (!meta) {
-      meta = document.createElement("meta");
-      meta.setAttribute("name", "description");
-      document.head.appendChild(meta);
-    }
-    meta.setAttribute("content", "Dealers often claim add-ons are mandatory. Learn what's legally required, what's optional, and how to avoid paying for unnecessary dealer-installed products.");
-    return () => {
-      document.title = "Is This a Good Car Deal? | Odigos";
-      if (meta) {
-        meta.setAttribute("content", "Paste dealer texts or emails. Odigos flags what's missing, risky, or unclear before you go to the dealership.");
-      }
-    };
+    return setSeoMeta({
+      title: "Mandatory Dealer Add-Ons Explained | Odigos",
+      description: "Dealers often claim add-ons are mandatory. Learn what's legally required, what's optional, and how to avoid paying for unnecessary dealer-installed products.",
+      path: "/mandatory-dealer-add-ons",
+    });
   }, []);
 
   return (
@@ -72,14 +64,14 @@ export default function MandatoryDealerAddOns() {
               </li>
             </ul>
             <p className="text-muted-foreground mb-8">
-              Everything beyond that — documentation fees, dealer-installed accessories, protection packages — is set by the dealer, not the government. If someone tells you an add-on is "required by law," ask them to show you the statute. They won't be able to, because it doesn't exist.
+              Everything beyond that — documentation fees, dealer-installed accessories, protection packages — is set by the dealer, not the government. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's new car buying guide</a> confirms this distinction. If someone tells you an add-on is "required by law," ask them to show you the statute. They won't be able to, because it doesn't exist.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Common Add-Ons to Watch For</h2>
 
             <h3 className="text-lg font-semibold mt-6 mb-2 text-foreground">Paint Protection / Ceramic Coating</h3>
             <p className="text-muted-foreground mb-4">
-              Dealers charge $500–$1,500 for paint protection that often costs them $50–$100 to apply. Factory paint is already designed to resist normal wear. Aftermarket ceramic coatings from a detailer are typically better quality and far cheaper than the dealer's version.
+              Dealers charge $500–$1,500 for paint protection that often costs them $50–$100 to apply. Factory paint is already designed to resist normal wear. Aftermarket ceramic coatings from a detailer are typically better quality and far cheaper than the dealer's version. See <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds' fee breakdown</a> for more on what these charges really cost.
             </p>
 
             <h3 className="text-lg font-semibold mt-6 mb-2 text-foreground">Nitrogen-Filled Tires</h3>
@@ -131,7 +123,7 @@ export default function MandatoryDealerAddOns() {
               Add-ons are most dangerous when they're buried in a monthly payment. A $1,500 protection package adds about $25–$30/month over a 60-month loan — small enough that many buyers don't notice. But you're paying interest on that amount too, so the real cost is even higher.
             </p>
             <p className="text-muted-foreground mb-4">
-              That's why the out-the-door price is the only number that matters. It shows every dollar you'll pay, including add-ons, fees, and taxes. When you see each line item broken out, it's much easier to spot what's legitimate and what's padding.
+              That's why the out-the-door price is the only number that matters. It shows every dollar you'll pay, including add-ons, fees, and taxes. When you see each line item broken out, it's much easier to spot what's legitimate and what's padding. Use <a href="https://www.kbb.com/car-advice/" target="_blank" rel="noopener" className="underline text-foreground">Kelley Blue Book</a> to research fair vehicle values so you have a baseline before negotiating.
             </p>
             <p className="text-muted-foreground mb-8">
               Always request a written, itemized OTD quote before visiting the dealership. If a dealer won't provide one, that's a red flag in itself.

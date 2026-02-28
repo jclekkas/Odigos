@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy, AlertTriangle, CircleDollarSign } from "lucide-react";
 import logoImage from "@assets/odigos_logo.png";
+import { setSeoMeta } from "@/lib/seo";
 
 const OTD_MESSAGE = `Before I come in, can you confirm the full out-the-door price in writing, including sale price, taxes, title/registration, doc fee, and any dealer add-ons? If add-ons are included, please itemize each one with pricing. I'm ready to move forward once I can review the complete OTD breakdown.`;
 
@@ -20,20 +21,11 @@ export default function OutTheDoorPrice() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    document.title = "What Is an Out-the-Door Price (OTD)? The Only Number That Matters | Odigos";
-    let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
-    if (!meta) {
-      meta = document.createElement("meta");
-      meta.setAttribute("name", "description");
-      document.head.appendChild(meta);
-    }
-    meta.setAttribute("content", "The out-the-door price (OTD) is the total you pay to leave the dealership with the keys. Learn what it includes, what dealers leave out, red flags, and a copy-paste message to get the full OTD in writing.");
-    return () => {
-      document.title = "Is This a Good Car Deal? | Odigos";
-      if (meta) {
-        meta.setAttribute("content", "Paste dealer texts or emails. Odigos flags what's missing, risky, or unclear before you go to the dealership.");
-      }
-    };
+    return setSeoMeta({
+      title: "What Is an Out-the-Door Price (OTD)? The Only Number That Matters | Odigos",
+      description: "The out-the-door price (OTD) is the total you pay to leave the dealership with the keys. Learn what it includes, what dealers leave out, red flags, and a copy-paste message to get the full OTD in writing.",
+      path: "/out-the-door-price",
+    });
   }, []);
 
   const handleCopy = async () => {
@@ -91,7 +83,7 @@ export default function OutTheDoorPrice() {
               ))}
             </ul>
             <p className="text-muted-foreground mb-4">
-              If you don't have the full OTD in writing, you do not know what the car costs.
+              If you don't have the full OTD in writing, you do not know what the car costs. For a broader overview of what to expect, see the <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide to buying a new car</a>.
             </p>
             <p className="text-muted-foreground mb-10">
               Dealers often focus on the monthly payment. That hides fees. The OTD price is what protects you.
@@ -145,7 +137,7 @@ export default function OutTheDoorPrice() {
               ))}
             </ul>
             <p className="text-muted-foreground mb-8">
-              Many of these are optional — even when labeled "mandatory." Learn more about <Link href="/mandatory-dealer-add-ons" className="underline text-foreground">mandatory dealer add-ons</Link> and which ones you can decline.
+              Many of these are optional — even when labeled "mandatory." Learn more about <Link href="/mandatory-dealer-add-ons" className="underline text-foreground">mandatory dealer add-ons</Link> and which ones you can decline. Resources like <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds' breakdown of dealer fees</a> can help you identify common charges.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why Dealers Avoid Giving the OTD Price in Writing</h2>
@@ -164,7 +156,7 @@ export default function OutTheDoorPrice() {
               ))}
             </ul>
             <p className="text-muted-foreground mb-8">
-              Without a written OTD, numbers can shift in the finance office.
+              Without a written OTD, numbers can shift in the finance office. Use tools like <a href="https://www.kbb.com/car-advice/" target="_blank" rel="noopener" className="underline text-foreground">Kelley Blue Book</a> to compare fair pricing before you negotiate.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground flex items-center gap-2">

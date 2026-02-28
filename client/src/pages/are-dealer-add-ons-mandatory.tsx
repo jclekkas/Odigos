@@ -119,7 +119,7 @@ export default function AreDealerAddOnsMandatory() {
               <li>Market adjustment fees</li>
             </ul>
             <p className="text-muted-foreground mb-8">
-              These are not factory requirements. They are dealership profit items.
+              These are not factory requirements. They are dealership profit items. For a detailed breakdown, see <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds' dealer fee guide</a>.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Are Any Add-Ons Legally Required?</h2>
@@ -135,7 +135,7 @@ export default function AreDealerAddOnsMandatory() {
               But add-ons like protection packages, accessories, service contracts, and extended warranties are typically optional.
             </p>
             <p className="text-muted-foreground mb-8">
-              If a dealer claims something is legally required, ask: "Can you show me where that's required by state law?"
+              If a dealer claims something is legally required, ask: "Can you show me where that's required by state law?" The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's new car buying guide</a> is a helpful reference for understanding what fees are actually required.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why Dealers Say Add-Ons Are "Mandatory"</h2>
@@ -261,7 +261,7 @@ export default function AreDealerAddOnsMandatory() {
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to Review Add-Ons Before You Go In</h2>
             <p className="text-muted-foreground mb-8">
-              Ask for a full itemized out-the-door quote, review each line item, and compare across dealerships. Separate vehicle price from extras.
+              Ask for a full itemized out-the-door quote, review each line item, and compare across dealerships. Use <a href="https://www.kbb.com/car-advice/" target="_blank" rel="noopener" className="underline text-foreground">Kelley Blue Book</a> for price comparisons and separate vehicle price from extras.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">The Bottom Line</h2>

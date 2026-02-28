@@ -167,7 +167,7 @@ export default function DealerWontGiveOtdPrice() {
               In most states, yes. Dealers are not legally required to provide a written OTD quote by email.
             </p>
             <p className="text-muted-foreground mb-4">
-              However: once a number is agreed upon in writing, changing it later can become a deceptive practice issue depending on state law.
+              However: once a number is agreed upon in writing, changing it later can become a deceptive practice issue depending on state law. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's car buying guide</a> outlines key consumer rights worth reviewing before any negotiation.
             </p>
             <p className="text-muted-foreground mb-4">
               The bigger issue isn't legality. It's transparency.
@@ -266,7 +266,7 @@ export default function DealerWontGiveOtdPrice() {
               <li>Do not let them combine trade-in and vehicle price into one number</li>
             </ol>
             <p className="text-muted-foreground mb-8">
-              And most importantly: never agree verbally without seeing the full breakdown.
+              And most importantly: never agree verbally without seeing the full breakdown. Review <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds</a> to understand common fee structures before your visit.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why OTD Pricing Matters More Than Monthly Payments</h2>
@@ -282,7 +282,7 @@ export default function DealerWontGiveOtdPrice() {
               <li>Add-ons rolled into financing</li>
             </ul>
             <p className="text-muted-foreground mb-8">
-              OTD pricing forces transparency. Monthly payments obscure it.
+              OTD pricing forces transparency. Monthly payments obscure it. Use resources like <a href="https://www.kbb.com/car-advice/" target="_blank" rel="noopener" className="underline text-foreground">Kelley Blue Book</a> to compare total costs across vehicles before committing.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">When You Should Walk Away</h2>

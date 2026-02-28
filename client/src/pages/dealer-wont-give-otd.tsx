@@ -1,11 +1,16 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { setSeoMeta } from "@/lib/seo";
 import logoImage from "@assets/odigos_logo.png";
 
 export default function DealerWontGiveOtd() {
   useEffect(() => {
-    document.title = "Why Dealers Avoid Giving Out-the-Door Prices | Odigos";
+    return setSeoMeta({
+      title: "Why Dealers Avoid Giving Out-the-Door Prices | Odigos",
+      description: "Some dealers avoid giving out-the-door prices to keep pricing flexible. Learn why OTD transparency matters and how to request it before visiting.",
+      path: "/dealer-wont-give-otd",
+    });
   }, []);
 
   return (
@@ -27,7 +32,7 @@ export default function DealerWontGiveOtd() {
           
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">
-              Some dealers avoid giving out-the-door prices because it limits flexibility in pricing and add-ons.
+              Some dealers avoid giving out-the-door prices because it limits flexibility in pricing and add-ons. See <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds' breakdown of common dealer fees</a> to understand what may be included.
             </p>
             
             <p className="text-lg text-muted-foreground mb-6">
@@ -35,7 +40,7 @@ export default function DealerWontGiveOtd() {
             </p>
             
             <p className="text-lg text-muted-foreground mb-8">
-              Requesting the full out-the-door price in writing helps ensure transparency before you step inside the showroom.
+              Requesting the full out-the-door price in writing helps ensure transparency before you step inside the showroom. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for car buyers</a> recommends getting all costs upfront.
             </p>
           </div>
           

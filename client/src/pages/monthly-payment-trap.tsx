@@ -1,11 +1,16 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { setSeoMeta } from "@/lib/seo";
 import logoImage from "@assets/odigos_logo.png";
 
 export default function MonthlyPaymentTrap() {
   useEffect(() => {
-    document.title = "The Monthly Payment Trap in Car Buying | Odigos";
+    return setSeoMeta({
+      title: "The Monthly Payment Trap in Car Buying | Odigos",
+      description: "Monthly payment quotes hide extended loan terms, higher APRs, and dealer add-ons. Learn why the out-the-door price matters more than the monthly number.",
+      path: "/monthly-payment-trap",
+    });
   }, []);
 
   return (
@@ -37,7 +42,7 @@ export default function MonthlyPaymentTrap() {
             <ul className="space-y-2 mb-6 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span>extended loan terms</span>
+                <span><a href="https://consumer.ftc.gov/articles/auto-loans" target="_blank" rel="noopener" className="underline text-foreground">extended loan terms</a></span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
@@ -54,7 +59,7 @@ export default function MonthlyPaymentTrap() {
             </ul>
             
             <p className="text-lg text-muted-foreground mb-8">
-              Always request the full out-the-door price and financing terms before committing.
+              Always request the full out-the-door price and financing terms before committing. Use resources like <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds</a> to understand what fees to expect.
             </p>
           </div>
           

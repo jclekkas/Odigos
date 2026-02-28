@@ -2,23 +2,15 @@ import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import logoImage from "@assets/odigos_logo.png";
+import { setSeoMeta } from "@/lib/seo";
 
 export default function DealerDocFee() {
   useEffect(() => {
-    document.title = "Are Dealer Documentation Fees Legit? | Odigos";
-    let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
-    if (!meta) {
-      meta = document.createElement("meta");
-      meta.setAttribute("name", "description");
-      document.head.appendChild(meta);
-    }
-    meta.setAttribute("content", "Learn what dealer doc fees are, whether they're negotiable, how much is normal by state, and how to challenge inflated documentation fees before signing.");
-    return () => {
-      document.title = "Is This a Good Car Deal? | Odigos";
-      if (meta) {
-        meta.setAttribute("content", "Paste dealer texts or emails. Odigos flags what's missing, risky, or unclear before you go to the dealership.");
-      }
-    };
+    return setSeoMeta({
+      title: "Are Dealer Documentation Fees Legit? | Odigos",
+      description: "Learn what dealer doc fees are, whether they're negotiable, how much is normal by state, and how to challenge inflated documentation fees before signing.",
+      path: "/dealer-doc-fee",
+    });
   }, []);
 
   return (
@@ -50,7 +42,7 @@ export default function DealerDocFee() {
               A dealer documentation fee is a charge the dealership adds to cover the cost of preparing and processing the paperwork for your vehicle purchase. This includes title work, registration filing, contract preparation, and other administrative tasks.
             </p>
             <p className="text-muted-foreground mb-4">
-              The fee is not set by the government. It's set by the dealership. That means the amount varies widely from one dealer to another, even within the same city. Some dealers charge $150. Others charge $899. The paperwork involved is essentially the same.
+              The fee is not set by the government. It's set by the dealership. That means the amount varies widely from one dealer to another, even within the same city. Some dealers charge $150. Others charge $899. The paperwork involved is essentially the same. For a full overview of typical charges, see <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds' guide to dealership fees</a>.
             </p>
             <p className="text-muted-foreground mb-8">
               In most states, the doc fee must be disclosed on the buyer's order or purchase agreement. But many buyers don't notice it until they're sitting in the finance office, ready to sign.
@@ -86,7 +78,7 @@ export default function DealerDocFee() {
               </li>
             </ul>
             <p className="text-muted-foreground mb-8">
-              If a dealer in a no-cap state is charging $999, it's technically legal — but it's worth asking whether competitors nearby charge less. The fee should be part of your total deal comparison, not treated as a fixed cost.
+              If a dealer in a no-cap state is charging $999, it's technically legal — but it's worth asking whether competitors nearby charge less. You can also check <a href="https://www.kbb.com/car-advice/" target="_blank" rel="noopener" className="underline text-foreground">Kelley Blue Book</a> for regional pricing benchmarks. The fee should be part of your total deal comparison, not treated as a fixed cost.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Can You Negotiate a Doc Fee?</h2>
@@ -123,6 +115,9 @@ export default function DealerDocFee() {
                 <span>Dealer refuses to provide a written out-the-door price that includes the doc fee</span>
               </li>
             </ul>
+            <p className="text-muted-foreground mb-8">
+              If any of these sound familiar, review the <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for car buyers</a> to understand your rights before signing.
+            </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What To Say to Push Back</h2>
             <p className="text-muted-foreground mb-3">

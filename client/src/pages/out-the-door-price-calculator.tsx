@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import logoImage from "@assets/odigos_logo.png";
+import { setSeoMeta } from "@/lib/seo";
 
 const OTD_MESSAGE = `Hi, I'm interested in [YEAR MAKE MODEL TRIM]. Before I come in, could you send me the full out-the-door price in writing? I'd like to see the sale price, taxes, title/registration, doc fee, and any dealer-installed add-ons itemized separately. Thanks!`;
 
@@ -20,20 +21,11 @@ export default function OutTheDoorPriceCalculator() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    document.title = "Out-the-Door Price Calculator | Odigos";
-    let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
-    if (!meta) {
-      meta = document.createElement("meta");
-      meta.setAttribute("name", "description");
-      document.head.appendChild(meta);
-    }
-    meta.setAttribute("content", "Estimate your out-the-door (OTD) price and learn what calculators miss—doc fees, dealer add-ons, and hidden costs. Get a copy-paste message to request an itemized OTD quote.");
-    return () => {
-      document.title = "Is This a Good Car Deal? | Odigos";
-      if (meta) {
-        meta.setAttribute("content", "Paste dealer texts or emails. Odigos flags what's missing, risky, or unclear before you go to the dealership.");
-      }
-    };
+    return setSeoMeta({
+      title: "Out-the-Door Price Calculator | Odigos",
+      description: "Estimate your out-the-door (OTD) price and learn what calculators miss—doc fees, dealer add-ons, and hidden costs. Get a copy-paste message to request an itemized OTD quote.",
+      path: "/out-the-door-price-calculator",
+    });
   }, []);
 
   const handleCopy = async () => {
@@ -71,7 +63,7 @@ export default function OutTheDoorPriceCalculator() {
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-4">
-              The out-the-door price (OTD) is the total amount you pay to drive a car off the lot — sale price, taxes, registration, dealer fees, and any add-ons combined into one number. It's the only figure that tells you what a car actually costs.
+              The out-the-door price (OTD) is the total amount you pay to drive a car off the lot — sale price, taxes, registration, dealer fees, and any add-ons combined into one number. It's the only figure that tells you what a car actually costs. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's car buying guide</a> explains which fees are required and which are negotiable.
             </p>
             <p className="text-lg text-muted-foreground mb-10">
               Most online car price calculators estimate tax and registration but miss the fees that vary most: <Link href="/dealer-doc-fee" className="underline text-foreground">dealer documentation fees</Link>, <Link href="/mandatory-dealer-add-ons" className="underline text-foreground">mandatory add-ons</Link>, market adjustments, and F&I products. Those dealer-specific charges are often where hundreds or thousands of dollars hide.
@@ -79,7 +71,7 @@ export default function OutTheDoorPriceCalculator() {
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What an OTD Calculator Can (and Can't) Do</h2>
             <p className="text-muted-foreground mb-3">
-              A calculator can give you a ballpark. Here's what it handles well and where it falls short:
+              A calculator can give you a ballpark — but for fair market pricing, check <a href="https://www.kbb.com/car-advice/" target="_blank" rel="noopener" className="underline text-foreground">Kelley Blue Book</a> before you start. Here's what it handles well and where it falls short:
             </p>
             <p className="text-sm font-semibold text-foreground mb-2">What it can estimate:</p>
             <ul className="space-y-2 mb-6 text-muted-foreground">

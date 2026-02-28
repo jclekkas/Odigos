@@ -1,11 +1,16 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { setSeoMeta } from "@/lib/seo";
 import logoImage from "@assets/odigos_logo.png";
 
 export default function IsThisAGoodCarDeal() {
   useEffect(() => {
-    document.title = "Is This a Good Car Deal? How to Tell Before You Go | Odigos";
+    return setSeoMeta({
+      title: "Is This a Good Car Deal? How to Tell Before You Go | Odigos",
+      description: "Car deals can hide unnecessary fees, unfavorable financing, and inflated pricing. Learn what to look for before visiting the dealership.",
+      path: "/is-this-a-good-car-deal",
+    });
   }, []);
 
   return (
@@ -37,7 +42,7 @@ export default function IsThisAGoodCarDeal() {
             <ul className="space-y-2 mb-6 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span>unnecessary fees</span>
+                <span>unnecessary fees — check <a href="https://www.kbb.com/car-advice/" target="_blank" rel="noopener" className="underline text-foreground">Kelley Blue Book</a> to research fair vehicle pricing</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
@@ -54,7 +59,7 @@ export default function IsThisAGoodCarDeal() {
             </ul>
             
             <p className="text-lg text-muted-foreground mb-8">
-              Seeing everything in writing before visiting the dealership protects you from surprises.
+              Seeing everything in writing before visiting the dealership protects you from surprises. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's car buying guide</a> offers additional tips on what to verify.
             </p>
           </div>
           

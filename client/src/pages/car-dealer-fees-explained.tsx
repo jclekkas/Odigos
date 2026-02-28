@@ -1,11 +1,16 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { setSeoMeta } from "@/lib/seo";
 import logoImage from "@assets/odigos_logo.png";
 
 export default function CarDealerFeesExplained() {
   useEffect(() => {
-    document.title = "Common Car Dealer Fees Explained | Odigos";
+    return setSeoMeta({
+      title: "Common Car Dealer Fees Explained | Odigos",
+      description: "Understand common car dealer fees like doc fees, dealer services fees, and protection packages. Know which are required and which are optional before you sign.",
+      path: "/car-dealer-fees-explained",
+    });
   }, []);
 
   return (
@@ -37,7 +42,7 @@ export default function CarDealerFeesExplained() {
             <ul className="space-y-2 mb-6 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span>documentation fees</span>
+                <span><a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">documentation fees</a></span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
@@ -54,7 +59,7 @@ export default function CarDealerFeesExplained() {
             </ul>
             
             <p className="text-lg text-muted-foreground mb-8">
-              Understanding which fees are required versus optional helps you avoid overpaying.
+              Understanding which fees are required versus optional — as outlined in the <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's car buying guide</a> — helps you avoid overpaying.
             </p>
           </div>
           
