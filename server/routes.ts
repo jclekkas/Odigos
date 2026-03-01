@@ -619,5 +619,14 @@ GO/NO-GO/NEED-MORE-INFO:
     res.sendFile("sitemap.xml", { root: "." });
   });
 
+  app.get("/robots.txt", (_req, res) => {
+    res.type("text/plain");
+    res.send(
+`User-agent: *
+Allow: /
+Sitemap: https://odigos.replit.app/sitemap.xml`
+    );
+  });
+
   return httpServer;
 }
