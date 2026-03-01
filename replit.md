@@ -71,6 +71,12 @@ Note: The database is used for metrics tracking and optional features. The core 
 - **PostgreSQL**: Connection via `DATABASE_URL` environment variable
 - **Session Store**: `connect-pg-simple` for session persistence
 
+### Content Pages (SEO Articles)
+- All article pages follow a consistent pattern: `setSeoMeta` for meta tags/canonical, logo header linking to `/`, article body with dark theme styling, internal link to `/out-the-door-price`, one external link (FTC/Edmunds/KBB), CTA linking to `/analyze`, and footer disclaimer
+- **Pages**: `/out-the-door-price`, `/monthly-payment-trap`, `/is-this-a-good-car-deal`, `/dealer-wont-give-otd`, `/car-dealer-fees-explained`, `/dealer-doc-fee`, `/mandatory-dealer-add-ons`, `/out-the-door-price-calculator`, `/dealer-pricing-tactics`, `/dealer-wont-give-otd-price`, `/are-dealer-add-ons-mandatory`, `/dealer-added-fees-after-agreement`, `/market-adjustment-fee`, `/doc-fee-too-high`, `/dealer-changed-price-after-deposit`, `/finance-office-changed-the-numbers`
+- **Sitemap**: `sitemap.xml` (18 URLs, excludes `/guides` redirect and `/admin/metrics`)
+- **robots.txt**: Served via explicit Express route in `server/routes.ts`
+
 ### Prerendering (SEO)
 - **Tool**: `puppeteer-core` + system Chromium via `scripts/prerender.mjs`
 - **Meta Tags**: `react-helmet-async` renders title/description/OG/Twitter/canonical at render time (not useEffect)

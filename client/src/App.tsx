@@ -16,6 +16,11 @@ import OutTheDoorPriceCalculator from "@/pages/out-the-door-price-calculator";
 import DealerPricingTactics from "@/pages/dealer-pricing-tactics";
 import DealerWontGiveOtdPrice from "@/pages/dealer-wont-give-otd-price";
 import AreDealerAddOnsMandatory from "@/pages/are-dealer-add-ons-mandatory";
+import DealerAddedFeesAfterAgreement from "@/pages/dealer-added-fees-after-agreement";
+import MarketAdjustmentFee from "@/pages/market-adjustment-fee";
+import DocFeeTooHigh from "@/pages/doc-fee-too-high";
+import DealerChangedPriceAfterDeposit from "@/pages/dealer-changed-price-after-deposit";
+import FinanceOfficeChangedTheNumbers from "@/pages/finance-office-changed-the-numbers";
 import GuidesRedirect from "@/pages/guides-redirect";
 import AdminMetrics from "@/pages/admin-metrics";
 import NotFound from "@/pages/not-found";
@@ -36,6 +41,11 @@ function Router() {
       <Route path="/dealer-pricing-tactics" component={DealerPricingTactics} />
       <Route path="/dealer-wont-give-otd-price" component={DealerWontGiveOtdPrice} />
       <Route path="/are-dealer-add-ons-mandatory" component={AreDealerAddOnsMandatory} />
+      <Route path="/dealer-added-fees-after-agreement" component={DealerAddedFeesAfterAgreement} />
+      <Route path="/market-adjustment-fee" component={MarketAdjustmentFee} />
+      <Route path="/doc-fee-too-high" component={DocFeeTooHigh} />
+      <Route path="/dealer-changed-price-after-deposit" component={DealerChangedPriceAfterDeposit} />
+      <Route path="/finance-office-changed-the-numbers" component={FinanceOfficeChangedTheNumbers} />
       <Route path="/guides" component={GuidesRedirect} />
       <Route path="/admin/metrics" component={AdminMetrics} />
       <Route component={NotFound} />
