@@ -8,7 +8,7 @@ export default function CarDealerFeesExplained() {
   useEffect(() => {
     return setSeoMeta({
       title: "Common Car Dealer Fees Explained | Odigos",
-      description: "Understand common car dealer fees like doc fees, dealer services fees, and protection packages. Know which are required and which are optional before you sign.",
+      description: "When you buy a car, the sale price is only part of what you pay. Learn which dealer fees are required, which are optional, and how to protect yourself before signing.",
       path: "/car-dealer-fees-explained",
     });
   }, []);
@@ -27,41 +27,76 @@ export default function CarDealerFeesExplained() {
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-fees-headline">
-            Common car dealer fees you should understand
+            Common Car Dealer Fees Explained: What You Should (and Shouldn't) Pay
           </h1>
           
-          <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-lg text-muted-foreground mb-6">
-              Dealer fees can vary widely and are often poorly explained.
-            </p>
-            
-            <p className="text-lg text-muted-foreground mb-4">
-              Common examples include:
-            </p>
-            
-            <ul className="space-y-2 mb-6 text-muted-foreground">
-              <li className="flex items-start gap-2">
-                <span className="text-muted-foreground">•</span>
-                <span><a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">documentation fees</a></span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-muted-foreground">•</span>
-                <span>dealer services fees</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-muted-foreground">•</span>
-                <span>protection or appearance packages</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-muted-foreground">•</span>
-                <span>administrative add-ons</span>
-              </li>
-            </ul>
-            
-            <p className="text-lg text-muted-foreground mb-8">
-              Understanding which fees are required versus optional — as outlined in the <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's car buying guide</a> — helps you avoid overpaying.
-            </p>
-          </div>
+          <p className="text-lg text-muted-foreground mb-6">
+            When you buy a car, the sale price is only part of what you'll pay. Dealers add a range of fees — some required by law, others entirely optional, even when they're not presented that way. Knowing the difference can save you hundreds or thousands.
+          </p>
+
+          <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Fees you should expect to pay</h2>
+
+          <p className="text-muted-foreground mb-4">
+            Certain charges are unavoidable because they're set or collected by government agencies. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for new car buyers</a> outlines what dealers are legally required to disclose, and these fees are part of that picture.
+          </p>
+
+          <ul className="space-y-2 mb-6 text-muted-foreground">
+            <li className="flex items-start gap-2">
+              <span className="text-muted-foreground">•</span>
+              <span><strong className="text-foreground">Sales tax</strong> — set by your state and local government, not negotiable. The rate depends on where you live, not where the dealership is located.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-muted-foreground">•</span>
+              <span><strong className="text-foreground">Title and registration</strong> — government fees that typically range from $100 to $500 depending on your state. These go directly to your DMV or equivalent agency.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-muted-foreground">•</span>
+              <span><strong className="text-foreground">Dealer documentation fees</strong> — these cover the cost of processing paperwork and vary widely. Some states cap them at relatively low amounts, while others have no cap at all and you might see charges of $500 or more. It's worth checking what's typical in your area before negotiating.</span>
+            </li>
+          </ul>
+
+          <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Fees that are often negotiable or optional</h2>
+
+          <p className="text-muted-foreground mb-4">
+            Many line items on a dealer's worksheet are add-ons, not requirements. According to <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds</a>, buyers can often push back on these charges — or decline them entirely.
+          </p>
+
+          <ul className="space-y-2 mb-6 text-muted-foreground">
+            <li className="flex items-start gap-2">
+              <span className="text-muted-foreground">•</span>
+              <span><strong className="text-foreground">Dealer prep / reconditioning fees</strong> — these cover tasks like washing and inspecting the vehicle, which are often already included in the MSRP. Paying extra for them is rarely justified.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-muted-foreground">•</span>
+              <span><strong className="text-foreground">Paint or fabric protection</strong> — the dealer's cost is usually $50 to $100, but it's commonly marked up to $500–$1,500. Aftermarket alternatives are widely available for far less.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-muted-foreground">•</span>
+              <span><strong className="text-foreground">VIN etching</strong> — DIY kits cost $20–$30, yet dealers charge $200–$400 for the same service. It's a valid theft deterrent, but not at that markup.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-muted-foreground">•</span>
+              <span><strong className="text-foreground">Nitrogen-filled tires</strong> — the benefit for everyday driving is negligible. Many tire shops offer nitrogen fills for free, so paying a dealership for it rarely makes sense.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-muted-foreground">•</span>
+              <span><strong className="text-foreground">Market adjustment / ADM</strong> — this is pure dealer profit added on top of MSRP. It's always negotiable, especially when inventory is available and demand has cooled.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-muted-foreground">•</span>
+              <span><strong className="text-foreground">Extended warranties</strong> — these can usually be purchased later from third-party providers for significantly less than what the dealer charges at signing.</span>
+            </li>
+          </ul>
+
+          <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to protect yourself</h2>
+
+          <p className="text-muted-foreground mb-6">
+            The simplest defense is requesting the full <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> in writing before you visit the dealership. An itemized OTD quote shows every dollar — taxes, fees, and add-ons — and makes it straightforward to spot optional charges and negotiate them out before you're sitting in the finance office.
+          </p>
+
+          <p className="text-muted-foreground mb-8">
+            If a dealer won't provide an itemized breakdown, that's worth treating as a signal. Transparent pricing shouldn't be hard to get.
+          </p>
           
           <div className="mt-12 pt-8 border-t border-border">
             <p className="text-muted-foreground mb-4">

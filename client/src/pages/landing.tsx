@@ -1,11 +1,33 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
+import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Check, CheckCircle2 } from "lucide-react";
+import { Check, CheckCircle2, ChevronDown } from "lucide-react";
 import { trackPageView, trackCtaClick } from "@/lib/tracking";
 
+const faqs = [
+  {
+    q: "What is an out-the-door price?",
+    a: "The total cost to purchase a vehicle — sale price, sales tax, title, registration, doc fees, and any add-ons. It's the check you'd write to leave with the car today.",
+  },
+  {
+    q: "Why won't the dealer give me an OTD price?",
+    a: "Some dealers prefer to negotiate around monthly payments because it gives them more flexibility to adjust terms and fees. Requesting the OTD in writing forces transparency.",
+  },
+  {
+    q: "Is Odigos free?",
+    a: "The preview is free and gives you a Green/Yellow/Red verdict with a deal score. The full analysis with red flags, missing info checklist, and a copy-paste dealer reply is $49 one-time. No subscriptions.",
+  },
+  {
+    q: "Do you store my messages?",
+    a: "No. Messages are analyzed in real time and are not stored.",
+  },
+];
+
 export default function Landing() {
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
   useEffect(() => {
     trackPageView("/");
   }, []);
@@ -97,6 +119,17 @@ export default function Landing() {
           </div>
         </section>
 
+        <section className="py-12 px-6">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-xl md:text-2xl font-bold mb-4 text-center" data-testid="text-otd-explainer-heading">
+              What is an out-the-door price?
+            </h2>
+            <p className="text-base text-muted-foreground leading-relaxed">
+              The out-the-door price (OTD) is the total amount you'll pay to leave the dealership with the keys — including sale price, tax, title, registration, doc fees, and any add-ons. It's the only number that tells you what the car actually costs. Dealers often focus on the monthly payment instead, which can hide longer loan terms, higher rates, and fees you never agreed to. Odigos analyzes the quote you already have and tells you what's missing.
+            </p>
+          </div>
+        </section>
+
         <section className="py-16 px-6 bg-muted/30">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
@@ -159,6 +192,17 @@ export default function Landing() {
                 </p>
               </CardContent>
             </Card>
+          </div>
+        </section>
+
+        <section className="py-12 px-6">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-xl md:text-2xl font-bold mb-4" data-testid="text-built-for-heading">
+              Built for real car buyers
+            </h2>
+            <p className="text-base text-muted-foreground leading-relaxed">
+              We don't sell cars. We don't work with dealerships. We don't take referral fees. Odigos is an independent tool that works entirely from the messages you already have. No account required. No data stored. Just clarity before you sign.
+            </p>
           </div>
         </section>
 
@@ -246,6 +290,48 @@ export default function Landing() {
             <p className="text-center text-sm text-muted-foreground mt-4">
               No subscription. No upsells. One-time purchase per analysis.
             </p>
+          </div>
+        </section>
+
+        <section className="py-16 px-6">
+          <Helmet>
+            <script type="application/ld+json">{JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": faqs.map((faq) => ({
+                "@type": "Question",
+                "name": faq.q,
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": faq.a,
+                },
+              })),
+            })}</script>
+          </Helmet>
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center" data-testid="text-faq-heading">
+              Common questions
+            </h2>
+            <div className="space-y-2">
+              {faqs.map((faq, idx) => (
+                <div key={idx} className="border border-border rounded-lg overflow-hidden">
+                  <button
+                    type="button"
+                    className="w-full flex items-center justify-between px-5 py-4 text-left"
+                    onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                    data-testid={`button-faq-${idx}`}
+                  >
+                    <span className="text-sm font-medium text-foreground">{faq.q}</span>
+                    <ChevronDown className={`w-4 h-4 text-muted-foreground shrink-0 ml-4 transition-transform ${openFaq === idx ? "rotate-180" : ""}`} />
+                  </button>
+                  {openFaq === idx && (
+                    <div className="px-5 pb-4">
+                      <p className="text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
