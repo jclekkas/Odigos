@@ -22,6 +22,10 @@ import DocFeeTooHigh from "@/pages/doc-fee-too-high";
 import DealerChangedPriceAfterDeposit from "@/pages/dealer-changed-price-after-deposit";
 import FinanceOfficeChangedTheNumbers from "@/pages/finance-office-changed-the-numbers";
 import CarDealerFeesByState from "@/pages/car-dealer-fees-by-state";
+import DealerAddOnsList from "@/pages/dealer-add-ons-list";
+import DealerDocFeeByState from "@/pages/dealer-doc-fee-by-state";
+import CarDealerFeesList from "@/pages/car-dealer-fees-list";
+import CalculateOutTheDoorPrice from "@/pages/calculate-out-the-door-price";
 import GuidesRedirect from "@/pages/guides-redirect";
 import AdminMetrics from "@/pages/admin-metrics";
 import NotFound from "@/pages/not-found";
@@ -48,6 +52,10 @@ function Router() {
       <Route path="/dealer-changed-price-after-deposit" component={DealerChangedPriceAfterDeposit} />
       <Route path="/finance-office-changed-the-numbers" component={FinanceOfficeChangedTheNumbers} />
       <Route path="/car-dealer-fees-by-state" component={CarDealerFeesByState} />
+      <Route path="/dealer-add-ons-list" component={DealerAddOnsList} />
+      <Route path="/dealer-doc-fee-by-state" component={DealerDocFeeByState} />
+      <Route path="/car-dealer-fees-list" component={CarDealerFeesList} />
+      <Route path="/calculate-out-the-door-price" component={CalculateOutTheDoorPrice} />
       <Route path="/guides" component={GuidesRedirect} />
       <Route path="/admin/metrics" component={AdminMetrics} />
       <Route component={NotFound} />
