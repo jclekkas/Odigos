@@ -244,6 +244,21 @@ export default function OutTheDoorPrice() {
               You can try our <Link href="/out-the-door-price-calculator" className="underline text-foreground">out-the-door price calculator</Link> to get a baseline estimate before contacting a dealer.
             </p>
             <p className="text-muted-foreground mb-8">Just remember: calculators don't reveal hidden add-ons.</p>
+
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Related Guides</h2>
+            <p className="text-muted-foreground mb-4">
+              If you're trying to understand dealership pricing tactics and hidden charges, these guides explain the most common situations buyers run into.
+            </p>
+            <ul className="space-y-2 mb-8 text-muted-foreground">
+              <li><Link href="/doc-fee-too-high" className="underline text-foreground">Dealer Doc Fee Too High? What You Can Actually Do</Link></li>
+              <li><Link href="/market-adjustment-fee" className="underline text-foreground">Market Adjustment Fees Explained: Can Dealers Charge Them?</Link></li>
+              <li><Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">Are Dealer Add-Ons Mandatory? What You Can Actually Refuse</Link></li>
+              <li><Link href="/dealer-added-fees-after-agreement" className="underline text-foreground">Dealer Added Fees After Agreement? What to Do Next</Link></li>
+              <li><Link href="/dealer-changed-price-after-deposit" className="underline text-foreground">Dealer Changed the Price After Your Deposit? What It Means</Link></li>
+              <li><Link href="/finance-office-changed-the-numbers" className="underline text-foreground">Why the Finance Office Numbers Look Different</Link></li>
+              <li><Link href="/monthly-payment-trap" className="underline text-foreground">The Monthly Payment Trap in Car Buying</Link></li>
+              <li><Link href="/dealer-wont-give-otd-price" className="underline text-foreground">Dealer Won't Give You an Out-the-Door Price? Here's Why</Link></li>
+            </ul>
           </div>
 
           <div className="mt-12 pt-8 border-t border-border">
