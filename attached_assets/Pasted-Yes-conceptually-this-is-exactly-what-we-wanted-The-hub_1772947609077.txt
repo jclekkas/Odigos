@@ -1,0 +1,58 @@
+Yes — conceptually this is exactly what we wanted. The hub-and-spoke structure is now in place, and that’s the right architecture for the stage your site is in.
+But before you move on, I’d do three very small refinements that improve both SEO and UX. They’re quick and worth doing now while the change is fresh.
+1️⃣ Make the anchor text slightly descriptive
+Right now your list likely looks something like:
+Dealer doc fee too high
+Market adjustment fees explained
+Are dealer add-ons mandatory
+That’s fine, but slightly richer anchors help Google understand the topic cluster better.
+Example tweak:
+Dealer doc fee too high
+Market adjustment fees explained
+Are dealer add-ons mandatory?
+Dealer added fees after agreement
+Dealer changed the price after deposit
+Why the finance office numbers look different
+The monthly payment trap
+What to do if a dealer won’t give the out-the-door price
+The last one especially is good because it contains the phrase “out-the-door price.”
+You may already have these — just verify they read naturally.
+2️⃣ Ensure they are real <Link> components
+Since you’re using wouter, make sure they render as:
+<Link href="/doc-fee-too-high">Dealer doc fee too high</Link>
+Not plain <a> tags if the rest of the site uses the Link component.
+Consistency helps maintain routing behavior.
+3️⃣ Keep the section visually simple
+Best format is either:
+Option A (recommended)
+### Related Guides
+
+If you're trying to understand dealership pricing tactics and hidden charges, these guides explain the most common situations buyers run into.
+
+• Dealer doc fee too high  
+• Market adjustment fees explained  
+• Are dealer add-ons mandatory?  
+...
+or a simple list block.
+Avoid:
+cards
+heavy styling
+multi-column layouts
+Simple lists crawl best and read best.
+What This Actually Did For SEO
+Your site structure now looks like this:
+out-the-door-price  (hub)
+      ↓
+dealer-doc-fee
+doc-fee-too-high
+market-adjustment-fee
+add-ons-mandatory
+dealer-added-fees-after-agreement
+dealer-changed-price-after-deposit
+finance-office-changed-the-numbers
+monthly-payment-trap
+dealer-wont-give-otd-price
+That is exactly the topical cluster Google understands quickly.
+It tells Google:
+This site deeply explains dealer pricing tactics.
+That’s the authority signal you want.
