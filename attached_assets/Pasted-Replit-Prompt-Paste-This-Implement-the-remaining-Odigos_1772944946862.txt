@@ -1,0 +1,125 @@
+Replit Prompt (Paste This)
+Implement the remaining Odigos crisis pages and apply one conversion improvement across all guide pages.
+Do not redesign anything.
+Do not rewrite existing approved pages except where specified.
+Keep the current dark theme, layout, CTA block, navigation, footer, and tone consistent.
+All new pages should follow the same structure and patterns used in the already-approved pages:
+/dealer-added-fees-after-agreement
+/are-dealer-add-ons-mandatory
+Use the same components, copy-template card style, internal linking style, and CTA pattern.
+PART 1 — Create Remaining Crisis Pages
+Create the following pages if they do not already exist.
+Each page should include:
+H1
+intro
+explanation of the situation
+what dealers are doing strategically
+what the buyer should say (copy-paste template with copy button)
+what to do if the dealer refuses
+internal links
+1 contextual outbound link (FTC or Edmunds)
+existing bottom CTA:
+"Already have a dealer quote? Find out if it's a good deal. Paste your dealer message → Analyze"
+Use calm, practical Odigos voice.
+Target length: 900–1,200 words.
+Page 1
+Route:
+/doc-fee-too-high
+H1:
+Dealer Doc Fee Too High? What You Can Actually Do
+Angle:
+Buyer believes the documentation fee is excessive and wants to know their options.
+Internal links:
+/dealer-doc-fee
+/out-the-door-price
+Outbound link:
+FTC or Edmunds explanation of dealer fees.
+Page 2
+Route:
+/market-adjustment-fee
+H1:
+Market Adjustment Fees Explained: Can Dealers Charge Them?
+Angle:
+Explain ADM / market adjustment pricing and what leverage buyers still have.
+Internal links:
+/out-the-door-price
+/are-dealer-add-ons-mandatory
+Outbound link:
+Edmunds or FTC explanation of dealer pricing practices.
+Page 3
+Route:
+/dealer-changed-price-after-deposit
+H1:
+Dealer Changed the Price After Your Deposit? What It Means
+Angle:
+Focus on buyers who placed a deposit and later see the numbers change.
+Internal links:
+/dealer-added-fees-after-agreement
+/out-the-door-price
+Outbound link:
+FTC consumer guide about car buying contracts.
+Page 4
+Route:
+/finance-office-changed-the-numbers
+H1:
+Why the Finance Office Numbers Look Different
+Angle:
+Explain how numbers sometimes change in the F&I office and what buyers should verify.
+Internal links:
+/monthly-payment-trap
+/out-the-door-price
+Outbound link:
+FTC or Edmunds finance explanation.
+PART 2 — Conversion Improvement
+Add a single early CTA line near the top of all guide pages.
+Insert the following sentence immediately after the intro section of each guide page:
+Already have a dealer quote? Paste it here and see if anything is missing.
+Link “Paste it here” to the existing analyze route.
+Do not place this above the H1.
+Do not remove the existing bottom CTA.
+Apply this to all article-style pages including:
+/out-the-door-price
+/car-dealer-fees-explained
+/monthly-payment-trap
+/dealer-wont-give-otd-price
+/dealer-added-fees-after-agreement
+/are-dealer-add-ons-mandatory
+/dealer-doc-fee
+/doc-fee-too-high
+/market-adjustment-fee
+/dealer-changed-price-after-deposit
+/finance-office-changed-the-numbers
+Style this as a simple inline sentence or subtle callout consistent with existing typography.
+PART 3 — Internal Linking
+Ensure all new pages link naturally to:
+/out-the-door-price
+at least one related crisis page
+Do not cluster links at the end.
+Place them inside body copy where relevant.
+PART 4 — SEO Requirements
+For each page:
+unique meta title
+unique meta description
+canonical preserved
+no schema duplication
+same SEO meta system currently used (setSeoMeta)
+PART 5 — Verification
+After implementation confirm:
+All new routes render correctly.
+Early CTA line appears once per guide page after the intro.
+Internal links resolve correctly.
+Bottom CTA remains unchanged.
+Styling matches existing guide pages.
+Why This Is the Right Move
+You are now building a topical authority cluster:
+OTD
+ ├ dealer fees
+ │   ├ dealer doc fee
+ │   ├ doc fee too high
+ │   ├ market adjustment
+ │   └ add-ons mandatory
+ ├ pricing manipulation
+ │   ├ dealer added fees after agreement
+ │   ├ finance office changed numbers
+ │   └ monthly payment trap
+Google understands clusters like this very quickly.
