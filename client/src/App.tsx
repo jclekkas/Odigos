@@ -21,6 +21,7 @@ import MarketAdjustmentFee from "@/pages/market-adjustment-fee";
 import DocFeeTooHigh from "@/pages/doc-fee-too-high";
 import DealerChangedPriceAfterDeposit from "@/pages/dealer-changed-price-after-deposit";
 import FinanceOfficeChangedTheNumbers from "@/pages/finance-office-changed-the-numbers";
+import CarDealerFeesByState from "@/pages/car-dealer-fees-by-state";
 import GuidesRedirect from "@/pages/guides-redirect";
 import AdminMetrics from "@/pages/admin-metrics";
 import NotFound from "@/pages/not-found";
@@ -46,6 +47,7 @@ function Router() {
       <Route path="/doc-fee-too-high" component={DocFeeTooHigh} />
       <Route path="/dealer-changed-price-after-deposit" component={DealerChangedPriceAfterDeposit} />
       <Route path="/finance-office-changed-the-numbers" component={FinanceOfficeChangedTheNumbers} />
+      <Route path="/car-dealer-fees-by-state" component={CarDealerFeesByState} />
       <Route path="/guides" component={GuidesRedirect} />
       <Route path="/admin/metrics" component={AdminMetrics} />
       <Route component={NotFound} />
