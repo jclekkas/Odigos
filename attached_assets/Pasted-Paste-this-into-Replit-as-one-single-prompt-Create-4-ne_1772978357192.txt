@@ -1,0 +1,436 @@
+Paste this into Replit as one single prompt:
+
+⸻
+
+Create 4 new SEO guide pages for Odigos that expand query coverage beyond crisis pages. These should follow the exact same design, layout, dark theme, typography, CTA pattern, and SEO implementation used on existing guide pages like:
+	•	/car-dealer-fees-by-state
+	•	/car-dealer-fees-explained
+	•	/dealer-doc-fee
+	•	/doc-fee-too-high
+
+Use the same:
+	•	setSeoMeta
+	•	header/footer pattern
+	•	early CTA line after intro
+	•	bottom CTA
+	•	copy-button card pattern where relevant
+	•	<Link> component for internal links
+
+Do not redesign anything.
+
+These pages are meant to expand Odigos’s query surface and link naturally into the existing cluster.
+
+⸻
+
+PAGE 1
+
+Route
+
+/dealer-add-ons-list
+
+H1
+
+Dealer Add-Ons List: What Dealers Try to Sell and What You Can Refuse
+
+Meta title
+
+Dealer Add-Ons List: Common Dealer Extras and What’s Optional | Odigos
+
+Meta description
+
+See the most common dealer add-ons, what they cost, which ones are optional, and how to ask for the full out-the-door price before you visit.
+
+Page goals
+
+Create a high-surface-area explainer page targeting searches like:
+	•	dealer add ons list
+	•	car dealer add ons
+	•	common dealer add ons
+	•	what add ons do dealers sell
+	•	are dealer add ons mandatory
+
+Structure
+
+Include:
+
+Intro
+
+Explain that many buyers are shown dealer-installed extras without a clear explanation of which are optional.
+
+Immediately after the intro, include the standard early CTA line:
+
+Already have a dealer quote? Paste it here and see if anything is missing.
+
+Link “Paste it here” to /analyze.
+
+Section: Common dealer add-ons
+
+Create a clean list/table of common add-ons such as:
+	•	paint protection
+	•	fabric protection
+	•	VIN etching
+	•	nitrogen-filled tires
+	•	wheel locks
+	•	theft recovery systems
+	•	appearance packages
+	•	tint
+	•	LoJack / tracking systems
+	•	tire and wheel protection
+	•	key replacement protection
+
+Section: Which add-ons are actually optional
+
+Clarify that most dealer add-ons are not legally required even if framed as mandatory.
+
+Section: What these add-ons usually cost
+
+Give typical ranges, clearly framed as approximate.
+
+Section: What to say if you don’t want them
+
+Add a copy-paste template in the same Card + copy-button style used elsewhere.
+
+Use this wording:
+
+“Please send the full out-the-door price with all dealer-installed products itemized separately. If any add-ons are included, let me know which are optional and whether the selling price can be adjusted if I decline them.”
+
+Section: How Odigos helps
+
+Explain that Odigos can analyze the wording in dealer quotes and highlight add-ons that are unclear or overpriced.
+
+Internal links
+
+Include natural internal links to:
+	•	/are-dealer-add-ons-mandatory
+	•	/out-the-door-price
+	•	/car-dealer-fees-explained
+
+Outbound link
+
+Include exactly 1 contextual outbound link to FTC or Edmunds, using target="_blank" and rel="noopener".
+
+Bottom CTA
+
+Keep the standard existing bottom CTA unchanged.
+
+⸻
+
+PAGE 2
+
+Route
+
+/dealer-doc-fee-by-state
+
+H1
+
+Dealer Doc Fee by State: What Buyers Should Expect
+
+Meta title
+
+Dealer Doc Fee by State: Typical Ranges and Fee Caps | Odigos
+
+Meta description
+
+Dealer documentation fees vary widely by state. See typical doc fee ranges, where caps are lower, and how to compare the real out-the-door price.
+
+Page goals
+
+Create a more search-targeted doc fee page for queries like:
+	•	dealer doc fee by state
+	•	dealer doc fee california
+	•	dealer doc fee florida
+	•	dealer doc fee texas
+	•	dealer doc fee new york
+
+This page should be distinct from /car-dealer-fees-by-state by being specifically centered on documentation fees, not all dealer fees.
+
+Structure
+
+Include:
+
+Intro
+
+Explain that doc fees vary more than most buyers expect and are one of the most confusing charges in dealership pricing.
+
+Add the standard early CTA line after the intro.
+
+Section: Why doc fees vary by state
+
+Explain caps, lack of caps, dealer practices, and why this fee creates confusion.
+
+Section: Typical dealer doc fee ranges by state
+
+Create a larger state table than the broader fees page. Include at least 25–30 states. Approximate ranges are fine. Make clear they are informational and can change.
+
+Include examples like:
+	•	California
+	•	Florida
+	•	Texas
+	•	New York
+	•	Illinois
+	•	Pennsylvania
+	•	Ohio
+	•	Georgia
+	•	North Carolina
+	•	Arizona
+	•	Virginia
+	•	New Jersey
+	•	Massachusetts
+	•	Colorado
+	•	Tennessee
+	•	Nevada
+	•	etc.
+
+Section: What if the doc fee seems too high?
+
+Explain practical steps:
+	•	compare OTD, not just fee line items
+	•	ask whether the vehicle price can be reduced
+	•	compare multiple dealers
+
+Section: Copy-paste template
+
+Use a copy-button card with wording like:
+
+“Before I come in, could you send the full out-the-door price including the vehicle price, taxes, registration, doc fee, and any dealer add-ons? I’m comparing total pricing across multiple dealers.”
+
+Section: How to compare dealers correctly
+
+Reinforce that OTD matters more than the doc fee alone.
+
+Internal links
+
+Include natural links to:
+	•	/dealer-doc-fee
+	•	/doc-fee-too-high
+	•	/out-the-door-price
+	•	/car-dealer-fees-by-state
+
+Outbound link
+
+Exactly 1 FTC or Edmunds link.
+
+Bottom CTA
+
+Keep standard CTA unchanged.
+
+⸻
+
+PAGE 3
+
+Route
+
+/car-dealer-fees-list
+
+H1
+
+Car Dealer Fees List: Common Charges Explained
+
+Meta title
+
+Car Dealer Fees List: Common Dealer Charges and What They Mean | Odigos
+
+Meta description
+
+See the most common car dealer fees, which charges are normal, which are optional, and how to compare the true out-the-door price.
+
+Page goals
+
+Target broad comparison/search queries like:
+	•	car dealer fees list
+	•	common car dealer fees
+	•	what fees do car dealers charge
+	•	dealer fees explained
+
+This should be distinct from /car-dealer-fees-explained by acting more like a comprehensive list / glossary-style page.
+
+Structure
+
+Include:
+
+Intro
+
+Explain that dealership pricing often includes multiple fee lines and buyers need to know which are standard vs questionable.
+
+Add the standard early CTA line after the intro.
+
+Section: Common dealer fees list
+
+Create a clean structured list/table including:
+	•	sales tax
+	•	title fee
+	•	registration fee
+	•	dealer doc fee
+	•	market adjustment
+	•	dealer prep
+	•	reconditioning
+	•	VIN etching
+	•	nitrogen tires
+	•	theft protection
+	•	paint/fabric protection
+	•	extended warranty
+	•	GAP
+	•	appearance package
+
+Section: Which fees are normal
+
+Explain government fees and doc fees.
+
+Section: Which fees deserve questions
+
+Explain optional products and vague dealer charges.
+
+Section: How to compare fees correctly
+
+Point buyers back to total OTD.
+
+Section: Copy-paste message
+
+Use a copy-button card with a practical script asking for an itemized OTD.
+
+Internal links
+
+Include natural links to:
+	•	/car-dealer-fees-explained
+	•	/dealer-doc-fee
+	•	/market-adjustment-fee
+	•	/out-the-door-price
+
+Outbound link
+
+Exactly 1 FTC or Edmunds link.
+
+Bottom CTA
+
+Keep standard CTA unchanged.
+
+⸻
+
+PAGE 4
+
+Route
+
+/calculate-out-the-door-price
+
+H1
+
+How to Calculate Out-the-Door Price on a Car
+
+Meta title
+
+How to Calculate Out-the-Door Price on a Car | Odigos
+
+Meta description
+
+Learn how to calculate the out-the-door price on a car, including taxes, registration, doc fees, and dealer add-ons.
+
+Page goals
+
+Target queries like:
+	•	calculate out the door price
+	•	how to calculate out the door price
+	•	otd price calculator
+	•	car out the door price calculator
+
+This is a guide/explainer page, not an interactive calculator build.
+
+Structure
+
+Include:
+
+Intro
+
+Explain that many buyers know the sale price but still do not know the true OTD because fees and add-ons are added later.
+
+Add the standard early CTA line after the intro.
+
+Section: OTD formula
+
+Show a simple breakdown:
+
+Vehicle price
+	•	sales tax
+	•	title and registration
+	•	dealer doc fee
+	•	dealer add-ons
+= out-the-door price
+
+Section: Step-by-step how to calculate it
+
+Walk through the process.
+
+Section: What usually gets left out
+
+Explain common missing items:
+	•	add-ons
+	•	accessories
+	•	protection packages
+	•	inflated dealer fees
+
+Section: Example calculation
+
+Give a realistic example with sample math.
+
+Section: What to ask the dealer
+
+Use a copy-paste template in the card + copy-button pattern.
+
+Suggested wording:
+
+“Before I visit, please send the full out-the-door price in writing, including sale price, taxes, title and registration, doc fee, and any dealer-installed add-ons.”
+
+Section: Why Odigos helps
+
+Explain that Odigos can analyze the quote and identify what may be missing from the dealer’s number.
+
+Internal links
+
+Include natural links to:
+	•	/out-the-door-price
+	•	/dealer-wont-give-otd-price
+	•	/car-dealer-fees-explained
+
+Outbound link
+
+Exactly 1 FTC or Edmunds link.
+
+Bottom CTA
+
+Keep standard CTA unchanged.
+
+⸻
+
+IMPLEMENTATION REQUIREMENTS
+
+For all 4 pages:
+	1.	Use the existing guide-page pattern already used across the site.
+	2.	Use setSeoMeta for title, description, and canonical path.
+	3.	Add each route to App.tsx.
+	4.	Add each URL to sitemap.xml.
+	5.	Add each page to the /out-the-door-price Related Guides section.
+	6.	Keep styling consistent with the rest of the site.
+	7.	Use <Link> for internal links.
+	8.	Use only 1 outbound link per page.
+	9.	Make sure the early CTA appears exactly once after the intro.
+	10.	Keep the existing bottom CTA unchanged.
+
+⸻
+
+VERIFICATION
+
+After implementation, confirm:
+	1.	All 4 routes render correctly.
+	2.	All 4 are in the sitemap.
+	3.	The early CTA appears once on each page after the intro.
+	4.	All internal links resolve correctly.
+	5.	The new links appear in /out-the-door-price Related Guides.
+	6.	Mobile layout works, especially tables.
+	7.	No existing pages were unnecessarily rewritten.
+
+⸻
+
+These pages should expand Odigos from crisis-intent coverage into broader high-surface-area search coverage while still funneling users back to the OTD and dealer-fee cluster.
+
+⸻
+
+After Replit finishes, paste me the implementation summary and I’ll QA the batch.
