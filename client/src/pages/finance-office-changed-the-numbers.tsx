@@ -1,17 +1,40 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import logoImage from "@assets/odigos_logo.png";
 
+const FINANCE_OFFICE_MESSAGE = `Hi — before I sign, I need a line-by-line breakdown of the final numbers compared to the price we agreed on. Please list the vehicle price, every fee, every add-on product, the interest rate, and the loan term separately. If anything changed from what we discussed, I'd like a written explanation of what's different and why.`;
+
 export default function FinanceOfficeChangedTheNumbers() {
+  const [copied, setCopied] = useState(false);
+
   useEffect(() => {
     return setSeoMeta({
-      title: "Finance Office Changed the Numbers — What to Do | Odigos",
+      title: "Why the Finance Office Numbers Look Different | Odigos",
       description: "You agreed on a price, but the finance office paperwork shows different numbers. Learn why this happens, what to check, and how to protect yourself before signing.",
       path: "/finance-office-changed-the-numbers",
     });
   }, []);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(FINANCE_OFFICE_MESSAGE);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = FINANCE_OFFICE_MESSAGE;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -27,12 +50,16 @@ export default function FinanceOfficeChangedTheNumbers() {
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-finance-office-headline">
-            Finance Office Changed the Numbers — What to Do
+            Why the Finance Office Numbers Look Different
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">
               You spent time negotiating a price with the salesperson. You shook hands, maybe even celebrated a little. Then you sit down in the finance office and the paperwork shows different numbers. The monthly payment is higher. The total doesn't match. New line items appeared. This happens more often than most buyers realize, and it's not always accidental.
+            </p>
+
+            <p className="text-sm text-muted-foreground mb-6">
+              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why the numbers look different</h2>
@@ -56,9 +83,35 @@ export default function FinanceOfficeChangedTheNumbers() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span><strong className="text-foreground">The loan term was extended.</strong> To keep the monthly payment close to what you discussed, the finance office may have quietly stretched the loan from 60 to 72 or 84 months. The monthly number looks similar, but the total cost goes up significantly due to additional interest.</span>
+                <span><strong className="text-foreground">The loan term was extended.</strong> To keep the monthly payment close to what you discussed, the finance office may have quietly stretched the loan from 60 to 72 or 84 months. The monthly number looks similar, but the total cost goes up significantly due to additional interest. This is one of the most common versions of the <Link href="/monthly-payment-trap" className="underline text-foreground">monthly payment trap</Link> — where the focus shifts to a comfortable monthly number while the real cost climbs.</span>
               </li>
             </ul>
+
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to say to the finance manager</h2>
+
+            <p className="text-muted-foreground mb-4">
+              If the numbers don't match what you agreed on, send or say this before signing. You can copy and paste it directly:
+            </p>
+
+            <Card className="relative p-5 bg-muted/50 mb-4">
+              <blockquote className="text-sm md:text-base text-foreground leading-relaxed italic pr-10">
+                {FINANCE_OFFICE_MESSAGE}
+              </blockquote>
+              <Button
+                variant="outline"
+                size="icon"
+                className="absolute top-3 right-3"
+                onClick={handleCopy}
+                data-testid="button-copy-finance-message"
+                aria-label="Copy message"
+              >
+                {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+              </Button>
+            </Card>
+
+            <p className="text-muted-foreground mb-6">
+              This works because it's direct and professional. You're not accusing anyone — you're asking for a clear comparison between what was agreed on and what's on the contract. That clarity alone often resolves the issue.
+            </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to do</h2>
 
@@ -102,11 +155,11 @@ export default function FinanceOfficeChangedTheNumbers() {
 
           <div className="mt-12 pt-8 border-t border-border">
             <p className="text-muted-foreground mb-4">
-              Have a quote or contract that doesn't match? Let us take a look.
+              Already have a dealer quote? Find out if it's a good deal.
             </p>
             <Link href="/analyze">
               <Button size="lg" data-testid="button-cta-finance-office">
-                Analyze My Quote Before I Go In
+                Paste your dealer message → Analyze
               </Button>
             </Link>
           </div>

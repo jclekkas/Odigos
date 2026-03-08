@@ -62,6 +62,10 @@ export default function DealerAddedFeesAfterAgreement() {
               This is one of the most common frustrations in car buying. Taxes, title, and registration are expected — they're government fees that apply to every purchase. But when dealer-added charges show up after you've already committed time and energy to a deal, that's a different situation. And it's one you can handle if you know what to look for.
             </p>
 
+            <p className="text-sm text-muted-foreground mb-6">
+              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
+            </p>
+
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why dealers add fees after the agreement</h2>
 
             <p className="text-lg text-muted-foreground mb-6">

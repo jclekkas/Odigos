@@ -1,17 +1,40 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import logoImage from "@assets/odigos_logo.png";
 
+const MARKET_ADJUSTMENT_MESSAGE = `Hi, I'm interested in this vehicle and want to understand the full pricing. Can you send me a breakdown showing the MSRP, any market adjustment or additional dealer markup, and the final out-the-door price with taxes and fees separated? I'd like to see how the adjusted price compares to the manufacturer's suggested retail price before moving forward.`;
+
 export default function MarketAdjustmentFee() {
+  const [copied, setCopied] = useState(false);
+
   useEffect(() => {
     return setSeoMeta({
-      title: "Market Adjustment Fee on a Car: What It Is & Do You Have to Pay? | Odigos",
+      title: "Market Adjustment Fees Explained: Can Dealers Charge Them? | Odigos",
       description: "Market adjustment fees (ADM) add thousands to a car's MSRP. Learn what they are, whether they're legal, how to negotiate them, and what to watch for in your dealer quote.",
       path: "/market-adjustment-fee",
     });
   }, []);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(MARKET_ADJUSTMENT_MESSAGE);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = MARKET_ADJUSTMENT_MESSAGE;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -27,12 +50,16 @@ export default function MarketAdjustmentFee() {
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-market-adjustment-headline">
-            Market Adjustment Fee on a Car: What It Is and Whether You Have to Pay It
+            Market Adjustment Fees Explained: Can Dealers Charge Them?
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">
               You found the car you want, but the window sticker has a second price label — sometimes called an "Additional Dealer Markup" (ADM) or "Market Adjustment." It can add $2,000, $5,000, or even $10,000 or more on top of the manufacturer's suggested retail price. If you've never seen one before, it can be confusing — and if you have, it's probably frustrating. Here's what's actually going on and what you can do about it.
+            </p>
+
+            <p className="text-sm text-muted-foreground mb-6">
+              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What a market adjustment fee is</h2>
@@ -42,7 +69,7 @@ export default function MarketAdjustmentFee() {
             </p>
 
             <p className="text-lg text-muted-foreground mb-6">
-              Unlike taxes, registration, or title fees, a market adjustment is pure profit for the dealership. It doesn't correspond to any additional product, service, or government requirement. It's simply a higher price because the dealer believes someone will pay it.
+              Unlike taxes, registration, or title fees, a market adjustment is pure profit for the dealership. It doesn't correspond to any additional product, service, or government requirement. It's simply a higher price because the dealer believes someone will pay it. This is different from <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">mandatory dealer add-ons</Link>, which bundle products or services into the price — a market adjustment adds nothing except a higher number.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Is it legal?</h2>
@@ -63,6 +90,32 @@ export default function MarketAdjustmentFee() {
 
             <p className="text-lg text-muted-foreground mb-6">
               If a dealer won't budge, check with other dealerships — including ones further away. Some dealers advertise MSRP pricing as a policy, and the trip may be worth the savings. <a href="https://www.edmunds.com/car-buying/dealer-markups-and-addendum-stickers.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds</a> tracks dealer pricing trends and can help you identify fair pricing for specific models.
+            </p>
+
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to send the dealer</h2>
+
+            <p className="text-muted-foreground mb-4">
+              Before committing to a vehicle with a market adjustment, send this message to the dealer. You can copy and paste it directly:
+            </p>
+
+            <Card className="relative p-5 bg-muted/50 mb-4">
+              <blockquote className="text-sm md:text-base text-foreground leading-relaxed italic pr-10">
+                {MARKET_ADJUSTMENT_MESSAGE}
+              </blockquote>
+              <Button
+                variant="outline"
+                size="icon"
+                className="absolute top-3 right-3"
+                onClick={handleCopy}
+                data-testid="button-copy-market-adjustment-message"
+                aria-label="Copy message"
+              >
+                {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+              </Button>
+            </Card>
+
+            <p className="text-muted-foreground mb-6">
+              This works because it's direct and professional. You're not arguing about the markup — you're asking to see the numbers clearly. Once you have the MSRP and the adjusted price side by side, you can decide whether the premium is worth it or shop elsewhere.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Questions worth asking</h2>
@@ -111,11 +164,11 @@ export default function MarketAdjustmentFee() {
 
           <div className="mt-12 pt-8 border-t border-border">
             <p className="text-muted-foreground mb-4">
-              Have a dealer quote with a market adjustment? Let us take a look.
+              Already have a dealer quote? Find out if it's a good deal.
             </p>
             <Link href="/analyze">
               <Button size="lg" data-testid="button-cta-market-adjustment">
-                Analyze My Dealer Quote
+                Paste your dealer message → Analyze
               </Button>
             </Link>
           </div>

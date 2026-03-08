@@ -35,6 +35,10 @@ export default function MonthlyPaymentTrap() {
               When a dealer asks "What monthly payment are you looking for?" instead of discussing the total price, that's a negotiation tactic, not a helpful question. Payment-focused selling shifts your attention away from the numbers that actually matter: the vehicle price, the interest rate, the loan term, and the total amount you'll pay over the life of the loan.
             </p>
 
+            <p className="text-sm text-muted-foreground mb-6">
+              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
+            </p>
+
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How the payment trap works</h2>
 
             <p className="text-lg text-muted-foreground mb-6">

@@ -34,6 +34,10 @@ export default function CarDealerFeesExplained() {
             When you buy a car, the sale price is only part of what you'll pay. Dealers add a range of fees — some required by law, others entirely optional, even when they're not presented that way. Knowing the difference can save you hundreds or thousands.
           </p>
 
+          <p className="text-sm text-muted-foreground mb-6">
+            Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
+          </p>
+
           <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Fees you should expect to pay</h2>
 
           <p className="text-muted-foreground mb-4">

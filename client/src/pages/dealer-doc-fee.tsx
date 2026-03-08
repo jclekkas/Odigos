@@ -37,6 +37,10 @@ export default function DealerDocFee() {
               Understanding what a doc fee is, what's normal in your state, and how to push back can save you hundreds of dollars on your next car purchase.
             </p>
 
+            <p className="text-sm text-muted-foreground mb-6">
+              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
+            </p>
+
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What Is a Dealer Doc Fee?</h2>
             <p className="text-muted-foreground mb-4">
               A dealer documentation fee is a charge the dealership adds to cover the cost of preparing and processing the paperwork for your vehicle purchase. This includes title work, registration filing, contract preparation, and other administrative tasks.

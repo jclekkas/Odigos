@@ -62,6 +62,10 @@ export default function OutTheDoorPrice() {
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
+            <p className="text-sm text-muted-foreground mb-6">
+              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
+            </p>
+
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">The Out-the-Door Price (OTD) Is the Real Cost of a Car</h2>
             <p className="text-lg text-muted-foreground mb-4">
               The out-the-door price (OTD) is the total amount you pay to leave the dealership with the keys in your hand.

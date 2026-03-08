@@ -1,17 +1,40 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import logoImage from "@assets/odigos_logo.png";
 
+const DOC_FEE_MESSAGE = `Hi — I'd like to move forward, but first I need a few things in writing. Can you send me the full out-the-door price with every fee itemized? Specifically, please break out the documentation fee separately and show me what it covers. I'd also like to see taxes, title, and registration listed on their own lines so I can compare easily. Thanks.`;
+
 export default function DocFeeTooHigh() {
+  const [copied, setCopied] = useState(false);
+
   useEffect(() => {
     return setSeoMeta({
-      title: "Car Dealer Doc Fee Too High — What You Can Do | Odigos",
+      title: "Dealer Doc Fee Too High? What You Can Actually Do | Odigos",
       description: "Doc fees vary widely by state and dealer. Learn what's normal, whether you can negotiate, and what red flags to watch for when a dealer's documentation fee seems too high.",
       path: "/doc-fee-too-high",
     });
   }, []);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(DOC_FEE_MESSAGE);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = DOC_FEE_MESSAGE;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -27,7 +50,7 @@ export default function DocFeeTooHigh() {
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-doc-fee-headline">
-            Car Dealer Doc Fee Too High — What You Can Do
+            Dealer Doc Fee Too High? What You Can Actually Do
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
@@ -35,10 +58,14 @@ export default function DocFeeTooHigh() {
               The documentation fee — sometimes called a "doc fee" or "dealer prep fee" — is one of the most common charges added to a car deal. It's supposed to cover the cost of processing your paperwork: title, registration, loan documents, and filing. But the amount dealers charge for this work varies wildly, from under $100 in some states to over $1,000 in others. If your doc fee looks too high, you're right to question it.
             </p>
 
+            <p className="text-sm text-muted-foreground mb-6">
+              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
+            </p>
+
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What's a normal doc fee?</h2>
 
             <p className="text-lg text-muted-foreground mb-6">
-              There's no single "normal" amount — it depends on where you're buying. Some states cap doc fees by law. For example, California limits the fee to $85, while Florida and Colorado have no cap at all. In states without regulation, dealers may charge $500, $700, or even more.
+              There's no single "normal" amount — it depends on where you're buying. Some states cap doc fees by law. For example, California limits the fee to $85, while Florida and Colorado have no cap at all. In states without regulation, dealers may charge $500, $700, or even more. For a deeper look at what the <Link href="/dealer-doc-fee" className="underline text-foreground">dealer doc fee</Link> typically covers and how it varies by state, see our full breakdown.
             </p>
 
             <p className="text-lg text-muted-foreground mb-6">
@@ -53,6 +80,32 @@ export default function DocFeeTooHigh() {
 
             <p className="text-lg text-muted-foreground mb-6">
               Even in states that cap doc fees, the cap is a maximum — not a minimum. You can always ask the dealer to reduce it. If the dealer won't budge on the doc fee specifically, you can negotiate the vehicle price down by the same amount. The total <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> is what matters, not any individual line item.
+            </p>
+
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to say to the dealer</h2>
+
+            <p className="text-muted-foreground mb-4">
+              If the doc fee looks too high or wasn't disclosed upfront, send this message. You can copy and paste it directly:
+            </p>
+
+            <Card className="relative p-5 bg-muted/50 mb-4">
+              <blockquote className="text-sm md:text-base text-foreground leading-relaxed italic pr-10">
+                {DOC_FEE_MESSAGE}
+              </blockquote>
+              <Button
+                variant="outline"
+                size="icon"
+                className="absolute top-3 right-3"
+                onClick={handleCopy}
+                data-testid="button-copy-doc-fee-message"
+                aria-label="Copy message"
+              >
+                {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+              </Button>
+            </Card>
+
+            <p className="text-muted-foreground mb-6">
+              This works because it's specific and professional. You're not accusing anyone — you're asking for a clear breakdown so you can evaluate the total deal on your terms.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to ask upfront</h2>
@@ -108,11 +161,11 @@ export default function DocFeeTooHigh() {
 
           <div className="mt-12 pt-8 border-t border-border">
             <p className="text-muted-foreground mb-4">
-              Have a quote with a doc fee that looks off? Let us check it.
+              Already have a dealer quote? Find out if it's a good deal.
             </p>
             <Link href="/analyze">
               <Button size="lg" data-testid="button-cta-doc-fee">
-                Check My Quote
+                Paste your dealer message → Analyze
               </Button>
             </Link>
           </div>

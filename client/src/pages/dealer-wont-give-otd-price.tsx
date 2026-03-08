@@ -98,6 +98,10 @@ export default function DealerWontGiveOtdPrice() {
               Here's why dealers avoid OTD pricing — and what you should do next.
             </p>
 
+            <p className="text-sm text-muted-foreground mb-6">
+              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
+            </p>
+
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why Dealers Avoid Giving OTD Prices</h2>
             <p className="text-muted-foreground mb-6">
               There are four common reasons.
