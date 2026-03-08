@@ -139,14 +139,14 @@ export default function DealerDocFee() {
 
           <div className="mt-12 pt-8 border-t border-border">
             <h2 className="text-xl font-semibold mb-2 text-foreground" data-testid="text-doc-fee-cta-heading">
-              Have a dealer quote already?
+              Not sure if the dealer quote is complete?
             </h2>
             <p className="text-muted-foreground mb-4">
-              Paste it into Odigos and we'll flag hidden fees, missing details, and anything that doesn't add up — so you know what to ask before you sign.
+              Paste the message or quote you received. Odigos checks for missing out-the-door pricing, add-ons, and unclear fees.
             </p>
-            <Link href="/">
+            <Link href="/analyze">
               <Button size="lg" data-testid="button-cta-doc-fee">
-                Analyze My Dealer Quote
+                Check the Quote with Odigos
               </Button>
             </Link>
           </div>

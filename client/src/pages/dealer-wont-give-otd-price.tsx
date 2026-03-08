@@ -331,22 +331,14 @@ export default function DealerWontGiveOtdPrice() {
 
           <div className="mt-12 pt-8 border-t border-border">
             <h2 className="text-xl font-semibold mb-2 text-foreground" data-testid="text-otd-refuse-cta-heading">
-              Analyze Your Dealer Quote Before You Go In
+              Not sure if the dealer quote is complete?
             </h2>
-            <p className="text-muted-foreground mb-3">
-              Paste your dealer's quote into Odigos and see:
-            </p>
-            <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
-              <li>Hidden fee flags</li>
-              <li>Common pricing tactics</li>
-              <li>Negotiation leverage points</li>
-            </ul>
             <p className="text-muted-foreground mb-4">
-              Know what's negotiable before you walk into the showroom.
+              Paste the message or quote you received. Odigos checks for missing out-the-door pricing, add-ons, and unclear fees.
             </p>
-            <Link href="/">
+            <Link href="/analyze">
               <Button size="lg" data-testid="button-cta-otd-refuse">
-                Analyze My Dealer Quote
+                Check the Quote with Odigos
               </Button>
             </Link>
           </div>

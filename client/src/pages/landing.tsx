@@ -38,11 +38,10 @@ export default function Landing() {
         <section className="pt-16 pb-20 md:pt-24 md:pb-28 px-6">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-foreground max-w-4xl mx-auto" data-testid="text-hero-headline">
-              Know Your Real OTD Price.<br />
-              Before You Sign.
+              Spot dealer pricing tricks before you walk into the dealership.
             </h1>
             <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed" data-testid="text-hero-subheadline">
-              We expose hidden fees, APR traps, dealer add-ons, and missing out-the-door details before they cost you thousands.
+              Paste a dealer quote, text, or email. Odigos checks for missing out-the-door pricing, hidden fees, and common dealership tactics so you know exactly what you're agreeing to.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
               <Link href="/analyze">
@@ -50,9 +49,9 @@ export default function Landing() {
                   size="lg" 
                   className="w-full sm:w-auto px-8 py-6 text-lg font-semibold rounded-xl" 
                   data-testid="button-cta-hero"
-                  onClick={() => trackCtaClick("hero-analyze", "Analyze My Dealer Quote")}
+                  onClick={() => trackCtaClick("hero-analyze", "Check a Dealer Quote")}
                 >
-                  Analyze My Dealer Quote
+                  Check a Dealer Quote
                 </Button>
               </Link>
               <Link href="/analyze?example=bad">
@@ -67,7 +66,10 @@ export default function Landing() {
                 </Button>
               </Link>
             </div>
-            <p className="mt-6 text-sm font-medium tracking-wide text-muted-foreground leading-relaxed" data-testid="text-trust-strip">
+            <p className="mt-3 text-sm text-muted-foreground" data-testid="text-reassurance">
+              Takes 10 seconds. No signup required.
+            </p>
+            <p className="mt-4 text-sm font-medium tracking-wide text-muted-foreground leading-relaxed" data-testid="text-trust-strip">
               Independent · No account required · We don't store your text · Secure Stripe checkout
             </p>
           </div>
@@ -92,27 +94,36 @@ export default function Landing() {
         </section>
 
         <section className="py-16 px-6">
-          <div className="max-w-2xl mx-auto">
-            <Card>
-              <CardContent className="pt-6 pb-6">
-                <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
-                  What Odigos checks before you go in
-                </h2>
-                <ul className="space-y-3">
-                  {[
-                    "Missing out-the-door (OTD) price details",
-                    "Hidden fees, add-ons, and protection packages",
-                    "APR / term inconsistencies",
-                    "Payment-focused tactics that hide total cost",
-                  ].map((item, idx) => (
-                    <li key={idx} className="flex items-center gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span className="text-base text-muted-foreground">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-xl md:text-2xl font-bold mb-8 text-center" data-testid="text-checks-heading">
+              What Odigos Checks For
+            </h2>
+            <div className="grid md:grid-cols-2 gap-4">
+              <Card data-testid="card-check-otd">
+                <CardContent className="pt-6 pb-6">
+                  <h3 className="font-semibold mb-2 text-foreground">Missing Out-the-Door Price</h3>
+                  <p className="text-sm text-muted-foreground">Many dealer quotes hide the full price. Odigos flags when tax, registration, documentation fees, or add-ons are not clearly included.</p>
+                </CardContent>
+              </Card>
+              <Card data-testid="card-check-addons">
+                <CardContent className="pt-6 pb-6">
+                  <h3 className="font-semibold mb-2 text-foreground">Dealer Add-Ons</h3>
+                  <p className="text-sm text-muted-foreground">Dealers often present optional add-ons like nitrogen tires or paint protection as mandatory. Odigos highlights language that suggests this.</p>
+                </CardContent>
+              </Card>
+              <Card data-testid="card-check-fees">
+                <CardContent className="pt-6 pb-6">
+                  <h3 className="font-semibold mb-2 text-foreground">Unclear Fees</h3>
+                  <p className="text-sm text-muted-foreground">Dealer documentation fees, prep fees, and appearance packages are sometimes buried in quotes. Odigos helps surface them.</p>
+                </CardContent>
+              </Card>
+              <Card data-testid="card-check-language">
+                <CardContent className="pt-6 pb-6">
+                  <h3 className="font-semibold mb-2 text-foreground">Vague Pricing Language</h3>
+                  <p className="text-sm text-muted-foreground">If a dealer message avoids committing to a full price or conditions the deal on financing or add-ons, Odigos calls it out.</p>
+                </CardContent>
+              </Card>
+            </div>
             <p className="text-xs text-muted-foreground text-center mt-4" data-testid="text-privacy-note">
               Privacy: Your messages are analyzed in real time. We don't store or share them.
             </p>
@@ -347,6 +358,28 @@ export default function Landing() {
             </Link>
           </div>
         </section>
+
+        <section className="py-16 px-6">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-xl md:text-2xl font-bold mb-8 text-center" data-testid="text-why-heading">
+              Why Use Odigos?
+            </h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div data-testid="card-why-clarity">
+                <h3 className="font-semibold mb-2 text-foreground">Clarity Before You Visit</h3>
+                <p className="text-sm text-muted-foreground">Dealership pricing conversations often leave out important details. Odigos helps identify what's missing before you step into the showroom.</p>
+              </div>
+              <div data-testid="card-why-tactics">
+                <h3 className="font-semibold mb-2 text-foreground">Built Around Real Dealer Tactics</h3>
+                <p className="text-sm text-muted-foreground">The checks Odigos performs are based on common dealership pricing practices buyers frequently encounter.</p>
+              </div>
+              <div data-testid="card-why-free">
+                <h3 className="font-semibold mb-2 text-foreground">Free and Instant</h3>
+                <p className="text-sm text-muted-foreground">You can paste a dealer message and get feedback in seconds without creating an account.</p>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
       <section className="py-12 px-6">
@@ -357,6 +390,19 @@ export default function Landing() {
             </p>
           </div>
         </section>
+
+      <section className="py-12 px-6">
+        <div className="max-w-2xl mx-auto">
+          <h3 className="text-base font-semibold mb-4 text-foreground" data-testid="text-tactics-heading">Common Dealer Pricing Tactics Buyers Ask About</h3>
+          <ul className="space-y-2">
+            <li><Link href="/dealer-wont-give-otd-price" className="text-sm underline text-foreground" data-testid="link-tactic-otd">Dealer Won't Give Out-the-Door Price</Link></li>
+            <li><Link href="/are-dealer-add-ons-mandatory" className="text-sm underline text-foreground" data-testid="link-tactic-addons">Are Dealer Add-Ons Mandatory?</Link></li>
+            <li><Link href="/dealer-doc-fee" className="text-sm underline text-foreground" data-testid="link-tactic-docfee">Dealer Documentation Fee Explained</Link></li>
+            <li><Link href="/market-adjustment-fee" className="text-sm underline text-foreground" data-testid="link-tactic-market">Dealer Market Adjustment Fees</Link></li>
+            <li><Link href="/dealer-added-fees-after-agreement" className="text-sm underline text-foreground" data-testid="link-tactic-added-fees">Dealer Added Fees After Agreement</Link></li>
+          </ul>
+        </div>
+      </section>
 
       <footer className="border-t border-border/50 py-6">
         <div className="max-w-5xl mx-auto px-6 text-center space-y-2">

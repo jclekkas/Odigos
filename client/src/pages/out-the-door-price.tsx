@@ -268,9 +268,9 @@ export default function OutTheDoorPrice() {
 
           <div className="mt-12 pt-8 border-t border-border">
             <h2 className="text-xl font-semibold mb-2 text-foreground" data-testid="text-otd-cta-heading">
-              Already Have Dealer Texts or a Quote?
+              Not sure if the dealer quote is complete?
             </h2>
-            <p className="text-muted-foreground mb-2">Odigos analyzes real dealer messages and flags:</p>
+            <p className="text-muted-foreground mb-2">Paste the message or quote you received. Odigos checks for:</p>
             <ul className="space-y-2 mb-6 text-muted-foreground">
               {[
                 "Missing OTD components",
@@ -285,9 +285,9 @@ export default function OutTheDoorPrice() {
                 </li>
               ))}
             </ul>
-            <Link href="/">
+            <Link href="/analyze">
               <Button size="lg" data-testid="button-cta-otd">
-                Analyze My Dealer Messages
+                Check the Quote with Odigos
               </Button>
             </Link>
           </div>

@@ -202,11 +202,14 @@ export default function AreDealerAddOnsMandatory() {
 
           <div className="mt-12 pt-8 border-t border-border">
             <p className="text-muted-foreground mb-4">
-              Already have a dealer quote? Find out if it's a good deal.
+              Not sure if the dealer quote is complete?
+            </p>
+            <p className="text-sm text-muted-foreground mb-4">
+              Paste the message or quote you received. Odigos checks for missing out-the-door pricing, add-ons, and unclear fees.
             </p>
             <Link href="/analyze">
               <Button size="lg" data-testid="button-cta-addons">
-                Paste your dealer message → Analyze
+                Check the Quote with Odigos
               </Button>
             </Link>
           </div>
