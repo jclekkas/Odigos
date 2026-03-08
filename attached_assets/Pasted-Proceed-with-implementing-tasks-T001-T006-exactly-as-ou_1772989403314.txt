@@ -1,0 +1,79 @@
+Proceed with implementing tasks T001–T006 exactly as outlined in the implementation plan.
+
+Important constraints:
+- Do NOT add any new product features
+- Do NOT change backend logic, APIs, or analyzer behavior
+- Do NOT add databases, scoring systems, datasets, or user accounts
+- Do NOT modify routing or existing functionality
+- Only implement copy updates, layout sections, trust signals, and internal linking as described
+
+Tasks to implement:
+
+T001 — Update homepage hero copy in client/src/pages/landing.tsx
+• Change headline to: "Spot dealer pricing tricks before you walk into the dealership."
+• Change subheadline to: "Paste a dealer quote, text, or email. Odigos checks for missing out-the-door pricing, hidden fees, and common dealership tactics so you know exactly what you're agreeing to."
+• Change primary CTA button text to: "Check a Dealer Quote"
+• Update the trackCtaClick label to match
+• Add reassurance line under the CTA buttons: "Takes 10 seconds. No signup required."
+• Keep layout, example button, and trust strip unchanged
+
+T002 — Replace the existing “What Odigos checks before you go in” section with the new section “What Odigos Checks For”
+• Implement as a 4-item grid using existing Card components
+• Desktop: 2x2 grid
+• Mobile: stacked layout
+Items:
+1. Missing Out-the-Door Price
+2. Dealer Add-Ons
+3. Unclear Fees
+4. Vague Pricing Language
+Use the provided description text from the plan.
+
+T003 — Add a new section “Why Use Odigos?”
+• Place near the bottom of the homepage before the “What Odigos does NOT do” section
+• 3-column layout on desktop, stacked on mobile
+Items:
+• Clarity Before You Visit
+• Built Around Real Dealer Tactics
+• Free and Instant
+
+T004 — Add internal-linking section above the footer
+Section title:
+"Common Dealer Pricing Tactics Buyers Ask About"
+
+Include links to:
+• /dealer-wont-give-otd-price
+• /are-dealer-add-ons-mandatory
+• /dealer-doc-fee
+• /market-adjustment-fee
+• /dealer-added-fees-after-agreement
+
+Use the existing Link component and keep styling minimal.
+
+T005 — Update article CTA copy across all guide pages in client/src/pages/
+
+Replace the bottom CTA block text with:
+
+Headline:
+"Not sure if the dealer quote is complete?"
+
+Body:
+"Paste the message or quote you received. Odigos checks for missing out-the-door pricing, add-ons, and unclear fees."
+
+Button text:
+"Check the Quote with Odigos"
+
+Apply to all guide pages listed in the plan.
+Keep the existing mid-article CTA unchanged.
+
+T006 — Verification
+After implementing the changes:
+• Confirm homepage renders correctly
+• Confirm grid sections are responsive
+• Confirm internal links work
+• Confirm all guide page CTAs updated
+• Confirm no functionality changed
+
+When finished, provide a short summary of:
+• files modified
+• sections added
+• confirmation that no backend or product logic was altered.

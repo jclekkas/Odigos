@@ -1,0 +1,163 @@
+Make safe positioning, trust, and conversion improvements to the existing Odigos site without changing any product functionality, backend logic, workflows, or database structure.
+
+Important constraints:
+- Do not add new features
+- Do not change how the analyzer works
+- Do not add accounts, dashboards, saved quotes, scoring, datasets, or benchmarking
+- Do not redesign the site drastically
+- Only improve copy, layout clarity, trust signals, internal linking, and article CTAs
+- Keep the current visual style clean, minimal, and consistent with the site
+
+Goals:
+- Strengthen Odigos’s positioning around dealer pricing manipulation
+- Improve trust and clarity
+- Better connect SEO content to the analyzer
+- Increase conversion from informational pages into product usage
+
+Please implement all of the following:
+
+1) Update the homepage hero copy
+
+Keep the existing hero structure and analyzer workflow the same, but rewrite the copy to better communicate the problem Odigos solves.
+
+Use:
+
+Headline:
+"Spot dealer pricing tricks before you walk into the dealership."
+
+Subheadline:
+"Paste a dealer quote, text, or email. Odigos checks for missing out-the-door pricing, hidden fees, and common dealership tactics so you know exactly what you're agreeing to."
+
+Primary CTA button text:
+"Check a Dealer Quote"
+
+Add a short reassurance line under the CTA:
+"Takes 10 seconds. No signup required."
+
+2) Add a homepage section: "What Odigos Checks For"
+
+Place this section directly below the existing "How it works" section.
+
+Use a simple 4-item grid on desktop and a stacked layout on mobile.
+
+Section title:
+"What Odigos Checks For"
+
+Items:
+
+A)
+Title:
+"Missing Out-the-Door Price"
+Description:
+"Many dealer quotes hide the full price. Odigos flags when tax, registration, documentation fees, or add-ons are not clearly included."
+
+B)
+Title:
+"Dealer Add-Ons"
+Description:
+"Dealers often present optional add-ons like nitrogen tires or paint protection as mandatory. Odigos highlights language that suggests this."
+
+C)
+Title:
+"Unclear Fees"
+Description:
+"Dealer documentation fees, prep fees, and appearance packages are sometimes buried in quotes. Odigos helps surface them."
+
+D)
+Title:
+"Vague Pricing Language"
+Description:
+"If a dealer message avoids committing to a full price or conditions the deal on financing or add-ons, Odigos calls it out."
+
+This section is informational only. Do not connect it to any new functionality.
+
+3) Add a homepage trust section: "Why Use Odigos?"
+
+Place this section near the bottom of the homepage before the footer.
+
+Use a simple 3-column layout on desktop and stacked layout on mobile.
+
+Section title:
+"Why Use Odigos?"
+
+Include these three points:
+
+A)
+Title:
+"Clarity Before You Visit"
+Body:
+"Dealership pricing conversations often leave out important details. Odigos helps identify what's missing before you step into the showroom."
+
+B)
+Title:
+"Built Around Real Dealer Tactics"
+Body:
+"The checks Odigos performs are based on common dealership pricing practices buyers frequently encounter."
+
+C)
+Title:
+"Free and Instant"
+Body:
+"You can paste a dealer message and get feedback in seconds without creating an account."
+
+Keep this section simple, neutral, and consumer-focused.
+
+4) Update informational article CTAs
+
+For the SEO/article template, improve the CTA block that appears within informational pages.
+
+Use this CTA copy:
+
+Headline:
+"Not sure if the dealer quote is complete?"
+
+Body:
+"Paste the message or quote you received. Odigos checks for missing out-the-door pricing, add-ons, and unclear fees."
+
+Button text:
+"Check the Quote with Odigos"
+
+Place this CTA:
+- once mid-article
+- once at the end of the article
+
+Do not change analyzer functionality. This is only a copy/layout CTA improvement.
+
+5) Add a small internal-linking section above the footer
+
+Add a minimal section above the site footer titled:
+
+"Common Dealer Pricing Tactics Buyers Ask About"
+
+This should be designed for internal linking and SEO consistency.
+
+Link to existing or planned pages such as:
+- Dealer Won't Give Out-the-Door Price
+- Are Dealer Add-Ons Mandatory?
+- Dealer Documentation Fee Explained
+- Dealer Market Adjustment Fees
+- Dealer Added Fees After Agreement
+
+Use whichever slugs/pages already exist, and keep the section visually minimal.
+
+6) Keep the positioning consistent across the site
+
+As you make these edits, prefer copy that reflects these themes:
+- detect hidden fees
+- identify dealer tactics
+- uncover missing pricing
+- verify dealer claims
+- spot pricing tricks before visiting
+
+Avoid overly aggressive anti-dealer language. The tone should be trustworthy, calm, consumer-focused, and credible.
+
+7) Preserve everything else
+
+Do not remove existing core sections unless needed for clarity.
+Do not break layout, routing, or existing page functionality.
+Do not add any net-new product features.
+
+After making the changes, give me a concise summary of:
+- what was changed
+- which files/components were updated
+- any copy or layout decisions you made
