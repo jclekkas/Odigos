@@ -1,0 +1,75 @@
+Create a documentation folder for the project and add two internal reference files. These files are for developer and AI context only and must not affect the product, UI, routing, or runtime behavior.
+
+Requirements:
+
+1. Create a new folder at the project root called `docs`.
+
+2. Inside the `docs` folder create the following files:
+
+`ux-direction.md`
+
+Contents:
+
+# Odigos UX Direction
+
+Goal
+Odigos must feel trustworthy, authoritative, and calm. The site should resemble a consumer protection resource rather than a flashy startup tool.
+
+Design Principles
+
+* Prioritize clarity over cleverness
+* Use large readable typography
+* Maintain generous whitespace between sections
+* Limit color usage to one primary accent color
+* Avoid gimmicky animations or distracting effects
+* Keep layouts simple and structured
+
+Trust Signals
+
+* Show a realistic example analysis early on the page
+* Emphasize that the tool identifies common dealership pricing tactics
+* Avoid hype language or exaggerated claims
+
+Tone
+Serious, calm, and helpful.
+
+The product should feel closer to a consumer protection guide than a SaaS marketing page.
+
+The site must NOT feel like:
+
+* an AI gimmick site
+* a startup landing page template
+* a growth-hacking marketing funnel
+
+---
+
+`product-context.md`
+
+Contents:
+
+# Odigos Product Context
+
+Product
+Odigos analyzes dealer quotes or messages and flags common dealership pricing tactics before a customer visits the dealership.
+
+Core User Flow
+
+1. User pastes dealer quote, text message, or email
+2. Odigos analyzes the text
+3. The system flags missing out-the-door pricing, hidden fees, and common dealership tactics
+4. The user receives a simple explanation and optional response text they can send back to the dealer
+
+Current Pricing
+$60 per analysis.
+
+Positioning
+Consumer protection for car buyers.
+
+Key Constraints
+
+* Do not add unnecessary features
+* Maintain a simple single-action flow
+* The product should emphasize clarity and trust over complexity
+
+Important
+Creating these files must NOT modify any existing functionality, routing, UI, or styling. They are internal documentation only.
