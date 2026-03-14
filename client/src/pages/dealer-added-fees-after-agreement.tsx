@@ -66,6 +66,10 @@ export default function DealerAddedFeesAfterAgreement() {
               Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
             </p>
 
+            <p className="text-muted-foreground mb-6">
+              If a dealer refuses to provide the full out-the-door price before you visit, read <Link href="/dealer-wont-give-out-the-door-price" className="underline text-foreground">Dealer Won't Give an Out-the-Door Price? What to Do</Link> to learn how to handle that situation.
+            </p>
+
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why dealers add fees after the agreement</h2>
 
             <p className="text-lg text-muted-foreground mb-6">

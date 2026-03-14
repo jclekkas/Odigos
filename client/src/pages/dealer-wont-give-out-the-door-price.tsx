@@ -81,6 +81,10 @@ export default function DealerWontGiveOutTheDoorPrice() {
               If you only know the vehicle price, those costs can appear later.
             </p>
 
+            <p className="text-muted-foreground mb-6">
+              If a dealership agrees on a price but introduces new charges during paperwork, see <Link href="/dealer-added-fees-after-agreement" className="underline text-foreground">Dealer Added Fees After We Agreed on Price</Link> to understand why this happens and what you can do.
+            </p>
+
             <h3 className="text-xl font-semibold mt-8 mb-3 text-foreground">They want you at the dealership first</h3>
 
             <p className="text-muted-foreground mb-6">
