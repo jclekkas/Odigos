@@ -614,6 +614,14 @@ GO/NO-GO/NEED-MORE-INFO:
     }
   });
 
+  app.get("/dealer-wont-give-otd", (_req, res) => {
+    res.redirect(301, "/dealer-wont-give-out-the-door-price");
+  });
+
+  app.get("/dealer-wont-give-otd-price", (_req, res) => {
+    res.redirect(301, "/dealer-wont-give-out-the-door-price");
+  });
+
   app.get("/sitemap.xml", (_req, res) => {
     res.type("application/xml");
     res.sendFile("sitemap.xml", { root: "." });

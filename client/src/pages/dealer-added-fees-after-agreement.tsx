@@ -13,8 +13,8 @@ export default function DealerAddedFeesAfterAgreement() {
 
   useEffect(() => {
     return setSeoMeta({
-      title: "Dealer Added Fees After Agreement? What to Do Next | Odigos",
-      description: "You agreed on a price and now new charges appeared. Learn which dealer fees are legitimate, which are optional, and exactly what to say to get clarity before you sign.",
+      title: "Dealer Added Fees After We Agreed on Price — Is That Legal? | Odigos",
+      description: "Dealers sometimes add fees after agreeing on a price. Learn why this happens, which charges are red flags, and what to do before signing.",
       path: "/dealer-added-fees-after-agreement",
     });
   }, []);
@@ -50,7 +50,7 @@ export default function DealerAddedFeesAfterAgreement() {
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-dealer-added-fees-headline">
-            Dealer Added Fees After Agreement? What to Do Next
+            Dealer Added Fees After We Agreed on Price — Is That Legal?
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
