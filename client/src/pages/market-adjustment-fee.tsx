@@ -48,7 +48,7 @@ export default function MarketAdjustmentFee() {
       </header>
 
       <main className="py-12 md:py-20 px-6">
-        <article className="max-w-2xl mx-auto">
+        <article className="max-w-[700px] mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-market-adjustment-headline">
             Market Adjustment Fees Explained: Can Dealers Charge Them?
           </h1>

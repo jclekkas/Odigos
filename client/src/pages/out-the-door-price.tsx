@@ -56,7 +56,7 @@ export default function OutTheDoorPrice() {
       </header>
 
       <main className="py-12 md:py-20 px-6">
-        <article className="max-w-2xl mx-auto">
+        <article className="max-w-[700px] mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-otd-headline">
             What Is an Out-the-Door Price (OTD)? The Only Number That Matters When Buying a Car
           </h1>

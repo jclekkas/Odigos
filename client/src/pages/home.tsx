@@ -127,8 +127,8 @@ function DealScoreBadge({ score, goNoGo, confidenceLevel, verdictLabel }: DealSc
       </div>
       <p className={`text-lg font-semibold ${config.text} mb-3`}>{verdictLabel}</p>
       <div className="flex items-center justify-center gap-4 mb-3">
-        <div className={`inline-block px-4 py-2 rounded-lg ${config.bg} border ${config.border}`}>
-          <span className={`text-xl font-bold ${config.text}`}>{goNoGo}</span>
+        <div className={`inline-block px-5 py-3 rounded-lg ${config.bg} border ${config.border}`}>
+          <span className={`text-[22px] font-bold ${config.text}`} style={{ fontWeight: 700 }}>{goNoGo}</span>
         </div>
         <span className={`text-sm font-medium ${confConfig.color}`}>
           {confConfig.label}
@@ -156,18 +156,18 @@ function DetectedFieldsCard({ fields }: { fields: DetectedFields }) {
 
   return (
     <Card>
-      <CardHeader className="pb-4">
+      <CardHeader className="pb-4 px-6 pt-6">
         <CardTitle className="flex items-center gap-2 text-lg">
           <FileText className="w-5 h-5 text-muted-foreground" />
           What We Detected
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-6 pb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {items.map((item) => (
             <div key={item.label} className="flex justify-between items-center py-2 border-b border-border/50 last:border-0">
-              <span className="text-sm text-muted-foreground">{item.label}</span>
-              <span className={`text-sm font-medium font-mono ${item.value != null ? "text-foreground" : "text-muted-foreground/60"}`}>
+              <span className="text-sm text-muted-foreground leading-6">{item.label}</span>
+              <span className={`text-sm font-medium font-mono leading-6 ${item.value != null ? "text-foreground" : "text-muted-foreground/60"}`}>
                 {item.format(item.value)}
               </span>
             </div>
@@ -222,13 +222,13 @@ function MissingInfoCard({ items, confidenceLevel, verdictLabel, onCopy }: Missi
 
   return (
     <Card className="border-amber-500/30 bg-amber-500/5">
-      <CardHeader className="pb-4">
+      <CardHeader className="pb-4 px-6 pt-6">
         <CardTitle className="flex items-center gap-2 text-lg text-amber-700 dark:text-amber-400">
           <HelpCircle className="w-5 h-5" />
           {isProceedVerdict ? "Confirm These Details" : "Missing Information"}
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-6 pb-6">
         <p className="text-sm text-muted-foreground mb-4">
           {isProceedVerdict 
             ? "Before you visit, quickly confirm these points:"
@@ -297,13 +297,13 @@ interface LockedTier2Props {
 function LockedTier2Section({ onUnlock, isLoading, stripeConfigured }: LockedTier2Props) {
   return (
     <Card className="border-amber-500/30 bg-amber-500/5">
-      <CardHeader className="pb-4">
+      <CardHeader className="pb-4 px-6 pt-6">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Lock className="w-5 h-5 text-amber-500" />
           Unlock Full Deal Review
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-6 pb-6">
         <p className="text-sm text-muted-foreground mb-4">
           See what's missing, what's risky, and exactly what to ask the dealer.
         </p>
@@ -419,13 +419,13 @@ function SuggestedReplyCard({ reply }: { reply: string }) {
 
   return (
     <Card>
-      <CardHeader className="pb-4">
+      <CardHeader className="pb-4 px-6 pt-6">
         <CardTitle className="flex items-center gap-2 text-lg">
           <MessageSquare className="w-5 h-5 text-muted-foreground" />
           Suggested Reply to Dealer
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-6 pb-6">
         <div className="bg-muted/30 rounded-lg p-4 mb-4">
           <p className="text-sm whitespace-pre-wrap leading-relaxed">{reply}</p>
         </div>
@@ -636,31 +636,31 @@ export default function Home() {
       <main className="max-w-4xl mx-auto px-6 py-8 space-y-8">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => form.setValue("dealerText", SAMPLE_GOOD_DEAL)}
+                data-testid="button-sample-good"
+              >
+                Try a good deal example
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => form.setValue("dealerText", SAMPLE_BAD_DEAL)}
+                data-testid="button-sample-bad"
+              >
+                Try a bad deal example
+              </Button>
+            </div>
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Paste Dealer Communication</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => form.setValue("dealerText", SAMPLE_GOOD_DEAL)}
-                    data-testid="button-sample-good"
-                  >
-                    Try a good deal example
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => form.setValue("dealerText", SAMPLE_BAD_DEAL)}
-                    data-testid="button-sample-bad"
-                  >
-                    Try a bad deal example
-                  </Button>
-                </div>
                 <FormField
                   control={form.control}
                   name="dealerText"
@@ -881,14 +881,14 @@ export default function Home() {
             </div>
 
             <Card>
-              <CardHeader className="pb-4">
+              <CardHeader className="pb-4 px-6 pt-6">
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <FileText className="w-5 h-5 text-muted-foreground" />
                   What This Deal Likely Means
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-base leading-relaxed text-muted-foreground" data-testid="text-summary">
+              <CardContent className="px-6 pb-6">
+                <p className="text-base leading-7 text-muted-foreground" data-testid="text-summary">
                   {result.summary}
                 </p>
               </CardContent>

@@ -25,7 +25,7 @@ export default function MonthlyPaymentTrap() {
       </header>
 
       <main className="py-12 md:py-20 px-6">
-        <article className="max-w-2xl mx-auto">
+        <article className="max-w-[700px] mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-monthly-headline">
             The Monthly Payment Trap: How Dealers Use Payment-Focused Quotes to Hide the Real Cost
           </h1>
