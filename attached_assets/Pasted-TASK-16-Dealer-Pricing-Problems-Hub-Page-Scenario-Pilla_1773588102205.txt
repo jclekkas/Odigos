@@ -1,0 +1,156 @@
+TASK 16 — Dealer Pricing Problems Hub Page (Scenario Pillar)
+
+What & Why
+
+Odigos now has 15 scenario pages covering specific dealership situations (price changes, missing quotes, finance office tactics, add-ons, etc.).
+
+These pages are linked from guides and articles, but there is no single page that organizes them into a clear topic cluster.
+
+Creating a hub page improves:
+
+• SEO topical authority (pillar → cluster structure)  
+• Crawl discoverability for scenario pages  
+• User navigation during stressful dealership situations  
+• Internal linking density across the scenario network  
+
+This page should function as a navigation and authority page, not a long article.
+
+--------------------------------------------------
+
+URL
+
+/dealer-pricing-problems
+
+--------------------------------------------------
+
+Page Structure
+
+H1  
+Common Dealer Pricing Problems (And What To Do)
+
+Intro paragraph (2–3 sentences)  
+Explain that many dealership issues follow recognizable patterns — price changes, hidden fees, finance office tactics, and add-on pressure. Link the user to specific scenarios below.
+
+--------------------------------------------------
+
+Section 1 — Price Changes
+
+Short intro sentence.
+
+Cards or list items linking to:
+
+• Dealer Changed the Price After Your Deposit  
+• Dealer Changed the Price After You Arrived  
+• Dealer Changed the Price After the Test Drive  
+• Finance Office Changed the Numbers
+
+Each item should include:
+
+• Page title  
+• One-sentence explanation  
+• Link to the scenario page
+
+--------------------------------------------------
+
+Section 2 — Missing Transparency
+
+Short intro sentence.
+
+Links to:
+
+• Dealer Won’t Give an Out-the-Door Price  
+• Dealer Won’t Give a Written Quote  
+• Dealer Won’t Itemize Fees  
+• Dealer Only Shows a Monthly Payment
+
+--------------------------------------------------
+
+Section 3 — Add-On Charges
+
+Short intro sentence.
+
+Links to:
+
+• Nitrogen Tires Fee  
+• VIN Etching Fee  
+• Paint Protection / Protection Packages
+
+--------------------------------------------------
+
+Section 4 — Finance Office Tactics
+
+Short intro sentence.
+
+Links to:
+
+• Extended Warranty Pressure  
+• GAP Insurance Push  
+• Interest Rate Markup
+
+--------------------------------------------------
+
+CTA Block
+
+After the sections:
+
+H2  
+Already Have a Dealer Quote?
+
+Short explanation that Odigos can analyze the quote and flag pricing issues before the user signs.
+
+Button:  
+Check My Deal
+
+Link:  
+/analyze
+
+Reassurance text:  
+Takes 10 seconds · No signup required
+
+--------------------------------------------------
+
+Internal Linking
+
+Each scenario page should include a “Related dealer problems” section that links back to this hub page.
+
+Example:
+
+Related dealer problems  
+• Dealer Changed the Price After Your Deposit  
+• Dealer Added Fees After Agreement  
+• Dealer Won’t Give OTD Price
+
+--------------------------------------------------
+
+SEO Metadata
+
+Title  
+Dealer Pricing Problems: Common Dealer Tactics and What to Do
+
+Meta description  
+See the most common dealership pricing problems — price changes, hidden fees, finance office tricks, and add-on charges — and learn what to do before signing.
+
+--------------------------------------------------
+
+Out of Scope
+
+• No changes to analyzer logic  
+• No pricing changes  
+• No product feature additions  
+• No redesign of article pages
+
+--------------------------------------------------
+
+Relevant Files
+
+Create:
+
+client/src/pages/dealer-pricing-problems.tsx
+
+Update routing:
+
+client/src/App.tsx
+
+Add links from scenario pages:
+
+client/src/pages/scenario-page.tsx

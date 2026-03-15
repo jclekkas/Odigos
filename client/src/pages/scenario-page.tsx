@@ -116,6 +116,13 @@ export default function ScenarioPage() {
               ))}
             </ul>
 
+            <p className="text-sm text-muted-foreground mt-2">
+              Part of:{" "}
+              <Link href="/dealer-pricing-problems" className="underline underline-offset-2 text-foreground hover:text-muted-foreground transition-colors">
+                Common Dealer Pricing Problems
+              </Link>
+            </p>
+
           </div>
 
           <div className="mt-12 pt-8 border-t border-border">

@@ -30,6 +30,7 @@ import OtdPriceVsMsrp from "@/pages/otd-price-vs-msrp";
 import OutTheDoorPriceExample from "@/pages/out-the-door-price-example";
 import CarDealerFeesState from "@/pages/car-dealer-fees-state";
 import ScenarioPage from "@/pages/scenario-page";
+import DealerPricingProblems from "@/pages/dealer-pricing-problems";
 import GuidesRedirect from "@/pages/guides-redirect";
 import AdminMetrics from "@/pages/admin-metrics";
 import NotFound from "@/pages/not-found";
@@ -62,6 +63,7 @@ function Router() {
       <Route path="/how-to-ask-for-out-the-door-price" component={HowToAskForOutTheDoorPrice} />
       <Route path="/otd-price-vs-msrp" component={OtdPriceVsMsrp} />
       <Route path="/out-the-door-price-example" component={OutTheDoorPriceExample} />
+      <Route path="/dealer-pricing-problems" component={DealerPricingProblems} />
       <Route path="/dealer-raised-price-when-i-arrived" component={ScenarioPage} />
       <Route path="/dealer-changed-price-after-test-drive" component={ScenarioPage} />
       <Route path="/dealer-added-fees-after-deposit" component={ScenarioPage} />
