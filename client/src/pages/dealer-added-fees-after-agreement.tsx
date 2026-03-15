@@ -13,8 +13,8 @@ export default function DealerAddedFeesAfterAgreement() {
 
   useEffect(() => {
     return setSeoMeta({
-      title: "Dealer Added Fees After Agreement? What to Do Next | Odigos",
-      description: "You agreed on a price and now new charges appeared. Learn which dealer fees are legitimate, which are optional, and exactly what to say to get clarity before you sign.",
+      title: "Dealer Added Fees After We Agreed on Price — Is That Legal? | Odigos",
+      description: "Dealers sometimes add fees after agreeing on a price. Learn why this happens, which charges are red flags, and what to do before signing.",
       path: "/dealer-added-fees-after-agreement",
     });
   }, []);
@@ -50,7 +50,7 @@ export default function DealerAddedFeesAfterAgreement() {
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-dealer-added-fees-headline">
-            Dealer Added Fees After Agreement? What to Do Next
+            Dealer Added Fees After We Agreed on Price — Is That Legal?
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
@@ -64,6 +64,10 @@ export default function DealerAddedFeesAfterAgreement() {
 
             <p className="text-sm text-muted-foreground mb-6">
               Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
+            </p>
+
+            <p className="text-muted-foreground mb-6">
+              If a dealer refuses to provide the full out-the-door price before you visit, read <Link href="/dealer-wont-give-out-the-door-price" className="underline text-foreground">Dealer Won't Give an Out-the-Door Price? What to Do</Link> to learn how to handle that situation.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why dealers add fees after the agreement</h2>

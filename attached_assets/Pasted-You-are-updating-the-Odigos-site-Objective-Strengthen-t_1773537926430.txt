@@ -1,0 +1,195 @@
+You are updating the Odigos site.
+
+Objective:
+Strengthen topical authority around out-the-door (OTD) pricing and dealer pricing transparency by adding 3 tightly related SEO pages and improving internal linking to the existing OTD-related content.
+
+Critical constraints:
+- Do NOT add any new product features
+- Do NOT change backend logic, APIs, analyzer behavior, payments, routing architecture, or auth
+- Do NOT redesign the homepage
+- Do NOT change existing product copy outside of the tasks below unless necessary for internal linking consistency
+- Keep the current site design system, spacing, typography, CTA styling, and article template conventions
+- Match the tone of existing Odigos articles: clear, authoritative, calm, consumer-protection oriented, not fluffy, not “AI slop”
+- Preserve all existing tracking patterns and CTA component patterns where applicable
+- Use the existing article page structure and metadata conventions already present in the codebase
+- Add proper title/meta description/canonical/Open Graph/Twitter meta tags consistent with existing article pages
+- Ensure all new pages are included in routing and sitemap if the project currently manages those manually
+
+Business goal:
+Google is already associating Odigos with “OTD price” and related dealer-pricing queries. These additions should reinforce that cluster, improve internal topical authority, and channel readers into the existing Odigos analyzer.
+
+Tasks to implement:
+
+T001 — Create new article page:
+Slug:
+/how-to-ask-for-out-the-door-price
+
+Title:
+How to Ask a Dealer for an Out-the-Door Price
+
+Meta title:
+How to Ask a Dealer for an Out-the-Door Price | Odigos
+
+Meta description:
+Learn how to ask a dealer for an out-the-door price in writing, what to say, what should be included, and what to do if they avoid giving a full number.
+
+Primary H1:
+How to Ask a Dealer for an Out-the-Door Price
+
+Article content requirements:
+- Explain that the OTD price is the only number that matters before visiting a dealership
+- Explain why buyers should ask for the price in writing by text or email
+- Include a short section titled “What to Say” with a copy-paste script like:
+  “Can you send me the full out-the-door price in writing, including vehicle price, dealer fees, taxes, registration, and any add-ons?”
+- Include a section titled “What the OTD Price Should Include”
+- Include a section titled “What to Do If the Dealer Avoids the Question”
+- Include a section titled “Red Flags to Watch For”
+- Include a short FAQ section
+- Include internal links to:
+  - /dealer-wont-give-out-the-door-price
+  - /what-is-an-out-the-door-price
+  - any existing relevant doc fee / add-ons / market adjustment pages if they exist in the repo
+- Include a strong mid-article CTA and bottom CTA pointing to the main Odigos analyzer flow using the same CTA style/pattern as existing article pages
+- CTA copy should feel practical and specific, e.g.:
+  “Paste the dealer’s message into Odigos and check whether anything is missing before you go in.”
+
+Suggested article structure:
+1. Intro: why asking for OTD price matters
+2. Why dealers often avoid giving it
+3. What to say
+4. What the OTD price should include
+5. What to do if they won’t give it
+6. Red flags
+7. FAQ
+8. CTA
+
+T002 — Create new article page:
+Slug:
+/otd-price-vs-msrp
+
+Title:
+OTD Price vs. MSRP: What Car Buyers Get Wrong
+
+Meta title:
+OTD Price vs MSRP: What Car Buyers Get Wrong | Odigos
+
+Meta description:
+MSRP is not the same as the out-the-door price. Learn the difference, what extra charges get added, and which number you should negotiate around.
+
+Primary H1:
+OTD Price vs. MSRP: What Car Buyers Get Wrong
+
+Article content requirements:
+- Clearly explain the difference between MSRP and OTD price
+- Explain why MSRP alone is not enough to compare dealer offers
+- Include a section titled “Why Monthly Payment Quotes Confuse Buyers”
+- Include a section titled “What Gets Added on Top of MSRP”
+- Include a section titled “Which Number You Should Actually Compare”
+- Include a section titled “Simple Example: MSRP vs OTD”
+- Include internal links to:
+  - /what-is-an-out-the-door-price
+  - /dealer-wont-give-out-the-door-price
+  - other existing relevant fee/add-on pages if present
+- Include mid-article CTA and bottom CTA to the analyzer using existing article CTA styling/patterns
+
+Tone guidance:
+This page should be very plainspoken and useful. It should sound like a smart consumer advocate, not a marketing blog.
+
+T003 — Create new article page:
+Slug:
+/out-the-door-price-example
+
+Title:
+Out-the-Door Price Example: What a $30,000 Car Really Costs
+
+Meta title:
+Out-the-Door Price Example: What a $30,000 Car Really Costs | Odigos
+
+Meta description:
+See a simple out-the-door price example showing how a $30,000 car turns into a higher real total once taxes, fees, and add-ons are included.
+
+Primary H1:
+Out-the-Door Price Example: What a $30,000 Car Really Costs
+
+Article content requirements:
+- Walk through a clean example using a $30,000 vehicle price
+- Show typical categories added to reach OTD price:
+  - sales tax
+  - title/registration
+  - dealer doc fee
+  - optional add-ons
+  - market adjustment if applicable
+- Make clear that numbers vary by state and dealer
+- Include a section titled “Why the Real Number Is Often Higher Than Buyers Expect”
+- Include a section titled “Which Charges Are Normal vs. Negotiable”
+- Include a section titled “How to Use an Example Like This at the Dealership”
+- Include internal links to:
+  - /what-is-an-out-the-door-price
+  - /dealer-wont-give-out-the-door-price
+  - any existing doc fee / add-ons / market adjustment pages
+- Include mid-article CTA and bottom CTA to the analyzer using existing article CTA styling/patterns
+
+Important:
+Do not present the sample breakdown as legal/financial advice or exact pricing. Frame it as an illustrative example.
+
+T004 — Strengthen internal linking on the existing OTD pages
+
+Update these existing pages if present:
+- /dealer-wont-give-out-the-door-price
+- /what-is-an-out-the-door-price
+
+Add natural contextual internal links between the OTD cluster pages:
+- /how-to-ask-for-out-the-door-price
+- /otd-price-vs-msrp
+- /out-the-door-price-example
+- /dealer-wont-give-out-the-door-price
+- /what-is-an-out-the-door-price
+
+Linking guidance:
+- Links should appear naturally in body copy, not dumped into a link list
+- Anchor text should be descriptive and varied, such as:
+  - how to ask for an out-the-door price
+  - OTD price vs MSRP
+  - out-the-door price example
+  - dealer won’t give out-the-door price
+  - what an out-the-door price includes
+
+T005 — Preserve site conventions
+
+Make sure each new page:
+- uses the same article layout shell as existing longform content
+- includes consistent SEO metadata
+- is added to the router
+- is added to sitemap.xml if sitemap is manually maintained
+- is imported/registered the same way as the other article pages
+- does not break any existing pages or redirects
+
+T006 — Keep article quality high
+
+Writing requirements for all three new pages:
+- 900–1600 words each
+- clear subheads
+- short paragraphs
+- no filler
+- no exaggerated claims
+- no keyword stuffing
+- no generic AI phrasing
+- should read like expert consumer guidance
+- should feel highly relevant to buyers dealing with real dealer pricing ambiguity
+
+T007 — Do not touch unrelated parts of the app
+
+Unless absolutely necessary for wiring the pages into the site, do not modify:
+- analyzer logic
+- payment flow
+- homepage hero
+- backend routes unrelated to article routing
+- unrelated styling systems
+
+Deliverable:
+Implement all tasks directly in the codebase and then provide:
+1. A concise summary of files created
+2. A concise summary of files modified
+3. The exact new slugs added
+4. Any sitemap or routing changes made
+5. Any internal linking updates made to existing articles

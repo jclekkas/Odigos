@@ -1,0 +1,201 @@
+Objective
+
+Create and publish two new high-intent SEO articles for Odigos focused on dealership pricing manipulation.
+
+Important constraints:
+
+• Do NOT change backend logic
+• Do NOT modify analyzer behavior
+• Do NOT add features
+• Do NOT change routing structure
+• Do NOT change article layout components
+• Only add new article content using the existing article template and structure
+• Maintain the same SEO meta tag structure already used for other articles
+• Follow the Odigos editorial tone: clear, practical, consumer-protection focused
+• Articles should feel helpful and authoritative, not generic SEO content
+
+These articles should naturally lead readers to use the Odigos analyzer tool.
+
+--------------------------------------------------
+
+ARTICLE 1
+
+Slug:
+/dealer-wont-give-out-the-door-price
+
+Title:
+Dealer Won’t Give an Out-the-Door Price? What to Do
+
+Meta description:
+If a dealer won't give you the out-the-door price in writing, you don't know the real cost. Learn why dealerships avoid OTD pricing and what to do.
+
+Canonical:
+https://odigos.replit.app/dealer-wont-give-out-the-door-price
+
+Article content:
+
+# Dealer Won’t Give an Out-the-Door Price? What to Do
+
+If a dealer refuses to give you the out-the-door price (OTD) in writing, that's usually a red flag.
+
+The out-the-door price is the total amount you will actually pay to drive the car off the lot. It includes the vehicle price, taxes, registration, documentation fees, and any add-ons.
+
+Without this number, you cannot compare deals or understand the real cost of the car.
+
+Dealers sometimes avoid giving the OTD price because it removes their ability to add fees later in the process.
+
+## Why Some Dealers Avoid Giving the OTD Price
+
+There are a few common reasons dealerships hesitate to provide the full out-the-door number.
+
+### They want you to focus on the monthly payment
+
+Dealers often steer the conversation toward monthly payments instead of the total price. This makes it easier to hide fees inside financing.
+
+### Fees can be added later in the finance office
+
+Some dealerships wait until the final paperwork stage to introduce additional charges such as:
+
+• documentation fees  
+• dealer-installed add-ons  
+• protection packages  
+• VIN etching or nitrogen tires  
+
+If you only know the vehicle price, these costs can appear later.
+
+### They want you physically at the dealership
+
+Many dealers prefer to discuss final pricing in person. Once you're at the dealership and invested in the process, it's harder to walk away.
+
+## What the Out-the-Door Price Should Include
+
+A legitimate OTD price should include:
+
+• vehicle sale price  
+• sales tax  
+• title and registration  
+• dealer documentation fee  
+• any required state or local fees  
+• any add-ons already included in the deal  
+
+If a dealer gives you only the vehicle price or a vague estimate, you don't yet know the real cost.
+
+## What to Say If a Dealer Won’t Give the OTD Price
+
+A simple message often works:
+
+“Before I come in, could you send the full out-the-door price including taxes, registration, and all dealer fees?”
+
+If they still refuse, it may be worth reconsidering that dealership.
+
+Transparent dealers have no problem providing this number.
+
+## How Odigos Helps
+
+If a dealer sends you a quote, text, or email but the pricing looks unclear, you can paste the message into Odigos.
+
+Odigos checks for:
+
+• missing out-the-door pricing  
+• hidden fees  
+• common dealership pricing tactics  
+
+so you know exactly what you're agreeing to before visiting the dealership.
+
+--------------------------------------------------
+
+ARTICLE 2
+
+Slug:
+/dealer-added-fees-after-agreement
+
+Title:
+Dealer Added Fees After We Agreed on Price — Is That Legal?
+
+Meta description:
+Dealers sometimes add fees after agreeing on a price. Learn why this happens and what you can do if new charges appear.
+
+Canonical:
+https://odigos.replit.app/dealer-added-fees-after-agreement
+
+Article content:
+
+# Dealer Added Fees After We Agreed on Price — Is That Legal?
+
+Many car buyers experience the same frustrating situation.
+
+You agree on a price with the dealership, only to see new fees appear when it's time to sign the paperwork.
+
+This often happens during the final finance step, when additional charges are introduced that were not clearly discussed earlier.
+
+## Why Dealers Add Fees Late in the Process
+
+In many cases, the initial agreement focuses only on the vehicle price.
+
+The final contract may then include additional items such as:
+
+• dealer documentation fees  
+• protection packages  
+• paint protection  
+• VIN etching  
+• extended warranties  
+• gap insurance  
+
+Some of these are optional products that were never clearly explained.
+
+Others are legitimate fees but were not included in the earlier quote.
+
+## Is It Legal?
+
+In most cases, dealerships are allowed to charge legitimate fees, but the issue is transparency.
+
+Problems arise when:
+
+• fees appear that were never disclosed  
+• optional products are presented as mandatory  
+• the total price changes after an agreement  
+
+While laws vary by state, misleading pricing practices can violate consumer protection rules.
+
+## How to Protect Yourself
+
+Before agreeing to any deal, ask for the full out-the-door price in writing.
+
+That number should include:
+
+• vehicle price  
+• taxes  
+• registration  
+• dealer fees  
+• any add-ons already included  
+
+If something new appears later, ask for clarification before signing anything.
+
+You always have the option to walk away.
+
+## How Odigos Helps
+
+If a dealer sends a quote or breakdown and you want to know whether new fees are being introduced, paste the message into Odigos.
+
+Odigos checks dealer messages for:
+
+• missing out-the-door pricing  
+• suspicious fee structures  
+• common dealership negotiation tactics  
+
+so you can spot problems before finalizing the deal.
+
+--------------------------------------------------
+
+Implementation tasks
+
+1. Create both articles using the existing article template system already used for Odigos guides.
+2. Add proper SEO meta tags consistent with the existing articles.
+3. Ensure canonical URLs match the slugs above.
+4. Confirm articles render correctly in the existing article layout.
+5. Ensure internal links to the Odigos analyzer remain intact where appropriate.
+6. Do not modify any other pages or logic.
+
+Return:
+• the files created
+• the URLs where the articles can be accessed

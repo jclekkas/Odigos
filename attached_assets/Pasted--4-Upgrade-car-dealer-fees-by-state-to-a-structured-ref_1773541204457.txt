@@ -1,0 +1,57 @@
+#4 - Upgrade /car-dealer-fees-by-state to a structured reference page
+What & Why
+The existing page at client/src/pages/car-dealer-fees-by-state.tsx is functional but thin (~650 words, 2-column table). The goal is to turn it into a stronger reference resource targeting long-tail queries like "dealer doc fee Texas", "doc fee California cap", and "car dealer fees by state". The route, slug, and page template are unchanged.
+
+Done looks like
+H1 updated to "Car Dealer Fees by State: Doc Fee Limits and Typical Costs"
+Meta title + description updated per spec
+Table expanded from 2 columns to 4: State | Typical Doc Fee | Legal Cap | Notes
+All 15 states from spec are in the table (CA, TX, FL, NY, IL, PA, OH, GA, NC, AZ, MI, NJ, VA, WA, MA) — existing rows for CO, MN, WI, NV, TN kept too
+New "Which fees are negotiable" section added between "Which fees are required" and "How to compare"
+/market-adjustment-fee linked naturally (the one missing internal link from the T006 list)
+Final word count ~950–1,300 words
+No routes, backend logic, other pages, global styles, or layout system changed
+Only client/src/pages/car-dealer-fees-by-state.tsx is modified
+Exact changes
+1. Meta strings (useEffect → setSeoMeta call)
+title: "Car Dealer Fees by State: Doc Fee Limits and Typical Costs | Odigos"
+description: "Dealer documentation fees vary widely by state. See typical doc fees, legal caps, and what car buyers should expect across major U.S. states."
+2. H1
+Car Dealer Fees by State: Doc Fee Limits and Typical Costs
+(data-testid="text-fees-by-state-headline" preserved)
+
+3. Table — expand to 4 columns
+New columns: State | Typical Doc Fee | Legal Cap | Notes
+
+Example rows:
+
+California | $85 | Yes ($85 cap) | Strictly enforced; one of the lowest in the country
+Texas | $150–$300 | No | Unregulated; varies by dealer
+Florida | $500–$900+ | No | Among the highest in the country; always ask
+Include all 20 existing rows with the new Notes column populated with 1-sentence context per state.
+
+4. New section: "Which dealer fees are negotiable"
+Insert after "Which fees are actually required" and before "How to compare dealer fees correctly".
+
+Content summary:
+
+Doc fee: often presented as fixed, but even when it truly is non-negotiable, you can negotiate the vehicle sale price down to offset it
+Government fees: never negotiable
+Add-ons: almost always optional/removable (link to /are-dealer-add-ons-mandatory)
+Market adjustment: negotiable or avoidable (link to /market-adjustment-fee)
+5. Add /market-adjustment-fee internal link
+Natural insertion in the new "Which fees are negotiable" section. The sentence pattern: "A market adjustment is pure dealer markup above MSRP — it's not a government fee, not a doc fee, and can often be negotiated down or avoided entirely by shopping competing dealers."
+
+6. Prose expansion throughout
+Expand the intro section by 1 brief paragraph explaining that doc fees affect the out-the-door price, and that knowing state norms helps buyers spot outliers.
+
+Constraints
+Do NOT create new routes, components, pages, or API endpoints
+Do NOT touch server/routes.ts, sitemap.xml, App.tsx, or any other file
+Do NOT change the copy-paste template card or the bottom CTA pattern
+Do NOT redesign layout — only content inside the element changes
+All links: className="underline text-foreground", use from wouter
+All internal links must use canonical slugs (no trailing slashes)
+Relevant files
+client/src/pages/car-dealer-fees-by-state.tsx (only file changed)
+client/src/lib/seo.ts (read-only reference — setSeoMeta already handles canonical/OG/Twitter)

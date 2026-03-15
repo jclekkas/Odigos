@@ -1,0 +1,184 @@
+Objective
+
+Implement this week’s two Odigos article updates while avoiding duplicate or competing SEO pages.
+
+Important constraints:
+- Do NOT change backend logic
+- Do NOT modify analyzer behavior
+- Do NOT add features
+- Do NOT change article layout components
+- Only create/update article content and related SEO metadata
+- Maintain the existing article template system
+- Preserve existing rich content where it is already stronger
+- Follow Odigos editorial tone: clear, practical, consumer-protection focused
+
+--------------------------------------------------
+TASK 1 — CREATE THE PRIMARY OTD ARTICLE
+
+Create or finalize this page as the definitive primary article:
+
+Slug:
+/dealer-wont-give-out-the-door-price
+
+Title:
+Dealer Won’t Give an Out-the-Door Price? What to Do
+
+Meta title:
+Dealer Won’t Give an Out-the-Door Price? What to Do | Odigos
+
+Meta description:
+If a dealer won't give you the out-the-door price in writing, you don't know the real cost. Learn why dealerships avoid OTD pricing and what to do.
+
+Canonical:
+https://odigos.replit.app/dealer-wont-give-out-the-door-price
+
+Article content:
+
+# Dealer Won’t Give an Out-the-Door Price? What to Do
+
+If a dealer refuses to give you the out-the-door price (OTD) in writing, that is usually a red flag.
+
+The out-the-door price is the total amount you will actually pay to drive the car off the lot. It includes the vehicle price, taxes, registration, dealer documentation fees, and any add-ons already included in the deal.
+
+Without that number, you cannot compare offers or understand the real cost of the car.
+
+Dealers sometimes avoid giving the OTD price because it removes their ability to add fees later in the process.
+
+## Why Some Dealers Avoid Giving the OTD Price
+
+There are a few common reasons dealerships hesitate to provide the full out-the-door number.
+
+### They want you focused on the monthly payment
+
+Dealers often try to shift the conversation toward monthly payments instead of total price. That makes it easier to bury fees inside the financing.
+
+### Fees can be added later in the process
+
+Some dealerships wait until the paperwork stage to introduce extra charges such as:
+
+- documentation fees
+- dealer-installed add-ons
+- protection packages
+- VIN etching
+- nitrogen-filled tires
+
+If you only know the vehicle price, those costs can appear later.
+
+### They want you at the dealership first
+
+Many dealers prefer to discuss final pricing in person. Once you have spent time visiting, test driving, and negotiating, it becomes harder to walk away.
+
+## What the Out-the-Door Price Should Include
+
+A legitimate OTD price should include:
+
+- vehicle sale price
+- sales tax
+- title and registration
+- dealer documentation fee
+- required state or local fees
+- any add-ons already included in the quote
+
+If a dealer gives you only the sale price or a vague estimate, you still do not know the real cost.
+
+## What to Say If a Dealer Won’t Give the OTD Price
+
+Use a message like this:
+
+“Before I come in, could you send the full out-the-door price including taxes, registration, and all dealer fees?”
+
+If they still refuse, that is useful information. Transparent dealers usually have no problem giving this number.
+
+## How to Protect Yourself
+
+Before visiting the dealership, try to get the full pricing breakdown in writing.
+
+If the quote is vague, missing fees, or only shows a monthly payment, assume the deal is incomplete until you see the full OTD number.
+
+## How Odigos Helps
+
+If a dealer sends you a quote, text, or email but the pricing looks unclear, paste the message into Odigos.
+
+Odigos checks for:
+
+- missing out-the-door pricing
+- hidden fees
+- dealer add-ons
+- common dealership pricing tactics
+
+so you know what you are agreeing to before you go in.
+
+--------------------------------------------------
+TASK 2 — CONSOLIDATE SIMILAR OTD PAGES
+
+The site already contains similar pages:
+- /dealer-wont-give-otd
+- /dealer-wont-give-otd-price
+
+Handle them as follows:
+
+Preferred option:
+- add 301 redirects from both old slugs to /dealer-wont-give-out-the-door-price
+
+If redirects are not practical in the current setup:
+- keep the old pages from competing
+- update their canonical tags to point to /dealer-wont-give-out-the-door-price
+- remove or reduce internal linking to the duplicate versions
+- ensure the new primary page is the one surfaced in article lists or related links
+
+Do not leave all three pages competing equally.
+
+--------------------------------------------------
+TASK 3 — REFRESH THE EXISTING FEES ARTICLE, DO NOT RECREATE IT
+
+An existing page already exists at:
+/dealer-added-fees-after-agreement
+
+Do NOT create a duplicate page.
+Do NOT replace the existing richer structure with a shorter version.
+
+Instead, keep the existing stronger article and improve it with the following updates only:
+
+1. Make sure the title is:
+Dealer Added Fees After We Agreed on Price — Is That Legal?
+
+2. Make sure the meta title is:
+Dealer Added Fees After We Agreed on Price — Is That Legal? | Odigos
+
+3. Make sure the meta description is:
+Dealers sometimes add fees after agreeing on a price. Learn why this happens, which charges are red flags, and what to do before signing.
+
+4. Tighten the intro so it opens with stronger crisis-intent framing:
+- buyer agreed on a price
+- new fees appeared later
+- this often happens during paperwork
+- transparency is the core issue
+
+5. Preserve the richer existing sections if they are already present, especially:
+- why dealers add fees late
+- which fees are red flags
+- what to say
+- what to do if the fees are “non-negotiable”
+- how to protect yourself
+
+6. Improve the Odigos CTA in the article so it more directly says users can paste the dealer quote, message, or breakdown into Odigos to check for:
+- missing OTD pricing
+- suspicious fee structures
+- common dealership tactics
+
+Do not shorten the article if it is already more comprehensive.
+
+--------------------------------------------------
+TASK 4 — SEO AND QUALITY CHECKS
+
+1. Ensure both pages use the existing article template correctly
+2. Ensure canonical URLs are correct
+3. Ensure internal links point to the preferred OTD article slug
+4. Avoid introducing duplicate content competition
+5. Do not modify analyzer logic or any product functionality
+
+Return:
+- exact files changed
+- whether redirects were added or canonicals were used instead
+- final URLs for the primary article pages
+- confirmation that no product logic was changed

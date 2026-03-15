@@ -42,7 +42,7 @@ export default function IsThisAGoodCarDeal() {
             <ul className="space-y-2 mb-6 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span>unnecessary fees — check <a href="https://www.kbb.com/car-advice/" target="_blank" rel="noopener" className="underline text-foreground">Kelley Blue Book</a> to research fair vehicle pricing</span>
+                <span>unnecessary fees — including <Link href="/dealer-doc-fee" className="underline text-foreground">inflated doc fees</Link> and <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">optional add-ons presented as mandatory</Link>. Check <a href="https://www.kbb.com/car-advice/" target="_blank" rel="noopener" className="underline text-foreground">Kelley Blue Book</a> to research fair vehicle pricing</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
@@ -50,13 +50,17 @@ export default function IsThisAGoodCarDeal() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span>inflated pricing</span>
+                <span>inflated pricing — such as a <Link href="/market-adjustment-fee" className="underline text-foreground">market adjustment</Link> that adds thousands above MSRP with no added product or service</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
                 <span>vague "subject to approval" terms</span>
               </li>
             </ul>
+
+            <p className="text-lg text-muted-foreground mb-6">
+              The best way to evaluate any deal is to compare the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> — the total you'll actually pay, including taxes, fees, and every line item. If you don't have that number yet, start there. For a full rundown of what to watch for, see our <Link href="/dealer-pricing-tactics" className="underline text-foreground">guide to dealer pricing tactics</Link>.
+            </p>
             
             <p className="text-lg text-muted-foreground mb-8">
               Seeing everything in writing before visiting the dealership protects you from surprises. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's car buying guide</a> offers additional tips on what to verify.

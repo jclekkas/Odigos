@@ -109,7 +109,7 @@ export default function CalculateOutTheDoorPrice() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="font-semibold text-foreground shrink-0">4.</span>
-                <span><strong className="text-foreground">Add the dealer documentation fee.</strong> The doc fee covers the dealer's paperwork processing. It ranges from under $100 in capped states to $700+ in uncapped states. Check what's typical in your area.</span>
+                <span><strong className="text-foreground">Add the <Link href="/dealer-doc-fee" className="underline text-foreground">dealer documentation fee</Link>.</strong> The doc fee covers the dealer's paperwork processing. It ranges from under $100 in capped states to $700+ in uncapped states. Check what's typical in your area.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="font-semibold text-foreground shrink-0">5.</span>
@@ -208,7 +208,7 @@ export default function CalculateOutTheDoorPrice() {
             </Card>
 
             <p className="text-muted-foreground mb-8">
-              If they won't itemize the price, that tells you something. A dealer who is confident in their pricing will have no problem breaking it down. If they push back, you can read more about why in our guide on <Link href="/dealer-wont-give-otd-price" className="underline text-foreground">dealers who won't give an OTD price</Link>.
+              If they won't itemize the price, that tells you something. A dealer who is confident in their pricing will have no problem breaking it down. If they push back, you can read more about why in our guide on <Link href="/dealer-wont-give-out-the-door-price" className="underline text-foreground">dealers who won't give an OTD price</Link>.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why Odigos Helps</h2>

@@ -55,14 +55,14 @@ export default function CarDealerFeesExplained() {
             </li>
             <li className="flex items-start gap-2">
               <span className="text-muted-foreground">•</span>
-              <span><strong className="text-foreground">Dealer documentation fees</strong> — these cover the cost of processing paperwork and vary widely. Some states cap them at relatively low amounts, while others have no cap at all and you might see charges of $500 or more. It's worth checking what's typical in your area before negotiating.</span>
+              <span><strong className="text-foreground"><Link href="/dealer-doc-fee" className="underline text-foreground">Dealer documentation fees</Link></strong> — these cover the cost of processing paperwork and vary widely. Some states cap them at relatively low amounts, while others have no cap at all and you might see charges of $500 or more. It's worth checking what's typical in your area before negotiating.</span>
             </li>
           </ul>
 
           <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Fees that are often negotiable or optional</h2>
 
           <p className="text-muted-foreground mb-4">
-            Many line items on a dealer's worksheet are add-ons, not requirements. According to <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds</a>, buyers can often push back on these charges — or decline them entirely.
+            Many line items on a dealer's worksheet are add-ons, not requirements. Most <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">dealer add-ons are optional</Link>, even when presented as mandatory. According to <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds</a>, buyers can often push back on these charges — or decline them entirely.
           </p>
 
           <ul className="space-y-2 mb-6 text-muted-foreground">
@@ -84,7 +84,7 @@ export default function CarDealerFeesExplained() {
             </li>
             <li className="flex items-start gap-2">
               <span className="text-muted-foreground">•</span>
-              <span><strong className="text-foreground">Market adjustment / ADM</strong> — this is pure dealer profit added on top of MSRP. It's always negotiable, especially when inventory is available and demand has cooled.</span>
+              <span><strong className="text-foreground"><Link href="/market-adjustment-fee" className="underline text-foreground">Market adjustment / ADM</Link></strong> — this is pure dealer profit added on top of MSRP. It's always negotiable, especially when inventory is available and demand has cooled.</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-muted-foreground">•</span>
@@ -99,7 +99,7 @@ export default function CarDealerFeesExplained() {
           </p>
 
           <p className="text-muted-foreground mb-8">
-            If a dealer won't provide an itemized breakdown, that's worth treating as a signal. Transparent pricing shouldn't be hard to get.
+            If a dealer won't provide an itemized breakdown, that's worth treating as a signal. Transparent pricing shouldn't be hard to get. For more on what's negotiable versus what's not, see our guide on <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">whether dealer add-ons are mandatory</Link>, and use our <Link href="/how-to-ask-for-out-the-door-price" className="underline text-foreground">copy-paste template</Link> to request the full breakdown from any dealer.
           </p>
           
           <div className="mt-12 pt-8 border-t border-border">

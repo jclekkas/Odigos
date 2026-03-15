@@ -66,7 +66,7 @@ export default function OutTheDoorPriceCalculator() {
               The out-the-door price (OTD) is the total amount you pay to drive a car off the lot — sale price, taxes, registration, dealer fees, and any add-ons combined into one number. It's the only figure that tells you what a car actually costs. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's car buying guide</a> explains which fees are required and which are negotiable.
             </p>
             <p className="text-lg text-muted-foreground mb-10">
-              Most online car price calculators estimate tax and registration but miss the fees that vary most: <Link href="/dealer-doc-fee" className="underline text-foreground">dealer documentation fees</Link>, <Link href="/mandatory-dealer-add-ons" className="underline text-foreground">mandatory add-ons</Link>, market adjustments, and F&I products. Those dealer-specific charges are often where hundreds or thousands of dollars hide.
+              Most online car price calculators estimate tax and registration but miss the fees that vary most: <Link href="/dealer-doc-fee" className="underline text-foreground">dealer documentation fees</Link>, <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">mandatory add-ons</Link>, market adjustments, and F&I products. Those dealer-specific charges are often where hundreds or thousands of dollars hide.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What an OTD Calculator Can (and Can't) Do</h2>

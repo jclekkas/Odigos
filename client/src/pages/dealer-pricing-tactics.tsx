@@ -7,16 +7,52 @@ import SeoHead from "@/components/SeoHead";
 
 const tactics = [
   {
-    title: "Dealer Won't Give OTD Price? Here's What That Means",
+    title: "Dealer Won't Give an Out-the-Door Price? Here's Why",
     summary:
-      "If a dealer refuses to give you an out-the-door price in writing, it's usually strategic. Learn the four most common reasons — and exactly what to say back.",
-    href: "/dealer-wont-give-otd-price",
+      "If a dealer refuses to give you a full out-the-door price in writing, it's usually strategic. Learn the most common reasons — and exactly what to say back.",
+    href: "/dealer-wont-give-out-the-door-price",
   },
   {
-    title: "Are Dealer Add-Ons Mandatory? Here's What You Can Refuse",
+    title: "Are Dealer Add-Ons Mandatory? What You Can Refuse",
     summary:
       "Most dealer add-ons are optional profit items — not requirements. Learn what's negotiable, what's legally required, and exactly what to say to get them removed.",
     href: "/are-dealer-add-ons-mandatory",
+  },
+  {
+    title: "Dealer Added Fees After You Already Agreed? What to Do",
+    summary:
+      "New charges appearing after you've agreed on a price is more common than you'd expect. Learn why it happens and how to push back effectively.",
+    href: "/dealer-added-fees-after-agreement",
+  },
+  {
+    title: "Dealer Changed the Price After Your Deposit?",
+    summary:
+      "If a dealer is quoting a different price after collecting your deposit, you have options. Understand your rights and what to say to get the original deal — or your money back.",
+    href: "/dealer-changed-price-after-deposit",
+  },
+  {
+    title: "Market Adjustment Fees: Can Dealers Charge Them?",
+    summary:
+      "A market adjustment adds thousands above MSRP with no additional product or service. Learn whether it's negotiable and how to respond.",
+    href: "/market-adjustment-fee",
+  },
+  {
+    title: "Dealer Doc Fee Too High? What You Can Do",
+    summary:
+      "Doc fees vary widely by state and dealership. Learn what's normal, how to compare, and how to negotiate the total price even if the fee itself is fixed.",
+    href: "/doc-fee-too-high",
+  },
+  {
+    title: "Why the Finance Office Numbers Look Different",
+    summary:
+      "You agreed on a price, but the contract shows different numbers. Learn the most common reasons and what to check before you sign.",
+    href: "/finance-office-changed-the-numbers",
+  },
+  {
+    title: "The Monthly Payment Trap in Car Buying",
+    summary:
+      "When a dealer steers the conversation to monthly payments instead of total price, key costs get hidden. Learn how to spot it and what to focus on instead.",
+    href: "/monthly-payment-trap",
   },
 ];
 
@@ -45,7 +81,7 @@ export default function DealerPricingTactics() {
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-4">
-              Car dealers use a range of pricing tactics to keep buyers in the dark — from refusing to give out-the-door prices to bundling add-ons that inflate the final cost (see <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds' breakdown of common fees</a> for context). Understanding these tactics is the first step to negotiating from a position of strength.
+              Car dealers use a range of pricing tactics to keep buyers in the dark — from refusing to give <Link href="/out-the-door-price" className="underline text-foreground">out-the-door prices</Link> to bundling add-ons that inflate the final cost (see <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds' breakdown of common fees</a> for context). Understanding these tactics is the first step to negotiating from a position of strength.
             </p>
             <p className="text-lg text-muted-foreground mb-10">
               Odigos helps you identify these tactics in real dealer quotes, emails, and texts — so you know what to ask and what to push back on before you visit the dealership. For a broader overview of your rights as a buyer, see the <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for car buyers</a>.

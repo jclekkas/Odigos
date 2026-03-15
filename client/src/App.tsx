@@ -8,13 +8,12 @@ import Analyze from "@/pages/home";
 import OutTheDoorPrice from "@/pages/out-the-door-price";
 import MonthlyPaymentTrap from "@/pages/monthly-payment-trap";
 import IsThisAGoodCarDeal from "@/pages/is-this-a-good-car-deal";
-import DealerWontGiveOtd from "@/pages/dealer-wont-give-otd";
+import DealerWontGiveOutTheDoorPrice from "@/pages/dealer-wont-give-out-the-door-price";
 import CarDealerFeesExplained from "@/pages/car-dealer-fees-explained";
 import DealerDocFee from "@/pages/dealer-doc-fee";
 import MandatoryDealerAddOns from "@/pages/mandatory-dealer-add-ons";
 import OutTheDoorPriceCalculator from "@/pages/out-the-door-price-calculator";
 import DealerPricingTactics from "@/pages/dealer-pricing-tactics";
-import DealerWontGiveOtdPrice from "@/pages/dealer-wont-give-otd-price";
 import AreDealerAddOnsMandatory from "@/pages/are-dealer-add-ons-mandatory";
 import DealerAddedFeesAfterAgreement from "@/pages/dealer-added-fees-after-agreement";
 import MarketAdjustmentFee from "@/pages/market-adjustment-fee";
@@ -26,6 +25,9 @@ import DealerAddOnsList from "@/pages/dealer-add-ons-list";
 import DealerDocFeeByState from "@/pages/dealer-doc-fee-by-state";
 import CarDealerFeesList from "@/pages/car-dealer-fees-list";
 import CalculateOutTheDoorPrice from "@/pages/calculate-out-the-door-price";
+import HowToAskForOutTheDoorPrice from "@/pages/how-to-ask-for-out-the-door-price";
+import OtdPriceVsMsrp from "@/pages/otd-price-vs-msrp";
+import OutTheDoorPriceExample from "@/pages/out-the-door-price-example";
 import GuidesRedirect from "@/pages/guides-redirect";
 import AdminMetrics from "@/pages/admin-metrics";
 import NotFound from "@/pages/not-found";
@@ -38,13 +40,12 @@ function Router() {
       <Route path="/out-the-door-price" component={OutTheDoorPrice} />
       <Route path="/monthly-payment-trap" component={MonthlyPaymentTrap} />
       <Route path="/is-this-a-good-car-deal" component={IsThisAGoodCarDeal} />
-      <Route path="/dealer-wont-give-otd" component={DealerWontGiveOtd} />
+      <Route path="/dealer-wont-give-out-the-door-price" component={DealerWontGiveOutTheDoorPrice} />
       <Route path="/car-dealer-fees-explained" component={CarDealerFeesExplained} />
       <Route path="/dealer-doc-fee" component={DealerDocFee} />
       <Route path="/mandatory-dealer-add-ons" component={MandatoryDealerAddOns} />
       <Route path="/out-the-door-price-calculator" component={OutTheDoorPriceCalculator} />
       <Route path="/dealer-pricing-tactics" component={DealerPricingTactics} />
-      <Route path="/dealer-wont-give-otd-price" component={DealerWontGiveOtdPrice} />
       <Route path="/are-dealer-add-ons-mandatory" component={AreDealerAddOnsMandatory} />
       <Route path="/dealer-added-fees-after-agreement" component={DealerAddedFeesAfterAgreement} />
       <Route path="/market-adjustment-fee" component={MarketAdjustmentFee} />
@@ -56,6 +57,9 @@ function Router() {
       <Route path="/dealer-doc-fee-by-state" component={DealerDocFeeByState} />
       <Route path="/car-dealer-fees-list" component={CarDealerFeesList} />
       <Route path="/calculate-out-the-door-price" component={CalculateOutTheDoorPrice} />
+      <Route path="/how-to-ask-for-out-the-door-price" component={HowToAskForOutTheDoorPrice} />
+      <Route path="/otd-price-vs-msrp" component={OtdPriceVsMsrp} />
+      <Route path="/out-the-door-price-example" component={OutTheDoorPriceExample} />
       <Route path="/guides" component={GuidesRedirect} />
       <Route path="/admin/metrics" component={AdminMetrics} />
       <Route component={NotFound} />

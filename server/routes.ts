@@ -12,7 +12,6 @@ const openai = new OpenAI({
 });
 
 console.log("OpenAI configured with base URL:", process.env.AI_INTEGRATIONS_OPENAI_BASE_URL ? "set" : "not set");
-console.log("OpenAI API key:", process.env.AI_INTEGRATIONS_OPENAI_API_KEY ? "set" : "not set");
 
 export async function registerRoutes(
   httpServer: Server,
@@ -612,6 +611,14 @@ GO/NO-GO/NEED-MORE-INFO:
         message: error?.message 
       });
     }
+  });
+
+  app.get("/dealer-wont-give-otd", (_req, res) => {
+    res.redirect(301, "/dealer-wont-give-out-the-door-price");
+  });
+
+  app.get("/dealer-wont-give-otd-price", (_req, res) => {
+    res.redirect(301, "/dealer-wont-give-out-the-door-price");
   });
 
   app.get("/sitemap.xml", (_req, res) => {

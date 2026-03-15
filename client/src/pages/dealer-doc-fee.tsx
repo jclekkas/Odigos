@@ -7,7 +7,7 @@ import { setSeoMeta } from "@/lib/seo";
 export default function DealerDocFee() {
   useEffect(() => {
     return setSeoMeta({
-      title: "Are Dealer Documentation Fees Legit? | Odigos",
+      title: "Dealer Documentation Fees: What They Are and What's Normal by State | Odigos",
       description: "Learn what dealer doc fees are, whether they're negotiable, how much is normal by state, and how to challenge inflated documentation fees before signing.",
       path: "/dealer-doc-fee",
     });
@@ -26,12 +26,12 @@ export default function DealerDocFee() {
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-doc-fee-headline">
-            Are Dealer Documentation Fees Legit?
+            Dealer Documentation Fees: What They Are and What's Normal
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-4">
-              If you've ever reviewed a car deal closely, you've probably noticed a line item called a "documentation fee," "doc fee," or "dealer processing fee." It typically ranges from $100 to $1,000 or more depending on where you live. Some buyers assume it's a government charge. It's not. It's a dealer-imposed fee, and in many cases, it's negotiable.
+              If you've ever reviewed a car deal closely, you've probably noticed a line item called a "documentation fee," "doc fee," or "dealer processing fee." It typically ranges from $100 to $1,000 or more depending on where you live. Some buyers assume it's a government charge. It's not. It's a dealer-imposed fee, and in many cases, it's negotiable. This fee is one of several that can significantly affect your <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link>.
             </p>
             <p className="text-lg text-muted-foreground mb-10">
               Understanding what a doc fee is, what's normal in your state, and how to push back can save you hundreds of dollars on your next car purchase.
@@ -63,7 +63,7 @@ export default function DealerDocFee() {
               Even in states where the fee is consistent across all customers at a given dealership, you can still negotiate the vehicle price or other line items to offset it.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How Much Is Normal? (By State)</h2>
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">States With Doc Fee Caps</h2>
             <p className="text-muted-foreground mb-4">
               Doc fee norms vary significantly by state. Here are a few examples to illustrate how much rules vary by state (always confirm locally):
             </p>
@@ -74,11 +74,11 @@ export default function DealerDocFee() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                <span><strong className="text-foreground">No caps (examples):</strong> Florida, Texas, Georgia, Colorado — dealers can charge what they want, and $700–$1,000+ isn't unusual.</span>
+                <span><strong className="text-foreground">No caps (examples):</strong> Florida, Texas, Georgia, Colorado — dealers can charge what they want, and $700–$1,000+ isn't unusual. In some cases, a high doc fee may appear alongside a <Link href="/market-adjustment-fee" className="underline text-foreground">market adjustment fee</Link>.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                <span><strong className="text-foreground">Rule of thumb:</strong> Treat the doc fee as part of your total out-the-door price and compare dealers on the full itemized OTD.</span>
+                <span><strong className="text-foreground">Rule of thumb:</strong> Treat the doc fee as part of your total out-the-door price and compare dealers on the full itemized OTD. See an <Link href="/out-the-door-price-example" className="underline text-foreground">out-the-door price example</Link> to understand what a complete breakdown looks like.</span>
               </li>
             </ul>
             <p className="text-muted-foreground mb-8">
@@ -93,7 +93,7 @@ export default function DealerDocFee() {
               For example, if a dealer charges a $799 doc fee, you can ask for $799 more off the sale price. The net effect is the same. The doc fee stays on the paperwork, but the total out-the-door cost drops.
             </p>
             <p className="text-muted-foreground mb-8">
-              What matters isn't any single line item — it's the total out-the-door price. That's why you should always ask for an itemized OTD breakdown before agreeing to anything.
+              What matters isn't any single line item — it's the total out-the-door price. That's why you should always <Link href="/how-to-ask-for-out-the-door-price" className="underline text-foreground">ask for an itemized OTD breakdown in writing</Link> before agreeing to anything.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Red Flags to Watch For</h2>
@@ -108,15 +108,15 @@ export default function DealerDocFee() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-amber-500 mt-1.5 shrink-0">•</span>
-                <span>Multiple vague fees that look like duplicates (e.g., "processing fee" plus "doc fee" plus "admin fee")</span>
+                <span>Multiple vague fees that look like duplicates (e.g., "processing fee" plus "doc fee" plus "admin fee") — learn more about <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">which dealer add-ons are mandatory</Link></span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-amber-500 mt-1.5 shrink-0">•</span>
-                <span>The doc fee isn't shown on the initial quote — only revealed during F&I</span>
+                <span>The doc fee isn't shown on the initial quote — only <Link href="/dealer-added-fees-after-agreement" className="underline text-foreground">revealed after you've already agreed</Link></span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-amber-500 mt-1.5 shrink-0">•</span>
-                <span>Dealer refuses to provide a written out-the-door price that includes the doc fee</span>
+                <span><Link href="/dealer-wont-give-out-the-door-price" className="underline text-foreground">Dealer refuses to provide a written out-the-door price</Link> that includes the doc fee</span>
               </li>
             </ul>
             <p className="text-muted-foreground mb-8">

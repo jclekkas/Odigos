@@ -73,8 +73,9 @@ Note: The database is used for metrics tracking and optional features. The core 
 
 ### Content Pages (SEO Articles)
 - All article pages follow a consistent pattern: `setSeoMeta` for meta tags/canonical, logo header linking to `/`, article body with dark theme styling, internal link to `/out-the-door-price`, one external link (FTC/Edmunds/KBB), CTA linking to `/analyze`, and footer disclaimer
-- **Pages**: `/out-the-door-price`, `/monthly-payment-trap`, `/is-this-a-good-car-deal`, `/dealer-wont-give-otd`, `/car-dealer-fees-explained`, `/dealer-doc-fee`, `/mandatory-dealer-add-ons`, `/out-the-door-price-calculator`, `/dealer-pricing-tactics`, `/dealer-wont-give-otd-price`, `/are-dealer-add-ons-mandatory`, `/dealer-added-fees-after-agreement`, `/market-adjustment-fee`, `/doc-fee-too-high`, `/dealer-changed-price-after-deposit`, `/finance-office-changed-the-numbers`, `/car-dealer-fees-by-state`, `/dealer-add-ons-list`, `/dealer-doc-fee-by-state`, `/car-dealer-fees-list`, `/calculate-out-the-door-price`
-- **Sitemap**: `sitemap.xml` (23 URLs, excludes `/guides` redirect and `/admin/metrics`)
+- **Pages**: `/out-the-door-price`, `/monthly-payment-trap`, `/is-this-a-good-car-deal`, `/dealer-wont-give-out-the-door-price`, `/car-dealer-fees-explained`, `/dealer-doc-fee`, `/mandatory-dealer-add-ons`, `/out-the-door-price-calculator`, `/dealer-pricing-tactics`, `/are-dealer-add-ons-mandatory`, `/dealer-added-fees-after-agreement`, `/market-adjustment-fee`, `/doc-fee-too-high`, `/dealer-changed-price-after-deposit`, `/finance-office-changed-the-numbers`, `/car-dealer-fees-by-state`, `/dealer-add-ons-list`, `/dealer-doc-fee-by-state`, `/car-dealer-fees-list`, `/calculate-out-the-door-price`, `/how-to-ask-for-out-the-door-price`, `/otd-price-vs-msrp`, `/out-the-door-price-example`
+- **Redirects**: `/dealer-wont-give-otd` → 301 → `/dealer-wont-give-out-the-door-price`; `/dealer-wont-give-otd-price` → 301 → `/dealer-wont-give-out-the-door-price` (server-level in `server/routes.ts`)
+- **Sitemap**: `sitemap.xml` (25 URLs, excludes `/guides` redirect and `/admin/metrics`)
 - **robots.txt**: Served via explicit Express route in `server/routes.ts`
 
 ### Prerendering (SEO)

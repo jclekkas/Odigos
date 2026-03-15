@@ -1,0 +1,200 @@
+import { useEffect } from "react";
+import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import { setSeoMeta } from "@/lib/seo";
+import logoImage from "@assets/odigos_logo.png";
+
+export default function OtdPriceVsMsrp() {
+  useEffect(() => {
+    return setSeoMeta({
+      title: "OTD Price vs MSRP: What Car Buyers Get Wrong | Odigos",
+      description: "MSRP is not the same as the out-the-door price. Learn the difference, what extra charges get added, and which number you should negotiate around.",
+      path: "/otd-price-vs-msrp",
+    });
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-background">
+
+      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+        <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-3">
+          <Link href="/">
+            <img src={logoImage} alt="Odigos" className="h-28 w-auto cursor-pointer" data-testid="link-logo-home" />
+          </Link>
+        </div>
+      </header>
+
+      <main className="py-12 md:py-20 px-6">
+        <article className="max-w-2xl mx-auto">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-otd-vs-msrp-headline">
+            OTD Price vs. MSRP: What Car Buyers Get Wrong
+          </h1>
+
+          <div className="prose prose-lg dark:prose-invert max-w-none">
+            <p className="text-lg text-muted-foreground mb-6">
+              Many car buyers focus on the MSRP when comparing vehicles.
+            </p>
+
+            <p className="text-lg text-muted-foreground mb-6">
+              But the MSRP is not the final price you pay.
+            </p>
+
+            <p className="text-lg text-muted-foreground mb-6">
+              The number that matters most is the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link>, which includes taxes, fees, and other charges. Understanding the difference can help you avoid surprises at the dealership.
+            </p>
+
+            <p className="text-sm text-muted-foreground mb-6">
+              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
+            </p>
+
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What MSRP Actually Means</h2>
+
+            <p className="text-muted-foreground mb-4">
+              MSRP stands for Manufacturer's Suggested Retail Price. It is the price recommended by the car manufacturer for the vehicle.
+            </p>
+
+            <p className="text-muted-foreground mb-4">
+              The MSRP usually includes:
+            </p>
+
+            <ul className="space-y-2 mb-6 text-muted-foreground">
+              <li className="flex items-start gap-2"><span>•</span><span>Base vehicle price</span></li>
+              <li className="flex items-start gap-2"><span>•</span><span>Factory-installed options</span></li>
+              <li className="flex items-start gap-2"><span>•</span><span>Destination charge</span></li>
+            </ul>
+
+            <p className="text-muted-foreground mb-6">
+              However, it does not include taxes, registration, or most dealer fees. That means the amount you actually pay will usually be higher.
+            </p>
+
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What the Out-the-Door Price Includes</h2>
+
+            <p className="text-muted-foreground mb-4">
+              The out-the-door price represents the total cost to purchase the car. It typically includes:
+            </p>
+
+            <ul className="space-y-2 mb-6 text-muted-foreground">
+              <li className="flex items-start gap-2"><span>•</span><span>Vehicle sale price</span></li>
+              <li className="flex items-start gap-2"><span>•</span><span>Sales tax</span></li>
+              <li className="flex items-start gap-2"><span>•</span><span>Title and registration</span></li>
+              <li className="flex items-start gap-2"><span>•</span><span><Link href="/dealer-doc-fee" className="underline text-foreground">Dealer documentation fee</Link></span></li>
+              <li className="flex items-start gap-2"><span>•</span><span><Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">Dealer add-ons or accessories</Link></span></li>
+            </ul>
+
+            <p className="text-muted-foreground mb-6">
+              Because it includes everything, the OTD price is the most accurate number for comparing offers between dealerships.
+            </p>
+
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why Monthly Payment Quotes Confuse Buyers</h2>
+
+            <p className="text-muted-foreground mb-4">
+              Many dealerships focus on the monthly payment instead of the total price. Monthly payments depend on several variables:
+            </p>
+
+            <ul className="space-y-2 mb-6 text-muted-foreground">
+              <li className="flex items-start gap-2"><span>•</span><span>loan term</span></li>
+              <li className="flex items-start gap-2"><span>•</span><span>interest rate</span></li>
+              <li className="flex items-start gap-2"><span>•</span><span>down payment</span></li>
+              <li className="flex items-start gap-2"><span>•</span><span>trade-in value</span></li>
+            </ul>
+
+            <p className="text-muted-foreground mb-6">
+              Two offers with the same payment may have very different total costs. That's why it's usually better to compare out-the-door price first, then discuss financing separately.
+            </p>
+
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What Gets Added on Top of MSRP</h2>
+
+            <p className="text-muted-foreground mb-4">
+              Several charges often appear after the vehicle price is discussed. These may include:
+            </p>
+
+            <div className="space-y-4 mb-6">
+              <div>
+                <p className="font-medium text-foreground">Sales tax</p>
+                <p className="text-muted-foreground">Based on your state's tax rate.</p>
+              </div>
+              <div>
+                <p className="font-medium text-foreground">Title and registration fees</p>
+                <p className="text-muted-foreground">Required to legally register the car.</p>
+              </div>
+              <div>
+                <p className="font-medium text-foreground"><Link href="/dealer-doc-fee" className="underline text-foreground">Dealer documentation fee</Link></p>
+                <p className="text-muted-foreground">A fee for processing paperwork.</p>
+              </div>
+              <div>
+                <p className="font-medium text-foreground">Dealer add-ons</p>
+                <p className="text-muted-foreground">Optional products installed by the dealership.</p>
+              </div>
+              <div>
+                <p className="font-medium text-foreground"><Link href="/market-adjustment-fee" className="underline text-foreground">Market adjustment fees</Link></p>
+                <p className="text-muted-foreground">Additional markups some dealers add for high-demand vehicles.</p>
+              </div>
+            </div>
+
+            <p className="text-muted-foreground mb-6">
+              These additions explain why the final price often differs significantly from the MSRP.
+            </p>
+
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Which Number Should You Compare?</h2>
+
+            <p className="text-muted-foreground mb-6">
+              When comparing dealerships, focus on the out-the-door price. The OTD price shows the full amount you will pay.
+            </p>
+
+            <p className="text-muted-foreground mb-6">
+              Two dealers may offer the same vehicle at the same MSRP but have very different OTD totals because of fees or add-ons.
+            </p>
+
+            <p className="text-muted-foreground mb-6">
+              Before visiting the dealership, <Link href="/how-to-ask-for-out-the-door-price" className="underline text-foreground">ask for the full out-the-door price in writing</Link>. If <Link href="/dealer-wont-give-out-the-door-price" className="underline text-foreground">a dealer avoids providing it</Link>, that can be a sign the final cost may be higher than expected.
+            </p>
+
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Simple Example: MSRP vs OTD</h2>
+
+            <p className="text-muted-foreground mb-4">
+              A car with a $30,000 MSRP might end up with an out-the-door price closer to:
+            </p>
+
+            <ul className="space-y-2 mb-6 text-muted-foreground">
+              <li className="flex items-start gap-2"><span>•</span><span>$31,800 after tax</span></li>
+              <li className="flex items-start gap-2"><span>•</span><span>$32,200 after registration and doc fees</span></li>
+              <li className="flex items-start gap-2"><span>•</span><span>$33,000 or more if add-ons are included</span></li>
+            </ul>
+
+            <p className="text-muted-foreground mb-6">
+              This is why understanding the OTD price is essential when negotiating. For a more detailed breakdown, see a full <Link href="/out-the-door-price-example" className="underline text-foreground">out-the-door price example</Link> using a $30,000 vehicle.
+            </p>
+
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Before Visiting the Dealership</h2>
+
+            <p className="text-muted-foreground mb-6">
+              Once you receive a written quote, review the breakdown carefully. Make sure the OTD price includes every major charge.
+            </p>
+
+            <p className="text-muted-foreground mb-6">
+              If you're unsure whether something is missing, you can paste the quote into Odigos to check for hidden fees or incomplete pricing.
+            </p>
+          </div>
+
+          <div className="mt-12 pt-8 border-t border-border">
+            <p className="text-muted-foreground mb-4">
+              Not sure if the dealer quote is complete?
+            </p>
+            <p className="text-sm text-muted-foreground mb-4">
+              Paste the message or quote you received. Odigos checks for missing out-the-door pricing, add-ons, and unclear fees.
+            </p>
+            <Link href="/analyze">
+              <Button size="lg" data-testid="button-cta-otd-vs-msrp">
+                Check the Quote with Odigos
+              </Button>
+            </Link>
+          </div>
+
+          <p className="text-xs text-muted-foreground mt-12">
+            Not affiliated with any dealership. Optimized for U.S. car purchases.
+          </p>
+        </article>
+      </main>
+    </div>
+  );
+}

@@ -81,14 +81,14 @@ export default function MonthlyPaymentTrap() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span><strong className="text-foreground">The total sale price.</strong> If you never see the full out-the-door number, you can't compare it against other offers or verify that the price matches what was advertised.</span>
+                <span><strong className="text-foreground">The total sale price.</strong> If you never see the full out-the-door number, you can't compare it against other offers or verify that the price matches what was advertised. See the full list of <Link href="/dealer-pricing-tactics" className="underline text-foreground">dealer pricing tactics</Link> that work alongside payment-focused quotes.</span>
               </li>
             </ul>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to avoid the trap</h2>
 
             <p className="text-lg text-muted-foreground mb-6">
-              The most effective approach is to treat the vehicle price and the financing as two separate transactions — because they are. Negotiate the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> first: the total amount including tax, title, registration, and any dealer fees. Once you have that number agreed upon, then discuss financing terms separately.
+              The most effective approach is to treat the vehicle price and the financing as two separate transactions — because they are. Negotiate the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> first: the total amount including tax, title, registration, and any dealer fees. Once you have that number agreed upon, then discuss financing terms separately. If the numbers change when you get to the finance office, that's a different problem — see <Link href="/finance-office-changed-the-numbers" className="underline text-foreground">why the finance office numbers look different</Link>.
             </p>
 
             <ul className="space-y-2 mb-6 text-muted-foreground">
@@ -107,7 +107,7 @@ export default function MonthlyPaymentTrap() {
             </ul>
 
             <p className="text-lg text-muted-foreground mb-8">
-              If you already have a payment-focused quote from a dealer, Odigos can analyze what's missing and flag anything that looks unclear or incomplete.
+              If you already have a payment-focused quote from a dealer, Odigos can analyze what's missing and flag anything that looks unclear or incomplete. You can also use our <Link href="/how-to-ask-for-out-the-door-price" className="underline text-foreground">copy-paste message template</Link> to request the full OTD breakdown from the dealer.
             </p>
           </div>
           

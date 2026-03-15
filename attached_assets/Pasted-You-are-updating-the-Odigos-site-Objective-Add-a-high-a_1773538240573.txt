@@ -1,0 +1,87 @@
+You are updating the Odigos site.
+
+Objective:
+Add a high-authority SEO article explaining dealer documentation fees (“doc fees”) and how they vary by state. This page should strengthen Odigos’ topical authority around dealership pricing transparency.
+
+Important constraints:
+- Do NOT add new product features
+- Do NOT modify backend logic, APIs, analyzer behavior, or payment flows
+- Do NOT change homepage layout or product UX
+- Follow the existing article page structure used for other Odigos SEO pages
+- Maintain the same tone as existing articles: clear, calm, consumer-protection focused
+- Avoid filler content or generic SEO language
+- Ensure the article includes strong internal links and Odigos CTAs
+
+Create a new article page with the following:
+
+Slug:
+/dealer-doc-fee
+
+Meta title:
+Dealer Documentation Fees: What They Are and What’s Normal by State | Odigos
+
+Meta description:
+Dealer doc fees can add hundreds of dollars to a car purchase. Learn what documentation fees are, what’s normal, and how they vary by state.
+
+Primary H1:
+Dealer Documentation Fees: What They Are and What’s Normal
+
+Article structure requirements:
+
+Section 1 — Intro
+Explain what dealer doc fees are and why buyers often discover them late in the process.
+
+Section 2 — What a Dealer Documentation Fee Is
+Explain that this fee covers paperwork and administrative processing but varies widely by dealership.
+
+Section 3 — Why Doc Fees Vary So Much
+Explain that some states regulate doc fees while others allow dealers to set their own price.
+
+Section 4 — Typical Doc Fee Ranges
+Explain that fees can range from around $100 to $1,000 depending on state and dealer.
+
+Section 5 — States With Doc Fee Caps
+Explain that some states limit documentation fees and briefly list examples.
+
+Section 6 — Are Dealer Doc Fees Negotiable?
+Explain that in many states the fee itself must be charged equally to all buyers, but the vehicle price can often be negotiated to offset it.
+
+Section 7 — Red Flags to Watch For
+Examples:
+- unusually high doc fee
+- additional “processing” fees
+- fee appearing only in final paperwork
+
+Section 8 — What to Do if the Fee Looks Too High
+Explain how buyers can ask for a breakdown or compare offers between dealerships.
+
+CTA placement requirements:
+
+Mid-article CTA:
+Encourage readers to paste a dealer quote into Odigos to check whether fees or charges look unusual.
+
+Bottom CTA:
+Explain that Odigos analyzes dealer messages and quotes to flag missing or suspicious pricing details before visiting a dealership.
+
+Internal linking requirements:
+
+Add links to existing pages where relevant:
+- /what-is-an-out-the-door-price
+- /dealer-wont-give-out-the-door-price
+- /are-dealer-add-ons-mandatory
+- other pricing transparency articles if they exist
+
+Technical requirements:
+
+- Follow the same article component and layout used by other SEO pages
+- Add appropriate meta tags (title, description, canonical, Open Graph)
+- Register the page in routing
+- Add the page to sitemap.xml if sitemap is manually maintained
+
+Writing quality:
+
+- 1000–1600 words
+- Short paragraphs
+- Clear headings
+- No keyword stuffing
+- Content should feel authoritative and practical

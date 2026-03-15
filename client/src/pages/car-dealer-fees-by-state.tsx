@@ -13,8 +13,8 @@ export default function CarDealerFeesByState() {
 
   useEffect(() => {
     return setSeoMeta({
-      title: "Car Dealer Fees by State: Doc Fees, Taxes, and What Dealers Can Charge | Odigos",
-      description: "Dealer documentation fees vary widely by state. See typical dealer fees, why they differ, and how to compare out-the-door prices before visiting a dealership.",
+      title: "Car Dealer Fees by State: Doc Fee Limits and Typical Costs | Odigos",
+      description: "Dealer documentation fees vary widely by state. See typical doc fees, legal caps, and what car buyers should expect across major U.S. states.",
       path: "/car-dealer-fees-by-state",
     });
   }, []);
@@ -50,7 +50,7 @@ export default function CarDealerFeesByState() {
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-fees-by-state-headline">
-            Car Dealer Fees by State: What Buyers Should Expect
+            Car Dealer Fees by State: Doc Fee Limits and Typical Costs
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
@@ -60,6 +60,10 @@ export default function CarDealerFeesByState() {
 
             <p className="text-lg text-muted-foreground mb-6">
               The reason is straightforward: sales tax and registration fees are set by state and local governments, but the <Link href="/dealer-doc-fee" className="underline text-foreground">dealer documentation fee</Link> is set by the dealership itself. Some states cap what dealers can charge for paperwork. Others have no cap at all, which means the doc fee is whatever the dealer decides it should be.
+            </p>
+
+            <p className="text-lg text-muted-foreground mb-6">
+              Knowing where your state falls on that spectrum matters. If a dealer quotes you a $900 doc fee in a state where most buyers report paying $300–$500, that's a signal worth investigating. And because doc fees are rolled into the final total, they directly affect the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> — the only number that actually determines what you'll pay.
             </p>
 
             <p className="text-sm text-muted-foreground mb-6">
@@ -81,13 +85,13 @@ export default function CarDealerFeesByState() {
             </p>
 
             <p className="text-muted-foreground mb-6">
-              <strong className="text-foreground">Optional dealer add-ons</strong> are products like paint protection, fabric coating, nitrogen-filled tires, VIN etching, or extended warranties. These are profit items added by the dealership and are almost always optional, even when they're presented as included or required.
+              <strong className="text-foreground">Optional dealer add-ons</strong> are products like paint protection, fabric coating, nitrogen-filled tires, VIN etching, or extended warranties. These are profit items added by the dealership and are almost always optional, even when they're presented as included or required. For a detailed breakdown of which add-ons you can refuse and how to do it, see our guide on <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">whether dealer add-ons are mandatory</Link>.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Typical dealer doc fee ranges by state</h2>
 
             <p className="text-muted-foreground mb-4">
-              The table below shows approximate documentation fee ranges for 20 major states. Some states set legal caps; others allow dealers to charge whatever they choose. Where there's no cap, the ranges shown reflect what buyers commonly report.
+              The table below shows documentation fee ranges for 20 major states, along with whether a legal cap applies and brief context on what buyers typically encounter. Where there's no cap, the ranges reflect what buyers commonly report — not what the dealer is legally required to charge.
             </p>
 
             <div className="overflow-x-auto mb-4">
@@ -95,30 +99,132 @@ export default function CarDealerFeesByState() {
                 <thead>
                   <tr className="bg-muted/50">
                     <th className="px-4 py-3 font-semibold text-foreground border-b border-border">State</th>
-                    <th className="px-4 py-3 font-semibold text-foreground border-b border-border">Typical Dealer Doc Fee Range</th>
+                    <th className="px-4 py-3 font-semibold text-foreground border-b border-border">Typical Doc Fee</th>
+                    <th className="px-4 py-3 font-semibold text-foreground border-b border-border">Legal Cap</th>
+                    <th className="px-4 py-3 font-semibold text-foreground border-b border-border">Notes</th>
                   </tr>
                 </thead>
                 <tbody className="text-muted-foreground">
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">California</td><td className="px-4 py-2">~$85 (capped)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Florida</td><td className="px-4 py-2">$500–$900+ (no cap)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Texas</td><td className="px-4 py-2">$150–$300 typical</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">New York</td><td className="px-4 py-2">~$175 (capped)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Illinois</td><td className="px-4 py-2">~$300 (capped)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Pennsylvania</td><td className="px-4 py-2">$200–$500 typical</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Ohio</td><td className="px-4 py-2">$200–$500 typical</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Georgia</td><td className="px-4 py-2">$400–$700 (no cap)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">North Carolina</td><td className="px-4 py-2">$500–$800 (no cap)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Arizona</td><td className="px-4 py-2">$400–$600 typical</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Michigan</td><td className="px-4 py-2">$200–$400 typical</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Washington</td><td className="px-4 py-2">~$200 (capped)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Virginia</td><td className="px-4 py-2">$500–$800 (no cap)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">New Jersey</td><td className="px-4 py-2">$300–$600 typical</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Massachusetts</td><td className="px-4 py-2">$300–$500 typical</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Colorado</td><td className="px-4 py-2">$400–$700 (no cap)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Minnesota</td><td className="px-4 py-2">~$125 (capped)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Wisconsin</td><td className="px-4 py-2">$200–$400 typical</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Nevada</td><td className="px-4 py-2">$400–$700 (no cap)</td></tr>
-                  <tr><td className="px-4 py-2">Tennessee</td><td className="px-4 py-2">$300–$600 typical</td></tr>
+                  <tr className="border-b border-border/50">
+                    <td className="px-4 py-2 font-medium text-foreground">California</td>
+                    <td className="px-4 py-2">~$85</td>
+                    <td className="px-4 py-2">Yes (~$85)</td>
+                    <td className="px-4 py-2">Strictly enforced; one of the lowest caps in the country.</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="px-4 py-2 font-medium text-foreground">Texas</td>
+                    <td className="px-4 py-2">$150–$300</td>
+                    <td className="px-4 py-2">No</td>
+                    <td className="px-4 py-2">Unregulated; wide variation by dealer and market.</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="px-4 py-2 font-medium text-foreground">Florida</td>
+                    <td className="px-4 py-2">$500–$900+</td>
+                    <td className="px-4 py-2">No</td>
+                    <td className="px-4 py-2">Among the highest in the country; always ask for the exact amount upfront.</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="px-4 py-2 font-medium text-foreground">New York</td>
+                    <td className="px-4 py-2">~$175</td>
+                    <td className="px-4 py-2">Yes (~$175)</td>
+                    <td className="px-4 py-2">Capped and consistently applied; relatively low for an uncapped-fee region.</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="px-4 py-2 font-medium text-foreground">Illinois</td>
+                    <td className="px-4 py-2">~$300</td>
+                    <td className="px-4 py-2">Yes (~$300)</td>
+                    <td className="px-4 py-2">State cap in place; most dealers charge at or near the maximum.</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="px-4 py-2 font-medium text-foreground">Pennsylvania</td>
+                    <td className="px-4 py-2">$200–$500</td>
+                    <td className="px-4 py-2">No</td>
+                    <td className="px-4 py-2">No cap; amounts vary significantly between dealers.</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="px-4 py-2 font-medium text-foreground">Ohio</td>
+                    <td className="px-4 py-2">$200–$500</td>
+                    <td className="px-4 py-2">No</td>
+                    <td className="px-4 py-2">Unregulated; compare across dealers in the same market.</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="px-4 py-2 font-medium text-foreground">Georgia</td>
+                    <td className="px-4 py-2">$400–$700</td>
+                    <td className="px-4 py-2">No</td>
+                    <td className="px-4 py-2">No cap; high end of the range is common at larger dealerships.</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="px-4 py-2 font-medium text-foreground">North Carolina</td>
+                    <td className="px-4 py-2">$500–$800</td>
+                    <td className="px-4 py-2">No</td>
+                    <td className="px-4 py-2">No cap; buyers frequently report fees at the higher end.</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="px-4 py-2 font-medium text-foreground">Arizona</td>
+                    <td className="px-4 py-2">$400–$600</td>
+                    <td className="px-4 py-2">No</td>
+                    <td className="px-4 py-2">Unregulated; amounts cluster in the mid-range for most dealers.</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="px-4 py-2 font-medium text-foreground">Michigan</td>
+                    <td className="px-4 py-2">$200–$400</td>
+                    <td className="px-4 py-2">No</td>
+                    <td className="px-4 py-2">No cap; generally lower than southeastern states with no regulation.</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="px-4 py-2 font-medium text-foreground">Washington</td>
+                    <td className="px-4 py-2">~$200</td>
+                    <td className="px-4 py-2">Yes (~$200)</td>
+                    <td className="px-4 py-2">Capped; one of the more buyer-friendly states for doc fees.</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="px-4 py-2 font-medium text-foreground">Virginia</td>
+                    <td className="px-4 py-2">$500–$800</td>
+                    <td className="px-4 py-2">No</td>
+                    <td className="px-4 py-2">No cap; among the higher uncapped states; verify before visiting.</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="px-4 py-2 font-medium text-foreground">New Jersey</td>
+                    <td className="px-4 py-2">$300–$600</td>
+                    <td className="px-4 py-2">No</td>
+                    <td className="px-4 py-2">No cap; mid-to-high range is common across most dealers.</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="px-4 py-2 font-medium text-foreground">Massachusetts</td>
+                    <td className="px-4 py-2">$300–$500</td>
+                    <td className="px-4 py-2">No</td>
+                    <td className="px-4 py-2">No formal cap; dealers generally charge in the middle range.</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="px-4 py-2 font-medium text-foreground">Colorado</td>
+                    <td className="px-4 py-2">$400–$700</td>
+                    <td className="px-4 py-2">No</td>
+                    <td className="px-4 py-2">No cap; higher fees are common, especially at larger metro dealers.</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="px-4 py-2 font-medium text-foreground">Minnesota</td>
+                    <td className="px-4 py-2">~$125</td>
+                    <td className="px-4 py-2">Yes (~$125)</td>
+                    <td className="px-4 py-2">Low cap; one of the most regulated states for dealer paperwork fees.</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="px-4 py-2 font-medium text-foreground">Wisconsin</td>
+                    <td className="px-4 py-2">$200–$400</td>
+                    <td className="px-4 py-2">No</td>
+                    <td className="px-4 py-2">No cap; fees tend to be lower than surrounding uncapped states.</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="px-4 py-2 font-medium text-foreground">Nevada</td>
+                    <td className="px-4 py-2">$400–$700</td>
+                    <td className="px-4 py-2">No</td>
+                    <td className="px-4 py-2">No cap; Las Vegas-area dealers frequently charge toward the upper range.</td>
+                  </tr>
+                  <tr>
+                    <td className="px-4 py-2 font-medium text-foreground">Tennessee</td>
+                    <td className="px-4 py-2">$300–$600</td>
+                    <td className="px-4 py-2">No</td>
+                    <td className="px-4 py-2">No cap; combined with high local sales tax, total fees can add up quickly.</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -154,6 +260,28 @@ export default function CarDealerFeesByState() {
 
             <p className="text-muted-foreground mb-6">
               Beyond these, most other charges on a dealer invoice are optional. Paint protection, fabric coating, window tinting, dealer-installed accessories, and extended warranties are all products the dealer adds for profit. They're rarely required, even when the dealer presents them that way. For a full breakdown of which charges are legitimate and which you can refuse, see our guide on <Link href="/car-dealer-fees-explained" className="underline text-foreground">common car dealer fees explained</Link>.
+            </p>
+
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Which dealer fees are negotiable</h2>
+
+            <p className="text-lg text-muted-foreground mb-6">
+              Not every fee on a dealer invoice behaves the same way when you try to negotiate.
+            </p>
+
+            <p className="text-muted-foreground mb-4">
+              <strong className="text-foreground">Government fees</strong> — sales tax, title, and registration — are fixed. There's no negotiating them with the dealer because the dealer doesn't set them.
+            </p>
+
+            <p className="text-muted-foreground mb-4">
+              <strong className="text-foreground">The doc fee</strong> is sometimes presented as non-negotiable, and in capped states that's partly true — the dealer can't legally charge more than the cap. But even when the dollar amount is fixed, the vehicle sale price is still negotiable. If a dealer's doc fee is $800 in an uncapped state, you can push back on the vehicle price to offset it. The total is what matters, not any single line.
+            </p>
+
+            <p className="text-muted-foreground mb-4">
+              <strong className="text-foreground">Dealer add-ons</strong> — paint protection, VIN etching, nitrogen fills, protection packages — are almost always removable. Even when they're described as "already installed," you can typically ask for the price to be reduced by the cost of items you didn't request. See our detailed guide on <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">whether dealer add-ons are truly mandatory</Link>.
+            </p>
+
+            <p className="text-muted-foreground mb-6">
+              <strong className="text-foreground">Market adjustment fees</strong> are pure dealer markup above MSRP — not a government fee, not a standard doc charge, and not tied to any specific product. A <Link href="/market-adjustment-fee" className="underline text-foreground">market adjustment</Link> can often be negotiated down or avoided entirely by shopping dealers who aren't charging one.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to compare dealer fees correctly</h2>

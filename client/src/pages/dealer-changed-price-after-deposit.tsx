@@ -87,7 +87,7 @@ export default function DealerChangedPriceAfterDeposit() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span><strong className="text-foreground">Demand-based repricing.</strong> If the vehicle is in high demand, some dealers will try to add a market adjustment after the deposit, hoping you're too committed to walk away.</span>
+                <span><strong className="text-foreground">Demand-based repricing.</strong> If the vehicle is in high demand, some dealers will try to add a <Link href="/market-adjustment-fee" className="underline text-foreground">market adjustment</Link> after the deposit, hoping you're too committed to walk away.</span>
               </li>
             </ul>
 
@@ -120,7 +120,7 @@ export default function DealerChangedPriceAfterDeposit() {
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What actually protects you</h2>
 
             <p className="text-lg text-muted-foreground mb-6">
-              In most U.S. states, a deposit on a vehicle does not create a binding purchase contract unless both parties have signed a formal agreement with all the material terms — price, trade-in value, financing, and fees. A verbal agreement or a handshake deal is difficult to enforce. However, you do have some protections:
+              In most U.S. states, a deposit on a vehicle does not create a binding purchase contract unless both parties have signed a formal agreement with all the material terms — price, trade-in value, financing, and fees. A verbal agreement or a handshake deal is difficult to enforce. If the dealer also <Link href="/dealer-wont-give-out-the-door-price" className="underline text-foreground">won't give you an out-the-door price</Link> in writing, that's a compounding red flag. However, you do have some protections:
             </p>
 
             <ul className="space-y-2 mb-6 text-muted-foreground">
@@ -152,7 +152,7 @@ export default function DealerChangedPriceAfterDeposit() {
                 <strong className="text-foreground">Ask for the revised numbers in writing.</strong> Don't agree to anything verbally. Request the new price breakdown on paper so you can compare it side by side with the original.
               </li>
               <li className="pl-2">
-                <strong className="text-foreground">Identify exactly what changed.</strong> Is it the vehicle price? A new fee? Different financing terms? Knowing the specific change helps you decide whether to push back or walk away.
+                <strong className="text-foreground">Identify exactly what changed.</strong> Is it the vehicle price? A new fee? Different financing terms? Check whether new <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">add-ons</Link> appeared that weren't in the original agreement. Knowing the specific change helps you decide whether to push back or walk away.
               </li>
               <li className="pl-2">
                 <strong className="text-foreground">Request your deposit back.</strong> If the dealer changed the terms and you no longer want to proceed, ask for a full refund in writing. If they refuse, mention your intent to file a complaint with your state attorney general's office.
@@ -165,7 +165,7 @@ export default function DealerChangedPriceAfterDeposit() {
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Before you go back in</h2>
 
             <p className="text-lg text-muted-foreground mb-6">
-              If you're considering going back to the dealership to renegotiate, make sure you know your <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> — the total amount including tax, title, registration, and all dealer fees. This is the only number that tells you what you're actually paying. Comparing monthly payments or sticker prices won't give you the full picture.
+              If you're considering going back to the dealership to renegotiate, make sure you know your <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> — the total amount including tax, title, registration, and all dealer fees. This is the only number that tells you what you're actually paying. Comparing monthly payments or sticker prices won't give you the full picture. You can use our <Link href="/how-to-ask-for-out-the-door-price" className="underline text-foreground">copy-paste message template</Link> to request the full breakdown before going back in.
             </p>
 
             <p className="text-lg text-muted-foreground mb-8">

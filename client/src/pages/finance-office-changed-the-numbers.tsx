@@ -71,7 +71,7 @@ export default function FinanceOfficeChangedTheNumbers() {
             <ul className="space-y-2 mb-6 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span><strong className="text-foreground">Add-ons were bundled in.</strong> Products like extended warranties, GAP insurance, paint protection, or tire-and-wheel packages are often pre-loaded into the contract. The finance manager may present them as included or required when they're actually optional. These can add $1,000–$4,000 to the total without being clearly called out.</span>
+                <span><strong className="text-foreground">Add-ons were bundled in.</strong> Products like extended warranties, GAP insurance, paint protection, or tire-and-wheel packages are often pre-loaded into the contract. The finance manager may present them as included or required when they're actually optional — see our guide on <Link href="/dealer-added-fees-after-agreement" className="underline text-foreground">fees added after the agreement</Link>. These can add $1,000–$4,000 to the total without being clearly called out.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
@@ -145,11 +145,11 @@ export default function FinanceOfficeChangedTheNumbers() {
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">The one thing that protects you most</h2>
 
             <p className="text-lg text-muted-foreground mb-6">
-              The single most effective thing you can do is get the full <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> in writing before you ever sit down in the finance office. That means the vehicle price, all taxes, all fees, and the total amount — not just the monthly payment. When you have that number documented, you have a clear reference point. Any deviation in the finance office becomes immediately obvious, and you have leverage to push back.
+              The single most effective thing you can do is get the full <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> in writing before you ever sit down in the finance office. That means the vehicle price, all taxes, all fees, and the total amount — not just the monthly payment. If a dealer <Link href="/dealer-wont-give-out-the-door-price" className="underline text-foreground">won't give you an OTD price</Link>, that's a red flag on its own. When you have that number documented, you have a clear reference point. Any deviation in the finance office becomes immediately obvious, and you have leverage to push back.
             </p>
 
             <p className="text-lg text-muted-foreground mb-8">
-              If you already have a quote or contract and the numbers don't look right, Odigos can break it down and flag what changed.
+              If the price changed after you already put down a deposit, that's a related but distinct issue — read about <Link href="/dealer-changed-price-after-deposit" className="underline text-foreground">what happens when a dealer changes the price after your deposit</Link>. If you already have a quote or contract and the numbers don't look right, Odigos can break it down and flag what changed.
             </p>
           </div>
 

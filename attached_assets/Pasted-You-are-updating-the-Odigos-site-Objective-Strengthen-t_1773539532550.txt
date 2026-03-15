@@ -1,0 +1,140 @@
+You are updating the Odigos site.
+
+Objective:
+Strengthen the internal linking “pillar reinforcement loop” across the existing SEO article cluster so Google more clearly understands the site’s central topic and the relationship between supporting pages.
+
+Important constraints:
+- Do NOT add any new product features
+- Do NOT create new pages
+- Do NOT change backend logic, APIs, analyzer behavior, payment flow, auth, or unrelated routing
+- Do NOT redesign page layouts
+- Do NOT broadly rewrite article copy
+- Only make light editorial changes where necessary to place natural internal links
+- Preserve current tone, readability, metadata, CTA patterns, and design system
+- Keep all changes tightly scoped to internal linking and light copy adjustments that support it
+
+Primary SEO goal:
+Implement a clear pillar reinforcement loop.
+
+This means:
+1. Identify the main out-the-door price explainer page already in the repo as the primary pillar page
+2. Make supporting pages link back to that pillar naturally
+3. Make supporting pages also link sideways to closely related sibling pages
+4. Ensure the pillar page also links back out to key supporting pages where contextually appropriate
+
+Core concept:
+Odigos should read as a tightly connected topical cluster around dealer pricing transparency, with the main OTD explainer acting as the conceptual center.
+
+Tasks:
+
+T001 — Identify the actual existing pillar page
+Inspect the repo and identify the main out-the-door price explainer page already present.
+Use the actual slug/component in the codebase rather than assuming a name.
+This page may be something like:
+- /what-is-an-out-the-door-price
+- /out-the-door-price
+or similar
+
+Use the real canonical page in the repo as the primary pillar.
+
+T002 — Reinforce the pillar from supporting pages
+For each major supporting SEO article already present, add one natural in-body link back to the OTD pillar page where context supports it.
+
+Prioritize pages such as:
+- dealer-wont-give-out-the-door-price
+- calculate-out-the-door-price
+- dealer-doc-fee / doc-fee page
+- are-dealer-add-ons-mandatory
+- dealer-added-fees-after-agreement
+- dealer-changed-price-after-deposit
+- market-adjustment-fee
+- dealer-pricing-tactics
+- any OTD example / OTD vs MSRP / how to ask for OTD pages if they already exist
+
+Use varied, natural anchor text such as:
+- out-the-door price
+- full out-the-door price
+- what an out-the-door price includes
+- out-the-door price breakdown
+- how out-the-door pricing works
+- OTD price
+
+Do not repeat the exact same anchor on every page.
+
+T003 — Add sideways sibling links on supporting pages
+For each major supporting article, add 1–2 natural contextual links to closely related sibling pages.
+
+Examples:
+- doc fee page can link to dealer-wont-give-out-the-door-price and market-adjustment-fee
+- add-ons page can link to dealer-added-fees-after-agreement and the OTD pillar
+- market adjustment page can link to add-ons page and OTD pillar
+- dealer added fees page can link to doc fee page, add-ons page, and OTD pillar
+- dealer changed price after deposit can link to dealer added fees after agreement and OTD pillar
+
+Guidelines:
+- Use only existing pages already in the repo
+- Add links where they naturally help the reader
+- Do not create link dumps
+- Do not force links into every paragraph
+- Prefer 2–4 strong links per article over excessive linking
+
+T004 — Strengthen the pillar page’s outbound links
+Update the identified OTD pillar page so it links out naturally to the most important supporting pages where context allows.
+
+At minimum, if they exist, try to naturally link to:
+- dealer-wont-give-out-the-door-price
+- calculate-out-the-door-price
+- dealer-doc-fee / doc-fee page
+- are-dealer-add-ons-mandatory
+- market-adjustment-fee
+- dealer-added-fees-after-agreement
+
+Goal:
+The pillar page should not be isolated. It should serve as the center of a two-way internal link loop.
+
+T005 — Strengthen the dealer-pricing-tactics hub as part of the loop
+If the dealer-pricing-tactics hub exists, lightly improve it so it:
+- links to the major tactic/supporting pages using canonical slugs
+- references the main OTD pillar page where helpful
+- fits naturally into the same cluster structure
+
+Do not turn it into a bare sitemap.
+Keep it editorial and useful.
+
+T006 — Canonical internal link cleanup
+While making these changes, ensure no internal links point to stale redirect slugs when a canonical slug exists.
+For example, if any page links to an old redirect version of the dealer-won’t-give-OTD page, update it to the canonical slug.
+
+T007 — Target linking pattern
+Aim for this approximate pattern on each major article:
+- 1 link to the OTD pillar page
+- 1–2 links to closely related sibling/supporting pages
+- optional hub link where relevant
+
+If a page already exceeds this with strong natural links, only improve where useful.
+
+T008 — Preserve copy quality
+When inserting links:
+- keep paragraphs readable
+- do not keyword stuff
+- do not insert repetitive anchor text patterns
+- do not materially change the article meaning
+- keep tone calm, practical, and consumer-protection oriented
+
+T009 — Do not touch unrelated areas
+Unless required for these internal linking fixes, do not modify:
+- analyzer logic
+- backend routes unrelated to article routing
+- homepage hero
+- payment flow
+- unrelated styling systems
+- unrelated content pages
+
+Deliverable:
+Implement the changes directly in the codebase, then provide:
+1. the exact files modified
+2. the canonical pillar page identified
+3. which pages now link back to the pillar
+4. which sibling-to-sibling links were added
+5. any stale redirect links corrected
+6. confirmation that no unrelated logic or backend behavior was changed
