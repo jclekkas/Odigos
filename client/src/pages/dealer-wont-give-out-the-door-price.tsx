@@ -127,11 +127,11 @@ export default function DealerWontGiveOutTheDoorPrice() {
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to Protect Yourself</h2>
 
             <p className="text-muted-foreground mb-6">
-              Before visiting the dealership, try to get the full pricing breakdown in writing.
+              Before visiting the dealership, try to get the full pricing breakdown in writing. If you're not sure how to phrase the request, see <Link href="/how-to-ask-for-out-the-door-price" className="underline text-foreground">how to ask a dealer for an out-the-door price</Link> for a copy-paste message you can send directly.
             </p>
 
             <p className="text-muted-foreground mb-6">
-              If the quote is vague, missing fees, or only shows a monthly payment, assume the deal is incomplete until you see the full <Link href="/out-the-door-price" className="underline text-foreground">out-the-door number</Link>.
+              If the quote is vague, missing fees, or only shows a monthly payment, assume the deal is incomplete until you see the full <Link href="/out-the-door-price" className="underline text-foreground">out-the-door number</Link>. A simple <Link href="/out-the-door-price-example" className="underline text-foreground">out-the-door price example</Link> can show you what a complete breakdown should look like.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How Odigos Helps</h2>

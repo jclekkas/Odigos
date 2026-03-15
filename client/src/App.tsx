@@ -25,6 +25,9 @@ import DealerAddOnsList from "@/pages/dealer-add-ons-list";
 import DealerDocFeeByState from "@/pages/dealer-doc-fee-by-state";
 import CarDealerFeesList from "@/pages/car-dealer-fees-list";
 import CalculateOutTheDoorPrice from "@/pages/calculate-out-the-door-price";
+import HowToAskForOutTheDoorPrice from "@/pages/how-to-ask-for-out-the-door-price";
+import OtdPriceVsMsrp from "@/pages/otd-price-vs-msrp";
+import OutTheDoorPriceExample from "@/pages/out-the-door-price-example";
 import GuidesRedirect from "@/pages/guides-redirect";
 import AdminMetrics from "@/pages/admin-metrics";
 import NotFound from "@/pages/not-found";
@@ -54,6 +57,9 @@ function Router() {
       <Route path="/dealer-doc-fee-by-state" component={DealerDocFeeByState} />
       <Route path="/car-dealer-fees-list" component={CarDealerFeesList} />
       <Route path="/calculate-out-the-door-price" component={CalculateOutTheDoorPrice} />
+      <Route path="/how-to-ask-for-out-the-door-price" component={HowToAskForOutTheDoorPrice} />
+      <Route path="/otd-price-vs-msrp" component={OtdPriceVsMsrp} />
+      <Route path="/out-the-door-price-example" component={OutTheDoorPriceExample} />
       <Route path="/guides" component={GuidesRedirect} />
       <Route path="/admin/metrics" component={AdminMetrics} />
       <Route component={NotFound} />
