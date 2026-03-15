@@ -236,10 +236,12 @@ GO/NO-GO/NEED-MORE-INFO:
       trackEvent("submission", {
         vehicle: data.vehicle,
         zipCode: data.zipCode,
+        articleSource: data.articleSource || undefined,
       });
       trackEvent("submission_score", {
         dealScore: finalResult.dealScore,
         vehicle: data.vehicle,
+        articleSource: data.articleSource || undefined,
       });
       
       res.json(finalResult);
@@ -295,7 +297,7 @@ GO/NO-GO/NEED-MORE-INFO:
 
   app.post("/api/checkout", async (req, res) => {
     try {
-      const { product } = req.body;
+      const { product, articleSource } = req.body;
       
       if (!product || product !== "deal_clarity") {
         return res.status(400).json({ error: "INVALID_PRODUCT" });
@@ -322,6 +324,7 @@ GO/NO-GO/NEED-MORE-INFO:
         line_items: [{ price: priceId, quantity: 1 }],
         success_url: `${baseUrl}/analyze?paid=1&product=${product}`,
         cancel_url: `${baseUrl}/analyze?paid=0`,
+        metadata: articleSource ? { articleSource } : undefined,
       });
 
       res.json({ url: session.url });
@@ -415,7 +418,8 @@ GO/NO-GO/NEED-MORE-INFO:
         return res.json({ paid: false, tier: null });
       }
 
-      trackEvent("payment_completed", { tier: "49" });
+      const paymentArticleSource = session.metadata?.articleSource || undefined;
+      trackEvent("payment_completed", { tier: "49", articleSource: paymentArticleSource });
       
       res.json({ paid: true, tier: "49" });
     } catch (error) {

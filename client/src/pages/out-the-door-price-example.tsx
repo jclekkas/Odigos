@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
+import { trackCtaClick } from "@/lib/tracking";
 
 export default function OutTheDoorPriceExample() {
   useEffect(() => {
@@ -16,7 +17,7 @@ export default function OutTheDoorPriceExample() {
   return (
     <div className="min-h-screen bg-background">
 
-      <ArticleHeader />
+      <ArticleHeader slug="out-the-door-price-example" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -35,8 +36,8 @@ export default function OutTheDoorPriceExample() {
 
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
               <p className="font-medium text-foreground mb-3">Have a real dealer quote? Compare it to what a clean breakdown looks like.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-callout-otd-example">Check My Deal</Button>
+              <Link href="/analyze?src=out-the-door-price-example">
+                <Button size="sm" data-testid="button-callout-otd-example" onClick={() => trackCtaClick({ location: "article_top_callout", article: "out-the-door-price-example" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -160,8 +161,8 @@ export default function OutTheDoorPriceExample() {
               Have a real quote to compare?
             </h2>
             <p className="text-muted-foreground mb-6">Paste it and Odigos shows you whether it matches what a clean, complete OTD breakdown should look like.</p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-otd-example">
+            <Link href="/analyze?src=out-the-door-price-example">
+              <Button size="lg" data-testid="button-cta-otd-example" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "out-the-door-price-example" })}>
                 Compare My Quote
               </Button>
             </Link>

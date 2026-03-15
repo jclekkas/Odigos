@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
+import { trackCtaClick } from "@/lib/tracking";
 
 const OTD_CALC_MESSAGE = `Hi — before I come in, can you send me the full out-the-door price with every line item broken out? I'd like to see the vehicle price, sales tax, title and registration, doc fee, and any dealer-added packages or fees listed separately. I want to compare the total against my own estimate before we finalize anything. Thanks.`;
 
@@ -49,7 +50,7 @@ export default function CalculateOutTheDoorPrice() {
   return (
     <div className="min-h-screen bg-background">
 
-      <ArticleHeader />
+      <ArticleHeader slug="calculate-out-the-door-price" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -64,8 +65,8 @@ export default function CalculateOutTheDoorPrice() {
 
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
               <p className="font-medium text-foreground mb-3">Already have a quote? Check if the full OTD price is included.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-callout-calc-otd">Check My Deal</Button>
+              <Link href="/analyze?src=calculate-out-the-door-price">
+                <Button size="sm" data-testid="button-callout-calc-otd" onClick={() => trackCtaClick({ location: "article_top_callout", article: "calculate-out-the-door-price" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -225,8 +226,8 @@ export default function CalculateOutTheDoorPrice() {
               Have a dealer quote but not an OTD price?
             </h2>
             <p className="text-muted-foreground mb-6">Paste it and Odigos builds the full out-the-door breakdown — and flags anything that shouldn't be there.</p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-calc-otd">
+            <Link href="/analyze?src=calculate-out-the-door-price">
+              <Button size="lg" data-testid="button-cta-calc-otd" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "calculate-out-the-door-price" })}>
                 Get the Full Breakdown
               </Button>
             </Link>

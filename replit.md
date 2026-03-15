@@ -51,10 +51,13 @@ Note: The database is used for metrics tracking and optional features. The core 
 
 ### Metrics System
 - **Table**: `metrics_events` stores all tracked events with type, timestamp, and JSON metadata
-- **Event Types**: submission, submission_score, checkout_started, payment_completed, page_view
-- **API Endpoint**: `GET /api/metrics` returns aggregated statistics
+- **Event Types**: submission, submission_score, checkout_started, payment_completed, page_view, cta_click, form_start, form_focus
+- **API Endpoint**: `GET /api/metrics` returns aggregated statistics including per-article funnel data
 - **Admin Dashboard**: `/admin/metrics` displays key business metrics (private, not in sitemap)
 - **Tracked Data**: Submissions, payments, revenue, conversion rate, score distribution, activity timeline
+- **Article CTA Tracking**: All 23 SEO article pages track CTA clicks with `location` (article_header, article_top_callout, article_mid_cta, article_bottom_cta) and `article` (slug) metadata. All `/analyze` links from articles include `?src=<slug>` parameter.
+- **Article Source Attribution**: The `?src=` URL parameter is captured by the analyzer page and attached as `articleSource` to page_view, submission, submission_score, and payment_completed events. Checkout sessions store `articleSource` in Stripe metadata for payment attribution.
+- **Article Funnel Dashboard**: The engagement tab in admin-metrics shows a per-article breakdown table with CTA clicks, analyzer loads, submissions, and payments by slug.
 
 ### Development vs Production
 - **Development**: Vite dev server with HMR, proxied through Express

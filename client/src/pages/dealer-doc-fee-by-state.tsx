@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
+import { trackCtaClick } from "@/lib/tracking";
 
 const DOC_FEE_REQUEST_MESSAGE = `Hi — I'm comparing offers from a few dealerships. Before I come in, could you send me an itemized out-the-door price that breaks out the documentation fee as its own line? I'd also like to see taxes, title, and registration listed separately. Thanks.`;
 
@@ -39,7 +40,7 @@ export default function DealerDocFeeByState() {
   return (
     <div className="min-h-screen bg-background">
 
-      <ArticleHeader />
+      <ArticleHeader slug="dealer-doc-fee-by-state" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -54,8 +55,8 @@ export default function DealerDocFeeByState() {
 
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
               <p className="font-medium text-foreground mb-3">Doc fee higher than typical in your state? Paste your quote and see.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-callout-doc-fee-by-state">Check My Deal</Button>
+              <Link href="/analyze?src=dealer-doc-fee-by-state">
+                <Button size="sm" data-testid="button-callout-doc-fee-by-state" onClick={() => trackCtaClick({ location: "article_top_callout", article: "dealer-doc-fee-by-state" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -192,8 +193,8 @@ export default function DealerDocFeeByState() {
               Doc fee higher than typical in your state?
             </h2>
             <p className="text-muted-foreground mb-6">Paste your quote and Odigos checks it against your state's norms — and tells you what to say next.</p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-doc-fee-by-state">
+            <Link href="/analyze?src=dealer-doc-fee-by-state">
+              <Button size="lg" data-testid="button-cta-doc-fee-by-state" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "dealer-doc-fee-by-state" })}>
                 Check the Doc Fee
               </Button>
             </Link>

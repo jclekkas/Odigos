@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
+import { trackCtaClick } from "@/lib/tracking";
 
 const ADDONS_MESSAGE = `Hi — I'm interested in the vehicle but I'd like to see a breakdown of every dealer-installed add-on included in the price. For each one, please list the product name, what it does, and the individual cost. I'd also like to know which add-ons can be removed and what the out-the-door price would be without them. Thanks.`;
 
@@ -39,7 +40,7 @@ export default function DealerAddOnsList() {
   return (
     <div className="min-h-screen bg-background">
 
-      <ArticleHeader />
+      <ArticleHeader slug="dealer-add-ons-list" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -58,8 +59,8 @@ export default function DealerAddOnsList() {
 
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
               <p className="font-medium text-foreground mb-3">Have a quote with add-ons you didn't ask for? See which ones you can decline.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-callout-addons-list">Check My Deal</Button>
+              <Link href="/analyze?src=dealer-add-ons-list">
+                <Button size="sm" data-testid="button-callout-addons-list" onClick={() => trackCtaClick({ location: "article_top_callout", article: "dealer-add-ons-list" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -213,8 +214,8 @@ export default function DealerAddOnsList() {
               Not sure which add-ons on your quote are optional?
             </h2>
             <p className="text-muted-foreground mb-6">Odigos identifies what's mandatory and what you can push back on — before you go in.</p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-addons-list">
+            <Link href="/analyze?src=dealer-add-ons-list">
+              <Button size="lg" data-testid="button-cta-addons-list" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "dealer-add-ons-list" })}>
                 Review the Add-Ons
               </Button>
             </Link>

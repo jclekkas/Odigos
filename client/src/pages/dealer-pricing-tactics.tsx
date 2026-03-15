@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import ArticleHeader from "@/components/ArticleHeader";
 import SeoHead from "@/components/SeoHead";
+import { trackCtaClick } from "@/lib/tracking";
 
 const tactics = [
   {
@@ -65,7 +66,7 @@ export default function DealerPricingTactics() {
         path="/dealer-pricing-tactics"
       />
 
-      <ArticleHeader />
+      <ArticleHeader slug="dealer-pricing-tactics" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -83,8 +84,8 @@ export default function DealerPricingTactics() {
 
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
               <p className="font-medium text-foreground mb-3">Already have a dealer quote? Check it for these tactics before you go in.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-callout-tactics">Check My Deal</Button>
+              <Link href="/analyze?src=dealer-pricing-tactics">
+                <Button size="sm" data-testid="button-callout-tactics" onClick={() => trackCtaClick({ location: "article_top_callout", article: "dealer-pricing-tactics" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -92,8 +93,8 @@ export default function DealerPricingTactics() {
 
           <div className="my-8 rounded-lg border border-border bg-muted/40 p-5">
             <p className="font-medium text-foreground mb-3">Have a quote? Paste it and Odigos flags which tactics are being used on you right now.</p>
-            <Link href="/analyze">
-              <Button size="sm" data-testid="button-mid-article-tactics">Check My Deal</Button>
+            <Link href="/analyze?src=dealer-pricing-tactics">
+              <Button size="sm" data-testid="button-mid-article-tactics" onClick={() => trackCtaClick({ location: "article_mid_cta", article: "dealer-pricing-tactics" })}>Check My Deal</Button>
             </Link>
             <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
           </div>
@@ -127,8 +128,8 @@ export default function DealerPricingTactics() {
               Spot a tactic in your dealer quote?
             </h2>
             <p className="text-muted-foreground mb-6">Paste it and Odigos identifies exactly which tactics are at play and what you can do about them.</p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-tactics">
+            <Link href="/analyze?src=dealer-pricing-tactics">
+              <Button size="lg" data-testid="button-cta-tactics" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "dealer-pricing-tactics" })}>
                 Check My Quote
               </Button>
             </Link>

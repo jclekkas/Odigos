@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
+import { trackCtaClick } from "@/lib/tracking";
 
 const FEES_CHANGED_MESSAGE = `Thanks. Before I move forward, I need the updated out-the-door price in writing with every added fee itemized. Please separate taxes and government fees from dealer-installed products or optional add-ons. If anything was added after our earlier quote, please show exactly what changed and why.`;
 
@@ -39,7 +40,7 @@ export default function DealerAddedFeesAfterAgreement() {
   return (
     <div className="min-h-screen bg-background">
 
-      <ArticleHeader />
+      <ArticleHeader slug="dealer-added-fees-after-agreement" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -58,8 +59,8 @@ export default function DealerAddedFeesAfterAgreement() {
 
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
               <p className="font-medium text-foreground mb-3">New fees appeared after you agreed on a price? Paste the quote and see what changed.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-callout-added-fees">Check My Deal</Button>
+              <Link href="/analyze?src=dealer-added-fees-after-agreement">
+                <Button size="sm" data-testid="button-callout-added-fees" onClick={() => trackCtaClick({ location: "article_top_callout", article: "dealer-added-fees-after-agreement" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -197,8 +198,8 @@ export default function DealerAddedFeesAfterAgreement() {
               Fees changed after you agreed on a price?
             </h2>
             <p className="text-muted-foreground mb-6">Paste the quote and Odigos identifies every new charge — what's legitimate and what you can push back on.</p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-dealer-added-fees">
+            <Link href="/analyze?src=dealer-added-fees-after-agreement">
+              <Button size="lg" data-testid="button-cta-dealer-added-fees" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "dealer-added-fees-after-agreement" })}>
                 Flag What Changed
               </Button>
             </Link>

@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import ArticleHeader from "@/components/ArticleHeader";
 import { setSeoMeta } from "@/lib/seo";
+import { trackCtaClick } from "@/lib/tracking";
 
 export default function DealerDocFee() {
   useEffect(() => {
@@ -15,7 +16,7 @@ export default function DealerDocFee() {
 
   return (
     <div className="min-h-screen bg-background">
-      <ArticleHeader />
+      <ArticleHeader slug="dealer-doc-fee" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -33,8 +34,8 @@ export default function DealerDocFee() {
 
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
               <p className="font-medium text-foreground mb-3">Doc fee higher than expected? Paste your quote to see how it compares.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-callout-doc-fee">Check My Deal</Button>
+              <Link href="/analyze?src=dealer-doc-fee">
+                <Button size="sm" data-testid="button-callout-doc-fee" onClick={() => trackCtaClick({ location: "article_top_callout", article: "dealer-doc-fee" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -140,8 +141,8 @@ export default function DealerDocFee() {
               Doc fee higher than expected?
             </h2>
             <p className="text-muted-foreground mb-6">Paste the quote and Odigos compares it to what's typical in your state — and flags whether it's negotiable.</p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-doc-fee">
+            <Link href="/analyze?src=dealer-doc-fee">
+              <Button size="lg" data-testid="button-cta-doc-fee" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "dealer-doc-fee" })}>
                 Check the Doc Fee
               </Button>
             </Link>

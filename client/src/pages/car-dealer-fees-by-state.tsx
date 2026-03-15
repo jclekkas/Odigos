@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
+import { trackCtaClick } from "@/lib/tracking";
 
 const FEE_REQUEST_MESSAGE = `Before I visit the dealership, could you please send the full out-the-door price including vehicle price, taxes, registration, doc fee, and any dealer add-ons? I'm comparing total pricing across multiple dealers.`;
 
@@ -39,7 +40,7 @@ export default function CarDealerFeesByState() {
   return (
     <div className="min-h-screen bg-background">
 
-      <ArticleHeader />
+      <ArticleHeader slug="car-dealer-fees-by-state" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -62,8 +63,8 @@ export default function CarDealerFeesByState() {
 
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
               <p className="font-medium text-foreground mb-3">Have a dealer quote? Check if the fees match what's typical in your state.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-callout-fees-by-state">Check My Deal</Button>
+              <Link href="/analyze?src=car-dealer-fees-by-state">
+                <Button size="sm" data-testid="button-callout-fees-by-state" onClick={() => trackCtaClick({ location: "article_top_callout", article: "car-dealer-fees-by-state" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -233,8 +234,8 @@ export default function CarDealerFeesByState() {
 
             <div className="my-8 rounded-lg border border-border bg-muted/40 p-5">
               <p className="font-medium text-foreground mb-3">Have a quote with fees that look off for your state? Paste it and see what's typical vs. what's inflated.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-mid-article-fees-by-state">Check My Deal</Button>
+              <Link href="/analyze?src=car-dealer-fees-by-state">
+                <Button size="sm" data-testid="button-mid-article-fees-by-state" onClick={() => trackCtaClick({ location: "article_mid_cta", article: "car-dealer-fees-by-state" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -363,8 +364,8 @@ export default function CarDealerFeesByState() {
               Have a dealer quote with fees you don't recognize?
             </h2>
             <p className="text-muted-foreground mb-6">Paste it and Odigos breaks down every line — what's typical in your state, what's optional, and what you can negotiate.</p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-fees-by-state">
+            <Link href="/analyze?src=car-dealer-fees-by-state">
+              <Button size="lg" data-testid="button-cta-fees-by-state" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "car-dealer-fees-by-state" })}>
                 Analyze My Quote
               </Button>
             </Link>

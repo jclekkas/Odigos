@@ -411,8 +411,12 @@ export default function Home() {
   const [formStartTracked, setFormStartTracked] = useState(false);
   const { toast } = useToast();
 
+  const articleSourceRef = useRef<string | null>(
+    new URLSearchParams(window.location.search).get("src")
+  );
+
   useEffect(() => {
-    trackPageView("/analyze");
+    trackPageView("/analyze", articleSourceRef.current || undefined);
     return setSeoMeta({
       title: "Analyze Your Car Deal | Odigos",
       description: "Paste dealer texts, emails, or quotes into Odigos. Get an instant GO/NO-GO recommendation with hidden fee detection and suggested questions for the dealer.",
@@ -498,7 +502,7 @@ export default function Home() {
     setCheckoutLoading(true);
     
     try {
-      const response = await apiRequest("POST", "/api/checkout", { product: "deal_clarity" });
+      const response = await apiRequest("POST", "/api/checkout", { product: "deal_clarity", articleSource: articleSourceRef.current || undefined });
       const data = await response.json();
       
       if (data.error === "PAYMENTS_NOT_CONFIGURED") {
@@ -539,6 +543,7 @@ export default function Home() {
         apr: data.apr ? parseFloat(data.apr) : undefined,
         termMonths: data.termMonths ? parseInt(data.termMonths) : undefined,
         downPayment: data.downPayment ? parseFloat(data.downPayment) : undefined,
+        articleSource: articleSourceRef.current || undefined,
       };
       const response = await apiRequest("POST", "/api/analyze", payload);
       return response.json() as Promise<AnalysisResponse>;

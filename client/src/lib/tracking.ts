@@ -4,6 +4,9 @@ interface TrackingMetadata {
   page?: string;
   ctaId?: string;
   ctaLabel?: string;
+  location?: string;
+  article?: string;
+  articleSource?: string;
   fieldName?: string;
   referrer?: string;
   sessionId?: string;
@@ -37,12 +40,21 @@ export async function track(eventType: EventType, metadata?: TrackingMetadata): 
   }
 }
 
-export function trackPageView(page: string): void {
-  track("page_view", { page });
+export function trackPageView(page: string, articleSource?: string): void {
+  track("page_view", { page, articleSource });
 }
 
-export function trackCtaClick(ctaId: string, ctaLabel?: string): void {
-  track("cta_click", { ctaId, ctaLabel, page: window.location.pathname });
+export function trackCtaClick(ctaIdOrParams: string | { location: string; article: string }, ctaLabel?: string): void {
+  if (typeof ctaIdOrParams === "string") {
+    track("cta_click", { ctaId: ctaIdOrParams, ctaLabel, page: window.location.pathname });
+  } else {
+    track("cta_click", {
+      ctaId: `${ctaIdOrParams.location}|${ctaIdOrParams.article}`,
+      location: ctaIdOrParams.location,
+      article: ctaIdOrParams.article,
+      page: window.location.pathname,
+    });
+  }
 }
 
 export function trackFormStart(page: string): void {

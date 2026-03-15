@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
+import { trackCtaClick } from "@/lib/tracking";
 
 const OTD_REQUEST_MESSAGE = `Can you send me the full out-the-door price in writing, including vehicle price, dealer fees, taxes, registration, and any add-ons?`;
 
@@ -39,7 +40,7 @@ export default function HowToAskForOutTheDoorPrice() {
   return (
     <div className="min-h-screen bg-background">
 
-      <ArticleHeader />
+      <ArticleHeader slug="how-to-ask-for-out-the-door-price" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -66,8 +67,8 @@ export default function HowToAskForOutTheDoorPrice() {
 
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
               <p className="font-medium text-foreground mb-3">Already asked for the OTD and got a quote? Check if it's actually complete.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-callout-how-to-ask">Check My Deal</Button>
+              <Link href="/analyze?src=how-to-ask-for-out-the-door-price">
+                <Button size="sm" data-testid="button-callout-how-to-ask" onClick={() => trackCtaClick({ location: "article_top_callout", article: "how-to-ask-for-out-the-door-price" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -261,8 +262,8 @@ export default function HowToAskForOutTheDoorPrice() {
               Got a quote back from the dealer?
             </h2>
             <p className="text-muted-foreground mb-6">Paste it and Odigos checks whether the full OTD price is actually there — or whether key items are still missing.</p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-how-to-ask">
+            <Link href="/analyze?src=how-to-ask-for-out-the-door-price">
+              <Button size="lg" data-testid="button-cta-how-to-ask" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "how-to-ask-for-out-the-door-price" })}>
                 Check If It's Complete
               </Button>
             </Link>

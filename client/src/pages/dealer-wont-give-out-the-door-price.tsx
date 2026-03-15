@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
+import { trackCtaClick } from "@/lib/tracking";
 
 export default function DealerWontGiveOutTheDoorPrice() {
   useEffect(() => {
@@ -16,7 +17,7 @@ export default function DealerWontGiveOutTheDoorPrice() {
   return (
     <div className="min-h-screen bg-background">
 
-      <ArticleHeader />
+      <ArticleHeader slug="dealer-wont-give-out-the-door-price" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -43,8 +44,8 @@ export default function DealerWontGiveOutTheDoorPrice() {
 
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
               <p className="font-medium text-foreground mb-3">Have a partial quote or no OTD price yet? See what's missing.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-callout-otd-refuse">Check My Deal</Button>
+              <Link href="/analyze?src=dealer-wont-give-out-the-door-price">
+                <Button size="sm" data-testid="button-callout-otd-refuse" onClick={() => trackCtaClick({ location: "article_top_callout", article: "dealer-wont-give-out-the-door-price" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -159,8 +160,8 @@ export default function DealerWontGiveOutTheDoorPrice() {
               Have a partial quote or a dealer dodging the OTD?
             </h2>
             <p className="text-muted-foreground mb-6">Paste what you have and Odigos flags exactly what's missing before you walk in.</p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-otd-refuse">
+            <Link href="/analyze?src=dealer-wont-give-out-the-door-price">
+              <Button size="lg" data-testid="button-cta-otd-refuse" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "dealer-wont-give-out-the-door-price" })}>
                 See What's Missing
               </Button>
             </Link>

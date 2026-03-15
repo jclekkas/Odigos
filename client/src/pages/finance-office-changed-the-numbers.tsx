@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
+import { trackCtaClick } from "@/lib/tracking";
 
 const FINANCE_OFFICE_MESSAGE = `Hi — before I sign, I need a line-by-line breakdown of the final numbers compared to the price we agreed on. Please list the vehicle price, every fee, every add-on product, the interest rate, and the loan term separately. If anything changed from what we discussed, I'd like a written explanation of what's different and why.`;
 
@@ -39,7 +40,7 @@ export default function FinanceOfficeChangedTheNumbers() {
   return (
     <div className="min-h-screen bg-background">
 
-      <ArticleHeader />
+      <ArticleHeader slug="finance-office-changed-the-numbers" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -54,8 +55,8 @@ export default function FinanceOfficeChangedTheNumbers() {
 
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
               <p className="font-medium text-foreground mb-3">Numbers in the paperwork don't match what you agreed on? Paste the quote now.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-callout-finance-office">Check My Deal</Button>
+              <Link href="/analyze?src=finance-office-changed-the-numbers">
+                <Button size="sm" data-testid="button-callout-finance-office" onClick={() => trackCtaClick({ location: "article_top_callout", article: "finance-office-changed-the-numbers" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -156,8 +157,8 @@ export default function FinanceOfficeChangedTheNumbers() {
               Numbers don't match what you agreed on?
             </h2>
             <p className="text-muted-foreground mb-6">Paste the quote — Odigos flags every discrepancy between what you agreed to and what the paperwork shows.</p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-finance-office">
+            <Link href="/analyze?src=finance-office-changed-the-numbers">
+              <Button size="lg" data-testid="button-cta-finance-office" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "finance-office-changed-the-numbers" })}>
                 Flag What Changed
               </Button>
             </Link>

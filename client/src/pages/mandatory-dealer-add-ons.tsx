@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import ArticleHeader from "@/components/ArticleHeader";
 import { setSeoMeta } from "@/lib/seo";
+import { trackCtaClick } from "@/lib/tracking";
 
 export default function MandatoryDealerAddOns() {
   useEffect(() => {
@@ -15,7 +16,7 @@ export default function MandatoryDealerAddOns() {
 
   return (
     <div className="min-h-screen bg-background">
-      <ArticleHeader />
+      <ArticleHeader slug="mandatory-dealer-add-ons" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -33,8 +34,8 @@ export default function MandatoryDealerAddOns() {
 
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
               <p className="font-medium text-foreground mb-3">Have a quote with add-ons you didn't ask for? Check which ones you can decline.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-callout-mandatory-addons">Check My Deal</Button>
+              <Link href="/analyze?src=mandatory-dealer-add-ons">
+                <Button size="sm" data-testid="button-callout-mandatory-addons" onClick={() => trackCtaClick({ location: "article_top_callout", article: "mandatory-dealer-add-ons" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -137,8 +138,8 @@ export default function MandatoryDealerAddOns() {
               Not sure which add-ons on your quote are optional?
             </h2>
             <p className="text-muted-foreground mb-6">Odigos identifies what's mandatory and what you can push back on — before you go in.</p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-add-ons">
+            <Link href="/analyze?src=mandatory-dealer-add-ons">
+              <Button size="lg" data-testid="button-cta-add-ons" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "mandatory-dealer-add-ons" })}>
                 Review the Add-Ons
               </Button>
             </Link>

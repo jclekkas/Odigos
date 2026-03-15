@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
+import { trackCtaClick } from "@/lib/tracking";
 
 const MARKET_ADJUSTMENT_MESSAGE = `Hi, I'm interested in this vehicle and want to understand the full pricing. Can you send me a breakdown showing the MSRP, any market adjustment or additional dealer markup, and the final out-the-door price with taxes and fees separated? I'd like to see how the adjusted price compares to the manufacturer's suggested retail price before moving forward.`;
 
@@ -39,7 +40,7 @@ export default function MarketAdjustmentFee() {
   return (
     <div className="min-h-screen bg-background">
 
-      <ArticleHeader />
+      <ArticleHeader slug="market-adjustment-fee" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -54,8 +55,8 @@ export default function MarketAdjustmentFee() {
 
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
               <p className="font-medium text-foreground mb-3">See a market adjustment on your quote? Find out if it's within normal range.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-callout-market-adj">Check My Deal</Button>
+              <Link href="/analyze?src=market-adjustment-fee">
+                <Button size="sm" data-testid="button-callout-market-adj" onClick={() => trackCtaClick({ location: "article_top_callout", article: "market-adjustment-fee" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -165,8 +166,8 @@ export default function MarketAdjustmentFee() {
               See a market adjustment on your quote?
             </h2>
             <p className="text-muted-foreground mb-6">Paste it and find out if it's within normal range — and what the full out-the-door price actually is.</p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-market-adjustment">
+            <Link href="/analyze?src=market-adjustment-fee">
+              <Button size="lg" data-testid="button-cta-market-adjustment" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "market-adjustment-fee" })}>
                 Check My Quote
               </Button>
             </Link>

@@ -27,6 +27,9 @@ export interface EventMetadata {
   stripeSessionId?: string;
   ctaId?: string;
   ctaLabel?: string;
+  location?: string;
+  article?: string;
+  articleSource?: string;
   fieldName?: string;
   sessionId?: string;
   [key: string]: unknown;
@@ -214,6 +217,13 @@ export interface MetricsSummary {
     formStartToSubmissionRate: number;
     ctaClicksByButton: Array<{ ctaId: string; label: string; count: number }>;
   };
+  articleFunnel: Array<{
+    slug: string;
+    ctaClicks: number;
+    analyzerLoads: number;
+    submissions: number;
+    payments: number;
+  }>;
 }
 
 export async function getMetricsSummary(): Promise<MetricsSummary> {
@@ -394,6 +404,49 @@ export async function getMetricsSummary(): Promise<MetricsSummary> {
           .map(([ctaId, data]) => ({ ctaId, label: data.label, count: data.count }))
           .sort((a, b) => b.count - a.count),
       };
+    })(),
+    articleFunnel: (() => {
+      const slugMap: Record<string, { ctaClicks: number; analyzerLoads: number; submissions: number; payments: number }> = {};
+
+      const ensureSlug = (slug: string) => {
+        if (!slugMap[slug]) slugMap[slug] = { ctaClicks: 0, analyzerLoads: 0, submissions: 0, payments: 0 };
+      };
+
+      ctaClickEvents.forEach(e => {
+        const article = e.metadata?.article;
+        if (article) {
+          ensureSlug(article);
+          slugMap[article].ctaClicks++;
+        }
+      });
+
+      pageViewEvents.forEach(e => {
+        if (e.metadata?.page === "/analyze" && e.metadata?.articleSource) {
+          const slug = e.metadata.articleSource as string;
+          ensureSlug(slug);
+          slugMap[slug].analyzerLoads++;
+        }
+      });
+
+      submissions.forEach(e => {
+        const src = e.metadata?.articleSource as string | undefined;
+        if (src) {
+          ensureSlug(src);
+          slugMap[src].submissions++;
+        }
+      });
+
+      payments.forEach(e => {
+        const src = e.metadata?.articleSource as string | undefined;
+        if (src) {
+          ensureSlug(src);
+          slugMap[src].payments++;
+        }
+      });
+
+      return Object.entries(slugMap)
+        .map(([slug, data]) => ({ slug, ...data }))
+        .sort((a, b) => b.ctaClicks - a.ctaClicks);
     })(),
   };
 }

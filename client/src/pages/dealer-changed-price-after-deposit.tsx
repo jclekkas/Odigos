@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
+import { trackCtaClick } from "@/lib/tracking";
 
 const DEPOSIT_PRICE_CHANGE_MESSAGE = `Hi, I'd like to follow up on our agreement. The price I was quoted when I put down my deposit was different from what I'm now being asked to pay. Can you provide a written explanation of exactly what changed and why? I'd also like to understand my options for a full refund of my deposit if we can't agree on the original terms.`;
 
@@ -39,7 +40,7 @@ export default function DealerChangedPriceAfterDeposit() {
   return (
     <div className="min-h-screen bg-background">
 
-      <ArticleHeader />
+      <ArticleHeader slug="dealer-changed-price-after-deposit" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -54,8 +55,8 @@ export default function DealerChangedPriceAfterDeposit() {
 
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
               <p className="font-medium text-foreground mb-3">Dealer changed the price after your deposit? Paste the quote and see what changed.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-callout-deposit">Check My Deal</Button>
+              <Link href="/analyze?src=dealer-changed-price-after-deposit">
+                <Button size="sm" data-testid="button-callout-deposit" onClick={() => trackCtaClick({ location: "article_top_callout", article: "dealer-changed-price-after-deposit" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -176,8 +177,8 @@ export default function DealerChangedPriceAfterDeposit() {
               Dealer changed the price after your deposit?
             </h2>
             <p className="text-muted-foreground mb-6">Paste the original quote and the new one. Odigos breaks down exactly what changed and whether it's legitimate.</p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-deposit">
+            <Link href="/analyze?src=dealer-changed-price-after-deposit">
+              <Button size="lg" data-testid="button-cta-deposit" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "dealer-changed-price-after-deposit" })}>
                 Check the New Numbers
               </Button>
             </Link>

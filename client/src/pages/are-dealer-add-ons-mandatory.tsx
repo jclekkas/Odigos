@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
+import { trackCtaClick } from "@/lib/tracking";
 
 const DECLINE_ADDONS_MESSAGE = `I'd like to move forward with the vehicle, but without the dealer-installed add-ons. Please send me an updated out-the-door price with only the base vehicle price, taxes, title, registration, and your documentation fee. If any add-ons can't be removed, please list each one separately with pricing so I can evaluate them individually.`;
 
@@ -39,7 +40,7 @@ export default function AreDealerAddOnsMandatory() {
   return (
     <div className="min-h-screen bg-background">
 
-      <ArticleHeader />
+      <ArticleHeader slug="are-dealer-add-ons-mandatory" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -58,8 +59,8 @@ export default function AreDealerAddOnsMandatory() {
 
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
               <p className="font-medium text-foreground mb-3">Have a quote with add-ons listed as required? See which ones you can actually remove.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-callout-addons-mandatory">Check My Deal</Button>
+              <Link href="/analyze?src=are-dealer-add-ons-mandatory">
+                <Button size="sm" data-testid="button-callout-addons-mandatory" onClick={() => trackCtaClick({ location: "article_top_callout", article: "are-dealer-add-ons-mandatory" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -203,8 +204,8 @@ export default function AreDealerAddOnsMandatory() {
               Not sure which add-ons on your quote are optional?
             </h2>
             <p className="text-muted-foreground mb-6">Odigos identifies what's mandatory and what you can push back on — before you go in.</p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-addons">
+            <Link href="/analyze?src=are-dealer-add-ons-mandatory">
+              <Button size="lg" data-testid="button-cta-addons" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "are-dealer-add-ons-mandatory" })}>
                 Review the Add-Ons
               </Button>
             </Link>

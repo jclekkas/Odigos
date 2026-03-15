@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
+import { trackCtaClick } from "@/lib/tracking";
 
 export default function CarDealerFeesExplained() {
   useEffect(() => {
@@ -16,7 +17,7 @@ export default function CarDealerFeesExplained() {
   return (
     <div className="min-h-screen bg-background">
       
-      <ArticleHeader />
+      <ArticleHeader slug="car-dealer-fees-explained" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -30,8 +31,8 @@ export default function CarDealerFeesExplained() {
 
           <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
             <p className="font-medium text-foreground mb-3">Not sure which fees on your quote are optional? Check in seconds.</p>
-            <Link href="/analyze">
-              <Button size="sm" data-testid="button-callout-fees">Check My Deal</Button>
+            <Link href="/analyze?src=car-dealer-fees-explained">
+              <Button size="sm" data-testid="button-callout-fees" onClick={() => trackCtaClick({ location: "article_top_callout", article: "car-dealer-fees-explained" })}>Check My Deal</Button>
             </Link>
             <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
           </div>
@@ -92,8 +93,8 @@ export default function CarDealerFeesExplained() {
 
           <div className="my-8 rounded-lg border border-border bg-muted/40 p-5">
             <p className="font-medium text-foreground mb-3">See a fee on your quote you're not sure about? Paste it and find out what's standard vs. what to push back on.</p>
-            <Link href="/analyze">
-              <Button size="sm" data-testid="button-mid-article-fees">Check My Deal</Button>
+            <Link href="/analyze?src=car-dealer-fees-explained">
+              <Button size="sm" data-testid="button-mid-article-fees" onClick={() => trackCtaClick({ location: "article_mid_cta", article: "car-dealer-fees-explained" })}>Check My Deal</Button>
             </Link>
             <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
           </div>
@@ -113,8 +114,8 @@ export default function CarDealerFeesExplained() {
               Have a dealer quote with fees you don't recognize?
             </h2>
             <p className="text-muted-foreground mb-6">Paste it and Odigos breaks down every line — what's required, what's optional, and what you can push back on.</p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-fees">
+            <Link href="/analyze?src=car-dealer-fees-explained">
+              <Button size="lg" data-testid="button-cta-fees" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "car-dealer-fees-explained" })}>
                 Analyze My Quote
               </Button>
             </Link>

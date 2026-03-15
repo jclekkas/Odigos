@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Check, Copy, AlertTriangle, CircleDollarSign } from "lucide-react";
 import ArticleHeader from "@/components/ArticleHeader";
 import { setSeoMeta } from "@/lib/seo";
+import { trackCtaClick } from "@/lib/tracking";
 
 const OTD_MESSAGE = `Before I come in, can you confirm the full out-the-door price in writing, including sale price, taxes, title/registration, doc fee, and any dealer add-ons? If add-ons are included, please itemize each one with pricing. I'm ready to move forward once I can review the complete OTD breakdown.`;
 
@@ -47,7 +48,7 @@ export default function OutTheDoorPrice() {
 
   return (
     <div className="min-h-screen bg-background">
-      <ArticleHeader />
+      <ArticleHeader slug="out-the-door-price" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -58,8 +59,8 @@ export default function OutTheDoorPrice() {
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
               <p className="font-medium text-foreground mb-3">Already have a dealer quote? Check if it includes everything.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-callout-otd">Check My Deal</Button>
+              <Link href="/analyze?src=out-the-door-price">
+                <Button size="sm" data-testid="button-callout-otd" onClick={() => trackCtaClick({ location: "article_top_callout", article: "out-the-door-price" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -163,8 +164,8 @@ export default function OutTheDoorPrice() {
 
             <div className="my-8 rounded-lg border border-border bg-muted/40 p-5">
               <p className="font-medium text-foreground mb-3">Have a quote already? Check if it includes all the components a real OTD price requires.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-mid-article-otd">Check My Deal</Button>
+              <Link href="/analyze?src=out-the-door-price">
+                <Button size="sm" data-testid="button-mid-article-otd" onClick={() => trackCtaClick({ location: "article_mid_cta", article: "out-the-door-price" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -286,8 +287,8 @@ export default function OutTheDoorPrice() {
               Not sure if your quote includes the full OTD price?
             </h2>
             <p className="text-muted-foreground mb-6">Check what's missing before you go in. Odigos flags incomplete breakdowns, hidden fees, and add-ons you didn't ask for.</p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-otd">
+            <Link href="/analyze?src=out-the-door-price">
+              <Button size="lg" data-testid="button-cta-otd" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "out-the-door-price" })}>
                 Check the Quote
               </Button>
             </Link>

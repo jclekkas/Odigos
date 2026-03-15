@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
+import { trackCtaClick } from "@/lib/tracking";
 
 const OTD_MESSAGE = `Hi, I'm interested in [YEAR MAKE MODEL TRIM]. Before I come in, could you send me the full out-the-door price in writing? I'd like to see the sale price, taxes, title/registration, doc fee, and any dealer-installed add-ons itemized separately. Thanks!`;
 
@@ -47,7 +48,7 @@ export default function OutTheDoorPriceCalculator() {
 
   return (
     <div className="min-h-screen bg-background">
-      <ArticleHeader />
+      <ArticleHeader slug="out-the-door-price-calculator" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -65,8 +66,8 @@ export default function OutTheDoorPriceCalculator() {
 
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
               <p className="font-medium text-foreground mb-3">Have an actual dealer quote? See if it matches your estimate.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-callout-otd-calc">Check My Deal</Button>
+              <Link href="/analyze?src=out-the-door-price-calculator">
+                <Button size="sm" data-testid="button-callout-otd-calc" onClick={() => trackCtaClick({ location: "article_top_callout", article: "out-the-door-price-calculator" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -211,8 +212,8 @@ export default function OutTheDoorPriceCalculator() {
             <p className="text-muted-foreground mb-4">
               A calculator gives you an estimate — but the dealer's quote is what you actually sign. Paste it into Odigos and see whether the real numbers match what a calculator can't predict: doc fees, add-ons, and line items that weren't disclosed upfront.
             </p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-otd-calc">
+            <Link href="/analyze?src=out-the-door-price-calculator">
+              <Button size="lg" data-testid="button-cta-otd-calc" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "out-the-door-price-calculator" })}>
                 Check the Real Numbers
               </Button>
             </Link>

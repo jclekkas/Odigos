@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
+import { trackCtaClick } from "@/lib/tracking";
 
 export default function OtdPriceVsMsrp() {
   useEffect(() => {
@@ -16,7 +17,7 @@ export default function OtdPriceVsMsrp() {
   return (
     <div className="min-h-screen bg-background">
 
-      <ArticleHeader />
+      <ArticleHeader slug="otd-price-vs-msrp" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -39,8 +40,8 @@ export default function OtdPriceVsMsrp() {
 
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
               <p className="font-medium text-foreground mb-3">Have a quote with only an MSRP? See what the actual OTD price will be.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-callout-otd-vs-msrp">Check My Deal</Button>
+              <Link href="/analyze?src=otd-price-vs-msrp">
+                <Button size="sm" data-testid="button-callout-otd-vs-msrp" onClick={() => trackCtaClick({ location: "article_top_callout", article: "otd-price-vs-msrp" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -179,8 +180,8 @@ export default function OtdPriceVsMsrp() {
               Only seeing MSRP in your quote?
             </h2>
             <p className="text-muted-foreground mb-6">Paste the quote and Odigos estimates the full OTD price — and flags any fees that look unusual.</p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-otd-vs-msrp">
+            <Link href="/analyze?src=otd-price-vs-msrp">
+              <Button size="lg" data-testid="button-cta-otd-vs-msrp" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "otd-price-vs-msrp" })}>
                 Get the Real Price
               </Button>
             </Link>

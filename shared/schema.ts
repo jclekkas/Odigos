@@ -10,6 +10,7 @@ export const analysisRequestSchema = z.object({
   apr: z.number().optional(),
   termMonths: z.number().optional(),
   downPayment: z.number().optional(),
+  articleSource: z.string().optional(),
 });
 
 export type AnalysisRequest = z.infer<typeof analysisRequestSchema>;

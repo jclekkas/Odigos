@@ -116,6 +116,13 @@ interface MetricsSummary {
     formStartToSubmissionRate: number;
     ctaClicksByButton: Array<{ ctaId: string; label: string; count: number }>;
   };
+  articleFunnel: Array<{
+    slug: string;
+    ctaClicks: number;
+    analyzerLoads: number;
+    submissions: number;
+    payments: number;
+  }>;
 }
 
 function TrendBadge({ current, previous, suffix = "" }: { current: number; previous: number; suffix?: string }) {
@@ -907,6 +914,49 @@ export default function AdminMetrics() {
                 </CardContent>
               </Card>
             </div>
+
+            {metrics?.articleFunnel && metrics.articleFunnel.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Article Funnel Breakdown
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm" data-testid="table-article-funnel">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2 pr-4 font-medium text-muted-foreground">Article</th>
+                          <th className="text-right py-2 px-3 font-medium text-muted-foreground">CTA Clicks</th>
+                          <th className="text-right py-2 px-3 font-medium text-muted-foreground">Analyzer Loads</th>
+                          <th className="text-right py-2 px-3 font-medium text-muted-foreground">Submissions</th>
+                          <th className="text-right py-2 pl-3 font-medium text-muted-foreground">Payments</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {metrics.articleFunnel.map((row) => (
+                          <tr key={row.slug} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                            <td className="py-2 pr-4 font-medium truncate max-w-[220px]" title={row.slug}>{row.slug}</td>
+                            <td className="text-right py-2 px-3">{row.ctaClicks}</td>
+                            <td className="text-right py-2 px-3">{row.analyzerLoads}</td>
+                            <td className="text-right py-2 px-3">{row.submissions}</td>
+                            <td className="text-right py-2 pl-3">
+                              {row.payments > 0 ? (
+                                <Badge variant="secondary" className="text-green-600">{row.payments}</Badge>
+                              ) : (
+                                <span className="text-muted-foreground">0</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <Card>

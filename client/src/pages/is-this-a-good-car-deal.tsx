@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
+import { trackCtaClick } from "@/lib/tracking";
 
 export default function IsThisAGoodCarDeal() {
   useEffect(() => {
@@ -15,7 +16,7 @@ export default function IsThisAGoodCarDeal() {
 
   return (
     <div className="min-h-screen bg-background">
-      <ArticleHeader />
+      <ArticleHeader slug="is-this-a-good-car-deal" />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -61,8 +62,8 @@ export default function IsThisAGoodCarDeal() {
 
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
               <p className="font-medium text-foreground mb-3">Have a quote you're not sure about? Get a quick read before you decide.</p>
-              <Link href="/analyze">
-                <Button size="sm" data-testid="button-callout-good-deal">Check My Deal</Button>
+              <Link href="/analyze?src=is-this-a-good-car-deal">
+                <Button size="sm" data-testid="button-callout-good-deal" onClick={() => trackCtaClick({ location: "article_top_callout", article: "is-this-a-good-car-deal" })}>Check My Deal</Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
             </div>
@@ -73,8 +74,8 @@ export default function IsThisAGoodCarDeal() {
               Not sure if your deal is actually good?
             </h2>
             <p className="text-muted-foreground mb-6">Paste the quote and get a GO or NO-GO — with a clear breakdown of what's fair, what's padded, and what to ask next.</p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-good-deal">
+            <Link href="/analyze?src=is-this-a-good-car-deal">
+              <Button size="lg" data-testid="button-cta-good-deal" onClick={() => trackCtaClick({ location: "article_bottom_cta", article: "is-this-a-good-car-deal" })}>
                 Check My Deal
               </Button>
             </Link>
