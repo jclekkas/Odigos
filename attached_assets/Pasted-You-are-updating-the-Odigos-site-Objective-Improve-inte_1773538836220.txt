@@ -1,0 +1,174 @@
+You are updating the Odigos site.
+
+Objective:
+Improve internal linking across the existing SEO article cluster so Google more clearly understands Odigos as an authority on dealer pricing transparency.
+
+Important constraints:
+- Do NOT add any new product features
+- Do NOT change backend logic, APIs, analyzer behavior, payment flow, or auth
+- Do NOT redesign the homepage or article layout
+- Do NOT materially rewrite article copy unless needed to place natural internal links
+- Keep the current tone, structure, and design system intact
+- Keep links natural inside body copy; do NOT add spammy link lists
+- Preserve existing CTA components and tracking patterns
+- Maintain current routing, canonical structure, and metadata unless a small consistency fix is required
+
+Goal:
+Strengthen article-to-article internal linking so the site more clearly forms a topical cluster around:
+1. Out-the-door pricing
+2. Dealer fees
+3. Dealer add-ons
+4. Dealer pricing tactics
+
+Implementation tasks:
+
+T001 — Audit the current SEO article pages and identify the main cluster pages already present
+
+Look for existing pages including or equivalent to:
+- /what-is-an-out-the-door-price
+- /dealer-wont-give-out-the-door-price
+- /calculate-out-the-door-price
+- /doc-fee-too-high
+- /are-dealer-add-ons-mandatory
+- /dealer-changed-price-after-deposit
+- /dealer-added-fees-after-agreement
+- /market-adjustment-fee
+- /dealer-pricing-tactics
+
+If slugs differ slightly, use the actual existing slugs in the repo rather than inventing new ones.
+
+T002 — Strengthen pillar reinforcement for the main OTD explainer page
+
+Identify the primary OTD explainer page already in the codebase (for example /what-is-an-out-the-door-price or equivalent).
+
+Update all relevant related articles so they naturally link back to that OTD explainer using varied, descriptive anchor text such as:
+- what an out-the-door price includes
+- full out-the-door price
+- out-the-door price breakdown
+- how out-the-door pricing works
+- what OTD price means
+
+Pages that should likely link to the OTD explainer if relevant:
+- dealer won’t give OTD price
+- calculate OTD price
+- doc fee page
+- add-ons page
+- dealer added fees page
+- market adjustment page
+
+Do not force exact-match anchor repetition. Vary anchors naturally.
+
+T003 — Increase sideways article-to-article linking inside the cluster
+
+Update the body copy of each relevant article so it naturally links to 2–4 other closely related articles.
+
+Desired pattern:
+- Each article should link to at least 1 pillar page
+- Each article should link to at least 2 sibling/supporting pages where contextually relevant
+- Links should be embedded in explanatory sentences, not dropped into standalone link dumps
+
+Examples of the intended linking structure:
+
+OTD cluster
+- main OTD explainer
+- dealer won’t give OTD price
+- calculate OTD price
+- any OTD example / MSRP / how to ask pages if they already exist
+
+Dealer fees cluster
+- doc fee too high / dealer doc fee page
+- market adjustment fee
+- dealer added fees after agreement
+- dealer changed price after deposit
+
+Dealer add-ons cluster
+- are dealer add-ons mandatory
+- fee/tactics pages that reference add-ons
+- future add-on specific pages should be easy to connect later
+
+Dealer tactics / hub cluster
+- dealer-pricing-tactics hub should link to all major tactic pages
+- tactic pages should also link back to the hub where natural
+
+T004 — Improve linking from the “dealer-pricing-tactics” hub page
+
+Update the existing tactics hub page so it clearly and naturally links to all major relevant guides already present in the repo.
+
+At minimum, if these pages exist, include links to:
+- dealer won’t give OTD price
+- dealer add-ons mandatory
+- dealer added fees after agreement
+- dealer changed price after deposit
+- market adjustment fee
+- doc fee page
+- OTD explainer page
+
+Do this in a useful editorial way.
+Do NOT make it feel like a bare sitemap.
+Use short supporting descriptions where appropriate so the hub feels like a real guide.
+
+T005 — Strengthen the fee cluster
+
+Where relevant in existing articles, add natural cross-links among:
+- doc fee page
+- market adjustment fee page
+- dealer added fees after agreement
+- dealer changed price after deposit
+- OTD explainer page
+
+Examples of natural contextual references:
+- mention that a high doc fee is one type of charge that can increase the out-the-door price
+- mention that market adjustments and add-ons are separate from taxes/registration
+- mention that added fees after agreement may include doc fees, accessories, or markups
+
+T006 — Strengthen the add-ons cluster
+
+Update the add-ons article so it naturally links to:
+- the OTD explainer page
+- dealer added fees after agreement
+- doc fee page if relevant
+- market adjustment page if relevant
+- dealer-pricing-tactics hub if relevant
+
+Also update fee/tactic pages so that when add-ons are discussed, they link back to the add-ons article using natural anchors like:
+- dealer add-ons
+- mandatory add-ons
+- dealer-installed add-ons
+- whether dealer add-ons are optional
+
+T007 — Keep link placement natural and high quality
+
+Internal linking requirements:
+- Add links in body paragraphs where users would genuinely benefit
+- Avoid stuffing too many links into one paragraph
+- Avoid repetitive exact same anchor text across every page
+- Prefer descriptive anchors over generic “click here”
+- Do not create orphan pages
+- Do not add sitewide footer-style link spam
+- Do not add giant “related articles” blocks unless the site already uses them and they match the design
+
+T008 — Minimum linking target per article
+
+For each major SEO article in the cluster, aim for:
+- 3–5 internal links total inside the article body
+- at least 1 link to a pillar/explainer page
+- at least 2 links to related sibling pages
+
+If a page already exceeds this with good links, improve only where helpful.
+
+T009 — Preserve copy quality
+
+When inserting links:
+- keep the tone calm, authoritative, and practical
+- avoid obvious SEO-style keyword stuffing
+- avoid changing the meaning of paragraphs
+- preserve readability first
+
+T010 — Deliverable summary
+
+After implementing, provide:
+1. A concise list of files modified
+2. The existing article pages that were updated
+3. A summary of which pages were linked to which
+4. Any pages that could not be linked because they do not exist in the repo
+5. Confirmation that no unrelated product logic or backend behavior was changed
