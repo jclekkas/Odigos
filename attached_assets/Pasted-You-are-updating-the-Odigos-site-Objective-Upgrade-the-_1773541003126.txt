@@ -1,0 +1,196 @@
+You are updating the Odigos site.
+
+Objective
+Upgrade the existing `car-dealer-fees-by-state` page so it becomes a structured reference resource explaining dealer fees and documentation fee limits by state. This page should strengthen Odigos’ topical authority around dealer pricing transparency and capture long-tail searches such as “dealer doc fee Texas”, “doc fee California cap”, and “car dealer fees by state”.
+
+Important constraints
+
+* Do NOT create a new page; update the existing `car-dealer-fees-by-state.tsx`
+* Do NOT modify backend logic, APIs, analyzer behavior, payments, routing architecture, or authentication
+* Do NOT redesign the page layout system
+* Follow the same article template and styling used by other Odigos article pages
+* Preserve existing CTA patterns used in other articles
+* Avoid generic SEO filler or AI-style fluff
+* Keep tone consistent with Odigos: clear, practical, consumer-protection oriented
+* Only expand or restructure the content where necessary to make the page a strong reference resource
+
+Primary goal
+Turn this page into a “reference guide + state table” that ranks for long-tail queries about dealer documentation fees and dealer charges in different states.
+
+Tasks
+
+T001 — Verify and preserve the existing route
+Confirm the page is located at something like:
+
+`client/src/pages/car-dealer-fees-by-state.tsx`
+
+Keep the existing route and slug unless there is a clear inconsistency with other SEO pages.
+
+Do NOT create a duplicate page.
+
+---
+
+T002 — Improve the page title and metadata
+
+Title (H1):
+Car Dealer Fees by State: Doc Fee Limits and Typical Costs
+
+Meta title:
+Car Dealer Fees by State: Doc Fee Limits and Typical Costs | Odigos
+
+Meta description:
+Dealer documentation fees vary widely by state. See typical doc fees, legal caps, and what car buyers should expect across major U.S. states.
+
+Ensure the page also includes:
+
+* canonical URL
+* Open Graph tags
+* Twitter card tags
+  matching the format used in other Odigos article pages.
+
+---
+
+T003 — Add a short introductory explanation section
+
+Add a clear introduction explaining:
+
+* what dealer documentation fees are
+* why they vary by state
+* why some states regulate them and others do not
+* that these fees often affect the final out-the-door price
+
+Keep this section concise (2–3 paragraphs).
+
+---
+
+T004 — Add a structured “Dealer Fees by State” table
+
+Create a table section showing example states and fee ranges.
+
+Columns:
+
+State
+Typical Doc Fee
+Legal Cap (if applicable)
+Notes
+
+Include at least 10–15 high-population states such as:
+
+California
+Texas
+Florida
+New York
+Illinois
+Pennsylvania
+Ohio
+Georgia
+North Carolina
+Arizona
+Michigan
+New Jersey
+Virginia
+Washington
+Massachusetts
+
+If exact legal caps are not available in the codebase, present ranges and clearly state that rules may change and buyers should verify current regulations.
+
+The table should be readable and styled consistently with the site's typography system.
+
+---
+
+T005 — Add supporting explanatory sections
+
+Below the table, include several short sections:
+
+1. Why Dealer Fees Vary by State
+   Explain that some states regulate doc fees and others allow dealerships to set their own.
+
+2. Which Dealer Fees Are Regulated
+   Explain that documentation fees are sometimes capped while other fees (add-ons, accessories, markups) are usually not.
+
+3. Which Fees Are Negotiable
+   Explain that doc fees are sometimes non-negotiable but vehicle price can often be negotiated to offset them.
+
+4. What to Do if a Dealer Fee Seems Too High
+   Provide practical advice for buyers reviewing a dealer quote.
+
+Keep each section short and practical.
+
+---
+
+T006 — Add natural internal links to the existing cluster
+
+Where context supports it, add natural links to existing pages such as:
+
+* `/dealer-doc-fee`
+* `/doc-fee-too-high`
+* `/car-dealer-fees-explained`
+* `/market-adjustment-fee`
+* `/are-dealer-add-ons-mandatory`
+* `/out-the-door-price`
+
+Guidelines:
+
+* insert links in natural sentences
+* do not create a link dump
+* vary anchor text naturally
+
+Example anchors:
+
+* dealer documentation fees
+* out-the-door price
+* dealer add-ons
+* market adjustment fees
+
+---
+
+T007 — Include a contextual Odigos CTA
+
+Near the end of the page include a short section encouraging users to check a dealer quote before visiting the dealership.
+
+Example idea:
+
+“If a dealership quote includes a doc fee or other charges you don’t recognize, you can paste the message into Odigos to check whether the pricing looks normal.”
+
+Use the same CTA component or pattern used on other article pages.
+
+---
+
+T008 — Maintain article quality standards
+
+Writing requirements:
+
+* approximately 900–1500 words
+* short paragraphs
+* clear headings
+* no keyword stuffing
+* avoid generic blog tone
+* focus on clarity and practical advice for buyers
+
+The page should feel like a consumer reference resource rather than a marketing blog.
+
+---
+
+T009 — Do not change unrelated parts of the application
+
+Unless absolutely necessary for wiring the page:
+
+Do NOT modify:
+
+* analyzer logic
+* payment flow
+* homepage hero
+* global styles
+* unrelated pages
+
+---
+
+Deliverable summary
+
+After implementing the update, report:
+
+1. the exact file modified
+2. the final H1 used
+3. the states included in the table
+4. which internal links were added
+5. confirmation that no new routes or backend logic were changed
