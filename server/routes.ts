@@ -322,7 +322,7 @@ GO/NO-GO/NEED-MORE-INFO:
       const session = await stripe.checkout.sessions.create({
         mode: "payment",
         line_items: [{ price: priceId, quantity: 1 }],
-        success_url: `${baseUrl}/analyze?paid=1&product=${product}`,
+        success_url: `${baseUrl}/analyze?paid=1&product=${product}&session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${baseUrl}/analyze?paid=0`,
         metadata: articleSource ? { articleSource } : undefined,
       });
@@ -474,6 +474,7 @@ GO/NO-GO/NEED-MORE-INFO:
         amount: number;
         created: Date;
         tier: "49";
+        articleSource?: string;
       }> = [];
       
       let hasMore = true;
@@ -501,6 +502,7 @@ GO/NO-GO/NEED-MORE-INFO:
               amount,
               created: new Date(session.created * 1000),
               tier: "49",
+              articleSource: session.metadata?.articleSource || undefined,
             });
           }
         }
@@ -535,7 +537,7 @@ GO/NO-GO/NEED-MORE-INFO:
         events.push({
           eventType: "payment_completed" as const,
           createdAt: payment.created.toISOString(),
-          metadata: { tier: payment.tier, stripeSessionId: payment.id },
+          metadata: { tier: payment.tier, stripeSessionId: payment.id, articleSource: payment.articleSource },
         });
         events.push({
           eventType: "submission" as const,

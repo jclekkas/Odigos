@@ -494,6 +494,13 @@ export default function Home() {
           });
         }
       } catch {}
+
+      const sessionId = params.get("session_id");
+      if (sessionId) {
+        fetch(`/api/verify-session?session_id=${encodeURIComponent(sessionId)}`)
+          .catch(() => {});
+      }
+
       window.history.replaceState({}, "", window.location.pathname);
     }
   }, [toast]);
