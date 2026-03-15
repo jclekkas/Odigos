@@ -12,7 +12,6 @@ const openai = new OpenAI({
 });
 
 console.log("OpenAI configured with base URL:", process.env.AI_INTEGRATIONS_OPENAI_BASE_URL ? "set" : "not set");
-console.log("OpenAI API key:", process.env.AI_INTEGRATIONS_OPENAI_API_KEY ? "set" : "not set");
 
 export async function registerRoutes(
   httpServer: Server,
