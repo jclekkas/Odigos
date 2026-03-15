@@ -166,7 +166,7 @@ export default function DealerAddOnsList() {
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Typical costs and markup ranges</h2>
 
             <p className="text-lg text-muted-foreground mb-6">
-              The pattern across nearly every dealer add-on is the same: the dealer's actual cost is a fraction of what they charge. Paint sealant that costs the dealer $50 in product is billed at $800. VIN etching that takes five minutes and costs $25 in materials is charged at $300. Protection packages bundle several of these low-cost items together and present a single price of $1,500 or more, making it harder to evaluate each item individually.
+              The pattern across nearly every dealer add-on is the same: the dealer's actual cost is a fraction of what they charge. Paint sealant that costs the dealer $50 in product is billed at $800. VIN etching that takes five minutes and costs $25 in materials is charged at $300. Protection packages bundle several of these low-cost items together and present a single price of $1,500 or more, making it harder to evaluate each item individually. Some dealers also layer on a <Link href="/market-adjustment-fee" className="underline text-foreground">market adjustment fee</Link> above MSRP — pure markup with no product attached at all.
             </p>
 
             <p className="text-lg text-muted-foreground mb-6">

@@ -81,7 +81,7 @@ export default function CarDealerFeesByState() {
             </p>
 
             <p className="text-muted-foreground mb-6">
-              <strong className="text-foreground">Optional dealer add-ons</strong> are products like paint protection, fabric coating, nitrogen-filled tires, VIN etching, or extended warranties. These are profit items added by the dealership and are almost always optional, even when they're presented as included or required.
+              <strong className="text-foreground">Optional dealer add-ons</strong> are products like paint protection, fabric coating, nitrogen-filled tires, VIN etching, or extended warranties. These are profit items added by the dealership and are almost always optional, even when they're presented as included or required. For a detailed breakdown of which add-ons you can refuse and how to do it, see our guide on <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">whether dealer add-ons are mandatory</Link>.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Typical dealer doc fee ranges by state</h2>

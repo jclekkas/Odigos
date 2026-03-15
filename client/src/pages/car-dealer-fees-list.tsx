@@ -161,7 +161,7 @@ export default function CarDealerFeesList() {
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Which fees deserve questions?</h2>
 
             <p className="text-lg text-muted-foreground mb-6">
-              Anything beyond the fees above is worth asking about. A <Link href="/market-adjustment-fee" className="underline text-foreground">market adjustment</Link> is pure profit — it's the dealer deciding the car is worth more than MSRP. Dealer prep charges duplicate work that's already factored into the manufacturer's price. Paint protection, VIN etching, and nitrogen fills are high-margin add-ons with low actual value.
+              Anything beyond the fees above is worth asking about. A <Link href="/market-adjustment-fee" className="underline text-foreground">market adjustment</Link> is pure profit — it's the dealer deciding the car is worth more than MSRP. Dealer prep charges duplicate work that's already factored into the manufacturer's price. Paint protection, VIN etching, and nitrogen fills are high-margin <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">dealer add-ons</Link> with low actual value — and most of them are optional regardless of how they're presented.
             </p>
 
             <p className="text-lg text-muted-foreground mb-6">
