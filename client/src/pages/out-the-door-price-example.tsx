@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 export default function OutTheDoorPriceExample() {
   useEffect(() => {
@@ -24,6 +25,11 @@ export default function OutTheDoorPriceExample() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-otd-example-headline">
             Out-the-Door Price Example: What a $30,000 Car Really Costs
           </h1>
+
+          <DirectAnswerBlock
+            question="What does a car's out-the-door price include?"
+            answer="The out-the-door price includes the sale price, sales tax (typically 5–10% depending on state), title fee, registration fee, and documentation fee. On a $30,000 vehicle, these additions typically bring the real total to $32,000–$35,000 or more. Dealer add-ons like protection packages or extended warranties increase it further if you agree to them."
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">

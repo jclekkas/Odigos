@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 export default function OtdPriceVsMsrp() {
   useEffect(() => {
@@ -24,6 +25,11 @@ export default function OtdPriceVsMsrp() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-otd-vs-msrp-headline">
             OTD Price vs. MSRP: What Car Buyers Get Wrong
           </h1>
+
+          <DirectAnswerBlock
+            question="What is the difference between OTD price and MSRP?"
+            answer="MSRP is the manufacturer's suggested retail price — the sticker price before taxes and fees. The out-the-door (OTD) price is what you actually pay: MSRP plus sales tax, title, registration, documentation fee, and any add-ons. OTD is typically $2,000–$5,000 higher than MSRP depending on your state and the dealer's fee structure."
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">

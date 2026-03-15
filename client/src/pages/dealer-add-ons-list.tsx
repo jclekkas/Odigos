@@ -6,6 +6,7 @@ import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 const ADDONS_MESSAGE = `Hi — I'm interested in the vehicle but I'd like to see a breakdown of every dealer-installed add-on included in the price. For each one, please list the product name, what it does, and the individual cost. I'd also like to know which add-ons can be removed and what the out-the-door price would be without them. Thanks.`;
 
@@ -47,6 +48,11 @@ export default function DealerAddOnsList() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-addons-list-headline">
             Dealer Add-Ons List: What Dealers Try to Sell and What You Can Refuse
           </h1>
+
+          <DirectAnswerBlock
+            question="What dealer add-ons can I refuse?"
+            answer="You can refuse nearly all dealer add-ons, including paint sealant, fabric protection, nitrogen tires, GPS tracking, window tinting, and extended warranties. These are optional profit items even when presented as standard. Ask for an itemized list and confirm which add-ons were included in the original advertised price before agreeing to anything."
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">

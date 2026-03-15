@@ -6,6 +6,7 @@ import { Check, Copy, AlertTriangle, CircleDollarSign } from "lucide-react";
 import ArticleHeader from "@/components/ArticleHeader";
 import { setSeoMeta } from "@/lib/seo";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 const OTD_MESSAGE = `Before I come in, can you confirm the full out-the-door price in writing, including sale price, taxes, title/registration, doc fee, and any dealer add-ons? If add-ons are included, please itemize each one with pricing. I'm ready to move forward once I can review the complete OTD breakdown.`;
 
@@ -55,6 +56,11 @@ export default function OutTheDoorPrice() {
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-otd-headline">
             What Is an Out-the-Door Price (OTD)? The Only Number That Matters When Buying a Car
           </h1>
+
+          <DirectAnswerBlock
+            question="What is an out-the-door price?"
+            answer="The out-the-door price (OTD) is the total you pay to drive away — the vehicle price plus sales tax, title, registration, documentation fee, and any add-ons. It's the only number that shows what the car truly costs, and the one to request in writing before agreeing to any deal."
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">

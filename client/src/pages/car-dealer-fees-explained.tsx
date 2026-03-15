@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 export default function CarDealerFeesExplained() {
   useEffect(() => {
@@ -24,6 +25,11 @@ export default function CarDealerFeesExplained() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-fees-headline">
             Common Car Dealer Fees Explained: What You Should (and Shouldn't) Pay
           </h1>
+
+          <DirectAnswerBlock
+            question="What are car dealer fees?"
+            answer="Car dealer fees fall into two categories: required (sales tax, title, registration, doc fee) and optional (dealer prep, paint protection, nitrogen tires). Required fees are non-negotiable. Optional fees are often presented as standard but can usually be removed from the deal before you sign."
+          />
           
           <p className="text-lg text-muted-foreground mb-6">
             When you buy a car, the sale price is only part of what you'll pay. Dealers add a range of fees — some required by law, others entirely optional, even when they're not presented that way. Knowing the difference can save you hundreds or thousands.

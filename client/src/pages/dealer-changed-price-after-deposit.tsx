@@ -6,6 +6,7 @@ import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 const DEPOSIT_PRICE_CHANGE_MESSAGE = `Hi, I'd like to follow up on our agreement. The price I was quoted when I put down my deposit was different from what I'm now being asked to pay. Can you provide a written explanation of exactly what changed and why? I'd also like to understand my options for a full refund of my deposit if we can't agree on the original terms.`;
 
@@ -47,6 +48,11 @@ export default function DealerChangedPriceAfterDeposit() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-deposit-headline">
             Dealer Changed the Price After Your Deposit? What It Means
           </h1>
+
+          <DirectAnswerBlock
+            question="Can a dealer change the price after you pay a deposit?"
+            answer="It depends on what you signed. A deposit alone doesn't lock in a price unless it's in a written agreement. If you received written confirmation of a specific price and the dealer raises it, that may breach your agreement. Always get the full out-the-door price in writing before paying any deposit."
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">

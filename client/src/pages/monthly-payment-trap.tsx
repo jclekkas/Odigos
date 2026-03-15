@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 export default function MonthlyPaymentTrap() {
   useEffect(() => {
@@ -24,6 +25,11 @@ export default function MonthlyPaymentTrap() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-monthly-headline">
             The Monthly Payment Trap: How Dealers Use Payment-Focused Quotes to Hide the Real Cost
           </h1>
+
+          <DirectAnswerBlock
+            question="What is the monthly payment trap in car buying?"
+            answer="The monthly payment trap happens when dealers shift the negotiation from the total price to what you'll pay per month. By extending the loan term or adjusting the interest rate, a dealer can keep the monthly number low while increasing your total cost. Always negotiate based on the out-the-door price before discussing monthly payments or financing."
+          />
           
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">

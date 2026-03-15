@@ -6,6 +6,7 @@ import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 const MARKET_ADJUSTMENT_MESSAGE = `Hi, I'm interested in this vehicle and want to understand the full pricing. Can you send me a breakdown showing the MSRP, any market adjustment or additional dealer markup, and the final out-the-door price with taxes and fees separated? I'd like to see how the adjusted price compares to the manufacturer's suggested retail price before moving forward.`;
 
@@ -47,6 +48,11 @@ export default function MarketAdjustmentFee() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-market-adjustment-headline">
             Market Adjustment Fees Explained: Can Dealers Charge Them?
           </h1>
+
+          <DirectAnswerBlock
+            question="What is a market adjustment fee at a car dealership?"
+            answer="A market adjustment fee is an amount dealers add above MSRP on high-demand or low-inventory vehicles. It is not required by law and is entirely the dealer's discretion. While legal, it is negotiable — especially as inventory normalizes. You can refuse it, negotiate it down, or use it as leverage against other fees."
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">

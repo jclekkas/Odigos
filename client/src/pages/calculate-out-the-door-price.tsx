@@ -6,6 +6,7 @@ import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 const OTD_CALC_MESSAGE = `Hi — before I come in, can you send me the full out-the-door price with every line item broken out? I'd like to see the vehicle price, sales tax, title and registration, doc fee, and any dealer-added packages or fees listed separately. I want to compare the total against my own estimate before we finalize anything. Thanks.`;
 
@@ -57,6 +58,11 @@ export default function CalculateOutTheDoorPrice() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-calc-otd-headline">
             How to Calculate Out-the-Door Price on a Car
           </h1>
+
+          <DirectAnswerBlock
+            question="How do you calculate the out-the-door price on a car?"
+            answer="Add the negotiated sale price, your state's sales tax, title fee, registration fee, and the dealer's documentation fee. Include any agreed add-ons. The total is your out-the-door price. Sales tax is usually the largest addition, ranging from 0% to over 10% depending on your state."
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">

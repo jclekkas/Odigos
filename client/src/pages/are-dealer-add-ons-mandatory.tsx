@@ -6,6 +6,7 @@ import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 const DECLINE_ADDONS_MESSAGE = `I'd like to move forward with the vehicle, but without the dealer-installed add-ons. Please send me an updated out-the-door price with only the base vehicle price, taxes, title, registration, and your documentation fee. If any add-ons can't be removed, please list each one separately with pricing so I can evaluate them individually.`;
 
@@ -47,6 +48,11 @@ export default function AreDealerAddOnsMandatory() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-addons-headline">
             Are Dealer Add-Ons Mandatory? What You Can Actually Refuse
           </h1>
+
+          <DirectAnswerBlock
+            question="Are dealer add-ons mandatory?"
+            answer="No. Most dealer add-ons — paint protection, fabric coating, nitrogen tires, VIN etching — are optional even when presented as required. Dealers cannot legally make you buy products you didn't agree to. You can refuse any add-on that wasn't included in the advertised price or written sales agreement."
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">

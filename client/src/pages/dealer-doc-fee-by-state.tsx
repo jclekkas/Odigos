@@ -6,6 +6,7 @@ import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 const DOC_FEE_REQUEST_MESSAGE = `Hi — I'm comparing offers from a few dealerships. Before I come in, could you send me an itemized out-the-door price that breaks out the documentation fee as its own line? I'd also like to see taxes, title, and registration listed separately. Thanks.`;
 
@@ -47,6 +48,11 @@ export default function DealerDocFeeByState() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-doc-fee-by-state-headline">
             Dealer Doc Fee by State: What Buyers Should Expect
           </h1>
+
+          <DirectAnswerBlock
+            question="What is the dealer documentation fee by state?"
+            answer="Doc fees vary widely — some states cap them by law (California: ~$85), while others like Florida and Texas have no cap, allowing fees of $500–$999. The fee covers paperwork processing and is usually non-negotiable, but knowing your state's typical range helps you identify when a doc fee is genuinely out of line."
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">

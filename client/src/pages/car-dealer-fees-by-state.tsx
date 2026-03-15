@@ -6,6 +6,7 @@ import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 const FEE_REQUEST_MESSAGE = `Before I visit the dealership, could you please send the full out-the-door price including vehicle price, taxes, registration, doc fee, and any dealer add-ons? I'm comparing total pricing across multiple dealers.`;
 
@@ -47,6 +48,11 @@ export default function CarDealerFeesByState() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-fees-by-state-headline">
             Car Dealer Fees by State: Doc Fee Limits and Typical Costs
           </h1>
+
+          <DirectAnswerBlock
+            question="How much are car dealer fees by state?"
+            answer="Doc fees range from under $100 to $999 depending on the state. California caps them around $85; Florida and other states have no legal cap. Sales tax, title, and registration are separate and also vary by state. Knowing your state's typical doc fee range helps you spot when a dealer is overcharging."
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">

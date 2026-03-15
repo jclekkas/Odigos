@@ -6,6 +6,7 @@ import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 const FINANCE_OFFICE_MESSAGE = `Hi — before I sign, I need a line-by-line breakdown of the final numbers compared to the price we agreed on. Please list the vehicle price, every fee, every add-on product, the interest rate, and the loan term separately. If anything changed from what we discussed, I'd like a written explanation of what's different and why.`;
 
@@ -47,6 +48,11 @@ export default function FinanceOfficeChangedTheNumbers() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-finance-office-headline">
             Why the Finance Office Numbers Look Different
           </h1>
+
+          <DirectAnswerBlock
+            question="Why do the finance office numbers look different from the sales floor?"
+            answer="Finance office figures differ because the F&I manager adds loan terms, optional products like gap insurance or extended warranties, and their own fees. Monthly payments can shift by adjusting loan term or interest rate. Always compare the total out-the-door price — not the monthly payment — across both conversations before signing anything."
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">

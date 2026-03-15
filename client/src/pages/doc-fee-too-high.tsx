@@ -6,6 +6,7 @@ import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 const DOC_FEE_MESSAGE = `Hi — I'd like to move forward, but first I need a few things in writing. Can you send me the full out-the-door price with every fee itemized? Specifically, please break out the documentation fee separately and show me what it covers. I'd also like to see taxes, title, and registration listed on their own lines so I can compare easily. Thanks.`;
 
@@ -47,6 +48,11 @@ export default function DocFeeTooHigh() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-doc-fee-headline">
             Dealer Doc Fee Too High? What You Can Actually Do
           </h1>
+
+          <DirectAnswerBlock
+            question="Is the dealer's doc fee too high?"
+            answer="Doc fees above $500 may be high depending on your state. Some states cap them by law while others have no limit. Although usually non-negotiable, you can ask the dealer to offset it against the sale price. Researching typical doc fees in your state helps you recognize when one is genuinely outside the normal range."
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">

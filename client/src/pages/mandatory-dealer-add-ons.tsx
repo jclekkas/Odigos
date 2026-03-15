@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import ArticleHeader from "@/components/ArticleHeader";
 import { setSeoMeta } from "@/lib/seo";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 export default function MandatoryDealerAddOns() {
   useEffect(() => {
@@ -23,6 +24,11 @@ export default function MandatoryDealerAddOns() {
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-add-ons-headline">
             Are Dealer Add-Ons Really Mandatory?
           </h1>
+
+          <DirectAnswerBlock
+            question="Are dealer add-ons really mandatory?"
+            answer="No. Add-ons like paint sealant, gap insurance, window tinting, and extended warranties are optional — even when dealers present them as part of the standard deal or say they're already installed. Federal and state consumer protection laws require separate disclosure of add-on costs, and you can refuse any not in the original price."
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-4">

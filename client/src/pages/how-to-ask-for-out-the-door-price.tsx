@@ -6,6 +6,7 @@ import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 const OTD_REQUEST_MESSAGE = `Can you send me the full out-the-door price in writing, including vehicle price, dealer fees, taxes, registration, and any add-ons?`;
 
@@ -47,6 +48,11 @@ export default function HowToAskForOutTheDoorPrice() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-how-to-ask-headline">
             How to Ask a Dealer for an Out-the-Door Price
           </h1>
+
+          <DirectAnswerBlock
+            question="How do you ask a dealer for the out-the-door price?"
+            answer={'Ask by email or text: "Can you send the full out-the-door price including all taxes, fees, and any add-ons?" Written requests create a record and require the dealer to itemize every charge. Avoid negotiating monthly payments until you have the out-the-door total confirmed in writing \u2014 that\u2019s the only number that matters.'}
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">

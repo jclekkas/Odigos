@@ -6,6 +6,7 @@ import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 const FEES_CHANGED_MESSAGE = `Thanks. Before I move forward, I need the updated out-the-door price in writing with every added fee itemized. Please separate taxes and government fees from dealer-installed products or optional add-ons. If anything was added after our earlier quote, please show exactly what changed and why.`;
 
@@ -47,6 +48,11 @@ export default function DealerAddedFeesAfterAgreement() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-dealer-added-fees-headline">
             Dealer Added Fees After We Agreed on Price — Is That Legal?
           </h1>
+
+          <DirectAnswerBlock
+            question="Can a dealer add fees after you agree on a price?"
+            answer="Only if you agreed to them. Fees not disclosed before signing may be unenforceable and could violate consumer protection laws. You're entitled to an itemized out-the-door breakdown before finalizing any purchase. If new fees appear in the finance office that weren't discussed on the sales floor, you can refuse to sign."
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">

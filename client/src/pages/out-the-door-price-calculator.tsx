@@ -6,6 +6,7 @@ import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 const OTD_MESSAGE = `Hi, I'm interested in [YEAR MAKE MODEL TRIM]. Before I come in, could you send me the full out-the-door price in writing? I'd like to see the sale price, taxes, title/registration, doc fee, and any dealer-installed add-ons itemized separately. Thanks!`;
 
@@ -55,6 +56,11 @@ export default function OutTheDoorPriceCalculator() {
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-otd-calc-headline">
             Out-the-Door Price Calculator: Estimate Your Real Cost
           </h1>
+
+          <DirectAnswerBlock
+            question="How do you estimate the out-the-door price of a car?"
+            answer="Add the sale price, your state's sales tax, title fee, registration fee, and documentation fee. Include any negotiated add-ons. The sum is your estimated out-the-door price. Most states publish title and registration costs on DMV websites, making this a straightforward calculation you can do before visiting the dealer."
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-4">

@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import ArticleHeader from "@/components/ArticleHeader";
 import SeoHead from "@/components/SeoHead";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 const tactics = [
   {
@@ -73,6 +74,11 @@ export default function DealerPricingTactics() {
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-tactics-headline">
             Dealer Pricing Tactics: Complete Guide (2026)
           </h1>
+
+          <DirectAnswerBlock
+            question="What pricing tactics do car dealers use?"
+            answer="Common dealer pricing tactics include quoting monthly payments instead of the total price, bundling optional add-ons without itemizing them, charging market adjustment fees on high-demand vehicles, and delaying disclosure of the full out-the-door price. Knowing these tactics before you negotiate helps you keep the conversation focused on the total cost."
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-4">

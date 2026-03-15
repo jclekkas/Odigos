@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 export default function DealerWontGiveOutTheDoorPrice() {
   useEffect(() => {
@@ -24,6 +25,11 @@ export default function DealerWontGiveOutTheDoorPrice() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-otd-refuse-headline">
             Dealer Won't Give an Out-the-Door Price? What to Do
           </h1>
+
+          <DirectAnswerBlock
+            question="What should you do if the dealer won't give an out-the-door price?"
+            answer="Request it in writing — by email or text — asking for all fees, taxes, and add-ons itemized. If the dealer still refuses, that's a red flag. You're entitled to know the full cost before agreeing to anything. A dealer focused on monthly payments is often obscuring the total price, APR, or loan term."
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">

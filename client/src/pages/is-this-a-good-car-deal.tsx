@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 export default function IsThisAGoodCarDeal() {
   useEffect(() => {
@@ -23,6 +24,11 @@ export default function IsThisAGoodCarDeal() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-good-deal-headline">
             Is this actually a good car deal?
           </h1>
+
+          <DirectAnswerBlock
+            question="How do you know if a car deal is actually good?"
+            answer="A good deal has a clear out-the-door price, a sale price near fair market value, no forced add-ons, and transparent financing terms — APR, loan term, and monthly payment all itemized. Compare the OTD total to market data, verify all fees are disclosed upfront, and confirm no optional packages were added without your consent."
+          />
           
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">

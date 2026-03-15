@@ -6,6 +6,7 @@ import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleHeader from "@/components/ArticleHeader";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 const FEES_MESSAGE = `Hi — before I come in, can you send me the full out-the-door price with every fee listed on its own line? I'd like to see the vehicle price, doc fee, any dealer-installed accessories, taxes, title, registration, and any other charges — all itemized. That way I can compare apples to apples. Thanks.`;
 
@@ -47,6 +48,11 @@ export default function CarDealerFeesList() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-fees-list-headline">
             Car Dealer Fees List: Common Charges Explained
           </h1>
+
+          <DirectAnswerBlock
+            question="What fees do car dealers charge?"
+            answer="Common dealer fees include a documentation fee, sales tax, title fee, registration fee, and sometimes a dealer preparation charge. Add-ons like paint protection, gap insurance, and nitrogen tires are extra. Only taxes, title, registration, and a doc fee are typically unavoidable — the rest can often be negotiated."
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">

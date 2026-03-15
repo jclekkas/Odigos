@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import ArticleHeader from "@/components/ArticleHeader";
 import { setSeoMeta } from "@/lib/seo";
 import { trackCtaClick } from "@/lib/tracking";
+import DirectAnswerBlock from "@/components/DirectAnswerBlock";
 
 export default function DealerDocFee() {
   useEffect(() => {
@@ -23,6 +24,11 @@ export default function DealerDocFee() {
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-doc-fee-headline">
             Dealer Documentation Fees: What They Are and What's Normal
           </h1>
+
+          <DirectAnswerBlock
+            question="What is a dealer documentation fee?"
+            answer="A dealer documentation fee (doc fee) is charged for processing your purchase and loan paperwork. It typically ranges from $100 to $999 depending on the state, with some states capping the amount by law. The fee is usually non-negotiable, but it must be disclosed in your out-the-door price breakdown before you sign."
+          />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-4">
