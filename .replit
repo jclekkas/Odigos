@@ -4,11 +4,6 @@ hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
 
 [nix]
 channel = "stable-24_05"
-packages = ["chromium"]
-
-[[ports]]
-localPort = 3333
-externalPort = 3000
 
 [[ports]]
 localPort = 5000
@@ -44,4 +39,4 @@ args = "npm run dev"
 waitForPort = 5000
 
 [agent]
-integrations = ["javascript_openai_ai_integrations:2.0.0", "stripe:2.0.0"]
+integrations = ["github:1.0.0"]
