@@ -15,7 +15,7 @@ export interface EventMetadata {
   dealScore?: "GREEN" | "YELLOW" | "RED";
   vehicle?: string;
   zipCode?: string;
-  tier?: "49" | "79";
+  tier?: "49";
   page?: string;
   referrer?: string;
   endpoint?: string;
@@ -238,9 +238,8 @@ export async function getMetricsSummary(): Promise<MetricsSummary> {
     red: scores.filter(e => e.metadata?.dealScore === "RED").length,
   };
   
-  const getRevenue = (evts: typeof payments) => evts.reduce((sum, p) => {
-    const tier = p.metadata?.tier;
-    return sum + (tier === "49" ? 49 : tier === "79" ? 79 : 49);
+  const getRevenue = (evts: typeof payments) => evts.reduce((sum) => {
+    return sum + 49;
   }, 0);
   
   const revenue = getRevenue(payments);
@@ -254,8 +253,7 @@ export async function getMetricsSummary(): Promise<MetricsSummary> {
   const revenueByDayMap: Record<string, number> = {};
   payments.forEach(p => {
     const date = p.createdAt.toISOString().split("T")[0];
-    const tier = p.metadata?.tier;
-    const amount = tier === "49" ? 49 : tier === "79" ? 79 : 49;
+    const amount = 49;
     revenueByDayMap[date] = (revenueByDayMap[date] || 0) + amount;
   });
   

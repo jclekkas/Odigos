@@ -346,67 +346,6 @@ function LockedTier2Section({ onUnlock, isLoading, stripeConfigured }: LockedTie
   );
 }
 
-/* $79 Negotiation Pack - Hidden for single-tier pricing
-interface LockedTier3Props {
-  onUnlock: () => void;
-  isLoading: boolean;
-  stripeConfigured: boolean;
-}
-
-function LockedTier3Section({ onUnlock, isLoading, stripeConfigured }: LockedTier3Props) {
-  return (
-    <Card className="border-amber-500/30 bg-amber-500/5">
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Lock className="w-5 h-5 text-amber-500" />
-          Unlock Negotiation Pack
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground mb-4">
-          Get a copy-paste reply to send the dealer + the full reasoning behind this analysis.
-        </p>
-        <ul className="space-y-2 mb-4">
-          {[
-            "Copy-paste reply tailored to this deal",
-            "Full analysis reasoning and methodology"
-          ].map((item, idx) => (
-            <li key={idx} className="flex items-start gap-2 text-sm">
-              <Check className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-              <span className="text-muted-foreground">{item}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="text-xs text-muted-foreground mb-4">
-          One-time payment. Not affiliated with any dealership.
-        </p>
-        {stripeConfigured ? (
-          <Button
-            variant="default"
-            onClick={onUnlock}
-            className="w-full bg-amber-500 hover:bg-amber-600 text-white"
-            disabled={isLoading}
-            data-testid="button-unlock-79"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              "Unlock for $79"
-            )}
-          </Button>
-        ) : (
-          <p className="text-sm text-center text-muted-foreground">
-            Payments not configured
-          </p>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-*/
 
 function SuggestedReplyCard({ reply }: { reply: string }) {
   const [copied, setCopied] = useState(false);
@@ -454,9 +393,7 @@ function SuggestedReplyCard({ reply }: { reply: string }) {
 
 function getStoredTier(): UnlockTier {
   try {
-    if (localStorage.getItem("paid_negotiation_pack") === "true") return "49";
     if (localStorage.getItem("paid_deal_clarity") === "true") return "49";
-    if (localStorage.getItem("odigos_unlock_tier") === "79") return "49";
     if (localStorage.getItem("odigos_unlock_tier") === "49") return "49";
     if (localStorage.getItem("odigos_premium_unlocked") === "true") return "49";
     return "free";
@@ -544,7 +481,7 @@ export default function Home() {
 
     if (paid === "1" && product) {
       try {
-        if (product === "deal_clarity" || product === "negotiation_pack") {
+        if (product === "deal_clarity") {
           localStorage.setItem("paid_deal_clarity", "true");
           setUnlockTier("49");
           toast({

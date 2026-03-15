@@ -297,7 +297,7 @@ GO/NO-GO/NEED-MORE-INFO:
     try {
       const { product } = req.body;
       
-      if (!product || !["deal_clarity", "negotiation_pack"].includes(product)) {
+      if (!product || product !== "deal_clarity") {
         return res.status(400).json({ error: "INVALID_PRODUCT" });
       }
 
@@ -306,18 +306,9 @@ GO/NO-GO/NEED-MORE-INFO:
         return res.status(400).json({ error: "PAYMENTS_NOT_CONFIGURED" });
       }
 
-      let priceId: string | undefined;
-      
-      if (product === "deal_clarity") {
-        priceId = process.env.STRIPE_PRICE_ID_49;
-        if (!priceId) {
-          return res.status(400).json({ error: "PAYMENTS_NOT_CONFIGURED" });
-        }
-      } else {
-        priceId = process.env.STRIPE_PRICE_ID_79;
-        if (!priceId) {
-          return res.status(400).json({ error: "PAYMENTS_NOT_CONFIGURED" });
-        }
+      const priceId = process.env.STRIPE_PRICE_ID_49;
+      if (!priceId) {
+        return res.status(400).json({ error: "PAYMENTS_NOT_CONFIGURED" });
       }
 
       const stripe = await getStripeClient();
@@ -347,12 +338,10 @@ GO/NO-GO/NEED-MORE-INFO:
         return res.status(503).json({ error: "Payments not configured" });
       }
 
-      const { analysisId, tier } = req.body;
+      const { analysisId } = req.body;
       if (!analysisId) {
         return res.status(400).json({ error: "Missing analysisId" });
       }
-      
-      const selectedTier = tier === "49" ? "49" : "79";
 
       const stripe = await getStripeClient();
       
@@ -362,51 +351,26 @@ GO/NO-GO/NEED-MORE-INFO:
 
       let priceId: string | undefined;
 
-      if (selectedTier === "49") {
-        if (process.env.STRIPE_PRICE_ID_49) {
-          priceId = process.env.STRIPE_PRICE_ID_49;
-        } else {
-          const products = await stripe.products.list({ active: true, limit: 20 });
-          let product = products.data.find(p => p.name === "Odigos Deal Clarity Pack");
-          
-          if (!product) {
-            product = await stripe.products.create({
-              name: "Odigos Deal Clarity Pack",
-              description: "Unlock red flags, missing info, and deal explanation",
-            });
-            const price = await stripe.prices.create({
-              product: product.id,
-              unit_amount: 4900,
-              currency: "usd",
-            });
-            priceId = price.id;
-          } else {
-            const prices = await stripe.prices.list({ product: product.id, active: true, limit: 1 });
-            priceId = prices.data[0]?.id;
-          }
-        }
+      if (process.env.STRIPE_PRICE_ID_49) {
+        priceId = process.env.STRIPE_PRICE_ID_49;
       } else {
-        if (process.env.STRIPE_PRICE_ID) {
-          priceId = process.env.STRIPE_PRICE_ID;
+        const products = await stripe.products.list({ active: true, limit: 20 });
+        let product = products.data.find(p => p.name === "Odigos Deal Clarity Pack");
+        
+        if (!product) {
+          product = await stripe.products.create({
+            name: "Odigos Deal Clarity Pack",
+            description: "Unlock red flags, missing info, and deal explanation",
+          });
+          const price = await stripe.prices.create({
+            product: product.id,
+            unit_amount: 4900,
+            currency: "usd",
+          });
+          priceId = price.id;
         } else {
-          const products = await stripe.products.list({ active: true, limit: 20 });
-          let product = products.data.find(p => p.name === "Odigos Negotiation Pack");
-          
-          if (!product) {
-            product = await stripe.products.create({
-              name: "Odigos Negotiation Pack",
-              description: "Unlock suggested dealer reply and detailed analysis reasoning",
-            });
-            const price = await stripe.prices.create({
-              product: product.id,
-              unit_amount: 7900,
-              currency: "usd",
-            });
-            priceId = price.id;
-          } else {
-            const prices = await stripe.prices.list({ product: product.id, active: true, limit: 1 });
-            priceId = prices.data[0]?.id;
-          }
+          const prices = await stripe.prices.list({ product: product.id, active: true, limit: 1 });
+          priceId = prices.data[0]?.id;
         }
       }
 
@@ -419,7 +383,7 @@ GO/NO-GO/NEED-MORE-INFO:
         line_items: [{ price: priceId, quantity: 1 }],
         success_url: `${baseUrl}/analyze?session_id={CHECKOUT_SESSION_ID}&analysisId=${analysisId}`,
         cancel_url: `${baseUrl}/analyze?canceled=1&analysisId=${analysisId}`,
-        metadata: { tier: selectedTier },
+        metadata: { tier: "49" },
       });
 
       res.json({ url: session.url });
@@ -451,21 +415,9 @@ GO/NO-GO/NEED-MORE-INFO:
         return res.json({ paid: false, tier: null });
       }
 
-      let tier: "49" | "79" = "79";
+      trackEvent("payment_completed", { tier: "49" });
       
-      if (session.metadata?.tier) {
-        tier = session.metadata.tier === "49" ? "49" : "79";
-      } else {
-        const lineItems = session.line_items?.data || [];
-        const priceAmount = (lineItems[0]?.price as any)?.unit_amount;
-        if (priceAmount === 4900) {
-          tier = "49";
-        }
-      }
-      
-      trackEvent("payment_completed", { tier });
-      
-      res.json({ paid: true, tier });
+      res.json({ paid: true, tier: "49" });
     } catch (error) {
       console.error("Session verification error:", error);
       res.json({ paid: false, tier: null });
@@ -517,7 +469,7 @@ GO/NO-GO/NEED-MORE-INFO:
         id: string;
         amount: number;
         created: Date;
-        tier: "49" | "79";
+        tier: "49";
       }> = [];
       
       let hasMore = true;
@@ -538,20 +490,13 @@ GO/NO-GO/NEED-MORE-INFO:
               continue;
             }
             
-            let tier: "49" | "79" = "49";
             const amount = session.amount_total ? session.amount_total / 100 : 49;
-            
-            if (session.metadata?.tier) {
-              tier = session.metadata.tier === "79" ? "79" : "49";
-            } else if (amount >= 79) {
-              tier = "79";
-            }
             
             payments.push({
               id: session.id,
               amount,
               created: new Date(session.created * 1000),
-              tier,
+              tier: "49",
             });
           }
         }

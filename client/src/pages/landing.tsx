@@ -271,32 +271,6 @@ export default function Landing() {
                   </ul>
                 </CardContent>
               </Card>
-              {/* $79 Negotiation Pack - Hidden for single-tier pricing
-              <Card className="border-primary/50 bg-primary/5" data-testid="card-pricing-tier3">
-                <CardContent className="pt-6">
-                  <h3 className="font-semibold mb-2">Negotiation Pack</h3>
-                  <p className="text-2xl font-bold mb-3">$79 <span className="text-xs font-normal text-muted-foreground">(one-time)</span></p>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Everything in Deal Clarity</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Copy-paste dealer reply</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Full negotiation reasoning</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Strategic next questions</span>
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-              */}
             </div>
             <p className="text-center text-sm text-muted-foreground mt-4">
               No subscription. No upsells. One-time purchase per analysis.
