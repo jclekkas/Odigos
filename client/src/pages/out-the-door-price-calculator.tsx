@@ -3,8 +3,8 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
-import logoImage from "@assets/odigos_logo.png";
 import { setSeoMeta } from "@/lib/seo";
+import ArticleHeader from "@/components/ArticleHeader";
 
 const OTD_MESSAGE = `Hi, I'm interested in [YEAR MAKE MODEL TRIM]. Before I come in, could you send me the full out-the-door price in writing? I'd like to see the sale price, taxes, title/registration, doc fee, and any dealer-installed add-ons itemized separately. Thanks!`;
 
@@ -47,13 +47,7 @@ export default function OutTheDoorPriceCalculator() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-3">
-          <Link href="/">
-            <img src={logoImage} alt="Odigos" className="h-12 md:h-14 w-auto cursor-pointer" data-testid="link-logo-home" />
-          </Link>
-        </div>
-      </header>
+      <ArticleHeader />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -68,6 +62,14 @@ export default function OutTheDoorPriceCalculator() {
             <p className="text-lg text-muted-foreground mb-10">
               Most online car price calculators estimate tax and registration but miss the fees that vary most: <Link href="/dealer-doc-fee" className="underline text-foreground">dealer documentation fees</Link>, <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">mandatory add-ons</Link>, market adjustments, and F&I products. Those dealer-specific charges are often where hundreds or thousands of dollars hide.
             </p>
+
+            <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
+              <p className="font-medium text-foreground mb-3">Have an actual dealer quote? See if it matches your estimate.</p>
+              <Link href="/analyze">
+                <Button size="sm" data-testid="button-callout-otd-calc">Check My Deal</Button>
+              </Link>
+              <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
+            </div>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What an OTD Calculator Can (and Can't) Do</h2>
             <p className="text-muted-foreground mb-3">
@@ -204,16 +206,17 @@ export default function OutTheDoorPriceCalculator() {
 
           <div className="mt-12 pt-8 border-t border-border">
             <h2 className="text-xl font-semibold mb-2 text-foreground" data-testid="text-otd-calc-cta-heading">
-              Not sure if the dealer quote is complete?
+              Already have a quote from the dealer?
             </h2>
             <p className="text-muted-foreground mb-4">
-              Paste the message or quote you received. Odigos checks for missing out-the-door pricing, add-ons, and unclear fees.
+              A calculator gives you an estimate — but the dealer's quote is what you actually sign. Paste it into Odigos and see whether the real numbers match what a calculator can't predict: doc fees, add-ons, and line items that weren't disclosed upfront.
             </p>
             <Link href="/analyze">
               <Button size="lg" data-testid="button-cta-otd-calc">
-                Check the Quote with Odigos
+                Check the Real Numbers
               </Button>
             </Link>
+            <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
           </div>
 
           <p className="text-xs text-muted-foreground mt-12">
