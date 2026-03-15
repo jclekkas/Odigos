@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Check, CheckCircle2, ChevronDown } from "lucide-react";
+import { ChevronDown, Shield, FileSearch, MessageSquareText, CheckCircle, ArrowRight } from "lucide-react";
 import { trackPageView, trackCtaClick } from "@/lib/tracking";
+import logoImage from "@assets/odigos_logo.png";
 
 const faqs = [
   {
@@ -17,13 +17,22 @@ const faqs = [
   },
   {
     q: "Is Odigos free?",
-    a: "The preview is free and gives you a Green/Yellow/Red verdict with a deal score. The full analysis with red flags, missing info checklist, and a copy-paste dealer reply is $49 one-time. No subscriptions.",
+    a: "The initial analysis is free and gives you a verdict with key findings. The full report with detailed breakdown and suggested dealer response is $49 one-time.",
   },
   {
     q: "Do you store my messages?",
-    a: "No. Messages are analyzed in real time and are not stored.",
+    a: "No. Your dealer communications are analyzed in real time and are not stored on our servers.",
   },
 ];
+
+function TrustBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+      <CheckCircle className="w-3.5 h-3.5 text-primary/70" />
+      {children}
+    </span>
+  );
+}
 
 export default function Landing() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -34,277 +43,268 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Odigos - Understand Your Car Deal Before You Sign</title>
+        <meta name="description" content="Paste a dealer quote and get clarity on what's included, what's missing, and what to ask. Independent analysis for car buyers." />
+      </Helmet>
+
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
+        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <img src={logoImage} alt="Odigos" className="h-7 w-auto" />
+          </Link>
+          <nav className="hidden md:flex items-center gap-8">
+            <Link href="/out-the-door-price" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Guides
+            </Link>
+            <Link href="/dealer-pricing-tactics" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Dealer Tactics
+            </Link>
+          </nav>
+          <Link href="/analyze">
+            <Button size="sm" className="rounded-full px-5">
+              Analyze Quote
+            </Button>
+          </Link>
+        </div>
+      </header>
+
       <main>
-        <section className="pt-16 pb-20 md:pt-24 md:pb-28 px-6">
+        {/* Hero Section */}
+        <section className="pt-32 pb-20 md:pt-40 md:pb-28 px-6">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-foreground max-w-4xl mx-auto" data-testid="text-hero-headline">
-              Spot dealer pricing tricks before you walk into the dealership.
-            </h1>
-            <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed" data-testid="text-hero-subheadline">
-              Paste a dealer quote, text, or email. Odigos checks for missing out-the-door pricing, hidden fees, and common dealership tactics so you know exactly what you're agreeing to.
+            <p className="text-sm font-medium text-primary mb-4 tracking-wide uppercase">
+              Independent Deal Analysis
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
+            <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-semibold tracking-tight leading-[1.1] text-foreground text-balance">
+              Understand your car deal before you sign
+            </h1>
+            <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed text-pretty">
+              Paste a dealer quote, text, or email. We'll show you what's included, what's missing, and exactly what to ask before you visit.
+            </p>
+            
+            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/analyze">
                 <Button 
                   size="lg" 
-                  className="w-full sm:w-auto px-8 py-6 text-lg font-semibold rounded-xl" 
-                  data-testid="button-cta-hero"
-                  onClick={() => trackCtaClick("hero-analyze", "Check a Dealer Quote")}
+                  className="w-full sm:w-auto px-8 h-12 text-base font-medium rounded-full"
+                  onClick={() => trackCtaClick("hero-analyze", "Analyze a Dealer Quote")}
                 >
-                  Check a Dealer Quote
-                </Button>
-              </Link>
-              <Link href="/analyze?example=bad">
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="w-full sm:w-auto text-sm rounded-lg mt-4" 
-                  data-testid="button-try-bad"
-                  onClick={() => trackCtaClick("hero-bad-example", "Try a bad deal example")}
-                >
-                  Try a bad deal example
+                  Analyze a Dealer Quote
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
             </div>
-            <p className="mt-3 text-sm text-muted-foreground" data-testid="text-reassurance">
-              Takes 10 seconds. No signup required.
-            </p>
-            <p className="mt-4 text-sm font-medium tracking-wide text-muted-foreground leading-relaxed" data-testid="text-trust-strip">
-              Independent · No account required · We don't store your text · Secure Stripe checkout
+            
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+              <TrustBadge>No account required</TrustBadge>
+              <TrustBadge>Independent analysis</TrustBadge>
+              <TrustBadge>Data not stored</TrustBadge>
+            </div>
+          </div>
+        </section>
+
+        {/* Problem Statement */}
+        <section className="py-16 md:py-24 px-6 bg-card/50">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-4">
+              Dealer quotes rarely tell the full story
+            </h2>
+            <p className="text-muted-foreground text-lg leading-relaxed max-w-2xl mx-auto">
+              Monthly payments without APR. Sale prices without fees. Add-ons you didn't ask for. 
+              Small omissions can cost thousands — and you won't know until you're at the dealership.
             </p>
           </div>
         </section>
 
-        <section className="py-12 px-6">
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center" data-testid="text-how-it-works-heading">How it works</h2>
-            <ol className="space-y-4">
+        {/* How It Works */}
+        <section className="py-16 md:py-24 px-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-3">
+                How it works
+              </h2>
+              <p className="text-muted-foreground">
+                Get clarity in under a minute
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-8 md:gap-6">
               {[
-                "Paste the dealer text or quote",
-                "Odigos flags what's missing or risky",
-                "Send the copy-paste reply before you go in",
+                {
+                  icon: FileSearch,
+                  title: "Paste your quote",
+                  description: "Copy the dealer's text, email, or written quote exactly as you received it."
+                },
+                {
+                  icon: Shield,
+                  title: "Get your analysis",
+                  description: "We identify what's clearly stated, what's missing, and potential concerns."
+                },
+                {
+                  icon: MessageSquareText,
+                  title: "Know what to ask",
+                  description: "Get specific questions to send the dealer before your visit."
+                }
               ].map((step, idx) => (
-                <li key={idx} className="flex items-start gap-3">
-                  <span className="bg-muted text-foreground font-semibold text-sm rounded-full h-6 w-6 flex items-center justify-center shrink-0 mt-0.5">{idx + 1}</span>
-                  <span className="text-base text-muted-foreground">{step}</span>
-                </li>
+                <div key={idx} className="relative">
+                  <div className="flex flex-col items-center text-center md:items-start md:text-left">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                      <step.icon className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xs font-medium text-primary/60">0{idx + 1}</span>
+                      <h3 className="font-semibold text-foreground">{step.title}</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {step.description}
+                    </p>
+                  </div>
+                </div>
               ))}
-            </ol>
-          </div>
-        </section>
-
-        <section className="py-16 px-6">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-8 text-center" data-testid="text-checks-heading">
-              What Odigos Checks For
-            </h2>
-            <div className="grid md:grid-cols-2 gap-4">
-              <Card data-testid="card-check-otd">
-                <CardContent className="pt-6 pb-6">
-                  <h3 className="font-semibold mb-2 text-foreground">Missing Out-the-Door Price</h3>
-                  <p className="text-sm text-muted-foreground">Many dealer quotes hide the full price. Odigos flags when tax, registration, documentation fees, or add-ons are not clearly included.</p>
-                </CardContent>
-              </Card>
-              <Card data-testid="card-check-addons">
-                <CardContent className="pt-6 pb-6">
-                  <h3 className="font-semibold mb-2 text-foreground">Dealer Add-Ons</h3>
-                  <p className="text-sm text-muted-foreground">Dealers often present optional add-ons like nitrogen tires or paint protection as mandatory. Odigos highlights language that suggests this.</p>
-                </CardContent>
-              </Card>
-              <Card data-testid="card-check-fees">
-                <CardContent className="pt-6 pb-6">
-                  <h3 className="font-semibold mb-2 text-foreground">Unclear Fees</h3>
-                  <p className="text-sm text-muted-foreground">Dealer documentation fees, prep fees, and appearance packages are sometimes buried in quotes. Odigos helps surface them.</p>
-                </CardContent>
-              </Card>
-              <Card data-testid="card-check-language">
-                <CardContent className="pt-6 pb-6">
-                  <h3 className="font-semibold mb-2 text-foreground">Vague Pricing Language</h3>
-                  <p className="text-sm text-muted-foreground">If a dealer message avoids committing to a full price or conditions the deal on financing or add-ons, Odigos calls it out.</p>
-                </CardContent>
-              </Card>
             </div>
-            <p className="text-xs text-muted-foreground text-center mt-4" data-testid="text-privacy-note">
-              Privacy: Your messages are analyzed in real time. We don't store or share them.
-            </p>
           </div>
         </section>
 
-        <section className="py-12 px-6">
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-4 text-center" data-testid="text-otd-explainer-heading">
-              What is an out-the-door price?
-            </h2>
-            <p className="text-base text-muted-foreground leading-relaxed">
-              The out-the-door price (OTD) is the total amount you'll pay to leave the dealership with the keys — including sale price, tax, title, registration, doc fees, and any add-ons. It's the only number that tells you what the car actually costs. Dealers often focus on the monthly payment instead, which can hide longer loan terms, higher rates, and fees you never agreed to. Odigos analyzes the quote you already have and tells you what's missing.
-            </p>
-          </div>
-        </section>
-
-        <section className="py-16 px-6 bg-muted/30">
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
-              In minutes, you'll know:
-            </h2>
-            <ul className="space-y-3">
+        {/* What We Check */}
+        <section className="py-16 md:py-24 px-6 bg-card/50">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-3">
+                What we analyze
+              </h2>
+              <p className="text-muted-foreground">
+                The details that matter most in any dealer quote
+              </p>
+            </div>
+            
+            <div className="grid sm:grid-cols-2 gap-4">
               {[
-                "Green / Yellow / Red verdict",
-                "What's missing (OTD, APR, fees, term)",
-                "Red flags & dealer add-ons",
-                "Copy-paste reply to send the dealer (paid)"
+                {
+                  title: "Out-the-door pricing",
+                  description: "Is the total cost clearly stated? Are taxes, fees, and registration included?"
+                },
+                {
+                  title: "Financing terms",
+                  description: "APR, loan term, down payment — the numbers that determine your real cost."
+                },
+                {
+                  title: "Dealer fees",
+                  description: "Documentation fees, dealer prep, and other charges that vary widely."
+                },
+                {
+                  title: "Add-ons and packages",
+                  description: "Protection plans, appearance packages, and accessories you may not need."
+                },
+                {
+                  title: "Pricing language",
+                  description: "Vague terms, conditional offers, and language that leaves room for changes."
+                },
+                {
+                  title: "Missing information",
+                  description: "Critical details that should be in writing before you visit."
+                }
               ].map((item, idx) => (
-                <li key={idx} className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <span className="text-base text-muted-foreground">{item}</span>
-                </li>
+                <div key={idx} className="p-5 rounded-xl bg-background border border-border/50">
+                  <h3 className="font-medium text-foreground mb-1.5">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         </section>
 
-        <section className="py-16 px-6">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-xl md:text-2xl font-bold mb-4">
-              Why it matters
-            </h2>
-            <p className="text-base text-muted-foreground leading-relaxed">
-              Dealers often quote monthly payments, add packages later, or ask you to "come in to talk numbers." Odigos turns the messages you already have into a clear next step.
-            </p>
-          </div>
-        </section>
-
-        <section className="py-16 px-6 bg-muted/30">
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
-              Real example (anonymized)
-            </h2>
-            <Card>
-              <CardContent className="pt-6">
-                <p className="text-sm text-muted-foreground mb-3">
-                  Dealer quoted <span className="font-medium text-foreground">$589/month</span> for a 2025 SUV.
-                </p>
-                <p className="text-sm font-medium text-muted-foreground mb-2">Odigos flagged:</p>
-                <ul className="space-y-2 mb-4">
+        {/* Pricing */}
+        <section className="py-16 md:py-24 px-6">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-3">
+                Simple, one-time pricing
+              </h2>
+              <p className="text-muted-foreground">
+                No subscriptions. No upsells. Pay once per analysis.
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+              <div className="p-6 rounded-2xl border border-border/50 bg-background">
+                <div className="mb-4">
+                  <h3 className="font-semibold text-foreground mb-1">Quick Check</h3>
+                  <p className="text-3xl font-semibold text-foreground">Free</p>
+                </div>
+                <ul className="space-y-3 text-sm text-muted-foreground">
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-muted-foreground">No out-the-door price provided</span>
+                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Verdict (Green / Yellow / Red)</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-muted-foreground">APR not specified</span>
+                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Confidence assessment</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-muted-foreground">Protection package added without cost</span>
+                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Key pricing details detected</span>
                   </li>
                 </ul>
-                <p className="text-sm text-muted-foreground italic">
-                  Small gaps like these can cost thousands.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-
-        <section className="py-12 px-6">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-xl md:text-2xl font-bold mb-4" data-testid="text-built-for-heading">
-              Built for real car buyers
-            </h2>
-            <p className="text-base text-muted-foreground leading-relaxed">
-              We don't sell cars. We don't work with dealerships. We don't take referral fees. Odigos is an independent tool that works entirely from the messages you already have. No account required. No data stored. Just clarity before you sign.
-            </p>
-          </div>
-        </section>
-
-        <section className="py-16 px-6">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
-              Simple pricing
-            </h2>
-            <div className="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto">
-              <Card data-testid="card-pricing-tier1">
-                <CardContent className="pt-6">
-                  <h3 className="font-semibold mb-2">Free Preview</h3>
-                  <p className="text-2xl font-bold mb-3">$0</p>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Verdict (Green/Yellow/Red)</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Deal score & confidence</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Detected pricing details</span>
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-              <Card className="border-accent/50 bg-accent/5" data-testid="card-pricing-tier2">
-                <CardContent className="pt-6">
-                  <h3 className="font-semibold mb-2">Full Deal Review</h3>
-                  <p className="text-2xl font-bold mb-3">$49 <span className="text-xs font-normal text-muted-foreground">(one-time)</span></p>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Everything in Free</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Red flags & hidden fees</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Missing info checklist</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Copy-paste dealer reply</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Full analysis reasoning</span>
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-              {/* $79 Negotiation Pack - Hidden for single-tier pricing
-              <Card className="border-primary/50 bg-primary/5" data-testid="card-pricing-tier3">
-                <CardContent className="pt-6">
-                  <h3 className="font-semibold mb-2">Negotiation Pack</h3>
-                  <p className="text-2xl font-bold mb-3">$79 <span className="text-xs font-normal text-muted-foreground">(one-time)</span></p>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Everything in Deal Clarity</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Copy-paste dealer reply</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Full negotiation reasoning</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Strategic next questions</span>
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-              */}
+              </div>
+              
+              <div className="p-6 rounded-2xl border-2 border-primary/30 bg-primary/5">
+                <div className="mb-4">
+                  <h3 className="font-semibold text-foreground mb-1">Full Analysis</h3>
+                  <p className="text-3xl font-semibold text-foreground">$49</p>
+                </div>
+                <ul className="space-y-3 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Everything in Quick Check</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Complete red flag breakdown</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Missing information checklist</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Copy-paste dealer response</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Full analysis reasoning</span>
+                  </li>
+                </ul>
+              </div>
             </div>
-            <p className="text-center text-sm text-muted-foreground mt-4">
-              No subscription. No upsells. One-time purchase per analysis.
-            </p>
           </div>
         </section>
 
-        <section className="py-16 px-6">
+        {/* Trust Section */}
+        <section className="py-16 md:py-24 px-6 bg-card/50">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-4">
+              Built for car buyers, not dealerships
+            </h2>
+            <p className="text-muted-foreground text-lg leading-relaxed max-w-2xl mx-auto mb-8">
+              We don't sell cars. We don't work with dealerships. We don't take referral fees. 
+              Odigos is an independent tool that works entirely from the messages you already have.
+            </p>
+            <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm text-muted-foreground">
+              <span>No dealer partnerships</span>
+              <span className="hidden sm:inline">·</span>
+              <span>No account required</span>
+              <span className="hidden sm:inline">·</span>
+              <span>No data stored</span>
+              <span className="hidden sm:inline">·</span>
+              <span>Secure payment via Stripe</span>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section className="py-16 md:py-24 px-6">
           <Helmet>
             <script type="application/ld+json">{JSON.stringify({
               "@context": "https://schema.org",
@@ -320,100 +320,85 @@ export default function Landing() {
             })}</script>
           </Helmet>
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center" data-testid="text-faq-heading">
+            <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-8 text-center">
               Common questions
             </h2>
             <div className="space-y-2">
               {faqs.map((faq, idx) => (
-                <div key={idx} className="border border-border rounded-lg overflow-hidden">
+                <div key={idx} className="border border-border/50 rounded-xl overflow-hidden bg-background">
                   <button
                     type="button"
-                    className="w-full flex items-center justify-between px-5 py-4 text-left"
+                    className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-muted/30 transition-colors"
                     onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                    data-testid={`button-faq-${idx}`}
                   >
-                    <span className="text-sm font-medium text-foreground">{faq.q}</span>
-                    <ChevronDown className={`w-4 h-4 text-muted-foreground shrink-0 ml-4 transition-transform ${openFaq === idx ? "rotate-180" : ""}`} />
+                    <span className="text-sm font-medium text-foreground pr-4">{faq.q}</span>
+                    <ChevronDown className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 ${openFaq === idx ? "rotate-180" : ""}`} />
                   </button>
-                  {openFaq === idx && (
+                  <div className={`overflow-hidden transition-all duration-200 ${openFaq === idx ? "max-h-40" : "max-h-0"}`}>
                     <div className="px-5 pb-4">
                       <p className="text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
                     </div>
-                  )}
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="py-16 px-6 bg-muted/30">
+        {/* Final CTA */}
+        <section className="py-16 md:py-24 px-6 bg-primary/5">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-xl md:text-2xl font-bold mb-6">
-              Don't walk into a $30–$60k decision blind.
+            <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-4">
+              Know what you're agreeing to
             </h2>
+            <p className="text-muted-foreground mb-8 text-lg">
+              A car is one of the biggest purchases you'll make. Get clarity before you commit.
+            </p>
             <Link href="/analyze">
-              <Button size="lg" className="text-base rounded-lg" data-testid="button-cta-final">
-                Check This Deal
+              <Button 
+                size="lg" 
+                className="px-8 h-12 text-base font-medium rounded-full"
+                onClick={() => trackCtaClick("final-cta", "Analyze Your Quote")}
+              >
+                Analyze Your Quote
+                <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
           </div>
         </section>
 
-        <section className="py-16 px-6">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-8 text-center" data-testid="text-why-heading">
-              Why Use Odigos?
+        {/* Resources Section */}
+        <section className="py-16 px-6 border-t border-border/50">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-lg font-semibold text-foreground mb-6 text-center">
+              Learn more about dealer pricing
             </h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div data-testid="card-why-clarity">
-                <h3 className="font-semibold mb-2 text-foreground">Clarity Before You Visit</h3>
-                <p className="text-sm text-muted-foreground">Dealership pricing conversations often leave out important details. Odigos helps identify what's missing before you step into the showroom.</p>
-              </div>
-              <div data-testid="card-why-tactics">
-                <h3 className="font-semibold mb-2 text-foreground">Built Around Real Dealer Tactics</h3>
-                <p className="text-sm text-muted-foreground">The checks Odigos performs are based on common dealership pricing practices buyers frequently encounter.</p>
-              </div>
-              <div data-testid="card-why-free">
-                <h3 className="font-semibold mb-2 text-foreground">Free and Instant</h3>
-                <p className="text-sm text-muted-foreground">You can paste a dealer message and get feedback in seconds without creating an account.</p>
-              </div>
+            <div className="flex flex-wrap justify-center gap-3">
+              {[
+                { label: "Out-the-Door Price Guide", href: "/out-the-door-price" },
+                { label: "Dealer Fee Explained", href: "/car-dealer-fees-explained" },
+                { label: "Monthly Payment Trap", href: "/monthly-payment-trap" },
+                { label: "Common Dealer Tactics", href: "/dealer-pricing-tactics" },
+              ].map((link) => (
+                <Link key={link.href} href={link.href}>
+                  <span className="inline-block px-4 py-2 text-sm text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-colors">
+                    {link.label}
+                  </span>
+                </Link>
+              ))}
             </div>
           </div>
         </section>
       </main>
 
-      <section className="py-12 px-6">
-          <div className="max-w-2xl mx-auto">
-            <h3 className="text-base font-semibold mb-2 text-foreground" data-testid="text-scope-heading">What Odigos does NOT do</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Odigos analyzes pricing transparency and financing terms. It does not evaluate vehicle condition, mechanical reliability, or accident history.
-            </p>
+      {/* Footer */}
+      <footer className="py-12 px-6 border-t border-border/50">
+        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <img src={logoImage} alt="Odigos" className="h-5 w-auto opacity-70" />
           </div>
-        </section>
-
-      <section className="py-12 px-6">
-        <div className="max-w-2xl mx-auto">
-          <h3 className="text-base font-semibold mb-4 text-foreground" data-testid="text-tactics-heading">Common Dealer Pricing Tactics Buyers Ask About</h3>
-          <ul className="space-y-2">
-            <li><Link href="/dealer-wont-give-out-the-door-price" className="text-sm underline text-foreground" data-testid="link-tactic-otd">Dealer Won't Give Out-the-Door Price</Link></li>
-            <li><Link href="/are-dealer-add-ons-mandatory" className="text-sm underline text-foreground" data-testid="link-tactic-addons">Are Dealer Add-Ons Mandatory?</Link></li>
-            <li><Link href="/dealer-doc-fee" className="text-sm underline text-foreground" data-testid="link-tactic-docfee">Dealer Documentation Fee Explained</Link></li>
-            <li><Link href="/market-adjustment-fee" className="text-sm underline text-foreground" data-testid="link-tactic-market">Dealer Market Adjustment Fees</Link></li>
-            <li><Link href="/dealer-added-fees-after-agreement" className="text-sm underline text-foreground" data-testid="link-tactic-added-fees">Dealer Added Fees After Agreement</Link></li>
-          </ul>
-        </div>
-      </section>
-
-      <footer className="border-t border-border/50 py-6">
-        <div className="max-w-5xl mx-auto px-6 text-center space-y-2">
-          <p className="text-sm text-muted-foreground">
-            <Link href="/dealer-pricing-tactics" className="underline text-foreground" data-testid="link-guides">Guides: Dealer Pricing Tactics</Link>
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Built for U.S. car buyers. Independent. No dealer partnerships.
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Odigos provides estimates based on the information you share. Always verify details directly with the dealership.
+          <p className="text-xs text-muted-foreground text-center md:text-right">
+            Independent car deal analysis. Not affiliated with any dealership.
           </p>
         </div>
       </footer>
