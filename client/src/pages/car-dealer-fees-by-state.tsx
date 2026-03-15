@@ -378,6 +378,20 @@ export default function CarDealerFeesByState() {
             <p className="text-xs text-muted-foreground mt-3">Takes 10 seconds · No signup required</p>
           </div>
 
+          <div className="mt-12 pt-8 border-t border-border">
+            <h2 className="text-lg font-semibold mb-3 text-foreground">State-specific guides</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              For a deeper look at what buyers in specific states typically see — including doc fee norms, tax structure, and what to watch for:
+            </p>
+            <ul className="space-y-2">
+              <li><Link href="/car-dealer-fees-california" className="text-foreground underline underline-offset-2 hover:text-muted-foreground transition-colors text-sm">Car dealer fees in California</Link></li>
+              <li><Link href="/car-dealer-fees-texas" className="text-foreground underline underline-offset-2 hover:text-muted-foreground transition-colors text-sm">Car dealer fees in Texas</Link></li>
+              <li><Link href="/car-dealer-fees-florida" className="text-foreground underline underline-offset-2 hover:text-muted-foreground transition-colors text-sm">Car dealer fees in Florida</Link></li>
+              <li><Link href="/car-dealer-fees-new-york" className="text-foreground underline underline-offset-2 hover:text-muted-foreground transition-colors text-sm">Car dealer fees in New York</Link></li>
+              <li><Link href="/car-dealer-fees-georgia" className="text-foreground underline underline-offset-2 hover:text-muted-foreground transition-colors text-sm">Car dealer fees in Georgia</Link></li>
+            </ul>
+          </div>
+
           <p className="text-xs text-muted-foreground mt-12">
             Not affiliated with any dealership. Optimized for U.S. car purchases.
           </p>

@@ -1,0 +1,85 @@
+Objective
+Create a reusable template and initial set of high-intent “scenario pages” for Odigos. These pages target real situations car buyers encounter when dealing with dealerships (price changes, hidden fees, finance office changes, refusal to give OTD pricing, etc.).
+
+Strategic context
+Odigos is consumer protection software for car buyers. The analyzer helps detect hidden dealer fees, missing out-the-door pricing, forced add-ons, and negotiation traps before a buyer visits the dealership.
+
+These scenario pages capture high-intent searches where a buyer is already experiencing a problem and needs immediate clarity. Each page should explain the situation, provide guidance, and clearly present the Odigos analyzer as the tool that helps the reader verify their quote.
+
+Constraints
+• Do NOT add new product features
+• Do NOT modify backend logic or routing
+• Do NOT introduce email capture or new forms
+• Only create new SEO article pages and follow the existing Odigos article layout patterns
+• Maintain a calm, authoritative tone (not alarmist or sensational)
+
+Page structure (required for every scenario page)
+
+1. H1 title describing the situation clearly
+   Example: “Dealer Changed the Price After a Deposit — What You Can Do”
+
+2. Direct answer block immediately under the H1 (40–60 words)
+   This should clearly answer the situation for Google snippet eligibility.
+
+3. Section: What’s happening
+   Explain the situation and why dealerships sometimes do this.
+
+4. Section: Is it legal or common?
+   Clarify whether the behavior is typical, legal, or questionable.
+
+5. Section: What you should do next
+   Provide practical guidance and negotiation framing.
+
+6. Section: What to say to the dealer
+   Provide a short script or phrasing buyers can use.
+
+7. Contextual CTA block introducing Odigos
+   Example:
+   Headline: “Want to see exactly what changed?”
+   Copy: “Paste the quote or message you received. Odigos flags missing out-the-door pricing, hidden fees, and dealer tactics.”
+   Button: “Check My Deal” (link to /analyze)
+
+8. Optional short FAQ section (2–3 questions if relevant)
+
+Content quality rules
+• Avoid generic filler text
+• Use concise explanations and practical advice
+• Keep paragraphs short (2–4 sentences)
+• Avoid repeating the same language across pages
+• Each page should feel tailored to the specific situation
+
+Scenario pages to create
+
+1. dealer-raised-price-when-i-arrived
+2. dealer-changed-price-after-test-drive
+3. dealer-added-fees-after-deposit
+4. dealer-wont-give-written-quote
+5. dealer-only-gives-monthly-payment
+6. dealer-refuses-itemized-price
+7. dealer-added-warranty-without-asking
+8. dealer-added-gap-insurance
+9. dealer-added-nitrogen-tires
+10. dealer-added-vin-etching
+11. dealer-added-protection-package
+12. dealer-changed-price-before-signing
+13. dealer-increased-interest-rate
+14. dealer-added-market-adjustment-after-deposit
+15. dealer-says-add-ons-required
+
+File placement
+Create each page in:
+client/src/pages/
+
+Follow the existing Odigos page conventions used in the current article files.
+
+Internal linking
+Each scenario page should link to 2–3 related Odigos pages where relevant, such as:
+
+/out-the-door-price
+/dealer-pricing-tactics
+/are-dealer-add-ons-mandatory
+/dealer-doc-fee
+/doc-fee-too-high
+
+Primary goal
+Capture high-intent scenario searches and funnel readers to the Odigos analyzer as the solution to verify their dealer quote before continuing the purchase.

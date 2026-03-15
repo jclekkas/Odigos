@@ -28,6 +28,7 @@ import CalculateOutTheDoorPrice from "@/pages/calculate-out-the-door-price";
 import HowToAskForOutTheDoorPrice from "@/pages/how-to-ask-for-out-the-door-price";
 import OtdPriceVsMsrp from "@/pages/otd-price-vs-msrp";
 import OutTheDoorPriceExample from "@/pages/out-the-door-price-example";
+import CarDealerFeesState from "@/pages/car-dealer-fees-state";
 import GuidesRedirect from "@/pages/guides-redirect";
 import AdminMetrics from "@/pages/admin-metrics";
 import NotFound from "@/pages/not-found";
@@ -60,6 +61,7 @@ function Router() {
       <Route path="/how-to-ask-for-out-the-door-price" component={HowToAskForOutTheDoorPrice} />
       <Route path="/otd-price-vs-msrp" component={OtdPriceVsMsrp} />
       <Route path="/out-the-door-price-example" component={OutTheDoorPriceExample} />
+      <Route path="/car-dealer-fees-:state" component={CarDealerFeesState} />
       <Route path="/guides" component={GuidesRedirect} />
       <Route path="/admin/metrics" component={AdminMetrics} />
       <Route component={NotFound} />
