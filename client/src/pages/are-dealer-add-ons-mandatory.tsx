@@ -129,7 +129,7 @@ export default function AreDealerAddOnsMandatory() {
             </p>
 
             <p className="text-lg text-muted-foreground mb-6">
-              None of this means every dealer is trying to mislead you. But it does mean you should treat any charge beyond taxes, title, registration, and the doc fee as something you can question. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for car buyers</a> outlines what dealers are required to disclose and what rights you have as a buyer.
+              None of this means every dealer is trying to mislead you. But it does mean you should treat any charge beyond taxes, title, registration, and the doc fee as something you can question. Some dealers also add a <Link href="/market-adjustment-fee" className="underline text-foreground">market adjustment fee</Link> on top of add-ons — pure markup with no product attached. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for car buyers</a> outlines what dealers are required to disclose and what rights you have as a buyer.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What "already installed" actually means</h2>
@@ -185,7 +185,7 @@ export default function AreDealerAddOnsMandatory() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span>Walk away. You are never obligated to sign, and walking is often the most effective negotiating tool you have.</span>
+                <span>Walk away. You are never obligated to sign, and walking is often the most effective negotiating tool you have. For a broader view of how dealers structure pricing, see our <Link href="/dealer-pricing-tactics" className="underline text-foreground">complete guide to dealer pricing tactics</Link>.</span>
               </li>
             </ul>
 
@@ -196,7 +196,7 @@ export default function AreDealerAddOnsMandatory() {
             </p>
 
             <p className="text-lg text-muted-foreground mb-8">
-              If you already have a dealer quote and aren't sure which charges are optional, paste it into Odigos. We'll flag the add-ons, show you what's negotiable, and give you a clear picture of what the car actually costs without the extras.
+              If you already have a dealer quote and aren't sure which charges are optional, paste it into Odigos. We'll flag the add-ons, show you what's negotiable, and give you a clear picture of what the car actually costs without the extras. And if new charges appeared after you thought the deal was done, read about <Link href="/dealer-added-fees-after-agreement" className="underline text-foreground">fees added after the agreement</Link>.
             </p>
           </div>
 

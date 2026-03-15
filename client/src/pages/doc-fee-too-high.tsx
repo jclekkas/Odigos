@@ -150,12 +150,12 @@ export default function DocFeeTooHigh() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span><strong className="text-foreground">There are multiple vague fees that look like the same thing.</strong> If you see a "doc fee" plus a "processing fee" plus a "dealer services fee," some of those may be duplicative or made up entirely.</span>
+                <span><strong className="text-foreground">There are multiple vague fees that look like the same thing.</strong> If you see a "doc fee" plus a "processing fee" plus a "dealer services fee," some of those may be duplicative or made up entirely. This kind of stacking is also common with <Link href="/market-adjustment-fee" className="underline text-foreground">market adjustment fees</Link>.</span>
               </li>
             </ul>
 
             <p className="text-lg text-muted-foreground mb-8">
-              If you already have a quote with a doc fee that seems high, Odigos can analyze the full breakdown and flag anything that doesn't add up.
+              If charges appeared on your deal that weren't part of the original discussion, that's a separate issue — read about <Link href="/dealer-added-fees-after-agreement" className="underline text-foreground">fees added after the agreement</Link>. If you already have a quote with a doc fee that seems high, Odigos can analyze the full breakdown and flag anything that doesn't add up.
             </p>
           </div>
 

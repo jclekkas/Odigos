@@ -69,7 +69,7 @@ export default function MarketAdjustmentFee() {
             </p>
 
             <p className="text-lg text-muted-foreground mb-6">
-              Unlike taxes, registration, or title fees, a market adjustment is pure profit for the dealership. It doesn't correspond to any additional product, service, or government requirement. It's simply a higher price because the dealer believes someone will pay it. This is different from <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">mandatory dealer add-ons</Link>, which bundle products or services into the price — a market adjustment adds nothing except a higher number.
+              Unlike taxes, registration, or title fees, a market adjustment is pure profit for the dealership. It doesn't correspond to any additional product, service, or government requirement. It's simply a higher price because the dealer believes someone will pay it. This is different from <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">dealer add-ons</Link>, which bundle products or services into the price — a market adjustment adds nothing except a higher number.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Is it legal?</h2>
@@ -89,7 +89,7 @@ export default function MarketAdjustmentFee() {
             </p>
 
             <p className="text-lg text-muted-foreground mb-6">
-              If a dealer won't budge, check with other dealerships — including ones further away. Some dealers advertise MSRP pricing as a policy, and the trip may be worth the savings. <a href="https://www.edmunds.com/car-buying/dealer-markups-and-addendum-stickers.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds</a> tracks dealer pricing trends and can help you identify fair pricing for specific models.
+              If a dealer won't budge, check with other dealerships — including ones further away. Some dealers advertise MSRP pricing as a policy, and the trip may be worth the savings. If a dealer <Link href="/dealer-wont-give-out-the-door-price" className="underline text-foreground">won't give you an out-the-door price</Link> at all, that's an additional red flag. <a href="https://www.edmunds.com/car-buying/dealer-markups-and-addendum-stickers.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds</a> tracks dealer pricing trends and can help you identify fair pricing for specific models.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to send the dealer</h2>
@@ -146,7 +146,7 @@ export default function MarketAdjustmentFee() {
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to watch for in the quote</h2>
 
             <p className="text-lg text-muted-foreground mb-6">
-              If a dealer sends you a quote or a breakdown, look carefully at how the market adjustment is presented. Sometimes it's listed as a separate line item, which is transparent. Other times it's folded into the vehicle price without explanation, or buried under a vague label like "additional equipment" or "dealer accessories." If the total price doesn't match MSRP plus tax, title, and registration, ask what accounts for the difference.
+              If a dealer sends you a quote or a breakdown, look carefully at how the market adjustment is presented. Sometimes it's listed as a separate line item, which is transparent. Other times it's folded into the vehicle price without explanation, or buried under a vague label like "additional equipment" or "dealer accessories." If the total price doesn't match MSRP plus tax, title, and registration, ask what accounts for the difference. Watch out for <Link href="/dealer-added-fees-after-agreement" className="underline text-foreground">fees added after you've already agreed on a price</Link> — markups can reappear in the final paperwork under different names.
             </p>
 
             <p className="text-lg text-muted-foreground mb-6">
