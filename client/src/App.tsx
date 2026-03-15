@@ -29,6 +29,7 @@ import HowToAskForOutTheDoorPrice from "@/pages/how-to-ask-for-out-the-door-pric
 import OtdPriceVsMsrp from "@/pages/otd-price-vs-msrp";
 import OutTheDoorPriceExample from "@/pages/out-the-door-price-example";
 import CarDealerFeesState from "@/pages/car-dealer-fees-state";
+import ScenarioPage from "@/pages/scenario-page";
 import GuidesRedirect from "@/pages/guides-redirect";
 import AdminMetrics from "@/pages/admin-metrics";
 import NotFound from "@/pages/not-found";
@@ -61,6 +62,21 @@ function Router() {
       <Route path="/how-to-ask-for-out-the-door-price" component={HowToAskForOutTheDoorPrice} />
       <Route path="/otd-price-vs-msrp" component={OtdPriceVsMsrp} />
       <Route path="/out-the-door-price-example" component={OutTheDoorPriceExample} />
+      <Route path="/dealer-raised-price-when-i-arrived" component={ScenarioPage} />
+      <Route path="/dealer-changed-price-after-test-drive" component={ScenarioPage} />
+      <Route path="/dealer-added-fees-after-deposit" component={ScenarioPage} />
+      <Route path="/dealer-wont-give-written-quote" component={ScenarioPage} />
+      <Route path="/dealer-only-gives-monthly-payment" component={ScenarioPage} />
+      <Route path="/dealer-refuses-itemized-price" component={ScenarioPage} />
+      <Route path="/dealer-added-warranty-without-asking" component={ScenarioPage} />
+      <Route path="/dealer-added-gap-insurance" component={ScenarioPage} />
+      <Route path="/dealer-added-nitrogen-tires" component={ScenarioPage} />
+      <Route path="/dealer-added-vin-etching" component={ScenarioPage} />
+      <Route path="/dealer-added-protection-package" component={ScenarioPage} />
+      <Route path="/dealer-changed-price-before-signing" component={ScenarioPage} />
+      <Route path="/dealer-increased-interest-rate" component={ScenarioPage} />
+      <Route path="/dealer-added-market-adjustment-after-deposit" component={ScenarioPage} />
+      <Route path="/dealer-says-add-ons-required" component={ScenarioPage} />
       <Route path="/car-dealer-fees-:state" component={CarDealerFeesState} />
       <Route path="/guides" component={GuidesRedirect} />
       <Route path="/admin/metrics" component={AdminMetrics} />
