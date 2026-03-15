@@ -1,0 +1,45 @@
+Yes — proceed with these fixes.
+
+Implement only the internal-linking and hub-page improvements you identified. Do not add new pages, do not change backend logic, and do not do broad copy rewrites.
+
+Requirements:
+
+1. Fix canonical internal links
+- Replace any internal links pointing to /dealer-wont-give-otd-price with the canonical /dealer-wont-give-out-the-door-price
+- Check for any other internal links that point to redirected or stale article slugs and update them to the canonical destination where applicable
+- Do not rely on internal 301s when a canonical internal route already exists
+
+2. Strengthen internal links across the SEO article cluster
+- Update the major pillar, hub, and supporting article pages so each important article has roughly 3–5 useful in-body internal links where context supports them
+- Prioritize natural body-copy links, not link dumps
+- Do not overlink or make the prose feel spammy
+- Use varied, descriptive anchor text
+
+3. Strengthen the dealer-pricing-tactics hub
+- Expand the guide card array so the hub includes all major relevant guides already present in the repo
+- Use the actual canonical slugs already in the codebase
+- Replace any stale redirect slug usage in the hub
+- Keep the hub editorial and useful, not just a bare list
+
+4. Prioritize these pages for stronger cross-linking if they exist
+- main out-the-door price explainer
+- dealer-wont-give-out-the-door-price
+- calculate-out-the-door-price
+- dealer-doc-fee / doc-fee page
+- are-dealer-add-ons-mandatory
+- dealer-added-fees-after-agreement
+- dealer-changed-price-after-deposit
+- market-adjustment-fee
+- dealer-pricing-tactics
+
+5. Preserve article quality
+- No broad rewrites
+- Only add or lightly revise sentences where needed to support natural links
+- Keep tone, layout, metadata, and CTA patterns intact
+
+Then report back with:
+1. exact files modified
+2. exact stale/redirect links corrected
+3. which pages received new internal links
+4. which pages were added to the dealer-pricing-tactics hub
+5. confirmation that no unrelated logic or backend behavior was changed
