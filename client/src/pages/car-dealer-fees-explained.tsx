@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { setSeoMeta } from "@/lib/seo";
-import logoImage from "@assets/odigos_logo.png";
+import ArticleHeader from "@/components/ArticleHeader";
 
 export default function CarDealerFeesExplained() {
   useEffect(() => {
@@ -16,13 +16,7 @@ export default function CarDealerFeesExplained() {
   return (
     <div className="min-h-screen bg-background">
       
-      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-3">
-          <Link href="/">
-            <img src={logoImage} alt="Odigos" className="h-28 w-auto cursor-pointer" data-testid="link-logo-home" />
-          </Link>
-        </div>
-      </header>
+      <ArticleHeader />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -34,9 +28,13 @@ export default function CarDealerFeesExplained() {
             When you buy a car, the sale price is only part of what you'll pay. Dealers add a range of fees — some required by law, others entirely optional, even when they're not presented that way. Knowing the difference can save you hundreds or thousands.
           </p>
 
-          <p className="text-sm text-muted-foreground mb-6">
-            Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
-          </p>
+          <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
+            <p className="font-medium text-foreground mb-3">Not sure which fees on your quote are optional? Check in seconds.</p>
+            <Link href="/analyze">
+              <Button size="sm" data-testid="button-callout-fees">Check My Deal</Button>
+            </Link>
+            <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
+          </div>
 
           <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Fees you should expect to pay</h2>
 
@@ -92,6 +90,14 @@ export default function CarDealerFeesExplained() {
             </li>
           </ul>
 
+          <div className="my-8 rounded-lg border border-border bg-muted/40 p-5">
+            <p className="font-medium text-foreground mb-3">See a fee on your quote you're not sure about? Paste it and find out what's standard vs. what to push back on.</p>
+            <Link href="/analyze">
+              <Button size="sm" data-testid="button-mid-article-fees">Check My Deal</Button>
+            </Link>
+            <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
+          </div>
+
           <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to protect yourself</h2>
 
           <p className="text-muted-foreground mb-6">
@@ -103,17 +109,16 @@ export default function CarDealerFeesExplained() {
           </p>
           
           <div className="mt-12 pt-8 border-t border-border">
-            <p className="text-muted-foreground mb-4">
-              Not sure if the dealer quote is complete?
-            </p>
-            <p className="text-sm text-muted-foreground mb-4">
-              Paste the message or quote you received. Odigos checks for missing out-the-door pricing, add-ons, and unclear fees.
-            </p>
+            <h2 className="text-xl font-semibold mb-3 text-foreground" data-testid="text-fees-cta-heading">
+              Have a dealer quote with fees you don't recognize?
+            </h2>
+            <p className="text-muted-foreground mb-6">Paste it and Odigos breaks down every line — what's required, what's optional, and what you can push back on.</p>
             <Link href="/analyze">
               <Button size="lg" data-testid="button-cta-fees">
-                Check the Quote with Odigos
+                Analyze My Quote
               </Button>
             </Link>
+            <p className="text-xs text-muted-foreground mt-3">Takes 10 seconds · No signup required</p>
           </div>
 
           <p className="text-xs text-muted-foreground mt-12">

@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
-import logoImage from "@assets/odigos_logo.png";
+import ArticleHeader from "@/components/ArticleHeader";
 import SeoHead from "@/components/SeoHead";
 
 const tactics = [
@@ -65,13 +65,7 @@ export default function DealerPricingTactics() {
         path="/dealer-pricing-tactics"
       />
 
-      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-3">
-          <Link href="/">
-            <img src={logoImage} alt="Odigos" className="h-12 md:h-14 w-auto cursor-pointer" data-testid="link-logo-home" />
-          </Link>
-        </div>
-      </header>
+      <ArticleHeader />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -83,9 +77,25 @@ export default function DealerPricingTactics() {
             <p className="text-lg text-muted-foreground mb-4">
               Car dealers use a range of pricing tactics to keep buyers in the dark — from refusing to give <Link href="/out-the-door-price" className="underline text-foreground">out-the-door prices</Link> to bundling add-ons that inflate the final cost (see <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds' breakdown of common fees</a> for context). Understanding these tactics is the first step to negotiating from a position of strength.
             </p>
-            <p className="text-lg text-muted-foreground mb-10">
+            <p className="text-lg text-muted-foreground mb-6">
               Odigos helps you identify these tactics in real dealer quotes, emails, and texts — so you know what to ask and what to push back on before you visit the dealership. For a broader overview of your rights as a buyer, see the <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for car buyers</a>.
             </p>
+
+            <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
+              <p className="font-medium text-foreground mb-3">Already have a dealer quote? Check it for these tactics before you go in.</p>
+              <Link href="/analyze">
+                <Button size="sm" data-testid="button-callout-tactics">Check My Deal</Button>
+              </Link>
+              <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
+            </div>
+          </div>
+
+          <div className="my-8 rounded-lg border border-border bg-muted/40 p-5">
+            <p className="font-medium text-foreground mb-3">Have a quote? Paste it and Odigos flags which tactics are being used on you right now.</p>
+            <Link href="/analyze">
+              <Button size="sm" data-testid="button-mid-article-tactics">Check My Deal</Button>
+            </Link>
+            <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
           </div>
 
           <h2 className="text-2xl font-semibold mb-6 text-foreground">Tactics & Guides</h2>
@@ -113,17 +123,16 @@ export default function DealerPricingTactics() {
           </div>
 
           <div className="mt-12 pt-8 border-t border-border">
-            <h2 className="text-xl font-semibold mb-2 text-foreground" data-testid="text-tactics-cta-heading">
-              Not sure if the dealer quote is complete?
+            <h2 className="text-xl font-semibold mb-3 text-foreground" data-testid="text-tactics-cta-heading">
+              Spot a tactic in your dealer quote?
             </h2>
-            <p className="text-muted-foreground mb-4">
-              Paste the message or quote you received. Odigos checks for missing out-the-door pricing, add-ons, and unclear fees.
-            </p>
+            <p className="text-muted-foreground mb-6">Paste it and Odigos identifies exactly which tactics are at play and what you can do about them.</p>
             <Link href="/analyze">
               <Button size="lg" data-testid="button-cta-tactics">
-                Check the Quote with Odigos
+                Check My Quote
               </Button>
             </Link>
+            <p className="text-xs text-muted-foreground mt-3">Takes 10 seconds · No signup required</p>
           </div>
 
           <p className="text-xs text-muted-foreground mt-12">

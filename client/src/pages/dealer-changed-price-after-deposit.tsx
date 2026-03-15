@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
-import logoImage from "@assets/odigos_logo.png";
+import ArticleHeader from "@/components/ArticleHeader";
 
 const DEPOSIT_PRICE_CHANGE_MESSAGE = `Hi, I'd like to follow up on our agreement. The price I was quoted when I put down my deposit was different from what I'm now being asked to pay. Can you provide a written explanation of exactly what changed and why? I'd also like to understand my options for a full refund of my deposit if we can't agree on the original terms.`;
 
@@ -39,13 +39,7 @@ export default function DealerChangedPriceAfterDeposit() {
   return (
     <div className="min-h-screen bg-background">
 
-      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-3">
-          <Link href="/">
-            <img src={logoImage} alt="Odigos" className="h-28 w-auto cursor-pointer" data-testid="link-logo-home" />
-          </Link>
-        </div>
-      </header>
+      <ArticleHeader />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -58,9 +52,13 @@ export default function DealerChangedPriceAfterDeposit() {
               You agreed on a price, put down a deposit, and now the dealer is telling you the numbers have changed. Maybe they say the manager didn't approve the deal, or that the rebate expired, or that financing fell through. Whatever the reason, it feels like a bait-and-switch — because in many cases, that's exactly what it is.
             </p>
 
-            <p className="text-sm text-muted-foreground mb-6">
-              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
-            </p>
+            <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
+              <p className="font-medium text-foreground mb-3">Dealer changed the price after your deposit? Paste the quote and see what changed.</p>
+              <Link href="/analyze">
+                <Button size="sm" data-testid="button-callout-deposit">Check My Deal</Button>
+              </Link>
+              <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
+            </div>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why dealers do this</h2>
 
@@ -174,17 +172,16 @@ export default function DealerChangedPriceAfterDeposit() {
           </div>
 
           <div className="mt-12 pt-8 border-t border-border">
-            <p className="text-muted-foreground mb-4">
-              Not sure if the dealer quote is complete?
-            </p>
-            <p className="text-sm text-muted-foreground mb-4">
-              Paste the message or quote you received. Odigos checks for missing out-the-door pricing, add-ons, and unclear fees.
-            </p>
+            <h2 className="text-xl font-semibold mb-3 text-foreground" data-testid="text-deposit-cta-heading">
+              Dealer changed the price after your deposit?
+            </h2>
+            <p className="text-muted-foreground mb-6">Paste the original quote and the new one. Odigos breaks down exactly what changed and whether it's legitimate.</p>
             <Link href="/analyze">
               <Button size="lg" data-testid="button-cta-deposit">
-                Check the Quote with Odigos
+                Check the New Numbers
               </Button>
             </Link>
+            <p className="text-xs text-muted-foreground mt-3">Takes 10 seconds · No signup required</p>
           </div>
 
           <p className="text-xs text-muted-foreground mt-12">

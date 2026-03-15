@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
-import logoImage from "@assets/odigos_logo.png";
+import ArticleHeader from "@/components/ArticleHeader";
 
 const MARKET_ADJUSTMENT_MESSAGE = `Hi, I'm interested in this vehicle and want to understand the full pricing. Can you send me a breakdown showing the MSRP, any market adjustment or additional dealer markup, and the final out-the-door price with taxes and fees separated? I'd like to see how the adjusted price compares to the manufacturer's suggested retail price before moving forward.`;
 
@@ -39,13 +39,7 @@ export default function MarketAdjustmentFee() {
   return (
     <div className="min-h-screen bg-background">
 
-      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-3">
-          <Link href="/">
-            <img src={logoImage} alt="Odigos" className="h-28 w-auto cursor-pointer" data-testid="link-logo-home" />
-          </Link>
-        </div>
-      </header>
+      <ArticleHeader />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -58,9 +52,13 @@ export default function MarketAdjustmentFee() {
               You found the car you want, but the window sticker has a second price label — sometimes called an "Additional Dealer Markup" (ADM) or "Market Adjustment." It can add $2,000, $5,000, or even $10,000 or more on top of the manufacturer's suggested retail price. If you've never seen one before, it can be confusing — and if you have, it's probably frustrating. Here's what's actually going on and what you can do about it.
             </p>
 
-            <p className="text-sm text-muted-foreground mb-6">
-              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
-            </p>
+            <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
+              <p className="font-medium text-foreground mb-3">See a market adjustment on your quote? Find out if it's within normal range.</p>
+              <Link href="/analyze">
+                <Button size="sm" data-testid="button-callout-market-adj">Check My Deal</Button>
+              </Link>
+              <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
+            </div>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What a market adjustment fee is</h2>
 
@@ -163,17 +161,16 @@ export default function MarketAdjustmentFee() {
           </div>
 
           <div className="mt-12 pt-8 border-t border-border">
-            <p className="text-muted-foreground mb-4">
-              Not sure if the dealer quote is complete?
-            </p>
-            <p className="text-sm text-muted-foreground mb-4">
-              Paste the message or quote you received. Odigos checks for missing out-the-door pricing, add-ons, and unclear fees.
-            </p>
+            <h2 className="text-xl font-semibold mb-3 text-foreground" data-testid="text-market-adj-cta-heading">
+              See a market adjustment on your quote?
+            </h2>
+            <p className="text-muted-foreground mb-6">Paste it and find out if it's within normal range — and what the full out-the-door price actually is.</p>
             <Link href="/analyze">
               <Button size="lg" data-testid="button-cta-market-adjustment">
-                Check the Quote with Odigos
+                Check My Quote
               </Button>
             </Link>
+            <p className="text-xs text-muted-foreground mt-3">Takes 10 seconds · No signup required</p>
           </div>
 
           <p className="text-xs text-muted-foreground mt-12">

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { setSeoMeta } from "@/lib/seo";
-import logoImage from "@assets/odigos_logo.png";
+import ArticleHeader from "@/components/ArticleHeader";
 
 export default function IsThisAGoodCarDeal() {
   useEffect(() => {
@@ -15,14 +15,7 @@ export default function IsThisAGoodCarDeal() {
 
   return (
     <div className="min-h-screen bg-background">
-      
-      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-3">
-          <Link href="/">
-            <img src={logoImage} alt="Odigos" className="h-28 w-auto cursor-pointer" data-testid="link-logo-home" />
-          </Link>
-        </div>
-      </header>
+      <ArticleHeader />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -62,23 +55,30 @@ export default function IsThisAGoodCarDeal() {
               The best way to evaluate any deal is to compare the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> — the total you'll actually pay, including taxes, fees, and every line item. If you don't have that number yet, start there. For a full rundown of what to watch for, see our <Link href="/dealer-pricing-tactics" className="underline text-foreground">guide to dealer pricing tactics</Link>.
             </p>
             
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground mb-6">
               Seeing everything in writing before visiting the dealership protects you from surprises. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's car buying guide</a> offers additional tips on what to verify.
             </p>
+
+            <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
+              <p className="font-medium text-foreground mb-3">Have a quote you're not sure about? Get a quick read before you decide.</p>
+              <Link href="/analyze">
+                <Button size="sm" data-testid="button-callout-good-deal">Check My Deal</Button>
+              </Link>
+              <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
+            </div>
           </div>
           
           <div className="mt-12 pt-8 border-t border-border">
-            <p className="text-muted-foreground mb-4">
-              Not sure if the dealer quote is complete?
-            </p>
-            <p className="text-sm text-muted-foreground mb-4">
-              Paste the message or quote you received. Odigos checks for missing out-the-door pricing, add-ons, and unclear fees.
-            </p>
+            <h2 className="text-xl font-semibold mb-3 text-foreground" data-testid="text-good-deal-cta-heading">
+              Not sure if your deal is actually good?
+            </h2>
+            <p className="text-muted-foreground mb-6">Paste the quote and get a GO or NO-GO — with a clear breakdown of what's fair, what's padded, and what to ask next.</p>
             <Link href="/analyze">
               <Button size="lg" data-testid="button-cta-good-deal">
-                Check the Quote with Odigos
+                Check My Deal
               </Button>
             </Link>
+            <p className="text-xs text-muted-foreground mt-3">Takes 10 seconds · No signup required</p>
           </div>
 
           <p className="text-xs text-muted-foreground mt-12">

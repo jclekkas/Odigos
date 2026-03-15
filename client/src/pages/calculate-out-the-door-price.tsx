@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
-import logoImage from "@assets/odigos_logo.png";
+import ArticleHeader from "@/components/ArticleHeader";
 
 const OTD_CALC_MESSAGE = `Hi — before I come in, can you send me the full out-the-door price with every line item broken out? I'd like to see the vehicle price, sales tax, title and registration, doc fee, and any dealer-added packages or fees listed separately. I want to compare the total against my own estimate before we finalize anything. Thanks.`;
 
@@ -49,13 +49,7 @@ export default function CalculateOutTheDoorPrice() {
   return (
     <div className="min-h-screen bg-background">
 
-      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-3">
-          <Link href="/">
-            <img src={logoImage} alt="Odigos" className="h-28 w-auto cursor-pointer" data-testid="link-logo-home" />
-          </Link>
-        </div>
-      </header>
+      <ArticleHeader />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -68,9 +62,13 @@ export default function CalculateOutTheDoorPrice() {
               The out-the-door price (OTD) is the total amount you'll actually pay to drive a car off the lot — not just the sticker price or the number the salesperson quotes first. Calculating it yourself before you walk into a dealership gives you the clearest possible picture of the real cost and makes it much harder for hidden fees to slip through.
             </p>
 
-            <p className="text-sm text-muted-foreground mb-6">
-              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
-            </p>
+            <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
+              <p className="font-medium text-foreground mb-3">Already have a quote? Check if the full OTD price is included.</p>
+              <Link href="/analyze">
+                <Button size="sm" data-testid="button-callout-calc-otd">Check My Deal</Button>
+              </Link>
+              <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
+            </div>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">The OTD Formula</h2>
 
@@ -223,17 +221,16 @@ export default function CalculateOutTheDoorPrice() {
           </div>
 
           <div className="mt-12 pt-8 border-t border-border">
-            <p className="text-muted-foreground mb-4">
-              Not sure if the dealer quote is complete?
-            </p>
-            <p className="text-sm text-muted-foreground mb-4">
-              Paste the message or quote you received. Odigos checks for missing out-the-door pricing, add-ons, and unclear fees.
-            </p>
+            <h2 className="text-xl font-semibold mb-3 text-foreground" data-testid="text-calc-otd-cta-heading">
+              Have a dealer quote but not an OTD price?
+            </h2>
+            <p className="text-muted-foreground mb-6">Paste it and Odigos builds the full out-the-door breakdown — and flags anything that shouldn't be there.</p>
             <Link href="/analyze">
               <Button size="lg" data-testid="button-cta-calc-otd">
-                Check the Quote with Odigos
+                Get the Full Breakdown
               </Button>
             </Link>
+            <p className="text-xs text-muted-foreground mt-3">Takes 10 seconds · No signup required</p>
           </div>
 
           <p className="text-xs text-muted-foreground mt-12">

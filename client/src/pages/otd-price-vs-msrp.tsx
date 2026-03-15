@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { setSeoMeta } from "@/lib/seo";
-import logoImage from "@assets/odigos_logo.png";
+import ArticleHeader from "@/components/ArticleHeader";
 
 export default function OtdPriceVsMsrp() {
   useEffect(() => {
@@ -16,13 +16,7 @@ export default function OtdPriceVsMsrp() {
   return (
     <div className="min-h-screen bg-background">
 
-      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-3">
-          <Link href="/">
-            <img src={logoImage} alt="Odigos" className="h-28 w-auto cursor-pointer" data-testid="link-logo-home" />
-          </Link>
-        </div>
-      </header>
+      <ArticleHeader />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -43,9 +37,13 @@ export default function OtdPriceVsMsrp() {
               The number that matters most is the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link>, which includes taxes, fees, and other charges. Understanding the difference can help you avoid surprises at the dealership.
             </p>
 
-            <p className="text-sm text-muted-foreground mb-6">
-              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
-            </p>
+            <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
+              <p className="font-medium text-foreground mb-3">Have a quote with only an MSRP? See what the actual OTD price will be.</p>
+              <Link href="/analyze">
+                <Button size="sm" data-testid="button-callout-otd-vs-msrp">Check My Deal</Button>
+              </Link>
+              <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
+            </div>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What MSRP Actually Means</h2>
 
@@ -177,17 +175,16 @@ export default function OtdPriceVsMsrp() {
           </div>
 
           <div className="mt-12 pt-8 border-t border-border">
-            <p className="text-muted-foreground mb-4">
-              Not sure if the dealer quote is complete?
-            </p>
-            <p className="text-sm text-muted-foreground mb-4">
-              Paste the message or quote you received. Odigos checks for missing out-the-door pricing, add-ons, and unclear fees.
-            </p>
+            <h2 className="text-xl font-semibold mb-3 text-foreground" data-testid="text-otd-vs-msrp-cta-heading">
+              Only seeing MSRP in your quote?
+            </h2>
+            <p className="text-muted-foreground mb-6">Paste the quote and Odigos estimates the full OTD price — and flags any fees that look unusual.</p>
             <Link href="/analyze">
               <Button size="lg" data-testid="button-cta-otd-vs-msrp">
-                Check the Quote with Odigos
+                Get the Real Price
               </Button>
             </Link>
+            <p className="text-xs text-muted-foreground mt-3">Takes 10 seconds · No signup required</p>
           </div>
 
           <p className="text-xs text-muted-foreground mt-12">

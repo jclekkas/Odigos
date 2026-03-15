@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
-import logoImage from "@assets/odigos_logo.png";
+import ArticleHeader from "@/components/ArticleHeader";
 
 const DECLINE_ADDONS_MESSAGE = `I'd like to move forward with the vehicle, but without the dealer-installed add-ons. Please send me an updated out-the-door price with only the base vehicle price, taxes, title, registration, and your documentation fee. If any add-ons can't be removed, please list each one separately with pricing so I can evaluate them individually.`;
 
@@ -39,13 +39,7 @@ export default function AreDealerAddOnsMandatory() {
   return (
     <div className="min-h-screen bg-background">
 
-      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-3">
-          <Link href="/">
-            <img src={logoImage} alt="Odigos" className="h-28 w-auto cursor-pointer" data-testid="link-logo-home" />
-          </Link>
-        </div>
-      </header>
+      <ArticleHeader />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -62,9 +56,13 @@ export default function AreDealerAddOnsMandatory() {
               Dealer add-ons are products or services added by the dealership, not the manufacturer. They're profit items. Understanding which charges are actually required and which are optional puts you in a much stronger position before you sign anything.
             </p>
 
-            <p className="text-sm text-muted-foreground mb-6">
-              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
-            </p>
+            <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
+              <p className="font-medium text-foreground mb-3">Have a quote with add-ons listed as required? See which ones you can actually remove.</p>
+              <Link href="/analyze">
+                <Button size="sm" data-testid="button-callout-addons-mandatory">Check My Deal</Button>
+              </Link>
+              <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
+            </div>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What's actually required vs. what's optional</h2>
 
@@ -201,17 +199,16 @@ export default function AreDealerAddOnsMandatory() {
           </div>
 
           <div className="mt-12 pt-8 border-t border-border">
-            <p className="text-muted-foreground mb-4">
-              Not sure if the dealer quote is complete?
-            </p>
-            <p className="text-sm text-muted-foreground mb-4">
-              Paste the message or quote you received. Odigos checks for missing out-the-door pricing, add-ons, and unclear fees.
-            </p>
+            <h2 className="text-xl font-semibold mb-3 text-foreground" data-testid="text-addons-mandatory-cta-heading">
+              Not sure which add-ons on your quote are optional?
+            </h2>
+            <p className="text-muted-foreground mb-6">Odigos identifies what's mandatory and what you can push back on — before you go in.</p>
             <Link href="/analyze">
               <Button size="lg" data-testid="button-cta-addons">
-                Check the Quote with Odigos
+                Review the Add-Ons
               </Button>
             </Link>
+            <p className="text-xs text-muted-foreground mt-3">Takes 10 seconds · No signup required</p>
           </div>
 
           <p className="text-xs text-muted-foreground mt-12">

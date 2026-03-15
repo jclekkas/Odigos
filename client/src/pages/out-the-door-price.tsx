@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy, AlertTriangle, CircleDollarSign } from "lucide-react";
-import logoImage from "@assets/odigos_logo.png";
+import ArticleHeader from "@/components/ArticleHeader";
 import { setSeoMeta } from "@/lib/seo";
 
 const OTD_MESSAGE = `Before I come in, can you confirm the full out-the-door price in writing, including sale price, taxes, title/registration, doc fee, and any dealer add-ons? If add-ons are included, please itemize each one with pricing. I'm ready to move forward once I can review the complete OTD breakdown.`;
@@ -47,13 +47,7 @@ export default function OutTheDoorPrice() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-3">
-          <Link href="/">
-            <img src={logoImage} alt="Odigos" className="h-28 w-auto cursor-pointer" data-testid="link-logo-home" />
-          </Link>
-        </div>
-      </header>
+      <ArticleHeader />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -62,9 +56,13 @@ export default function OutTheDoorPrice() {
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-sm text-muted-foreground mb-6">
-              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
-            </p>
+            <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
+              <p className="font-medium text-foreground mb-3">Already have a dealer quote? Check if it includes everything.</p>
+              <Link href="/analyze">
+                <Button size="sm" data-testid="button-callout-otd">Check My Deal</Button>
+              </Link>
+              <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
+            </div>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">The Out-the-Door Price (OTD) Is the Real Cost of a Car</h2>
             <p className="text-lg text-muted-foreground mb-4">
@@ -162,6 +160,14 @@ export default function OutTheDoorPrice() {
             <p className="text-muted-foreground mb-8">
               Without a written OTD, numbers can shift in the finance office. Use tools like <a href="https://www.kbb.com/car-advice/" target="_blank" rel="noopener" className="underline text-foreground">Kelley Blue Book</a> to compare fair pricing before you negotiate.
             </p>
+
+            <div className="my-8 rounded-lg border border-border bg-muted/40 p-5">
+              <p className="font-medium text-foreground mb-3">Have a quote already? Check if it includes all the components a real OTD price requires.</p>
+              <Link href="/analyze">
+                <Button size="sm" data-testid="button-mid-article-otd">Check My Deal</Button>
+              </Link>
+              <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
+            </div>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0" />
@@ -276,29 +282,16 @@ export default function OutTheDoorPrice() {
           </div>
 
           <div className="mt-12 pt-8 border-t border-border">
-            <h2 className="text-xl font-semibold mb-2 text-foreground" data-testid="text-otd-cta-heading">
-              Not sure if the dealer quote is complete?
+            <h2 className="text-xl font-semibold mb-3 text-foreground" data-testid="text-otd-cta-heading">
+              Not sure if your quote includes the full OTD price?
             </h2>
-            <p className="text-muted-foreground mb-2">Paste the message or quote you received. Odigos checks for:</p>
-            <ul className="space-y-2 mb-6 text-muted-foreground">
-              {[
-                "Missing OTD components",
-                "Hidden or vague fees",
-                "Risky language",
-                "APR ambiguity",
-                'Add-ons framed as "mandatory"',
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+            <p className="text-muted-foreground mb-6">Check what's missing before you go in. Odigos flags incomplete breakdowns, hidden fees, and add-ons you didn't ask for.</p>
             <Link href="/analyze">
               <Button size="lg" data-testid="button-cta-otd">
-                Check the Quote with Odigos
+                Check the Quote
               </Button>
             </Link>
+            <p className="text-xs text-muted-foreground mt-3">Takes 10 seconds · No signup required</p>
           </div>
 
           <p className="text-xs text-muted-foreground mt-12">

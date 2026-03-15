@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import logoImage from "@assets/odigos_logo.png";
+import ArticleHeader from "@/components/ArticleHeader";
 import { setSeoMeta } from "@/lib/seo";
 
 export default function MandatoryDealerAddOns() {
@@ -15,13 +15,7 @@ export default function MandatoryDealerAddOns() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-3">
-          <Link href="/">
-            <img src={logoImage} alt="Odigos" className="h-28 w-auto cursor-pointer" data-testid="link-logo-home" />
-          </Link>
-        </div>
-      </header>
+      <ArticleHeader />
 
       <main className="py-12 md:py-20 px-6">
         <article className="max-w-2xl mx-auto">
@@ -33,9 +27,17 @@ export default function MandatoryDealerAddOns() {
             <p className="text-lg text-muted-foreground mb-4">
               Walk into almost any dealership and you'll eventually hear some version of: "These add-ons are already installed — they're part of the vehicle." Paint protection, nitrogen-filled tires, VIN etching, fabric coating, wheel locks, window tinting. The list varies by dealer, but the approach is the same: present optional products as if they're non-negotiable.
             </p>
-            <p className="text-lg text-muted-foreground mb-10">
+            <p className="text-lg text-muted-foreground mb-6">
               The truth? Almost none of these add-ons are legally required. Understanding what's truly mandatory versus what's dealer profit padding can save you hundreds — sometimes thousands — on your next car purchase.
             </p>
+
+            <div className="my-6 rounded-lg border border-border bg-muted/40 p-4">
+              <p className="font-medium text-foreground mb-3">Have a quote with add-ons you didn't ask for? Check which ones you can decline.</p>
+              <Link href="/analyze">
+                <Button size="sm" data-testid="button-callout-mandatory-addons">Check My Deal</Button>
+              </Link>
+              <p className="text-xs text-muted-foreground mt-2">Takes 10 seconds · No signup required</p>
+            </div>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What Counts as a Dealer Add-On?</h2>
             <p className="text-muted-foreground mb-4">
@@ -131,17 +133,16 @@ export default function MandatoryDealerAddOns() {
           </div>
 
           <div className="mt-12 pt-8 border-t border-border">
-            <h2 className="text-xl font-semibold mb-2 text-foreground" data-testid="text-add-ons-cta-heading">
-              Not sure if the dealer quote is complete?
+            <h2 className="text-xl font-semibold mb-3 text-foreground" data-testid="text-add-ons-cta-heading">
+              Not sure which add-ons on your quote are optional?
             </h2>
-            <p className="text-muted-foreground mb-4">
-              Paste the message or quote you received. Odigos checks for missing out-the-door pricing, add-ons, and unclear fees.
-            </p>
+            <p className="text-muted-foreground mb-6">Odigos identifies what's mandatory and what you can push back on — before you go in.</p>
             <Link href="/analyze">
               <Button size="lg" data-testid="button-cta-add-ons">
-                Check the Quote with Odigos
+                Review the Add-Ons
               </Button>
             </Link>
+            <p className="text-xs text-muted-foreground mt-3">Takes 10 seconds · No signup required</p>
           </div>
 
           <p className="text-xs text-muted-foreground mt-12">
