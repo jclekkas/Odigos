@@ -120,7 +120,7 @@ export default function DealerChangedPriceAfterDeposit() {
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What actually protects you</h2>
 
             <p className="text-lg text-muted-foreground mb-6">
-              In most U.S. states, a deposit on a vehicle does not create a binding purchase contract unless both parties have signed a formal agreement with all the material terms — price, trade-in value, financing, and fees. A verbal agreement or a handshake deal is difficult to enforce. However, you do have some protections:
+              In most U.S. states, a deposit on a vehicle does not create a binding purchase contract unless both parties have signed a formal agreement with all the material terms — price, trade-in value, financing, and fees. A verbal agreement or a handshake deal is difficult to enforce. If the dealer also <Link href="/dealer-wont-give-out-the-door-price" className="underline text-foreground">won't give you an out-the-door price</Link> in writing, that's a compounding red flag. However, you do have some protections:
             </p>
 
             <ul className="space-y-2 mb-6 text-muted-foreground">

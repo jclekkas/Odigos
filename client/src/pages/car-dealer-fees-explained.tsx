@@ -62,7 +62,7 @@ export default function CarDealerFeesExplained() {
           <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Fees that are often negotiable or optional</h2>
 
           <p className="text-muted-foreground mb-4">
-            Many line items on a dealer's worksheet are add-ons, not requirements. According to <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds</a>, buyers can often push back on these charges — or decline them entirely.
+            Many line items on a dealer's worksheet are add-ons, not requirements. Most <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">dealer add-ons are optional</Link>, even when presented as mandatory. According to <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds</a>, buyers can often push back on these charges — or decline them entirely.
           </p>
 
           <ul className="space-y-2 mb-6 text-muted-foreground">
