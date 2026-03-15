@@ -74,7 +74,7 @@ export default function DealerDocFee() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                <span><strong className="text-foreground">No caps (examples):</strong> Florida, Texas, Georgia, Colorado — dealers can charge what they want, and $700–$1,000+ isn't unusual.</span>
+                <span><strong className="text-foreground">No caps (examples):</strong> Florida, Texas, Georgia, Colorado — dealers can charge what they want, and $700–$1,000+ isn't unusual. In some cases, a high doc fee may appear alongside a <Link href="/market-adjustment-fee" className="underline text-foreground">market adjustment fee</Link>.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
