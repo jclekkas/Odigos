@@ -1,0 +1,120 @@
+:::writing{variant=“standard” id=“58214”}
+We’re moving into the next phase of measurement for Odigos. I want to add analytics so we can see which SEO articles actually drive analyzer usage and purchases.
+
+Important constraints:
+• Do NOT add new product features
+• Do NOT change the analyzer logic
+• Do NOT modify pricing or checkout
+• Only add tracking and a small landing page CTA improvement
+
+There are three tasks.
+
+⸻
+
+TASK 1 — Track article CTA clicks
+
+Currently only the landing page hero CTAs fire trackCtaClick. None of the article CTAs are tracked.
+
+Add click tracking to ALL analyzer CTAs across article pages:
+
+• Sticky header button (“Check My Deal”)
+• Top callout CTA boxes
+• Mid-article CTA blocks
+• Bottom CTA sections
+
+Each event should include the article slug so we know where the click came from.
+
+Event format example:
+
+trackCtaClick({
+location: “article_header”,
+article: “<article_slug>”
+})
+
+trackCtaClick({
+location: “article_top_callout”,
+article: “<article_slug>”
+})
+
+trackCtaClick({
+location: “article_mid_cta”,
+article: “<article_slug>”
+})
+
+trackCtaClick({
+location: “article_bottom_cta”,
+article: “<article_slug>”
+})
+
+This allows us to compare which pages and which placements generate analyzer clicks.
+
+⸻
+
+TASK 2 — Track the full article → analyzer funnel
+
+Right now the metrics dashboard shows:
+
+• page views
+• analyzer submissions
+• payments
+
+But it does NOT show which article started the funnel.
+
+When a user lands on /analyze, capture the article source if it exists.
+
+Implementation idea:
+
+When an article CTA links to /analyze, append a query parameter:
+
+/analyze?src=<article_slug>
+
+Examples:
+/analyze?src=monthly-payment-trap
+/analyze?src=dealer-added-fees-after-agreement
+
+Then when the analyzer loads:
+
+• record the src value
+• attach it to the analyzer submission event
+• attach it to the payment event
+
+This allows the metrics dashboard to show:
+
+article_slug → analyzer_started → payment
+
+So we can see which SEO pages actually generate revenue.
+
+⸻
+
+TASK 3 — Add sticky CTA to landing page
+
+Article pages now have a sticky header with:
+
+Logo (left)
+“Check My Deal” button (right)
+
+The landing page currently does not.
+
+Update the landing page header so it matches the article header pattern:
+
+Left:
+Odigos logo
+
+Right:
+“Check My Deal” button linking to /analyze
+
+Below button:
+“Takes 10 seconds · No signup required”
+
+This CTA should remain visible while scrolling.
+
+⸻
+
+Success criteria
+	1.	Every analyzer CTA across article pages fires trackCtaClick.
+	2.	Analyzer loads include a src article parameter when coming from content.
+	3.	Analyzer submissions and payments record that article source.
+	4.	The admin metrics dashboard can show which article pages drive analyzer usage and revenue.
+	5.	The landing page has a persistent “Check My Deal” CTA similar to article pages.
+
+Do not modify any product logic or checkout flow. This is strictly measurement and CTA visibility work.
