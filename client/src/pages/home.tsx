@@ -672,7 +672,7 @@ export default function Home() {
       <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-6 py-3 flex items-center gap-2">
           <a href="/">
-            <img src={logoImage} alt="Odigos" className="h-8 md:h-9 w-auto cursor-pointer" data-testid="link-logo-home" />
+            <img src={logoImage} alt="Odigos" className="h-10 md:h-12 w-auto cursor-pointer" data-testid="link-logo-home" />
           </a>
         </div>
       </header>
