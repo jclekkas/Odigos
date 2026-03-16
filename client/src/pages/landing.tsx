@@ -35,38 +35,45 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-background">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:bg-background focus:text-foreground focus:px-4 focus:py-2 focus:rounded-md focus:border focus:border-border"
+        data-testid="link-skip-to-content"
+      >
+        Skip to main content
+      </a>
       <SiteHeader />
-      <main>
+      <main id="main-content">
         <section className="pt-12 pb-20 md:pt-16 md:pb-28 px-6">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.015em] leading-[1.25] text-foreground max-w-4xl mx-auto" data-testid="text-hero-headline">
               Spot dealer pricing tricks before you walk into the dealership.
             </h1>
-            <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed" data-testid="text-hero-subheadline">
+            <p className="mt-6 text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto leading-relaxed" data-testid="text-hero-subheadline">
               Paste a dealer quote, text, or email. Odigos checks for missing out-the-door pricing, hidden fees, and common dealership tactics so you know exactly what you're agreeing to.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
-              <Link href="/analyze">
-                <Button 
-                  size="lg" 
-                  className="w-full sm:w-auto px-8 py-6 text-lg font-semibold rounded-xl" 
-                  data-testid="button-cta-hero"
-                  onClick={() => trackCtaClick("hero-analyze", "Check a Dealer Quote")}
-                >
+              <Button
+                asChild
+                size="lg"
+                className="w-full sm:w-auto px-8 py-6 text-lg font-semibold rounded-xl"
+                data-testid="button-cta-hero"
+              >
+                <Link href="/analyze" onClick={() => trackCtaClick("hero-analyze", "Check a Dealer Quote")}>
                   Check a Dealer Quote
-                </Button>
-              </Link>
-              <Link href="/analyze?example=bad">
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="w-full sm:w-auto text-sm rounded-lg mt-4" 
-                  data-testid="button-try-bad"
-                  onClick={() => trackCtaClick("hero-bad-example", "Try a bad deal example")}
-                >
+                </Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="w-full sm:w-auto text-sm rounded-lg mt-4"
+                data-testid="button-try-bad"
+              >
+                <Link href="/analyze?example=bad" onClick={() => trackCtaClick("hero-bad-example", "Try a bad deal example")}>
                   Try a bad deal example
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
             <p className="mt-3 text-sm text-muted-foreground" data-testid="text-reassurance">
               Takes 10 seconds. No signup required.
@@ -77,7 +84,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-12 px-6">
+        <section className="py-12 px-6 bg-muted/30">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-xl md:text-2xl font-bold mb-6 text-center" data-testid="text-how-it-works-heading">How it works</h2>
             <ol className="space-y-4">
@@ -138,7 +145,7 @@ export default function Landing() {
             <h2 className="text-xl md:text-2xl font-bold mb-4 text-center" data-testid="text-otd-explainer-heading">
               What is an out-the-door price?
             </h2>
-            <p className="text-base text-muted-foreground leading-relaxed">
+            <p className="text-base text-foreground/75 leading-relaxed">
               The out-the-door price (OTD) is the total amount you'll pay to leave the dealership with the keys — including sale price, tax, title, registration, doc fees, and any add-ons. It's the only number that tells you what the car actually costs. Dealers often focus on the monthly payment instead, which can hide longer loan terms, higher rates, and fees you never agreed to. Odigos analyzes the quote you already have and tells you what's missing.
             </p>
           </div>
@@ -170,7 +177,7 @@ export default function Landing() {
             <h2 className="text-xl md:text-2xl font-bold mb-4">
               Why it matters
             </h2>
-            <p className="text-base text-muted-foreground leading-relaxed">
+            <p className="text-base text-foreground/75 leading-relaxed">
               Dealers often quote monthly payments, add packages later, or ask you to "come in to talk numbers." Odigos turns the messages you already have into a clear next step.
             </p>
           </div>
@@ -214,7 +221,7 @@ export default function Landing() {
             <h2 className="text-xl md:text-2xl font-bold mb-4" data-testid="text-built-for-heading">
               Built for real car buyers
             </h2>
-            <p className="text-base text-muted-foreground leading-relaxed">
+            <p className="text-base text-foreground/75 leading-relaxed">
               We don't sell cars. We don't work with dealerships. We don't take referral fees. Odigos is an independent tool that works entirely from the messages you already have. No account required. No data stored. Just clarity before you sign.
             </p>
           </div>
@@ -244,6 +251,14 @@ export default function Landing() {
                       <span>Detected pricing details</span>
                     </li>
                   </ul>
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="w-full mt-4"
+                    data-testid="button-cta-free-preview"
+                  >
+                    <Link href="/analyze">Try Free Preview</Link>
+                  </Button>
                 </CardContent>
               </Card>
               <Card className="border-accent/50 bg-accent/5" data-testid="card-pricing-tier2">
@@ -272,6 +287,13 @@ export default function Landing() {
                       <span>Full analysis reasoning</span>
                     </li>
                   </ul>
+                  <Button
+                    asChild
+                    className="w-full mt-4"
+                    data-testid="button-cta-full-review"
+                  >
+                    <Link href="/analyze">Get Full Review — $49</Link>
+                  </Button>
                 </CardContent>
               </Card>
               {/* $79 Negotiation Pack - Hidden for single-tier pricing
@@ -307,7 +329,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-16 px-6">
+        <section className="py-16 px-6 bg-muted/30">
           <Helmet>
             <script type="application/ld+json">{JSON.stringify({
               "@context": "https://schema.org",
@@ -333,13 +355,15 @@ export default function Landing() {
                     type="button"
                     className="w-full flex items-center justify-between px-5 py-4 text-left"
                     onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                    aria-expanded={openFaq === idx}
+                    aria-controls={`faq-panel-${idx}`}
                     data-testid={`button-faq-${idx}`}
                   >
                     <span className="text-sm font-medium text-foreground">{faq.q}</span>
                     <ChevronDown className={`w-4 h-4 text-muted-foreground shrink-0 ml-4 transition-transform ${openFaq === idx ? "rotate-180" : ""}`} />
                   </button>
                   {openFaq === idx && (
-                    <div className="px-5 pb-4">
+                    <div id={`faq-panel-${idx}`} className="px-5 pb-4">
                       <p className="text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
                     </div>
                   )}
@@ -354,11 +378,9 @@ export default function Landing() {
             <h2 className="text-xl md:text-2xl font-bold mb-6">
               Don't walk into a $30–$60k decision blind.
             </h2>
-            <Link href="/analyze">
-              <Button size="lg" className="text-base rounded-lg" data-testid="button-cta-final">
-                Check This Deal
-              </Button>
-            </Link>
+            <Button asChild size="lg" className="text-base rounded-lg" data-testid="button-cta-final">
+              <Link href="/analyze">Check This Deal</Link>
+            </Button>
           </div>
         </section>
 
@@ -383,9 +405,8 @@ export default function Landing() {
             </div>
           </div>
         </section>
-      </main>
 
-      <section className="py-12 px-6">
+        <section className="py-12 px-6">
           <div className="max-w-2xl mx-auto">
             <h3 className="text-base font-semibold mb-2 text-foreground" data-testid="text-scope-heading">What Odigos does NOT do</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -394,18 +415,19 @@ export default function Landing() {
           </div>
         </section>
 
-      <section className="py-12 px-6">
-        <div className="max-w-2xl mx-auto">
-          <h3 className="text-base font-semibold mb-4 text-foreground" data-testid="text-tactics-heading">Common Dealer Pricing Tactics Buyers Ask About</h3>
-          <ul className="space-y-2">
-            <li><Link href="/dealer-wont-give-otd-price" className="text-sm underline text-foreground" data-testid="link-tactic-otd">Dealer Won't Give Out-the-Door Price</Link></li>
-            <li><Link href="/are-dealer-add-ons-mandatory" className="text-sm underline text-foreground" data-testid="link-tactic-addons">Are Dealer Add-Ons Mandatory?</Link></li>
-            <li><Link href="/dealer-doc-fee" className="text-sm underline text-foreground" data-testid="link-tactic-docfee">Dealer Documentation Fee Explained</Link></li>
-            <li><Link href="/market-adjustment-fee" className="text-sm underline text-foreground" data-testid="link-tactic-market">Dealer Market Adjustment Fees</Link></li>
-            <li><Link href="/dealer-added-fees-after-agreement" className="text-sm underline text-foreground" data-testid="link-tactic-added-fees">Dealer Added Fees After Agreement</Link></li>
-          </ul>
-        </div>
-      </section>
+        <section className="py-12 px-6 bg-muted/30">
+          <div className="max-w-2xl mx-auto">
+            <h3 className="text-base font-semibold mb-4 text-foreground" data-testid="text-tactics-heading">Common Dealer Pricing Tactics Buyers Ask About</h3>
+            <ul className="space-y-2">
+              <li><Link href="/dealer-wont-give-otd-price" className="text-sm underline text-foreground" data-testid="link-tactic-otd">Dealer Won't Give Out-the-Door Price</Link></li>
+              <li><Link href="/are-dealer-add-ons-mandatory" className="text-sm underline text-foreground" data-testid="link-tactic-addons">Are Dealer Add-Ons Mandatory?</Link></li>
+              <li><Link href="/dealer-doc-fee" className="text-sm underline text-foreground" data-testid="link-tactic-docfee">Dealer Documentation Fee Explained</Link></li>
+              <li><Link href="/market-adjustment-fee" className="text-sm underline text-foreground" data-testid="link-tactic-market">Dealer Market Adjustment Fees</Link></li>
+              <li><Link href="/dealer-added-fees-after-agreement" className="text-sm underline text-foreground" data-testid="link-tactic-added-fees">Dealer Added Fees After Agreement</Link></li>
+            </ul>
+          </div>
+        </section>
+      </main>
 
       <footer className="border-t border-border/50 py-6">
         <div className="max-w-5xl mx-auto px-6 text-center space-y-2">
