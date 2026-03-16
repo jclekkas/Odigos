@@ -20,7 +20,7 @@ export default function SiteHeader() {
           <Link
             href="/dealer-pricing-problems"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors px-2 py-1"
-            data-testid="link-nav-scenario-hub"
+            data-testid="link-nav-dealer-tactics"
           >
             Dealer Tactics
           </Link>
