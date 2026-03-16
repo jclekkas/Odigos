@@ -12,21 +12,21 @@ export default function SiteHeader() {
           <img
             src={logoImage}
             alt="Odigos"
-            className="h-8 md:h-9 w-auto cursor-pointer"
+            className="h-9 md:h-10 w-auto cursor-pointer dark:invert"
             data-testid="link-logo-home"
           />
         </Link>
-        <nav className="flex items-center gap-5" data-testid="nav-links">
+        <nav className="flex items-center gap-3 sm:gap-5" data-testid="nav-links">
           <Link
             href="/dealer-pricing-problems"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors px-2 py-1"
             data-testid="link-nav-scenario-hub"
           >
             Scenario Hub
           </Link>
           <a
             href="/#how-it-works"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors px-2 py-1"
             data-testid="link-nav-how-it-works"
           >
             How It Works

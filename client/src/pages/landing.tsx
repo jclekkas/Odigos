@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, CheckCircle2, ChevronDown } from "lucide-react";
 import { trackPageView, trackCtaClick } from "@/lib/tracking";
+import SiteHeader from "@/components/SiteHeader";
 
 const faqs = [
   {
@@ -34,8 +35,9 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SiteHeader />
       <main>
-        <section className="pt-16 pb-20 md:pt-24 md:pb-28 px-6">
+        <section className="pt-12 pb-20 md:pt-16 md:pb-28 px-6">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.015em] leading-[1.25] text-foreground max-w-4xl mx-auto" data-testid="text-hero-headline">
               Spot dealer pricing tricks before you walk into the dealership.
