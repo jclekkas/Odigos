@@ -1,10 +1,19 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import OpenAI from "openai";
+import multer from "multer";
 import { analysisRequestSchema, analysisResponseSchema, type AnalysisResponse } from "@shared/schema";
 import { applyRuleEngine } from "./ruleEngine";
 import { getStripeClient, isStripeConfigured } from "./stripeClient";
 import { trackEvent } from "./metrics";
+import { extractTextFromFile } from "./extractText";
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+});
+
+const ALLOWED_MIME_TYPES = ["image/png", "image/jpeg", "image/webp", "application/pdf"];
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
@@ -261,6 +270,41 @@ GO/NO-GO/NEED-MORE-INFO:
         error: "Failed to analyze deal",
         message: errorMessage
       });
+    }
+  });
+
+  app.post("/api/extract-text", upload.single("file"), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded." });
+      }
+
+      const { mimetype, buffer } = req.file;
+
+      if (!ALLOWED_MIME_TYPES.includes(mimetype)) {
+        return res.status(400).json({ message: "That file type isn't supported." });
+      }
+
+      let text: string;
+      try {
+        text = await extractTextFromFile(buffer, mimetype);
+      } catch (err) {
+        console.error("Text extraction error:", err);
+        return res.status(422).json({
+          message: "We couldn't read that file. Try pasting the text or uploading a clearer image.",
+        });
+      }
+
+      if (text.length < 20) {
+        return res.status(422).json({
+          message: "We couldn't read enough text from that file. Try pasting the text or uploading a clearer image.",
+        });
+      }
+
+      res.json({ text });
+    } catch (err) {
+      console.error("extract-text error:", err);
+      res.status(500).json({ message: "Something went wrong. Please try again." });
     }
   });
 

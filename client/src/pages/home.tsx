@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -472,7 +472,57 @@ export default function Home() {
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [formStartTracked, setFormStartTracked] = useState(false);
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  const ALLOWED_UPLOAD_TYPES = ["image/png", "image/jpeg", "image/webp", "application/pdf"];
+  const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+
+  const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!e.target) return;
+    e.target.value = "";
+
+    if (!file) return;
+
+    setUploadError(null);
+
+    if (!ALLOWED_UPLOAD_TYPES.includes(file.type)) {
+      setUploadError("That file type isn't supported. Please upload a PNG, JPG, WEBP, or PDF.");
+      return;
+    }
+
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setUploadError("That file is too large to process. Please use a file under 10 MB.");
+      return;
+    }
+
+    setUploadLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/extract-text", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setUploadError(data.message ?? "We couldn't process that file. Please try again.");
+        return;
+      }
+
+      form.setValue("dealerText", data.text);
+    } catch {
+      setUploadError("Something went wrong. Please try again or paste the text manually.");
+    } finally {
+      setUploadLoading(false);
+    }
+  }, [form]);
 
   useEffect(() => {
     trackPageView("/analyze");
@@ -680,6 +730,34 @@ export default function Home() {
                     </FormItem>
                   )}
                 />
+
+                <div className="mt-3 flex items-center gap-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".png,.jpg,.jpeg,.webp,.pdf"
+                    className="hidden"
+                    onChange={handleFileUpload}
+                    data-testid="input-file-upload"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadLoading}
+                    className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    data-testid="button-upload-file"
+                  >
+                    or upload a screenshot or PDF
+                  </button>
+                  {uploadLoading && (
+                    <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+                  )}
+                </div>
+                {uploadError && (
+                  <p className="text-xs text-destructive mt-1" data-testid="text-upload-error">
+                    {uploadError}
+                  </p>
+                )}
               </CardContent>
             </Card>
 
