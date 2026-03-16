@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Check, CheckCircle2, ChevronDown } from "lucide-react";
+import { AlertTriangle, Check, CheckCircle2, ChevronDown } from "lucide-react";
 import { trackPageView, trackCtaClick } from "@/lib/tracking";
 import SiteHeader from "@/components/SiteHeader";
 
@@ -104,7 +104,7 @@ export default function Landing() {
 
         <section className="py-16 px-6">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-8 text-center" data-testid="text-checks-heading">
+            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center" data-testid="text-checks-heading">
               What Odigos Checks For
             </h2>
             <div className="grid md:grid-cols-2 gap-4">
@@ -227,9 +227,54 @@ export default function Landing() {
           </div>
         </section>
 
+        <section className="py-16 px-6 bg-muted/30" data-testid="section-sample-output">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-bold mb-2 text-center">
+              What the analysis looks like
+            </h2>
+            <p className="text-sm text-muted-foreground text-center mb-6">
+              Sample output from a real dealer quote (anonymized)
+            </p>
+            <div className="border border-border/60 rounded-lg bg-background p-5 md:p-6 space-y-4">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold tracking-wide border border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-400">
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  NO-GO
+                </span>
+                <span className="text-xs text-muted-foreground border border-border/60 px-2 py-0.5 rounded bg-muted/40">
+                  Medium confidence
+                </span>
+              </div>
+              <p className="text-sm font-medium text-foreground">
+                This quote is missing critical pricing details. Do not proceed without a complete out-the-door breakdown.
+              </p>
+              <div className="space-y-2 pt-1">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Detected issues</p>
+                <ul className="space-y-1.5">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-3.5 h-3.5 text-amber-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-muted-foreground">No out-the-door price — only monthly payment quoted</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-3.5 h-3.5 text-amber-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-muted-foreground">APR not disclosed — rate described as "competitive"</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-3.5 h-3.5 text-amber-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-muted-foreground">"Protection packages" added without itemized cost</span>
+                  </li>
+                </ul>
+              </div>
+              <p className="text-xs text-muted-foreground italic pt-1 border-t border-border/40">
+                Full analysis includes missing info checklist, negotiation reply, and detailed reasoning.
+              </p>
+            </div>
+          </div>
+        </section>
+
         <section className="py-16 px-6">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">
               Simple pricing
             </h2>
             <div className="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto">
@@ -375,9 +420,9 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-16 px-6 bg-muted/30">
+        <section className="py-16 px-6">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-xl md:text-2xl font-bold mb-6">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6">
               Don't walk into a $30–$60k decision blind.
             </h2>
             <Button asChild size="lg" className="text-base rounded-lg" data-testid="button-cta-final">

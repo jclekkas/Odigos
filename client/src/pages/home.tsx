@@ -671,10 +671,10 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
 
-      <main className="max-w-4xl mx-auto px-6 py-8 space-y-8">
-        <div className="max-w-2xl mx-auto mb-6" data-testid="section-analyzer-context">
-          <h1 className="text-xl font-semibold text-foreground" data-testid="text-analyzer-heading">Analyze a Dealer Quote</h1>
-          <p className="text-sm text-muted-foreground mt-1" data-testid="text-analyzer-description">
+      <main className="max-w-4xl mx-auto px-6 py-10 space-y-8">
+        <div className="max-w-2xl mx-auto mb-2" data-testid="section-analyzer-context">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground" data-testid="text-analyzer-heading">Analyze a Dealer Quote</h1>
+          <p className="text-sm text-muted-foreground mt-2 leading-relaxed" data-testid="text-analyzer-description">
             Paste a dealer quote, email, or text message. Odigos checks for missing out-the-door pricing, hidden fees, and common dealership tactics.
           </p>
           <a
@@ -685,11 +685,12 @@ export default function Home() {
             How this analysis works
           </a>
         </div>
+        <div className="border border-border/60 rounded-xl bg-card/50 p-4 md:p-6" data-testid="section-analyzer-module">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Paste Dealer Communication</CardTitle>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <Card className="border-border/50">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold">Paste Dealer Communication</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col sm:flex-row gap-2 mb-4">
@@ -953,6 +954,7 @@ export default function Home() {
             </p>
           </form>
         </Form>
+        </div>
 
         {result && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">

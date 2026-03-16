@@ -4,15 +4,15 @@ import logoImage from "@assets/odigos_logo.png";
 export default function SiteHeader() {
   return (
     <header
-      className="w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50"
+      className="w-full border-b border-border/80 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50"
       data-testid="site-header"
     >
-      <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
+      <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
         <Link href="/">
           <img
             src={logoImage}
             alt="Odigos"
-            className="h-9 md:h-10 w-auto cursor-pointer dark:invert"
+            className="h-11 md:h-[3.25rem] w-auto cursor-pointer dark:invert"
             data-testid="link-logo-home"
           />
         </Link>
