@@ -1,8 +1,4 @@
-import { createRequire } from "module";
 import { openai } from "./openaiClient";
-
-const require = createRequire(import.meta.url);
-const pdfParse = require("pdf-parse") as (buffer: Buffer) => Promise<{ text: string }>;
 
 const IMAGE_MIME_TYPES = ["image/png", "image/jpeg", "image/webp"];
 const PDF_MIME_TYPE = "application/pdf";
@@ -38,6 +34,7 @@ export async function extractTextFromFile(buffer: Buffer, mimetype: string): Pro
   }
 
   if (mimetype === PDF_MIME_TYPE) {
+    const { default: pdfParse } = await import("pdf-parse") as any;
     let text = "";
     try {
       const data = await pdfParse(buffer);
