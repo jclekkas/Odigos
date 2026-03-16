@@ -6,12 +6,24 @@ import { applyRuleEngine } from "./ruleEngine";
 import { getStripeClient, isStripeConfigured } from "./stripeClient";
 import { trackEvent } from "./metrics";
 
-const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-});
+// Lazy initialization of OpenAI client to avoid startup errors
+let openaiClient: OpenAI | null = null;
 
-console.log("OpenAI configured with base URL:", process.env.AI_INTEGRATIONS_OPENAI_BASE_URL ? "set" : "not set");
+function getOpenAIClient(): OpenAI {
+  if (!openaiClient) {
+    const apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      throw new Error("OpenAI API key not configured. Please set OPENAI_API_KEY or AI_INTEGRATIONS_OPENAI_API_KEY environment variable.");
+    }
+    openaiClient = new OpenAI({
+      apiKey,
+      baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+    });
+  }
+  return openaiClient;
+}
+
+console.log("OpenAI will be configured on first request");
 
 export async function registerRoutes(
   httpServer: Server,
@@ -153,6 +165,7 @@ GO/NO-GO/NEED-MORE-INFO:
       console.log("Making OpenAI API call with model: gpt-4o");
       console.log("User message length:", userMessage.length);
       
+      const openai = getOpenAIClient();
       const response = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: [
