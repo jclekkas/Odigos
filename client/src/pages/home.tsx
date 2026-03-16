@@ -5,18 +5,23 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { trackPageView, trackFormStart, trackFormFocus } from "@/lib/tracking";
 import { setSeoMeta } from "@/lib/seo";
-import { 
-  ChevronDown, 
-  ChevronUp, 
-  Loader2, 
-  Copy, 
-  Check, 
+import {
+  ChevronDown,
+  ChevronUp,
+  Loader2,
+  Copy,
+  Check,
   HelpCircle,
   DollarSign,
   FileText,
   MessageSquare,
   Info,
-  Lock
+  Lock,
+  ArrowRight,
+  CheckCircle2,
+  AlertCircle,
+  XCircle,
+  Shield
 } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
@@ -82,61 +87,50 @@ interface DealScoreBadgeProps {
 function DealScoreBadge({ score, goNoGo, confidenceLevel, verdictLabel }: DealScoreBadgeProps) {
   const scoreConfig = {
     GREEN: {
-      bg: "bg-emerald-500/5",
-      border: "border-emerald-500/20",
-      chipBg: "bg-emerald-500/15",
-      chipBorder: "border-emerald-500/30",
+      bg: "bg-emerald-50 dark:bg-emerald-950/30",
+      border: "border-emerald-200 dark:border-emerald-800/50",
       text: "text-emerald-700 dark:text-emerald-400",
+      icon: CheckCircle2,
+      message: "This deal appears reasonable. Consider visiting the dealership.",
     },
     YELLOW: {
-      bg: "bg-amber-500/5",
-      border: "border-amber-500/20",
-      chipBg: "bg-amber-500/15",
-      chipBorder: "border-amber-500/30",
-      text: "text-amber-700 dark:text-amber-400",
+      bg: "bg-amber-50 dark:bg-amber-950/30",
+      border: "border-amber-200 dark:border-amber-800/50",
+      text: "text-amber-700 dark:text-amber-500",
+      icon: AlertCircle,
+      message: "Some details need clarification before you proceed.",
     },
     RED: {
-      bg: "bg-red-500/5",
-      border: "border-red-500/20",
-      chipBg: "bg-red-500/15",
-      chipBorder: "border-red-500/30",
+      bg: "bg-red-50 dark:bg-red-950/30",
+      border: "border-red-200 dark:border-red-800/50",
       text: "text-red-700 dark:text-red-400",
+      icon: XCircle,
+      message: "This quote has significant concerns. Proceed with caution.",
     },
   };
 
   const confidenceLabels: Record<ConfidenceLevel, string> = {
     HIGH: "High confidence",
     MEDIUM: "Medium confidence",
-    LOW: "Low confidence",
-  };
-
-  const goNoGoMessages = {
-    "GO": "This deal appears reasonable. Consider visiting the dealership.",
-    "NO-GO": "Red flags detected. We recommend looking elsewhere.",
-    "NEED-MORE-INFO": "Get answers to the questions below before visiting.",
+    LOW: "Low confidence — limited information provided",
   };
 
   const config = scoreConfig[score];
+  const Icon = config.icon;
 
   return (
-    <div className={`rounded-xl border ${config.border} ${config.bg} p-5`}>
-      <div className="flex items-start gap-3">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-2 flex-wrap">
-            <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-semibold tracking-wide border ${config.chipBg} ${config.chipBorder} ${config.text}`}>
-              {goNoGo}
-            </span>
-            <span className="text-xs text-muted-foreground border border-border/60 px-2 py-0.5 rounded bg-muted/40">
-              {confidenceLabels[confidenceLevel]}
-            </span>
-          </div>
-          <p className={`text-base font-semibold leading-snug mb-1 ${config.text}`}>
-            {verdictLabel}
-          </p>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {goNoGoMessages[goNoGo]}
-          </p>
-        </div>
+    <div className={`rounded-2xl border ${config.border} ${config.bg} p-6 md:p-8`}>
+      <div className="flex flex-col items-center text-center">
+        <Icon className={`w-12 h-12 ${config.text} mb-3`} />
+        <h3 className={`text-2xl md:text-3xl font-semibold ${config.text} mb-1`}>
+          {verdictLabel}
+        </h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          {confidenceLabels[confidenceLevel]}
+        </p>
+        <p className={`text-base ${config.text}`}>
+          {config.message}
+        </p>
       </div>
     </div>
   );
@@ -155,46 +149,61 @@ function DetectedFieldsCard({ fields }: { fields: DetectedFields }) {
     { label: "Down Payment", value: fields.downPayment, format: formatCurrency },
   ];
 
+  const specifiedItems = items.filter(item => item.value != null);
+  const unspecifiedItems = items.filter(item => item.value == null);
+
   return (
-    <Card>
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <FileText className="w-5 h-5 text-muted-foreground" />
-          What We Detected
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {items.map((item) => (
-            <div key={item.label} className="flex justify-between items-center py-2 border-b border-border/50 last:border-0">
+    <div className="rounded-2xl border border-border/50 bg-card p-6">
+      <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+        <FileText className="w-4 h-4 text-muted-foreground" />
+        What we found in your quote
+      </h3>
+
+      {specifiedItems.length > 0 && (
+        <div className="space-y-2 mb-4">
+          {specifiedItems.map((item) => (
+            <div key={item.label} className="flex justify-between items-center py-2 border-b border-border/30 last:border-0">
               <span className="text-sm text-muted-foreground">{item.label}</span>
-              <span className={`text-sm font-medium font-mono ${item.value != null ? "text-foreground" : "text-muted-foreground/60"}`}>
+              <span className="text-sm font-medium text-foreground font-mono">
                 {item.format(item.value)}
               </span>
             </div>
           ))}
         </div>
-        
-        {fields.fees && fields.fees.length > 0 && (
-          <div className="mt-6">
-            <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-muted-foreground" />
-              Itemized Fees
-            </h4>
-            <div className="space-y-2">
-              {fields.fees.map((fee, idx) => (
-                <div key={idx} className="flex justify-between items-center py-2 bg-muted/30 rounded-md px-3">
-                  <span className="text-sm">{fee.name}</span>
-                  <span className="text-sm font-mono font-medium">
-                    {fee.amount != null ? formatCurrency(fee.amount) : "Amount unclear"}
-                  </span>
-                </div>
-              ))}
-            </div>
+      )}
+
+      {unspecifiedItems.length > 0 && (
+        <div className="pt-2">
+          <p className="text-xs text-muted-foreground mb-2">Not found in quote:</p>
+          <div className="flex flex-wrap gap-2">
+            {unspecifiedItems.map((item) => (
+              <span key={item.label} className="text-xs px-2 py-1 rounded-md bg-muted/50 text-muted-foreground">
+                {item.label}
+              </span>
+            ))}
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      )}
+
+      {fields.fees && fields.fees.length > 0 && (
+        <div className="mt-6 pt-4 border-t border-border/30">
+          <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+            <DollarSign className="w-4 h-4 text-muted-foreground" />
+            Itemized Fees
+          </h4>
+          <div className="space-y-2">
+            {fields.fees.map((fee, idx) => (
+              <div key={idx} className="flex justify-between items-center py-2 bg-muted/30 rounded-md px-3">
+                <span className="text-sm">{fee.name}</span>
+                <span className="text-sm font-mono font-medium">
+                  {fee.amount != null ? formatCurrency(fee.amount) : "Amount unclear"}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -222,58 +231,54 @@ function MissingInfoCard({ items, confidenceLevel, verdictLabel, onCopy }: Missi
   if (displayItems.length === 0 || confidenceLevel === "HIGH") return null;
 
   return (
-    <Card className="border-amber-500/30 bg-amber-500/5">
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-lg text-amber-700 dark:text-amber-400">
-          <HelpCircle className="w-5 h-5" />
-          {isProceedVerdict ? "Confirm These Details" : "Missing Information"}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground mb-4">
-          {isProceedVerdict 
-            ? "Before you visit, quickly confirm these points:"
-            : "Ask the dealer these questions to get the full picture:"}
+    <div className="rounded-2xl border border-primary/20 bg-primary/5 p-6">
+      <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+        <HelpCircle className="w-4 h-4 text-primary" />
+        {isProceedVerdict ? "Confirm these details" : "Questions to ask before you visit"}
+      </h3>
+      <p className="text-sm text-muted-foreground mb-4">
+        {isProceedVerdict
+          ? "Before you visit, quickly confirm these points:"
+          : "Send these to the dealer to get the full picture."}
+      </p>
+      <ul className="space-y-3 mb-5">
+        {displayItems.map((item, idx) => (
+          <li key={idx} className="flex gap-3">
+            <span className="shrink-0 w-5 h-5 rounded-full bg-primary/20 text-primary text-xs font-medium flex items-center justify-center mt-0.5">
+              {idx + 1}
+            </span>
+            <div>
+              <p className="text-sm font-medium text-foreground">{item.field}</p>
+              <p className="text-sm text-muted-foreground">{item.question}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+      {items.length > displayItems.length && (
+        <p className="text-xs text-muted-foreground mb-3">
+          + {items.length - displayItems.length} more questions available in full analysis
         </p>
-        <ul className="space-y-3 mb-4">
-          {displayItems.map((item, idx) => (
-            <li key={idx} className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-bold flex items-center justify-center">
-                {idx + 1}
-              </span>
-              <div>
-                <p className="text-sm font-medium">{item.field}</p>
-                <p className="text-sm text-muted-foreground">{item.question}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-        {items.length > displayItems.length && (
-          <p className="text-xs text-muted-foreground mb-3">
-            + {items.length - displayItems.length} more questions available in full analysis
-          </p>
+      )}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleCopy}
+        className="w-full rounded-xl"
+        data-testid="button-copy-questions"
+      >
+        {copied ? (
+          <>
+            <Check className="w-4 h-4 mr-2" />
+            Copied to clipboard
+          </>
+        ) : (
+          <>
+            <Copy className="w-4 h-4 mr-2" />
+            Copy questions
+          </>
         )}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleCopy}
-          className="w-full"
-          data-testid="button-copy-questions"
-        >
-          {copied ? (
-            <>
-              <Check className="w-4 h-4 mr-2" />
-              Copied!
-            </>
-          ) : (
-            <>
-              <Copy className="w-4 h-4 mr-2" />
-              Copy Questions to Send to Dealer
-            </>
-          )}
-        </Button>
-      </CardContent>
-    </Card>
+      </Button>
+    </div>
   );
 }
 
@@ -297,53 +302,57 @@ interface LockedTier2Props {
 
 function LockedTier2Section({ onUnlock, isLoading, stripeConfigured }: LockedTier2Props) {
   return (
-    <Card className="border-border bg-muted/20">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base font-semibold">
-          <Lock className="w-4 h-4 text-muted-foreground" />
-          Full Deal Review
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground mb-3">
-          See what's missing, what's risky, and exactly what to ask the dealer.
-        </p>
-        <ul className="space-y-1.5 mb-4">
-          {[
-            "Red flags and risks in this deal",
-            "Missing information to request",
-            "Copy-paste reply for the dealer",
-            "Full analysis reasoning"
-          ].map((item, idx) => (
-            <li key={idx} className="flex items-start gap-2 text-sm">
-              <Check className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-              <span className="text-muted-foreground">{item}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="text-xs text-muted-foreground mb-3">
-          One-time payment · Not affiliated with any dealership
-        </p>
-        <Button
-          variant="default"
-          onClick={onUnlock}
-          className="w-full bg-amber-500 hover:bg-amber-600 text-white"
-          disabled={isLoading || !stripeConfigured}
-          data-testid="button-unlock-49"
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Processing...
-            </>
-          ) : !stripeConfigured ? (
-            "Checkout unavailable"
-          ) : (
-            "Unlock Full Deal Review — $49 (one-time)"
-          )}
-        </Button>
-      </CardContent>
-    </Card>
+    <div className="rounded-2xl border border-primary/30 bg-primary/5 p-6">
+      <div className="flex items-start gap-4">
+        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+          <Lock className="w-5 h-5 text-primary" />
+        </div>
+        <div className="flex-1">
+          <h3 className="font-semibold text-foreground mb-1">
+            Unlock full analysis
+          </h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            See the complete breakdown, missing information, and a ready-to-send response for the dealer.
+          </p>
+          <ul className="space-y-2 mb-5">
+            {[
+              "Complete red flag breakdown",
+              "Missing information checklist",
+              "Copy-paste dealer response",
+              "Full analysis reasoning",
+            ].map((item, idx) => (
+              <li key={idx} className="flex items-start gap-2 text-sm">
+                <Check className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                <span className="text-muted-foreground">{item}</span>
+              </li>
+            ))}
+          </ul>
+          <Button
+            className="w-full rounded-xl"
+            onClick={onUnlock}
+            disabled={isLoading || !stripeConfigured}
+            data-testid="button-unlock-49"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Processing...
+              </>
+            ) : !stripeConfigured ? (
+              "Checkout unavailable"
+            ) : (
+              <>
+                Unlock for $49
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </>
+            )}
+          </Button>
+          <p className="text-xs text-muted-foreground text-center mt-3">
+            One-time payment. Secure checkout via Stripe.
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -419,37 +428,33 @@ function SuggestedReplyCard({ reply }: { reply: string }) {
   };
 
   return (
-    <Card>
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <MessageSquare className="w-5 h-5 text-muted-foreground" />
-          Suggested Reply to Dealer
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="bg-muted/30 rounded-lg p-4 mb-4">
-          <p className="text-sm whitespace-pre-wrap leading-relaxed">{reply}</p>
-        </div>
-        <Button
-          variant="default"
-          onClick={handleCopy}
-          className="w-full"
-          data-testid="button-copy-reply"
-        >
-          {copied ? (
-            <>
-              <Check className="w-4 h-4 mr-2" />
-              Copied!
-            </>
-          ) : (
-            <>
-              <Copy className="w-4 h-4 mr-2" />
-              Copy Reply
-            </>
-          )}
-        </Button>
-      </CardContent>
-    </Card>
+    <div className="rounded-2xl border border-border/50 bg-card p-6">
+      <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+        <MessageSquare className="w-4 h-4 text-muted-foreground" />
+        Suggested reply to dealer
+      </h3>
+      <div className="bg-muted/30 rounded-xl p-4 mb-4">
+        <p className="text-sm whitespace-pre-wrap leading-relaxed">{reply}</p>
+      </div>
+      <Button
+        variant="default"
+        onClick={handleCopy}
+        className="w-full rounded-xl"
+        data-testid="button-copy-reply"
+      >
+        {copied ? (
+          <>
+            <Check className="w-4 h-4 mr-2" />
+            Copied to clipboard
+          </>
+        ) : (
+          <>
+            <Copy className="w-4 h-4 mr-2" />
+            Copy reply
+          </>
+        )}
+      </Button>
+    </div>
   );
 }
 
@@ -671,48 +676,37 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
 
-      <main className="max-w-4xl mx-auto px-6 py-10 space-y-8">
-        <div className="max-w-2xl mx-auto mb-2" data-testid="section-analyzer-context">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground" data-testid="text-analyzer-heading">Analyze a Dealer Quote</h1>
-          <p className="text-sm text-muted-foreground mt-2 leading-relaxed" data-testid="text-analyzer-description">
-            Paste a dealer quote, email, or text message. Odigos checks for missing out-the-door pricing, hidden fees, and common dealership tactics.
-          </p>
-          <a
-            href="/how-odigos-works"
-            className="inline-block mt-2 text-sm text-muted-foreground underline-offset-4 hover:underline hover:text-foreground transition-colors"
-            data-testid="link-methodology"
-          >
-            How this analysis works
-          </a>
-        </div>
-        <div className="border border-border/60 rounded-xl bg-card/50 p-4 md:p-6" data-testid="section-analyzer-module">
+      <main className="pt-24 pb-16 px-6">
+        <div className="max-w-2xl mx-auto">
+          {/* Page Header */}
+          <div className="text-center mb-8" data-testid="section-analyzer-context">
+            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-4">
+              <Shield className="w-4 h-4 text-primary/70" />
+              <span>Independent analysis</span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-semibold text-foreground mb-2" data-testid="text-analyzer-heading">
+              Analyze your dealer quote
+            </h1>
+            <p className="text-muted-foreground" data-testid="text-analyzer-description">
+              Paste the message exactly as you received it.
+            </p>
+            <a
+              href="/how-odigos-works"
+              className="inline-block mt-2 text-sm text-muted-foreground underline-offset-4 hover:underline hover:text-foreground transition-colors"
+              data-testid="link-methodology"
+            >
+              How this analysis works
+            </a>
+          </div>
+
+          {/* Input Form */}
+          <div className="space-y-4 mb-8" data-testid="section-analyzer-module">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            <Card className="border-border/50">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base font-semibold">Paste Dealer Communication</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col sm:flex-row gap-2 mb-4">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => form.setValue("dealerText", SAMPLE_GOOD_DEAL)}
-                    data-testid="button-sample-good"
-                  >
-                    Try a good deal example
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => form.setValue("dealerText", SAMPLE_BAD_DEAL)}
-                    data-testid="button-sample-bad"
-                  >
-                    Try a bad deal example
-                  </Button>
-                </div>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="rounded-2xl border border-border/50 bg-card p-6">
+              <label className="block text-sm font-medium text-foreground mb-3">
+                Dealer text, email, or quote
+              </label>
                 <FormField
                   control={form.control}
                   name="dealerText"
@@ -737,7 +731,27 @@ export default function Home() {
                   )}
                 />
 
-                <div className="mt-3 flex items-center gap-2">
+                <div className="flex items-center gap-2 mt-3">
+                  <span className="text-xs text-muted-foreground">Try an example:</span>
+                  <button
+                    type="button"
+                    onClick={() => form.setValue("dealerText", SAMPLE_GOOD_DEAL)}
+                    className="text-xs text-primary hover:underline"
+                    data-testid="button-sample-good"
+                  >
+                    Good quote
+                  </button>
+                  <span className="text-xs text-muted-foreground">·</span>
+                  <button
+                    type="button"
+                    onClick={() => form.setValue("dealerText", SAMPLE_BAD_DEAL)}
+                    className="text-xs text-primary hover:underline"
+                    data-testid="button-sample-bad"
+                  >
+                    Vague quote
+                  </button>
+                </div>
+                <div className="mt-2 flex items-center gap-2">
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -764,29 +778,28 @@ export default function Home() {
                     {uploadError}
                   </p>
                 )}
-              </CardContent>
-            </Card>
+            </div>
 
             <Collapsible open={isOptionalOpen} onOpenChange={setIsOptionalOpen}>
-              <Card>
+              <div className="rounded-2xl border border-border/50 bg-card overflow-hidden">
                 <CollapsibleTrigger asChild>
-                  <CardHeader className="cursor-pointer hover-elevate active-elevate-2 rounded-t-xl">
-                    <div className="flex items-center justify-between gap-2">
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <Info className="w-5 h-5 text-muted-foreground" />
-                        Optional Details
-                        <span className="text-sm font-normal text-muted-foreground">(improves accuracy)</span>
-                      </CardTitle>
-                      {isOptionalOpen ? (
-                        <ChevronUp className="w-5 h-5 text-muted-foreground" />
-                      ) : (
-                        <ChevronDown className="w-5 h-5 text-muted-foreground" />
-                      )}
-                    </div>
-                  </CardHeader>
+                  <button
+                    type="button"
+                    className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-muted/30 transition-colors"
+                  >
+                    <span className="text-sm font-medium text-foreground">Optional details</span>
+                    {isOptionalOpen ? (
+                      <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    )}
+                  </button>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                  <CardContent className="pt-0 space-y-6">
+                  <div className="px-6 pb-6 space-y-6">
+                    <p className="text-xs text-muted-foreground">
+                      Adding context helps us give you a more accurate analysis.
+                    </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
@@ -927,65 +940,57 @@ export default function Home() {
                         />
                       </div>
                     )}
-                  </CardContent>
+                  </div>
                 </CollapsibleContent>
-              </Card>
+              </div>
             </Collapsible>
 
-            <div className="border-t border-border/40 pt-5">
             <Button
               type="submit"
               size="lg"
-              className="w-full"
+              className="w-full h-12 rounded-xl text-base font-medium"
               disabled={analyzeMutation.isPending}
               data-testid="button-analyze"
             >
               {analyzeMutation.isPending ? (
                 <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Analyzing Deal...
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Analyzing...
                 </>
               ) : (
-                "Analyze Deal"
+                <>
+                  Analyze Quote
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </>
               )}
             </Button>
             <p className="text-xs text-muted-foreground text-center mt-3" data-testid="text-data-disclosure">
               Pricing signals (not your personal details) are stored anonymously to improve our dealer fee database.{" "}
               <a href="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</a>
             </p>
-            </div>
           </form>
         </Form>
-        </div>
+          </div>
 
-        {result && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="border-t border-border/50 pt-8">
-              <h2 className="text-xl font-semibold mb-6 text-center">Analysis Results</h2>
-              
-              <DealScoreBadge 
-                score={result.dealScore} 
+          {/* Results */}
+          {result && (
+          <div className="space-y-6">
+              <DealScoreBadge
+                score={result.dealScore}
                 goNoGo={result.goNoGo}
                 confidenceLevel={result.confidenceLevel}
                 verdictLabel={result.verdictLabel}
               />
-            </div>
 
-            <Card>
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <FileText className="w-5 h-5 text-muted-foreground" />
-                  What This Deal Likely Means
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="max-w-[750px] mx-auto">
-                  <p className="text-base leading-relaxed text-muted-foreground" data-testid="text-summary">
-                    {result.summary}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="rounded-2xl border border-border/50 bg-card p-6">
+              <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                <FileText className="w-4 h-4 text-muted-foreground" />
+                What this deal likely means
+              </h3>
+              <p className="text-base leading-relaxed text-muted-foreground" data-testid="text-summary">
+                {result.summary}
+              </p>
+            </div>
 
             <DetectedFieldsCard fields={result.detectedFields} />
 
@@ -1004,27 +1009,24 @@ export default function Home() {
                   onCopy={() => toast({ title: "Questions copied to clipboard" })}
                 />
                 <SuggestedReplyCard reply={result.suggestedReply} />
-                <Card className="bg-muted/20">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Info className="w-4 h-4" />
-                      Analysis Reasoning
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-reasoning">
-                      {result.reasoning}
-                    </p>
-                  </CardContent>
-                </Card>
+                <div className="rounded-2xl border border-border/50 bg-muted/20 p-6">
+                  <h3 className="font-semibold text-muted-foreground mb-3 flex items-center gap-2 text-sm">
+                    <Info className="w-4 h-4" />
+                    Analysis reasoning
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-reasoning">
+                    {result.reasoning}
+                  </p>
+                </div>
               </>
             )}
           </div>
         )}
+        </div>
       </main>
 
-      <footer className="border-t border-border/50 mt-12">
-        <div className="max-w-4xl mx-auto px-6 py-6 text-center space-y-1">
+      <footer className="border-t border-border/50 py-8 px-6">
+        <div className="max-w-2xl mx-auto text-center space-y-1">
           <p className="text-sm text-muted-foreground">
             Odigos provides estimates based on the information you share.
             Always verify details directly with the dealership.
