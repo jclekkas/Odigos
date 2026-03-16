@@ -362,11 +362,13 @@ export default function Landing() {
                     <span className="text-sm font-medium text-foreground">{faq.q}</span>
                     <ChevronDown className={`w-4 h-4 text-muted-foreground shrink-0 ml-4 transition-transform ${openFaq === idx ? "rotate-180" : ""}`} />
                   </button>
-                  {openFaq === idx && (
-                    <div id={`faq-panel-${idx}`} className="px-5 pb-4">
-                      <p className="text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
-                    </div>
-                  )}
+                  <div
+                    id={`faq-panel-${idx}`}
+                    className="px-5 pb-4"
+                    hidden={openFaq !== idx}
+                  >
+                    <p className="text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
+                  </div>
                 </div>
               ))}
             </div>
