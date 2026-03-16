@@ -24,7 +24,7 @@ export default function DealerDocFee() {
       </header>
 
       <main className="py-12 md:py-20 px-6">
-        <article className="max-w-2xl mx-auto">
+        <article className="max-w-[700px] mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-doc-fee-headline">
             Dealer Documentation Fees: What They Are and What's Normal
           </h1>

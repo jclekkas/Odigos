@@ -74,7 +74,7 @@ export default function DealerPricingTactics() {
       </header>
 
       <main className="py-12 md:py-20 px-6">
-        <article className="max-w-2xl mx-auto">
+        <article className="max-w-[700px] mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-tactics-headline">
             Dealer Pricing Tactics: Complete Guide (2026)
           </h1>
@@ -93,7 +93,7 @@ export default function DealerPricingTactics() {
           <div className="space-y-4 mb-12">
             {tactics.map((tactic) => (
               <Link key={tactic.href} href={tactic.href}>
-                <Card className="cursor-pointer">
+                <Card className="cursor-pointer border-border/80 bg-card/50">
                   <CardContent className="pt-6 pb-6">
                     <div className="flex items-start justify-between gap-4">
                       <div>

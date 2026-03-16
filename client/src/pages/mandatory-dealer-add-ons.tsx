@@ -24,7 +24,7 @@ export default function MandatoryDealerAddOns() {
       </header>
 
       <main className="py-12 md:py-20 px-6">
-        <article className="max-w-2xl mx-auto">
+        <article className="max-w-[700px] mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-add-ons-headline">
             Are Dealer Add-Ons Really Mandatory?
           </h1>

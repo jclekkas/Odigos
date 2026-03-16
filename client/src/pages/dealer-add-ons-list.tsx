@@ -48,7 +48,7 @@ export default function DealerAddOnsList() {
       </header>
 
       <main className="py-12 md:py-20 px-6">
-        <article className="max-w-2xl mx-auto">
+        <article className="max-w-[700px] mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-addons-list-headline">
             Dealer Add-Ons List: What Dealers Try to Sell and What You Can Refuse
           </h1>

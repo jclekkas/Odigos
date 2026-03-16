@@ -40,14 +40,14 @@ export default function Landing() {
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-foreground max-w-4xl mx-auto" data-testid="text-hero-headline">
               Spot dealer pricing tricks before you walk into the dealership.
             </h1>
-            <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed" data-testid="text-hero-subheadline">
+            <p className="mt-6 text-[18px] md:text-xl text-foreground/70 max-w-2xl mx-auto leading-relaxed" data-testid="text-hero-subheadline">
               Paste a dealer quote, text, or email. Odigos checks for missing out-the-door pricing, hidden fees, and common dealership tactics so you know exactly what you're agreeing to.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
               <Link href="/analyze">
                 <Button 
-                  size="lg" 
-                  className="w-full sm:w-auto px-8 py-6 text-lg font-semibold rounded-xl" 
+                  size="lg"
+                  className="w-full sm:w-auto px-10 py-7 text-lg font-bold rounded-xl"
                   data-testid="button-cta-hero"
                   onClick={() => trackCtaClick("hero-analyze", "Check a Dealer Quote")}
                 >
@@ -99,25 +99,25 @@ export default function Landing() {
               What Odigos Checks For
             </h2>
             <div className="grid md:grid-cols-2 gap-4">
-              <Card data-testid="card-check-otd">
+              <Card data-testid="card-check-otd" className="border-border/80 bg-card/50">
                 <CardContent className="pt-6 pb-6">
                   <h3 className="font-semibold mb-2 text-foreground">Missing Out-the-Door Price</h3>
                   <p className="text-sm text-muted-foreground">Many dealer quotes hide the full price. Odigos flags when tax, registration, documentation fees, or add-ons are not clearly included.</p>
                 </CardContent>
               </Card>
-              <Card data-testid="card-check-addons">
+              <Card data-testid="card-check-addons" className="border-border/80 bg-card/50">
                 <CardContent className="pt-6 pb-6">
                   <h3 className="font-semibold mb-2 text-foreground">Dealer Add-Ons</h3>
                   <p className="text-sm text-muted-foreground">Dealers often present optional add-ons like nitrogen tires or paint protection as mandatory. Odigos highlights language that suggests this.</p>
                 </CardContent>
               </Card>
-              <Card data-testid="card-check-fees">
+              <Card data-testid="card-check-fees" className="border-border/80 bg-card/50">
                 <CardContent className="pt-6 pb-6">
                   <h3 className="font-semibold mb-2 text-foreground">Unclear Fees</h3>
                   <p className="text-sm text-muted-foreground">Dealer documentation fees, prep fees, and appearance packages are sometimes buried in quotes. Odigos helps surface them.</p>
                 </CardContent>
               </Card>
-              <Card data-testid="card-check-language">
+              <Card data-testid="card-check-language" className="border-border/80 bg-card/50">
                 <CardContent className="pt-6 pb-6">
                   <h3 className="font-semibold mb-2 text-foreground">Vague Pricing Language</h3>
                   <p className="text-sm text-muted-foreground">If a dealer message avoids committing to a full price or conditions the deal on financing or add-ons, Odigos calls it out.</p>
