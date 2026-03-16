@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, CheckCircle2, ChevronDown } from "lucide-react";
 import { trackPageView, trackCtaClick } from "@/lib/tracking";
+import SiteHeader from "@/components/SiteHeader";
 
 const faqs = [
   {
@@ -34,7 +35,8 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-background">
-      <main>
+      <SiteHeader maxWidth="max-w-3xl" />
+      <main id="main-content">
         <section className="pt-16 pb-20 md:pt-24 md:pb-28 px-6">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-foreground max-w-4xl mx-auto" data-testid="text-hero-headline">
@@ -75,9 +77,9 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-12 px-6">
+        <section className="py-16 px-6 bg-muted/20">
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center" data-testid="text-how-it-works-heading">How it works</h2>
+            <h2 className="text-xl md:text-2xl font-bold mb-8 text-center tracking-tight" data-testid="text-how-it-works-heading">How it works</h2>
             <ol className="space-y-4">
               {[
                 "Paste the dealer text or quote",
@@ -93,9 +95,9 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-16 px-6">
+        <section className="py-20 px-6">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-8 text-center" data-testid="text-checks-heading">
+            <h2 className="text-xl md:text-2xl font-bold mb-10 text-center tracking-tight" data-testid="text-checks-heading">
               What Odigos Checks For
             </h2>
             <div className="grid md:grid-cols-2 gap-4">
@@ -130,9 +132,9 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-12 px-6">
+        <section className="py-16 px-6">
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-4 text-center" data-testid="text-otd-explainer-heading">
+            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center tracking-tight" data-testid="text-otd-explainer-heading">
               What is an out-the-door price?
             </h2>
             <p className="text-base text-muted-foreground leading-relaxed">
@@ -141,9 +143,9 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-16 px-6 bg-muted/30">
+        <section className="py-20 px-6 bg-muted/30">
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
+            <h2 className="text-xl md:text-2xl font-bold mb-8 text-center tracking-tight">
               In minutes, you'll know:
             </h2>
             <ul className="space-y-3">
@@ -162,9 +164,9 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-16 px-6">
+        <section className="py-20 px-6">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-xl md:text-2xl font-bold mb-4">
+            <h2 className="text-xl md:text-2xl font-bold mb-6 tracking-tight">
               Why it matters
             </h2>
             <p className="text-base text-muted-foreground leading-relaxed">
@@ -173,9 +175,9 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-16 px-6 bg-muted/30">
+        <section className="py-20 px-6 bg-muted/30">
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
+            <h2 className="text-xl md:text-2xl font-bold mb-8 text-center tracking-tight">
               Real example (anonymized)
             </h2>
             <Card>
@@ -206,9 +208,9 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-12 px-6">
+        <section className="py-16 px-6">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-xl md:text-2xl font-bold mb-4" data-testid="text-built-for-heading">
+            <h2 className="text-xl md:text-2xl font-bold mb-6 tracking-tight" data-testid="text-built-for-heading">
               Built for real car buyers
             </h2>
             <p className="text-base text-muted-foreground leading-relaxed">
@@ -217,9 +219,9 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-16 px-6">
+        <section className="py-20 px-6 bg-muted/20">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
+            <h2 className="text-xl md:text-2xl font-bold mb-8 text-center tracking-tight">
               Simple pricing
             </h2>
             <div className="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto">
@@ -304,7 +306,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-16 px-6">
+        <section className="py-20 px-6">
           <Helmet>
             <script type="application/ld+json">{JSON.stringify({
               "@context": "https://schema.org",
@@ -320,7 +322,7 @@ export default function Landing() {
             })}</script>
           </Helmet>
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center" data-testid="text-faq-heading">
+            <h2 className="text-xl md:text-2xl font-bold mb-8 text-center tracking-tight" data-testid="text-faq-heading">
               Common questions
             </h2>
             <div className="space-y-2">
@@ -346,9 +348,9 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-16 px-6 bg-muted/30">
+        <section className="py-20 px-6 bg-muted/30">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-xl md:text-2xl font-bold mb-6">
+            <h2 className="text-xl md:text-2xl font-bold mb-8 tracking-tight">
               Don't walk into a $30–$60k decision blind.
             </h2>
             <Link href="/analyze">
@@ -359,9 +361,9 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-16 px-6">
+        <section className="py-20 px-6">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-8 text-center" data-testid="text-why-heading">
+            <h2 className="text-xl md:text-2xl font-bold mb-10 text-center tracking-tight" data-testid="text-why-heading">
               Why Use Odigos?
             </h2>
             <div className="grid md:grid-cols-3 gap-6">

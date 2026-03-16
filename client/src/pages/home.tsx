@@ -21,7 +21,7 @@ import {
   Info,
   Lock
 } from "lucide-react";
-import logoImage from "@assets/odigos_logo.png";
+import SiteHeader from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -625,15 +625,17 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-6 py-6 flex items-center gap-2">
-          <a href="/">
-            <img src={logoImage} alt="Odigos" className="h-28 w-auto cursor-pointer" data-testid="link-logo-home" />
-          </a>
-        </div>
-      </header>
+      <SiteHeader />
 
-      <main className="max-w-4xl mx-auto px-6 py-8 space-y-8">
+      <main id="main-content" className="max-w-4xl mx-auto px-6 py-10 space-y-8">
+        <div className="text-center mb-2">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+            Analyze Your Dealer Quote
+          </h1>
+          <p className="mt-2 text-base text-muted-foreground">
+            Paste a dealer text, email, or quote below for an instant evaluation.
+          </p>
+        </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="flex flex-wrap gap-2">
@@ -656,9 +658,10 @@ export default function Home() {
                 Try a bad deal example
               </Button>
             </div>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Paste Dealer Communication</CardTitle>
+            <Card className="border-border">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg font-semibold">Paste Dealer Communication</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">Texts, emails, screenshots transcriptions, or written quotes</p>
               </CardHeader>
               <CardContent>
                 <FormField
@@ -848,29 +851,34 @@ export default function Home() {
               </Card>
             </Collapsible>
 
-            <Button
-              type="submit"
-              size="lg"
-              className="w-full"
-              disabled={analyzeMutation.isPending}
-              data-testid="button-analyze"
-            >
-              {analyzeMutation.isPending ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Analyzing Deal...
-                </>
-              ) : (
-                "Analyze Deal"
-              )}
-            </Button>
+            <div className="pt-2">
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full py-6 text-base font-semibold"
+                disabled={analyzeMutation.isPending}
+                data-testid="button-analyze"
+              >
+                {analyzeMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Analyzing Deal...
+                  </>
+                ) : (
+                  "Analyze This Deal"
+                )}
+              </Button>
+              <p className="text-center text-xs text-muted-foreground mt-3">
+                Your text is analyzed in real time and is not stored.
+              </p>
+            </div>
           </form>
         </Form>
 
         {result && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="border-t border-border/50 pt-8">
-              <h2 className="text-xl font-semibold mb-6 text-center">Analysis Results</h2>
+            <div className="border-t border-border pt-10">
+              <h2 className="text-2xl font-bold mb-8 text-center tracking-tight">Analysis Results</h2>
               
               <DealScoreBadge 
                 score={result.dealScore} 
