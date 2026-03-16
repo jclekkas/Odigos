@@ -1,159 +1,232 @@
-Odigos — Lite Business Plan
+# Odigos — Business Overview
 
-## What It Is
+## Product
 
-Odigos is a consumer protection tool for U.S. car buyers.
+Odigos is a consumer protection tool for car buyers negotiating with dealerships.
 
-Users paste a dealer quote, email, or text message into the analyzer. Odigos reviews the quote in seconds and returns a GO / NO-GO verdict along with a structured explanation of potential issues — such as hidden fees, missing out-the-door pricing, forced add-ons, or common dealership negotiation tactics.
+Users either:
+- paste dealer text, or
+- upload a screenshot, photo, email, or PDF of a dealer quote
 
-The product has two tiers:
+Odigos extracts the text and analyzes the quote in seconds.
+
+The system returns a structured report including:
+- a GO / NO-GO verdict
+- detected pricing risks or missing information
+- explanations of dealership tactics
+- a checklist of information the buyer should request
+- a ready-to-send reply script for the dealer
+
+The product is intentionally narrow: it provides a fast second opinion on a specific dealer quote.
+
+---
+
+## Product Tiers
+
+Odigos uses a free → paid unlock model.
 
 **Free**
 - GO / NO-GO verdict
-- Surface-level analysis
+- high-level issue summary
+
+Purpose: Give the user an immediate answer to the question: "Does this deal look safe or suspicious?"
 
 **Paid ($49 one-time)**
-- Full deal review
-- Detailed reasoning
-- Missing information checklist
-- Negotiation reply script
-- Confidence assessment
 
-No account required. No subscription. The tool works on the exact quote the buyer already has — dealer emails, text messages, PDFs, or screenshots.
+Unlocks the full report:
+- detailed reasoning
+- missing information checklist
+- negotiation reply script
+- deeper explanation of detected tactics
+- confidence assessment
+
+Purpose: Help the buyer respond to the dealer and correct the deal.
+
+This model mirrors the buyer's behavior: the purchase is episodic and high-stakes, so a single-transaction payment aligns better than a subscription.
 
 ---
 
-## The Problem
+## The Core Problem
 
-Buying a car is one of the largest financial transactions most Americans will make, yet the process remains highly opaque.
+Car buyers face a large information imbalance when negotiating with dealerships.
 
-Dealership pricing structures often include:
-- unclear or incomplete quotes
+Common issues include:
+- incomplete quotes that omit the out-the-door price
 - dealer documentation fees
 - dealer-installed add-ons
-- market adjustment fees
+- "market adjustment" fees
 - negotiation tactics that focus on monthly payment instead of total cost
 
-The out-the-door price — the actual amount a buyer will pay — is frequently missing from initial quotes.
+These practices are not rare edge cases — they are common features of dealership sales processes.
 
-As a result, buyers may believe they have agreed to a $42,000 deal only to discover a final price closer to $47,000 after additional charges appear.
-
-Most buyers sense something is wrong but lack the knowledge to identify the issue or respond effectively, especially under time pressure during negotiations.
+Most buyers suspect something is wrong but lack the expertise to identify specific problems or respond effectively, especially under time pressure during negotiations.
 
 ---
 
-## The Solution
+## The Wedge
 
-Odigos analyzes the quote the buyer already received and highlights potential issues before the buyer commits to the deal.
+Odigos focuses on a specific moment in the buying process: the buyer already has a quote and wants a second opinion.
 
-The analysis produces a structured report including:
-- a clear GO / NO-GO verdict
-- detected pricing concerns
-- explanations of common dealership tactics
-- a checklist of missing information
-- a ready-to-send reply asking the dealer to clarify or correct the quote
+Typical scenario:
+1. Buyer requests pricing from a dealership.
+2. Dealer sends a quote, worksheet, or email.
+3. The buyer senses something is unclear or off.
+4. The buyer searches for help.
 
-The goal is not to replace research or negotiation — it is to give buyers a quick second opinion before moving forward.
+Odigos sits directly in that moment and answers the question: "Is this deal safe to proceed with?"
+
+This is a late-stage decision problem, which is why users may be willing to pay for clarity.
 
 ---
 
-## Market Size
+## Market Context
 
-Approximately 14 million new vehicles and 36 million used vehicles are sold each year in the United States.
+Each year in the United States:
+- ~14 million new cars are sold
+- ~36 million used cars are sold
 
-Not all buyers will need a tool like Odigos. The most relevant segment consists of buyers who:
-- research purchases online
+Not all buyers need assistance reviewing a quote.
+
+The most relevant segment consists of buyers who:
+- research pricing online
 - communicate with dealers digitally
-- actively compare pricing
-- seek advice before committing to a deal
+- compare offers from multiple dealers
+- seek external validation before committing
 
-This segment likely represents 10–20 million buyers annually.
+This segment likely represents millions of buyers per year.
 
-Even a very small share of these buyers represents a meaningful opportunity. For example, capturing a fraction of high-intent buyers through organic search traffic could support a multi-million-dollar business.
-
----
-
-## Pricing & Economics
-
-Odigos uses a one-time transaction model.
-
-**Price: $49 per full analysis**
-
-The pricing aligns with the customer's behavior: most people buy a car infrequently and need help reviewing a specific quote rather than a recurring service.
-
-Estimated economics per transaction:
-- OpenAI analysis cost: ~$0.02–$0.10
-- Stripe processing: ~3%
-- Gross margin: approximately 90–95%
-
-There is no inventory, fulfillment cost, or customer onboarding overhead.
+The product does not need to capture a large percentage of all car buyers to become a meaningful business.
 
 ---
 
-## Distribution
+## Distribution Strategy
 
-Odigos relies primarily on high-intent organic search traffic.
+The primary distribution channel is high-intent search traffic.
 
-SEO articles target queries where buyers are actively seeking help, such as:
+Odigos publishes articles targeting queries such as:
 - "dealer doc fee by state"
 - "are dealer add-ons mandatory"
-- "how to calculate out-the-door price"
+- "dealer won't give out the door price"
 - "dealer added fees after agreement"
 
-These queries tend to occur late in the buying process, when the buyer already has a quote and needs clarification quickly.
+These searches often occur when buyers are already dealing with a dealership and are trying to verify pricing practices.
 
-Each article directs readers to the analyzer.
+Articles act as the entry point to the analyzer.
 
-Secondary distribution sources include:
-- organic sharing between buyers comparing deals
-- discussion forums where buyers seek advice (e.g., Reddit, personal finance communities)
+Secondary discovery sources include:
+- community forums
+- personal finance communities
+- word-of-mouth sharing among buyers comparing deals
 
-The product is designed so that a user can paste a deal and receive an answer immediately, which makes it naturally shareable.
+However, SEO is a slow, compounding channel, and early traction depends on search indexing and ranking improvements over time.
 
 ---
 
 ## Competitive Landscape
 
-Several products provide information about car pricing, but none focus on analyzing a buyer's specific dealer quote.
+Odigos competes less with traditional car-pricing tools and more with informal advice channels.
 
-| Product | Model | What They Provide | Gap |
-|---|---|---|---|
-| TrueCar / Edmunds / KBB | Lead generation / advertising | Market price data | Do not analyze the buyer's quote |
-| CarEdge | Subscription coaching | Human advice and negotiation help | High cost and slower turnaround |
-| Dealer websites | Marketing | Dealer-controlled pricing information | Conflict of interest |
-| Online forums | Community discussion | Informal advice | Slow and inconsistent |
+| Alternative | What Users Do | Limitations |
+|---|---|---|
+| Reddit / forums | Post their deal and wait for feedback | slow, inconsistent advice |
+| Friends or family | Ask someone with car experience | limited expertise |
+| Dealer assurances | Trust the salesperson | conflict of interest |
+| DIY research | Read articles and guess | requires interpretation |
 
-The most common alternative is for buyers to paste their deal into forums or ask friends for opinions. Odigos automates this process by providing an immediate structured review.
+Odigos automates what many buyers already do: asking someone to sanity-check a quote.
 
----
-
-## Data Advantage
-
-Each analysis contributes anonymized pricing signals to Odigos' internal dataset.
-
-Over time this dataset can reveal patterns such as:
-- typical dealer documentation fees by state
-- frequency of dealer add-ons
-- how often quotes omit out-the-door pricing
-- common negotiation tactics
-
-These insights can improve the analysis engine and support data-driven content and reports about dealership pricing practices.
-
-As the dataset grows, the tool becomes more informative for future users.
+The difference is speed and structure.
 
 ---
 
-## Business Model Summary
+## The Impact of LLMs (ChatGPT, Claude, etc.)
 
-| Metric | Target |
-|---|---|
-| Price | $49 per analysis |
-| Gross margin | ~90–95% |
-| Customer acquisition | primarily organic search |
-| Payback period | immediate |
-| Recurring revenue | none (transaction model) |
+General LLMs introduce both risk and opportunity for Odigos.
 
-The business grows by increasing the number of buyers who discover the tool during the car-shopping process.
+### Why LLMs are a real substitute
+
+A buyer could paste a dealer quote into ChatGPT and ask: "Is this deal good?"
+
+The model may produce a reasonable explanation.
+
+Because LLM access is widespread and often free, this creates a natural substitute product. In many cases, users will try ChatGPT first.
+
+### Why LLMs do not fully replace Odigos
+
+However, general LLMs have limitations for this use case.
+
+**1. Prompting skill requirement**
+
+ChatGPT requires users to know what questions to ask. Many buyers do not know what elements of a quote matter or what signals to request. Odigos provides a structured analysis without prompting.
+
+**2. Structured output**
+
+Odigos returns a consistent format: verdict, detected issues, missing information, negotiation response. ChatGPT responses are less standardized and may vary significantly depending on the prompt.
+
+**3. Domain-specific logic**
+
+Odigos can embed: dealership-specific pricing patterns, fee terminology detection, known negotiation tactics, future benchmark comparisons. A general LLM is not optimized for this specific domain.
+
+**4. Reduced friction**
+
+Odigos supports file uploads, allowing users to submit: screenshots, photos, PDFs, dealer worksheets. This removes the need to copy text or format prompts.
+
+**5. Data accumulation**
+
+Each analysis contributes anonymized pricing signals to Odigos' internal dataset. Over time this dataset can reveal patterns such as: typical dealer documentation fees by state, frequency of add-ons, how often quotes omit out-the-door pricing. These insights can improve analysis quality and support data-driven content. General LLMs do not accumulate user-specific industry datasets in the same way.
+
+### Net effect of LLMs
+
+LLMs lower the barrier to creating tools like Odigos. However, they also increase demand for domain-specific applications built on top of them.
+
+The long-term value of Odigos is not simply using AI, but applying it to a narrow consumer protection use case and accumulating structured pricing intelligence over time.
+
+---
+
+## Economics
+
+Odigos uses a simple transaction model.
+
+**Price:** $49 per analysis unlock
+
+Typical costs per transaction:
+- AI analysis: ~$0.02–$0.10
+- payment processing: ~3%
+
+**Estimated gross margin: ~90–95%**
+
+The model avoids:
+- subscription friction
+- human support overhead
+- fulfillment costs
+
+Revenue scales primarily with traffic and conversion rate.
+
+---
+
+## Trust & Product Risks
+
+The biggest risks are not technical. They are behavioral:
+
+- **Trust:** Buyers must believe the analysis is credible before paying.
+- **Expectations:** Some users may expect legal or financial certainty from the tool.
+- **Input quality:** Blurry photos or incomplete quotes may limit analysis accuracy.
+
+The product is best positioned as a decision-support tool, not a guarantee.
+
+---
+
+## Data Flywheel
+
+Each submission contributes anonymized signals about dealership pricing practices.
+
+Over time this enables:
+- improved detection logic
+- benchmark statistics
+- data-driven consumer guides
+- stronger authority in search results
+
+This creates a data flywheel where product usage strengthens the system for future users.
 
 ---
 
@@ -163,18 +236,33 @@ Odigos does not attempt to be:
 - a VIN pricing database
 - a dealership marketplace
 - a negotiation coaching service
-- a subscription analytics product
+- a legal opinion
 
-It is intentionally narrow: a fast second opinion on a dealer quote.
-
-The product is independent and not affiliated with dealerships, manufacturers, or lenders.
+Its purpose is narrowly defined: a fast second opinion on a dealer quote.
 
 ---
 
 ## Current State
 
-The product is live and functional.
+The product is live.
 
-The analyzer supports text input and file uploads, processes quotes using AI analysis, and returns structured results. The payment flow is integrated with Stripe, and submissions are stored with PII-redacted text for short-term quality review.
+Core components include:
+- paste + upload quote analysis
+- AI-driven review engine
+- Stripe payment integration
+- PII-redacted submission storage
+- SEO content targeting buyer intent queries
 
-The site currently includes a set of SEO articles targeting high-intent buyer queries. The next milestone is validating organic traffic and early paid conversions from those pages.
+The immediate milestone is validating that organic search traffic converts into paid analyses.
+
+---
+
+## Near-Term Milestones
+
+Key validation metrics over the next year include:
+- organic traffic growth
+- analyzer submissions
+- free → paid conversion rate
+- early evidence of repeat pricing patterns in submissions
+
+These signals determine whether the product has strong product-market fit.
