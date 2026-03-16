@@ -19,20 +19,19 @@ The system returns a structured report including:
 
 The product is intentionally narrow: it provides a fast second opinion on a specific dealer quote.
 
----
-
 ## Product Tiers
 
 Odigos uses a free → paid unlock model.
 
-**Free**
+Free
 - GO / NO-GO verdict
 - high-level issue summary
 
-Purpose: Give the user an immediate answer to the question: "Does this deal look safe or suspicious?"
+Purpose:
+Give the user an immediate answer to the question:
+"Does this deal look safe or suspicious?"
 
-**Paid ($49 one-time)**
-
+Paid ($49 one-time)
 Unlocks the full report:
 - detailed reasoning
 - missing information checklist
@@ -40,11 +39,10 @@ Unlocks the full report:
 - deeper explanation of detected tactics
 - confidence assessment
 
-Purpose: Help the buyer respond to the dealer and correct the deal.
+Purpose:
+Help the buyer respond to the dealer and correct the deal.
 
 This model mirrors the buyer's behavior: the purchase is episodic and high-stakes, so a single-transaction payment aligns better than a subscription.
-
----
 
 ## The Core Problem
 
@@ -61,11 +59,10 @@ These practices are not rare edge cases — they are common features of dealersh
 
 Most buyers suspect something is wrong but lack the expertise to identify specific problems or respond effectively, especially under time pressure during negotiations.
 
----
-
 ## The Wedge
 
-Odigos focuses on a specific moment in the buying process: the buyer already has a quote and wants a second opinion.
+Odigos focuses on a specific moment in the buying process:
+The buyer already has a quote and wants a second opinion.
 
 Typical scenario:
 1. Buyer requests pricing from a dealership.
@@ -73,11 +70,10 @@ Typical scenario:
 3. The buyer senses something is unclear or off.
 4. The buyer searches for help.
 
-Odigos sits directly in that moment and answers the question: "Is this deal safe to proceed with?"
+Odigos sits directly in that moment and answers the question:
+"Is this deal safe to proceed with?"
 
 This is a late-stage decision problem, which is why users may be willing to pay for clarity.
-
----
 
 ## Market Context
 
@@ -96,8 +92,6 @@ The most relevant segment consists of buyers who:
 This segment likely represents millions of buyers per year.
 
 The product does not need to capture a large percentage of all car buyers to become a meaningful business.
-
----
 
 ## Distribution Strategy
 
@@ -120,8 +114,6 @@ Secondary discovery sources include:
 
 However, SEO is a slow, compounding channel, and early traction depends on search indexing and ranking improvements over time.
 
----
-
 ## Competitive Landscape
 
 Odigos competes less with traditional car-pricing tools and more with informal advice channels.
@@ -133,11 +125,10 @@ Odigos competes less with traditional car-pricing tools and more with informal a
 | Dealer assurances | Trust the salesperson | conflict of interest |
 | DIY research | Read articles and guess | requires interpretation |
 
-Odigos automates what many buyers already do: asking someone to sanity-check a quote.
+Odigos automates what many buyers already do:
+asking someone to sanity-check a quote.
 
 The difference is speed and structure.
-
----
 
 ## The Impact of LLMs (ChatGPT, Claude, etc.)
 
@@ -145,55 +136,78 @@ General LLMs introduce both risk and opportunity for Odigos.
 
 ### Why LLMs are a real substitute
 
-A buyer could paste a dealer quote into ChatGPT and ask: "Is this deal good?"
+A buyer could paste a dealer quote into ChatGPT and ask:
+"Is this deal good?"
 
 The model may produce a reasonable explanation.
 
-Because LLM access is widespread and often free, this creates a natural substitute product. In many cases, users will try ChatGPT first.
+Because LLM access is widespread and often free, this creates a natural substitute product.
+In many cases, users will try ChatGPT first.
 
 ### Why LLMs do not fully replace Odigos
 
 However, general LLMs have limitations for this use case.
 
-**1. Prompting skill requirement**
+1. Prompting skill requirement
+ChatGPT requires users to know what questions to ask.
+Many buyers do not know what elements of a quote matter or what signals to request.
+Odigos provides a structured analysis without prompting.
 
-ChatGPT requires users to know what questions to ask. Many buyers do not know what elements of a quote matter or what signals to request. Odigos provides a structured analysis without prompting.
+2. Structured output
+Odigos returns a consistent format:
+- verdict
+- detected issues
+- missing information
+- negotiation response
 
-**2. Structured output**
+ChatGPT responses are less standardized and may vary significantly depending on the prompt.
 
-Odigos returns a consistent format: verdict, detected issues, missing information, negotiation response. ChatGPT responses are less standardized and may vary significantly depending on the prompt.
+3. Domain-specific logic
+Odigos can embed:
+- dealership-specific pricing patterns
+- fee terminology detection
+- known negotiation tactics
+- future benchmark comparisons
 
-**3. Domain-specific logic**
+A general LLM is not optimized for this specific domain.
 
-Odigos can embed: dealership-specific pricing patterns, fee terminology detection, known negotiation tactics, future benchmark comparisons. A general LLM is not optimized for this specific domain.
+4. Reduced friction
+Odigos supports file uploads, allowing users to submit:
+- screenshots
+- photos
+- PDFs
+- dealer worksheets
 
-**4. Reduced friction**
+This removes the need to copy text or format prompts.
 
-Odigos supports file uploads, allowing users to submit: screenshots, photos, PDFs, dealer worksheets. This removes the need to copy text or format prompts.
+5. Data accumulation
+Each analysis contributes anonymized pricing signals to Odigos' internal dataset.
+Over time this dataset can reveal patterns such as:
+- typical dealer documentation fees by state
+- frequency of add-ons
+- how often quotes omit out-the-door pricing
 
-**5. Data accumulation**
-
-Each analysis contributes anonymized pricing signals to Odigos' internal dataset. Over time this dataset can reveal patterns such as: typical dealer documentation fees by state, frequency of add-ons, how often quotes omit out-the-door pricing. These insights can improve analysis quality and support data-driven content. General LLMs do not accumulate user-specific industry datasets in the same way.
+These insights can improve analysis quality and support data-driven content.
+General LLMs do not accumulate user-specific industry datasets in the same way.
 
 ### Net effect of LLMs
 
-LLMs lower the barrier to creating tools like Odigos. However, they also increase demand for domain-specific applications built on top of them.
+LLMs lower the barrier to creating tools like Odigos.
+However, they also increase demand for domain-specific applications built on top of them.
 
 The long-term value of Odigos is not simply using AI, but applying it to a narrow consumer protection use case and accumulating structured pricing intelligence over time.
-
----
 
 ## Economics
 
 Odigos uses a simple transaction model.
 
-**Price:** $49 per analysis unlock
+Price: $49 per analysis unlock
 
 Typical costs per transaction:
 - AI analysis: ~$0.02–$0.10
 - payment processing: ~3%
 
-**Estimated gross margin: ~90–95%**
+Estimated gross margin: ~90–95%
 
 The model avoids:
 - subscription friction
@@ -202,19 +216,21 @@ The model avoids:
 
 Revenue scales primarily with traffic and conversion rate.
 
----
-
 ## Trust & Product Risks
 
-The biggest risks are not technical. They are behavioral:
+The biggest risks are not technical.
+They are behavioral:
 
-- **Trust:** Buyers must believe the analysis is credible before paying.
-- **Expectations:** Some users may expect legal or financial certainty from the tool.
-- **Input quality:** Blurry photos or incomplete quotes may limit analysis accuracy.
+Trust
+Buyers must believe the analysis is credible before paying.
+
+Expectations
+Some users may expect legal or financial certainty from the tool.
+
+Input quality
+Blurry photos or incomplete quotes may limit analysis accuracy.
 
 The product is best positioned as a decision-support tool, not a guarantee.
-
----
 
 ## Data Flywheel
 
@@ -228,8 +244,6 @@ Over time this enables:
 
 This creates a data flywheel where product usage strengthens the system for future users.
 
----
-
 ## What Odigos Is Not
 
 Odigos does not attempt to be:
@@ -238,9 +252,8 @@ Odigos does not attempt to be:
 - a negotiation coaching service
 - a legal opinion
 
-Its purpose is narrowly defined: a fast second opinion on a dealer quote.
-
----
+Its purpose is narrowly defined:
+a fast second opinion on a dealer quote.
 
 ## Current State
 
@@ -254,8 +267,6 @@ Core components include:
 - SEO content targeting buyer intent queries
 
 The immediate milestone is validating that organic search traffic converts into paid analyses.
-
----
 
 ## Near-Term Milestones
 
