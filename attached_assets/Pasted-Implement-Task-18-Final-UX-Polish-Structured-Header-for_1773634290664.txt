@@ -1,0 +1,288 @@
+Implement Task #18 — Final UX Polish + Structured Header for Odigos.
+
+This is a small follow-up UX refinement pass after the previous polish release.
+
+The goal is to resolve the final UI nitpicks identified in the production UX audit and improve the structural presentation of the Odigos logo.
+
+This is NOT a redesign and NOT a feature project.
+
+PRIMARY GOAL
+Finish the remaining usability and credibility improvements:
+
+1. Slight crowding of example buttons on mobile
+2. Overly wide text blocks in analyzer results on large monitors
+3. Missing breadcrumbs on article pages
+4. Article prose width still too wide on desktop
+5. Logo presentation feels visually “floating” — introduce a structured header container that anchors the interface
+6. Add a small context section above the analyzer textarea to clearly explain what the tool does
+
+NON-NEGOTIABLE CONSTRAINTS
+
+- Do NOT change OpenAI prompts
+- Do NOT change analyzer logic
+- Do NOT change scoring or rule engine
+- Do NOT change Stripe flow or pricing
+- Do NOT add features, accounts, or dashboards
+- Do NOT change frameworks (remain Vite + Express)
+- Do NOT add dependencies
+- Do NOT materially rewrite existing page copy
+- Do NOT modify server routes except where explicitly noted
+- Preserve existing SEO metadata
+- Preserve current dark theme and visual system
+
+All work must be purely layout, typography, and component structure.
+
+SUCCESS CRITERIA
+
+• Mobile example buttons no longer feel cramped  
+• Analyzer explanation text is readable on large screens (~700–800px width)  
+• Article pages include simple breadcrumbs  
+• Article prose is constrained to readable width (~65ch)  
+• The analyzer page and article pages have a proper full-width header container  
+• The logo no longer appears as a floating element on the page  
+• The analyzer page clearly explains what the user should do before the textarea  
+• The interface feels calm, structured, and trustworthy
+
+────────────────
+1) Create a structured application header
+────────────────
+
+Create a proper full-width header component.
+
+File:
+client/src/components/SiteHeader.tsx
+
+Requirements:
+
+• full width container  
+• subtle bottom border  
+• calm spacing  
+• logo aligned left  
+• navigation links aligned right  
+
+Layout guidance:
+
+header  
+  width: full  
+  padding: px-6 py-3  
+  border-bottom border-border  
+  display flex  
+  align-items center  
+  justify-between  
+
+Left side:
+Odigos logo
+
+Right side:
+simple navigation links
+
+Links:
+
+Scenario Hub → /dealer-pricing-problems  
+How It Works → link to landing page section or /#how-it-works
+
+Style:
+
+text-sm  
+text-muted-foreground  
+hover:text-foreground  
+
+Header height target: ~56–64px.
+
+Do NOT introduce a heavy nav bar.
+
+────────────────
+2) Fix the logo presentation
+────────────────
+
+The logo must no longer appear as a floating white box.
+
+Requirements:
+
+• use a transparent PNG or SVG asset if available  
+• remove any white background  
+• logo height: h-8 md:h-9 (32–36px)  
+• logo aligned left within the header  
+
+Logo must link to:
+
+/
+
+This provides the expected “click logo to go home” behavior.
+
+────────────────
+3) Integrate header into pages
+────────────────
+
+Apply the SiteHeader component to:
+
+client/src/pages/home.tsx  
+client/src/components/ArticleLayout.tsx  
+
+Remove the previous floating logo usage.
+
+Ensure the header appears consistently across:
+
+• analyzer page  
+• scenario hub  
+• all article pages  
+
+────────────────
+4) Fix crowded example buttons on mobile
+────────────────
+
+File:
+client/src/pages/home.tsx
+
+The example buttons:
+
+“Try a good deal example”  
+“Try a bad deal example”
+
+Currently feel cramped on narrow mobile screens.
+
+Fix with responsive layout:
+
+mobile:
+flex-col
+
+desktop:
+flex-row
+
+Add small vertical spacing.
+
+Button hierarchy must remain:
+
+good example → variant="ghost"  
+bad example → variant="outline"
+
+Both must remain clearly secondary to the main textarea input.
+
+────────────────
+5) Constrain analyzer explanation text width
+────────────────
+
+File:
+client/src/pages/home.tsx
+
+Locate long explanatory blocks such as:
+
+“What This Deal Likely Means”  
+analysis explanation paragraphs
+
+Currently they stretch across the full result card on large monitors.
+
+Wrap these sections in a container with:
+
+max-w-[750px]  
+mx-auto
+
+Do NOT shrink tables or structured data sections.
+
+Only constrain narrative reading text.
+
+────────────────
+6) Add breadcrumbs to article pages
+────────────────
+
+File:
+client/src/components/ArticleLayout.tsx
+
+Add a breadcrumb trail above the article title.
+
+Structure:
+
+Home → Dealer Pricing Problems → Article Name
+
+Links:
+
+Home → /  
+Dealer Pricing Problems → /dealer-pricing-problems  
+
+The final breadcrumb (current article) should not be clickable.
+
+Style:
+
+text-sm  
+text-muted-foreground  
+mb-6  
+
+Breadcrumbs should be subtle and not dominate the layout.
+
+────────────────
+7) Constrain article prose width
+────────────────
+
+File:
+client/src/components/ArticleLayout.tsx
+
+Ensure article body text is constrained to comfortable reading width.
+
+Target width:
+
+~65ch or ~700px
+
+Implementation example:
+
+max-w-[700px]  
+mx-auto  
+
+This constraint should apply to the main article prose container.
+
+Utility boxes, CTA blocks, and interactive elements may remain wider if necessary.
+
+────────────────
+8) Add analyzer context section
+────────────────
+
+File:
+client/src/pages/home.tsx
+
+Add a small context section above the textarea input that explains what the user should do.
+
+Place this immediately below the header and above the analyzer textarea.
+
+Structure:
+
+Heading:
+“Analyze a Dealer Quote”
+
+Description:
+“Paste a dealer quote, email, or text message. Odigos checks for missing out-the-door pricing, hidden fees, and common dealership tactics.”
+
+Styling guidance:
+
+max-w-2xl mx-auto  
+mb-6  
+
+Heading:
+text-xl font-semibold  
+
+Description:
+text-sm text-muted-foreground mt-1
+
+This should feel like calm instruction, not marketing copy.
+
+────────────────
+FILES EXPECTED TO CHANGE
+
+client/src/components/SiteHeader.tsx (new)
+
+client/src/pages/home.tsx
+
+client/src/components/ArticleLayout.tsx
+
+Possibly minor updates to article pages if needed for breadcrumb titles.
+
+────────────────
+OUTPUT WHEN COMPLETE
+
+1. List every file changed
+2. Describe how the header was implemented
+3. Confirm the logo asset no longer has a white background
+4. Confirm how mobile button crowding was fixed
+5. Confirm analyzer text width constraint
+6. Confirm breadcrumb implementation
+7. Confirm article prose width constraint
+8. Confirm analyzer context section placement
+9. Confirm no analyzer logic, Stripe flow, pricing, or routing behavior changed
