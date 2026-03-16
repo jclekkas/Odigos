@@ -1,12 +1,8 @@
-import OpenAI from "openai";
 import { createRequire } from "module";
+import { openai } from "./openaiClient";
+
 const require = createRequire(import.meta.url);
 const pdfParse = require("pdf-parse") as (buffer: Buffer) => Promise<{ text: string }>;
-
-const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-});
 
 const IMAGE_MIME_TYPES = ["image/png", "image/jpeg", "image/webp"];
 const PDF_MIME_TYPE = "application/pdf";
@@ -47,15 +43,14 @@ export async function extractTextFromFile(buffer: Buffer, mimetype: string): Pro
       const data = await pdfParse(buffer);
       text = data.text?.trim() ?? "";
     } catch {
-      text = "";
+      throw new Error("Could not parse PDF file");
     }
 
-    if (text.length >= 50) {
-      return text;
+    if (text.length < 50) {
+      throw new Error("PDF contained insufficient extractable text");
     }
 
-    const fallback = await extractTextViaVision(buffer, "image/png");
-    return fallback.trim();
+    return text;
   }
 
   throw new Error(`Unsupported file type: ${mimetype}`);

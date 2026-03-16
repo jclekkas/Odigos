@@ -711,6 +711,10 @@ export default function Home() {
                         <Textarea
                           {...field}
                           onFocus={() => handleFormStart()}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            if (uploadError) setUploadError(null);
+                          }}
                           placeholder="Paste dealer texts, emails, or quotes here..."
                           className="min-h-48 text-base resize-y"
                           data-testid="input-dealer-text"

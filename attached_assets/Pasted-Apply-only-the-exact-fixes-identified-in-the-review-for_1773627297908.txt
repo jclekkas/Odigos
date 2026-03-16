@@ -1,0 +1,120 @@
+Apply only the exact fixes identified in the review for Upload v1. Do not make any other changes.
+
+This is a surgical patch, not a redesign or cleanup pass.
+
+STATUS
+Upload v1 is not safe yet.
+There is:
+- 1 critical bug
+- 1 medium-risk issue
+- 2 minor cleanups
+
+Your job is to fix only those items and preserve everything else exactly as implemented.
+
+FILES IN SCOPE
+- server/extractText.ts
+- server/routes.ts
+- client/src/pages/home.tsx
+- optionally one small shared server helper file if needed for the OpenAI client cleanup
+
+DO NOT TOUCH
+- analysis prompt
+- analysis pipeline
+- result experience
+- pricing or plans
+- checkout
+- routes unrelated to /api/extract-text
+- article pages
+- landing page design
+- navigation
+- any unrelated refactor
+
+REQUIRED FIXES
+
+1) CRITICAL FIX — remove broken PDF vision fallback
+Problem:
+In server/extractText.ts, when pdf-parse returns sparse text, the code currently falls back by sending the raw PDF buffer to the vision helper as if it were image/png. That is invalid and will not work reliably.
+
+Required change:
+- Do NOT attempt vision fallback for PDFs
+- If pdf-parse returns insufficient extracted text for a PDF, throw a descriptive error instead
+- Let the route return a calm 422 message to the client
+
+Implementation intent:
+Replace the current PDF fallback behavior with something equivalent to:
+- if trimmed extracted PDF text is under the threshold, throw an error like:
+  "PDF contained insufficient extractable text"
+
+Important:
+- Keep vision extraction only for actual image files
+- Do not invent a new PDF rendering pipeline
+- Do not add new dependencies
+
+2) MEDIUM-RISK FIX — catch Multer file-size errors with calm copy
+Problem:
+If a user bypasses client-side validation and uploads a file over 10 MB, Multer throws before the async route handler runs. That means the current calm message is bypassed and Express returns a technical error string.
+
+Required change:
+Wrap the multer middleware invocation so Multer errors are intercepted and converted into calm JSON responses before the main handler runs.
+
+Desired behavior:
+- LIMIT_FILE_SIZE returns a calm message like:
+  "That file is too large to process. Please use a file under 10 MB."
+- Other multer errors return a generic calm message like:
+  "Something went wrong processing the file."
+
+Important:
+- Keep the same endpoint: POST /api/extract-text
+- Keep memoryStorage()
+- Keep no-disk-write behavior
+- Keep server-side MIME validation in place
+
+3) MINOR CLEANUP — remove duplicate OpenAI client source-of-truth
+Problem:
+extractText.ts currently creates its own OpenAI client even though the app already has equivalent client setup elsewhere.
+
+Required change:
+Make the OpenAI client come from a single shared place.
+
+Acceptable implementations:
+- create a tiny shared file like server/openaiClient.ts and import it where needed
+OR
+- another equally small shared approach
+
+Important:
+- Keep this minimal
+- Do not refactor unrelated server architecture
+- Do not change model choice unless absolutely required by the current codebase
+
+4) MINOR CLEANUP — clear uploadError when user manually edits textarea
+Problem:
+If upload extraction fails and uploadError is shown, then the user manually types or pastes into the textarea, the old uploadError remains visible.
+
+Required change:
+- Clear uploadError when the user manually changes the textarea content
+- Preserve all existing textarea behavior
+- Do not convert this into a new component or broader form refactor
+
+SUCCESS CRITERIA
+After your patch:
+- Image uploads still work as before
+- PDFs with valid embedded text still work
+- PDFs with insufficient extractable text return the calm user-facing 422 path
+- Oversized uploads return calm copy, not technical Multer errors
+- Files are still never written to disk
+- Existing paste-text flow remains unchanged
+- Textarea remains editable after upload
+- uploadError disappears if the user starts manually editing the textarea
+- Build passes with no TypeScript errors
+
+IMPORTANT DECISION RULE
+Make the smallest safe patch.
+Do not broaden scope.
+Do not “improve” anything beyond these exact items.
+
+OUTPUT FORMAT
+When done, return:
+1. Exact files changed
+2. Exact fixes applied
+3. Confirmation that nothing outside Upload v1 was changed
+4. Short QA checklist for the patched cases

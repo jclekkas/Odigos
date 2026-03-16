@@ -1,12 +1,12 @@
-import type { Express } from "express";
+import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
-import OpenAI from "openai";
 import multer from "multer";
 import { analysisRequestSchema, analysisResponseSchema, type AnalysisResponse } from "@shared/schema";
 import { applyRuleEngine } from "./ruleEngine";
 import { getStripeClient, isStripeConfigured } from "./stripeClient";
 import { trackEvent } from "./metrics";
 import { extractTextFromFile } from "./extractText";
+import { openai } from "./openaiClient";
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -15,10 +15,14 @@ const upload = multer({
 
 const ALLOWED_MIME_TYPES = ["image/png", "image/jpeg", "image/webp", "application/pdf"];
 
-const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-});
+function runUploadMiddleware(req: Request, res: Response): Promise<void> {
+  return new Promise((resolve, reject) => {
+    upload.single("file")(req, res, (err) => {
+      if (err) return reject(err);
+      resolve();
+    });
+  });
+}
 
 console.log("OpenAI configured with base URL:", process.env.AI_INTEGRATIONS_OPENAI_BASE_URL ? "set" : "not set");
 console.log("OpenAI API key:", process.env.AI_INTEGRATIONS_OPENAI_API_KEY ? "set" : "not set");
@@ -273,7 +277,16 @@ GO/NO-GO/NEED-MORE-INFO:
     }
   });
 
-  app.post("/api/extract-text", upload.single("file"), async (req, res) => {
+  app.post("/api/extract-text", async (req, res) => {
+    try {
+      await runUploadMiddleware(req, res);
+    } catch (err: any) {
+      const message = err?.code === "LIMIT_FILE_SIZE"
+        ? "That file is too large to process. Please use a file under 10 MB."
+        : "Something went wrong processing the file.";
+      return res.status(400).json({ message });
+    }
+
     try {
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded." });
@@ -291,7 +304,7 @@ GO/NO-GO/NEED-MORE-INFO:
       } catch (err) {
         console.error("Text extraction error:", err);
         return res.status(422).json({
-          message: "We couldn't read that file. Try pasting the text or uploading a clearer image.",
+          message: "We couldn't read enough text from that file. Try pasting the text or uploading a clearer image.",
         });
       }
 
