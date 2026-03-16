@@ -1,0 +1,84 @@
+Yes — create this as a single tightly scoped follow-up task.
+
+#24a — Authority Framing + CTA Reinforcement
+
+What & Why
+A small follow-up pass to close the remaining authority/clarity gap from Task #24.
+Most of the authority pass is already complete. The remaining work is:
+1. add a concise authority framing line near the landing-page hero so the product role is immediately clear
+2. reinforce the analyzer submit area so the primary CTA reads more clearly as the main action
+
+This is a refinement task only.
+Do not rework completed Task #24 changes unless something is genuinely off at the rendered level.
+
+Done looks like
+- A concise authority framing line appears above the landing-page hero headline
+- The framing line is calm, restrained, and explanatory — not promotional
+- The analyzer submit area feels more clearly separated from the Optional Details section above it
+- The submit CTA reads as the primary action without changing form structure or behavior
+- Existing Task #24 improvements remain intact
+- No pricing, routing, logic, prompt, or substantive copy changes
+
+Out of scope
+- Reworking the header/logo unless a real rendered issue is found
+- Reworking the static preview block unless a real rendered issue is found
+- Pricing changes
+- Routing changes
+- Analyzer logic or prompt changes
+- Copy rewrites beyond the single authority framing line
+- New components, pages, or redesigns
+
+Tasks
+
+1. Authority framing line — landing page
+Add one concise authority framing line above the hero H1 in client/src/pages/landing.tsx.
+
+Requirements:
+- Use a restrained eyebrow-style text treatment
+- No pill background
+- No bright accent color
+- No decorative icon
+- Keep it typographic only
+- Style direction: uppercase or small-caps feel is acceptable, tracking slightly wider, text-xs or similar, muted-foreground
+- It should read as calm explanatory framing, not marketing copy
+
+Preferred copy direction:
+Independent analysis for car buyers
+
+If that exact line does not fit the surrounding copy rhythm, use the closest equivalent that preserves the same meaning and tone.
+
+2. Analyzer submit CTA reinforcement — analyzer page
+In client/src/pages/home.tsx, reinforce the submit area visually so it reads more clearly as the primary action beneath the Optional Details section.
+
+Requirements:
+- Preserve the current form structure and behavior
+- Preserve field names and submission logic
+- Add restrained visual separation between the Optional Details area and the submit area
+- Acceptable solutions include:
+  - a subtle top separator line
+  - a slight padding increase above the button area
+  - slightly stronger grouping around the submit area
+- Keep the effect quiet and structural, not flashy
+
+Goal:
+The submit button should feel like the clear final action, even though it sits below the Optional Details collapsible.
+
+3. Rendered audit confirmation
+Quickly confirm at the rendered level that the existing Task #24 work remains aligned with spec:
+- header/logo still materially stronger
+- analyzer container still reads as the engine of the page
+- output preview block still feels editorial and realistic
+
+Do not rework these unless something is genuinely off.
+
+Relevant files
+- client/src/pages/landing.tsx
+- client/src/pages/home.tsx
+
+Output format
+At the end provide:
+1. exact files changed
+2. exact authority framing line added
+3. exact submit-area reinforcement added
+4. confirmation that prior Task #24 work was preserved
+5. confirmation that pricing, routing, analyzer logic, and prompts were untouched

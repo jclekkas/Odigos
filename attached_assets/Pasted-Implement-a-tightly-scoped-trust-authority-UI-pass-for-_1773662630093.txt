@@ -1,0 +1,206 @@
+Implement a tightly scoped trust/authority UI pass for Odigos.
+
+This is NOT a redesign.
+This is NOT a rebrand.
+This is NOT a logic change.
+This is NOT a copy rewrite.
+
+The goal is to implement 4 specific UI patterns that make Odigos feel calmer, more authoritative, and more trustworthy — without changing pricing, routing, analyzer logic, prompts, or the overall product flow.
+
+The 4 required patterns are:
+
+1. Masthead Header
+2. Engine Box Analyzer
+3. Proof-of-Output Preview
+4. Authority Framing Line
+
+Do not improvise beyond these.
+Do not introduce flashy startup aesthetics.
+Do not add gradients, glow effects, stock imagery, illustrations, charts, or dashboard-style mockups.
+Do not convert the site to light mode.
+Do not create new pages.
+Do not remove any educational content.
+
+DESIGN INTENT
+
+Odigos should feel:
+- calm
+- serious
+- restrained
+- trustworthy
+- consumer-protective
+- editorial/fintech
+- not playful
+- not flashy
+- not "AI startup"
+
+Keep the current dark-mode system, but execute it more professionally:
+- crisp borders
+- stronger hierarchy
+- cleaner spacing
+- better section rhythm
+- stronger brand anchor
+
+REQUIRED TASK 1 — MASTHEAD HEADER
+
+Update the shared header in client/src/components/SiteHeader.tsx.
+
+Problem:
+The current header/logo treatment is too weak. The logo feels too small, the top of the page does not feel anchored, and the header reads more like a generic app navbar than a serious brand masthead.
+
+Requirements:
+- Increase the visual authority of the logo materially, not trivially
+- Increase logo scale approximately 20–35% from current treatment
+- Rebalance header spacing so the larger logo does not feel cramped
+- Increase vertical padding in the header container
+- Ensure the logo aligns exactly with the main page content container/grid
+- Slightly strengthen the header’s bottom border/backdrop separation from page content
+- Keep the header calm and restrained
+- Preserve existing navigation behavior and layout logic
+- Preserve responsive behavior, but ensure the logo does not become tiny or cramped on mobile
+- The end result should make the brand feel intentionally placed and more premium
+
+Do NOT:
+- invent a new brand mark
+- add decorative effects
+- radically change nav structure
+
+Success criteria for Task 1:
+- the logo is noticeably larger
+- the header feels more stable and deliberate
+- the top-left brand presence clearly anchors the page
+
+REQUIRED TASK 2 — ENGINE BOX ANALYZER
+
+Update the analyzer section in client/src/pages/home.tsx (analyzer section).
+
+Problem:
+The analyzer is the product, but it does not assert itself enough as the primary functional object on the page.
+
+Requirements:
+- Give the analyzer container a stronger but restrained visual presence
+- Use slightly crisper border/surface treatment so it feels more intentional than surrounding content
+- Increase the heading size/weight above the analyzer slightly so the tool feels more important
+- Tighten spacing and grouping between the textarea and submit button so the CTA hierarchy is clearer
+- Keep the analyzer simple, clean, and serious
+- It should feel like the engine of the page, not just another card
+
+Do NOT:
+- change form logic
+- change field names
+- change submission behavior
+- add extra steps or friction
+- make it look like a flashy SaaS widget
+
+Success criteria for Task 2:
+- the analyzer is visually the focal functional object
+- its container feels more deliberate than surrounding sections
+- the CTA hierarchy is clearer
+
+REQUIRED TASK 3 — PROOF-OF-OUTPUT PREVIEW
+
+Update client/src/pages/landing.tsx.
+
+Add a static example output preview block on the landing page.
+Place it in a sensible location near conversion-oriented content, such as before or after pricing.
+
+Problem:
+Users currently have to imagine what Odigos returns. This creates trust friction.
+
+Requirements:
+- Add a short static sample-output block showing what Odigos analysis looks like
+- Include:
+  - a verdict label/chip such as “RED / NO-GO”
+  - 2–3 concise detected issues
+  - one short realistic explanatory line
+- This should resemble an actual excerpt of Odigos output
+- Keep it editorial and product-real
+- It should look like a sample result excerpt, not a dashboard, not a browser mockup, not a decorative card
+- Keep it compact and credible
+
+Example content direction:
+Verdict: RED / NO-GO
+Issues detected:
+- Missing out-the-door price
+- Dealer add-ons presented as mandatory
+- Monthly payment framing without total cost
+Short note:
+“This quote leaves out the full price and uses common dealership framing that makes comparison harder.”
+
+Do NOT:
+- add charts
+- add fake analytics
+- add browser chrome
+- add generic SaaS UI
+- add decorative icons unless the current design system already uses them very sparingly
+
+Success criteria for Task 3:
+- a first-time visitor can immediately understand what the product output looks like
+- the preview block feels realistic and restrained
+
+REQUIRED TASK 4 — AUTHORITY FRAMING LINE
+
+Update client/src/pages/landing.tsx.
+
+Problem:
+“Odigos” is not a self-explanatory brand name. The page needs a concise framing line that explains what the product is in a trust-building way.
+
+Requirements:
+- Add one short authority framing line near the hero/analyzer area
+- This line should clarify the product’s role without sounding promotional or startup-like
+- Keep it concise, calm, and confidence-building
+
+Acceptable direction examples:
+- Independent analysis for car buyers
+- Spot hidden dealer pricing tactics before you go in
+- Helps buyers check quotes for hidden fees and missing pricing
+
+Use the existing copy style and choose the version that best fits the current page structure.
+Do not turn this into a large paragraph.
+Do not add hype language.
+
+GLOBAL CONSTRAINTS
+
+Do NOT:
+- change pricing
+- change analyzer logic
+- change prompts
+- change routes
+- add accounts
+- add dashboards
+- cut educational content
+- rewrite the page wholesale
+- introduce new color tokens or a parallel design system
+- introduce flashy animations, gradients, glows, or stock imagery
+
+You MAY:
+- adjust spacing
+- adjust hierarchy
+- adjust borders/surfaces
+- adjust typography scale
+- strengthen container structure
+- improve semantic/accessibility details if needed, without changing behavior
+
+FILES IN SCOPE
+- client/src/components/SiteHeader.tsx
+- client/src/pages/home.tsx
+- client/src/pages/landing.tsx
+- client/src/index.css
+
+IMPORTANT IMPLEMENTATION STANDARD
+
+Do not solve these tasks with tiny cosmetic tweaks.
+The header/logo change must be visibly stronger.
+The analyzer emphasis must be noticeable.
+The output preview must look like real product output.
+The authority line must genuinely improve first-impression clarity.
+
+OUTPUT FORMAT
+
+At the end, provide:
+1. exact files changed
+2. exact header/logo changes
+3. exact analyzer container changes
+4. exact output preview block added
+5. exact authority framing line added
+6. confirmation that pricing, routing, analyzer logic, and prompts were not changed
