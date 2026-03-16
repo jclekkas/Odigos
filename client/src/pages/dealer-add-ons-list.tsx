@@ -38,7 +38,7 @@ export default function DealerAddOnsList() {
   };
 
   return (
-    <ArticleLayout>
+    <ArticleLayout title="Dealer Add-Ons List: What Dealers Try to Sell and What You Can Refuse">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-addons-list-headline">
             Dealer Add-Ons List: What Dealers Try to Sell and What You Can Refuse
           </h1>

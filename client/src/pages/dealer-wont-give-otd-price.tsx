@@ -48,7 +48,7 @@ export default function DealerWontGiveOtdPrice() {
   };
 
   return (
-    <ArticleLayout>
+    <ArticleLayout title="Dealer Won't Give OTD Price? Here's What That Means">
           <p className="text-sm text-muted-foreground mb-4">
             <Link href="/dealer-pricing-tactics" className="underline text-foreground" data-testid="link-breadcrumb-hub">Dealer Pricing Tactics</Link> &rsaquo; This Article
           </p>

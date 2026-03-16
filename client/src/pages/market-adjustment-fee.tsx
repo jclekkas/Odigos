@@ -38,7 +38,7 @@ export default function MarketAdjustmentFee() {
   };
 
   return (
-    <ArticleLayout>
+    <ArticleLayout title="Market Adjustment Fees Explained: Can Dealers Charge Them?">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-market-adjustment-headline">
             Market Adjustment Fees Explained: Can Dealers Charge Them?
           </h1>

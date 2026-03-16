@@ -47,7 +47,7 @@ export default function OutTheDoorPrice() {
   };
 
   return (
-    <ArticleLayout>
+    <ArticleLayout title="What Is an Out-the-Door Price (OTD)? The Only Number That Matters When Buying a Car">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-otd-headline">
             What Is an Out-the-Door Price (OTD)? The Only Number That Matters When Buying a Car
           </h1>

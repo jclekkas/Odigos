@@ -48,7 +48,7 @@ export default function CalculateOutTheDoorPrice() {
   };
 
   return (
-    <ArticleLayout>
+    <ArticleLayout title="How to Calculate Out-the-Door Price on a Car">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-calc-otd-headline">
             How to Calculate Out-the-Door Price on a Car
           </h1>

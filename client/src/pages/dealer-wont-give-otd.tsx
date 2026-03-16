@@ -38,7 +38,7 @@ export default function DealerWontGiveOtd() {
   };
 
   return (
-    <ArticleLayout>
+    <ArticleLayout title="What to Do When a Dealer Won't Give You the Out-the-Door Price">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-dealer-otd-headline">
             What to Do When a Dealer Won't Give You the Out-the-Door Price
           </h1>

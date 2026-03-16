@@ -15,7 +15,7 @@ export default function CarDealerFeesExplained() {
   }, []);
 
   return (
-    <ArticleLayout>
+    <ArticleLayout title="Common Car Dealer Fees Explained: What You Should (and Shouldn't) Pay">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-fees-headline">
             Common Car Dealer Fees Explained: What You Should (and Shouldn't) Pay
           </h1>

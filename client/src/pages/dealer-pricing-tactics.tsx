@@ -23,7 +23,7 @@ const tactics = [
 
 export default function DealerPricingTactics() {
   return (
-    <ArticleLayout>
+    <ArticleLayout title="Dealer Pricing Tactics: Complete Guide (2026)">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-tactics-headline">
             Dealer Pricing Tactics: Complete Guide (2026)
           </h1>

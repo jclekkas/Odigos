@@ -38,7 +38,7 @@ export default function DealerAddedFeesAfterAgreement() {
   };
 
   return (
-    <ArticleLayout>
+    <ArticleLayout title="Dealer Added Fees After Agreement? What to Do Next">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-dealer-added-fees-headline">
             Dealer Added Fees After Agreement? What to Do Next
           </h1>

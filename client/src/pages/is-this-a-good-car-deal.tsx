@@ -15,7 +15,7 @@ export default function IsThisAGoodCarDeal() {
   }, []);
 
   return (
-    <ArticleLayout>
+    <ArticleLayout title="Is this actually a good car deal?">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-good-deal-headline">
             Is this actually a good car deal?
           </h1>

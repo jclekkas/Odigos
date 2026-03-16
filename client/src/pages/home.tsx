@@ -18,7 +18,7 @@ import {
   Info,
   Lock
 } from "lucide-react";
-import logoImage from "@assets/odigos_logo.png";
+import SiteHeader from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -669,15 +669,22 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-6 py-3 flex items-center gap-2">
-          <a href="/">
-            <img src={logoImage} alt="Odigos" className="h-10 md:h-12 w-auto cursor-pointer" data-testid="link-logo-home" />
-          </a>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="max-w-4xl mx-auto px-6 py-8 space-y-8">
+        <div className="max-w-2xl mx-auto mb-6" data-testid="section-analyzer-context">
+          <h1 className="text-xl font-semibold text-foreground" data-testid="text-analyzer-heading">Analyze a Dealer Quote</h1>
+          <p className="text-sm text-muted-foreground mt-1" data-testid="text-analyzer-description">
+            Paste a dealer quote, email, or text message. Odigos checks for missing out-the-door pricing, hidden fees, and common dealership tactics.
+          </p>
+          <a
+            href="/how-odigos-works"
+            className="inline-block mt-2 text-sm text-muted-foreground underline-offset-4 hover:underline hover:text-foreground transition-colors"
+            data-testid="link-methodology"
+          >
+            How this analysis works
+          </a>
+        </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <Card>
@@ -685,7 +692,7 @@ export default function Home() {
                 <CardTitle className="text-lg">Paste Dealer Communication</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-wrap gap-2 mb-4">
+                <div className="flex flex-col sm:flex-row gap-2 mb-4">
                   <Button
                     type="button"
                     variant="ghost"
@@ -968,9 +975,11 @@ export default function Home() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-base leading-relaxed text-muted-foreground" data-testid="text-summary">
-                  {result.summary}
-                </p>
+                <div className="max-w-[750px] mx-auto">
+                  <p className="text-base leading-relaxed text-muted-foreground" data-testid="text-summary">
+                    {result.summary}
+                  </p>
+                </div>
               </CardContent>
             </Card>
 

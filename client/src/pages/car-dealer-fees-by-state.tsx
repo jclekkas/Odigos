@@ -38,7 +38,7 @@ export default function CarDealerFeesByState() {
   };
 
   return (
-    <ArticleLayout>
+    <ArticleLayout title="Car Dealer Fees by State: What Buyers Should Expect">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-fees-by-state-headline">
             Car Dealer Fees by State: What Buyers Should Expect
           </h1>

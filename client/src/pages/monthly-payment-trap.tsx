@@ -15,7 +15,7 @@ export default function MonthlyPaymentTrap() {
   }, []);
 
   return (
-    <ArticleLayout>
+    <ArticleLayout title="The Monthly Payment Trap: How Dealers Use Payment-Focused Quotes to Hide the Real Cost">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-monthly-headline">
             The Monthly Payment Trap: How Dealers Use Payment-Focused Quotes to Hide the Real Cost
           </h1>

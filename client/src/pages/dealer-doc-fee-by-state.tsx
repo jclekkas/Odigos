@@ -38,7 +38,7 @@ export default function DealerDocFeeByState() {
   };
 
   return (
-    <ArticleLayout>
+    <ArticleLayout title="Dealer Doc Fee by State: What Buyers Should Expect">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-doc-fee-by-state-headline">
             Dealer Doc Fee by State: What Buyers Should Expect
           </h1>

@@ -38,7 +38,7 @@ export default function AreDealerAddOnsMandatory() {
   };
 
   return (
-    <ArticleLayout>
+    <ArticleLayout title="Are Dealer Add-Ons Mandatory? What You Can Actually Refuse">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-addons-headline">
             Are Dealer Add-Ons Mandatory? What You Can Actually Refuse
           </h1>

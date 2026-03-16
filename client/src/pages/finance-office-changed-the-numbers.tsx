@@ -38,7 +38,7 @@ export default function FinanceOfficeChangedTheNumbers() {
   };
 
   return (
-    <ArticleLayout>
+    <ArticleLayout title="Why the Finance Office Numbers Look Different">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-finance-office-headline">
             Why the Finance Office Numbers Look Different
           </h1>

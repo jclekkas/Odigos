@@ -38,7 +38,7 @@ export default function CarDealerFeesList() {
   };
 
   return (
-    <ArticleLayout>
+    <ArticleLayout title="Car Dealer Fees List: Common Charges Explained">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-fees-list-headline">
             Car Dealer Fees List: Common Charges Explained
           </h1>

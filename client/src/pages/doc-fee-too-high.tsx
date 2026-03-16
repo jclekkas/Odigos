@@ -38,7 +38,7 @@ export default function DocFeeTooHigh() {
   };
 
   return (
-    <ArticleLayout>
+    <ArticleLayout title="Dealer Doc Fee Too High? What You Can Actually Do">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-doc-fee-headline">
             Dealer Doc Fee Too High? What You Can Actually Do
           </h1>

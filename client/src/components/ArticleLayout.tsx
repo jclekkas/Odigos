@@ -1,29 +1,30 @@
 import { Link } from "wouter";
-import logoImage from "@assets/odigos_logo.png";
+import SiteHeader from "@/components/SiteHeader";
 
 interface ArticleLayoutProps {
   children: React.ReactNode;
+  title?: string;
 }
 
-export default function ArticleLayout({ children }: ArticleLayoutProps) {
+export default function ArticleLayout({ children, title }: ArticleLayoutProps) {
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-3 flex items-center">
-          <Link href="/">
-            <img
-              src={logoImage}
-              alt="Odigos"
-              className="h-10 md:h-12 w-auto cursor-pointer"
-              data-testid="link-logo-home"
-            />
-          </Link>
-        </div>
-      </header>
+      <SiteHeader />
       <main className="py-12 md:py-20 px-6">
-        <article className="max-w-2xl mx-auto">
-          {children}
-        </article>
+        <div className="max-w-[700px] mx-auto">
+          {title && (
+            <nav className="text-sm text-muted-foreground mb-6" aria-label="Breadcrumb" data-testid="nav-breadcrumbs">
+              <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+              <span className="mx-1.5">/</span>
+              <Link href="/dealer-pricing-problems" className="hover:text-foreground transition-colors">Dealer Pricing Problems</Link>
+              <span className="mx-1.5">/</span>
+              <span className="text-foreground/70">{title}</span>
+            </nav>
+          )}
+          <article>
+            {children}
+          </article>
+        </div>
       </main>
     </div>
   );

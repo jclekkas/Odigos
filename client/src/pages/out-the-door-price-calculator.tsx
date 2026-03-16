@@ -47,7 +47,7 @@ export default function OutTheDoorPriceCalculator() {
   };
 
   return (
-    <ArticleLayout>
+    <ArticleLayout title="Out-the-Door Price Calculator: Estimate Your Real Cost">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-otd-calc-headline">
             Out-the-Door Price Calculator: Estimate Your Real Cost
           </h1>

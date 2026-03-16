@@ -38,7 +38,7 @@ export default function DealerChangedPriceAfterDeposit() {
   };
 
   return (
-    <ArticleLayout>
+    <ArticleLayout title="Dealer Changed the Price After Your Deposit? What It Means">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-deposit-headline">
             Dealer Changed the Price After Your Deposit? What It Means
           </h1>
