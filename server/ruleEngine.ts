@@ -1,4 +1,4 @@
-import type { AnalysisResponse, DetectedFields, Fee } from "@shared/schema";
+import type { AnalysisResponse, DetectedFields, Fee } from "../shared/schema";
 
 interface RuleEngineResult {
   dealScore: "GREEN" | "YELLOW" | "RED";

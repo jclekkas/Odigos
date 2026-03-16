@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import OpenAI from "openai";
-import { analysisRequestSchema, analysisResponseSchema, type AnalysisResponse } from "@shared/schema";
+import { analysisRequestSchema, analysisResponseSchema, type AnalysisResponse } from "../shared/schema";
 import { applyRuleEngine } from "./ruleEngine";
 import { getStripeClient, isStripeConfigured } from "./stripeClient";
 import { trackEvent } from "./metrics";

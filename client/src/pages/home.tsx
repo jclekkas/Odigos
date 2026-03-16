@@ -51,7 +51,7 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel } from "@shared/schema";
+import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel } from "../../../shared/schema";
 
 const formSchema = z.object({
   dealerText: z.string().min(1, "Please paste dealer text to analyze"),
