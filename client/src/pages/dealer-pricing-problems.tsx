@@ -126,7 +126,7 @@ export default function DealerPricingProblems() {
   }, []);
 
   return (
-    <ArticleLayout>
+    <ArticleLayout title="Dealer Pricing Problems" showBreadcrumbs={false}>
       <h1
         className="text-3xl md:text-4xl font-bold tracking-tight mb-4 leading-tight"
         data-testid="text-hub-headline"
