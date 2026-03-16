@@ -60,6 +60,7 @@ const formSchema = z.object({
   apr: z.string().optional(),
   termMonths: z.string().optional(),
   downPayment: z.string().optional(),
+  source: z.enum(["paste", "upload"]).default("paste").optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -507,6 +508,7 @@ export default function Home() {
       apr: "",
       termMonths: "",
       downPayment: "",
+      source: "paste",
     },
   });
 
@@ -537,6 +539,7 @@ export default function Home() {
         return;
       }
       form.setValue("dealerText", data.text);
+      form.setValue("source", "upload");
     } catch {
       setUploadError("Something went wrong. Please try again or paste the text manually.");
     } finally {
@@ -639,6 +642,7 @@ export default function Home() {
         vehicle: data.vehicle || undefined,
         zipCode: data.zipCode || undefined,
         purchaseType: data.purchaseType,
+        source: data.source ?? "paste",
         apr: data.apr ? parseFloat(data.apr) : undefined,
         termMonths: data.termMonths ? parseInt(data.termMonths) : undefined,
         downPayment: data.downPayment ? parseFloat(data.downPayment) : undefined,
@@ -936,6 +940,10 @@ export default function Home() {
                 "Analyze Deal"
               )}
             </Button>
+            <p className="text-xs text-muted-foreground text-center" data-testid="text-data-disclosure">
+              Pricing signals (not your personal details) are stored anonymously to improve our dealer fee database.{" "}
+              <a href="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</a>
+            </p>
           </form>
         </Form>
 
@@ -1003,10 +1011,13 @@ export default function Home() {
       </main>
 
       <footer className="border-t border-border/50 mt-12">
-        <div className="max-w-4xl mx-auto px-6 py-6 text-center">
+        <div className="max-w-4xl mx-auto px-6 py-6 text-center space-y-1">
           <p className="text-sm text-muted-foreground">
-            Odigos provides estimates based on the information you share. 
+            Odigos provides estimates based on the information you share.
             Always verify details directly with the dealership.
+          </p>
+          <p className="text-xs text-muted-foreground">
+            <a href="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</a>
           </p>
         </div>
       </footer>

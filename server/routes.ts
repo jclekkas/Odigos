@@ -7,6 +7,7 @@ import { getStripeClient, isStripeConfigured } from "./stripeClient";
 import { trackEvent } from "./metrics";
 import { extractTextFromFile } from "./extractText";
 import { openai } from "./openaiClient";
+import { enqueueSubmission } from "./ingestor";
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -255,8 +256,11 @@ GO/NO-GO/NEED-MORE-INFO:
         dealScore: finalResult.dealScore,
         vehicle: data.vehicle,
       });
-      
+
       res.json(finalResult);
+
+      // Non-blocking: fire after response is already sent to the client
+      enqueueSubmission({ request: data, result: finalResult });
     } catch (error) {
       console.error("Analysis error:", error);
       

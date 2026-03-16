@@ -10,6 +10,7 @@ export const analysisRequestSchema = z.object({
   apr: z.number().optional(),
   termMonths: z.number().optional(),
   downPayment: z.number().optional(),
+  source: z.enum(["paste", "upload"]).default("paste").optional(),
 });
 
 export type AnalysisRequest = z.infer<typeof analysisRequestSchema>;
@@ -67,7 +68,17 @@ export type AnalysisResponse = z.infer<typeof analysisResponseSchema>;
 
 // Legacy user schema (keeping for compatibility)
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, jsonb } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  varchar,
+  timestamp,
+  jsonb,
+  numeric,
+  integer,
+  boolean,
+  index,
+} from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 
 export const users = pgTable("users", {
@@ -99,3 +110,86 @@ export const insertMetricsEventSchema = createInsertSchema(metricsEvents).omit({
 
 export type InsertMetricsEvent = z.infer<typeof insertMetricsEventSchema>;
 export type MetricsEvent = typeof metricsEvents.$inferSelect;
+
+// ---------------------------------------------------------------------------
+// Dealer Submissions — Privacy-First Intelligence Pipeline
+// ---------------------------------------------------------------------------
+// Two-tier retention model:
+//   Tier 1: Derived signals (no PII, no expiry) — used for aggregate analysis
+//   Tier 2: PII-redacted raw text (90-day expiry, then nulled)
+// ZIP code is NEVER stored — only the 2-letter state derived from its prefix.
+// ---------------------------------------------------------------------------
+export const dealerSubmissions = pgTable(
+  "dealer_submissions",
+  {
+    id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+    submittedAt: timestamp("submitted_at").defaultNow().notNull(),
+
+    // Tracks prompt/extraction logic version so datasets are comparable over time
+    analysisVersion: text("analysis_version").notNull().default("v1"),
+
+    // --- Scoring ---
+    dealScore: text("deal_score").notNull(),
+    confidenceLevel: text("confidence_level").notNull(),
+    goNoGo: text("go_no_go").notNull(),
+    verdictLabel: text("verdict_label").notNull(),
+
+    // --- Buyer context (user-declared, not identifying) ---
+    condition: text("condition").notNull().default("unknown"),
+    purchaseType: text("purchase_type").notNull().default("unknown"),
+    source: text("source").notNull().default("paste"),
+
+    // --- Geography: state only, ZIP is never persisted ---
+    stateCode: text("state_code"),
+
+    // --- Extracted financial signals (all nullable) ---
+    salePrice: numeric("sale_price"),
+    msrp: numeric("msrp"),
+    otdPrice: numeric("otd_price"),
+    monthlyPayment: numeric("monthly_payment"),
+    apr: numeric("apr"),
+    termMonths: integer("term_months"),
+    downPayment: numeric("down_payment"),
+    rebates: numeric("rebates"),
+    tradeInValue: numeric("trade_in_value"),
+    totalFeesAmount: numeric("total_fees_amount"),
+
+    // --- Fee intelligence ---
+    feeCount: integer("fee_count").notNull().default(0),
+    feeNames: text("fee_names").array().notNull().default(sql`ARRAY[]::text[]`),
+
+    // --- Tactic flags (boolean columns for fast WHERE queries) ---
+    flagMarketAdjustment: boolean("flag_market_adjustment").notNull().default(false),
+    flagPaymentOnly: boolean("flag_payment_only").notNull().default(false),
+    flagMissingOtd: boolean("flag_missing_otd").notNull().default(false),
+    flagVagueFees: boolean("flag_vague_fees").notNull().default(false),
+    flagHighCostAddons: boolean("flag_high_cost_addons").notNull().default(false),
+    highCostAddonCount: integer("high_cost_addon_count").notNull().default(0),
+    missingInfoCount: integer("missing_info_count").notNull().default(0),
+
+    // --- Full structured payload (JSONB for schema evolution) ---
+    detectedFields: jsonb("detected_fields"),
+
+    // --- Tier 2: PII-redacted text with 90-day expiry ---
+    // Best-effort redaction only — not guaranteed to catch every PII pattern.
+    rawTextRedacted: text("raw_text_redacted"),
+    rawTextStoredAt: timestamp("raw_text_stored_at"),
+    rawTextExpiresAt: timestamp("raw_text_expires_at"),
+    rawTextClearedAt: timestamp("raw_text_cleared_at"),
+  },
+  (table) => ({
+    submittedAtIdx: index("ds_submitted_at_idx").on(table.submittedAt),
+    dealScoreIdx: index("ds_deal_score_idx").on(table.dealScore),
+    stateCodeIdx: index("ds_state_code_idx").on(table.stateCode),
+    flagMarketAdjIdx: index("ds_flag_market_adj_idx").on(table.flagMarketAdjustment),
+    feeNamesIdx: index("ds_fee_names_idx").on(table.feeNames),
+  }),
+);
+
+export const insertDealerSubmissionSchema = createInsertSchema(dealerSubmissions).omit({
+  id: true,
+  submittedAt: true,
+});
+
+export type InsertDealerSubmission = z.infer<typeof insertDealerSubmissionSchema>;
+export type DealerSubmission = typeof dealerSubmissions.$inferSelect;

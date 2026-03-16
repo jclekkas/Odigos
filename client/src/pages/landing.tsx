@@ -125,7 +125,8 @@ export default function Landing() {
               </Card>
             </div>
             <p className="text-xs text-muted-foreground text-center mt-4" data-testid="text-privacy-note">
-              Privacy: Your messages are analyzed in real time. We don't store or share them.
+              Pricing signals are stored anonymously to improve dealer fee benchmarks. Submitted text is PII-redacted and deleted after 90 days.{" "}
+              <a href="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</a>
             </p>
           </div>
         </section>
@@ -414,6 +415,9 @@ export default function Landing() {
           </p>
           <p className="text-sm text-muted-foreground">
             Odigos provides estimates based on the information you share. Always verify details directly with the dealership.
+          </p>
+          <p className="text-xs text-muted-foreground">
+            <a href="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</a>
           </p>
         </div>
       </footer>

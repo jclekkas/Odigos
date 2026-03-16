@@ -1,13 +1,18 @@
-import { type User, type InsertUser } from "@shared/schema";
+import {
+  type User,
+  type InsertUser,
+  type InsertDealerSubmission,
+  dealerSubmissions,
+  users,
+} from "@shared/schema";
 import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { db } from "./db";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  saveDealerSubmission(data: InsertDealerSubmission): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -33,6 +38,36 @@ export class MemStorage implements IStorage {
     this.users.set(id, user);
     return user;
   }
+
+  async saveDealerSubmission(_data: InsertDealerSubmission): Promise<void> {
+    // No-op in memory mode — DATABASE_URL not present
+  }
 }
 
-export const storage = new MemStorage();
+export class DrizzleStorage implements IStorage {
+  async getUser(id: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(
+      (await import("drizzle-orm")).eq(users.id, id),
+    );
+    return result[0];
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const { eq } = await import("drizzle-orm");
+    const result = await db.select().from(users).where(eq(users.username, username));
+    return result[0];
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const result = await db.insert(users).values(insertUser).returning();
+    return result[0];
+  }
+
+  async saveDealerSubmission(data: InsertDealerSubmission): Promise<void> {
+    await db.insert(dealerSubmissions).values(data);
+  }
+}
+
+export const storage: IStorage = process.env.DATABASE_URL
+  ? new DrizzleStorage()
+  : new MemStorage();

@@ -1,0 +1,139 @@
+Implement a tightly scoped UI/UX polish pass for Odigos based on the audit below.
+
+This is NOT a redesign and NOT a feature project.
+Do NOT change product logic, backend behavior, APIs, pricing, routes (except fixing the one broken route if needed), analysis logic, Stripe flow, OpenAI flow, or core page copy unless strictly necessary for the UI changes below.
+
+PRIMARY GOAL
+Improve trust, readability, hierarchy, spacing, and visual polish so Odigos feels calm, credible, and professional — closer to a serious consumer-protection tool than an “AI playground.”
+
+TECH / SCOPE CONSTRAINTS
+- Keep the existing stack exactly as-is
+- Do NOT migrate frameworks
+- Do NOT convert to Next.js
+- Do NOT change Vite/Express architecture
+- Do NOT add new dependencies unless absolutely necessary
+- Do NOT add new product features
+- Do NOT add dashboards, accounts, saved history, or new workflows
+- Do NOT materially rewrite page copy
+- Do NOT remove existing functionality
+- Preserve all current business logic and routing unless a route is currently broken
+- Keep changes tightly scoped to layout, styling, spacing, typography, hierarchy, and CTA presentation
+
+DESIGN DIRECTION
+Odigos should feel:
+- calm
+- serious
+- trustworthy
+- document-centric
+- polished
+- stable
+
+It should NOT feel:
+- flashy
+- crypto-like
+- neon
+- “AI toy”
+- overly aggressive
+
+GLOBAL DESIGN RULES
+Apply these principles consistently across the touched pages/components:
+- Remove or drastically reduce aggressive blue glow / halo effects
+- Prefer subtle borders, clean surfaces, restrained contrast, and structured spacing
+- Improve typography hierarchy and breathing room
+- Use clearer button hierarchy:
+  - primary CTA = filled / highest emphasis
+  - secondary actions = outline or lower emphasis
+  - low-priority links = text only
+- Keep the UI calm and objective, especially around negative analysis outcomes
+- Constrain long-form reading widths for comfort
+- Improve mobile above-the-fold usability
+
+IMPLEMENT THE FOLLOWING CHANGES
+
+1) GLOBAL / AESTHETIC CLEANUP
+- Remove the aggressive bright blue edge glows / ambient glow effects from the dark theme
+- Tone the site toward a more muted, stable, trust-oriented appearance
+- Do not introduce a full redesign; simply reduce the current “glowy AI app” feel
+
+2) LANDING PAGE
+File: relevant landing page component(s)
+
+Make the following improvements:
+- Increase hero headline line-height to approximately 1.2–1.3
+- Slightly loosen headline tracking / letter-spacing if currently too tight
+- Improve visual breathing room in the hero without changing the copy
+- Move or surface trust signals (“Independent”, “No account required”, etc.) higher on the page
+- Place trust reassurance immediately below the hero CTA area or in a clearly visible trust banner near the top
+- Keep layout changes modest and do not redesign the page structure unnecessarily
+
+3) ANALYZER PAGE
+File: relevant analyzer page/component(s)
+
+Make the following improvements:
+- Fix the Odigos logo/header treatment so it does not appear as a white box awkwardly sitting on a dark header
+- Use a transparent asset or otherwise make the header/logo presentation feel intentional and polished
+- Restyle “Try a good deal example” and “Try a bad deal example” so they no longer have identical visual weight
+- Make both clearly secondary to the main user action
+- Prefer secondary/outline styling for example actions
+- If one example should receive slightly more emphasis, make the “bad deal” example the more obvious demo path, but keep both secondary to the primary CTA/input
+- Tone down overly aggressive “NO-GO” styling
+- Replace any giant alarming red treatment with a calmer, structured verdict presentation
+- Prefer an auditor-like verdict UI: chip/badge + verdict label + supporting summary
+- Keep verdict clarity high, but remove the siren/alarm feel
+- Move or embed the “Unlock Analysis” CTA into the results card so it feels like the natural next step
+- It should not feel like a floating ad disconnected from the content
+
+4) SCENARIO / ARTICLE PAGE TEMPLATE
+Files: relevant article page(s) and/or shared article layout
+
+Make the following improvements:
+- Constrain body text width on desktop to a readable measure around 65ch / ~700px
+- Center the reading column appropriately
+- Increase body text size for long-form reading to around 18px equivalent
+- Increase paragraph line-height to around 1.6
+- Strengthen article heading hierarchy so section headings feel clearly distinct from body copy
+- Keep the article reading experience clean, calm, and authoritative
+- Add a prominent CTA block near the end of article pages that clearly directs users into the core product
+- CTA should feel like a true button/block, not a low-visibility text link
+- Keep the CTA visually strong but consistent with the calm trust-oriented design
+
+5) SCENARIO HUB PAGE / BROKEN ROUTE
+Page noted in audit: /dealer-pricing-problems
+
+- Investigate why this route returns 404
+- Restore/fix it if it is intended to exist
+- Do not invent unnecessary new architecture
+- If the route already should exist, fix the routing/page registration cleanly
+- If a corresponding page file is missing and must be restored, do so minimally and consistently with the current site structure
+
+6) MOBILE USABILITY
+Across the analyzer page and shared header if relevant:
+- Reduce header/logo vertical footprint on small screens
+- Prioritize showing the core textarea/input area higher above the fold
+- Reduce unnecessary top spacing/margins on mobile
+- Keep the mobile UI compact but not cramped
+
+IMPORTANT IMPLEMENTATION NOTES
+- Preserve existing copy as much as possible
+- Preserve all existing flows and behavior
+- Prefer editing existing classes/components over introducing parallel variants unless clearly cleaner
+- Keep the styling system consistent with the current codebase
+- Avoid one-off hacks where a reusable class or cleaner adjustment is more appropriate
+- Make the final result feel cohesive, not like unrelated isolated tweaks
+
+DELIVERABLES
+When complete, provide:
+1. A concise summary of exactly which files were changed
+2. A bullet list of the UI/UX improvements implemented
+3. Any route/file restored or fixed for the 404 page
+4. Anything you intentionally did NOT change due to scope constraints
+
+SUCCESS CRITERIA
+The final UI should feel:
+- calmer
+- more readable
+- more trustworthy
+- more polished
+- more like a serious consumer guidance product
+
+without changing the product itself.

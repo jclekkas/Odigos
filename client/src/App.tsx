@@ -28,6 +28,7 @@ import CarDealerFeesList from "@/pages/car-dealer-fees-list";
 import CalculateOutTheDoorPrice from "@/pages/calculate-out-the-door-price";
 import GuidesRedirect from "@/pages/guides-redirect";
 import AdminMetrics from "@/pages/admin-metrics";
+import Privacy from "@/pages/privacy";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -58,6 +59,7 @@ function Router() {
       <Route path="/calculate-out-the-door-price" component={CalculateOutTheDoorPrice} />
       <Route path="/guides" component={GuidesRedirect} />
       <Route path="/admin/metrics" component={AdminMetrics} />
+      <Route path="/privacy" component={Privacy} />
       <Route component={NotFound} />
     </Switch>
   );
