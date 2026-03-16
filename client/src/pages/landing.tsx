@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AlertTriangle, Check, CheckCircle2, ChevronDown } from "lucide-react";
 import { trackPageView, trackCtaClick } from "@/lib/tracking";
 import SiteHeader from "@/components/SiteHeader";
+import SeoHead from "@/components/SeoHead";
 
 const faqs = [
   {
@@ -43,6 +44,11 @@ export default function Landing() {
         Skip to main content
       </a>
       <SiteHeader />
+      <SeoHead
+        title="Odigos — Independent Dealer Quote Analysis for Car Buyers"
+        description="Paste a dealer quote, text, or email. Odigos checks for missing out-the-door pricing, hidden fees, and common dealership tactics. Free preview, full analysis $49."
+        path="/"
+      />
       <main id="main-content">
         <section className="pt-12 pb-20 md:pt-16 md:pb-28 px-6">
           <div className="max-w-3xl mx-auto text-center">
@@ -225,7 +231,7 @@ export default function Landing() {
               Built for real car buyers
             </h2>
             <p className="text-base text-foreground/75 leading-relaxed">
-              We don't sell cars. We don't work with dealerships. We don't take referral fees. Odigos is an independent tool that works entirely from the messages you already have. No account required. No data stored. Just clarity before you sign.
+              We don't sell cars. We don't work with dealerships. We don't take referral fees. Odigos is an independent tool that works entirely from the messages you already have. No account required. PII-redacted submitted text is deleted within 90 days. Just clarity before you sign.
             </p>
           </div>
         </section>
@@ -393,7 +399,7 @@ export default function Landing() {
             })}</script>
           </Helmet>
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center" data-testid="text-faq-heading">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center" data-testid="text-faq-heading">
               Common questions
             </h2>
             <div className="space-y-2">

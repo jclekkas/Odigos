@@ -22,7 +22,7 @@ export default function SiteHeader() {
             className="text-sm text-muted-foreground hover:text-foreground transition-colors px-2 py-1"
             data-testid="link-nav-scenario-hub"
           >
-            Scenario Hub
+            Dealer Tactics
           </Link>
           <a
             href="/#how-it-works"
