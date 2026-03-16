@@ -1,0 +1,36 @@
+🏛️ Header & Logo Audit (New)
+A structural navigation header was recently introduced to visually ground the application and establish trust.
+
+Problem (Landing Page Missing Header): The entry landing page currently completely lacks the new header.
+
+Why it hurts trust: This breaks the product's "structural grounding." Users experience a floating layout on the entry page, which then shifts abruptly to a structured layout on subpages, reducing the feeling of a cohesive, professional application.
+
+Recommendation: Ensure the application header is present on ALL pages, including the landing page, for immediate trust and grounding.
+
+Problem (Logo White Box): The logo continues to feature a solid white background square, creating a harsh "cut-out" effect on the dark theme.
+
+Why it hurts trust: It looks like an unpolished placeholder asset, instantly degrading the premium feel established by the rest of the UI.
+
+Recommendation: Replace the logo asset with a transparent PNG or SVG. The logo graphic and text must sit naturally on the dark background without a container box. Additionally, scaling the logo size up by ~20% will improve its authority.
+
+Problem (Mobile Navigation): On mobile viewports, the "Scenario Hub" and "How It Works" links are placed very tightly together.
+
+Why it hurts usability: Touch targets are too close, leading to "fat-finger" errors on small screens.
+
+Recommendation: Increase the horizontal gap (or padding) between header navigation links on mobile.
+
+Landing lacks header
+Review
+Landing lacks header
+
+📸 Page-Specific Audit & Remaining Nitpicks
+1. Landing Page
+Remaining Mobile Nitpick: The "Try a good/bad example" buttons in the landing page header can feel a bit crowded on narrow mobile screens.
+Recommendation: Consider a very slight vertical padding or margin adjustment on the mobile header utility buttons.
+2. Deal Analyzer
+Remaining Desktop Nitpick: On large monitors (1400px+), the analysis summary text spans the full width of the card interface. This results in wide line lengths (~1200px) which are exhausting to read.
+Recommendation: Constrain the max-width of large text blocks within the result cards to ~700-800px for optimal eye tracking.
+3. Scenario Hub & Articles
+Remaining Navigation Nitpick: Article pages currently lack navigational breadcrumbs (e.g. Home > Scenario Hub > Article Name).
+Recommendation: Add a simple breadcrumb trail to the top of articles. This anchors the user's location and highly encourages them to click "up" a level to read more articles in the Hub.
+Remaining Desktop Nitpick: Similar to the analyzer, the article body text remains too wide on desktop monitors. Ensure a max-width container is applied specifically to the prose text (around 65ch or 700px).
