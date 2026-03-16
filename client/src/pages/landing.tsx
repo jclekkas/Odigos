@@ -59,7 +59,7 @@ export default function Landing() {
               Spot dealer pricing tricks before you walk into the dealership.
             </h1>
             <p className="mt-6 text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto leading-relaxed" data-testid="text-hero-subheadline">
-              Paste a dealer quote, text, or email. Odigos checks for missing out-the-door pricing, hidden fees, and common dealership tactics so you know exactly what you're agreeing to.
+              Paste a car dealer quote, text, or email. Odigos checks for missing out-the-door pricing, hidden fees, and common dealership tactics so you know exactly what you're agreeing to.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
               <Button
@@ -242,7 +242,7 @@ export default function Landing() {
               What the analysis looks like
             </h2>
             <p className="text-sm text-muted-foreground text-center mb-6">
-              Sample output from a real dealer quote (anonymized)
+              Sample output from a real car dealer quote (anonymized)
             </p>
             <div className="border border-border/60 rounded-lg bg-background p-5 md:p-6 space-y-4">
               <div className="flex items-center gap-2 flex-wrap">
