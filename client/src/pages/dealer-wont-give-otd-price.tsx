@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Check, Copy } from "lucide-react";
-import logoImage from "@assets/odigos_logo.png";
 import SeoHead from "@/components/SeoHead";
+import ArticleLayout from "@/components/ArticleLayout";
+import ArticleCta from "@/components/ArticleCta";
 
 const OTD_REQUEST = `I'm ready to move forward if the numbers make sense. Can you please send the full out-the-door price including all fees, taxes, and add-ons so I can review before coming in?`;
 
@@ -47,23 +48,7 @@ export default function DealerWontGiveOtdPrice() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <SeoHead
-        title="Dealer Won't Give OTD Price? What To Do | Odigos"
-        description="If a dealer refuses to give an out-the-door price, here's what it means and how to respond before visiting the dealership."
-        path="/dealer-wont-give-otd-price"
-      />
-
-      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-3">
-          <Link href="/">
-            <img src={logoImage} alt="Odigos" className="h-12 md:h-14 w-auto cursor-pointer" data-testid="link-logo-home" />
-          </Link>
-        </div>
-      </header>
-
-      <main className="py-12 md:py-20 px-6">
-        <article className="max-w-2xl mx-auto">
+    <ArticleLayout>
           <p className="text-sm text-muted-foreground mb-4">
             <Link href="/dealer-pricing-tactics" className="underline text-foreground" data-testid="link-breadcrumb-hub">Dealer Pricing Tactics</Link> &rsaquo; This Article
           </p>
@@ -329,25 +314,12 @@ export default function DealerWontGiveOtdPrice() {
             </p>
           </div>
 
-          <div className="mt-12 pt-8 border-t border-border">
-            <h2 className="text-xl font-semibold mb-2 text-foreground" data-testid="text-otd-refuse-cta-heading">
-              Not sure if the dealer quote is complete?
-            </h2>
-            <p className="text-muted-foreground mb-4">
-              Paste the message or quote you received. Odigos checks for missing out-the-door pricing, add-ons, and unclear fees.
-            </p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-otd-refuse">
-                Check the Quote with Odigos
-              </Button>
-            </Link>
-          </div>
+
+          <ArticleCta />
 
           <p className="text-xs text-muted-foreground mt-12">
             Not affiliated with any dealership. Optimized for U.S. car purchases.
           </p>
-        </article>
-      </main>
-    </div>
+    </ArticleLayout>
   );
 }

@@ -11,9 +11,6 @@ import {
   Loader2, 
   Copy, 
   Check, 
-  AlertTriangle,
-  CheckCircle2,
-  XCircle,
   HelpCircle,
   DollarSign,
   FileText,
@@ -85,29 +82,32 @@ interface DealScoreBadgeProps {
 function DealScoreBadge({ score, goNoGo, confidenceLevel, verdictLabel }: DealScoreBadgeProps) {
   const scoreConfig = {
     GREEN: {
-      bg: "bg-emerald-500/10 dark:bg-emerald-500/20",
-      border: "border-emerald-500/30",
+      bg: "bg-emerald-500/5",
+      border: "border-emerald-500/20",
+      chipBg: "bg-emerald-500/15",
+      chipBorder: "border-emerald-500/30",
       text: "text-emerald-700 dark:text-emerald-400",
-      icon: CheckCircle2,
     },
     YELLOW: {
-      bg: "bg-amber-500/10 dark:bg-amber-500/20",
-      border: "border-amber-500/30",
+      bg: "bg-amber-500/5",
+      border: "border-amber-500/20",
+      chipBg: "bg-amber-500/15",
+      chipBorder: "border-amber-500/30",
       text: "text-amber-700 dark:text-amber-400",
-      icon: AlertTriangle,
     },
     RED: {
-      bg: "bg-red-500/10 dark:bg-red-500/20",
-      border: "border-red-500/30",
+      bg: "bg-red-500/5",
+      border: "border-red-500/20",
+      chipBg: "bg-red-500/15",
+      chipBorder: "border-red-500/30",
       text: "text-red-700 dark:text-red-400",
-      icon: XCircle,
     },
   };
 
-  const confidenceConfig = {
-    HIGH: { label: "High Confidence", color: "text-emerald-600 dark:text-emerald-400" },
-    MEDIUM: { label: "Medium Confidence", color: "text-amber-600 dark:text-amber-400" },
-    LOW: { label: "Low Confidence", color: "text-red-600 dark:text-red-400" },
+  const confidenceLabels: Record<ConfidenceLevel, string> = {
+    HIGH: "High confidence",
+    MEDIUM: "Medium confidence",
+    LOW: "Low confidence",
   };
 
   const goNoGoMessages = {
@@ -117,27 +117,27 @@ function DealScoreBadge({ score, goNoGo, confidenceLevel, verdictLabel }: DealSc
   };
 
   const config = scoreConfig[score];
-  const confConfig = confidenceConfig[confidenceLevel];
-  const Icon = config.icon;
 
   return (
-    <div className={`rounded-xl border-2 ${config.border} ${config.bg} p-8 text-center`}>
-      <div className="flex items-center justify-center gap-3 mb-2">
-        <Icon className={`w-12 h-12 ${config.text}`} />
-        <span className={`text-5xl font-bold ${config.text}`}>{score}</span>
-      </div>
-      <p className={`text-lg font-semibold ${config.text} mb-3`}>{verdictLabel}</p>
-      <div className="flex items-center justify-center gap-4 mb-3">
-        <div className={`inline-block px-4 py-2 rounded-lg ${config.bg} border ${config.border}`}>
-          <span className={`text-xl font-bold ${config.text}`}>{goNoGo}</span>
+    <div className={`rounded-xl border ${config.border} ${config.bg} p-5`}>
+      <div className="flex items-start gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-semibold tracking-wide border ${config.chipBg} ${config.chipBorder} ${config.text}`}>
+              {goNoGo}
+            </span>
+            <span className="text-xs text-muted-foreground border border-border/60 px-2 py-0.5 rounded bg-muted/40">
+              {confidenceLabels[confidenceLevel]}
+            </span>
+          </div>
+          <p className={`text-base font-semibold leading-snug mb-1 ${config.text}`}>
+            {verdictLabel}
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {goNoGoMessages[goNoGo]}
+          </p>
         </div>
-        <span className={`text-sm font-medium ${confConfig.color}`}>
-          {confConfig.label}
-        </span>
       </div>
-      <p className="text-sm text-muted-foreground">
-        {goNoGoMessages[goNoGo]}
-      </p>
     </div>
   );
 }
@@ -297,18 +297,18 @@ interface LockedTier2Props {
 
 function LockedTier2Section({ onUnlock, isLoading, stripeConfigured }: LockedTier2Props) {
   return (
-    <Card className="border-amber-500/30 bg-amber-500/5">
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Lock className="w-5 h-5 text-amber-500" />
-          Unlock Full Deal Review
+    <Card className="border-border bg-muted/20">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-base font-semibold">
+          <Lock className="w-4 h-4 text-muted-foreground" />
+          Full Deal Review
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground mb-4">
+        <p className="text-sm text-muted-foreground mb-3">
           See what's missing, what's risky, and exactly what to ask the dealer.
         </p>
-        <ul className="space-y-2 mb-4">
+        <ul className="space-y-1.5 mb-4">
           {[
             "Red flags and risks in this deal",
             "Missing information to request",
@@ -316,13 +316,13 @@ function LockedTier2Section({ onUnlock, isLoading, stripeConfigured }: LockedTie
             "Full analysis reasoning"
           ].map((item, idx) => (
             <li key={idx} className="flex items-start gap-2 text-sm">
-              <Check className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+              <Check className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
               <span className="text-muted-foreground">{item}</span>
             </li>
           ))}
         </ul>
-        <p className="text-xs text-muted-foreground mb-4">
-          One-time payment. Not affiliated with any dealership.
+        <p className="text-xs text-muted-foreground mb-3">
+          One-time payment · Not affiliated with any dealership
         </p>
         <Button
           variant="default"
@@ -670,9 +670,9 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-6 py-6 flex items-center gap-2">
+        <div className="max-w-4xl mx-auto px-6 py-3 flex items-center gap-2">
           <a href="/">
-            <img src={logoImage} alt="Odigos" className="h-28 w-auto cursor-pointer" data-testid="link-logo-home" />
+            <img src={logoImage} alt="Odigos" className="h-8 md:h-9 w-auto cursor-pointer" data-testid="link-logo-home" />
           </a>
         </div>
       </header>
@@ -688,7 +688,7 @@ export default function Home() {
                 <div className="flex flex-wrap gap-2 mb-4">
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
                     onClick={() => form.setValue("dealerText", SAMPLE_GOOD_DEAL)}
                     data-testid="button-sample-good"

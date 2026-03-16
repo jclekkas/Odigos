@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
-import logoImage from "@assets/odigos_logo.png";
+import ArticleLayout from "@/components/ArticleLayout";
+import ArticleCta from "@/components/ArticleCta";
 
 const DECLINE_ADDONS_MESSAGE = `I'd like to move forward with the vehicle, but without the dealer-installed add-ons. Please send me an updated out-the-door price with only the base vehicle price, taxes, title, registration, and your documentation fee. If any add-ons can't be removed, please list each one separately with pricing so I can evaluate them individually.`;
 
@@ -37,18 +38,7 @@ export default function AreDealerAddOnsMandatory() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-
-      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-3">
-          <Link href="/">
-            <img src={logoImage} alt="Odigos" className="h-28 w-auto cursor-pointer" data-testid="link-logo-home" />
-          </Link>
-        </div>
-      </header>
-
-      <main className="py-12 md:py-20 px-6">
-        <article className="max-w-2xl mx-auto">
+    <ArticleLayout>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-addons-headline">
             Are Dealer Add-Ons Mandatory? What You Can Actually Refuse
           </h1>
@@ -200,25 +190,12 @@ export default function AreDealerAddOnsMandatory() {
             </p>
           </div>
 
-          <div className="mt-12 pt-8 border-t border-border">
-            <p className="text-muted-foreground mb-4">
-              Not sure if the dealer quote is complete?
-            </p>
-            <p className="text-sm text-muted-foreground mb-4">
-              Paste the message or quote you received. Odigos checks for missing out-the-door pricing, add-ons, and unclear fees.
-            </p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-addons">
-                Check the Quote with Odigos
-              </Button>
-            </Link>
-          </div>
+
+          <ArticleCta />
 
           <p className="text-xs text-muted-foreground mt-12">
             Not affiliated with any dealership. Optimized for U.S. car purchases.
           </p>
-        </article>
-      </main>
-    </div>
+    </ArticleLayout>
   );
 }

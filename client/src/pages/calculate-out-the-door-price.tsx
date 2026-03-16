@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
-import logoImage from "@assets/odigos_logo.png";
+import ArticleLayout from "@/components/ArticleLayout";
+import ArticleCta from "@/components/ArticleCta";
 
 const OTD_CALC_MESSAGE = `Hi — before I come in, can you send me the full out-the-door price with every line item broken out? I'd like to see the vehicle price, sales tax, title and registration, doc fee, and any dealer-added packages or fees listed separately. I want to compare the total against my own estimate before we finalize anything. Thanks.`;
 
@@ -47,18 +48,7 @@ export default function CalculateOutTheDoorPrice() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-
-      <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-3">
-          <Link href="/">
-            <img src={logoImage} alt="Odigos" className="h-28 w-auto cursor-pointer" data-testid="link-logo-home" />
-          </Link>
-        </div>
-      </header>
-
-      <main className="py-12 md:py-20 px-6">
-        <article className="max-w-2xl mx-auto">
+    <ArticleLayout>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-calc-otd-headline">
             How to Calculate Out-the-Door Price on a Car
           </h1>
@@ -222,25 +212,12 @@ export default function CalculateOutTheDoorPrice() {
             </p>
           </div>
 
-          <div className="mt-12 pt-8 border-t border-border">
-            <p className="text-muted-foreground mb-4">
-              Not sure if the dealer quote is complete?
-            </p>
-            <p className="text-sm text-muted-foreground mb-4">
-              Paste the message or quote you received. Odigos checks for missing out-the-door pricing, add-ons, and unclear fees.
-            </p>
-            <Link href="/analyze">
-              <Button size="lg" data-testid="button-cta-calc-otd">
-                Check the Quote with Odigos
-              </Button>
-            </Link>
-          </div>
+
+          <ArticleCta />
 
           <p className="text-xs text-muted-foreground mt-12">
             Not affiliated with any dealership. Optimized for U.S. car purchases.
           </p>
-        </article>
-      </main>
-    </div>
+    </ArticleLayout>
   );
 }

@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     q: "Do you store my messages?",
-    a: "No. Messages are analyzed in real time and are not stored.",
+    a: "Submitted text is PII-redacted and stored for up to 90 days for service quality purposes, then deleted. We do not sell or share your data.",
   },
 ];
 
@@ -37,7 +37,7 @@ export default function Landing() {
       <main>
         <section className="pt-16 pb-20 md:pt-24 md:pb-28 px-6">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-foreground max-w-4xl mx-auto" data-testid="text-hero-headline">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.015em] leading-[1.25] text-foreground max-w-4xl mx-auto" data-testid="text-hero-headline">
               Spot dealer pricing tricks before you walk into the dealership.
             </h1>
             <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed" data-testid="text-hero-subheadline">
@@ -69,8 +69,8 @@ export default function Landing() {
             <p className="mt-3 text-sm text-muted-foreground" data-testid="text-reassurance">
               Takes 10 seconds. No signup required.
             </p>
-            <p className="mt-4 text-sm font-medium tracking-wide text-muted-foreground leading-relaxed" data-testid="text-trust-strip">
-              Independent · No account required · We don't store your text · Secure Stripe checkout
+            <p className="mt-4 text-sm font-semibold tracking-wide text-foreground/60 dark:text-foreground/70 leading-relaxed" data-testid="text-trust-strip">
+              Independent · No account required · Secure Stripe checkout
             </p>
           </div>
         </section>
