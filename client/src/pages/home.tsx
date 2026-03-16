@@ -465,6 +465,9 @@ function getStoredTier(): UnlockTier {
   }
 }
 
+const ALLOWED_UPLOAD_TYPES = ["image/png", "image/jpeg", "image/webp", "application/pdf"];
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+
 export default function Home() {
   const [isOptionalOpen, setIsOptionalOpen] = useState(false);
   const [result, setResult] = useState<AnalysisResponse | null>(null);
@@ -476,53 +479,6 @@ export default function Home() {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-
-  const ALLOWED_UPLOAD_TYPES = ["image/png", "image/jpeg", "image/webp", "application/pdf"];
-  const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
-
-  const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!e.target) return;
-    e.target.value = "";
-
-    if (!file) return;
-
-    setUploadError(null);
-
-    if (!ALLOWED_UPLOAD_TYPES.includes(file.type)) {
-      setUploadError("That file type isn't supported. Please upload a PNG, JPG, WEBP, or PDF.");
-      return;
-    }
-
-    if (file.size > MAX_UPLOAD_BYTES) {
-      setUploadError("That file is too large to process. Please use a file under 10 MB.");
-      return;
-    }
-
-    setUploadLoading(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch("/api/extract-text", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setUploadError(data.message ?? "We couldn't process that file. Please try again.");
-        return;
-      }
-
-      form.setValue("dealerText", data.text);
-    } catch {
-      setUploadError("Something went wrong. Please try again or paste the text manually.");
-    } finally {
-      setUploadLoading(false);
-    }
-  }, [form]);
 
   useEffect(() => {
     trackPageView("/analyze");
@@ -553,6 +509,40 @@ export default function Home() {
       downPayment: "",
     },
   });
+
+  const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (e.target) e.target.value = "";
+    if (!file) return;
+
+    setUploadError(null);
+
+    if (!ALLOWED_UPLOAD_TYPES.includes(file.type)) {
+      setUploadError("That file type isn't supported. Please upload a PNG, JPG, WEBP, or PDF.");
+      return;
+    }
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setUploadError("That file is too large to process. Please use a file under 10 MB.");
+      return;
+    }
+
+    setUploadLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await fetch("/api/extract-text", { method: "POST", body: formData });
+      const data = await response.json();
+      if (!response.ok) {
+        setUploadError(data.message ?? "We couldn't process that file. Please try again.");
+        return;
+      }
+      form.setValue("dealerText", data.text);
+    } catch {
+      setUploadError("Something went wrong. Please try again or paste the text manually.");
+    } finally {
+      setUploadLoading(false);
+    }
+  }, [form]);
 
   const { data: stripeStatus } = useQuery<{ configured: boolean }>({
     queryKey: ["/api/stripe-status"],
