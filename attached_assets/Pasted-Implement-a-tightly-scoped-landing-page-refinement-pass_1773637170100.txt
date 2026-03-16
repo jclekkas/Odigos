@@ -1,0 +1,118 @@
+Implement a tightly scoped landing-page refinement pass for Odigos based on recent UX feedback.
+
+This is NOT a redesign and NOT a feature project.
+Do NOT change analyzer logic, pricing, Stripe flow, prompts, scoring, routing architecture, or article content.
+
+PRIMARY GOAL
+Fix the real UX/accessibility issues on the landing page without undermining Odigos’s current calm, document-centric, trust-oriented design.
+
+NON-NEGOTIABLE CONSTRAINTS
+- Do NOT change OpenAI prompts, analyzer logic, scoring, or rule engine
+- Do NOT change Stripe/payment behavior or pricing
+- Do NOT add new features, accounts, or workflows
+- Do NOT change frameworks or add dependencies
+- Do NOT materially rewrite landing page copy
+- Do NOT remove the educational/SEO sections from the landing page
+- Do NOT turn the page into a flashy marketing redesign
+- Preserve the current calm, serious visual direction
+
+SUCCESS CRITERIA
+- Hero CTA no longer uses invalid nested interactive elements
+- Landing page has proper semantic landmarks: header, nav, main, footer
+- A skip-to-content link exists as the first focusable element
+- FAQ accordion triggers are accessible and expose the question text correctly
+- FAQ triggers communicate open/closed state
+- Pricing cards each include a clear CTA button
+- Supporting paragraph text on the landing page is slightly easier to read
+- Landing sections have subtle visual rhythm with restrained background variation
+- No product logic, payment flow, pricing, or analyzer behavior changes
+
+TASKS
+
+1) Fix hero CTA markup
+File: client/src/pages/landing.tsx
+
+- Find the primary hero CTA (“Check a Dealer Quote”) and remove any nested <a> inside <button> or <button> inside <a> structure
+- Use a single correct interactive element only
+- Preserve current styling and behavior
+- Ensure click behavior is reliable and keyboard accessible
+
+2) Add semantic landmarks
+File: client/src/pages/landing.tsx
+
+- Ensure the landing page uses proper semantic structure:
+  - <header>
+  - <nav>
+  - <main id="main-content">
+  - <footer>
+- Reuse the current lightweight site header if already available and appropriate
+- Keep structure simple and valid
+- Do not introduce large new navigation or redesign the page
+
+3) Add skip navigation link
+File: client/src/pages/landing.tsx
+
+- Add a skip-to-content link as the first focusable element on the page
+- Link target should be #main-content
+- Use a standard visually-hidden-until-focus pattern, e.g. sr-only focus:not-sr-only
+- Keep it accessible and unobtrusive
+
+4) Fix FAQ accordion accessibility
+File: client/src/pages/landing.tsx
+Also inspect any shared accordion component if the FAQ uses one.
+
+- Ensure each FAQ trigger/button exposes the visible question text properly
+- Ensure each trigger communicates expanded/collapsed state using aria-expanded
+- If needed, ensure proper aria-controls / id relationships
+- Do not change FAQ copy beyond what is necessary for accessibility wiring
+- Preserve current visual style
+
+5) Add CTA buttons inside pricing cards
+File: client/src/pages/landing.tsx
+
+- In the pricing section, add a clear button to each card:
+  - Free card: “Try Free Preview”
+  - Paid card: “Get Full Review — $49”
+- Buttons should route users into the existing analyzer flow
+- Keep the cards visually aligned and balanced
+- Preserve existing pricing copy and structure as much as possible
+
+6) Improve supporting text readability slightly
+File: client/src/pages/landing.tsx
+
+- Increase contrast slightly for key supporting paragraph text where it currently feels too dim on the dark background
+- Keep hierarchy intact
+- Do not over-brighten the whole page
+- Prefer a restrained shift (e.g. gray-400 to gray-300 equivalent) where useful
+
+7) Add subtle section background rhythm
+File: client/src/pages/landing.tsx
+Possibly shared style classes if appropriate.
+
+- Introduce very subtle background variation between major landing sections
+- Keep the palette restrained and trust-oriented
+- Do NOT reintroduce glow effects, flashy gradients, or bright accent backgrounds
+- Aim only to reduce visual monotony and improve section separation
+- Keep the page feeling calm, serious, and consistent with the current design direction
+
+IMPORTANT GUIDANCE
+- Do not remove long-form educational sections from the landing page in this task
+- Do not perform major content restructuring
+- Do not redesign the page around generic SaaS landing-page patterns
+- This pass should improve usability, accessibility, and conversion clarity while preserving Odigos’s utility-first and authority-oriented structure
+
+EXPECTED FILES TO CHANGE
+- client/src/pages/landing.tsx
+- possibly a shared accordion component if the FAQ uses one
+- possibly a shared header component only if needed for semantic reuse
+
+OUTPUT WHEN COMPLETE
+1. List every file changed
+2. Confirm how the hero CTA markup was fixed
+3. Confirm semantic landmarks added
+4. Confirm skip link added
+5. Confirm FAQ accessibility improvements
+6. Confirm pricing card CTA buttons added
+7. Confirm contrast/readability adjustment
+8. Confirm subtle section background variation
+9. Confirm no analyzer logic, Stripe flow, pricing behavior, or routing logic changed
