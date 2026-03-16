@@ -119,22 +119,22 @@ const sections = [
 export default function DealerPricingProblems() {
   useEffect(() => {
     return setSeoMeta({
-      title: "Dealer Pricing Problems: Guides for U.S. Car Buyers | Odigos",
-      description: "Browse guides on hidden dealer fees, forced add-ons, the monthly payment trap, out-the-door pricing, and common dealership tactics — all written for U.S. car buyers.",
+      title: "Dealer Tactics: Pricing Tricks and Negotiation Guides | Odigos",
+      description: "Guides on hidden dealer fees, forced add-ons, the monthly payment trap, out-the-door pricing, and common dealership tactics — written for U.S. car buyers.",
       path: "/dealer-pricing-problems",
     });
   }, []);
 
   return (
-    <ArticleLayout title="Dealer Pricing Problems" showBreadcrumbs={false}>
+    <ArticleLayout title="Dealer Tactics" showBreadcrumbs={false}>
       <h1
         className="text-3xl md:text-4xl font-bold tracking-tight mb-4 leading-tight"
         data-testid="text-hub-headline"
       >
-        Dealer Pricing Problems
+        Dealer Tactics
       </h1>
       <p className="text-lg text-muted-foreground mb-10 leading-relaxed" data-testid="text-hub-intro">
-        Practical guides for U.S. car buyers — covering hidden fees, forced add-ons, financing tactics, and how to get a clear out-the-door price before you sign anything.
+        Common pricing tricks, hidden fees, and negotiation traps — explained for U.S. car buyers.
       </p>
 
       <div className="space-y-12" data-testid="section-hub-articles">
