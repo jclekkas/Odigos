@@ -1,0 +1,63 @@
+Update Task #24 (UI/UX Authority Pass) with the following refinements. 
+These are clarifications to ensure the header/logo improvements are materially visible and not implemented as minimal cosmetic tweaks.
+
+Do NOT change the overall scope of the task. 
+Do NOT introduce redesigns, new pages, pricing changes, analyzer logic changes, routing changes, or copy rewrites.
+
+The goal is to strengthen the implementation instructions so the authority improvements are clear and measurable.
+
+HEADER / LOGO TASK — CLARIFICATION
+
+Replace the first sentence of Task 1 with:
+
+Increase the visual authority of the logo. The current logo sizing (h-9 md:h-10) reads too small for the brand anchor. Increase the logo scale meaningfully (approximately 20–35% larger than current) and rebalance the header layout accordingly so the brand clearly anchors the top-left region.
+
+Add the following implementation requirements to Task 1:
+
+• Ensure the logo aligns with the main page container/grid used throughout the site so the header feels structurally intentional and not floating.
+
+• Adjust header vertical padding as necessary so the enlarged logo does not feel cramped within the header container.
+
+• Maintain crisp rendering and spacing in both light and dark themes.
+
+• On mobile breakpoints, ensure the logo remains clearly legible and does not collapse into a tiny or cramped treatment.
+
+• Preserve the existing header layout logic and navigation behavior.
+
+ANALYZER MODULE TASK — CLARIFICATION
+
+Add this line to Task 2:
+
+The analyzer module should visually read as the engine of the page. Its container should feel slightly more deliberate than surrounding sections through subtle border, surface contrast, and spacing — without appearing like a flashy SaaS card.
+
+STATIC OUTPUT PREVIEW BLOCK — CLARIFICATION
+
+Add this constraint to Task 3:
+
+The preview block should resemble a realistic excerpt of Odigos analysis output rather than a stylized UI card. Treat it as a sample result excerpt, not a dashboard or decorative component.
+
+GLOBAL DESIGN CONSTRAINT
+
+Add the following rule to the Out of Scope section:
+
+Do not introduce new color tokens, typography systems, or component styles that diverge from the current design language. Improvements should refine the existing system rather than create a parallel design system.
+
+FILE REFERENCE CLARIFICATION
+
+Replace:
+
+client/src/pages/home.tsx:670–955
+
+with:
+
+client/src/pages/home.tsx (analyzer section)
+
+DONE CRITERIA REMAIN THE SAME
+
+All original success criteria remain unchanged:
+• Header/logo noticeably stronger
+• Analyzer module visually emphasized
+• Landing page hierarchy improved
+• Static preview block added
+• No changes to analyzer logic, pricing, routing, or prompts
+• Accessibility improvements preserved

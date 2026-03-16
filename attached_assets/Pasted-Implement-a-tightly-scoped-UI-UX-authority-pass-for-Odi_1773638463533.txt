@@ -1,0 +1,187 @@
+Implement a tightly scoped UI/UX authority pass for Odigos.
+
+This is NOT a redesign.
+This is NOT a rebrand.
+This is NOT a product logic change.
+
+Your goal is to make Odigos feel more trustworthy, calm, authoritative, and visually deliberate — while preserving the current product flow, copy substance, routes, pricing, and analyzer behavior.
+
+PRIMARY OBJECTIVE
+
+Improve the visual presentation of Odigos so it feels less like an indie AI tool and more like a serious consumer protection / buyer advocacy product.
+
+The biggest priority is the logo/header system:
+- the logo currently feels too small
+- the logo placement lacks authority
+- the logo does not anchor the page
+- the header overall feels too weak relative to the importance of the brand
+
+NON-NEGOTIABLE CONSTRAINTS
+
+Do NOT:
+- change pricing
+- change analyzer logic
+- change prompts
+- change routing
+- add accounts
+- add dashboards
+- add new pages unless absolutely necessary
+- rewrite the landing page copy wholesale
+- cut the educational page content in half
+- convert the whole site to a light theme
+- introduce flashy startup graphics, stock photos, or decorative illustrations
+- add fake dashboards or generic SaaS mockups
+- add animations unless extremely subtle and already aligned with current code style
+
+You MAY:
+- improve spacing
+- improve hierarchy
+- improve section rhythm
+- improve header/logo treatment
+- improve CTA clarity
+- improve semantic HTML / accessibility
+- improve typography scale and contrast
+- tighten borders, surfaces, and layout structure
+- add a simple static example-output preview card if it can be done cleanly and without feeling flashy
+
+DESIGN DIRECTION
+
+Odigos should feel:
+- calm
+- serious
+- clear
+- sharp
+- trustworthy
+- consumer-protective
+- not flashy
+- not playful
+- not "AI startup"
+
+Think:
+- serious fintech restraint
+- consumer advocacy
+- editorial clarity
+- crisp dark theme execution
+
+Do NOT push the aesthetic toward:
+- neon/glow
+- heavy gradients
+- soft playful SaaS
+- generic startup landing page patterns
+
+MOST IMPORTANT TASK: HEADER + LOGO AUTHORITY FIX
+
+This is the top priority.
+
+Audit the current header/logo implementation and improve it substantially without requiring a full brand redesign.
+
+Requirements:
+1. Increase the visual authority of the logo in the header
+   - make it larger
+   - improve spacing around it
+   - ensure it visually anchors the top-left area
+   - it should read clearly on both landing and article pages
+
+2. Improve logo placement
+   - it should feel intentionally positioned, not floating or incidental
+   - align it to a strong layout container
+   - ensure vertical alignment with nav/actions is polished
+
+3. Improve logo treatment
+   - if the current logo mark/icon is hurting clarity or authority, simplify presentation
+   - prioritize a clean, high-confidence wordmark treatment over cleverness
+   - if the icon remains, it must feel subordinate to a stronger wordmark
+   - do NOT invent a whole new brand identity; refine what exists into a cleaner, more authoritative header presence
+
+4. Improve responsive behavior
+   - logo should not become tiny or awkward on mobile
+   - spacing and scale should remain intentional across breakpoints
+   - avoid oversized, wrapping, or unbalanced behavior
+
+5. Header should feel more premium and stable
+   - slightly stronger structure
+   - cleaner spacing
+   - more deliberate separation from page content
+   - can use a subtle bottom border / backdrop treatment / background treatment if already consistent with the site
+
+SECOND PRIORITY: ANALYZER MODULE EMPHASIS
+
+The analyzer is the product.
+Make sure it visually reads as the primary functional object on the page.
+
+Requirements:
+- give it a stronger container presence
+- use crisp border/surface treatment
+- improve spacing inside the module
+- ensure CTA hierarchy is obvious
+- make it feel like the engine of the page, not just another card
+
+THIRD PRIORITY: VISUAL RHYTHM / SECTION HIERARCHY
+
+The page content should remain long-form, but should feel easier to scan.
+
+Requirements:
+- improve spacing between sections
+- introduce restrained section differentiation where useful
+- improve heading hierarchy
+- improve supporting text contrast where needed
+- avoid making the page feel like one continuous slab of dark background
+- keep it calm and restrained, not over-designed
+
+FOURTH PRIORITY: ACCESSIBILITY + HTML CORRECTNESS
+
+Fix known quality issues if present, especially:
+- invalid nested interactive elements
+- missing skip-to-content link
+- missing or weak semantic landmarks
+- FAQ accordion aria-expanded / aria-controls issues
+- heading structure issues
+- keyboard/focus clarity
+
+These should be fixed cleanly with minimal visual disruption.
+
+OPTIONAL: STATIC OUTPUT PREVIEW BLOCK
+
+Only if it can be added elegantly without making the page feel like a startup dashboard.
+
+You may add a simple static “example analysis result” preview block that shows the style of Odigos output, such as:
+- a verdict label
+- a few detected issues
+- short, realistic text
+
+Requirements:
+- must feel editorial / product-real, not decorative
+- no charts
+- no fake analytics
+- no glossy mockups
+- no browser-window gimmicks
+- omit entirely if it weakens the page
+
+FILES / SCOPE
+
+Audit the codebase and make the minimum necessary changes to achieve the above.
+Prefer changing existing components/pages/styles rather than creating new architecture.
+
+If a shared header/nav component exists, update it there.
+If the logo implementation is duplicated across pages, normalize it carefully.
+
+DONE LOOKS LIKE
+
+1. The header feels materially stronger and more authoritative.
+2. The logo is noticeably improved in size, placement, spacing, and presence.
+3. The brand no longer feels visually incidental.
+4. The analyzer section feels like the core engine of the site.
+5. The page is easier to scan without losing educational trust-building content.
+6. The dark theme feels crisper and more professional.
+7. Accessibility / semantic issues are corrected where present.
+8. No product logic, pricing, routing, or analyzer behavior has changed.
+
+OUTPUT FORMAT
+
+At the end, provide:
+1. exact files changed
+2. concise explanation of what changed in the header/logo system
+3. concise explanation of what changed in the analyzer module
+4. concise explanation of section hierarchy / spacing improvements
+5. concise explanation of any accessibility fixes
+6. confirmation that pricing, analyzer logic, prompts, and routes were not changed
