@@ -46,6 +46,9 @@ export default function Landing() {
       <main id="main-content">
         <section className="pt-12 pb-20 md:pt-16 md:pb-28 px-6">
           <div className="max-w-3xl mx-auto text-center">
+            <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4" data-testid="text-authority-framing">
+              Independent analysis for car buyers
+            </p>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.015em] leading-[1.25] text-foreground max-w-4xl mx-auto" data-testid="text-hero-headline">
               Spot dealer pricing tricks before you walk into the dealership.
             </h1>

@@ -932,6 +932,7 @@ export default function Home() {
               </Card>
             </Collapsible>
 
+            <div className="border-t border-border/40 pt-5">
             <Button
               type="submit"
               size="lg"
@@ -948,10 +949,11 @@ export default function Home() {
                 "Analyze Deal"
               )}
             </Button>
-            <p className="text-xs text-muted-foreground text-center" data-testid="text-data-disclosure">
+            <p className="text-xs text-muted-foreground text-center mt-3" data-testid="text-data-disclosure">
               Pricing signals (not your personal details) are stored anonymously to improve our dealer fee database.{" "}
               <a href="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</a>
             </p>
+            </div>
           </form>
         </Form>
         </div>
