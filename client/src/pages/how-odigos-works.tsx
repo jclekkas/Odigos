@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleLayout from "@/components/ArticleLayout";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, FileText, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { ArrowRight, AlertTriangle, CheckCircle2 } from "lucide-react";
 
 export default function HowOdigosWorks() {
   useEffect(() => {
