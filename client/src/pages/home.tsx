@@ -1044,6 +1044,18 @@ export default function Home() {
         </Form>
         </div>
 
+        {!result && (
+          <div className="border-t pt-6 mt-2">
+            <p className="text-sm font-medium text-muted-foreground mb-2">Why Odigos instead of generic AI?</p>
+            <ul className="space-y-1 text-xs text-muted-foreground list-disc list-inside">
+              <li>Built specifically for car dealer quotes — not general answers</li>
+              <li>Consistent detection of fees, add-ons, and missing pricing</li>
+              <li>Structured output with clear next steps</li>
+              <li>Designed for real negotiation situations</li>
+            </ul>
+          </div>
+        )}
+
         {result && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="border-t border-border/50 pt-8">
