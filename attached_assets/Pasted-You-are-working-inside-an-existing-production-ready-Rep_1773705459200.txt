@@ -1,0 +1,168 @@
+You are working inside an existing production-ready Replit app for Odigos.
+
+Your task is to prepare the codebase for a UI migration.
+This phase is **setup only** — do NOT implement any UI changes yet.
+
+---
+
+## PRIMARY GOAL
+
+Create a safe baseline so we can migrate a new frontend (from a v0/Vercel design) **without breaking anything**.
+
+---
+
+## NON-NEGOTIABLE CONSTRAINTS
+
+DO NOT:
+
+* Modify any analyzer logic
+* Modify API routes or endpoints
+* Modify the upload flow (image/PDF handling, OCR, GPT calls)
+* Modify Stripe/payment logic
+* Modify routing behavior
+* Modify existing page structure or layout
+* Change any copy or UI yet
+* Add new features
+* Refactor existing components
+
+This phase is strictly **stability + backup + visibility**.
+
+---
+
+## TASKS TO COMPLETE
+
+### 1. Create a full safety snapshot
+
+* Ensure the project is in a clean state
+* If git is enabled:
+
+  * Create a commit with message: "Pre-UI-migration baseline"
+* If git is NOT enabled:
+
+  * Duplicate the following critical files with a `.backup` suffix:
+
+client/src/pages/landing.tsx
+client/src/pages/analyze.tsx (or equivalent analyzer page)
+client/src/App.tsx
+client/src/components/**/* (all shared UI components)
+client/src/lib/**/* (if used for API/helpers)
+server/routes.ts
+Any file related to Stripe or uploads
+
+Do NOT modify the originals.
+
+---
+
+### 2. Map the current architecture (read-only analysis)
+
+Create a new file:
+
+`migration-map.md`
+
+Document the following:
+
+#### A. Pages
+
+* List all pages and their routes
+* Identify which file controls each route
+
+#### B. Core flows
+
+Identify where each of these lives (file + function names):
+
+* Analyze submission (text input)
+* File upload (image/PDF)
+* OCR / GPT processing
+* API calls to /api/analyze
+* Stripe checkout flow
+
+#### C. Shared UI components
+
+List key reusable components:
+
+* Button
+* Card
+* Input/Textarea
+* Layout wrappers
+* Header/Footer (if present)
+
+#### D. Styling system
+
+* Confirm if Tailwind is used
+* Identify global CSS or theme files
+* Note any custom tokens (colors, shadows, spacing)
+
+This is documentation only — no code changes.
+
+---
+
+### 3. Identify safe insertion points
+
+In `migration-map.md`, add a section:
+
+“Safe UI Replacement Zones”
+
+List:
+
+* Sections of landing page that are purely presentational
+* Components that do NOT affect logic
+* Areas safe to replace without breaking flows
+
+Examples:
+
+* Hero section
+* Marketing sections
+* Pricing cards
+* FAQ
+* Footer
+
+---
+
+### 4. Add a temporary “migration staging” folder
+
+Create:
+
+`client/src/migration/`
+
+Inside it, create empty placeholder files:
+
+* LandingHeroV0.tsx
+* PricingSectionV0.tsx
+* FaqSectionV0.tsx
+* HeaderV0.tsx
+* FooterV0.tsx
+
+These are placeholders only. Do not import or use them yet.
+
+---
+
+### 5. Verify app stability
+
+Run the app and confirm:
+
+* Landing page loads
+* Analyzer page works
+* Text submission works
+* File upload works
+* API calls succeed
+* No console errors
+* No TypeScript errors (excluding known Replit integration issues)
+
+---
+
+## DEFINITION OF DONE
+
+* Backup/snapshot is created
+* migration-map.md exists and is complete
+* migration staging folder exists with placeholder files
+* App runs exactly as before with zero behavior changes
+
+---
+
+## IMPORTANT
+
+You are NOT redesigning anything yet.
+You are NOT touching UI yet.
+You are preparing the system so the next phase can be done safely.
+
+If something is unclear, default to **not changing anything**.

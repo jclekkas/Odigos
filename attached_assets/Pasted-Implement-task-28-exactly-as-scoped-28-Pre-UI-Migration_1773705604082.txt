@@ -1,0 +1,134 @@
+Implement task #28 exactly as scoped.
+
+#28 — Pre-UI-Migration Baseline Setup
+
+## Objective
+Prepare the codebase for a future UI migration without changing any product behavior. This task is setup/documentation only. The goal is to create a safety snapshot, document the current architecture, and add a staging folder for future UI migration work.
+
+## Non-negotiable constraints
+Do NOT:
+- make any UI changes
+- change any copy
+- change any logic
+- change any routes
+- change any API behavior
+- change any analyzer behavior
+- change any upload/OCR behavior
+- change any Stripe/payment behavior
+- refactor existing code
+- import or use the new migration placeholder files anywhere
+
+This task must leave the app behaving exactly as it does now.
+
+## Required deliverables
+
+### 1) Git snapshot
+Create a git commit with the exact message:
+
+Pre-UI-migration baseline
+
+This commit should capture the current clean state before future UI migration work.
+
+### 2) migration-map.md
+Create a file at the project root named:
+
+migration-map.md
+
+It must document the following clearly and concretely based on the current codebase.
+
+#### A. Pages and routes
+Using `client/src/App.tsx`, list all pages/routes and the file that controls each route.
+
+#### B. Core flows
+Document where each of these lives, including file names and relevant functions/components where applicable:
+- analyze submission
+- file upload
+- OCR / text extraction
+- GPT / OpenAI processing
+- `/api/analyze` flow
+- Stripe checkout flow
+
+Use these files as starting points:
+- `client/src/pages/home.tsx`
+- `client/src/pages/landing.tsx`
+- `server/routes.ts`
+- `server/stripeClient.ts`
+- `server/extractText.ts`
+- `server/openaiClient.ts`
+- `server/ruleEngine.ts`
+
+#### C. Shared UI components
+List the important reusable UI/layout components currently in use, especially things like:
+- header
+- article/page layout
+- shared presentational wrappers/components
+
+Use these files as starting points:
+- `client/src/components/SiteHeader.tsx`
+- `client/src/components/ArticleLayout.tsx`
+
+#### D. Styling system
+Document the styling stack currently in use, including:
+- whether Tailwind is used
+- whether shadcn/ui is present
+- global styling file(s), especially `client/src/index.css`
+- any notable custom tokens/utilities/themes already defined there
+
+#### E. Safe UI Replacement Zones
+Add a section called exactly:
+
+Safe UI Replacement Zones
+
+List areas that are purely presentational and safe to replace later without affecting logic. Be specific. Examples may include:
+- landing page hero
+- marketing sections
+- pricing section
+- FAQ section
+- footer
+- static trust sections
+Only include areas that are actually safe based on the current implementation.
+
+### 3) Migration staging folder
+Create this folder:
+
+client/src/migration/
+
+Inside it, create these five empty placeholder files:
+- `LandingHeroV0.tsx`
+- `PricingSectionV0.tsx`
+- `FaqSectionV0.tsx`
+- `HeaderV0.tsx`
+- `FooterV0.tsx`
+
+They must remain unused and unimported.
+
+### 4) Stability verification
+Verify that the app still starts cleanly and behaves exactly as before.
+Confirm:
+- landing page loads
+- no behavior changes were introduced
+- no TypeScript errors were introduced by this task
+- no console errors were introduced by this task
+
+If there are any pre-existing unrelated issues, distinguish them clearly from anything introduced by this task.
+
+## Relevant files
+- `client/src/App.tsx:35-65`
+- `client/src/pages/home.tsx`
+- `client/src/pages/landing.tsx`
+- `server/routes.ts`
+- `server/stripeClient.ts`
+- `server/extractText.ts`
+- `server/openaiClient.ts`
+- `server/ruleEngine.ts`
+- `client/src/components/SiteHeader.tsx`
+- `client/src/components/ArticleLayout.tsx`
+- `client/src/index.css`
+
+## Output format
+When done, report back with:
+1. exact files created/modified
+2. confirmation that the git commit was created
+3. a concise summary of what `migration-map.md` contains
+4. stability verification results
+5. confirmation that no UI/logic/route/payment/upload changes were made
