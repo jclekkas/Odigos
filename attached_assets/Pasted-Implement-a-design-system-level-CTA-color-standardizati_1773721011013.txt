@@ -1,0 +1,104 @@
+Implement a design-system-level CTA color standardization for Odigos.
+
+This is NOT a redesign.
+This is NOT a layout change.
+This is a controlled refactor to centralize CTA styling using a reusable color token and Button variant.
+
+PRIMARY GOAL
+Replace hardcoded CTA colors with a single reusable “primary CTA” color token and ensure all primary actions use it consistently.
+
+NON-NEGOTIABLE CONSTRAINTS
+- Do NOT change layout, spacing, or structure of any page
+- Do NOT change copy
+- Do NOT modify analyzer logic, Stripe, or routing
+- Do NOT introduce new components unless required for Button variant extension
+- Do NOT restyle non-CTA elements
+- Keep all changes minimal and scoped
+
+---
+
+TASKS
+
+1) ADD CTA COLOR TOKEN TO DESIGN SYSTEM
+
+In tailwind.config.ts (or equivalent):
+
+- Extend colors with:
+  cta:
+    DEFAULT: "#8A96A3"
+    hover: "#7A8795"
+    foreground: "#FFFFFF"
+
+- Do NOT remove or modify existing color tokens
+
+---
+
+2) STANDARDIZE PRIMARY BUTTON VARIANT
+
+Locate the shared Button component (client/src/components/ui/button.tsx or equivalent).
+
+- Add or update a "primary" (or "default" if already primary) variant to use:
+  - bg-cta
+  - text-cta-foreground
+  - hover:bg-cta-hover
+
+- Ensure:
+  - No hardcoded hex values remain in the Button component
+  - Existing variants (outline, ghost, etc.) are untouched
+
+---
+
+3) MIGRATE EXISTING PRIMARY CTAs
+
+Across the app:
+- Replace any hardcoded CTA styles like:
+  bg-[#...] or custom blue classes used for main actions
+
+With:
+  <Button variant="primary">
+
+Targets include (but are not limited to):
+- “Start Review” button on /analyze
+- “Check a Dealer Quote” buttons
+- Paid conversion CTAs
+- Any primary submit or forward action
+
+Do NOT:
+- Change secondary buttons (outline, ghost)
+- Change link styling
+- Change non-interactive elements
+
+---
+
+4) PRESERVE VISUAL CONSISTENCY
+
+- Ensure hover states feel identical or slightly improved (no jarring change)
+- Ensure text contrast remains accessible (white on CTA background)
+- Do NOT introduce animation, gradients, or new effects
+
+---
+
+5) VERIFY NO COLOR DRIFT
+
+After migration:
+- Search for any remaining hardcoded CTA-like blue values
+- Ensure all primary CTAs now rely on the shared token
+
+---
+
+DELIVERABLES REQUIRED
+
+1. Full unified diff (no commit)
+2. List of files modified
+3. Confirmation:
+   - CTA color token added
+   - Button variant updated
+   - All primary CTAs migrated
+   - No unintended visual/layout changes
+4. App builds and runs cleanly
+
+---
+
+IMPORTANT
+This is a consistency pass, not a visual redesign.
+If anything feels like a redesign, you have gone too far.

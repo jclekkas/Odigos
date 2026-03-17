@@ -38,7 +38,7 @@ export default function SiteHeader() {
           </Link>
         </nav>
 
-        <Button size="sm" asChild data-testid="button-cta-header">
+        <Button variant="cta" size="sm" asChild data-testid="button-cta-header">
           <Link href="/analyze">Check a Dealer Quote</Link>
         </Button>
       </div>

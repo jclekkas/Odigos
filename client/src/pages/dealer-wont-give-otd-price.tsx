@@ -193,7 +193,7 @@ export default function DealerWontGiveOtdPrice() {
                 Paste it into Odigos and we'll flag what's missing, risky, or unclear — before you visit.
               </p>
               <Link href="/analyze">
-                <Button size="sm" data-testid="button-cta-mid-article">
+                <Button variant="cta" size="sm" data-testid="button-cta-mid-article">
                   Analyze My Dealer Quote
                 </Button>
               </Link>

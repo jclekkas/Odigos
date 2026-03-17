@@ -67,7 +67,7 @@ export default function Landing() {
               </p>
 
               <div className="mt-14 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                <Button size="lg" className="gap-2" asChild data-testid="button-cta-hero">
+                <Button variant="cta" size="lg" className="gap-2" asChild data-testid="button-cta-hero">
                   <Link href="/analyze" onClick={() => trackCtaClick("hero-analyze", "Check a Dealer Quote")}>
                     Check a Dealer Quote
                     <ArrowRight className="h-4 w-4" />
@@ -368,6 +368,7 @@ export default function Landing() {
                   </li>
                 </ul>
                 <Button
+                  variant="cta"
                   asChild
                   className="w-full"
                   data-testid="button-cta-full-review"
@@ -447,7 +448,7 @@ export default function Landing() {
             <h2 className="text-2xl md:text-3xl font-bold mb-6">
               Don't walk into a $30–$60k decision blind.
             </h2>
-            <Button asChild size="lg" className="text-base rounded-lg" data-testid="button-cta-final">
+            <Button variant="cta" asChild size="lg" className="text-base rounded-lg" data-testid="button-cta-final">
               <Link href="/analyze">Check This Deal</Link>
             </Button>
           </div>

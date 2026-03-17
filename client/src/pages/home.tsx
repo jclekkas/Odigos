@@ -960,6 +960,7 @@ export default function Home() {
 
             <div className="border-t border-border/40 pt-5">
             <Button
+              variant="cta"
               type="submit"
               size="lg"
               className="w-full"

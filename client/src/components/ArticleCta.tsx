@@ -14,7 +14,7 @@ export default function ArticleCta() {
         Paste the message or quote you received. Odigos checks for missing out-the-door pricing, hidden fees, and common dealer tactics — in about 10 seconds.
       </p>
       <Link href="/analyze">
-        <Button size="lg" data-testid="button-cta-article">
+        <Button variant="cta" size="lg" data-testid="button-cta-article">
           Check My Deal with Odigos
         </Button>
       </Link>

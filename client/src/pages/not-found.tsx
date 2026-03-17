@@ -18,7 +18,7 @@ export default function NotFound() {
           The page you're looking for doesn't exist or may have moved. If you were checking a dealer quote, head to the analyzer below.
         </p>
         <div className="flex flex-col sm:flex-row items-center gap-3">
-          <Button asChild size="lg" className="gap-2" data-testid="button-404-analyze">
+          <Button variant="cta" asChild size="lg" className="gap-2" data-testid="button-404-analyze">
             <Link href="/analyze">
               Check a Dealer Quote
               <ArrowRight className="h-4 w-4" />
