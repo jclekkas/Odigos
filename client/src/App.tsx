@@ -30,6 +30,7 @@ import GuidesRedirect from "@/pages/guides-redirect";
 import AdminMetrics from "@/pages/admin-metrics";
 import Privacy from "@/pages/privacy";
 import DealerPricingProblems from "@/pages/dealer-pricing-problems";
+import HowOdigosWorks from "@/pages/how-odigos-works";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -62,6 +63,7 @@ function Router() {
       <Route path="/admin/metrics" component={AdminMetrics} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/dealer-pricing-problems" component={DealerPricingProblems} />
+      <Route path="/how-odigos-works" component={HowOdigosWorks} />
       <Route component={NotFound} />
     </Switch>
   );

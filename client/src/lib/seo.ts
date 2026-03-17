@@ -1,4 +1,4 @@
-const SITE_URL = "https://odigos.replit.app";
+const SITE_URL = import.meta.env.VITE_SITE_URL || "https://odigos.replit.app";
 
 interface SeoMeta {
   title: string;

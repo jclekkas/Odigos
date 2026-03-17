@@ -535,10 +535,11 @@ GO/NO-GO/NEED-MORE-INFO:
   });
 
   app.get("/api/metrics", async (req, res) => {
-    const adminKey = req.query.key;
-    const expectedKey = process.env.ADMIN_KEY || "odigos-admin-2024";
-    
-    if (adminKey !== expectedKey) {
+    const configuredKey = process.env.ADMIN_KEY;
+    if (!configuredKey) {
+      return res.status(503).json({ error: "Admin access not configured" });
+    }
+    if (req.query.key !== configuredKey) {
       return res.status(401).json({ error: "Unauthorized" });
     }
     
@@ -557,10 +558,11 @@ GO/NO-GO/NEED-MORE-INFO:
   });
 
   app.post("/api/admin/import-stripe-history", async (req, res) => {
-    const adminKey = req.query.key;
-    const expectedKey = process.env.ADMIN_KEY || "odigos-admin-2024";
-    
-    if (adminKey !== expectedKey) {
+    const configuredKey = process.env.ADMIN_KEY;
+    if (!configuredKey) {
+      return res.status(503).json({ error: "Admin access not configured" });
+    }
+    if (req.query.key !== configuredKey) {
       return res.status(401).json({ error: "Unauthorized" });
     }
     
@@ -681,12 +683,9 @@ GO/NO-GO/NEED-MORE-INFO:
   });
 
   app.get("/robots.txt", (_req, res) => {
+    const siteUrl = process.env.SITE_URL || "https://odigos.replit.app";
     res.type("text/plain");
-    res.send(
-`User-agent: *
-Allow: /
-Sitemap: https://odigos.replit.app/sitemap.xml`
-    );
+    res.send(`User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml`);
   });
 
   return httpServer;
