@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { capture } from "@/lib/analytics";
 
 function scrollToHash(hash: string) {
   if (window.location.pathname === "/") {
@@ -48,7 +49,7 @@ export default function SiteHeader() {
         </nav>
 
         <Button variant="cta" size="sm" asChild data-testid="button-cta-header">
-          <Link href="/analyze">Check a Dealer Quote</Link>
+          <Link href="/analyze" onClick={() => capture("landing_cta_clicked", { location: "header", cta_text: "Check a Dealer Quote" })}>Check a Dealer Quote</Link>
         </Button>
       </div>
     </header>

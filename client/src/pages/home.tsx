@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { trackPageView, trackFormStart, trackFormFocus } from "@/lib/tracking";
+import { capture } from "@/lib/analytics";
 import { setSeoMeta } from "@/lib/seo";
 import { 
   ChevronDown, 
@@ -516,10 +517,13 @@ export default function Home() {
   const [uploadLoading, setUploadLoading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const inputStartedRef = useRef(false);
+  const resultFiredRef = useRef(false);
   const { toast } = useToast();
 
   useEffect(() => {
     trackPageView("/analyze");
+    capture("analyze_page_viewed", { route: "/analyze" });
     return setSeoMeta({
       title: "Analyze Your Car Deal | Odigos",
       description: "Paste dealer texts, emails, or quotes into Odigos. Get an instant GO/NO-GO recommendation with hidden fee detection and suggested questions for the dealer.",
@@ -626,6 +630,7 @@ export default function Home() {
       try {
         if (product === "deal_clarity" || product === "negotiation_pack") {
           localStorage.setItem("paid_deal_clarity", "true");
+          capture("paid_conversion", { product: "full_review" });
           setUnlockTier("49");
           toast({
             title: "Payment Successful",
@@ -671,6 +676,13 @@ export default function Home() {
 
   const purchaseType = form.watch("purchaseType");
 
+  function getInputLengthBucket(length: number): string {
+    if (length < 100) return "1-99";
+    if (length < 300) return "100-299";
+    if (length < 600) return "300-599";
+    return "600+";
+  }
+
   const analyzeMutation = useMutation({
     mutationFn: async (data: FormValues) => {
       const payload = {
@@ -689,6 +701,10 @@ export default function Home() {
     },
     onSuccess: (data) => {
       setResult(data);
+      if (!resultFiredRef.current) {
+        resultFiredRef.current = true;
+        capture("analysis_completed", { result_available: true });
+      }
     },
     onError: (error) => {
       toast({
@@ -701,6 +717,11 @@ export default function Home() {
 
   const onSubmit = (data: FormValues) => {
     setResult(null);
+    resultFiredRef.current = false;
+    capture("analysis_submitted", {
+      input_mode: data.source ?? "paste",
+      input_length_bucket: getInputLengthBucket(data.dealerText.length),
+    });
     analyzeMutation.mutate(data);
   };
 
@@ -802,6 +823,18 @@ export default function Home() {
                               onChange={(e) => {
                                 field.onChange(e);
                                 if (uploadError) setUploadError(null);
+                              }}
+                              onInput={() => {
+                                if (!inputStartedRef.current) {
+                                  inputStartedRef.current = true;
+                                  capture("analysis_input_started", { input_method: "typing" });
+                                }
+                              }}
+                              onPaste={() => {
+                                if (!inputStartedRef.current) {
+                                  inputStartedRef.current = true;
+                                  capture("analysis_input_started", { input_method: "paste" });
+                                }
                               }}
                               placeholder="Paste the dealer's email, text message, or quote — any format works"
                               className="min-h-48 text-base resize-y"

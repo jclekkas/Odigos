@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { AlertTriangle, ArrowRight, Check, CheckCircle2, XCircle } from "lucide-react";
 import { trackPageView, trackCtaClick } from "@/lib/tracking";
+import { capture } from "@/lib/analytics";
 import SiteHeader from "@/components/SiteHeader";
 import SeoHead from "@/components/SeoHead";
 
@@ -92,13 +93,13 @@ export default function Landing() {
 
                 <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row lg:justify-start">
                   <Button variant="cta" size="lg" className="gap-2" asChild data-testid="button-cta-hero">
-                    <Link href="/analyze" onClick={() => trackCtaClick("hero-analyze", "Check a Dealer Quote")}>
+                    <Link href="/analyze" onClick={() => { trackCtaClick("hero-analyze", "Check a Dealer Quote"); capture("landing_cta_clicked", { location: "hero", cta_text: "Check a Dealer Quote" }); }}>
                       Check a Dealer Quote
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
                   <Button variant="outline" size="lg" asChild data-testid="button-try-bad">
-                    <Link href="/analyze?example=bad" onClick={() => trackCtaClick("hero-bad-example", "Try a bad deal example")}>
+                    <Link href="/analyze?example=bad" onClick={() => { trackCtaClick("hero-bad-example", "Try a bad deal example"); capture("landing_cta_clicked", { location: "hero", cta_text: "Try a bad deal example" }); }}>
                       Try a bad deal example
                     </Link>
                   </Button>
