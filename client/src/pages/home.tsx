@@ -1074,6 +1074,31 @@ export default function Home() {
               </CardContent>
             </Card>
 
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">How to use this</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex gap-2">
+                    <span className="shrink-0">&bull;</span>
+                    <span>Ask for a full itemized out-the-door price before discussing payments.</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="shrink-0">&bull;</span>
+                    <span>Push back on any add-ons that are not clearly optional.</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="shrink-0">&bull;</span>
+                    <span>If the dealer avoids giving clear answers, treat it as a red flag.</span>
+                  </li>
+                </ul>
+                <p className="text-xs text-muted-foreground pt-2">
+                  Use the full review if you want a ready-to-send reply and a complete breakdown.
+                </p>
+              </CardContent>
+            </Card>
+
             <DetectedFieldsCard fields={result.detectedFields} />
 
             {unlockTier === "free" ? (
