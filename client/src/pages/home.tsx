@@ -691,9 +691,9 @@ export default function Home() {
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">What you'll get</p>
           <ul className="space-y-1 text-sm text-muted-foreground" data-testid="list-what-you-get">
             <li>· GO / NO-GO recommendation</li>
-            <li>· Issues found and explained</li>
-            <li>· Missing information checklist</li>
-            <li>· Copy-paste reply for the dealer</li>
+            <li>· Issues found</li>
+            <li>· Missing info checklist</li>
+            <li>· Copy-paste dealer reply</li>
           </ul>
         </div>
 
