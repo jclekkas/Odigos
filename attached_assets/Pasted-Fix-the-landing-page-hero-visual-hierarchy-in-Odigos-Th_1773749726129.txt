@@ -1,0 +1,156 @@
+Fix the landing page hero visual hierarchy in Odigos.
+
+The current hero is structurally correct but visually too washed out, low-contrast, and hesitant. It feels flat and under-confident. This is hurting clarity and likely hurting conversion.
+
+This is a surgical visual correction only.
+
+DO NOT change:
+- headline copy
+- subheadline copy
+- bullet copy
+- CTA text
+- route destinations
+- layout structure
+- analyzer logic
+- pricing
+- backend
+- trust strip copy
+- preview card content
+
+ONLY improve contrast, emphasis, spacing, and hierarchy so the hero feels confident, premium, and clear.
+
+--------------------------------
+OBJECTIVE
+
+Keep the current hero content and structure, but fix the visual presentation so that:
+
+1. the headline feels dominant
+2. the primary CTA clearly stands out
+3. the preview card feels like a real product artifact
+4. the example-analysis link feels intentional, not accidental
+5. the whole hero feels more authoritative and less washed out
+
+--------------------------------
+TARGET FILE
+
+client/src/pages/landing.tsx
+
+Only modify the hero section and the trust strip directly below it.
+
+--------------------------------
+REQUIRED FIXES
+
+1. STRENGTHEN OVERALL CONTRAST
+
+The current gray-on-gray treatment is too weak.
+
+Adjust typography so that:
+- headline remains the strongest, darkest element
+- subheadline is darker and easier to read
+- bullet list is not lighter than the subheadline
+- small helper/link text is still secondary, but readable
+
+Do NOT introduce random new colors.
+Use existing foreground / muted-foreground / card / border tokens more effectively.
+
+--------------------------------
+2. MAKE THE PRIMARY CTA CLEARLY DOMINANT
+
+The primary CTA currently blends in too much.
+
+Improve the visual dominance of the primary button using existing system styling only:
+- stronger contrast vs surrounding elements
+- slightly stronger visual weight
+- if the current button variant is too soft, adjust only within the existing design system/tokens
+- keep the secondary CTA clearly secondary
+
+The primary CTA should immediately read as the main action.
+Do NOT change the button text.
+
+--------------------------------
+3. FIX THE “SEE AN EXAMPLE ANALYSIS” LINK
+
+Right now it reads like leftover or accidental text.
+
+Make it feel intentional but clearly secondary:
+- slightly better spacing below the CTA row
+- readable muted styling
+- optional/helpful tone
+- should not compete with the buttons
+- should not look invisible
+
+Keep it as a text link, not a button.
+
+--------------------------------
+4. UPGRADE THE PREVIEW CARD HIERARCHY
+
+The preview card needs to feel more like actual output and less like filler.
+
+Improve with existing tokens only:
+- clearer separation between card sections
+- stronger heading hierarchy
+- stronger emphasis on the verdict line
+- make “Detected issues” and “Suggested next step” easier to scan
+- slightly stronger card definition (border/shadow/background contrast) without making it flashy
+
+Do NOT change the content inside the card.
+Do NOT add animation.
+Do NOT add new components.
+
+--------------------------------
+5. TIGHTEN SPACING AND VISUAL FLOW
+
+Ensure the hero reads in this order:
+- eyebrow
+- headline
+- subheadline
+- bullets
+- CTA row
+- example link
+- reassurance line
+
+Spacing should feel deliberate and premium.
+Avoid the current “everything sits in a gray stack” effect.
+
+--------------------------------
+6. PRESERVE CLEANNESS
+
+Important:
+Do NOT overcorrect.
+
+This should NOT become:
+- loud
+- salesy
+- high-saturation
+- overdesigned
+- startup-glossy
+
+Target feeling:
+- serious
+- clear
+- trustworthy
+- premium
+- calm
+
+Think:
+consumer protection tool with strong authority
+
+NOT:
+marketing landing page
+
+--------------------------------
+DONE LOOKS LIKE
+
+- the hero feels confident and readable
+- the CTA stands out immediately
+- the preview card feels tangible and real
+- the link feels intentional and helpful
+- the section no longer looks washed out or flat
+
+--------------------------------
+RETURN
+
+Provide:
+1. exact classes changed
+2. unified diff
+3. one-paragraph explanation of how hierarchy was improved without redesigning the page
