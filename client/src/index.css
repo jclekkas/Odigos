@@ -9,10 +9,10 @@
   --opaque-button-border-intensity: -8;
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
-  --background: 0 0% 100%;
+  --background: 36 25% 97%;
   --foreground: 0 0% 9%;
-  --border: 0 0% 89%;
-  --card: 0 0% 98%;
+  --border: 36 14% 88%;
+  --card: 36 20% 95%;
   --card-foreground: 0 0% 9%;
   --card-border: 0 0% 94%;
   --sidebar: 0 0% 96%;
@@ -28,10 +28,10 @@
   --popover-border: 0 0% 90%;
   --primary: 217 91% 35%;
   --primary-foreground: 217 91% 98%;
-  --secondary: 0 0% 91%;
+  --secondary: 36 18% 91%;
   --secondary-foreground: 0 0% 9%;
-  --muted: 210 6% 93%;
-  --muted-foreground: 210 6% 38%;
+  --muted: 36 12% 92%;
+  --muted-foreground: 30 8% 38%;
   --accent: 212 8% 91%;
   --accent-foreground: 212 8% 15%;
   --destructive: 0 84% 35%;
