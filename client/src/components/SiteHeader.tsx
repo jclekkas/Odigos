@@ -9,7 +9,7 @@ export default function SiteHeader() {
     >
       <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4 sm:px-6">
         <Link href="/" data-testid="link-logo-home">
-          <span className="font-serif text-xl font-semibold tracking-tight text-foreground cursor-pointer">
+          <span className="font-serif text-2xl font-semibold tracking-tight text-foreground cursor-pointer">
             Odigos
           </span>
         </Link>
