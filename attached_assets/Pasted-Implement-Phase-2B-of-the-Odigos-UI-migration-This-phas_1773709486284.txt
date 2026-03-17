@@ -1,0 +1,175 @@
+Implement Phase 2B of the Odigos UI migration.
+
+This phase is a tightly scoped landing-page presentation transplant inside the existing Replit app.
+
+---
+
+## PRIMARY GOAL
+
+Migrate the following landing-page sections toward the provided v0/Vercel design reference:
+
+- What Odigos Reviews / features section
+- Sample Review Output section
+- Pricing section
+- FAQ section
+
+The existing Replit app remains the behavior source of truth.
+The provided v0 code is the presentation source of truth.
+
+---
+
+## CRITICAL CONSTRAINTS
+
+Do NOT:
+- change analyzer logic
+- change upload flow
+- change OCR / extraction flow
+- change GPT/OpenAI flow
+- change Stripe/payment flow
+- change routes
+- change API contracts
+- touch backend files
+- touch the analyzer page
+- modify any shared UI primitives
+- modify global CSS
+- modify Tailwind config
+- modify any non-landing-page files
+- change CTA destinations unless they already cleanly map to existing app behavior
+- auto-commit or auto-merge anything
+
+---
+
+## FILE SCOPE
+
+Prefer keeping this limited to:
+
+- client/src/pages/landing.tsx
+
+Only touch any additional file if absolutely necessary for a directly related presentational reason, and explicitly report it.
+
+---
+
+## PRESERVE BEHAVIOR
+
+If there is any conflict:
+- preserve current Replit behavior
+- adapt the v0 presentation safely
+
+That means:
+- preserve existing CTA destinations
+- preserve existing tracking handlers where they already exist
+- preserve accessibility and semantic structure
+- preserve current pricing/payment behavior
+- preserve current route behavior
+
+---
+
+## PRICING SOURCE OF TRUTH
+
+Current Odigos pricing is **$49**, and this matches the v0 reference.
+
+You may use the v0 pricing layout and value, but:
+- do NOT change Stripe integration
+- do NOT introduce new pricing logic
+- do NOT alter checkout behavior
+
+This is a visual/layout migration only.
+
+---
+
+## TARGET V0 SOURCE
+
+[PASTE YOUR FEATURES / SAMPLE / PRICING / FAQ CODE HERE — unchanged]
+
+---
+
+## IMPLEMENTATION EXPECTATIONS
+
+### Features section
+Adapt the current “What Odigos Checks For” section toward the v0 layout:
+
+- use a max-w-4xl container
+- centered heading block
+- serif heading styling
+- 2-column grid on larger screens
+- card-style items with clean spacing
+- include privacy note beneath the grid
+
+Preserve strong existing Odigos positioning if it is more direct or conversion-oriented than v0 wording.
+
+---
+
+### Sample output section
+Adapt the current sample output area toward the v0 layout:
+
+- centered max-width container
+- structured card layout with:
+  - verdict/status header
+  - issues list
+  - supporting explanation block
+- improved hierarchy and spacing
+
+Preserve:
+- current CTA behavior (if any)
+- any trust elements already present unless they conflict with layout
+
+---
+
+### Pricing section
+Adapt the current pricing section toward the v0 layout:
+
+- centered heading block
+- two-column pricing cards
+- clear visual hierarchy
+- highlighted paid tier
+- clean spacing and alignment
+
+Preserve:
+- $49 pricing
+- current CTA destinations (likely `/analyze`)
+- current purchase flow behavior
+
+Do NOT introduce:
+- new pricing tiers
+- subscriptions
+- new payment logic
+
+---
+
+### FAQ section
+Adapt the current FAQ section toward the v0 layout:
+
+- border-top section separation
+- centered max-width container
+- serif section heading
+- clean accordion spacing and hierarchy
+
+Preserve:
+- current FAQ content (do not degrade clarity or SEO value)
+- existing accordion behavior (shadcn components)
+
+---
+
+## OUT OF SCOPE
+
+- header / hero / footer (Phase 2A already complete)
+- analyzer page changes
+- backend changes
+- route/API changes
+- payment changes
+- global styling changes
+- shared component refactors
+
+---
+
+## REPORT BACK WITH
+
+1. exact files modified
+2. full unified diff (git diff format)
+3. summary of what changed (by section)
+4. summary of what was explicitly left untouched
+5. any adaptations made from v0 → current app
+6. confirmation that:
+   - no commit was made
+   - no merge was performed
+   - no backend, route, analyzer, upload, OCR, or Stripe files were changed

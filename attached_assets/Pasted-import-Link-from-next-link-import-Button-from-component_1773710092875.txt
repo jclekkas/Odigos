@@ -1,0 +1,87 @@
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Check } from "lucide-react"
+
+const tiers = [
+  {
+    name: "Initial Review",
+    price: "Free",
+    description: "A quick assessment of your quote.",
+    features: [
+      "Overall verdict",
+      "Confidence level",
+      "Key pricing details detected",
+    ],
+    cta: "Start Review",
+    href: "/analyze",
+    highlighted: false,
+  },
+  {
+    name: "Full Analysis",
+    price: "$49",
+    description: "Complete breakdown with written response.",
+    features: [
+      "Everything in Initial Review",
+      "All identified concerns",
+      "Missing information checklist",
+      "Written response to send dealer",
+      "Detailed reasoning",
+    ],
+    cta: "Get Full Analysis",
+    href: "/analyze",
+    highlighted: true,
+  },
+]
+
+export function Pricing() {
+  return (
+    <section id="pricing" className="border-t border-border py-24 sm:py-32">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6">
+        <div className="mx-auto max-w-2xl text-center mb-16">
+          <h2 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl">
+            Pricing
+          </h2>
+          <p className="mt-4 text-muted-foreground text-sm">
+            One-time payment per analysis. No subscription.
+          </p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 max-w-2xl mx-auto">
+          {tiers.map((tier) => (
+            <div
+              key={tier.name}
+              className={`rounded-lg border p-6 ${
+                tier.highlighted
+                  ? "border-primary bg-primary/5"
+                  : "border-border bg-card"
+              }`}
+            >
+              <div className="mb-5">
+                <h3 className="font-medium">{tier.name}</h3>
+                <div className="mt-2 flex items-baseline gap-1">
+                  <span className="text-2xl font-semibold">{tier.price}</span>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">{tier.description}</p>
+              </div>
+              <ul className="mb-6 space-y-2">
+                {tier.features.map((feature) => (
+                  <li key={feature} className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 shrink-0 text-muted-foreground mt-0.5" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button
+                className="w-full"
+                variant={tier.highlighted ? "default" : "outline"}
+                asChild
+              >
+                <Link href={tier.href}>{tier.cta}</Link>
+              </Button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}

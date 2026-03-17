@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link } from "wouter";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { AlertTriangle, ArrowRight, Check, CheckCircle2, ChevronDown } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { AlertTriangle, ArrowRight, Check, CheckCircle2, XCircle } from "lucide-react";
 import { trackPageView, trackCtaClick } from "@/lib/tracking";
 import SiteHeader from "@/components/SiteHeader";
 import SeoHead from "@/components/SeoHead";
@@ -28,8 +29,6 @@ const faqs = [
 ];
 
 export default function Landing() {
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-
   useEffect(() => {
     trackPageView("/");
   }, []);
@@ -121,40 +120,37 @@ export default function Landing() {
           </div>
         </section>
 
-        <section id="features" className="py-16 px-6">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center" data-testid="text-checks-heading">
-              What Odigos Checks For
-            </h2>
-            <div className="grid md:grid-cols-2 gap-4">
-              <Card data-testid="card-check-otd">
-                <CardContent className="pt-6 pb-6">
-                  <h3 className="font-semibold mb-2 text-foreground">Missing Out-the-Door Price</h3>
-                  <p className="text-sm text-muted-foreground">Many dealer quotes hide the full price. Odigos flags when tax, registration, documentation fees, or add-ons are not clearly included.</p>
-                </CardContent>
-              </Card>
-              <Card data-testid="card-check-addons">
-                <CardContent className="pt-6 pb-6">
-                  <h3 className="font-semibold mb-2 text-foreground">Dealer Add-Ons</h3>
-                  <p className="text-sm text-muted-foreground">Dealers often present optional add-ons like nitrogen tires or paint protection as mandatory. Odigos highlights language that suggests this.</p>
-                </CardContent>
-              </Card>
-              <Card data-testid="card-check-fees">
-                <CardContent className="pt-6 pb-6">
-                  <h3 className="font-semibold mb-2 text-foreground">Unclear Fees</h3>
-                  <p className="text-sm text-muted-foreground">Dealer documentation fees, prep fees, and appearance packages are sometimes buried in quotes. Odigos helps surface them.</p>
-                </CardContent>
-              </Card>
-              <Card data-testid="card-check-language">
-                <CardContent className="pt-6 pb-6">
-                  <h3 className="font-semibold mb-2 text-foreground">Vague Pricing Language</h3>
-                  <p className="text-sm text-muted-foreground">If a dealer message avoids committing to a full price or conditions the deal on financing or add-ons, Odigos calls it out.</p>
-                </CardContent>
-              </Card>
+        <section id="features" className="border-t border-border bg-secondary/30 py-24 sm:py-32">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6">
+            <div className="mx-auto max-w-2xl text-center mb-16">
+              <h2 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl" data-testid="text-checks-heading">
+                What Odigos Checks For
+              </h2>
+              <p className="mt-4 text-muted-foreground text-sm">
+                The review focuses on pricing transparency and disclosure practices.
+              </p>
             </div>
-            <p className="text-xs text-muted-foreground text-center mt-4" data-testid="text-privacy-note">
+            <div className="grid gap-6 sm:grid-cols-2">
+              <div className="rounded-lg border border-border bg-card p-5" data-testid="card-check-otd">
+                <h3 className="font-medium">Missing Out-the-Door Price</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">Many dealer quotes hide the full price. Odigos flags when tax, registration, documentation fees, or add-ons are not clearly included.</p>
+              </div>
+              <div className="rounded-lg border border-border bg-card p-5" data-testid="card-check-addons">
+                <h3 className="font-medium">Dealer Add-Ons</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">Dealers often present optional add-ons like nitrogen tires or paint protection as mandatory. Odigos highlights language that suggests this.</p>
+              </div>
+              <div className="rounded-lg border border-border bg-card p-5" data-testid="card-check-fees">
+                <h3 className="font-medium">Unclear Fees</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">Dealer documentation fees, prep fees, and appearance packages are sometimes buried in quotes. Odigos helps surface them.</p>
+              </div>
+              <div className="rounded-lg border border-border bg-card p-5" data-testid="card-check-language">
+                <h3 className="font-medium">Vague Pricing Language</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">If a dealer message avoids committing to a full price or conditions the deal on financing or add-ons, Odigos calls it out.</p>
+              </div>
+            </div>
+            <p className="mx-auto mt-16 max-w-2xl text-center text-xs text-muted-foreground" data-testid="text-privacy-note">
               Pricing signals are stored anonymously to improve dealer fee benchmarks. Submitted text is PII-redacted and deleted after 90 days.{" "}
-              <a href="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</a>
+              <Link href="/privacy" className="underline hover:text-foreground">Privacy Policy</Link>
             </p>
           </div>
         </section>
@@ -246,120 +242,137 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-16 px-6 bg-muted/30" data-testid="section-sample-output">
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold mb-2 text-center">
+        <section className="border-t border-border py-24 sm:py-32" data-testid="section-sample-output">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6">
+            <h2 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl">
               What the analysis looks like
             </h2>
-            <p className="text-sm text-muted-foreground text-center mb-6">
+            <p className="mt-4 text-sm text-muted-foreground">
               Sample output from a real car dealer quote (anonymized)
             </p>
-            <div className="border border-border/60 rounded-lg bg-background p-5 md:p-6 space-y-4">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold tracking-wide border border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-400">
-                  <AlertTriangle className="w-3.5 h-3.5" />
-                  NO-GO
-                </span>
-                <span className="text-xs text-muted-foreground border border-border/60 px-2 py-0.5 rounded bg-muted/40">
-                  Medium confidence
-                </span>
+
+            <div className="mt-12 rounded-lg border border-border bg-card overflow-hidden">
+              <div className="p-5 border-b border-border bg-secondary/30">
+                <div className="flex items-center gap-3">
+                  <XCircle className="h-5 w-5 text-destructive shrink-0" />
+                  <div>
+                    <span className="font-medium">Verdict: NO-GO</span>
+                    <span className="text-sm text-muted-foreground ml-2">Medium confidence</span>
+                  </div>
+                </div>
+                <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+                  This quote is missing critical pricing details. Do not proceed without a complete out-the-door breakdown.
+                </p>
               </div>
-              <p className="text-sm font-medium text-foreground">
-                This quote is missing critical pricing details. Do not proceed without a complete out-the-door breakdown.
-              </p>
-              <div className="space-y-2 pt-1">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Detected issues</p>
-                <ul className="space-y-1.5">
-                  <li className="flex items-start gap-2">
-                    <Check className="w-3.5 h-3.5 text-amber-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-muted-foreground">No out-the-door price — only monthly payment quoted</span>
+
+              <div className="p-5">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-4">Detected issues</p>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <AlertTriangle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
+                    <span className="text-sm">No out-the-door price — only monthly payment quoted</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="w-3.5 h-3.5 text-amber-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-muted-foreground">APR not disclosed — rate described as "competitive"</span>
+                  <li className="flex items-start gap-3">
+                    <AlertTriangle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
+                    <span className="text-sm">APR not disclosed — rate described as "competitive"</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="w-3.5 h-3.5 text-amber-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-muted-foreground">"Protection packages" added without itemized cost</span>
+                  <li className="flex items-start gap-3">
+                    <AlertTriangle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
+                    <span className="text-sm">"Protection packages" added without itemized cost</span>
                   </li>
                 </ul>
               </div>
-              <p className="text-xs text-muted-foreground italic pt-1 border-t border-border/40">
-                Full analysis includes missing info checklist, negotiation reply, and detailed reasoning.
-              </p>
+
+              <div className="px-5 pb-5">
+                <div className="rounded border border-border bg-secondary/20 p-4">
+                  <p className="text-xs text-muted-foreground">
+                    Full analysis includes missing info checklist, negotiation reply, and detailed reasoning.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        <section id="pricing" className="py-16 px-6">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">
-              Simple pricing
-            </h2>
-            <div className="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto">
-              <Card data-testid="card-pricing-tier1">
-                <CardContent className="pt-6">
-                  <h3 className="font-semibold mb-2">Free Preview</h3>
-                  <p className="text-2xl font-bold mb-3">$0</p>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Verdict (Green/Yellow/Red)</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Deal score & confidence</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Detected pricing details</span>
-                    </li>
-                  </ul>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="w-full mt-4"
-                    data-testid="button-cta-free-preview"
-                  >
-                    <Link href="/analyze">Try Free Preview</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-              <Card className="border-accent/50 bg-accent/5" data-testid="card-pricing-tier2">
-                <CardContent className="pt-6">
-                  <h3 className="font-semibold mb-2">Full Deal Review</h3>
-                  <p className="text-2xl font-bold mb-3">$49 <span className="text-xs font-normal text-muted-foreground">(one-time)</span></p>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Everything in Free</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Red flags & hidden fees</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Missing info checklist</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Copy-paste dealer reply</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Full analysis reasoning</span>
-                    </li>
-                  </ul>
-                  <Button
-                    asChild
-                    className="w-full mt-4"
-                    data-testid="button-cta-full-review"
-                  >
-                    <Link href="/analyze">Get Full Review — $49</Link>
-                  </Button>
-                </CardContent>
-              </Card>
+        <section id="pricing" className="border-t border-border py-24 sm:py-32">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6">
+            <div className="mx-auto max-w-2xl text-center mb-16">
+              <h2 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl">
+                Simple pricing
+              </h2>
+              <p className="mt-4 text-muted-foreground text-sm">
+                No subscription. No upsells. One-time purchase per analysis.
+              </p>
+            </div>
+            <div className="grid gap-6 md:grid-cols-2 max-w-2xl mx-auto">
+              <div className="rounded-lg border border-border bg-card p-6" data-testid="card-pricing-tier1">
+                <div className="mb-5">
+                  <h3 className="font-medium">Free Preview</h3>
+                  <div className="mt-2 flex items-baseline gap-1">
+                    <span className="text-2xl font-semibold">$0</span>
+                  </div>
+                </div>
+                <ul className="mb-6 space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>Verdict (Green/Yellow/Red)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>Deal score & confidence</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>Detected pricing details</span>
+                  </li>
+                </ul>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full"
+                  data-testid="button-cta-free-preview"
+                >
+                  <Link href="/analyze">Try Free Preview</Link>
+                </Button>
+              </div>
+              <div className="rounded-lg border border-primary bg-primary/5 p-6" data-testid="card-pricing-tier2">
+                <div className="mb-5">
+                  <h3 className="font-medium">Full Deal Review</h3>
+                  <div className="mt-2 flex items-baseline gap-1">
+                    <span className="text-2xl font-semibold">$49</span>
+                    <span className="text-xs font-normal text-muted-foreground">(one-time)</span>
+                  </div>
+                </div>
+                <ul className="mb-6 space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>Everything in Free</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>Red flags & hidden fees</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>Missing info checklist</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>Copy-paste dealer reply</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>Full analysis reasoning</span>
+                  </li>
+                </ul>
+                <Button
+                  asChild
+                  className="w-full"
+                  data-testid="button-cta-full-review"
+                >
+                  <Link href="/analyze">Get Full Review — $49</Link>
+                </Button>
+              </div>
               {/* $79 Negotiation Pack - Hidden for single-tier pricing
               <Card className="border-primary/50 bg-primary/5" data-testid="card-pricing-tier3">
                 <CardContent className="pt-6">
@@ -387,13 +400,10 @@ export default function Landing() {
               </Card>
               */}
             </div>
-            <p className="text-center text-sm text-muted-foreground mt-4">
-              No subscription. No upsells. One-time purchase per analysis.
-            </p>
           </div>
         </section>
 
-        <section id="faq" className="py-16 px-6 bg-muted/30">
+        <section id="faq" className="border-t border-border py-24 sm:py-32">
           <Helmet>
             <script type="application/ld+json">{JSON.stringify({
               "@context": "https://schema.org",
@@ -408,34 +418,25 @@ export default function Landing() {
               })),
             })}</script>
           </Helmet>
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center" data-testid="text-faq-heading">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6">
+            <h2 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl mb-12" data-testid="text-faq-heading">
               Common questions
             </h2>
-            <div className="space-y-2">
+            <Accordion type="single" collapsible className="w-full">
               {faqs.map((faq, idx) => (
-                <div key={idx} className="border border-border rounded-lg overflow-hidden">
-                  <button
-                    type="button"
-                    className="w-full flex items-center justify-between px-5 py-4 text-left"
-                    onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                    aria-expanded={openFaq === idx}
-                    aria-controls={`faq-panel-${idx}`}
+                <AccordionItem key={idx} value={`item-${idx}`}>
+                  <AccordionTrigger
+                    className="text-left text-sm font-medium"
                     data-testid={`button-faq-${idx}`}
                   >
-                    <span className="text-sm font-medium text-foreground">{faq.q}</span>
-                    <ChevronDown className={`w-4 h-4 text-muted-foreground shrink-0 ml-4 transition-transform ${openFaq === idx ? "rotate-180" : ""}`} />
-                  </button>
-                  <div
-                    id={`faq-panel-${idx}`}
-                    className="px-5 pb-4"
-                    hidden={openFaq !== idx}
-                  >
-                    <p className="text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
-                  </div>
-                </div>
+                    {faq.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
+                    {faq.a}
+                  </AccordionContent>
+                </AccordionItem>
               ))}
-            </div>
+            </Accordion>
           </div>
         </section>
 

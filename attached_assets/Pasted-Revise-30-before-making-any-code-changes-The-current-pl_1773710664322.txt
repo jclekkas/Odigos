@@ -1,0 +1,69 @@
+Revise #30 before making any code changes.
+
+The current plan is too permissive on content and product-language changes. Tighten it with the following non-negotiable rules and return the updated task spec only. Do not modify code yet.
+
+## Add this rule near the top
+This is a presentation-only migration.
+
+Do NOT reinterpret product decisions, pricing, verdict language, CTA text, or business copy.
+Do NOT “improve” wording beyond layout-driven adjustments.
+The goal is visual alignment with v0, not a product/content rewrite.
+
+## Add this CONTENT LOCK RULE
+For all sections in this phase:
+
+- Preserve all existing Odigos copy, product terminology, CTA text, pricing structure, and section structure by default
+- Only apply v0 content where it is explicitly safe and purely presentational
+- If there is any ambiguity, prefer existing Odigos content over v0 content
+
+This is a UI migration, not a product rewrite.
+
+## Tighten the Features task
+Replace any instruction that says to update titles/descriptions “to match v0” with:
+
+Use the v0 layout and structure for the features section.
+Only replace feature copy if it clearly improves clarity without weakening existing Odigos positioning.
+If there is any doubt, preserve the current Odigos copy.
+
+## Tighten the Sample Review Output task
+Replace any instruction that allows verdict-language reinterpretation with:
+
+Use the v0 layout structure for the sample output section, but preserve all existing Odigos product terminology and verdict wording exactly as currently implemented.
+Do not change the sample review’s substantive content unless it is a purely presentational formatting change.
+
+## Tighten the Pricing task with a hard lock
+Add this exactly:
+
+Do NOT modify:
+- pricing tiers
+- pricing amounts
+- CTA text
+- CTA destinations
+- any commented-out pricing code
+- any Stripe-related logic or references
+
+This is strictly a visual/layout migration.
+
+Also add:
+Use the v0 pricing card layout/styling only.
+Preserve all current Odigos pricing content and structure exactly unless a change is purely presentational.
+
+## Tighten the FAQ task
+Replace any instruction to use the v0 FAQ content wholesale with:
+
+Use the v0 FAQ layout and accordion presentation as the reference.
+Preserve current Odigos FAQ content by default.
+Only add or replace FAQ entries if they are clearly approved by the existing task scope and do not weaken clarity, SEO, or product accuracy.
+
+## Tighten Adaptations from v0
+Add this:
+Adaptations from v0 must be limited to framework/runtime differences (e.g. Next.js Link → wouter Link) and layout/styling adjustments.
+Do not treat v0 wording as authoritative over current Odigos wording.
+
+## Preserve process rule
+Do NOT commit or merge after making changes.
+Show full diff and wait for explicit approval.
+
+## Deliver back
+Return the revised #30 task spec in full, with these tighter constraints integrated.
+Do not implement yet.
