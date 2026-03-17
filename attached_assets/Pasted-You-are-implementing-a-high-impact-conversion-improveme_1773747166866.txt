@@ -1,0 +1,164 @@
+You are implementing a high-impact conversion improvement to the Odigos analyzer page.
+
+This is a surgical UX upgrade.
+
+DO NOT change:
+- backend logic
+- analysis prompt
+- pricing
+- routing
+- API calls
+- result rendering logic
+
+ONLY improve the UI/UX around the input experience.
+
+--------------------------------
+
+OBJECTIVE
+
+Increase the % of users who paste a dealer quote and run an analysis.
+
+Eliminate hesitation by making:
+- the input feel safe
+- the outcome feel clear
+- the effort feel minimal
+
+--------------------------------
+
+TARGET FILE
+
+client/src/pages/analyze.tsx
+
+--------------------------------
+
+REQUIRED CHANGES
+
+1. ADD “WHAT YOU’LL GET” BLOCK (ABOVE INPUT)
+
+Place directly above the text input area.
+
+Add a short section header:
+
+"What you'll get"
+
+Then 3–4 bullet points (clean, compact):
+
+• GO / NO-GO recommendation  
+• Clear explanation of issues found  
+• Missing information checklist  
+• Copy-paste response you can send to the dealer  
+
+Keep typography slightly muted but readable.
+
+--------------------------------
+
+2. ADD “EXAMPLE INPUT” BOX (COLLAPSIBLE OR INLINE)
+
+Directly above or inside the input area.
+
+Show a realistic dealer message example:
+
+Example:
+
+"Hi, the vehicle is $28,995. With taxes, fees, and protection package you're looking at $34,200 OTD. Monthly comes out to about $540 depending on credit. Let me know when you can come in."
+
+Label it clearly:
+"Example dealer message"
+
+Style:
+- subtle background (muted)
+- rounded
+- smaller font
+
+Purpose:
+Remove uncertainty about what to paste.
+
+--------------------------------
+
+3. ADD INPUT GUIDANCE TEXT
+
+Directly above the textarea:
+
+"Paste a dealer quote, email, or text message."
+
+Below textarea (small muted text):
+
+"For best results, include pricing, fees, and any messages from the dealer."
+
+--------------------------------
+
+4. ADD PRIVACY / SAFETY REASSURANCE
+
+Directly below the input area:
+
+"Your data is not stored or shared. This is a one-time analysis."
+
+Small, muted, but clearly visible.
+
+--------------------------------
+
+5. ADD “WHAT HAPPENS NEXT” MICRO-COPY
+
+Near the CTA button.
+
+Short line:
+
+"You’ll get a verdict and a breakdown in seconds."
+
+This reduces uncertainty about outcome.
+
+--------------------------------
+
+6. ADD LOADING STATE MICROCOPY (IF EXISTS)
+
+If there is already a loading state, update text to:
+
+"Analyzing dealer pricing…"
+
+If not, do NOT build new logic — just update text where applicable.
+
+--------------------------------
+
+7. VISUAL HIERARCHY IMPROVEMENTS
+
+Without redesigning layout:
+
+- Ensure input area is visually dominant
+- Group supporting elements tightly (example + guidance + privacy)
+- Avoid large empty gaps
+- Keep everything within existing spacing system
+
+--------------------------------
+
+IMPORTANT CONSTRAINTS
+
+- Do NOT add new components beyond simple UI blocks
+- Do NOT introduce new colors
+- Do NOT add animations
+- Do NOT change button styles or variants
+- Do NOT change layout structure drastically
+
+--------------------------------
+
+DONE LOOKS LIKE
+
+A user can instantly understand:
+- what to paste
+- what they’ll get
+- that it’s safe
+- that it’s fast
+
+The page should feel:
+clear, calm, and trustworthy
+
+NOT complex, NOT flashy
+
+--------------------------------
+
+CRITICAL
+
+Do not skip any section.
+Do not simplify the task.
+Implement exactly as specified.
+
+Return a clean diff of changes.
