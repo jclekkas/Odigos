@@ -74,22 +74,8 @@ export default function Landing() {
                 </h1>
 
                 <p className="mt-6 text-base text-muted-foreground sm:text-lg leading-relaxed" data-testid="text-hero-subheadline">
-                  Paste a dealer quote, email, or text. Odigos checks for missing out-the-door pricing, hidden fees, and negotiation traps — so you know exactly what you're being charged.
+                  Paste a dealer quote, email, or text. Odigos flags missing out-the-door pricing, hidden fees, and common dealership tactics.
                 </p>
-
-                <ul className="mt-5 space-y-2 text-sm text-muted-foreground" data-testid="list-what-it-flags">
-                  {[
-                    "Missing out-the-door price",
-                    "Hidden or inflated fees",
-                    '"Mandatory" add-ons that aren\'t actually required',
-                    "Payment-focused pricing traps",
-                  ].map((item) => (
-                    <li key={item} className="flex items-center gap-2 justify-center lg:justify-start">
-                      <span className="text-muted-foreground/50 select-none">·</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
 
                 <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row lg:justify-start">
                   <Button variant="cta" size="lg" className="gap-2" asChild data-testid="button-cta-hero">
@@ -105,28 +91,16 @@ export default function Landing() {
                   </Button>
                 </div>
 
-                <p className="mt-3 text-xs text-muted-foreground/70">
-                  <Link href="/example-analysis" className="underline underline-offset-2 hover:text-muted-foreground transition-colors" data-testid="link-example-analysis-hero">
-                    See an example analysis
+                <p className="mt-4 text-sm text-muted-foreground" data-testid="text-reassurance">
+                  Takes ~10 seconds. No signup required.{" "}
+                  <Link href="/example-analysis" className="underline underline-offset-2 hover:text-foreground transition-colors" data-testid="link-example-analysis-hero">
+                    See an example.
                   </Link>
                 </p>
-
-                <p className="mt-4 text-sm text-muted-foreground" data-testid="text-reassurance">
-                  Takes ~10 seconds. No signup required.
-                </p>
-
-                <div className="mt-8 space-y-1" data-testid="text-trust-strip">
-                  <p className="text-sm font-medium text-foreground">
-                    Built specifically for U.S. car buyers dealing with real dealer quotes.
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Not affiliated with dealerships. No upsells. No incentives — just analysis.
-                  </p>
-                </div>
               </div>
 
               {/* Static output preview card */}
-              <div className="lg:w-96 lg:shrink-0" data-testid="card-preview-result">
+              <div className="lg:w-80 lg:shrink-0" data-testid="card-preview-result">
                 <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 shadow-sm p-5 space-y-4">
 
                   {/* Header */}
