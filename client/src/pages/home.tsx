@@ -79,9 +79,10 @@ interface DealScoreBadgeProps {
   goNoGo: "GO" | "NO-GO" | "NEED-MORE-INFO";
   confidenceLevel: ConfidenceLevel;
   verdictLabel: string;
+  missingInfo: MissingInfo[];
 }
 
-function DealScoreBadge({ score, goNoGo, confidenceLevel, verdictLabel }: DealScoreBadgeProps) {
+function DealScoreBadge({ score, goNoGo, confidenceLevel, verdictLabel, missingInfo }: DealScoreBadgeProps) {
   const scoreConfig = {
     GREEN: {
       bg: "bg-emerald-500/5",
@@ -112,19 +113,26 @@ function DealScoreBadge({ score, goNoGo, confidenceLevel, verdictLabel }: DealSc
     LOW: "Low confidence",
   };
 
-  const goNoGoMessages = {
-    "GO": "This deal appears reasonable. Consider visiting the dealership.",
-    "NO-GO": "Red flags detected. We recommend looking elsewhere.",
-    "NEED-MORE-INFO": "Get answers to the questions below before visiting.",
+  const verdictHeadings: Record<string, string> = {
+    "GO": "Deal appears reasonable — a few things to confirm",
+    "NO-GO": "Significant red flags found — key information is missing or unclear",
+    "NEED-MORE-INFO": "Proceed with caution — several pricing concerns detected",
+  };
+
+  const verdictSubtext: Record<string, string> = {
+    "GO": "The quote looks broadly in line with market norms. The details below are worth verifying before you sign.",
+    "NO-GO": "This quote has enough gaps or warning signs that visiting the dealership without resolving them first is high-risk.",
+    "NEED-MORE-INFO": "There are open questions in this quote that could meaningfully change the out-the-door price. Get answers before proceeding.",
   };
 
   const config = scoreConfig[score];
+  const previewIssues = missingInfo.slice(0, 3);
 
   return (
-    <div className={`rounded-xl border ${config.border} ${config.bg} p-5`}>
+    <div className={`rounded-xl border ${config.border} ${config.bg} p-5 space-y-4`}>
       <div className="flex items-start gap-3">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-2 flex-wrap">
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
             <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-semibold tracking-wide border ${config.chipBg} ${config.chipBorder} ${config.text}`}>
               {goNoGo}
             </span>
@@ -132,13 +140,34 @@ function DealScoreBadge({ score, goNoGo, confidenceLevel, verdictLabel }: DealSc
               {confidenceLabels[confidenceLevel]}
             </span>
           </div>
-          <p className={`text-base font-semibold leading-snug mb-1 ${config.text}`}>
-            {verdictLabel}
+          <p className={`text-base font-semibold leading-snug mb-2 ${config.text}`}>
+            {verdictHeadings[goNoGo] ?? verdictLabel}
           </p>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            {goNoGoMessages[goNoGo]}
+            {verdictSubtext[goNoGo]}
           </p>
         </div>
+      </div>
+
+      <div className="border-t border-border/40 pt-4 space-y-3">
+        {previewIssues.length > 0 && (
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+              Key issues found
+            </p>
+            <div className="space-y-1.5">
+              {previewIssues.map((item, idx) => (
+                <div key={idx} className="flex items-baseline gap-2 text-sm" data-testid={`issue-row-${idx}`}>
+                  <span className="font-medium text-foreground shrink-0">{item.field}:</span>
+                  <span className="text-muted-foreground leading-snug">{item.question}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Quotes like this can obscure the real out-the-door price or bury fees that only appear in the final paperwork. Knowing what's missing helps you decide whether to push back or walk away.
+        </p>
       </div>
     </div>
   );
@@ -303,19 +332,16 @@ function LockedTier2Section({ onUnlock, isLoading, stripeConfigured }: LockedTie
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base font-semibold">
           <Lock className="w-4 h-4 text-muted-foreground" />
-          Full Deal Review
+          Unlock the full review
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground mb-3">
-          See what's missing, what's risky, and exactly what to ask the dealer.
-        </p>
-        <ul className="space-y-1.5 mb-4">
+        <ul className="space-y-2 mb-4">
           {[
-            "Red flags and risks in this deal",
-            "Missing information to request",
-            "Copy-paste reply for the dealer",
-            "Full analysis reasoning"
+            "Checklist of missing information to request from the dealer",
+            "Copy-paste reply you can send to the dealer directly",
+            "Detailed breakdown of fees, add-ons, and negotiation risks",
+            "Clear guidance on whether to proceed, push back, or walk away",
           ].map((item, idx) => (
             <li key={idx} className="flex items-start gap-2 text-sm">
               <Check className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
@@ -323,8 +349,8 @@ function LockedTier2Section({ onUnlock, isLoading, stripeConfigured }: LockedTie
             </li>
           ))}
         </ul>
-        <p className="text-xs text-muted-foreground mb-3">
-          One-time payment · Not affiliated with any dealership
+        <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+          Use the full review when you need to reply to the dealer, pressure-test the quote, or decide whether to keep negotiating.
         </p>
         <Button
           variant="default"
@@ -344,6 +370,9 @@ function LockedTier2Section({ onUnlock, isLoading, stripeConfigured }: LockedTie
             "Unlock Full Deal Review — $49 (one-time)"
           )}
         </Button>
+        <p className="text-xs text-muted-foreground text-center mt-2">
+          Unlocks immediately after payment · One-time · Not affiliated with any dealership
+        </p>
       </CardContent>
     </Card>
   );
@@ -1018,13 +1047,14 @@ export default function Home() {
         {result && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="border-t border-border/50 pt-8">
-              <h2 className="text-xl font-semibold mb-6 text-center">Analysis Results</h2>
+              <h2 className="text-sm font-medium text-muted-foreground text-center mb-4 uppercase tracking-wider">Your deal analysis</h2>
               
               <DealScoreBadge 
                 score={result.dealScore} 
                 goNoGo={result.goNoGo}
                 confidenceLevel={result.confidenceLevel}
                 verdictLabel={result.verdictLabel}
+                missingInfo={unlockTier === "free" ? result.missingInfo : []}
               />
             </div>
 
