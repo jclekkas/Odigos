@@ -58,55 +58,99 @@ export default function Landing() {
         path="/"
       />
       <main id="main-content">
-        <section className="py-28 sm:py-40 lg:py-48">
+        <section className="py-20 sm:py-28 lg:py-32">
           <div className="mx-auto max-w-4xl px-4 sm:px-6">
-            <div className="mx-auto max-w-3xl text-center">
-              <p className="mb-8 text-xs font-medium tracking-widest uppercase text-muted-foreground" data-testid="text-authority-framing">
-                Independent Quote Review
-              </p>
+            <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:gap-14">
 
-              <h1 className="font-serif text-balance text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl" data-testid="text-hero-headline">
-                Understand your dealer quote before you commit.
-              </h1>
+              {/* Hero text column */}
+              <div className="flex-1 text-center lg:text-left">
+                <p className="mb-6 text-xs font-medium tracking-widest uppercase text-muted-foreground" data-testid="text-authority-framing">
+                  Independent Quote Review
+                </p>
 
-              <p className="mx-auto mt-10 max-w-2xl text-pretty text-base text-muted-foreground sm:text-lg leading-relaxed" data-testid="text-hero-subheadline">
-                Odigos reviews car dealer quotes for missing pricing details, unclear fees,
-                and language that may not be in your best interest. Paste a quote and
-                receive an independent assessment.
-              </p>
+                <h1 className="font-serif text-balance text-4xl font-semibold tracking-tight sm:text-5xl" data-testid="text-hero-headline">
+                  Spot dealer pricing tricks before you agree to anything.
+                </h1>
 
-              <div className="mt-14 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                <Button variant="cta" size="lg" className="gap-2" asChild data-testid="button-cta-hero">
-                  <Link href="/analyze" onClick={() => trackCtaClick("hero-analyze", "Check a Dealer Quote")}>
-                    Check a Dealer Quote
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button variant="outline" size="lg" asChild data-testid="button-try-bad">
-                  <Link href="/analyze?example=bad" onClick={() => trackCtaClick("hero-bad-example", "Try a bad deal example")}>
-                    Try a bad deal example
-                  </Link>
-                </Button>
+                <p className="mt-6 text-base text-muted-foreground sm:text-lg leading-relaxed" data-testid="text-hero-subheadline">
+                  Paste a dealer quote, email, or text. Odigos checks for missing out-the-door pricing, hidden fees, and negotiation traps — so you know exactly what you're being charged.
+                </p>
+
+                <ul className="mt-5 space-y-2 text-sm text-muted-foreground" data-testid="list-what-it-flags">
+                  {[
+                    "Missing out-the-door price",
+                    "Hidden or inflated fees",
+                    '"Mandatory" add-ons that aren\'t actually required',
+                    "Payment-focused pricing traps",
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-2 justify-center lg:justify-start">
+                      <span className="text-muted-foreground/50 select-none">·</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row lg:justify-start">
+                  <Button variant="cta" size="lg" className="gap-2" asChild data-testid="button-cta-hero">
+                    <Link href="/analyze" onClick={() => trackCtaClick("hero-analyze", "Check a Dealer Quote")}>
+                      Check a Dealer Quote
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button variant="outline" size="lg" asChild data-testid="button-try-bad">
+                    <Link href="/analyze?example=bad" onClick={() => trackCtaClick("hero-bad-example", "Try a bad deal example")}>
+                      Try a bad deal example
+                    </Link>
+                  </Button>
+                </div>
+
+                <p className="mt-6 text-sm text-muted-foreground" data-testid="text-reassurance">
+                  Takes 10 seconds. No signup required.
+                </p>
+
+                <div className="mt-8 space-y-1" data-testid="text-trust-strip">
+                  <p className="text-sm font-medium text-foreground">
+                    Built specifically for U.S. car buyers dealing with real dealer quotes.
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Not affiliated with dealerships. No upsells. No incentives — just analysis.
+                  </p>
+                </div>
               </div>
 
-              <p className="mt-10 text-sm text-muted-foreground" data-testid="text-reassurance">
-                Takes 10 seconds. No signup required.
-              </p>
-
-              <div className="mt-12 flex flex-col items-center justify-center gap-3 text-xs text-muted-foreground sm:flex-row sm:gap-6" data-testid="text-trust-strip">
-                <div className="flex items-center gap-2">
-                  <span className="text-primary">✓</span>
-                  <span>Independent analysis</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-primary">✓</span>
-                  <span>No dealership affiliations</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-primary">✓</span>
-                  <span>Personal information redacted</span>
+              {/* Static output preview card */}
+              <div className="lg:w-80 lg:shrink-0" data-testid="card-preview-result">
+                <div className="rounded-xl border border-border bg-card shadow-sm p-5">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">
+                    Sample result
+                  </p>
+                  <p className="text-sm font-semibold text-foreground mb-4">
+                    GO / NO-GO: ⚠️ Proceed with caution
+                  </p>
+                  <div className="mb-4">
+                    <p className="text-xs font-medium text-muted-foreground mb-2">Detected issues:</p>
+                    <ul className="space-y-1.5">
+                      {[
+                        "No out-the-door price provided",
+                        "$1,995 dealer add-on not itemized",
+                        "Monthly payment shown without full breakdown",
+                      ].map((issue) => (
+                        <li key={issue} className="flex items-start gap-2 text-xs text-foreground">
+                          <span className="mt-0.5 text-muted-foreground/50 select-none">·</span>
+                          <span>{issue}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="border-t border-border pt-4">
+                    <p className="text-xs font-medium text-muted-foreground mb-1.5">Suggested next step:</p>
+                    <p className="text-xs text-foreground leading-relaxed italic">
+                      "Can you provide the full out-the-door price including all fees?"
+                    </p>
+                  </div>
                 </div>
               </div>
+
             </div>
           </div>
         </section>
