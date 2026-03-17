@@ -31,6 +31,7 @@ import AdminMetrics from "@/pages/admin-metrics";
 import Privacy from "@/pages/privacy";
 import DealerPricingProblems from "@/pages/dealer-pricing-problems";
 import HowOdigosWorks from "@/pages/how-odigos-works";
+import ExampleAnalysis from "@/pages/example-analysis";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -64,6 +65,7 @@ function Router() {
       <Route path="/privacy" component={Privacy} />
       <Route path="/dealer-pricing-problems" component={DealerPricingProblems} />
       <Route path="/how-odigos-works" component={HowOdigosWorks} />
+      <Route path="/example-analysis" component={ExampleAnalysis} />
       <Route component={NotFound} />
     </Switch>
   );
