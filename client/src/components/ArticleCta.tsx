@@ -18,6 +18,11 @@ export default function ArticleCta() {
           Check My Deal with Odigos
         </Button>
       </Link>
+      <p className="mt-3 text-xs text-muted-foreground">
+        <Link href="/example-analysis" className="underline underline-offset-2 hover:text-foreground transition-colors" data-testid="link-example-analysis-article-cta">
+          See an example analysis →
+        </Link>
+      </p>
     </div>
   );
 }

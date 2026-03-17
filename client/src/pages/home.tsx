@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { Link } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -372,6 +373,11 @@ function LockedTier2Section({ onUnlock, isLoading, stripeConfigured }: LockedTie
         </Button>
         <p className="text-xs text-muted-foreground text-center mt-2">
           Unlocks immediately after payment · One-time · Not affiliated with any dealership
+        </p>
+        <p className="text-xs text-muted-foreground text-center mt-4">
+          <Link href="/example-analysis" className="underline underline-offset-2 hover:text-foreground transition-colors" data-testid="link-example-analysis-paywall">
+            Still unsure? See a full example analysis
+          </Link>
         </p>
       </CardContent>
     </Card>
@@ -783,7 +789,12 @@ export default function Home() {
                       name="dealerText"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-foreground">Paste a dealer quote, email, or text message.</FormLabel>
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                            <FormLabel className="text-sm font-medium text-foreground">Paste a dealer quote, email, or text message.</FormLabel>
+                            <Link href="/example-analysis" className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors shrink-0" data-testid="link-example-analysis-textarea">
+                              Not sure what to paste? See an example
+                            </Link>
+                          </div>
                           <FormControl>
                             <Textarea
                               {...field}

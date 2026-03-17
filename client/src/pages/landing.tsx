@@ -104,7 +104,13 @@ export default function Landing() {
                   </Button>
                 </div>
 
-                <p className="mt-6 text-sm text-muted-foreground" data-testid="text-reassurance">
+                <p className="mt-3 text-xs text-muted-foreground/70">
+                  <Link href="/example-analysis" className="underline underline-offset-2 hover:text-muted-foreground transition-colors" data-testid="link-example-analysis-hero">
+                    See an example analysis
+                  </Link>
+                </p>
+
+                <p className="mt-4 text-sm text-muted-foreground" data-testid="text-reassurance">
                   Takes ~10 seconds. No signup required.
                 </p>
 
