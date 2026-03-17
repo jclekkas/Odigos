@@ -1,0 +1,71 @@
+Implement #33, but aim for v0-level analyzer tab presentation fidelity, not just functional visibility.
+
+## GOAL
+
+Fix the upload discoverability issue and make the analyzer input card feel visually aligned with the v0 prototype.
+
+The result should:
+- clearly present two equal workflows: Paste Text and Upload
+- feel clean, intentional, and premium
+- match the current migrated Odigos design language
+
+## REQUIREMENTS
+
+Only modify:
+- client/src/pages/home.tsx
+
+Do NOT:
+- change analyzer logic
+- change upload handler logic
+- change OCR/extraction/backend behavior
+- change routes or APIs
+- change submit behavior, validation, or tracking
+- commit or merge
+
+## TAB UI REQUIREMENTS
+
+- Use the existing shadcn Tabs component
+- TabsList must span the full width of the analyzer card
+- Both tabs must be equal width (50/50)
+- The tab styling should feel like a proper segmented control, not small utility tabs
+- The visual hierarchy should match the rest of the upgraded product
+
+## PASTE TEXT TAB
+
+- Keep the existing textarea
+- Keep existing placeholder and behavior
+- Keep sample-deal/example helper controls in this tab only
+- Ensure spacing/padding feels intentional and consistent with the rest of the card
+
+## UPLOAD TAB
+
+- Reuse the existing hidden file input exactly as-is
+- Reuse the existing handleFileUpload logic exactly as-is
+- Replace the tiny helper-link presentation with a clear primary upload affordance
+- Accepted file types must be clearly visible: PNG, JPG, JPEG, WEBP, PDF
+- Keep loading and error states exactly as implemented
+- The upload UI should feel like a supported primary path, not an afterthought
+
+## VISUAL QUALITY BAR
+
+The analyzer card should feel closer to the v0 prototype after this change:
+- cleaner spacing
+- stronger input-area hierarchy
+- more obvious dual-mode input choice
+- no awkward empty-feeling tab layout
+- no visually tiny or buried affordances
+
+Do not redesign the whole analyzer page.
+Do not change page structure outside the analyzer input card.
+Keep this a localized, reviewable diff.
+
+## DELIVERABLES
+
+Do NOT commit or merge.
+
+Return:
+1. exact file modified
+2. full unified diff
+3. summary of what changed
+4. confirmation no logic or backend behavior changed
+5. confirmation the same upload handler and endpoint are still used
