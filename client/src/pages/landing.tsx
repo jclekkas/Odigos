@@ -109,7 +109,7 @@ export default function Landing() {
               {[
                 "Paste the dealer text or quote",
                 "Odigos flags what's missing or risky",
-                "Send the copy-paste reply before you go in",
+                "Get a copy-paste reply to send the dealer (Full Review)",
               ].map((step, idx) => (
                 <li key={idx} className="flex items-start gap-3">
                   <span className="bg-muted text-foreground font-semibold text-sm rounded-full h-6 w-6 flex items-center justify-center shrink-0 mt-0.5">{idx + 1}</span>
@@ -257,7 +257,8 @@ export default function Landing() {
                   <XCircle className="h-5 w-5 text-destructive shrink-0" />
                   <div>
                     <span className="font-medium">Verdict: NO-GO</span>
-                    <span className="text-sm text-muted-foreground ml-2">Medium confidence</span>
+                    <span className="text-sm text-muted-foreground ml-2">High confidence</span>
+                    <span className="text-sm text-muted-foreground ml-2">· Deal Score: 38/100</span>
                   </div>
                 </div>
                 <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
@@ -278,7 +279,7 @@ export default function Landing() {
                   </li>
                   <li className="flex items-start gap-3">
                     <AlertTriangle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
-                    <span className="text-sm">"Protection packages" added without itemized cost</span>
+                    <span className="text-sm">$895 'protection package' added without a disclosed price</span>
                   </li>
                 </ul>
               </div>
@@ -286,7 +287,7 @@ export default function Landing() {
               <div className="px-5 pb-5">
                 <div className="rounded border border-border bg-secondary/20 p-4">
                   <p className="text-xs text-muted-foreground">
-                    Full analysis includes missing info checklist, negotiation reply, and detailed reasoning.
+                    Full analysis includes: the specific questions to request before signing, a copy-paste reply to send the dealer, and a line-by-line explanation of each flag detected.
                   </p>
                 </div>
               </div>
@@ -323,7 +324,7 @@ export default function Landing() {
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>Detected pricing details</span>
+                    <span>Pricing terms found in the quote</span>
                   </li>
                 </ul>
                 <Button
@@ -342,6 +343,7 @@ export default function Landing() {
                     <span className="text-2xl font-semibold">$49</span>
                     <span className="text-xs font-normal text-muted-foreground">(one-time)</span>
                   </div>
+                  <p className="mt-1 text-xs text-muted-foreground">Less than most dealer doc fees</p>
                 </div>
                 <ul className="mb-6 space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-start gap-2">

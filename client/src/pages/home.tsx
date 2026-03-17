@@ -692,7 +692,7 @@ export default function Home() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <Card className="border-border/50">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base font-semibold">Add Dealer Communication</CardTitle>
+                <CardTitle className="text-base font-semibold">Paste Your Dealer Quote or Message</CardTitle>
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="paste" className="w-full" data-testid="tabs-input-mode">
@@ -742,7 +742,7 @@ export default function Home() {
                                 field.onChange(e);
                                 if (uploadError) setUploadError(null);
                               }}
-                              placeholder="Paste dealer texts, emails, or quotes here..."
+                              placeholder="Paste the dealer's email, text message, or quote — any format works"
                               className="min-h-48 text-base resize-y"
                               data-testid="input-dealer-text"
                             />
@@ -776,7 +776,7 @@ export default function Home() {
                       )}
                       <div className="text-center">
                         <p className="text-sm font-medium text-foreground">
-                          {uploadLoading ? "Processing file…" : "Click to upload a file"}
+                          {uploadLoading ? "Processing file…" : "Upload a screenshot or PDF of the dealer quote"}
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
                           PNG, JPG, JPEG, WEBP, or PDF — up to 10 MB
@@ -976,7 +976,7 @@ export default function Home() {
               )}
             </Button>
             <p className="text-xs text-muted-foreground text-center mt-3" data-testid="text-data-disclosure">
-              Pricing signals (not your personal details) are stored anonymously to improve our dealer fee database.{" "}
+              Pricing signals (not your personal details) are stored anonymously to improve our dealer fee database. Your submission is not shared with any dealership.{" "}
               <a href="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</a>
             </p>
             </div>
