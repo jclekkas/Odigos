@@ -82,7 +82,7 @@ export default function Landing() {
               </div>
 
               <p className="mt-10 text-sm text-muted-foreground" data-testid="text-reassurance">
-                No account required. Takes about 10 seconds.
+                Takes 10 seconds. No signup required.
               </p>
 
               <div className="mt-12 flex flex-col items-center justify-center gap-3 text-xs text-muted-foreground sm:flex-row sm:gap-6" data-testid="text-trust-strip">
@@ -506,15 +506,15 @@ export default function Landing() {
             </div>
 
             <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-              <a href="/#features" className="transition-colors hover:text-foreground" data-testid="link-footer-features">
+              <Link href="/#features" className="transition-colors hover:text-foreground" data-testid="link-footer-features">
                 What We Review
-              </a>
-              <a href="/#pricing" className="transition-colors hover:text-foreground" data-testid="link-footer-pricing">
+              </Link>
+              <Link href="/#pricing" className="transition-colors hover:text-foreground" data-testid="link-footer-pricing">
                 Pricing
-              </a>
-              <a href="/#faq" className="transition-colors hover:text-foreground" data-testid="link-footer-questions">
+              </Link>
+              <Link href="/#faq" className="transition-colors hover:text-foreground" data-testid="link-footer-questions">
                 Questions
-              </a>
+              </Link>
               <Link href="/privacy" className="transition-colors hover:text-foreground" data-testid="link-footer-privacy">
                 Privacy
               </Link>
