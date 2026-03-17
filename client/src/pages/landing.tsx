@@ -33,6 +33,15 @@ export default function Landing() {
     trackPageView("/");
   }, []);
 
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+      setTimeout(() => {
+        document.getElementById(hash)?.scrollIntoView({ behavior: "smooth" });
+      }, 50);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <a

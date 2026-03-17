@@ -1,6 +1,15 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 
+function scrollToHash(hash: string) {
+  if (window.location.pathname === "/") {
+    document.getElementById(hash)?.scrollIntoView({ behavior: "smooth" });
+    history.replaceState(null, "", `/#${hash}`);
+  } else {
+    window.location.href = `/#${hash}`;
+  }
+}
+
 export default function SiteHeader() {
   return (
     <header
@@ -22,20 +31,20 @@ export default function SiteHeader() {
           >
             Dealer Tactics
           </Link>
-          <Link
-            href="/#pricing"
+          <button
+            onClick={() => scrollToHash("pricing")}
             className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             data-testid="link-nav-pricing"
           >
             Pricing
-          </Link>
-          <Link
-            href="/#faq"
+          </button>
+          <button
+            onClick={() => scrollToHash("faq")}
             className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             data-testid="link-nav-questions"
           >
             Questions
-          </Link>
+          </button>
         </nav>
 
         <Button variant="cta" size="sm" asChild data-testid="button-cta-header">
