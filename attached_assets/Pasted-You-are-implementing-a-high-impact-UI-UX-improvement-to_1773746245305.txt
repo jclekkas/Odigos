@@ -1,0 +1,152 @@
+You are implementing a high-impact UI/UX improvement to the Odigos landing page.
+
+This is a surgical change focused ONLY on:
+- the hero section
+- the trust / reassurance layer directly below it
+
+DO NOT modify:
+- routing
+- analyzer logic
+- pricing
+- backend
+- existing CTA destinations
+- overall page structure beyond this section
+
+--------------------------------
+
+OBJECTIVE
+
+Increase conversion by improving:
+1) clarity (what this is)
+2) confidence (why trust it)
+3) immediacy (why act now)
+
+The current issue:
+The hero explains the product, but does NOT establish enough authority or reduce hesitation.
+
+--------------------------------
+
+IMPLEMENTATION TARGET
+
+File:
+client/src/pages/landing.tsx
+
+Modify ONLY the hero section and immediately following trust content.
+
+--------------------------------
+
+HERO SECTION — REQUIRED CHANGES
+
+1. HEADLINE (replace existing)
+
+"Spot dealer pricing tricks before you agree to anything."
+
+2. SUBHEADLINE (replace existing)
+
+"Paste a dealer quote, email, or text. Odigos checks for missing out-the-door pricing, hidden fees, and negotiation traps — so you know exactly what you're being charged."
+
+3. ADD A “WHAT IT FLAGS” MICRO-LIST (directly under subheadline)
+
+Render as 3–4 short bullet points (no icons needed, keep clean):
+
+• Missing out-the-door price  
+• Hidden or inflated fees  
+• “Mandatory” add-ons that aren’t actually required  
+• Payment-focused pricing traps  
+
+Keep typography subtle but readable (slightly muted, smaller than body)
+
+4. KEEP EXISTING CTA BUTTONS
+
+Primary CTA:
+"Check a Dealer Quote"
+
+Secondary CTA (example button):
+Keep as-is
+
+5. ADD REASSURANCE LINE (directly under CTAs)
+
+"Takes ~10 seconds. No signup required."
+
+--------------------------------
+
+ADD: MINI “OUTPUT PREVIEW” BLOCK (RIGHT SIDE OR BELOW HERO)
+
+This is CRITICAL.
+
+Create a simple card-style container that visually simulates a result.
+
+DO NOT connect to real data — this is static UI.
+
+Example structure:
+
+-------------------------
+GO / NO-GO: ⚠️ Proceed with caution
+
+Detected issues:
+• No out-the-door price provided
+• $1,995 dealer add-on not itemized
+• Monthly payment shown without full breakdown
+
+Suggested next step:
+"Can you provide the full out-the-door price including all fees?"
+-------------------------
+
+Design:
+- subtle border
+- slightly elevated (shadow-sm)
+- clean spacing
+- not flashy
+
+This is to make the product feel REAL immediately.
+
+--------------------------------
+
+TRUST / REASSURANCE STRIP (DIRECTLY BELOW HERO)
+
+Replace or upgrade existing trust text with a tighter block.
+
+Include:
+
+Line 1 (bold or slightly emphasized):
+"Built specifically for U.S. car buyers dealing with real dealer quotes."
+
+Line 2 (muted):
+"Not affiliated with dealerships. No upsells. No incentives — just analysis."
+
+Optional (if spacing allows):
+"Designed to catch the most common pricing tactics before you walk in."
+
+--------------------------------
+
+DESIGN CONSTRAINTS
+
+- Do NOT introduce new colors
+- Do NOT redesign the full page
+- Do NOT add animations
+- Do NOT add icons unless already used in system
+- Use existing Tailwind tokens and spacing scale
+- Maintain current layout grid
+
+--------------------------------
+
+DONE LOOKS LIKE
+
+- Above-the-fold clearly communicates:
+  WHAT this is
+  WHAT it catches
+  WHY it’s trustworthy
+  HOW it works (implicitly)
+
+- A user can understand the product in under 5 seconds
+- A skeptical buyer feels safer pasting their quote
+
+--------------------------------
+
+IMPORTANT
+
+Do NOT overdesign this.
+Do NOT add new sections beyond what is specified.
+Clarity and credibility > creativity.
+
+Make the change clean, restrained, and deliberate.
