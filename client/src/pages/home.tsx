@@ -692,7 +692,7 @@ export default function Home() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <Card className="border-border/50">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base font-semibold">Paste Dealer Communication</CardTitle>
+                <CardTitle className="text-base font-semibold">Add Dealer Communication</CardTitle>
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="paste" className="w-full" data-testid="tabs-input-mode">
