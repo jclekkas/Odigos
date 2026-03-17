@@ -105,7 +105,7 @@ export default function Landing() {
                 </div>
 
                 <p className="mt-6 text-sm text-muted-foreground" data-testid="text-reassurance">
-                  Takes 10 seconds. No signup required.
+                  Takes ~10 seconds. No signup required.
                 </p>
 
                 <div className="mt-8 space-y-1" data-testid="text-trust-strip">
