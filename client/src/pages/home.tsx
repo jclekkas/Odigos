@@ -687,6 +687,16 @@ export default function Home() {
             How this analysis works
           </a>
         </div>
+        <div className="max-w-2xl mx-auto" data-testid="section-what-you-get">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">What you'll get</p>
+          <ul className="space-y-1 text-sm text-muted-foreground" data-testid="list-what-you-get">
+            <li>· GO / NO-GO recommendation</li>
+            <li>· Issues found and explained</li>
+            <li>· Missing information checklist</li>
+            <li>· Copy-paste reply for the dealer</li>
+          </ul>
+        </div>
+
         <div className="border border-border/60 rounded-xl bg-card/50 p-4 md:p-6" data-testid="section-analyzer-module">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
@@ -728,12 +738,23 @@ export default function Home() {
                         Try a bad deal example
                       </Button>
                     </div>
+
+                    <div className="rounded-lg bg-muted/40 border border-border/40 px-4 py-3" data-testid="block-example-message">
+                      <div className="flex items-center gap-2 mb-2">
+                        <p className="text-xs font-medium text-muted-foreground">Example dealer message</p>
+                        <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60 border border-border/50 rounded px-1.5 py-0.5 leading-none">Example</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground leading-relaxed italic" data-testid="text-example-message">
+                        "Hi, the vehicle is $28,995. With taxes, fees, and protection package you're looking at $34,200 OTD. Monthly comes out to about $540 depending on credit. Let me know when you can come in."
+                      </p>
+                    </div>
+
                     <FormField
                       control={form.control}
                       name="dealerText"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="sr-only">Dealer text</FormLabel>
+                          <FormLabel className="text-sm font-medium text-foreground">Paste a dealer quote, email, or text message.</FormLabel>
                           <FormControl>
                             <Textarea
                               {...field}
@@ -748,9 +769,15 @@ export default function Home() {
                             />
                           </FormControl>
                           <FormMessage />
+                          <p className="text-xs text-muted-foreground" data-testid="text-input-guidance">
+                            For best results, include pricing, fees, and any messages from the dealer.
+                          </p>
                         </FormItem>
                       )}
                     />
+                    <p className="text-xs text-muted-foreground" data-testid="text-privacy-reassurance">
+                      Your information is not shared with any dealership. This is an independent analysis.
+                    </p>
                   </TabsContent>
 
                   <TabsContent value="upload" className="mt-0">
@@ -970,12 +997,15 @@ export default function Home() {
               {analyzeMutation.isPending ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Analyzing Deal...
+                  Analyzing dealer pricing…
                 </>
               ) : (
                 "Analyze Deal"
               )}
             </Button>
+            <p className="text-xs text-muted-foreground text-center mt-2" data-testid="text-what-happens-next">
+              You'll get a verdict and a breakdown in seconds.
+            </p>
             <p className="text-xs text-muted-foreground text-center mt-3" data-testid="text-data-disclosure">
               Pricing signals (not your personal details) are stored anonymously to improve our dealer fee database. Your submission is not shared with any dealership.{" "}
               <a href="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</a>
