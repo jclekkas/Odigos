@@ -1,0 +1,160 @@
+Fix the visual hierarchy and focus of the analyzer page (client/src/pages/home.tsx).
+
+The current page is structurally correct but visually flat, low-contrast, and unfocused. Everything reads at the same visual weight, and the input area does not feel like the primary action. This hurts clarity and user momentum.
+
+This is a surgical UI correction only.
+
+DO NOT change:
+- any copy or text content
+- form fields or logic
+- analysis logic or API calls
+- routing or pricing
+- component structure or layout order
+- upload functionality
+- tabs or existing sections
+
+ONLY adjust contrast, emphasis, spacing, and hierarchy using existing design tokens.
+
+--------------------------------
+OBJECTIVE
+
+Make it immediately obvious:
+1. where the user should act (textarea)
+2. what the page is about (header)
+3. what is secondary vs primary
+
+The page should feel:
+- focused
+- confident
+- usable
+- not washed out
+
+--------------------------------
+TARGET FILE
+
+client/src/pages/home.tsx
+
+--------------------------------
+REQUIRED FIXES
+
+1. MAKE THE INPUT AREA THE CLEAR FOCAL POINT
+
+The input card must visually stand out from the rest of the page.
+
+Using existing tokens:
+- slightly increase card contrast (background, border, or shadow)
+- ensure the input container feels distinct from the page background
+- textarea should feel like an active input surface, not passive text
+
+Do NOT add new colors. Use existing card/border/shadow tokens.
+
+--------------------------------
+2. FIX TEXTAREA VISUAL CLARITY
+
+The textarea currently feels weak and inactive.
+
+Improve:
+- border visibility (slightly stronger)
+- focus state clarity (clearer ring or border change on focus)
+- placeholder readability
+
+Do NOT change placeholder text.
+
+--------------------------------
+3. REPOSITION THE HELPER LINK
+
+Current placement (inline with label) is cramped and harms readability.
+
+Move:
+"Not sure what to paste? See an example"
+
+To:
+- below the textarea (not inline with label)
+- styled as small, muted helper text
+
+It should feel like optional help, not part of the form label.
+
+--------------------------------
+4. STRENGTHEN PAGE HEADER HIERARCHY
+
+"Analyze a Dealer Quote" should clearly anchor the page.
+
+Adjust:
+- stronger foreground contrast (closer to headline strength)
+- slightly more visual weight than current
+
+Subtext:
+- slightly darker than current muted
+- clearly readable but still secondary
+
+--------------------------------
+5. REDUCE VISUAL COMPETITION ABOVE INPUT
+
+The sections above the textarea ("What you'll get", example box, etc.) currently compete with the input.
+
+Adjust:
+- tighten spacing between these sections
+- ensure they read as supporting context
+
+The textarea should be visually dominant once the user scrolls into the form.
+
+--------------------------------
+6. ADD SUBTLE DEPTH TO FORM CONTAINER
+
+The form card needs separation from the page.
+
+Using existing tokens:
+- slightly stronger border OR
+- slightly stronger shadow
+
+Do NOT make it heavy or elevated like a modal.
+
+Just enough to separate it from the background.
+
+--------------------------------
+7. CLEAN UP SPACING RHYTHM
+
+Ensure clear flow:
+
+header
+→ supporting text
+→ "what you'll get"
+→ form card
+→ textarea
+→ helper text
+
+Avoid:
+- cramped stacking
+- uniform spacing everywhere
+- sections blending together
+
+--------------------------------
+IMPORTANT CONSTRAINT
+
+Do NOT make the UI:
+- flashy
+- colorful
+- overdesigned
+
+Target feel:
+- serious
+- clear
+- professional
+- decisive
+
+--------------------------------
+DONE LOOKS LIKE
+
+- the textarea is obviously the main action
+- the form card stands out from the page
+- the header anchors the page clearly
+- the helper link feels helpful, not cluttered
+- the page no longer feels washed out or flat
+
+--------------------------------
+RETURN
+
+Provide:
+1. exact class changes
+2. unified diff
+3. short explanation of how hierarchy was improved without redesign
