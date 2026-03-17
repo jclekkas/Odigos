@@ -16,7 +16,8 @@ import {
   FileText,
   MessageSquare,
   Info,
-  Lock
+  Lock,
+  Upload
 } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Form,
   FormControl,
@@ -693,77 +695,101 @@ export default function Home() {
                 <CardTitle className="text-base font-semibold">Paste Dealer Communication</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-col sm:flex-row gap-2 mb-4">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => form.setValue("dealerText", SAMPLE_GOOD_DEAL)}
-                    data-testid="button-sample-good"
-                  >
-                    Try a good deal example
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => form.setValue("dealerText", SAMPLE_BAD_DEAL)}
-                    data-testid="button-sample-bad"
-                  >
-                    Try a bad deal example
-                  </Button>
-                </div>
-                <FormField
-                  control={form.control}
-                  name="dealerText"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="sr-only">Dealer text</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          onFocus={() => handleFormStart()}
-                          onChange={(e) => {
-                            field.onChange(e);
-                            if (uploadError) setUploadError(null);
-                          }}
-                          placeholder="Paste dealer texts, emails, or quotes here..."
-                          className="min-h-48 text-base resize-y"
-                          data-testid="input-dealer-text"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <Tabs defaultValue="paste" className="w-full" data-testid="tabs-input-mode">
+                  <TabsList className="w-full flex h-11 mb-4" data-testid="tabs-input-mode-list">
+                    <TabsTrigger value="paste" className="flex-1 text-sm font-medium" data-testid="tab-paste-text">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Paste text
+                    </TabsTrigger>
+                    <TabsTrigger value="upload" className="flex-1 text-sm font-medium" data-testid="tab-upload">
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload
+                    </TabsTrigger>
+                  </TabsList>
 
-                <div className="mt-3 flex items-center gap-2">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".png,.jpg,.jpeg,.webp,.pdf"
-                    className="hidden"
-                    onChange={handleFileUpload}
-                    data-testid="input-file-upload"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploadLoading}
-                    className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    data-testid="button-upload-file"
-                  >
-                    or upload a screenshot or PDF
-                  </button>
-                  {uploadLoading && (
-                    <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
-                  )}
-                </div>
-                {uploadError && (
-                  <p className="text-xs text-destructive mt-1" data-testid="text-upload-error">
-                    {uploadError}
-                  </p>
-                )}
+                  <TabsContent value="paste" className="mt-0 space-y-4">
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => form.setValue("dealerText", SAMPLE_GOOD_DEAL)}
+                        data-testid="button-sample-good"
+                      >
+                        Try a good deal example
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => form.setValue("dealerText", SAMPLE_BAD_DEAL)}
+                        data-testid="button-sample-bad"
+                      >
+                        Try a bad deal example
+                      </Button>
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name="dealerText"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="sr-only">Dealer text</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              onFocus={() => handleFormStart()}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                if (uploadError) setUploadError(null);
+                              }}
+                              placeholder="Paste dealer texts, emails, or quotes here..."
+                              className="min-h-48 text-base resize-y"
+                              data-testid="input-dealer-text"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="upload" className="mt-0">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".png,.jpg,.jpeg,.webp,.pdf"
+                      className="hidden"
+                      onChange={handleFileUpload}
+                      data-testid="input-file-upload"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploadLoading}
+                      className="w-full min-h-48 flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-border/80 bg-muted/30 hover:bg-muted/50 hover:border-foreground/20 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                      data-testid="button-upload-file"
+                    >
+                      {uploadLoading ? (
+                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                      ) : (
+                        <Upload className="h-8 w-8 text-muted-foreground" />
+                      )}
+                      <div className="text-center">
+                        <p className="text-sm font-medium text-foreground">
+                          {uploadLoading ? "Processing file…" : "Click to upload a file"}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          PNG, JPG, JPEG, WEBP, or PDF — up to 10 MB
+                        </p>
+                      </div>
+                    </button>
+                    {uploadError && (
+                      <p className="text-xs text-destructive mt-2" data-testid="text-upload-error">
+                        {uploadError}
+                      </p>
+                    )}
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
 
