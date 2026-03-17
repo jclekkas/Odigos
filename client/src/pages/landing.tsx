@@ -65,26 +65,27 @@ export default function Landing() {
 
               {/* Hero text column */}
               <div className="flex-1 text-center lg:text-left">
-                <p className="mb-6 text-xs font-medium tracking-widest uppercase text-muted-foreground" data-testid="text-authority-framing">
+                <p className="mb-4 text-xs font-semibold tracking-widest uppercase text-muted-foreground" data-testid="text-authority-framing">
                   Independent Quote Review
                 </p>
 
-                <h1 className="font-serif text-balance text-4xl font-semibold tracking-tight sm:text-5xl" data-testid="text-hero-headline">
+                <h1 className="font-serif text-balance text-4xl font-bold tracking-tight sm:text-5xl text-foreground" data-testid="text-hero-headline">
                   Spot dealer pricing tricks before you agree to anything.
                 </h1>
 
-                <p className="mt-6 text-base text-muted-foreground sm:text-lg leading-relaxed" data-testid="text-hero-subheadline">
+                <p className="mt-5 text-base text-foreground/80 sm:text-lg leading-relaxed" data-testid="text-hero-subheadline">
                   Paste a dealer quote, email, or text. Odigos flags missing out-the-door pricing, hidden fees, and common dealership tactics.
                 </p>
 
-                <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row lg:justify-start">
-                  <Button variant="cta" size="lg" className="gap-2" asChild data-testid="button-cta-hero">
+
+                <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
+                  <Button variant="cta" size="lg" className="gap-2 font-semibold shadow" asChild data-testid="button-cta-hero">
                     <Link href="/analyze" onClick={() => { trackCtaClick("hero-analyze", "Check a Dealer Quote"); capture("landing_cta_clicked", { location: "hero", cta_text: "Check a Dealer Quote" }); }}>
                       Check a Dealer Quote
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
-                  <Button variant="outline" size="lg" asChild data-testid="button-try-bad">
+                  <Button variant="outline" size="lg" className="text-muted-foreground" asChild data-testid="button-try-bad">
                     <Link href="/analyze?example=bad" onClick={() => { trackCtaClick("hero-bad-example", "Try a bad deal example"); capture("landing_cta_clicked", { location: "hero", cta_text: "Try a bad deal example" }); }}>
                       Try a bad deal example
                     </Link>
@@ -93,7 +94,7 @@ export default function Landing() {
 
                 <p className="mt-4 text-sm text-muted-foreground" data-testid="text-reassurance">
                   Takes ~10 seconds. No signup required.{" "}
-                  <Link href="/example-analysis" className="underline underline-offset-2 hover:text-foreground transition-colors" data-testid="link-example-analysis-hero">
+                  <Link href="/example-analysis" className="underline underline-offset-4 hover:text-foreground/70 transition-colors" data-testid="link-example-analysis-hero">
                     See an example.
                   </Link>
                 </p>
@@ -101,7 +102,7 @@ export default function Landing() {
 
               {/* Static output preview card */}
               <div className="lg:w-80 lg:shrink-0" data-testid="card-preview-result">
-                <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 shadow-sm p-5 space-y-4">
+                <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 shadow-md p-5 space-y-4">
 
                   {/* Header */}
                   <p className="text-[10px] font-semibold uppercase tracking-widest text-amber-600/70 dark:text-amber-400/60">

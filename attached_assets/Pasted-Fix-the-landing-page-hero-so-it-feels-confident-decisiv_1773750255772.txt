@@ -1,0 +1,145 @@
+Fix the landing page hero so it feels confident, decisive, and clearly action-oriented.
+
+The current hero is clean but too timid:
+- CTA does not stand out
+- left column reads like a gray wall of text
+- preview card feels polite instead of real output
+- overall tone is low-energy instead of authoritative
+
+This is NOT a redesign. It is a targeted hierarchy and emphasis correction.
+
+--------------------------------
+DO NOT CHANGE
+- any copy (headline, subheadline, bullets, CTA text, trust strip)
+- layout structure (two-column stays)
+- routes or logic
+- components or architecture
+- color system (must use existing tokens only)
+
+--------------------------------
+OBJECTIVE
+
+Make the hero feel:
+- confident
+- decisive
+- high-trust
+- clearly action-oriented
+
+The user should instantly understand:
+1. what this does
+2. what to do next
+3. what they will get
+
+--------------------------------
+TARGET FILE
+
+client/src/pages/landing.tsx
+
+--------------------------------
+REQUIRED CHANGES
+
+1. MAKE PRIMARY CTA UNMISTAKABLE
+
+The "Check a Dealer Quote" button must clearly dominate.
+
+Adjust using existing tokens:
+- use the strongest available button variant (cta/primary)
+- increase contrast vs page background
+- add subtle but visible elevation (shadow-sm → shadow or equivalent)
+- ensure it is visually stronger than the secondary button
+
+Secondary button must remain clearly subordinate.
+
+--------------------------------
+2. ADD VISUAL RHYTHM TO LEFT COLUMN
+
+Right now the content reads as a continuous block.
+
+Create clear separation between:
+- headline
+- subheadline
+- bullet list
+- CTA section
+
+Adjust spacing:
+- slightly more space before bullets
+- slightly more space before CTA row
+- ensure bullets feel like a distinct grouped section
+
+The goal is:
+headline → explanation → checklist → action
+
+NOT a gray stack.
+
+--------------------------------
+3. INCREASE TEXT CONTRAST WITH INTENT
+
+Keep the system but push contrast slightly further:
+
+- headline: strongest (text-foreground, bold)
+- subheadline: readable and confident (text-foreground/80 or similar)
+- bullets: match or slightly below subheadline, NOT lighter
+- helper text: still muted, but readable
+
+Avoid everything collapsing into similar gray tones.
+
+--------------------------------
+4. MAKE PREVIEW CARD FEEL LIKE REAL OUTPUT
+
+The card should feel like the product, not decoration.
+
+Improve using existing tokens:
+- slightly stronger border or ring
+- maintain shadow but ensure it is visible
+- increase weight of verdict line ("Proceed with caution")
+- ensure section labels are clearly distinct from body text
+- improve spacing inside card so sections don’t blend
+
+Do NOT change content or layout of the card.
+
+--------------------------------
+5. FIX CTA SECTION COMPOSITION
+
+The CTA area should feel like a clear decision point.
+
+- ensure primary button draws the eye first
+- ensure spacing between buttons is clean but not wide
+- place example link clearly below CTA row with enough separation
+
+--------------------------------
+6. TREAT "SEE AN EXAMPLE ANALYSIS" AS SUPPORTING, NOT INVISIBLE
+
+- keep it as text (not a button)
+- ensure it is readable without being prominent
+- slightly increase contrast from current if needed
+- ensure spacing makes it feel intentional, not accidental
+
+--------------------------------
+7. PRESERVE RESTRAINT
+
+Do NOT:
+- add bright colors
+- add gradients
+- add animations
+- make it “startup flashy”
+
+Target feel:
+- calm authority
+- strong signal
+- professional confidence
+
+--------------------------------
+DONE LOOKS LIKE
+
+- CTA is clearly the main action
+- hero reads in a clear flow instead of a gray block
+- preview card feels like actual output
+- page feels confident, not hesitant
+
+--------------------------------
+RETURN
+
+Provide:
+1. exact class changes
+2. unified diff
+3. short explanation of what changed and why it improves clarity and confidence
