@@ -1,6 +1,5 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import logoImage from "@assets/odigos_logo.png";
 
 export default function SiteHeader() {
   return (
@@ -9,13 +8,10 @@ export default function SiteHeader() {
       data-testid="site-header"
     >
       <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4 sm:px-6">
-        <Link href="/">
-          <img
-            src={logoImage}
-            alt="Odigos"
-            className="h-11 md:h-[3.25rem] w-auto cursor-pointer dark:invert"
-            data-testid="link-logo-home"
-          />
+        <Link href="/" data-testid="link-logo-home">
+          <span className="font-serif text-xl font-semibold tracking-tight text-foreground cursor-pointer">
+            Odigos
+          </span>
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex" data-testid="nav-links">
