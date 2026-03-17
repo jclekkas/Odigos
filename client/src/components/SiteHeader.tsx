@@ -26,20 +26,20 @@ export default function SiteHeader() {
           >
             Dealer Tactics
           </Link>
-          <a
+          <Link
             href="/#pricing"
             className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             data-testid="link-nav-pricing"
           >
             Pricing
-          </a>
-          <a
+          </Link>
+          <Link
             href="/#faq"
             className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             data-testid="link-nav-questions"
           >
             Questions
-          </a>
+          </Link>
         </nav>
 
         <Button size="sm" asChild data-testid="button-cta-header">
