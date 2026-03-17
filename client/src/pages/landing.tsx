@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { AlertTriangle, Check, CheckCircle2, ChevronDown } from "lucide-react";
+import { AlertTriangle, ArrowRight, Check, CheckCircle2, ChevronDown } from "lucide-react";
 import { trackPageView, trackCtaClick } from "@/lib/tracking";
 import SiteHeader from "@/components/SiteHeader";
 import SeoHead from "@/components/SeoHead";
@@ -50,46 +50,56 @@ export default function Landing() {
         path="/"
       />
       <main id="main-content">
-        <section className="pt-12 pb-20 md:pt-16 md:pb-28 px-6">
-          <div className="max-w-3xl mx-auto text-center">
-            <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4" data-testid="text-authority-framing">
-              Independent analysis for car buyers
-            </p>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.015em] leading-[1.25] text-foreground max-w-4xl mx-auto" data-testid="text-hero-headline">
-              Spot dealer pricing tricks before you walk into the dealership.
-            </h1>
-            <p className="mt-6 text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto leading-relaxed" data-testid="text-hero-subheadline">
-              Paste a car dealer quote, text, or email. Odigos checks for missing out-the-door pricing, hidden fees, and common dealership tactics so you know exactly what you're agreeing to.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
-              <Button
-                asChild
-                size="lg"
-                className="w-full sm:w-auto px-8 py-6 text-lg font-semibold rounded-xl"
-                data-testid="button-cta-hero"
-              >
-                <Link href="/analyze" onClick={() => trackCtaClick("hero-analyze", "Check a Dealer Quote")}>
-                  Check a Dealer Quote
-                </Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="w-full sm:w-auto text-sm rounded-lg mt-4"
-                data-testid="button-try-bad"
-              >
-                <Link href="/analyze?example=bad" onClick={() => trackCtaClick("hero-bad-example", "Try a bad deal example")}>
-                  Try a bad deal example
-                </Link>
-              </Button>
+        <section className="py-28 sm:py-40 lg:py-48">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="mb-8 text-xs font-medium tracking-widest uppercase text-muted-foreground" data-testid="text-authority-framing">
+                Independent Quote Review
+              </p>
+
+              <h1 className="font-serif text-balance text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl" data-testid="text-hero-headline">
+                Understand your dealer quote before you commit.
+              </h1>
+
+              <p className="mx-auto mt-10 max-w-2xl text-pretty text-base text-muted-foreground sm:text-lg leading-relaxed" data-testid="text-hero-subheadline">
+                Odigos reviews car dealer quotes for missing pricing details, unclear fees,
+                and language that may not be in your best interest. Paste a quote and
+                receive an independent assessment.
+              </p>
+
+              <div className="mt-14 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                <Button size="lg" className="gap-2" asChild data-testid="button-cta-hero">
+                  <Link href="/analyze" onClick={() => trackCtaClick("hero-analyze", "Check a Dealer Quote")}>
+                    Check a Dealer Quote
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button variant="outline" size="lg" asChild data-testid="button-try-bad">
+                  <Link href="/analyze?example=bad" onClick={() => trackCtaClick("hero-bad-example", "Try a bad deal example")}>
+                    Try a bad deal example
+                  </Link>
+                </Button>
+              </div>
+
+              <p className="mt-10 text-sm text-muted-foreground" data-testid="text-reassurance">
+                No account required. Takes about 10 seconds.
+              </p>
+
+              <div className="mt-12 flex flex-col items-center justify-center gap-3 text-xs text-muted-foreground sm:flex-row sm:gap-6" data-testid="text-trust-strip">
+                <div className="flex items-center gap-2">
+                  <span className="text-primary">✓</span>
+                  <span>Independent analysis</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-primary">✓</span>
+                  <span>No dealership affiliations</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-primary">✓</span>
+                  <span>Personal information redacted</span>
+                </div>
+              </div>
             </div>
-            <p className="mt-3 text-sm text-muted-foreground" data-testid="text-reassurance">
-              Takes 10 seconds. No signup required.
-            </p>
-            <p className="mt-4 text-sm font-semibold tracking-wide text-foreground/60 dark:text-foreground/70 leading-relaxed" data-testid="text-trust-strip">
-              Independent · No account required · Secure Stripe checkout
-            </p>
           </div>
         </section>
 
@@ -111,7 +121,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-16 px-6">
+        <section id="features" className="py-16 px-6">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center" data-testid="text-checks-heading">
               What Odigos Checks For
@@ -281,7 +291,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-16 px-6">
+        <section id="pricing" className="py-16 px-6">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">
               Simple pricing
@@ -383,7 +393,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-16 px-6 bg-muted/30">
+        <section id="faq" className="py-16 px-6 bg-muted/30">
           <Helmet>
             <script type="application/ld+json">{JSON.stringify({
               "@context": "https://schema.org",
@@ -485,20 +495,39 @@ export default function Landing() {
         </section>
       </main>
 
-      <footer className="border-t border-border/50 py-6">
-        <div className="max-w-5xl mx-auto px-6 text-center space-y-2">
-          <p className="text-sm text-muted-foreground">
-            <Link href="/dealer-pricing-tactics" className="underline text-foreground" data-testid="link-guides">Guides: Dealer Pricing Tactics</Link>
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Built for U.S. car buyers. Independent. No dealer partnerships.
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Odigos provides estimates based on the information you share. Always verify details directly with the dealership.
-          </p>
-          <p className="text-xs text-muted-foreground">
-            <a href="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</a>
-          </p>
+      <footer className="border-t border-border py-10">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6">
+          <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
+            <div>
+              <span className="font-serif font-semibold">Odigos</span>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Independent dealer quote review
+              </p>
+            </div>
+
+            <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
+              <a href="/#features" className="transition-colors hover:text-foreground" data-testid="link-footer-features">
+                What We Review
+              </a>
+              <a href="/#pricing" className="transition-colors hover:text-foreground" data-testid="link-footer-pricing">
+                Pricing
+              </a>
+              <a href="/#faq" className="transition-colors hover:text-foreground" data-testid="link-footer-questions">
+                Questions
+              </a>
+              <Link href="/privacy" className="transition-colors hover:text-foreground" data-testid="link-footer-privacy">
+                Privacy
+              </Link>
+            </nav>
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-border text-center text-xs text-muted-foreground leading-relaxed">
+            <p>
+              Odigos reviews pricing transparency and disclosure practices in dealer quotes.
+              It does not provide legal, financial, or mechanical advice.
+              Consult appropriate professionals for those assessments.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
