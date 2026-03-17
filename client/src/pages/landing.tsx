@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { AlertTriangle, ArrowRight, Check, CheckCircle2, XCircle } from "lucide-react";
+import { AlertTriangle, ArrowRight, Check, CheckCircle2, Lock, XCircle } from "lucide-react";
 import { trackPageView, trackCtaClick } from "@/lib/tracking";
 import { capture } from "@/lib/analytics";
 import SiteHeader from "@/components/SiteHeader";
@@ -126,35 +126,71 @@ export default function Landing() {
               </div>
 
               {/* Static output preview card */}
-              <div className="lg:w-80 lg:shrink-0" data-testid="card-preview-result">
-                <div className="rounded-xl border border-border bg-card shadow-sm p-5">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">
+              <div className="lg:w-96 lg:shrink-0" data-testid="card-preview-result">
+                <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 shadow-sm p-5 space-y-4">
+
+                  {/* Header */}
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-amber-600/70 dark:text-amber-400/60">
                     Sample result
                   </p>
-                  <p className="text-sm font-semibold text-foreground mb-4">
-                    GO / NO-GO: ⚠️ Proceed with caution
-                  </p>
-                  <div className="mb-4">
-                    <p className="text-xs font-medium text-muted-foreground mb-2">Detected issues:</p>
-                    <ul className="space-y-1.5">
-                      {[
-                        "No out-the-door price provided",
-                        "$1,995 dealer add-on not itemized",
-                        "Monthly payment shown without full breakdown",
-                      ].map((issue) => (
-                        <li key={issue} className="flex items-start gap-2 text-xs text-foreground">
-                          <span className="mt-0.5 text-muted-foreground/50 select-none">·</span>
-                          <span>{issue}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="border-t border-border pt-4">
-                    <p className="text-xs font-medium text-muted-foreground mb-1.5">Suggested next step:</p>
-                    <p className="text-xs text-foreground leading-relaxed italic">
-                      "Can you provide the full out-the-door price including all fees?"
+
+                  {/* Verdict chips + heading */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-semibold tracking-wide border bg-amber-500/15 border-amber-500/30 text-amber-700 dark:text-amber-400">
+                        NO-GO
+                      </span>
+                      <span className="text-xs text-muted-foreground border border-border/60 px-2 py-0.5 rounded bg-muted/40">
+                        High confidence
+                      </span>
+                    </div>
+                    <p className="text-sm font-semibold leading-snug text-amber-700 dark:text-amber-400">
+                      Significant red flags — key pricing information is missing
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+                      This quote has enough gaps that visiting the dealership without resolving them first is high-risk.
                     </p>
                   </div>
+
+                  {/* Issues */}
+                  <div className="border-t border-amber-500/15 pt-3 space-y-2">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                      Key issues found
+                    </p>
+                    {[
+                      { field: "OTD price", note: "No out-the-door total was provided" },
+                      { field: "Add-on fees", note: "$1,995 protection package not itemized" },
+                      { field: "Financing terms", note: "Monthly payment shown without APR or term" },
+                    ].map((item) => (
+                      <div key={item.field} className="flex items-start gap-2">
+                        <AlertTriangle className="w-3.5 h-3.5 text-amber-500 mt-0.5 shrink-0" />
+                        <p className="text-xs leading-snug">
+                          <span className="font-medium text-foreground">{item.field}:</span>{" "}
+                          <span className="text-muted-foreground">{item.note}</span>
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Locked full review preview */}
+                  <div className="border-t border-amber-500/15 pt-3">
+                    <div className="rounded-lg border border-border/50 bg-background/60 p-3 space-y-2 relative overflow-hidden">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <Lock className="w-3 h-3 text-muted-foreground/60" />
+                        <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+                          Full review
+                        </p>
+                      </div>
+                      {["Missing info checklist", "Copy-paste dealer reply", "Negotiation guidance"].map((line) => (
+                        <div key={line} className="flex items-center gap-2 opacity-40 select-none">
+                          <Check className="w-3 h-3 text-muted-foreground shrink-0" />
+                          <p className="text-xs text-muted-foreground">{line}</p>
+                        </div>
+                      ))}
+                      <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent pointer-events-none" />
+                    </div>
+                  </div>
+
                 </div>
               </div>
 
