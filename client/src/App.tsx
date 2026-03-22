@@ -52,6 +52,7 @@ import WhatIsAFairPriceForACar from "@/pages/what-is-a-fair-price-for-a-car";
 import HowMuchShouldYouPayForACar from "@/pages/how-much-should-you-pay-for-a-car";
 import HowToCompareCarDeals from "@/pages/how-to-compare-car-deals";
 import BestWayToCheckIfACarDealIsGood from "@/pages/best-way-to-check-if-a-car-deal-is-good";
+import CarDealerFeesState from "@/pages/car-dealer-fees-state";
 import NotFound from "@/pages/not-found";
 
 function ScrollToTop() {
@@ -113,6 +114,7 @@ function Router() {
       <Route path="/how-much-should-you-pay-for-a-car" component={HowMuchShouldYouPayForACar} />
       <Route path="/how-to-compare-car-deals" component={HowToCompareCarDeals} />
       <Route path="/best-way-to-check-if-a-car-deal-is-good" component={BestWayToCheckIfACarDealIsGood} />
+      <Route path="/car-dealer-fees-:state" component={CarDealerFeesState} />
       <Route component={NotFound} />
     </Switch>
     </>
