@@ -23,8 +23,8 @@ export default function OutTheDoorPrice() {
 
   useEffect(() => {
     return setSeoMeta({
-      title: "What Is an Out-the-Door Price (OTD)? The Only Number That Matters | Odigos",
-      description: "The out-the-door price (OTD) is the total you pay to leave the dealership with the keys. Learn what it includes, what dealers leave out, red flags, and a copy-paste message to get the full OTD in writing.",
+      title: "What Is an Out-the-Door Price? The Full OTD Guide | Odigos",
+      description: "The OTD price is every dollar you pay to drive off the lot. Learn what it includes, what dealers hide, red flags, and how to get it in writing.",
       path: "/out-the-door-price",
     });
   }, []);
@@ -176,6 +176,18 @@ export default function OutTheDoorPrice() {
             <p className="text-muted-foreground mb-8">
               If the dealer won't provide the total in writing, assume the number will change.
             </p>
+
+            <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
+              <p className="text-sm font-semibold text-foreground mb-2">Already have a dealer quote?</p>
+              <p className="text-sm text-muted-foreground mb-3">
+                Paste it into Odigos and we'll check it against the complete OTD standard — flagging missing fees, surprise add-ons, and anything that doesn't add up.
+              </p>
+              <Link href="/analyze">
+                <Button variant="cta" size="sm" data-testid="button-cta-mid-article-otd">
+                  Analyze My Dealer Quote
+                </Button>
+              </Link>
+            </div>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground flex items-center gap-2">
               <CircleDollarSign className="h-5 w-5 shrink-0" />

@@ -14,8 +14,8 @@ export default function AreDealerAddOnsMandatory() {
 
   useEffect(() => {
     return setSeoMeta({
-      title: "Are Dealer Add-Ons Mandatory? What You Can Actually Refuse | Odigos",
-      description: "Most dealer add-ons are optional, even when presented as required. Learn which charges you can decline, how to tell the difference, and what to say to get them removed.",
+      title: "Are Dealer Add-Ons Mandatory? What You Can Refuse | Odigos",
+      description: "Most dealer add-ons are optional even when presented as required. Learn which charges you can refuse, how to spot the difference, and what to say.",
       path: "/are-dealer-add-ons-mandatory",
     });
   }, []);
@@ -128,6 +128,18 @@ export default function AreDealerAddOnsMandatory() {
               One of the most common responses you'll hear is "it's already on the car." This is true — the product may already be applied or installed. But that doesn't mean you agreed to pay for it, and it doesn't eliminate your ability to negotiate the price. If a dealer added paint protection before you walked in, that was their decision. You're negotiating the total price, not approving a parts list. If you don't want to pay for a pre-installed add-on, you can ask for the vehicle price to be reduced by that amount.
             </p>
 
+            <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
+              <p className="text-sm font-semibold text-foreground mb-2">Not sure which charges in your quote are optional?</p>
+              <p className="text-sm text-muted-foreground mb-3">
+                Paste your dealer quote into Odigos. We'll flag every add-on, show what's negotiable, and give you the specific language to push back.
+              </p>
+              <Link href="/analyze">
+                <Button variant="cta" size="sm" data-testid="button-cta-mid-article-are-mandatory">
+                  Analyze My Dealer Quote
+                </Button>
+              </Link>
+            </div>
+
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to say when you want add-ons removed</h2>
 
             <p className="text-muted-foreground mb-4">
@@ -185,8 +197,12 @@ export default function AreDealerAddOnsMandatory() {
               The best time to deal with unwanted add-ons is before you visit the dealership. Request the full <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> in writing — every line item visible, including the vehicle price, taxes, government fees, the doc fee, and any dealer-installed products. When you can see each charge individually, you can decide what's worth paying for and what to push back on before you're in the finance office.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground mb-6">
               If you already have a dealer quote and aren't sure which charges are optional, paste it into Odigos. We'll flag the add-ons, show you what's negotiable, and give you a clear picture of what the car actually costs without the extras.
+            </p>
+
+            <p className="text-lg text-muted-foreground mb-8">
+              Watch for <Link href="/market-adjustment-fee" className="underline text-foreground">market adjustment fees</Link> too — these are a separate type of markup that appears above MSRP on the sticker itself, distinct from dealer-installed add-ons, and require a different approach to negotiate.
             </p>
           </div>
 

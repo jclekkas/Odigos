@@ -25,7 +25,7 @@ export default function CalculateOutTheDoorPrice() {
   useEffect(() => {
     return setSeoMeta({
       title: "How to Calculate Out-the-Door Price on a Car | Odigos",
-      description: "Learn how to calculate the true out-the-door price on any car. Step-by-step OTD formula, what dealers leave out, a worked example, and a copy-paste message to get every fee in writing.",
+      description: "OTD formula step-by-step: vehicle price + tax + title + doc fee + add-ons. Worked example, what dealers omit, and a message to get the full itemized price.",
       path: "/calculate-out-the-door-price",
     });
   }, []);
@@ -172,6 +172,18 @@ export default function CalculateOutTheDoorPrice() {
               If the dealer had only quoted "$28,500 plus tax and fees," you wouldn't know about the $595 paint protection package until the finance office. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC recommends</a> getting the full price in writing before committing to any deal.
             </p>
 
+            <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
+              <p className="text-sm font-semibold text-foreground mb-2">Have a quote that doesn't match your estimate?</p>
+              <p className="text-sm text-muted-foreground mb-3">
+                Paste it into Odigos. We'll show you exactly which line items are missing or higher than expected — so you can go back to the dealer with the right questions.
+              </p>
+              <Link href="/analyze">
+                <Button variant="cta" size="sm" data-testid="button-cta-mid-article-calculate-otd">
+                  Analyze My Dealer Quote
+                </Button>
+              </Link>
+            </div>
+
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Copy-Paste Message to Get the Full OTD Breakdown</h2>
 
             <p className="text-muted-foreground mb-4">
@@ -207,8 +219,12 @@ export default function CalculateOutTheDoorPrice() {
               Running the numbers yourself is a strong first step — but it only works if you know every fee the dealer plans to charge. Odigos analyzes the actual quote or text messages you receive from a dealer and flags anything that's missing, vague, or higher than expected.
             </p>
 
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground mb-6">
               Instead of guessing whether a fee is normal, paste the dealer's message and get a clear breakdown of what's included, what's missing, and what deserves a closer look.
+            </p>
+
+            <p className="text-muted-foreground mb-8">
+              If dealer add-ons are part of what's inflating your estimate, see our <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">guide on mandatory dealer add-ons</Link> to learn which charges you can push back on and how to phrase it professionally.
             </p>
           </div>
 

@@ -24,7 +24,7 @@ export default function OutTheDoorPriceCalculator() {
   useEffect(() => {
     return setSeoMeta({
       title: "Out-the-Door Price Calculator | Odigos",
-      description: "Estimate your out-the-door (OTD) price and learn what calculators miss—doc fees, dealer add-ons, and hidden costs. Get a copy-paste message to request an itemized OTD quote.",
+      description: "Estimate your OTD price and see what calculators miss: doc fees, dealer add-ons, and market adjustments. Includes a message to request an itemized quote.",
       path: "/out-the-door-price-calculator",
     });
   }, []);
@@ -126,6 +126,18 @@ export default function OutTheDoorPriceCalculator() {
               Your dealer quote is the source of truth. A calculator gives you a starting point — the itemized OTD from the dealer is what you actually sign.
             </p>
 
+            <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
+              <p className="text-sm font-semibold text-foreground mb-2">Already have a dealer quote to compare against?</p>
+              <p className="text-sm text-muted-foreground mb-3">
+                Paste it into Odigos to see what's missing from your estimate — including add-ons, market adjustments, and fees that no calculator can predict.
+              </p>
+              <Link href="/analyze">
+                <Button variant="cta" size="sm" data-testid="button-cta-mid-article-otd-calculator">
+                  Analyze My Dealer Quote
+                </Button>
+              </Link>
+            </div>
+
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">The 3 Numbers to Ask the Dealer For</h2>
             <p className="text-muted-foreground mb-3">
               Before you visit or commit to anything, make sure you have these three numbers in writing:
@@ -188,8 +200,12 @@ export default function OutTheDoorPriceCalculator() {
               ))}
             </ul>
 
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground mb-6">
               For a deeper look at what belongs in an OTD quote, see our full guide on <Link href="/out-the-door-price" className="underline text-foreground">out-the-door pricing</Link>.
+            </p>
+
+            <p className="text-muted-foreground mb-8">
+              If you're seeing add-on charges in your quote that look unfamiliar, check our <Link href="/dealer-add-ons-list" className="underline text-foreground">dealer add-ons list</Link> to understand what each product costs the dealer and whether it's worth paying for.
             </p>
           </div>
 

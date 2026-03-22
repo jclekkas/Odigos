@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Check, Copy } from "lucide-react";
-import SeoHead from "@/components/SeoHead";
+import { setSeoMeta } from "@/lib/seo";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -31,6 +31,14 @@ const faqs = [
 
 export default function DealerWontGiveOtdPrice() {
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+
+  useEffect(() => {
+    return setSeoMeta({
+      title: "Dealer Won't Give OTD Price? Here's What It Means | Odigos",
+      description: "If a dealer won't give an out-the-door price, there's a reason. Learn the tactics they use, what to say back, and how to protect yourself before visiting.",
+      path: "/dealer-wont-give-otd-price",
+    });
+  }, []);
 
   const handleCopy = async (text: string, idx: number) => {
     try {
@@ -134,7 +142,7 @@ export default function DealerWontGiveOtdPrice() {
               <li>High doc fees</li>
             </ul>
             <p className="text-muted-foreground mb-8">
-              Without OTD pricing in writing, these get introduced later.
+              Without OTD pricing in writing, these get introduced later. Understanding the full <Link href="/dealer-add-ons-list" className="underline text-foreground">dealer add-ons list</Link> before you visit gives you a clear benchmark for what's been pre-installed and what it should actually cost.
             </p>
 
             <h3 className="text-lg font-semibold mt-6 mb-2 text-foreground">4. They Want Flexibility to Adjust Based on You</h3>

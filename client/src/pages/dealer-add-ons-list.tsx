@@ -14,8 +14,8 @@ export default function DealerAddOnsList() {
 
   useEffect(() => {
     return setSeoMeta({
-      title: "Dealer Add-Ons List: Common Dealer Extras and What's Optional | Odigos",
-      description: "See the full list of common dealer add-ons, what they cost, and which ones you can refuse. Know what's optional before you sign anything.",
+      title: "Dealer Add-Ons List: Costs and What You Can Refuse | Odigos",
+      description: "See the full list of common dealer add-ons with typical prices, dealer cost, and whether each is optional. Know exactly what you can refuse before signing.",
       path: "/dealer-add-ons-list",
     });
   }, []);
@@ -163,6 +163,18 @@ export default function DealerAddOnsList() {
               This doesn't mean every add-on is worthless — window tint and floor mats have legitimate value. But you can almost always get the same products aftermarket for significantly less. The key is knowing what you're paying for so you can make an informed decision rather than accepting a bundled price.
             </p>
 
+            <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
+              <p className="text-sm font-semibold text-foreground mb-2">Seeing add-ons in your quote you didn't ask for?</p>
+              <p className="text-sm text-muted-foreground mb-3">
+                Paste your dealer quote into Odigos and we'll identify each dealer-installed extra, flag the markup, and show what the price looks like without them.
+              </p>
+              <Link href="/analyze">
+                <Button variant="cta" size="sm" data-testid="button-cta-mid-article-addons-list">
+                  Analyze My Dealer Quote
+                </Button>
+              </Link>
+            </div>
+
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to say to the dealer</h2>
 
             <p className="text-muted-foreground mb-4">
@@ -195,8 +207,12 @@ export default function DealerAddOnsList() {
               If you already have a dealer quote and aren't sure which charges are add-ons, paste it into Odigos. We'll identify every dealer-installed extra, flag the ones with high markup, and show you what the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> would look like without them. No guesswork, no math — just a clear picture of what's optional and what's not.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground mb-6">
               For more on how dealer fees work across different states, see our <Link href="/car-dealer-fees-explained" className="underline text-foreground">car dealer fees explained</Link> guide, or check the <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for car buyers</a> for your rights as a consumer.
+            </p>
+
+            <p className="text-lg text-muted-foreground mb-8">
+              Keep in mind that some dealers layer a <Link href="/market-adjustment-fee" className="underline text-foreground">market adjustment fee</Link> on top of MSRP before you even get to the add-ons conversation. If you see a price that doesn't match the sticker, that's worth asking about separately.
             </p>
           </div>
 

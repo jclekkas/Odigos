@@ -9,7 +9,7 @@ export default function MandatoryDealerAddOns() {
   useEffect(() => {
     return setSeoMeta({
       title: "Mandatory Dealer Add-Ons Explained | Odigos",
-      description: "Dealers often claim add-ons are mandatory. Learn what's legally required, what's optional, and how to avoid paying for unnecessary dealer-installed products.",
+      description: "Dealers claim add-ons are mandatory—but almost none are required by law. Learn what's truly required, what you can decline, and how to push back.",
       path: "/mandatory-dealer-add-ons",
     });
   }, []);
@@ -30,10 +30,10 @@ export default function MandatoryDealerAddOns() {
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What Counts as a Dealer Add-On?</h2>
             <p className="text-muted-foreground mb-4">
-              A dealer add-on is any product or service the dealership installs or bundles on top of the manufacturer's base vehicle. These are not factory options chosen by the buyer. They're installed by the dealer before you arrive, often without you requesting them.
+              A dealer add-on is any product or service the dealership installs or bundles on top of the manufacturer's base vehicle. These are not factory options chosen by the buyer — they're installed by the dealer before you arrive, often without any notification upfront.
             </p>
             <p className="text-muted-foreground mb-8">
-              Common examples include paint sealant, interior fabric protection, pinstripes, door edge guards, theft deterrent systems (like VIN etching), nitrogen tire fill, and all-weather floor mats. Some dealers bundle multiple items into a single "protection package" with a combined price.
+              The full <Link href="/dealer-add-ons-list" className="underline text-foreground">dealer add-ons list</Link> covers the most common extras in detail, including typical markup ranges. Some dealers bundle multiple items into a single "protection package" with a combined price, making it harder to see what you're actually paying for each product.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What's Actually Required by Law?</h2>
@@ -58,7 +58,10 @@ export default function MandatoryDealerAddOns() {
               Everything beyond that — documentation fees, dealer-installed accessories, protection packages — is set by the dealer, not the government. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's new car buying guide</a> confirms this distinction. If someone tells you an add-on is "required by law," ask them to show you the statute. They won't be able to, because it doesn't exist.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Common Add-Ons to Watch For</h2>
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What Each Add-On Actually Costs the Dealer</h2>
+            <p className="text-muted-foreground mb-4">
+              The markup on dealer add-ons is where the real money is. Here's what dealers typically charge versus what these products actually cost them:
+            </p>
 
             <h3 className="text-lg font-semibold mt-6 mb-2 text-foreground">Paint Protection / Ceramic Coating</h3>
             <p className="text-muted-foreground mb-4">
@@ -72,13 +75,25 @@ export default function MandatoryDealerAddOns() {
 
             <h3 className="text-lg font-semibold mt-6 mb-2 text-foreground">VIN Etching</h3>
             <p className="text-muted-foreground mb-4">
-              VIN etching involves engraving your vehicle identification number on windows as a theft deterrent. Dealers charge $200–$400 for this. DIY kits cost $20–$30. Some insurance companies offer it for free. The actual theft deterrence value is debatable.
+              VIN etching involves engraving your vehicle identification number on windows as a theft deterrent. Dealers charge $200–$400 for this. DIY kits cost $20–$30. Some insurance companies offer it for free. The actual theft deterrence value is debatable, and it is never legally required.
             </p>
 
             <h3 className="text-lg font-semibold mt-6 mb-2 text-foreground">Protection Packages / Dealer Bundles</h3>
             <p className="text-muted-foreground mb-8">
-              The most common tactic is bundling several low-cost items into one package priced at $1,000–$2,500. You'll see names like "Advantage Package," "Dealer Protection Plan," or "Certified Shield." Each individual item might cost the dealer $20–$50. The combined price is almost entirely profit margin.
+              The most common tactic is bundling several low-cost items into one package priced at $1,000–$2,500. You'll see names like "Advantage Package," "Dealer Protection Plan," or "Certified Shield." Each individual item might cost the dealer $20–$50. The combined price is almost entirely profit margin. Bundling also prevents you from evaluating each item on its merits.
             </p>
+
+            <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
+              <p className="text-sm font-semibold text-foreground mb-2">Have a dealer quote with add-ons included?</p>
+              <p className="text-sm text-muted-foreground mb-3">
+                Paste it into Odigos and we'll flag which charges are optional, what they're typically marked up to, and what to say to get them removed.
+              </p>
+              <Link href="/analyze">
+                <Button variant="cta" size="sm" data-testid="button-cta-mid-article-mandatory-addons">
+                  Analyze My Dealer Quote
+                </Button>
+              </Link>
+            </div>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">When Dealers Say "It's Already Installed"</h2>
             <p className="text-muted-foreground mb-4">
@@ -88,7 +103,7 @@ export default function MandatoryDealerAddOns() {
               Here's what they won't tell you: the decision to install those products was the dealer's, not yours. You didn't request them. In many cases, the dealer chose to install them specifically because they increase the final price and improve their margin.
             </p>
             <p className="text-muted-foreground mb-8">
-              You are under no obligation to pay for products you didn't ask for. If a dealer won't sell you the car without the package, you can walk away — or negotiate the overall price down to offset the add-ons.
+              You are under no obligation to pay for products you didn't ask for. If a dealer won't sell you the car without the package, you can walk away — or negotiate the overall price down to offset the add-ons. For specific language to use in this situation, see our guide on <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">what to say when a dealer claims add-ons are mandatory</Link>.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to Push Back</h2>
@@ -114,10 +129,10 @@ export default function MandatoryDealerAddOns() {
               Add-ons are most dangerous when they're buried in a monthly payment. A $1,500 protection package adds about $25–$30/month over a 60-month loan — small enough that many buyers don't notice. But you're paying interest on that amount too, so the real cost is even higher.
             </p>
             <p className="text-muted-foreground mb-4">
-              That's why the out-the-door price is the only number that matters. It shows every dollar you'll pay, including add-ons, fees, and taxes. When you see each line item broken out, it's much easier to spot what's legitimate and what's padding. Use <a href="https://www.kbb.com/car-advice/" target="_blank" rel="noopener" className="underline text-foreground">Kelley Blue Book</a> to research fair vehicle values so you have a baseline before negotiating.
+              That's why the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> is the only number that matters. It shows every dollar you'll pay, including add-ons, fees, and taxes. When you see each line item broken out, it's much easier to spot what's legitimate and what's padding. Use <a href="https://www.kbb.com/car-advice/" target="_blank" rel="noopener" className="underline text-foreground">Kelley Blue Book</a> to research fair vehicle values so you have a baseline before negotiating.
             </p>
             <p className="text-muted-foreground mb-8">
-              Always request a written, itemized OTD quote before visiting the dealership. If a dealer won't provide one, that's a red flag in itself.
+              Always request a written, itemized OTD quote before visiting the dealership. If a dealer won't provide one, see our guide on <Link href="/dealer-wont-give-otd" className="underline text-foreground">what to do when a dealer won't give you the out-the-door price</Link>.
             </p>
           </div>
 

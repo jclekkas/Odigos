@@ -14,8 +14,8 @@ export default function MarketAdjustmentFee() {
 
   useEffect(() => {
     return setSeoMeta({
-      title: "Market Adjustment Fees Explained: Can Dealers Charge Them? | Odigos",
-      description: "Market adjustment fees (ADM) add thousands to a car's MSRP. Learn what they are, whether they're legal, how to negotiate them, and what to watch for in your dealer quote.",
+      title: "Market Adjustment Fee: What It Is and What to Do | Odigos",
+      description: "Market adjustment fees add thousands above MSRP. Learn what they are, whether they're legal, how to negotiate them down, and what to watch for in quotes.",
       path: "/market-adjustment-fee",
     });
   }, []);
@@ -81,6 +81,18 @@ export default function MarketAdjustmentFee() {
             <p className="text-lg text-muted-foreground mb-6">
               If a dealer won't budge, check with other dealerships — including ones further away. Some dealers advertise MSRP pricing as a policy, and the trip may be worth the savings. <a href="https://www.edmunds.com/car-buying/dealer-markups-and-addendum-stickers.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds</a> tracks dealer pricing trends and can help you identify fair pricing for specific models.
             </p>
+
+            <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
+              <p className="text-sm font-semibold text-foreground mb-2">Have a quote that includes a market adjustment?</p>
+              <p className="text-sm text-muted-foreground mb-3">
+                Paste it into Odigos and we'll break down the full cost — including how the adjustment interacts with your financing and what's negotiable.
+              </p>
+              <Link href="/analyze">
+                <Button variant="cta" size="sm" data-testid="button-cta-mid-article-market-adjustment">
+                  Analyze My Dealer Quote
+                </Button>
+              </Link>
+            </div>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to send the dealer</h2>
 
@@ -148,7 +160,7 @@ export default function MarketAdjustmentFee() {
             </p>
 
             <p className="text-lg text-muted-foreground mb-8">
-              If you have a dealer quote and you're not sure whether the pricing is fair, Odigos can break it down for you and flag anything that looks off.
+              If you have a dealer quote and you're not sure whether the pricing is fair, Odigos can break it down for you and flag anything that looks off. You can also use our <Link href="/calculate-out-the-door-price" className="underline text-foreground">out-the-door price calculation guide</Link> to estimate what you should be paying before the dealer adjusts any numbers.
             </p>
           </div>
 

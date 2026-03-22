@@ -15,7 +15,7 @@ export default function DealerWontGiveOtd() {
   useEffect(() => {
     return setSeoMeta({
       title: "Why Dealers Avoid Giving Out-the-Door Prices | Odigos",
-      description: "When a dealer dodges your OTD question, it's not accidental. Learn why dealers avoid written out-the-door pricing, what to say back, and how to get the numbers you need.",
+      description: "When a dealer dodges your OTD question, it's not accidental. Learn why they avoid written pricing, what to say in response, and when to walk away.",
       path: "/dealer-wont-give-otd",
     });
   }, []);
@@ -66,7 +66,7 @@ export default function DealerWontGiveOtd() {
               ))}
             </ul>
             <p className="text-muted-foreground mb-8">
-              The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for car buyers</a> recommends getting all costs in writing before agreeing to a deal. Dealers who avoid this step are typically trying to preserve room to add fees later.
+              The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for car buyers</a> recommends getting all costs in writing before agreeing to a deal. Dealers who avoid this step are typically trying to preserve room to add fees later — including <Link href="/mandatory-dealer-add-ons" className="underline text-foreground">dealer add-ons</Link> and charges that appear only in the finance office.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to say when they dodge the question</h2>
@@ -95,12 +95,24 @@ export default function DealerWontGiveOtd() {
               This works because it's specific, reasonable, and signals you're an informed buyer. You're not being confrontational — you're asking for the same information any serious buyer needs to make a decision.
             </p>
 
+            <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
+              <p className="text-sm font-semibold text-foreground mb-2">Already have a partial quote?</p>
+              <p className="text-sm text-muted-foreground mb-3">
+                If you've received a vague estimate, monthly payment, or quote missing line items, paste it into Odigos. We'll flag what's missing and give you the right follow-up message.
+              </p>
+              <Link href="/analyze">
+                <Button variant="cta" size="sm" data-testid="button-cta-mid-article-wont-give-otd">
+                  Analyze My Dealer Quote
+                </Button>
+              </Link>
+            </div>
+
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What if they still won't?</h2>
             <p className="text-muted-foreground mb-4">
               Try other dealers. Most metro areas have multiple dealerships selling the same models, and many will compete on price over text or email. You don't owe your business to the first dealer you contacted.
             </p>
             <p className="text-muted-foreground mb-8">
-              A dealer who won't be transparent before you visit is unlikely to become more transparent in the finance office. If they won't put the number in writing now, expect additional fees and pressure when you're sitting across the desk.
+              A dealer who won't be transparent before you visit is unlikely to become more transparent in the finance office. If they won't put the number in writing now, expect additional fees and pressure when you're sitting across the desk. For a full breakdown of why this happens and when it becomes a real red flag, see our guide on <Link href="/dealer-wont-give-otd-price" className="underline text-foreground">what it means when a dealer refuses to give an OTD price</Link>.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How Odigos helps</h2>
