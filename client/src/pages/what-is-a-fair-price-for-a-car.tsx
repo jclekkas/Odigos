@@ -41,7 +41,7 @@ export default function WhatIsAFairPriceForACar() {
           </div>
           <div>
             <p className="font-semibold text-foreground mb-2">Market value</p>
-            <p className="text-muted-foreground">What comparable vehicles are actually selling for in your area. Sites like KBB, Edmunds, and CarGurus publish transaction data. During high-demand periods, market value can be above MSRP. During slower periods, it may be below invoice. Market value tells you whether the vehicle price is competitive — but still not the full cost.</p>
+            <p className="text-muted-foreground">What comparable vehicles are actually selling for in your area. Sites like <a href="https://www.kbb.com/car-values/" target="_blank" rel="noopener" className="underline text-foreground">KBB</a>, <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds</a>, and <a href="https://www.cargurus.com/Cars/new/nl-New-Cars-d0" target="_blank" rel="noopener" className="underline text-foreground">CarGurus</a> publish transaction data. During high-demand periods, market value can be above MSRP. During slower periods, it may be below invoice. Market value tells you whether the vehicle price is competitive — but still not the full cost.</p>
           </div>
           <div>
             <p className="font-semibold text-foreground mb-2">Out-the-door (OTD) price</p>
@@ -138,7 +138,7 @@ export default function WhatIsAFairPriceForACar() {
           </li>
           <li className="flex items-start gap-3">
             <span className="shrink-0 font-semibold text-foreground">Taxes, title, registration:</span>
-            <span>Fixed by your state and county. These aren't negotiable and don't vary between dealers — if one dealer quotes a lower tax, the math is likely wrong.</span>
+            <span>Fixed by your state and county. These aren't negotiable and don't vary between dealers — if one dealer quotes a lower tax, the math is likely wrong. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for new car buyers</a> explains which charges are required versus dealer-set.</span>
           </li>
           <li className="flex items-start gap-3">
             <span className="shrink-0 font-semibold text-foreground">Add-ons:</span>

@@ -36,11 +36,19 @@ export default function Landing() {
 
   useEffect(() => {
     const hash = window.location.hash.slice(1);
-    if (hash) {
-      setTimeout(() => {
-        document.getElementById(hash)?.scrollIntoView({ behavior: "smooth" });
-      }, 50);
+    if (!hash) return;
+    let attempts = 0;
+    const maxAttempts = 20;
+    function tryScroll() {
+      const el = document.getElementById(hash);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      } else if (attempts < maxAttempts) {
+        attempts++;
+        requestAnimationFrame(tryScroll);
+      }
     }
+    requestAnimationFrame(tryScroll);
   }, []);
 
   return (
