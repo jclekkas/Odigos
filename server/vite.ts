@@ -30,14 +30,6 @@ export async function setupVite(server: Server, app: Express) {
     appType: "custom",
   });
 
-  app.use((req, res, next) => {
-    const accept = req.headers.accept || "";
-    if (req.method === "GET" && accept.includes("text/html") && !req.path.startsWith("/api/") && !isKnownRoute(req.path)) {
-      res.status(404);
-    }
-    next();
-  });
-
   app.use(vite.middlewares);
 
   app.use("*", async (req, res, next) => {
@@ -58,7 +50,9 @@ export async function setupVite(server: Server, app: Express) {
         `src="/src/main.tsx?v=${nanoid()}"`,
       );
       const page = await vite.transformIndexHtml(url, template);
-      res.set({ "Content-Type": "text/html" }).end(page);
+      const pathname = req.originalUrl.split("?")[0];
+      const status = isKnownRoute(pathname) ? 200 : 404;
+      res.status(status).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {
       vite.ssrFixStacktrace(e as Error);
       next(e);

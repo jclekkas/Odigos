@@ -42,7 +42,8 @@ export function serveStatic(app: Express) {
   app.use(express.static(distPath, { redirect: false }));
 
   app.use("*", (req, res) => {
-    const status = isKnownRoute(req.path) ? 200 : 404;
+    const pathname = req.originalUrl.split("?")[0];
+    const status = isKnownRoute(pathname) ? 200 : 404;
     res.status(status).sendFile(path.resolve(distPath, "index.html"));
   });
 }
