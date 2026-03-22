@@ -1,0 +1,167 @@
+Perform a strict QA audit of the newly created Odigos SEO article pages.
+
+CRITICAL CONTEXT:
+These pages are part of tightly structured SEO clusters (OTD pricing and dealer add-ons). Each page is intended to target a distinct search intent and must NOT overlap meaningfully with others.
+
+Your job is NOT to rewrite everything. Your job is to IDENTIFY and FIX issues that would weaken SEO performance, including duplication, weak differentiation, incorrect internal linking, or poor metadata.
+
+---
+
+PAGES TO AUDIT:
+(List all newly created pages here)
+
+---
+
+AUDIT REQUIREMENTS:
+
+1. PAGE DIFFERENTIATION (MOST IMPORTANT)
+
+For each page:
+
+* Summarize its core intent in ONE sentence
+* Compare it against the other pages in the same cluster
+* Identify ANY overlap in:
+  • explanations
+  • structure
+  • repeated phrases
+  • reused sections
+
+If overlap >20%:
+
+* Flag it clearly
+* Rewrite ONLY the overlapping sections to make the page distinct
+
+---
+
+2. DUPLICATION & AI PATTERN DETECTION
+
+Check across all pages for:
+
+* repeated sentence structures
+* similar paragraph openings
+* reused explanation blocks
+* templated-feeling sections
+
+If found:
+
+* Rewrite those sections to sound natural and distinct
+* Do NOT rewrite entire pages — only fix the patterns
+
+---
+
+3. INTERNAL LINKING VALIDATION
+
+For each page:
+
+* List all internal links used
+* Verify each slug exists and matches App.tsx exactly
+* Ensure:
+  • at least 2–3 internal links per page
+  • anchor text is natural and varied
+  • no overuse of exact-match anchors
+
+Fix any:
+
+* incorrect slugs
+* missing links
+* repetitive anchors
+
+---
+
+4. CROSS-CLUSTER LINKING
+
+Ensure:
+
+* OTD pages link to add-ons pages where relevant
+* Add-ons pages link back to OTD pages where relevant
+
+If missing:
+
+* Add 1–2 natural cross-cluster links per page
+
+---
+
+5. CTA PLACEMENT & QUALITY
+
+For each page:
+
+* Identify where the mid-article CTA appears
+* Confirm it is placed after a strong insight (not arbitrarily)
+
+Check:
+
+* CTA wording is not identical across all pages
+* It feels natural in context
+
+If needed:
+
+* Adjust placement or wording slightly
+
+---
+
+6. SEO METADATA CHECK
+
+For each page:
+
+* Title:
+  • under 60 characters
+  • includes target keyword naturally
+  • ends with "| Odigos"
+
+* Meta description:
+  • 140–155 characters
+  • specific to the page (not generic)
+  • includes a mild action signal
+
+Fix anything that is:
+
+* too long
+* too vague
+* repetitive across pages
+
+---
+
+7. FINAL QUALITY SCORE
+
+For each page:
+
+* Rate from 1–10 on:
+  • differentiation
+  • clarity
+  • usefulness
+  • SEO readiness
+
+If any page is below 8:
+
+* Explain why
+* Fix the issue
+
+---
+
+OUTPUT FORMAT:
+
+For each page:
+
+* Issues found (if any)
+* Fixes applied
+* Final score
+
+At the end:
+
+* Summary of overall cluster quality
+* Any systemic issues across pages
+
+---
+
+GOAL:
+
+These pages should:
+
+* feel like distinct, standalone articles
+* work together as a cohesive SEO cluster
+* avoid duplication or templated patterns
+* be strong enough to rank independently
+
+---
+
+Run the audit now and apply fixes where needed.

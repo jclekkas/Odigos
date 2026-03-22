@@ -1,0 +1,111 @@
+Create 5 new SEO article pages for the Odigos site.
+
+CRITICAL CONTEXT:
+Odigos is a consumer protection tool for car buyers. It analyzes dealer quotes and identifies hidden fees, missing out-the-door pricing, and negotiation traps.
+
+These pages must:
+
+* Be highly practical, not generic
+* Match the tone of existing Odigos articles (calm, direct, slightly skeptical of dealers)
+* Be optimized for SEO but written for real humans
+* Avoid fluff, filler, or generic intros
+
+---
+
+PAGES TO CREATE:
+
+1. what does out the door price include
+2. out the door price vs msrp
+3. out the door price vs monthly payment
+4. why dealers won’t give out the door price
+5. out the door price example breakdown
+
+---
+
+STRUCTURE REQUIREMENTS (for EVERY page):
+
+* H1 (exact keyword or very close variation)
+* Short intro (2–3 sentences max, no fluff)
+* Clear sections with H2s
+* Bullet points where useful
+* Real-world explanation (not abstract)
+* “What to say to the dealer” section (script-style when relevant)
+* Mid-article CTA (Odigos product)
+* Bottom CTA (standard Odigos CTA)
+
+---
+
+INTERNAL LINKING (VERY IMPORTANT):
+
+Each page must:
+
+* Link to at least 2 other relevant Odigos articles (use natural anchor text)
+* Prefer linking to:
+  /out-the-door-price
+  /dealer-wont-give-out-the-door-price
+  /dealer-doc-fee
+  /are-dealer-add-ons-mandatory
+
+Anchor text must be natural (NOT exact-match spam)
+
+---
+
+CONTENT GUIDELINES:
+
+* No generic “buying a car can be stressful” intros
+
+* No repeating the same explanation across pages
+
+* Each page must have a DISTINCT angle:
+  • “what it includes” = breakdown
+  • “vs msrp” = comparison
+  • “vs monthly payment” = trap explanation
+  • “why dealers won’t give it” = incentives + tactics
+  • “example” = concrete numbers
+
+* Use simple, direct language
+
+* Assume the reader is skeptical and wants clarity fast
+
+---
+
+CTA REQUIREMENTS:
+
+Mid-article CTA:
+
+* Position after a key insight
+* Tone: “If you’re looking at a real quote…”
+
+Bottom CTA:
+
+* Standard Odigos conversion CTA
+* Emphasize: no signup, fast, protects you
+
+---
+
+OUTPUT FORMAT:
+
+Return each page as a complete React page file consistent with the existing Odigos codebase structure.
+
+Do NOT modify:
+
+* routing
+* global layout
+* styling system
+
+Only generate the page content files.
+
+---
+
+GOAL:
+
+These pages should:
+
+* reinforce topical authority around “out the door price”
+* interlink tightly
+* feel like a cohesive cluster, not isolated articles
+* be strong enough to rank independently
+
+---
+
+Generate all 5 pages now.
