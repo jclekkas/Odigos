@@ -8,7 +8,7 @@ export default function IsThisAGoodCarDeal() {
   useEffect(() => {
     return setSeoMeta({
       title: "Is This a Good Car Deal? | Odigos",
-      description: "Use this four-signal framework to quickly assess whether a dealer quote is good, borderline, or a red flag — before you sign anything.",
+      description: "Use this four-signal verdict framework to quickly assess whether a dealer quote is good, borderline, or a red flag — with a concrete example of each.",
       path: "/is-this-a-good-car-deal",
     });
   }, []);

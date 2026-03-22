@@ -8,7 +8,7 @@ export default function HowToCompareCarDeals() {
   useEffect(() => {
     return setSeoMeta({
       title: "How to Compare Car Deals | Odigos",
-      description: "The only valid comparison is OTD to OTD. See how two quotes for the same car can look different when one hides fees and bundles add-ons.",
+      description: "The only valid way to compare car deals is OTD to OTD. See how two quotes for the same vehicle can look different when fees and add-ons are hidden.",
       path: "/how-to-compare-car-deals",
     });
   }, []);
