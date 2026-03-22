@@ -30,7 +30,7 @@ export default function HowMuchShouldYouPayForACar() {
           <strong className="text-foreground">1. Out-the-door (OTD) price</strong>
         </p>
         <p className="text-lg text-muted-foreground mb-6">
-          The OTD price is what you pay for the vehicle, all-in: vehicle price, taxes, title, registration, doc fee, and any add-ons. This is the number that reflects the deal you're agreeing to, before financing enters the picture. Two dealers quoting the same vehicle can have very different OTD prices based on fees and add-ons — and the one with the lower vehicle price isn't always the better deal.
+          The <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> is what you pay for the vehicle, all-in: vehicle price, taxes, title, registration, doc fee, and any add-ons. This is the number that reflects the deal you're agreeing to, before financing enters the picture. Two dealers quoting the same vehicle can have very different OTD prices based on fees and add-ons — and the one with the lower vehicle price isn't always the better deal.
         </p>
 
         <p className="text-lg text-muted-foreground mb-4">
@@ -129,7 +129,7 @@ export default function HowMuchShouldYouPayForACar() {
         <ul className="space-y-2 mb-8 text-muted-foreground">
           <li className="flex items-start gap-2"><span>•</span><span>Start with the OTD price — not the monthly payment.</span></li>
           <li className="flex items-start gap-2"><span>•</span><span>Verify that fees are itemized and reasonable for your state. See <Link href="/are-dealer-fees-negotiable" className="underline text-foreground">which dealer fees are negotiable</Link> for context.</span></li>
-          <li className="flex items-start gap-2"><span>•</span><span>Identify every add-on by name and price. Remove or negotiate the ones you don't want.</span></li>
+          <li className="flex items-start gap-2"><span>•</span><span>Identify every add-on by name and price. Remove or negotiate the ones you don't want. See <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">whether dealer add-ons are mandatory</Link> — most are not.</span></li>
           <li className="flex items-start gap-2"><span>•</span><span>Once OTD is agreed, compare APR offers — your bank vs the dealer — and calculate total loan cost for each.</span></li>
           <li className="flex items-start gap-2"><span>•</span><span>Compare deals OTD-to-OTD. See <Link href="/how-to-compare-car-deals" className="underline text-foreground">how to compare car deals</Link> for a side-by-side framework.</span></li>
         </ul>

@@ -159,7 +159,7 @@ export default function HowToCompareCarDeals() {
         </p>
 
         <p className="text-lg text-muted-foreground mb-8">
-          Some dealers will match. Others won't. Either outcome is useful — if the lower-OTD dealer genuinely is the better deal, you should go with them. For guidance on the full evaluation process, see <Link href="/is-this-a-good-car-deal" className="underline text-foreground">how to assess whether a car deal is actually good</Link>.
+          Some dealers will match. Others won't. Either outcome is useful — if the lower-OTD dealer genuinely is the better deal, you should go with them. For guidance on the full evaluation process, see <Link href="/is-this-a-good-car-deal" className="underline text-foreground">how to assess whether a car deal is actually good</Link>. If a dealer uses inflated pricing or high-pressure tactics during this process, see <Link href="/dealer-pricing-tactics" className="underline text-foreground">common dealer pricing tactics</Link> for what to watch for.
         </p>
       </div>
 

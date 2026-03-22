@@ -72,42 +72,14 @@ export default function BestWayToCheckIfACarDealIsGood() {
           </Button>
         </div>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What a correct evaluation looks like</h2>
+        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What a real evaluation actually requires</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
-          A proper deal evaluation requires four checks — in this order:
+        <p className="text-lg text-muted-foreground mb-6">
+          A good deal evaluation has four components — an <Link href="/out-the-door-price" className="underline text-foreground">OTD price in writing</Link>, itemized fees (doc fee, prep fee, any market adjustment), individually named add-ons with prices, and disclosed financing terms (APR and loan term, not just monthly payment). Each element either exists in the quote or it doesn't. Missing components aren't just inconvenient — they're the mechanism dealers use to obscure cost.
         </p>
 
-        <ul className="space-y-4 mb-8 text-muted-foreground">
-          <li className="flex items-start gap-3">
-            <span className="shrink-0 font-bold text-foreground">1.</span>
-            <div>
-              <strong className="text-foreground">Is the OTD price provided?</strong>
-              <span className="block mt-1">If there's no out-the-door total — a single number that includes vehicle price, taxes, title, registration, fees, and add-ons — the quote is incomplete. Before anything else, that number needs to exist in writing. See <Link href="/out-the-door-price" className="underline text-foreground">what the OTD price is</Link> and what it should include.</span>
-            </div>
-          </li>
-          <li className="flex items-start gap-3">
-            <span className="shrink-0 font-bold text-foreground">2.</span>
-            <div>
-              <strong className="text-foreground">Are all fees individually identified?</strong>
-              <span className="block mt-1">The OTD breakdown should have separate line items for the doc fee, any preparation or delivery fees, and the market adjustment (if any). These should be distinguishable from government fees (sales tax, title, registration) which are non-negotiable.</span>
-            </div>
-          </li>
-          <li className="flex items-start gap-3">
-            <span className="shrink-0 font-bold text-foreground">3.</span>
-            <div>
-              <strong className="text-foreground">Are all add-ons named and priced individually?</strong>
-              <span className="block mt-1">Every dealer-installed extra should appear as its own line item with its own price. Bundles should be broken out. <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">These are not mandatory</Link> — the price can be negotiated even if the item is already installed.</span>
-            </div>
-          </li>
-          <li className="flex items-start gap-3">
-            <span className="shrink-0 font-bold text-foreground">4.</span>
-            <div>
-              <strong className="text-foreground">Are financing terms disclosed: APR and loan term?</strong>
-              <span className="block mt-1">If financing, you need the interest rate and the loan length — not just the monthly payment. Multiply payment × months to get the total loan cost, then subtract the OTD price. The difference is what you're paying in interest.</span>
-            </div>
-          </li>
-        </ul>
+        <p className="text-lg text-muted-foreground mb-8">
+          The problem isn't knowing what to look for. It's that most buyers don't know what's missing, don't recognize <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">which add-ons are optional</Link>, and don't have the state-level fee context to know what's inflated. That's where manual evaluation breaks down — and where a fast tool has an obvious advantage.</p>
 
         <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why this is hard to do manually</h2>
 

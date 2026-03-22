@@ -130,7 +130,7 @@ export default function WhatIsAFairPriceForACar() {
         <ul className="space-y-4 mb-8 text-muted-foreground">
           <li className="flex items-start gap-3">
             <span className="shrink-0 font-semibold text-foreground">Vehicle price:</span>
-            <span>Negotiable. The benchmark is market value for that specific vehicle in your area. A fair vehicle price is one that's at or near what comparable vehicles are actually selling for — not necessarily MSRP.</span>
+            <span>Negotiable. The benchmark is market value for that specific vehicle in your area. A fair vehicle price is one that's at or near what comparable vehicles are actually selling for — not necessarily MSRP. Dealers sometimes add a <Link href="/market-adjustment-fee" className="underline text-foreground">market adjustment</Link> on top of MSRP during high-demand periods; this is a dealer markup, not a fixed cost.</span>
           </li>
           <li className="flex items-start gap-3">
             <span className="shrink-0 font-semibold text-foreground">Doc fee:</span>
