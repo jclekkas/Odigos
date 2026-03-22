@@ -1,6 +1,7 @@
 import express, { type Express } from "express";
 import fs from "fs";
 import path from "path";
+import { isKnownRoute } from "../shared/routes";
 
 const PRERENDERED_ROUTES = [
   "/dealer-pricing-tactics",
@@ -40,7 +41,8 @@ export function serveStatic(app: Express) {
 
   app.use(express.static(distPath, { redirect: false }));
 
-  app.use("*", (_req, res) => {
-    res.sendFile(path.resolve(distPath, "index.html"));
+  app.use("*", (req, res) => {
+    const status = isKnownRoute(req.path) ? 200 : 404;
+    res.status(status).sendFile(path.resolve(distPath, "index.html"));
   });
 }
