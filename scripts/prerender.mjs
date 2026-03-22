@@ -19,6 +19,11 @@ const ROUTES = [
   "/hidden-dealer-fees",
   "/dealer-prep-fee",
   "/dealer-reconditioning-fee",
+  "/how-to-tell-if-a-car-deal-is-good",
+  "/what-is-a-fair-price-for-a-car",
+  "/how-much-should-you-pay-for-a-car",
+  "/how-to-compare-car-deals",
+  "/best-way-to-check-if-a-car-deal-is-good",
 ];
 
 const PORT = 4173;

@@ -47,6 +47,11 @@ import AreDealerFeesNegotiable from "@/pages/are-dealer-fees-negotiable";
 import HiddenDealerFees from "@/pages/hidden-dealer-fees";
 import DealerPrepFee from "@/pages/dealer-prep-fee";
 import DealerReconditioningFee from "@/pages/dealer-reconditioning-fee";
+import HowToTellIfACarDealIsGood from "@/pages/how-to-tell-if-a-car-deal-is-good";
+import WhatIsAFairPriceForACar from "@/pages/what-is-a-fair-price-for-a-car";
+import HowMuchShouldYouPayForACar from "@/pages/how-much-should-you-pay-for-a-car";
+import HowToCompareCarDeals from "@/pages/how-to-compare-car-deals";
+import BestWayToCheckIfACarDealIsGood from "@/pages/best-way-to-check-if-a-car-deal-is-good";
 import NotFound from "@/pages/not-found";
 
 function ScrollToTop() {
@@ -103,6 +108,11 @@ function Router() {
       <Route path="/hidden-dealer-fees" component={HiddenDealerFees} />
       <Route path="/dealer-prep-fee" component={DealerPrepFee} />
       <Route path="/dealer-reconditioning-fee" component={DealerReconditioningFee} />
+      <Route path="/how-to-tell-if-a-car-deal-is-good" component={HowToTellIfACarDealIsGood} />
+      <Route path="/what-is-a-fair-price-for-a-car" component={WhatIsAFairPriceForACar} />
+      <Route path="/how-much-should-you-pay-for-a-car" component={HowMuchShouldYouPayForACar} />
+      <Route path="/how-to-compare-car-deals" component={HowToCompareCarDeals} />
+      <Route path="/best-way-to-check-if-a-car-deal-is-good" component={BestWayToCheckIfACarDealIsGood} />
       <Route component={NotFound} />
     </Switch>
     </>
