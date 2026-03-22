@@ -42,6 +42,11 @@ import OutTheDoorPriceVsMsrp from "@/pages/out-the-door-price-vs-msrp";
 import OutTheDoorPriceVsMonthlyPayment from "@/pages/out-the-door-price-vs-monthly-payment";
 import WhyDealersWontGiveOutTheDoorPrice from "@/pages/why-dealers-wont-give-out-the-door-price";
 import OutTheDoorPriceExample from "@/pages/out-the-door-price-example";
+import WhatIsADealerDocFee from "@/pages/what-is-a-dealer-doc-fee";
+import AreDealerFeesNegotiable from "@/pages/are-dealer-fees-negotiable";
+import HiddenDealerFees from "@/pages/hidden-dealer-fees";
+import DealerPrepFee from "@/pages/dealer-prep-fee";
+import DealerReconditioningFee from "@/pages/dealer-reconditioning-fee";
 import NotFound from "@/pages/not-found";
 
 function ScrollToTop() {
@@ -93,6 +98,11 @@ function Router() {
       <Route path="/out-the-door-price-vs-monthly-payment" component={OutTheDoorPriceVsMonthlyPayment} />
       <Route path="/why-dealers-wont-give-out-the-door-price" component={WhyDealersWontGiveOutTheDoorPrice} />
       <Route path="/out-the-door-price-example" component={OutTheDoorPriceExample} />
+      <Route path="/what-is-a-dealer-doc-fee" component={WhatIsADealerDocFee} />
+      <Route path="/are-dealer-fees-negotiable" component={AreDealerFeesNegotiable} />
+      <Route path="/hidden-dealer-fees" component={HiddenDealerFees} />
+      <Route path="/dealer-prep-fee" component={DealerPrepFee} />
+      <Route path="/dealer-reconditioning-fee" component={DealerReconditioningFee} />
       <Route component={NotFound} />
     </Switch>
     </>

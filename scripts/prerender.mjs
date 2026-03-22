@@ -14,6 +14,11 @@ const ROUTES = [
   "/how-to-remove-dealer-add-ons",
   "/are-dealer-add-ons-required-by-law",
   "/dealer-add-ons-explained",
+  "/what-is-a-dealer-doc-fee",
+  "/are-dealer-fees-negotiable",
+  "/hidden-dealer-fees",
+  "/dealer-prep-fee",
+  "/dealer-reconditioning-fee",
 ];
 
 const PORT = 4173;
