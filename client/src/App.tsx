@@ -33,6 +33,10 @@ import Privacy from "@/pages/privacy";
 import DealerPricingProblems from "@/pages/dealer-pricing-problems";
 import HowOdigosWorks from "@/pages/how-odigos-works";
 import ExampleAnalysis from "@/pages/example-analysis";
+import AreDealerAddOnsNegotiable from "@/pages/are-dealer-add-ons-negotiable";
+import HowToRemoveDealerAddOns from "@/pages/how-to-remove-dealer-add-ons";
+import AreDealerAddOnsRequiredByLaw from "@/pages/are-dealer-add-ons-required-by-law";
+import DealerAddOnsExplained from "@/pages/dealer-add-ons-explained";
 import NotFound from "@/pages/not-found";
 
 function ScrollToTop() {
@@ -75,6 +79,10 @@ function Router() {
       <Route path="/dealer-pricing-problems" component={DealerPricingProblems} />
       <Route path="/how-odigos-works" component={HowOdigosWorks} />
       <Route path="/example-analysis" component={ExampleAnalysis} />
+      <Route path="/are-dealer-add-ons-negotiable" component={AreDealerAddOnsNegotiable} />
+      <Route path="/how-to-remove-dealer-add-ons" component={HowToRemoveDealerAddOns} />
+      <Route path="/are-dealer-add-ons-required-by-law" component={AreDealerAddOnsRequiredByLaw} />
+      <Route path="/dealer-add-ons-explained" component={DealerAddOnsExplained} />
       <Route component={NotFound} />
     </Switch>
     </>

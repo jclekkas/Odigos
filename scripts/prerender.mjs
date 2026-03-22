@@ -10,6 +10,10 @@ const ROUTES = [
   "/dealer-pricing-tactics",
   "/dealer-wont-give-otd-price",
   "/are-dealer-add-ons-mandatory",
+  "/are-dealer-add-ons-negotiable",
+  "/how-to-remove-dealer-add-ons",
+  "/are-dealer-add-ons-required-by-law",
+  "/dealer-add-ons-explained",
 ];
 
 const PORT = 4173;
