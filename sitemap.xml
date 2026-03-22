@@ -4,49 +4,149 @@
     <loc>https://odigos.replit.app/</loc>
   </url>
   <url>
-    <loc>https://odigos.replit.app/out-the-door-price</loc>
-  </url>
-  <url>
-    <loc>https://odigos.replit.app/monthly-payment-trap</loc>
-  </url>
-  <url>
-    <loc>https://odigos.replit.app/is-this-a-good-car-deal</loc>
-  </url>
-  <url>
-    <loc>https://odigos.replit.app/dealer-wont-give-otd</loc>
-  </url>
-  <url>
-    <loc>https://odigos.replit.app/car-dealer-fees-explained</loc>
-  </url>
-  <url>
     <loc>https://odigos.replit.app/analyze</loc>
   </url>
+
+  <!-- OTD cluster -->
   <url>
-    <loc>https://odigos.replit.app/dealer-doc-fee</loc>
-  </url>
-  <url>
-    <loc>https://odigos.replit.app/mandatory-dealer-add-ons</loc>
+    <loc>https://odigos.replit.app/out-the-door-price</loc>
   </url>
   <url>
     <loc>https://odigos.replit.app/out-the-door-price-calculator</loc>
   </url>
   <url>
-    <loc>https://odigos.replit.app/dealer-pricing-tactics</loc>
+    <loc>https://odigos.replit.app/calculate-out-the-door-price</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/what-does-out-the-door-price-include</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/out-the-door-price-vs-msrp</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/out-the-door-price-vs-monthly-payment</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/out-the-door-price-example</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/monthly-payment-trap</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/dealer-wont-give-otd</loc>
   </url>
   <url>
     <loc>https://odigos.replit.app/dealer-wont-give-otd-price</loc>
   </url>
   <url>
-    <loc>https://odigos.replit.app/are-dealer-add-ons-mandatory</loc>
+    <loc>https://odigos.replit.app/why-dealers-wont-give-out-the-door-price</loc>
+  </url>
+
+  <!-- Good deal decision cluster -->
+  <url>
+    <loc>https://odigos.replit.app/is-this-a-good-car-deal</loc>
   </url>
   <url>
-    <loc>https://odigos.replit.app/dealer-added-fees-after-agreement</loc>
+    <loc>https://odigos.replit.app/how-to-tell-if-a-car-deal-is-good</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/what-is-a-fair-price-for-a-car</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/how-much-should-you-pay-for-a-car</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/how-to-compare-car-deals</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/best-way-to-check-if-a-car-deal-is-good</loc>
+  </url>
+
+  <!-- Dealer fees cluster -->
+  <url>
+    <loc>https://odigos.replit.app/car-dealer-fees-explained</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/car-dealer-fees-list</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/car-dealer-fees-by-state</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/car-dealer-fees-california</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/car-dealer-fees-texas</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/car-dealer-fees-florida</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/car-dealer-fees-new-york</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/car-dealer-fees-georgia</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/dealer-doc-fee</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/dealer-doc-fee-by-state</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/what-is-a-dealer-doc-fee</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/doc-fee-too-high</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/are-dealer-fees-negotiable</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/hidden-dealer-fees</loc>
   </url>
   <url>
     <loc>https://odigos.replit.app/market-adjustment-fee</loc>
   </url>
   <url>
-    <loc>https://odigos.replit.app/doc-fee-too-high</loc>
+    <loc>https://odigos.replit.app/dealer-prep-fee</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/dealer-reconditioning-fee</loc>
+  </url>
+
+  <!-- Add-ons cluster -->
+  <url>
+    <loc>https://odigos.replit.app/mandatory-dealer-add-ons</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/are-dealer-add-ons-mandatory</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/are-dealer-add-ons-negotiable</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/are-dealer-add-ons-required-by-law</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/how-to-remove-dealer-add-ons</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/dealer-add-ons-explained</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/dealer-add-ons-list</loc>
+  </url>
+
+  <!-- Dealer tactics / problems cluster -->
+  <url>
+    <loc>https://odigos.replit.app/dealer-pricing-tactics</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/dealer-pricing-problems</loc>
+  </url>
+  <url>
+    <loc>https://odigos.replit.app/dealer-added-fees-after-agreement</loc>
   </url>
   <url>
     <loc>https://odigos.replit.app/dealer-changed-price-after-deposit</loc>
@@ -54,19 +154,12 @@
   <url>
     <loc>https://odigos.replit.app/finance-office-changed-the-numbers</loc>
   </url>
+
+  <!-- About / product -->
   <url>
-    <loc>https://odigos.replit.app/car-dealer-fees-by-state</loc>
+    <loc>https://odigos.replit.app/how-odigos-works</loc>
   </url>
   <url>
-    <loc>https://odigos.replit.app/dealer-add-ons-list</loc>
-  </url>
-  <url>
-    <loc>https://odigos.replit.app/dealer-doc-fee-by-state</loc>
-  </url>
-  <url>
-    <loc>https://odigos.replit.app/car-dealer-fees-list</loc>
-  </url>
-  <url>
-    <loc>https://odigos.replit.app/calculate-out-the-door-price</loc>
+    <loc>https://odigos.replit.app/example-analysis</loc>
   </url>
 </urlset>

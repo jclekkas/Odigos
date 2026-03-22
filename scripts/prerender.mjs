@@ -7,23 +7,65 @@ const DIST_DIR = resolve("dist/public");
 const CHROMIUM_PATH = process.env.CHROMIUM_PATH || "/nix/store/zi4f80l169xlmivz8vja8wlphq74qqk0-chromium-125.0.6422.141/bin/chromium";
 
 const ROUTES = [
-  "/dealer-pricing-tactics",
+  // OTD cluster
+  "/out-the-door-price",
+  "/out-the-door-price-calculator",
+  "/calculate-out-the-door-price",
+  "/what-does-out-the-door-price-include",
+  "/out-the-door-price-vs-msrp",
+  "/out-the-door-price-vs-monthly-payment",
+  "/out-the-door-price-example",
+  "/monthly-payment-trap",
+  "/dealer-wont-give-otd",
   "/dealer-wont-give-otd-price",
-  "/are-dealer-add-ons-mandatory",
-  "/are-dealer-add-ons-negotiable",
-  "/how-to-remove-dealer-add-ons",
-  "/are-dealer-add-ons-required-by-law",
-  "/dealer-add-ons-explained",
-  "/what-is-a-dealer-doc-fee",
-  "/are-dealer-fees-negotiable",
-  "/hidden-dealer-fees",
-  "/dealer-prep-fee",
-  "/dealer-reconditioning-fee",
+  "/why-dealers-wont-give-out-the-door-price",
+
+  // Good deal decision cluster
+  "/is-this-a-good-car-deal",
   "/how-to-tell-if-a-car-deal-is-good",
   "/what-is-a-fair-price-for-a-car",
   "/how-much-should-you-pay-for-a-car",
   "/how-to-compare-car-deals",
   "/best-way-to-check-if-a-car-deal-is-good",
+
+  // Dealer fees cluster
+  "/car-dealer-fees-explained",
+  "/car-dealer-fees-list",
+  "/car-dealer-fees-by-state",
+  "/car-dealer-fees-california",
+  "/car-dealer-fees-texas",
+  "/car-dealer-fees-florida",
+  "/car-dealer-fees-new-york",
+  "/car-dealer-fees-georgia",
+  "/dealer-doc-fee",
+  "/dealer-doc-fee-by-state",
+  "/what-is-a-dealer-doc-fee",
+  "/doc-fee-too-high",
+  "/are-dealer-fees-negotiable",
+  "/hidden-dealer-fees",
+  "/market-adjustment-fee",
+  "/dealer-prep-fee",
+  "/dealer-reconditioning-fee",
+
+  // Add-ons cluster
+  "/mandatory-dealer-add-ons",
+  "/are-dealer-add-ons-mandatory",
+  "/are-dealer-add-ons-negotiable",
+  "/are-dealer-add-ons-required-by-law",
+  "/how-to-remove-dealer-add-ons",
+  "/dealer-add-ons-explained",
+  "/dealer-add-ons-list",
+
+  // Dealer tactics / problems cluster
+  "/dealer-pricing-tactics",
+  "/dealer-pricing-problems",
+  "/dealer-added-fees-after-agreement",
+  "/dealer-changed-price-after-deposit",
+  "/finance-office-changed-the-numbers",
+
+  // About / product
+  "/how-odigos-works",
+  "/example-analysis",
 ];
 
 const PORT = 4173;
