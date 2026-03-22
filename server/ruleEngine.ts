@@ -7,6 +7,73 @@ interface RuleEngineResult {
   goNoGo: "GO" | "NO-GO" | "NEED-MORE-INFO";
 }
 
+export interface DocFeeCapResult {
+  violated: boolean;
+  capAmount: number;
+  chargedAmount: number;
+  overage: number;
+}
+
+interface StateData {
+  docFeeCap: boolean;
+  docFeeCapAmount: number | null;
+}
+
+// High-confidence doc-fee terms (explicit, low false-positive risk)
+const DOC_FEE_KEYWORDS_EXACT = [
+  "doc fee",
+  "documentation fee",
+  "document fee",
+  "documentary fee",
+];
+
+// Broader terms accepted only when a more specific doc-fee term is not found
+const DOC_FEE_KEYWORDS_BROAD = [
+  "dealer fee",
+  "processing fee",
+  "admin fee",
+  "administrative fee",
+];
+
+function detectDocFee(fees: Fee[]): number | null {
+  // Collect all matching fees across both tiers; prefer explicit-tier matches.
+  // Return the maximum charged amount so cap violation is never understated.
+  const exactMatches: number[] = [];
+  const broadMatches: number[] = [];
+
+  for (const fee of fees) {
+    if (fee.amount === null) continue;
+    const nameLower = fee.name.toLowerCase();
+    if (DOC_FEE_KEYWORDS_EXACT.some((kw) => nameLower.includes(kw))) {
+      exactMatches.push(fee.amount);
+    } else if (DOC_FEE_KEYWORDS_BROAD.some((kw) => nameLower.includes(kw))) {
+      broadMatches.push(fee.amount);
+    }
+  }
+
+  const candidates = exactMatches.length > 0 ? exactMatches : broadMatches;
+  return candidates.length > 0 ? Math.max(...candidates) : null;
+}
+
+export function checkDocFeeCap(fees: Fee[], stateData: StateData): DocFeeCapResult | null {
+  if (!stateData.docFeeCap || stateData.docFeeCapAmount === null) {
+    return null;
+  }
+  const chargedAmount = detectDocFee(fees);
+  if (chargedAmount === null) {
+    return null;
+  }
+  if (chargedAmount > stateData.docFeeCapAmount) {
+    return {
+      violated: true,
+      capAmount: stateData.docFeeCapAmount,
+      chargedAmount,
+      overage: chargedAmount - stateData.docFeeCapAmount,
+    };
+  }
+  return { violated: false, capAmount: stateData.docFeeCapAmount, chargedAmount, overage: 0 };
+}
+
 const VAGUE_FEE_KEYWORDS = [
   "dealer fee",
   "doc fee",
@@ -102,8 +169,18 @@ function hasMSRPOrSalePrice(fields: DetectedFields): boolean {
 
 export function applyRuleEngine(
   llmResult: AnalysisResponse,
-  fields: DetectedFields
+  fields: DetectedFields,
+  docFeeCapResult?: DocFeeCapResult | null
 ): RuleEngineResult {
+  if (docFeeCapResult?.violated) {
+    return {
+      dealScore: "RED",
+      confidenceLevel: "HIGH",
+      verdictLabel: "NO-GO — DOC FEE EXCEEDS STATE CAP",
+      goNoGo: "NO-GO",
+    };
+  }
+
   const fees = fields.fees || [];
   
   const hasMarketAdj = hasMarketAdjustment(fees);

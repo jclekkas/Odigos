@@ -2,7 +2,8 @@ import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
 import { analysisRequestSchema, analysisResponseSchema, type AnalysisResponse } from "@shared/schema";
-import { applyRuleEngine } from "./ruleEngine";
+import { applyRuleEngine, checkDocFeeCap } from "./ruleEngine";
+import { detectStateFromText, getStateFeeData, getAmbiguousCityOptions } from "./stateFeeLookup";
 import { getStripeClient, isStripeConfigured } from "./stripeClient";
 import { trackEvent } from "./metrics";
 import { extractTextFromFile } from "./extractText";
@@ -54,8 +55,61 @@ export async function registerRoutes(
       console.log("Dealer Text:", data.dealerText);
       console.log("===========================");
 
-      const systemPrompt = `You are an expert car buying advisor helping consumers evaluate car purchase offers. Your job is to analyze dealer quotes, texts, and emails to help buyers understand if they're getting a good deal.
+      // --- State detection (runs before LLM call to capture all paths in observability) ---
+      const stateDetection = detectStateFromText(data.dealerText, data.zipCode);
+      const stateData = stateDetection.state ? getStateFeeData(stateDetection.state) : null;
 
+      if (!stateData && stateDetection.state) {
+        console.warn(`[stateDetection] State ${stateDetection.state} not found in reference JSON — skipping injection`);
+      }
+
+      // Baseline metric fires immediately after detection so every analyze request is counted,
+      // even if LLM fails below. Cap violation outcome tracked in the post-LLM metric.
+      trackEvent("state_detection", {
+        method: stateDetection.method ?? undefined,
+        state: stateDetection.state ?? undefined,
+      });
+
+      // Build the STATE_FEE_REFERENCE block if we have data
+      let stateFeeSection = "";
+      if (stateData) {
+        const capLine = stateData.docFeeCap
+          ? `  Cap: YES — $${stateData.docFeeCapAmount} (dealers may NOT charge more)`
+          : `  Cap: NO — no state-imposed limit`;
+        const rangeLine = `  Typical range: $${stateData.docFeeTypicalRange[0]}–$${stateData.docFeeTypicalRange[1]}`;
+        const taxLine = `  State sales tax: ${(stateData.stateSalesTaxRate * 100).toFixed(2)}%`;
+        const tradeInLine = `  Trade-in tax credit: ${stateData.tradeInTaxCredit ? "YES" : "NO"}`;
+        const notesLine = stateData.specialNotes ? `  Special notes: ${stateData.specialNotes}` : "";
+
+        stateFeeSection = `
+STATE_FEE_REFERENCE (${stateData.name}):
+${capLine}
+${rangeLine}
+${taxLine}
+${tradeInLine}${notesLine ? `\n${notesLine}` : ""}`;
+      }
+
+      // Build STATE-SPECIFIC FEE RULES section
+      const stateFeeRulesSection = `
+STATE-SPECIFIC FEE RULES (STRICT — MUST FOLLOW):
+${stateData ? `
+A STATE_FEE_REFERENCE block has been injected above for ${stateData.name}. Apply these rules:
+1. Use ONLY the injected STATE_FEE_REFERENCE data for any state-specific claims — NOT general training knowledge.
+2. Doc fee cap analysis:
+   ${stateData.docFeeCap
+     ? `- ${stateData.name} has a $${stateData.docFeeCapAmount} doc fee cap. If a doc fee in the quote exceeds this:
+     - Flag it clearly in summary and reasoning as a HARD violation
+     - State the cap amount, the charged amount, the overage ($charged - $cap), and any statute reference
+     - Statute citation rule: if specialNotes contains a statute number or code citation, include it. If not, reference only the state name and cap amount — NEVER fabricate a statute citation.
+     - In the suggestedReply (paid tier): include a direct challenge referencing the cap amount and overage.`
+     : `- ${stateData.name} has NO state doc fee cap. Compare the detected doc fee against the typical range ($${stateData.docFeeTypicalRange[0]}–$${stateData.docFeeTypicalRange[1]}). Characterize it as: below typical / within typical / high end / above typical.`}
+3. For the suggestedReply: when a cap is violated AND specialNotes contains a statute reference, include a statutory challenge phrase. When no statute reference is present, challenge the fee by dollar amount only.
+` : `
+No state was detected. Do NOT make state-specific fee claims. Stick to general fee analysis.`}
+When state is unknown: omit all state-specific fee characterizations.`;
+
+      const systemPrompt = `You are an expert car buying advisor helping consumers evaluate car purchase offers. Your job is to analyze dealer quotes, texts, and emails to help buyers understand if they're getting a good deal.
+${stateFeeSection}
 LANGUAGE SAFETY & CERTAINTY RULES (STRICT - MUST FOLLOW):
 1. NEVER say "all key details are clear" unless ALL of the following are explicitly present:
    - Out-the-door price
@@ -102,7 +156,7 @@ CRITICAL REQUIREMENTS:
 2. Extract all pricing information you can find (sale price, MSRP, fees, monthly payments, etc.)
 3. Flag any suspicious fees or unclear terms like market adjustments, dealer add-ons, protection packages.
 4. Never invent numbers or make claims about "market averages" without data.
-
+${stateFeeRulesSection}
 You must respond with a valid JSON object with this exact structure:
 {
   "dealScore": "GREEN" | "YELLOW" | "RED",
@@ -236,7 +290,78 @@ GO/NO-GO/NEED-MORE-INFO:
       
       const llmResult = validationResult.data;
       
-      const ruleEngineAdjustments = applyRuleEngine(llmResult, llmResult.detectedFields);
+      // --- Doc fee cap check (hard override) ---
+      const docFeeCapResult = stateData
+        ? checkDocFeeCap(llmResult.detectedFields.fees, stateData)
+        : null;
+
+      // Emit consolidated single-line state+cap log and update metric with capViolation
+      const capCheck = !!stateData;
+      const capViolation = docFeeCapResult?.violated ?? false;
+      console.log(
+        `[stateDetection] method=${stateDetection.method ?? "null"} state=${stateDetection.state ?? "null"} capCheck=${capCheck} overage=${docFeeCapResult?.overage ?? 0}`
+      );
+      trackEvent("state_detection", {
+        method: stateDetection.method ?? undefined,
+        state: stateDetection.state ?? undefined,
+        capViolation,
+      });
+
+      // --- Inject missing info for unknown/ambiguous state ---
+      if (!stateDetection.state) {
+        const missingInfoArr = Array.isArray(llmResult.missingInfo) ? [...llmResult.missingInfo] : [];
+        if (stateDetection.ambiguousCity) {
+          const options = getAmbiguousCityOptions(stateDetection.ambiguousCity);
+          const optionsStr = options ? `${options[0]} or ${options[1]}` : "multiple states";
+          const cityDisplay = stateDetection.ambiguousCity.charAt(0).toUpperCase() + stateDetection.ambiguousCity.slice(1);
+          missingInfoArr.push({
+            field: "Dealership state",
+            question: `We found a reference to ${cityDisplay}, which could be ${optionsStr}. What's the dealership's ZIP code?`,
+          });
+        } else {
+          missingInfoArr.push({
+            field: "Dealership state",
+            question: "What city and state is the dealership located in? This helps us check state-specific fee limits.",
+          });
+        }
+        llmResult.missingInfo = missingInfoArr;
+      }
+
+      // --- Post-processing: deterministic cap violation augmentation ---
+      // When a cap violation is detected, ensure summary/reasoning/suggestedReply
+      // contain the required specifics (cap, charged, overage) regardless of LLM output.
+      if (docFeeCapResult?.violated && stateData) {
+        const { capAmount, chargedAmount, overage } = docFeeCapResult;
+        const stateName = stateData.name;
+        const capViolationPrefix = `ALERT: Doc fee of $${chargedAmount} exceeds ${stateName}'s legal cap of $${capAmount} by $${overage}.`;
+
+        // Extract statute citation from specialNotes if present (never fabricate)
+        let statuteCitation = "";
+        if (stateData.specialNotes) {
+          const statuteMatch = stateData.specialNotes.match(/([A-Z]{2,3}[\s.]+[\d.]+[\w.]*|§\s*[\d.]+[\w.]*|\b(?:Section|Sec\.|RS|RCW|ORS|MCL|CGS|GS|A\.?C\.?A\.?|C\.?R\.?S\.?|NRS|HSA|MCA)\s+[\d.-]+\w*)/i);
+          if (statuteMatch) {
+            statuteCitation = ` (${statuteMatch[0].trim()})`;
+          }
+        }
+
+        // Augment summary if it doesn't already contain the cap amount
+        if (!llmResult.summary.includes(String(capAmount))) {
+          llmResult.summary = `${capViolationPrefix} ${llmResult.summary}`;
+        }
+
+        // Augment reasoning if it doesn't already contain the overage amount
+        if (!llmResult.reasoning.includes(String(overage))) {
+          llmResult.reasoning = `Doc fee cap violation: ${stateName} cap is $${capAmount}${statuteCitation}. Charged: $${chargedAmount}. Overage: $${overage}. This is a hard NO-GO regardless of other deal terms. ` + llmResult.reasoning;
+        }
+
+        // Augment suggestedReply if it doesn't challenge the specific overage
+        if (!llmResult.suggestedReply.includes(String(capAmount)) && !llmResult.suggestedReply.includes(String(overage))) {
+          const replyStatuteNote = statuteCitation ? ` per state law${statuteCitation}` : " to comply with state law";
+          llmResult.suggestedReply = `I noticed the documentation fee of $${chargedAmount} exceeds the ${stateName} state cap of $${capAmount} by $${overage}. Please adjust the doc fee${replyStatuteNote}. ` + llmResult.suggestedReply;
+        }
+      }
+
+      const ruleEngineAdjustments = applyRuleEngine(llmResult, llmResult.detectedFields, docFeeCapResult);
       
       const finalResult: AnalysisResponse = {
         ...llmResult,

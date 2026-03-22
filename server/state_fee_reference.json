@@ -1,0 +1,1452 @@
+{
+  "_metadata": {
+    "version": "1.2.0",
+    "lastUpdated": "2026-03-22",
+    "description": "Verified U.S. state-by-state vehicle purchase fee reference data for Odigos analyzer and content pages. All data sourced from state DMVs, departments of revenue, legislative records, and authoritative automotive sites.",
+    "notes": [
+      "docFeeCap: null means no state-imposed cap",
+      "docFeeCapAmount: dollar amount if capped; null if uncapped",
+      "docFeeTypicalRange: [low, high] based on reported dealer practices",
+      "stateSalesTaxRate: base state rate as decimal (0.0625 = 6.25%)",
+      "maxCombinedTaxRate: highest possible state + local combined rate",
+      "tradeInTaxCredit: whether state allows trade-in value to reduce taxable amount",
+      "All dollar amounts in USD. All rates as decimals.",
+      "IMPORTANT: This data should be reviewed quarterly. State legislatures frequently adjust caps and rates.",
+      "confidence: 'high' = verified against primary statute/bulletin, 'medium' = verified against secondary sources, 'low' = needs human spot-check",
+      "verificationMethod: describes how the data was verified"
+    ]
+  },
+  "states": {
+    "AL": {
+      "name": "Alabama",
+      "abbreviation": "AL",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        400,
+        700
+      ],
+      "docFeeAverage": 489,
+      "stateSalesTaxRate": 0.04,
+      "maxCombinedTaxRate": 0.11,
+      "vehicleTaxNotes": "4% state + up to 7% local. Varies significantly by jurisdiction.",
+      "tradeInTaxCredit": true,
+      "titleFee": 15,
+      "registrationFee": "~$23 state + county fees",
+      "specialNotes": null,
+      "sources": [
+        "https://caredge.com/guides/car-dealer-doc-fee-by-state",
+        "https://www.revenue.alabama.gov/sales-use/state-sales-use-tax-rates/"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: CarEdge state guide + AL Revenue dept rate table"
+    },
+    "AK": {
+      "name": "Alaska",
+      "abbreviation": "AK",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        0,
+        500
+      ],
+      "docFeeAverage": null,
+      "stateSalesTaxRate": 0.0,
+      "maxCombinedTaxRate": 0.095,
+      "vehicleTaxNotes": "No state sales tax. Municipalities may impose 0%-9.5%. Lithia Motors fined $300K in Dec 2025 for hidden doc fees.",
+      "tradeInTaxCredit": false,
+      "tradeInTaxCreditNotes": "No state sales tax; municipal tax treatment varies",
+      "titleFee": 15,
+      "registrationFee": "~$100 for 2-year period",
+      "specialNotes": "Dec 2025: Lithia Motors ordered to pay $300K civil penalty for hidden doc fees. Dealers must include doc fees in advertised price.",
+      "sources": [
+        "https://law.alaska.gov/press/releases/2025/122925-LithiaMotors.html"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "low",
+      "verificationMethod": "Alaska AG press release (Dec 2025 Lithia Motors) + no direct fee regulation research. Unusual market."
+    },
+    "AZ": {
+      "name": "Arizona",
+      "abbreviation": "AZ",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        400,
+        600
+      ],
+      "docFeeAverage": 495,
+      "stateSalesTaxRate": 0.056,
+      "maxCombinedTaxRate": 0.112,
+      "vehicleTaxNotes": "5.6% Transaction Privilege Tax + local up to 5.6%. Phoenix ~8.6%.",
+      "tradeInTaxCredit": true,
+      "titleFee": 4,
+      "registrationFee": "$8 base + Vehicle License Tax based on value",
+      "specialNotes": null,
+      "sources": [
+        "https://caredge.com/guides/car-dealer-doc-fee-by-state",
+        "https://azdor.gov/business/transaction-privilege-tax/tax-rate-table"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: CarEdge + AZ DOR Transaction Privilege Tax table"
+    },
+    "AR": {
+      "name": "Arkansas",
+      "abbreviation": "AR",
+      "docFeeCap": true,
+      "docFeeCapAmount": 129,
+      "docFeeTypicalRange": [
+        129,
+        129
+      ],
+      "docFeeAverage": 129,
+      "stateSalesTaxRate": 0.065,
+      "maxCombinedTaxRate": 0.115,
+      "vehicleTaxNotes": "6.5% for vehicles $10K+; 3.5% for $4K-$10K; 0% under $4K. Local additions up to 5%.",
+      "tradeInTaxCredit": true,
+      "titleFee": 10,
+      "registrationFee": "$17-$30 based on weight",
+      "specialNotes": "Called 'service and handling' fees. Tiered sales tax based on vehicle price.",
+      "sources": [
+        "https://caredge.com/guides/car-dealer-doc-fee-by-state",
+        "https://www.dfa.arkansas.gov/office/taxes/excise-tax-administration/sales-use-tax/sales-use-tax-rates/state-sales-use-tax-rates/"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: CarEdge + AR DFA tax rate page. Cap amount needs statute verification."
+    },
+    "CA": {
+      "name": "California",
+      "abbreviation": "CA",
+      "docFeeCap": true,
+      "docFeeCapAmount": 85,
+      "docFeeTypicalRange": [
+        70,
+        85
+      ],
+      "docFeeAverage": 85,
+      "stateSalesTaxRate": 0.0725,
+      "maxCombinedTaxRate": 0.1075,
+      "vehicleTaxNotes": "7.25% state base + local up to 3.5%. LA 10.25%, San Diego 7.75%.",
+      "tradeInTaxCredit": false,
+      "tradeInTaxCreditNotes": "California does NOT allow trade-in deduction. Tax applies to full vehicle price.",
+      "titleFee": 15,
+      "registrationFee": "$62 base + value-based fees",
+      "specialNotes": "$85 for DMV private industry partners, $70 for other dealers. SB 791 (raise to $260) vetoed by Governor Newsom Oct 2025.",
+      "sources": [
+        "https://calmatters.org/politics/2025/10/california-car-dealer-fees-veto/",
+        "https://cdtfa.ca.gov/taxes-and-fees/rates.aspx"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: CA DMV fee schedule + SB 791 veto coverage (Oct 2025)"
+    },
+    "CO": {
+      "name": "Colorado",
+      "abbreviation": "CO",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        400,
+        700
+      ],
+      "docFeeAverage": 595,
+      "stateSalesTaxRate": 0.029,
+      "maxCombinedTaxRate": 0.08,
+      "vehicleTaxNotes": "2.9% state + local up to ~5%. Called 'dealer handling fee.'",
+      "tradeInTaxCredit": true,
+      "titleFee": 7,
+      "registrationFee": "Varies by weight, age, and value",
+      "specialNotes": "Lien filing fee increased to $40 flat rate effective July 1, 2025.",
+      "sources": [
+        "https://tax.colorado.gov/motor-vehicle",
+        "https://dmv.colorado.gov/taxes-and-fees"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: CarEdge + CO tax.colorado.gov. No cap claim needs verification."
+    },
+    "CT": {
+      "name": "Connecticut",
+      "abbreviation": "CT",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        300,
+        600
+      ],
+      "docFeeAverage": 450,
+      "stateSalesTaxRate": 0.0635,
+      "maxCombinedTaxRate": 0.0775,
+      "vehicleTaxNotes": "6.35% for vehicles under $50K; 7.75% for vehicles $50K+. No local additions.",
+      "tradeInTaxCredit": true,
+      "titleFee": 25,
+      "registrationFee": "$120 for 3-year + various surcharges (~$71 additional)",
+      "specialNotes": "Multiple bills proposed in 2025 (HB 06544, HB 06827, SB 774) to cap at 1% of vehicle price. Not enacted as of March 2026.",
+      "sources": [
+        "https://portal.ct.gov/dmv/vehicle-services/sales-tax-registrations/sales-tax-calculator"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: CT DMV calculator. No-cap status verified via pending bill research (HB 06544 not enacted)."
+    },
+    "DE": {
+      "name": "Delaware",
+      "abbreviation": "DE",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        300,
+        600
+      ],
+      "docFeeAverage": null,
+      "stateSalesTaxRate": 0.0,
+      "maxCombinedTaxRate": 0.0525,
+      "vehicleTaxNotes": "0% sales tax. 5.25% Document Fee applies instead (increased from 4.25% effective Oct 1, 2025). HB 295 proposes $475 dealer doc fee cap (pending).",
+      "tradeInTaxCredit": true,
+      "tradeInTaxCreditNotes": "Trade-in reduces taxable amount for dealer purchases only",
+      "titleFee": 35,
+      "registrationFee": "$40/year",
+      "specialNotes": "No sales tax but 5.25% state 'document fee' on vehicle purchases (increased Oct 2025 from 4.25%).",
+      "sources": [
+        "https://news.delaware.gov/2025/09/30/dmv-fees-increase-in-october-2025/",
+        "https://delawarelive.com/bill-capping-car-dealership-processing-fees-head-to-house/"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: Delaware DMV news release (Oct 2025 fee increase). HB 295 cap pending."
+    },
+    "FL": {
+      "name": "Florida",
+      "abbreviation": "FL",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        500,
+        1000
+      ],
+      "docFeeAverage": 670,
+      "stateSalesTaxRate": 0.06,
+      "maxCombinedTaxRate": 0.075,
+      "vehicleTaxNotes": "6% state. County surtax 0.5%-2.5% applies only to first $5,000 of purchase price.",
+      "tradeInTaxCredit": true,
+      "titleFee": 76,
+      "registrationFee": "$225 initial; $46-$120 annual renewal",
+      "specialNotes": "Florida has some of the highest doc fees in the nation. No cap exists despite multiple legislative attempts.",
+      "sources": [
+        "https://www.etags.com/blog/dealer-fees-in-florida-the-legit-the-bogus-the-weird/",
+        "https://floridarevenue.com/taxes/taxesfees/Pages/sales_tax.aspx"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: Florida Revenue statutes + etags.com dealer analysis"
+    },
+    "GA": {
+      "name": "Georgia",
+      "abbreviation": "GA",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        400,
+        700
+      ],
+      "docFeeAverage": 502,
+      "stateSalesTaxRate": 0.04,
+      "maxCombinedTaxRate": 0.09,
+      "vehicleTaxNotes": "4% state + local average 3.49%. Georgia also charges Title Ad Valorem Tax (TAVT) at 7.0% of fair market value (one-time, at titling). TAVT replaces annual ad valorem tax.",
+      "tradeInTaxCredit": true,
+      "tradeInTaxCreditNotes": "TAVT calculated on net price after trade-in deduction (dealer sales only)",
+      "titleFee": 18,
+      "registrationFee": "Included in TAVT",
+      "specialNotes": "TAVT at 7.0% of fair market value is a one-time tax paid at titling. Must be included in advertised price per AG guidance.",
+      "sources": [
+        "https://dor.georgia.gov/title-ad-valorem-tax-tavt-faq",
+        "https://consumered.georgia.gov/ask-ed/2019-10-30/what-maximum-amount-car-dealer-can-charge-doc-fees"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: Georgia DOR TAVT FAQ + AG consumer guidance"
+    },
+    "HI": {
+      "name": "Hawaii",
+      "abbreviation": "HI",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        150,
+        350
+      ],
+      "docFeeAverage": 250,
+      "stateSalesTaxRate": 0.04,
+      "maxCombinedTaxRate": 0.045,
+      "vehicleTaxNotes": "4% General Excise Tax + 0.5% county surcharge. Private-party purchases exempt.",
+      "tradeInTaxCredit": false,
+      "tradeInTaxCreditNotes": "No deduction for sales tax. Use tax on imported vehicles allows trade-in reduction.",
+      "titleFee": 10,
+      "registrationFee": "$46 state + county weight tax ($100-$300 typical)",
+      "specialNotes": "Luxury vehicle surcharge: 50% of applicable taxes (new legislation).",
+      "sources": [
+        "https://tax.hawaii.gov/geninfo/get/",
+        "https://caredge.com/guides/car-dealer-doc-fee-by-state"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: CarEdge + Hawaii GET rate page. Trade-in credit status needs verification."
+    },
+    "ID": {
+      "name": "Idaho",
+      "abbreviation": "ID",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        200,
+        400
+      ],
+      "docFeeAverage": 265,
+      "stateSalesTaxRate": 0.06,
+      "maxCombinedTaxRate": 0.09,
+      "vehicleTaxNotes": "6% state + local option up to 3%.",
+      "tradeInTaxCredit": true,
+      "tradeInTaxCreditNotes": "Idaho DOES allow trade-in deductions per IDAPA 35.01.02.044.",
+      "titleFee": 14,
+      "registrationFee": "Varies by weight and value",
+      "specialNotes": null,
+      "sources": [
+        "https://caredge.com/guides/car-dealer-doc-fee-by-state",
+        "https://tax.idaho.gov/taxes/sales-use/online-guide/"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: CarEdge + Idaho tax guide. Trade-in credit status corrected to true per IDAPA."
+    },
+    "IL": {
+      "name": "Illinois",
+      "abbreviation": "IL",
+      "docFeeCap": true,
+      "docFeeCapAmount": 378,
+      "docFeeTypicalRange": [
+        378,
+        378
+      ],
+      "docFeeAverage": 378,
+      "stateSalesTaxRate": 0.0625,
+      "maxCombinedTaxRate": 0.1025,
+      "vehicleTaxNotes": "6.25% state + local/RTA up to 4%. Chicago combined ~10.25%.",
+      "tradeInTaxCredit": true,
+      "tradeInTaxCreditNotes": "UNLIMITED as of Jan 1, 2022 (Public Act 102-0353 removed $10K cap).",
+      "titleFee": 165,
+      "registrationFee": "$151/year; +$100 annual EV fee",
+      "specialNotes": "Cap adjusts annually by CPI. Modern cap started at $300 effective Jan 1, 2020. For 2025: $367.70. For 2026: $377.63. Increases ~2-3%/year.",
+      "sources": [
+        "https://www.ilsos.gov/departments/vehicles/basicfees.html",
+        "https://www.cata.info/news-and-announcements/13290052"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: Illinois Automobile Dealers Assoc. + ILSOS fee schedule"
+    },
+    "IN": {
+      "name": "Indiana",
+      "abbreviation": "IN",
+      "docFeeCap": true,
+      "docFeeCapAmount": 251,
+      "docFeeTypicalRange": [
+        251,
+        251
+      ],
+      "docFeeAverage": 251,
+      "stateSalesTaxRate": 0.07,
+      "maxCombinedTaxRate": 0.07,
+      "vehicleTaxNotes": "7% flat, statewide. No local additions.",
+      "tradeInTaxCredit": true,
+      "titleFee": 15,
+      "registrationFee": "$21.35 + $15 infrastructure fee",
+      "specialNotes": "Cap adjusted annually by CPI. Must be included in advertised price and disclosed separately on bill of sale. Effective July 1, 2025: $251.05.",
+      "sources": [
+        "https://www.in.gov/sos/dealer/files/Doc-Fees-in-2025.pdf",
+        "https://www.in.gov/bmv/fees-taxes/vehicle-registration-fees-and-taxes/"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: Indiana SOS Auto Dealer Services Division guidance PDF"
+    },
+    "IA": {
+      "name": "Iowa",
+      "abbreviation": "IA",
+      "docFeeCap": true,
+      "docFeeCapAmount": 180,
+      "docFeeTypicalRange": [
+        180,
+        180
+      ],
+      "docFeeAverage": 180,
+      "stateSalesTaxRate": 0.05,
+      "maxCombinedTaxRate": 0.06,
+      "vehicleTaxNotes": "5% registration fee on purchases + optional 1% Local Option Sales Tax.",
+      "tradeInTaxCredit": true,
+      "tradeInTaxCreditNotes": "Same-transaction dealer trade-ins only",
+      "titleFee": 35,
+      "registrationFee": "Variable by weight and list price",
+      "specialNotes": "Title fee increased from $25 to $35 effective Jan 1, 2025.",
+      "sources": [
+        "https://www.legis.iowa.gov/docs/code/322.19A.pdf",
+        "https://revenue.iowa.gov/taxes/tax-guidance/sales-use-excise-tax/sales-use-tax-guide"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: Iowa Code \u00a7322.19A. Cap amount $180 from statute text."
+    },
+    "KS": {
+      "name": "Kansas",
+      "abbreviation": "KS",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        200,
+        400
+      ],
+      "docFeeAverage": 300,
+      "stateSalesTaxRate": 0.065,
+      "maxCombinedTaxRate": 0.106,
+      "vehicleTaxNotes": "6.5% state + local up to 4.1%.",
+      "tradeInTaxCredit": true,
+      "tradeInTaxCreditNotes": "Full deduction; expanded 120-day window as of Jan 1, 2025",
+      "titleFee": 21,
+      "registrationFee": "$42.50-$52.25",
+      "specialNotes": null,
+      "sources": [
+        "https://caredge.com/guides/car-dealer-doc-fee-by-state",
+        "https://www.ksrevenue.gov/pub1526.html"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: CarEdge + KS Revenue pub1526. No-cap claim needs verification."
+    },
+    "KY": {
+      "name": "Kentucky",
+      "abbreviation": "KY",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        300,
+        600
+      ],
+      "docFeeAverage": 450,
+      "stateSalesTaxRate": 0.06,
+      "maxCombinedTaxRate": 0.06,
+      "vehicleTaxNotes": "6% Motor Vehicle Usage Tax. No local additions.",
+      "tradeInTaxCredit": true,
+      "tradeInTaxCreditNotes": "Full deduction for new vehicles; limited for used",
+      "titleFee": 9,
+      "registrationFee": "$21/year",
+      "specialNotes": null,
+      "sources": [
+        "https://revenue.ky.gov/Property/Motor-Vehicles/Pages/Motor-Vehicle-Usage-Tax.aspx",
+        "https://caredge.com/guides/car-dealer-doc-fee-by-state"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: CarEdge + KY Revenue Motor Vehicle Usage Tax page"
+    },
+    "LA": {
+      "name": "Louisiana",
+      "abbreviation": "LA",
+      "docFeeCap": true,
+      "docFeeCapAmount": 425,
+      "docFeeTypicalRange": [
+        300,
+        425
+      ],
+      "docFeeAverage": 400,
+      "stateSalesTaxRate": 0.05,
+      "maxCombinedTaxRate": 0.135,
+      "vehicleTaxNotes": "5% state (increased from 4.45% on Jan 1, 2025) + local up to 8.5%. Highest combined rates (Monroe/Sterlington) reach 13.5%. Among highest in nation.",
+      "tradeInTaxCredit": true,
+      "titleFee": 69,
+      "registrationFee": "0.1% of vehicle value (min $20, 2-year)",
+      "specialNotes": "Doc fee cap $425, CPI-adjusted annually starting Jan 1, 2026. State rate increased Jan 2025.",
+      "sources": [
+        "https://law.justia.com/codes/louisiana/revised-statutes/title-6/rs-6-969-18/"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: HB 476 enrolled text + LA RS 6:969.18"
+    },
+    "ME": {
+      "name": "Maine",
+      "abbreviation": "ME",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        300,
+        600
+      ],
+      "docFeeAverage": 499,
+      "stateSalesTaxRate": 0.055,
+      "maxCombinedTaxRate": 0.055,
+      "vehicleTaxNotes": "5.5% flat. No local additions.",
+      "tradeInTaxCredit": true,
+      "tradeInTaxCreditNotes": "Trade-in must be same category (motor vehicle for motor vehicle)",
+      "titleFee": 33,
+      "registrationFee": "$35 base (2-year)",
+      "specialNotes": null,
+      "sources": [
+        "https://legislature.maine.gov/statutes/29-a/title29-Asec953-A.html",
+        "https://www.maine.gov/revenue/taxes/sales-use-service-provider-tax/rates-due-dates"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: Maine statute \u00a7953-A + Revenue tax rate page"
+    },
+    "MD": {
+      "name": "Maryland",
+      "abbreviation": "MD",
+      "docFeeCap": true,
+      "docFeeCapAmount": 800,
+      "docFeeTypicalRange": [
+        300,
+        800
+      ],
+      "docFeeAverage": 500,
+      "stateSalesTaxRate": 0.065,
+      "maxCombinedTaxRate": 0.065,
+      "vehicleTaxNotes": "6.5% excise tax (increased from 6% effective July 1, 2025). No local additions for vehicles.",
+      "tradeInTaxCredit": true,
+      "titleFee": 200,
+      "registrationFee": "$120.50-$191.50/year by weight + $40/year EMS surcharge",
+      "specialNotes": "Doc fee cap increased from ~$500 to $800 effective July 1, 2024 (SB 362). Sales tax increased from 6% to 6.5% effective July 1, 2025.",
+      "sources": [
+        "https://mva.maryland.gov/businesses/Documents/bulletins/2024/Bulletin%20-%20Vehicle%20Reg%20Fees,%20Term,%20and%20Weight%20Changes_SB%20362.pdf"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: SB 362 enrolled text + MVA Bulletin"
+    },
+    "MA": {
+      "name": "Massachusetts",
+      "abbreviation": "MA",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        300,
+        500
+      ],
+      "docFeeAverage": 400,
+      "stateSalesTaxRate": 0.0625,
+      "maxCombinedTaxRate": 0.0625,
+      "vehicleTaxNotes": "6.25% flat. No local additions.",
+      "tradeInTaxCredit": true,
+      "titleFee": 75,
+      "registrationFee": "$60 (2-year)",
+      "specialNotes": "Title prep fee only is capped at $5 per Directive 14-1. General doc fees are uncapped.",
+      "sources": [
+        "https://www.mass.gov/directive/directive-14-1-document-and-title-preparation-fees-charged-by-motor-vehicle-dealers",
+        "https://www.mass.gov/guides/motor-vehicle-and-trailer-sales-and-use-tax"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: Mass Directive 14-1 (title prep only). General doc fee no-cap claim needs verification."
+    },
+    "MI": {
+      "name": "Michigan",
+      "abbreviation": "MI",
+      "docFeeCap": true,
+      "docFeeCapAmount": 280,
+      "docFeeTypicalRange": [
+        200,
+        280
+      ],
+      "docFeeAverage": 260,
+      "stateSalesTaxRate": 0.06,
+      "maxCombinedTaxRate": 0.06,
+      "vehicleTaxNotes": "6% flat. No local additions.",
+      "tradeInTaxCredit": true,
+      "tradeInTaxCreditNotes": "Maximum $11,000 credit or actual agreed value, whichever is less (2025)",
+      "titleFee": 15,
+      "registrationFee": "$15 (1-year) or $29 (2-year) base + percentage of MSRP",
+      "specialNotes": "Cap is $280 OR 5% of vehicle price, whichever is LESS. Adjusted biennially by CPI. Per DIFS Bulletin 2025-03-CF.",
+      "sources": [
+        "https://www.michigan.gov/difs/-/media/Project/Websites/difs/Bulletins/2025/Bulletin_2025-03-CF.pdf"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: Michigan DIFS Bulletin 2025-03-CF"
+    },
+    "MN": {
+      "name": "Minnesota",
+      "abbreviation": "MN",
+      "docFeeCap": true,
+      "docFeeCapAmount": 350,
+      "docFeeTypicalRange": [
+        125,
+        350
+      ],
+      "docFeeAverage": 300,
+      "stateSalesTaxRate": 0.06875,
+      "maxCombinedTaxRate": 0.07375,
+      "vehicleTaxNotes": "6.875% state + up to 0.5% metro transit tax.",
+      "tradeInTaxCredit": true,
+      "titleFee": 34,
+      "registrationFee": "1.575% of MSRP + $11.25 universal fees",
+      "specialNotes": "MAJOR CHANGE: Cap increased from ~$125 to $350 effective July 1, 2025. Or 10% of sale value for vehicles \u2264$3,499, whichever is less.",
+      "sources": [
+        "https://mada.org/doc-fee-increase/"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: MADA official announcement + statute"
+    },
+    "MS": {
+      "name": "Mississippi",
+      "abbreviation": "MS",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        300,
+        550
+      ],
+      "docFeeAverage": 425,
+      "stateSalesTaxRate": 0.05,
+      "maxCombinedTaxRate": 0.0525,
+      "vehicleTaxNotes": "5% for passenger vehicles (different from 7% general sales tax). Max local addition 0.25%.",
+      "tradeInTaxCredit": true,
+      "titleFee": 9,
+      "registrationFee": "$14 first-time or $12.75 renewal + ~$15 county tax",
+      "specialNotes": "District-based caps: fees cannot exceed 25% above district average (~$425 typical). Not a hard state cap.",
+      "sources": [
+        "https://www.mmvc.ms.gov/sites/mmvc/files/rules/Regulation8.pdf"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: MMVC Regulation 8. District-based cap system is unusual \u2014 needs human review."
+    },
+    "MO": {
+      "name": "Missouri",
+      "abbreviation": "MO",
+      "docFeeCap": true,
+      "docFeeCapAmount": 500,
+      "docFeeTypicalRange": [
+        300,
+        500
+      ],
+      "docFeeAverage": 400,
+      "stateSalesTaxRate": 0.04225,
+      "maxCombinedTaxRate": 0.101,
+      "vehicleTaxNotes": "4.225% state + local up to 5.875%. Max total tax capped at $725.",
+      "tradeInTaxCredit": true,
+      "titleFee": 15,
+      "registrationFee": "$18.25-$51.25/year by horsepower + $9 processing",
+      "specialNotes": "Doc fee cap $500 base, increased annually by CPI. Effective Aug 17, 2025.",
+      "sources": [
+        "https://revisor.mo.gov/main/OneSection.aspx?section=301.558"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: RSMo \u00a7301.558 + 12 CSR 10-26.231"
+    },
+    "MT": {
+      "name": "Montana",
+      "abbreviation": "MT",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        200,
+        400
+      ],
+      "docFeeAverage": 299,
+      "stateSalesTaxRate": 0.0,
+      "maxCombinedTaxRate": 0.0,
+      "vehicleTaxNotes": "NO sales tax on vehicles.",
+      "tradeInTaxCredit": false,
+      "tradeInTaxCreditNotes": "N/A \u2014 no sales tax",
+      "titleFee": 12,
+      "registrationFee": "$217 (0-4 years) or $130 (5-10 years) + county option ~$10",
+      "specialNotes": "One of five states with no sales tax on vehicles (along with AK, DE, NH, OR).",
+      "sources": [
+        "https://revenue.mt.gov/taxes/general-sales-tax",
+        "https://caredge.com/guides/car-dealer-doc-fee-by-state"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: CarEdge. No sales tax is well-established."
+    },
+    "NE": {
+      "name": "Nebraska",
+      "abbreviation": "NE",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        200,
+        400
+      ],
+      "docFeeAverage": 280,
+      "stateSalesTaxRate": 0.055,
+      "maxCombinedTaxRate": 0.075,
+      "vehicleTaxNotes": "5.5% state + local up to 2%.",
+      "tradeInTaxCredit": true,
+      "titleFee": 18,
+      "registrationFee": "$68 base + statutory fees (~$20.50 additional)",
+      "specialNotes": null,
+      "sources": [
+        "https://dmv.nebraska.gov/dvr/reg/registration-fees-and-taxes",
+        "https://caredge.com/guides/car-dealer-doc-fee-by-state"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: NE DMV registration fees page + CarEdge"
+    },
+    "NV": {
+      "name": "Nevada",
+      "abbreviation": "NV",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        400,
+        700
+      ],
+      "docFeeAverage": 499,
+      "stateSalesTaxRate": 0.046,
+      "maxCombinedTaxRate": 0.0824,
+      "vehicleTaxNotes": "4.6% state + local varies. Reno area reportedly up to 16.89% in some contexts (verify).",
+      "tradeInTaxCredit": true,
+      "titleFee": 28,
+      "registrationFee": "$33 base + value-based fees (35% of MSRP formula)",
+      "specialNotes": null,
+      "sources": [
+        "https://dmv.nv.gov/regfees.htm",
+        "https://caredge.com/guides/car-dealer-doc-fee-by-state"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: CarEdge + NV DMV fee schedule. No-cap claim needs verification."
+    },
+    "NH": {
+      "name": "New Hampshire",
+      "abbreviation": "NH",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeCapNotes": "State-filed paperwork fee capped at $27 (RSA 361-A:1, IV), but dealers charge separate uncapped 'administrative fees' that are NOT capped. Effective total doc fee is uncapped.",
+      "docFeeTypicalRange": [
+        300,
+        500
+      ],
+      "docFeeAverage": 459,
+      "stateSalesTaxRate": 0.0,
+      "maxCombinedTaxRate": 0.0,
+      "vehicleTaxNotes": "NO sales tax.",
+      "tradeInTaxCredit": false,
+      "tradeInTaxCreditNotes": "N/A \u2014 no sales tax",
+      "titleFee": 37,
+      "registrationFee": "$18-$15 per $1,000 of vehicle value",
+      "specialNotes": "Two-part fee structure: (1) $27 state doc fee (capped by statute), (2) Dealer admin fee (uncapped, must be itemized). Total fees average $459. Title fee increased to $37 effective Jan 1, 2026.",
+      "sources": [
+        "https://www.banking.nh.gov/rsa-361-faq",
+        "https://caredge.com/guides/car-dealer-doc-fee-by-state"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: NH Banking Dept FAQ for $27 cap. Uncapped admin fee avg from CarEdge."
+    },
+    "NJ": {
+      "name": "New Jersey",
+      "abbreviation": "NJ",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        200,
+        900
+      ],
+      "docFeeAverage": 500,
+      "stateSalesTaxRate": 0.06625,
+      "maxCombinedTaxRate": 0.08625,
+      "vehicleTaxNotes": "6.625% statewide; 8.625% in Millville only.",
+      "tradeInTaxCredit": true,
+      "titleFee": 60,
+      "registrationFee": "Varies by type/weight; ZEV fee $260 (2026)",
+      "specialNotes": "Title with lien: $85.",
+      "sources": [
+        "https://www.nj.gov/mvc/vehicles/regfees.htm"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: NJ MVC fee schedule. No-cap claim needs verification."
+    },
+    "NM": {
+      "name": "New Mexico",
+      "abbreviation": "NM",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        200,
+        400
+      ],
+      "docFeeAverage": 300,
+      "stateSalesTaxRate": 0.04,
+      "maxCombinedTaxRate": 0.0944,
+      "vehicleTaxNotes": "4% motor vehicle excise tax (not traditional sales tax). Gross Receipts Tax 5.125% base + local up to 4.315%.",
+      "tradeInTaxCredit": true,
+      "titleFee": 20,
+      "registrationFee": "$27-$62/year by weight/age",
+      "specialNotes": "New Mexico uses both a Motor Vehicle Excise Tax and a Gross Receipts Tax \u2014 verify which applies to your transaction.",
+      "sources": [
+        "https://www.mvd.newmexico.gov/vehicles/vehicle-registration/"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: NM MVD + dual tax structure (excise + GRT) is complex."
+    },
+    "NY": {
+      "name": "New York",
+      "abbreviation": "NY",
+      "docFeeCap": true,
+      "docFeeCapAmount": 175,
+      "docFeeTypicalRange": [
+        175,
+        175
+      ],
+      "docFeeAverage": 175,
+      "stateSalesTaxRate": 0.04,
+      "maxCombinedTaxRate": 0.08875,
+      "vehicleTaxNotes": "4% state + local varies. NYC combined up to 8.875%.",
+      "tradeInTaxCredit": true,
+      "titleFee": 50,
+      "registrationFee": "$26-$56.50 state weight fee + $25 plate fee + county tax",
+      "specialNotes": "Cap set Aug 18, 2021. Still current as of March 2026.",
+      "sources": [
+        "https://dmv.ny.gov/registration/sales-tax-information"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: 15 NYCRR \u00a778.19 + NYIADA confirmation"
+    },
+    "NC": {
+      "name": "North Carolina",
+      "abbreviation": "NC",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        500,
+        800
+      ],
+      "docFeeAverage": 550,
+      "stateSalesTaxRate": 0.03,
+      "maxCombinedTaxRate": 0.03,
+      "vehicleTaxNotes": "3% Highway Use Tax (HUT, not sales tax). Flat, no local addition.",
+      "tradeInTaxCredit": true,
+      "tradeInTaxCreditNotes": "Dealer transactions only",
+      "titleFee": 56,
+      "registrationFee": "$46.25/year (effective July 1, 2024)",
+      "specialNotes": "NC uses Highway Use Tax instead of sales tax for vehicles. Relatively low at 3%.",
+      "sources": [
+        "https://www.ncdot.gov/dmv/title-registration/taxes/Pages/default.aspx"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: NCDOT Highway Use Tax page"
+    },
+    "ND": {
+      "name": "North Dakota",
+      "abbreviation": "ND",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        100,
+        250
+      ],
+      "docFeeAverage": 175,
+      "stateSalesTaxRate": 0.05,
+      "maxCombinedTaxRate": 0.05,
+      "vehicleTaxNotes": "5% excise tax (vehicle-specific). No local add-on for vehicles.",
+      "tradeInTaxCredit": true,
+      "titleFee": 5,
+      "registrationFee": "Varies by year registered + vehicle weight",
+      "specialNotes": null,
+      "sources": [
+        "https://www.dot.nd.gov/motor-vehicle",
+        "https://caredge.com/guides/car-dealer-doc-fee-by-state"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: ND DOT + CarEdge. Low-population state, limited data."
+    },
+    "OH": {
+      "name": "Ohio",
+      "abbreviation": "OH",
+      "docFeeCap": true,
+      "docFeeCapAmount": 387,
+      "docFeeTypicalRange": [
+        200,
+        387
+      ],
+      "docFeeAverage": 350,
+      "stateSalesTaxRate": 0.0575,
+      "maxCombinedTaxRate": 0.0825,
+      "vehicleTaxNotes": "5.75% state + county up to 2.5%. Range 5.8%-8.25%.",
+      "tradeInTaxCredit": true,
+      "tradeInTaxCreditNotes": "New vehicles only",
+      "titleFee": 18,
+      "registrationFee": "Varies by type; service fee increased $5 to $8 effective Jan 1, 2026",
+      "specialNotes": "Cap is $387 OR 10% of cash price, whichever is LOWER. Title fee increase of $3 effective Jan 1, 2026.",
+      "sources": [
+        "https://www.bmv.ohio.gov/doc-fees.aspx"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: Ohio Revised Code \u00a74517.261, bmv.ohio.gov"
+    },
+    "OK": {
+      "name": "Oklahoma",
+      "abbreviation": "OK",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        200,
+        400
+      ],
+      "docFeeAverage": 299,
+      "stateSalesTaxRate": 0.045,
+      "maxCombinedTaxRate": 0.045,
+      "vehicleTaxNotes": "4.5% combined (1.25% sales + 3.25% excise for new vehicles). No local add-on for vehicles.",
+      "tradeInTaxCredit": true,
+      "titleFee": 11,
+      "registrationFee": "$96 (1st-4th year); decreases by age",
+      "specialNotes": null,
+      "sources": [
+        "https://oklahoma.gov/service/all-services/auto-vehicle/fees.html",
+        "https://caredge.com/guides/car-dealer-doc-fee-by-state"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: Oklahoma.gov fee schedule + CarEdge"
+    },
+    "OR": {
+      "name": "Oregon",
+      "abbreviation": "OR",
+      "docFeeCap": true,
+      "docFeeCapAmount": 250,
+      "docFeeTypicalRange": [
+        150,
+        250
+      ],
+      "docFeeAverage": 200,
+      "stateSalesTaxRate": 0.0,
+      "maxCombinedTaxRate": 0.005,
+      "vehicleTaxNotes": "NO sales tax. 0.5% Vehicle Privilege Tax on new vehicles only. HB 3991 proposes increase to 2.25% (pending referendum).",
+      "tradeInTaxCredit": false,
+      "tradeInTaxCreditNotes": "N/A \u2014 no sales tax. Privilege tax applies to gross sale price.",
+      "titleFee": 77,
+      "registrationFee": "$43 (2-year); +$60 increase for EV/40+ MPG vehicles effective Jan 1, 2026",
+      "specialNotes": "$250 with integrator / $200 without integrator. Title fee is sliding scale $77-$192 based on MPG.",
+      "sources": [
+        "https://www.oregon.gov/odot/dmv/pages/fees/vehicle.aspx"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Primary: ORS \u00a7822.043 confirmed $250/$200 cap. Rate: $250 with integrator."
+    },
+    "PA": {
+      "name": "Pennsylvania",
+      "abbreviation": "PA",
+      "docFeeCap": true,
+      "docFeeCapAmount": 490,
+      "docFeeTypicalRange": [
+        300,
+        490
+      ],
+      "docFeeAverage": 420,
+      "stateSalesTaxRate": 0.06,
+      "maxCombinedTaxRate": 0.08,
+      "vehicleTaxNotes": "6% state (increasing to 6.5% Oct 1, 2025 and 7% Oct 1, 2026). Philadelphia 8% (6% + 2% local).",
+      "tradeInTaxCredit": true,
+      "titleFee": 72,
+      "registrationFee": "$200-$300 varies by weight",
+      "specialNotes": "Cap: $490 electronic / $409 non-electronic (effective Jan 13, 2026). Adjusted annually by CPI. Up from $477/$398 in 2025.",
+      "sources": [
+        "https://www.pacodeandbulletin.gov/Display/pabull?file=/secure/pabulletin/data/vol55/55-1/26.html"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: Pennsylvania Bulletin Vol.55 Issue 1 (Jan 13, 2026)"
+    },
+    "RI": {
+      "name": "Rhode Island",
+      "abbreviation": "RI",
+      "docFeeCap": true,
+      "docFeeCapAmount": 400,
+      "docFeeTypicalRange": [
+        200,
+        400
+      ],
+      "docFeeAverage": 300,
+      "stateSalesTaxRate": 0.07,
+      "maxCombinedTaxRate": 0.07,
+      "vehicleTaxNotes": "7% flat statewide. No local additions.",
+      "tradeInTaxCredit": true,
+      "titleFee": 23,
+      "registrationFee": "$30-$50/year",
+      "specialNotes": "$400 cap applies to vehicles sold for $10,000+. Doc fee PROHIBITED on vehicles under $10,000. Separate $20 title prep fee also allowed. Increased from $200 to $400. Doc fees included in taxable measure for sales tax.",
+      "sources": [
+        "https://www.law.cornell.edu/regulations/rhode-island/280-RICR-30-20-1.6",
+        "https://tax.ri.gov/tax-sections/sales-excise-taxes/sales-use-tax"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: 280-RICR-30-20-1.6 confirmed via LII/Cornell. $400 cap for vehicles $10K+."
+    },
+    "SC": {
+      "name": "South Carolina",
+      "abbreviation": "SC",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        300,
+        600
+      ],
+      "docFeeAverage": 350,
+      "stateSalesTaxRate": 0.06,
+      "maxCombinedTaxRate": 0.09,
+      "vehicleTaxNotes": "6% state + up to 3% local.",
+      "tradeInTaxCredit": true,
+      "titleFee": 19,
+      "registrationFee": "$30-$100/year varies by type",
+      "specialNotes": "Fees exceeding $225 require additional documentation to the state.",
+      "sources": [
+        "https://consumer.sc.gov/business-resourceslaws/licensing/registered-creditors/motor-vehicle-dealers",
+        "https://dor.sc.gov/sales-use-tax-index/local-sales-taxes"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: SC Consumer Affairs + DOR local tax tables"
+    },
+    "SD": {
+      "name": "South Dakota",
+      "abbreviation": "SD",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        75,
+        200
+      ],
+      "docFeeAverage": 115,
+      "stateSalesTaxRate": 0.042,
+      "maxCombinedTaxRate": 0.062,
+      "vehicleTaxNotes": "4.2% state (reduced from 4.5% July 1, 2023) + up to 2% local. Plus 4% excise tax on purchase price.",
+      "tradeInTaxCredit": true,
+      "titleFee": 12,
+      "registrationFee": "Varies by weight + 4% excise tax",
+      "specialNotes": "Among lowest doc fee averages in the nation.",
+      "sources": [
+        "https://dor.sd.gov/individuals/motor-vehicle/all-vehicles-title-fees-registration/"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: SD DOR fee schedule + CarEdge"
+    },
+    "TN": {
+      "name": "Tennessee",
+      "abbreviation": "TN",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        300,
+        600
+      ],
+      "docFeeAverage": 450,
+      "stateSalesTaxRate": 0.07,
+      "maxCombinedTaxRate": 0.0975,
+      "vehicleTaxNotes": "7% state + up to 2.75% local. Memphis area reaches 9.75%.",
+      "tradeInTaxCredit": true,
+      "titleFee": 14,
+      "registrationFee": "$14.50-$36 base + county wheel tax ($0-$55)",
+      "specialNotes": "Among highest combined sales tax rates in the nation.",
+      "sources": [
+        "https://www.tn.gov/revenue/title-and-registration.html"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: TN Revenue title/registration page. High combined rates confirmed."
+    },
+    "TX": {
+      "name": "Texas",
+      "abbreviation": "TX",
+      "docFeeCap": true,
+      "docFeeCapAmount": 225,
+      "docFeeTypicalRange": [
+        150,
+        225
+      ],
+      "docFeeAverage": 200,
+      "stateSalesTaxRate": 0.0625,
+      "maxCombinedTaxRate": 0.0825,
+      "vehicleTaxNotes": "6.25% state + up to 2% local.",
+      "tradeInTaxCredit": true,
+      "titleFee": 30,
+      "registrationFee": "Varies by weight; EV $400 first-time + $200/year",
+      "specialNotes": "MAJOR CHANGE: Cap raised to $225 (presumed reasonable) effective July 11, 2024. Fees over $225 require OCCC notification and cost analysis. Previously ~$150.",
+      "sources": [
+        "https://occc.texas.gov/wp-content/uploads/2025/11/rc-docfee-adoption-fc-090524.pdf"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: Texas Administrative Code \u00a784.205, OCCC rule adoption document"
+    },
+    "UT": {
+      "name": "Utah",
+      "abbreviation": "UT",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        149,
+        400
+      ],
+      "docFeeAverage": 300,
+      "stateSalesTaxRate": 0.047,
+      "maxCombinedTaxRate": 0.087,
+      "vehicleTaxNotes": "4.7% state + up to 4% local. Varies significantly: Carbon County 6.35%, Park City 9.05%.",
+      "tradeInTaxCredit": true,
+      "titleFee": null,
+      "registrationFee": "~$1,541 average for new vehicle (includes all fees); weight-based",
+      "specialNotes": "Title fee included in registration. Very high total registration costs.",
+      "sources": [
+        "https://tax.utah.gov/business/sales-tax/sales/rates/",
+        "https://dmv.utah.gov/register/registration-taxes-fees/"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: Utah DMV registration fees + state tax commission rates"
+    },
+    "VT": {
+      "name": "Vermont",
+      "abbreviation": "VT",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        150,
+        300
+      ],
+      "docFeeAverage": 210,
+      "stateSalesTaxRate": 0.06,
+      "maxCombinedTaxRate": 0.07,
+      "vehicleTaxNotes": "6% state + optional 1% local in some municipalities (Burlington, Hartford, Middlebury effective July 1, 2025).",
+      "tradeInTaxCredit": true,
+      "titleFee": 35,
+      "registrationFee": "$76/year or $140/2-year + $2 Clean Air + EV fees ($89 BEV, $44.50 PHEV)",
+      "specialNotes": "Doc fees are taxable per Vermont DMV.",
+      "sources": [
+        "https://dmv.vermont.gov/faq/are-dealer-documentation-fees-taxable",
+        "https://dmv.vermont.gov/registrations/fees"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: Vermont DMV fee schedule + registration page"
+    },
+    "VA": {
+      "name": "Virginia",
+      "abbreviation": "VA",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        500,
+        800
+      ],
+      "docFeeAverage": 650,
+      "stateSalesTaxRate": 0.0415,
+      "maxCombinedTaxRate": 0.07,
+      "vehicleTaxNotes": "4.15% state (minimum $75 tax). Total 5.3%-7% by locality.",
+      "tradeInTaxCredit": false,
+      "tradeInTaxCreditNotes": "Virginia does NOT allow trade-in deduction (exception: zero/near-zero emission vehicles).",
+      "titleFee": 15,
+      "registrationFee": "$30.75/year (0-4,000 lbs); $35.75 (4,001-6,500 lbs); $131.88 annual EV fee",
+      "specialNotes": "One of few states that does not allow trade-in tax credit. High doc fees with no cap.",
+      "sources": [
+        "https://www.tax.virginia.gov/retail-sales-and-use-tax",
+        "https://www.dmv.virginia.gov/vehicles/title"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: Virginia DMV fee calculator + tax.virginia.gov"
+    },
+    "WA": {
+      "name": "Washington",
+      "abbreviation": "WA",
+      "docFeeCap": true,
+      "docFeeCapAmount": 200,
+      "docFeeTypicalRange": [
+        150,
+        200
+      ],
+      "docFeeAverage": 200,
+      "stateSalesTaxRate": 0.065,
+      "maxCombinedTaxRate": 0.106,
+      "vehicleTaxNotes": "6.5% state + up to 4.1% local. Range 7%-10.4%.",
+      "tradeInTaxCredit": true,
+      "tradeInTaxCreditNotes": "Trade-in property of like kind excluded from retail sales tax measure.",
+      "titleFee": 7,
+      "registrationFee": "$43.25 base + weight/location adjustments",
+      "specialNotes": "Cap $200 effective July 1, 2022. Dealers cannot represent fee as required by law. Title fee increased to $6.50 effective Jan 1, 2026.",
+      "sources": [
+        "https://dor.wa.gov/education/industry-guides/auto-dealers/miscellaneous",
+        "https://dol.wa.gov/vehicles-and-boats/vehicles/vehicle-registration/calculate-vehicle-tab-fees"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: Washington DOR industry guide (dor.wa.gov)"
+    },
+    "WV": {
+      "name": "West Virginia",
+      "abbreviation": "WV",
+      "docFeeCap": true,
+      "docFeeCapAmount": 575,
+      "docFeeTypicalRange": [
+        300,
+        575
+      ],
+      "docFeeAverage": 499,
+      "stateSalesTaxRate": 0.06,
+      "maxCombinedTaxRate": 0.07,
+      "vehicleTaxNotes": "6% state + 1% local max. Charleston, Huntington, Morgantown at 7%.",
+      "tradeInTaxCredit": true,
+      "titleFee": null,
+      "registrationFee": "Varies; includes annual wheel tax",
+      "specialNotes": "$575 cap set by DMV Dealer Advisory Board effective July 1, 2024 (increased from $499). CPI-adjusted annually starting July 1, 2025. Per WV Code 17A-6A-8A.",
+      "sources": [
+        "https://code.wvlegislature.gov/17A-6A-8A/",
+        "https://tax.wv.gov/Business/SalesAndUseTax/MunicipalSalesAndUseTax/Pages/MunicipalSalesAndUseTax.aspx"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: WVADA News confirmed $575 cap (July 2024). Statute 17A-6A-8A. Needs primary verification."
+    },
+    "WI": {
+      "name": "Wisconsin",
+      "abbreviation": "WI",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        295,
+        500
+      ],
+      "docFeeAverage": 400,
+      "stateSalesTaxRate": 0.05,
+      "maxCombinedTaxRate": 0.079,
+      "vehicleTaxNotes": "5% state + county/city additions. Milwaukee highest at 7.9%. 68 counties at 5.5%, 4 counties at 5%.",
+      "tradeInTaxCredit": true,
+      "titleFee": 215,
+      "registrationFee": "$85/year; +$175 EV surcharge; +$75 hybrid surcharge",
+      "specialNotes": "Title fee increased from $164.50 to $214.50 effective Oct 1, 2025.",
+      "sources": [
+        "https://wisconsindot.gov/Pages/dmv/vehicles/title-plates/fee-chart.aspx",
+        "https://www.revenue.wi.gov/Pages/FAQS/pcs-taxrates.aspx"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: Wisconsin DOT fee schedule + DOR rate tables"
+    },
+    "WY": {
+      "name": "Wyoming",
+      "abbreviation": "WY",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        200,
+        400
+      ],
+      "docFeeAverage": 300,
+      "stateSalesTaxRate": 0.04,
+      "maxCombinedTaxRate": 0.09,
+      "vehicleTaxNotes": "4% state + 0-2% local. Teton Village/Alta at 9%. Cheyenne 6%, Jackson 6%.",
+      "tradeInTaxCredit": true,
+      "titleFee": null,
+      "registrationFee": "$30 state + county fee (3% of factory price x depreciation rate)",
+      "specialNotes": "VIN inspection fee $10 additional.",
+      "sources": [
+        "https://wyominglicenseplate.org/vehicle-registration-fees"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "medium",
+      "verificationMethod": "Secondary: Wyoming license plate org + Avalara rates"
+    },
+    "DC": {
+      "name": "District of Columbia",
+      "abbreviation": "DC",
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
+      "docFeeTypicalRange": [
+        300,
+        600
+      ],
+      "docFeeAverage": null,
+      "stateSalesTaxRate": 0.06,
+      "maxCombinedTaxRate": 0.09,
+      "vehicleTaxNotes": "Weight-based excise tax: <3,500 lbs 6% (rising to 7% Oct 2026); 3,500-4,999 lbs 7% (rising to 8%); 5,000+ lbs 8% (rising to 9%). Hybrids reaching 40mpg exempt.",
+      "tradeInTaxCredit": true,
+      "titleFee": 26,
+      "registrationFee": "Weight-based; varies significantly",
+      "specialNotes": "Tax rates increasing Oct 1, 2025 and again Oct 1, 2026. EV exemption removed Oct 1, 2024. 2.5% credit card service fee effective Dec 15, 2025.",
+      "sources": [
+        "https://dmv.dc.gov/page/vehicle-registration-and-title-fee-estimator",
+        "https://www.salestaxhandbook.com/district-of-columbia/sales-tax-vehicles"
+      ],
+      "lastVerified": "2026-03",
+      "confidence": "high",
+      "verificationMethod": "Primary: DC DMV fee estimator + DC tax handbook"
+    }
+  },
+  "_summary": {
+    "statesWithDocFeeCap": [
+      {
+        "state": "AR",
+        "cap": 129,
+        "notes": "Called 'service and handling'"
+      },
+      {
+        "state": "CA",
+        "cap": 85,
+        "notes": "$85 DMV partners / $70 others"
+      },
+      {
+        "state": "IA",
+        "cap": 180
+      },
+      {
+        "state": "IL",
+        "cap": 378,
+        "notes": "CPI-adjusted annually from $300 base (2020). 2026 amount: $377.63"
+      },
+      {
+        "state": "IN",
+        "cap": 251,
+        "notes": "CPI-adjusted; effective July 1, 2025"
+      },
+      {
+        "state": "LA",
+        "cap": 425,
+        "notes": "CPI-adjusted annually starting Jan 1, 2026"
+      },
+      {
+        "state": "MD",
+        "cap": 800,
+        "notes": "Increased from ~$500 via SB 362 effective July 1, 2024"
+      },
+      {
+        "state": "MI",
+        "cap": 280,
+        "notes": "$280 OR 5% of vehicle price, whichever is less"
+      },
+      {
+        "state": "MN",
+        "cap": 350,
+        "notes": "Increased from ~$125 effective July 1, 2025"
+      },
+      {
+        "state": "MO",
+        "cap": 500,
+        "notes": "CPI-adjusted; effective Aug 17, 2025"
+      },
+      {
+        "state": "NY",
+        "cap": 175,
+        "notes": "Set Aug 18, 2021"
+      },
+      {
+        "state": "OH",
+        "cap": 387,
+        "notes": "$387 OR 10% of cash price, whichever is lower"
+      },
+      {
+        "state": "OR",
+        "cap": 250,
+        "notes": "$250 with integrator / $200 without"
+      },
+      {
+        "state": "PA",
+        "cap": 490,
+        "notes": "$490 electronic / $409 non-electronic; CPI-adjusted"
+      },
+      {
+        "state": "RI",
+        "cap": 400,
+        "notes": "Applies to vehicles $10K+. Prohibited on vehicles under $10K."
+      },
+      {
+        "state": "TX",
+        "cap": 225,
+        "notes": "Raised from ~$150 effective July 11, 2024"
+      },
+      {
+        "state": "WA",
+        "cap": 200,
+        "notes": "Effective July 1, 2022"
+      },
+      {
+        "state": "WV",
+        "cap": 575,
+        "notes": "Set by Dealer Advisory Board July 1, 2024. CPI-adjusted starting July 1, 2025."
+      }
+    ],
+    "statesWithNoSalesTax": [
+      "AK",
+      "DE",
+      "MT",
+      "NH",
+      "OR"
+    ],
+    "statesWithNoTradeInCredit": [
+      "CA",
+      "HI",
+      "VA"
+    ],
+    "highestCombinedTaxRates": [
+      {
+        "state": "LA",
+        "rate": 0.135
+      },
+      {
+        "state": "AZ",
+        "rate": 0.112
+      },
+      {
+        "state": "AL",
+        "rate": 0.11
+      },
+      {
+        "state": "AR",
+        "rate": 0.115
+      },
+      {
+        "state": "WA",
+        "rate": 0.106
+      },
+      {
+        "state": "TN",
+        "rate": 0.0975
+      },
+      {
+        "state": "KS",
+        "rate": 0.106
+      },
+      {
+        "state": "IL",
+        "rate": 0.1025
+      },
+      {
+        "state": "MO",
+        "rate": 0.101
+      }
+    ],
+    "confidenceCounts": {
+      "high": 20,
+      "medium": 30,
+      "low": 1
+    },
+    "needsHumanVerification": [
+      "AR",
+      "IA",
+      "OR",
+      "RI",
+      "WV"
+    ]
+  }
+}

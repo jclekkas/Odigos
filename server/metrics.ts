@@ -9,7 +9,8 @@ export type EventType =
   | "form_focus"
   | "api_request"
   | "api_error"
-  | "system_health";
+  | "system_health"
+  | "state_detection";
 
 export interface EventMetadata {
   dealScore?: "GREEN" | "YELLOW" | "RED";
