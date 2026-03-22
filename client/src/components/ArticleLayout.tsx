@@ -1,7 +1,5 @@
-import { useEffect } from "react";
 import { Link } from "wouter";
 import SiteHeader from "@/components/SiteHeader";
-import { articleSchema, injectJsonLd } from "@/lib/jsonld";
 
 interface ArticleLayoutProps {
   children: React.ReactNode;
@@ -10,11 +8,6 @@ interface ArticleLayoutProps {
 }
 
 export default function ArticleLayout({ children, title, showBreadcrumbs = true }: ArticleLayoutProps) {
-  useEffect(() => {
-    if (!title) return;
-    return injectJsonLd(articleSchema(title));
-  }, [title]);
-
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />

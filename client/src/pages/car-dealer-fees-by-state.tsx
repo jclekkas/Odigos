@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
-import { itemListSchema, injectJsonLd } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -21,25 +20,6 @@ export default function CarDealerFeesByState() {
     });
   }, []);
 
-  useEffect(() => {
-    const siteUrl = import.meta.env.VITE_SITE_URL || "https://odigos.replit.app";
-    const states = [
-      "California", "Florida", "Texas", "New York", "Illinois",
-      "Pennsylvania", "Ohio", "Georgia", "North Carolina", "Arizona",
-      "Michigan", "Washington", "Virginia", "New Jersey", "Massachusetts",
-      "Colorado", "Minnesota", "Wisconsin", "Nevada", "Tennessee",
-    ];
-    return injectJsonLd(
-      itemListSchema(
-        "Car Dealer Fees by State",
-        `${siteUrl}/car-dealer-fees-by-state`,
-        states.map((name) => ({
-          name: `Car Dealer Fees in ${name}`,
-          url: `${siteUrl}/car-dealer-fees-${name.toLowerCase().replace(/\s+/g, "-")}`,
-        }))
-      )
-    );
-  }, []);
 
   const handleCopy = async () => {
     try {

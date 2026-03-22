@@ -65,11 +65,7 @@ export default function DealerDocFee() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                <span><strong className="text-foreground">No caps (examples):</strong> Florida, Georgia, Colorado — dealers can charge what they want, and $700–$1,000+ isn't unusual.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                <span><strong className="text-foreground">Texas ($225 cap):</strong> Texas caps dealer documentation fees at $225 by law. Any dealer charging above that limit is out of compliance with state law.</span>
+                <span><strong className="text-foreground">No caps (examples):</strong> Florida, Georgia, Colorado — dealers can charge what they want, and $700–$1,000+ isn't unusual. Texas has no cap but market competition keeps most dealers in the $150–$225 range.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>

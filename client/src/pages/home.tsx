@@ -7,7 +7,6 @@ import { z } from "zod";
 import { trackPageView, trackFormStart, trackFormFocus } from "@/lib/tracking";
 import { capture } from "@/lib/analytics";
 import { setSeoMeta } from "@/lib/seo";
-import { howToSchema, injectJsonLd } from "@/lib/jsonld";
 import { 
   ChevronDown, 
   ChevronUp, 
@@ -532,9 +531,6 @@ export default function Home() {
     });
   }, []);
 
-  useEffect(() => {
-    return injectJsonLd(howToSchema());
-  }, []);
 
   const handleFormStart = () => {
     if (!formStartTracked) {
