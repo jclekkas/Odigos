@@ -7,6 +7,7 @@ import { z } from "zod";
 import { trackPageView, trackFormStart, trackFormFocus } from "@/lib/tracking";
 import { capture } from "@/lib/analytics";
 import { setSeoMeta } from "@/lib/seo";
+import { howToSchema, injectJsonLd } from "@/lib/jsonld";
 import { 
   ChevronDown, 
   ChevronUp, 
@@ -529,6 +530,10 @@ export default function Home() {
       description: "Paste dealer texts, emails, or quotes into Odigos. Get an instant GO/NO-GO recommendation with hidden fee detection and suggested questions for the dealer.",
       path: "/analyze",
     });
+  }, []);
+
+  useEffect(() => {
+    return injectJsonLd(howToSchema());
   }, []);
 
   const handleFormStart = () => {

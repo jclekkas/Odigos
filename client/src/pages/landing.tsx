@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { Helmet } from "react-helmet-async";
+import { productSchema } from "@/lib/jsonld";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -66,6 +67,9 @@ export default function Landing() {
         description="Paste a dealer quote, text, or email. Odigos checks for missing out-the-door pricing, hidden fees, and common dealership tactics. Free preview, full analysis $49."
         path="/"
       />
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(productSchema())}</script>
+      </Helmet>
       <main id="main-content">
         <section className="py-20 sm:py-28 lg:py-32">
           <div className="mx-auto max-w-4xl px-4 sm:px-6">

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
+import { itemListSchema, injectJsonLd } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -18,6 +19,27 @@ export default function DealerDocFeeByState() {
       description: "Dealer documentation fees range from under $100 to over $1,000 depending on the state. See typical doc fee ranges, which states cap fees, and how to compare dealers fairly.",
       path: "/dealer-doc-fee-by-state",
     });
+  }, []);
+
+  useEffect(() => {
+    const siteUrl = import.meta.env.VITE_SITE_URL || "https://odigos.replit.app";
+    const states = [
+      "Alabama", "Arizona", "California", "Colorado", "Connecticut",
+      "Florida", "Georgia", "Illinois", "Maryland", "Massachusetts",
+      "Michigan", "Minnesota", "Nevada", "New Jersey", "New York",
+      "North Carolina", "Ohio", "Oregon", "Pennsylvania", "Tennessee",
+      "Texas", "Virginia", "Washington", "Wisconsin",
+    ];
+    return injectJsonLd(
+      itemListSchema(
+        "Dealer Doc Fee by State",
+        `${siteUrl}/dealer-doc-fee-by-state`,
+        states.map((name) => ({
+          name: `Dealer Doc Fee in ${name}`,
+          url: `${siteUrl}/car-dealer-fees-${name.toLowerCase().replace(/\s+/g, "-")}`,
+        }))
+      )
+    );
   }, []);
 
   const handleCopy = async () => {

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Link, useParams } from "wouter";
 import { Button } from "@/components/ui/button";
 import { setSeoMeta } from "@/lib/seo";
+import { faqPageSchema, injectJsonLd } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 import NotFound from "@/pages/not-found";
@@ -19,6 +20,26 @@ export default function CarDealerFeesState() {
       description: data.metaDescription,
       path: `/car-dealer-fees-${data.slug}`,
     });
+  }, [data]);
+
+  useEffect(() => {
+    if (!data) return;
+    return injectJsonLd(
+      faqPageSchema([
+        {
+          question: `What is the typical dealer documentation fee in ${data.name}?`,
+          answer: data.snippetAnswer,
+        },
+        {
+          question: `What should car buyers watch for in ${data.name} dealer quotes?`,
+          answer: data.watchFor[0] ?? data.negotiationNote,
+        },
+        {
+          question: `Can you negotiate dealer fees in ${data.name}?`,
+          answer: data.negotiationNote,
+        },
+      ])
+    );
   }, [data]);
 
   if (!data) return <NotFound />;
