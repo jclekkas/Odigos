@@ -1,0 +1,160 @@
+Create 5 new SEO article pages for the Odigos site focused on DEALER FEES.
+
+CRITICAL CONTEXT:
+Odigos is a consumer protection tool that helps car buyers identify hidden costs and dealer tactics. This cluster focuses specifically on dealer fees — what they are, which are legitimate, and which are inflated or negotiable.
+
+Tone:
+
+* Clear and factual
+* Calm and authoritative
+* Slightly skeptical of dealer practices
+* Focus on clarity over emotion
+
+---
+
+PAGES TO CREATE:
+
+1. what is a dealer doc fee
+2. are dealer fees negotiable
+3. hidden dealer fees list
+4. dealer prep fee explained
+5. dealer reconditioning fee
+
+---
+
+STRUCTURE REQUIREMENTS (for EVERY page):
+
+* H1 (target keyword or close variation)
+* Short intro (2–3 sentences, no fluff)
+* Clear H2 sections
+* Bullet points where helpful
+* Real-world explanation (not abstract)
+* "What to say to the dealer" section (practical, not generic)
+* Mid-article CTA (after key insight)
+* Bottom CTA (ArticleCta component)
+
+---
+
+CONTENT ANGLE (CRITICAL — NO OVERLAP):
+
+1. doc fee → what it is, typical ranges, state variation, why it exists
+2. negotiable → which fees can be reduced vs fixed, how to push back
+3. hidden fees → list of common unexpected charges and what they mean
+4. prep fee → what dealers claim vs reality, whether it's legitimate
+5. reconditioning fee → what it covers, when it's inflated, red flags
+
+Avoid repeating explanations across pages.
+
+---
+
+KEY CONTENT REQUIREMENTS:
+
+* Include real ranges where possible (e.g. doc fees $100–$800+ depending on state)
+
+* Clearly separate:
+  • legitimate fees (tax, title, registration)
+  • dealer-controlled fees (doc fee, prep fee, add-ons)
+
+* Explain how fees are presented in quotes (bundled, vague labels, last-minute additions)
+
+---
+
+INTERNAL LINKING (VERY IMPORTANT):
+
+Each page must:
+
+* Include at least 3 internal links
+* Include BOTH:
+  • same-cluster links (other fee pages)
+  • cross-cluster links
+
+Link to:
+
+OTD cluster:
+
+* /out-the-door-price
+* /what-does-out-the-door-price-include
+
+Add-ons cluster:
+
+* /are-dealer-add-ons-mandatory
+* /dealer-add-ons-explained
+
+Other:
+
+* /dealer-wont-give-otd-price
+
+Use natural anchor text (NOT exact-match repetition)
+
+---
+
+CROSS-LINKING RULE:
+
+Fees pages should reinforce:
+
+* total price (OTD)
+* add-ons as part of fees
+* dealer tactics
+
+---
+
+CTA REQUIREMENTS:
+
+Mid-article CTA:
+
+* Trigger after explaining how fees appear in real quotes
+* Tone: “If you're looking at a quote with unclear fees…”
+
+Bottom CTA:
+
+* Emphasize:
+  • fast analysis
+  • no signup
+  • protects you from hidden costs
+
+---
+
+SEO METADATA:
+
+Each page must:
+
+* Title ≤ 60 characters
+* Include keyword naturally
+* End with "| Odigos"
+
+Meta description:
+
+* 140–155 characters
+* Specific to the page
+* Include a mild action signal
+
+---
+
+OUTPUT FORMAT:
+
+Return each page as a complete React page file using:
+
+* ArticleLayout
+* ArticleCta
+* setSeoMeta
+
+Do NOT modify:
+
+* routing structure (except adding routes)
+* layout
+* styling system
+
+---
+
+GOAL:
+
+These pages should:
+
+* complete the “dealer cost” topic coverage
+* reinforce Odigos as an authority on hidden pricing
+* interlink tightly with OTD and add-ons clusters
+* be useful enough to rank independently
+
+---
+
+Generate all 5 pages now.
