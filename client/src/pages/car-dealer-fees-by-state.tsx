@@ -91,21 +91,21 @@ export default function CarDealerFeesByState() {
                 <tbody className="text-muted-foreground">
                   <tr className="border-b border-border/50"><td className="px-4 py-2">California</td><td className="px-4 py-2">~$85 (capped)</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Florida</td><td className="px-4 py-2">$500–$900+ (no cap)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Texas</td><td className="px-4 py-2">$150–$300 typical</td></tr>
+                  <tr className="border-b border-border/50"><td className="px-4 py-2">Texas</td><td className="px-4 py-2">$150–$225 typical (no cap)</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">New York</td><td className="px-4 py-2">~$175 (capped)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Illinois</td><td className="px-4 py-2">~$300 (capped)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Pennsylvania</td><td className="px-4 py-2">$200–$500 typical</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Ohio</td><td className="px-4 py-2">$200–$500 typical</td></tr>
+                  <tr className="border-b border-border/50"><td className="px-4 py-2">Illinois</td><td className="px-4 py-2">~$368 (capped)</td></tr>
+                  <tr className="border-b border-border/50"><td className="px-4 py-2">Pennsylvania</td><td className="px-4 py-2">Up to $477 (capped)</td></tr>
+                  <tr className="border-b border-border/50"><td className="px-4 py-2">Ohio</td><td className="px-4 py-2">Up to $387 (capped)</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Georgia</td><td className="px-4 py-2">$400–$700 (no cap)</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">North Carolina</td><td className="px-4 py-2">$500–$800 (no cap)</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Arizona</td><td className="px-4 py-2">$400–$600 typical</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Michigan</td><td className="px-4 py-2">$200–$400 typical</td></tr>
+                  <tr className="border-b border-border/50"><td className="px-4 py-2">Michigan</td><td className="px-4 py-2">$200–$280 (capped)</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Washington</td><td className="px-4 py-2">~$200 (capped)</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Virginia</td><td className="px-4 py-2">$500–$800 (no cap)</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">New Jersey</td><td className="px-4 py-2">$300–$600 typical</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Massachusetts</td><td className="px-4 py-2">$300–$500 typical</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Colorado</td><td className="px-4 py-2">$400–$700 (no cap)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Minnesota</td><td className="px-4 py-2">~$125 (capped)</td></tr>
+                  <tr className="border-b border-border/50"><td className="px-4 py-2">Minnesota</td><td className="px-4 py-2">Up to $350 (capped)</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Wisconsin</td><td className="px-4 py-2">$200–$400 typical</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Nevada</td><td className="px-4 py-2">$400–$700 (no cap)</td></tr>
                   <tr><td className="px-4 py-2">Tennessee</td><td className="px-4 py-2">$300–$600 typical</td></tr>
@@ -228,7 +228,7 @@ export default function CarDealerFeesByState() {
               <li className="flex items-start gap-2">
                 <span>→</span>
                 <Link href="/car-dealer-fees-texas" className="underline text-foreground" data-testid="link-state-texas">Car dealer fees in Texas</Link>
-                <span className="text-muted-foreground/70 text-sm ml-1">— no cap, typically $150–$300, flat 6.25% tax</span>
+                <span className="text-muted-foreground/70 text-sm ml-1">— no cap, typically $150–$225, flat 6.25% tax</span>
               </li>
               <li className="flex items-start gap-2">
                 <span>→</span>

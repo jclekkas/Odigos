@@ -84,7 +84,7 @@ export default function WhatIsADealerDocFee() {
           </li>
           <li className="flex items-start gap-2">
             <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-            <span><strong className="text-foreground">No-cap states:</strong> Florida, Texas, Georgia, and Colorado have no statutory cap. In these states, $700–$1,000+ doc fees are common and entirely legal.</span>
+            <span><strong className="text-foreground">No-cap states:</strong> Florida, Georgia, and Colorado have no statutory cap, and $700–$1,000+ doc fees are common and entirely legal. Texas also has no formal cap, though competitive market pressure keeps most Texas dealers in the $150–$225 range.</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-muted-foreground mt-1.5 shrink-0">•</span>

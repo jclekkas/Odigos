@@ -60,12 +60,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Texas",
     abbreviation: "TX",
     slug: "texas",
-    docFeeRange: "Typically $150–$300",
+    docFeeRange: "Typically $150–$225",
     hasCap: false,
     metaDescription:
-      "Texas has no cap on dealer doc fees — most charge $150–$300. The state tax is a flat 6.25%. See what buyers in Houston, Dallas, and San Antonio pay OTD.",
+      "Texas has no cap on dealer doc fees — most charge $150–$225. The state tax is a flat 6.25%. See what buyers in Houston, Dallas, and San Antonio pay OTD.",
     capNote:
-      "Texas has no legal cap on dealer documentation fees. Dealers set the doc fee themselves, and it can vary significantly from one dealership to another. In practice, most Texas dealers charge between $150 and $300 for the doc fee — lower than many uncapped states — but there's nothing preventing a dealer from charging more.",
+      "Texas has no legal cap on dealer documentation fees. Dealers set the doc fee themselves, and it can vary from one dealership to another. In practice, most Texas dealers charge between $150 and $225 for the doc fee — lower than many uncapped states — though dealers who file a cost analysis with the state can charge more.",
     salesTaxNote:
       "Texas charges a flat 6.25% state motor vehicle sales tax. Local add-ons are limited, so buyers across the state generally see the same effective rate. The tax is calculated on the full purchase price of the vehicle.",
     registrationNote:
@@ -73,9 +73,9 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "Texas is one of the largest vehicle markets in the country, with major dealer clusters in Houston, Dallas-Fort Worth, San Antonio, and Austin. The state has no cap on the documentation fee, but competitive pressure in these large metro markets tends to keep fees lower than in less competitive states. The 6.25% state sales tax is a flat, uniform rate — simpler than the multi-layered local rates buyers deal with in California or New York. What Texas buyers often miss is the risk from dealer add-ons, which can quietly add $1,000–$3,000 to a deal that looked clean on vehicle price alone.",
     snippetAnswer:
-      "Texas has no cap on dealer documentation fees. Most dealers charge $150–$300, though fees can be higher. The state sales tax is a flat 6.25% with minimal local variation. Texas OTD prices are primarily driven by the vehicle price and doc fee — the state's uniform tax structure keeps the math relatively simple for buyers.",
+      "Texas has no cap on dealer documentation fees. Most dealers charge $150–$225, though fees can be higher at some dealers who file for approved exceptions. The state sales tax is a flat 6.25% with minimal local variation. Texas OTD prices are primarily driven by the vehicle price and doc fee — the state's uniform tax structure keeps the math relatively simple for buyers.",
     watchFor: [
-      "Doc fees above $300: while most Texas dealers stay in the $150–$300 range, some charge $400–$500 or more. There's no state protection — if the doc fee looks high, ask if it's negotiable or compare it against competing dealers.",
+      "Doc fees above $225: while most Texas dealers stay in the $150–$225 range, some charge $300–$500 or more. There's no hard state protection — if the doc fee looks high, ask if it's negotiable or compare it against competing dealers.",
       "Market adjustment markups on popular models: Texas dealerships on high-demand vehicles (trucks, SUVs) sometimes add a market adjustment above MSRP. This is a dealer markup, not a tax — it's negotiable and disappears when demand softens.",
       "Bundled add-on packages listed as 'required': protection packages, paint sealant, and nitrogen tires are common add-on items in Texas dealerships. These are almost never required, even when presented as part of the vehicle configuration.",
       "Trade-in and purchase separated at signing: some Texas dealers present trade-in value as a separate transaction that doesn't reduce the taxable sale price. Verify whether your trade-in credit is being applied before tax is calculated.",

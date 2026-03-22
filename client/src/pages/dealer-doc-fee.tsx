@@ -65,7 +65,7 @@ export default function DealerDocFee() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                <span><strong className="text-foreground">No caps (examples):</strong> Florida, Texas, Georgia, Colorado — dealers can charge what they want, and $700–$1,000+ isn't unusual.</span>
+                <span><strong className="text-foreground">No caps (examples):</strong> Florida, Georgia, Colorado — dealers can charge what they want, and $700–$1,000+ isn't unusual. Texas has no cap but market competition keeps most dealers in the $150–$225 range.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>

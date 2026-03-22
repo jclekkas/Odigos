@@ -89,24 +89,24 @@ export default function DealerDocFeeByState() {
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Connecticut</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$300–$600</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Florida</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$500–$1,000+</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Georgia</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$400–$700</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Illinois</td><td className="px-4 py-2">Capped at ~$300</td><td className="px-4 py-2">~$300</td></tr>
+                  <tr className="border-b border-border/50"><td className="px-4 py-2">Illinois</td><td className="px-4 py-2">Capped at ~$368</td><td className="px-4 py-2">~$368</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Indiana</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$200–$400</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Louisiana</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$200–$500</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Maryland</td><td className="px-4 py-2">Capped at ~$500</td><td className="px-4 py-2">$300–$500</td></tr>
+                  <tr className="border-b border-border/50"><td className="px-4 py-2">Maryland</td><td className="px-4 py-2">Capped at $800</td><td className="px-4 py-2">Up to $800</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Massachusetts</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$300–$500</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Michigan</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$200–$400</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Minnesota</td><td className="px-4 py-2">Capped at ~$125</td><td className="px-4 py-2">~$125</td></tr>
+                  <tr className="border-b border-border/50"><td className="px-4 py-2">Michigan</td><td className="px-4 py-2">Capped at $280</td><td className="px-4 py-2">$200–$280</td></tr>
+                  <tr className="border-b border-border/50"><td className="px-4 py-2">Minnesota</td><td className="px-4 py-2">Capped at $350</td><td className="px-4 py-2">Up to $350</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Missouri</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$200–$500</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Nevada</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$400–$700</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">New Jersey</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$300–$600</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">New York</td><td className="px-4 py-2">Capped at ~$175</td><td className="px-4 py-2">~$175</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">North Carolina</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$500–$800</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Ohio</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$200–$500</td></tr>
+                  <tr className="border-b border-border/50"><td className="px-4 py-2">Ohio</td><td className="px-4 py-2">Capped at $387</td><td className="px-4 py-2">Up to $387</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Oregon</td><td className="px-4 py-2">Capped at ~$150</td><td className="px-4 py-2">~$150</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Pennsylvania</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$200–$500</td></tr>
+                  <tr className="border-b border-border/50"><td className="px-4 py-2">Pennsylvania</td><td className="px-4 py-2">Capped at ~$477</td><td className="px-4 py-2">Up to $477</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">South Carolina</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$400–$700</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Tennessee</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$300–$600</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Texas</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$150–$300</td></tr>
+                  <tr className="border-b border-border/50"><td className="px-4 py-2">Texas</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$150–$225</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Utah</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$300–$500</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Virginia</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$500–$800</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Washington</td><td className="px-4 py-2">Capped at ~$200</td><td className="px-4 py-2">~$200</td></tr>
