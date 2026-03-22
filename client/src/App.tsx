@@ -37,6 +37,11 @@ import AreDealerAddOnsNegotiable from "@/pages/are-dealer-add-ons-negotiable";
 import HowToRemoveDealerAddOns from "@/pages/how-to-remove-dealer-add-ons";
 import AreDealerAddOnsRequiredByLaw from "@/pages/are-dealer-add-ons-required-by-law";
 import DealerAddOnsExplained from "@/pages/dealer-add-ons-explained";
+import WhatDoesOutTheDoorPriceInclude from "@/pages/what-does-out-the-door-price-include";
+import OutTheDoorPriceVsMsrp from "@/pages/out-the-door-price-vs-msrp";
+import OutTheDoorPriceVsMonthlyPayment from "@/pages/out-the-door-price-vs-monthly-payment";
+import WhyDealersWontGiveOutTheDoorPrice from "@/pages/why-dealers-wont-give-out-the-door-price";
+import OutTheDoorPriceExample from "@/pages/out-the-door-price-example";
 import NotFound from "@/pages/not-found";
 
 function ScrollToTop() {
@@ -83,6 +88,11 @@ function Router() {
       <Route path="/how-to-remove-dealer-add-ons" component={HowToRemoveDealerAddOns} />
       <Route path="/are-dealer-add-ons-required-by-law" component={AreDealerAddOnsRequiredByLaw} />
       <Route path="/dealer-add-ons-explained" component={DealerAddOnsExplained} />
+      <Route path="/what-does-out-the-door-price-include" component={WhatDoesOutTheDoorPriceInclude} />
+      <Route path="/out-the-door-price-vs-msrp" component={OutTheDoorPriceVsMsrp} />
+      <Route path="/out-the-door-price-vs-monthly-payment" component={OutTheDoorPriceVsMonthlyPayment} />
+      <Route path="/why-dealers-wont-give-out-the-door-price" component={WhyDealersWontGiveOutTheDoorPrice} />
+      <Route path="/out-the-door-price-example" component={OutTheDoorPriceExample} />
       <Route component={NotFound} />
     </Switch>
     </>
