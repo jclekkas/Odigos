@@ -1,0 +1,203 @@
+Create 6 new SEO article pages for the Odigos site focused on evaluating whether a car deal is actually good.
+
+CRITICAL CONTEXT:
+Odigos is a consumer protection tool that analyzes dealer quotes and identifies hidden costs, missing information, inflated fees, forced add-ons, and pricing manipulation.
+
+This cluster is the DECISION LAYER of the site.
+Users already have a quote or are close to buying and want to know if the deal is fair.
+
+These pages must connect and synthesize existing clusters:
+- OTD / total-price pages
+- dealer add-ons pages
+- dealer fees pages
+
+Tone:
+- direct
+- practical
+- calm but skeptical
+- zero fluff
+
+GOAL:
+These pages should be highly conversion-oriented and naturally push users toward using Odigos.
+
+---
+
+PAGES TO CREATE:
+
+1. /is-this-a-good-car-deal  
+→ quick decision framework (good / borderline / bad)
+
+2. /how-to-tell-if-a-car-deal-is-good  
+→ checklist / step-by-step evaluation process
+
+3. /what-is-a-fair-price-for-a-car  
+→ pricing fairness (MSRP vs real total cost)
+
+4. /how-much-should-you-pay-for-a-car  
+→ budget framing + total cost (NOT monthly payment)
+
+5. /how-to-compare-car-deals  
+→ side-by-side comparison framework
+
+6. /best-way-to-check-if-a-car-deal-is-good  
+→ shortcut / fastest evaluation method (HIGH CONVERSION PAGE)
+
+---
+
+CRITICAL DIFFERENTIATION RULES:
+
+Each page must have a UNIQUE role:
+
+- is-this-a-good-car-deal → verdict framework
+- how-to-tell-if-a-car-deal-is-good → checklist process
+- what-is-a-fair-price-for-a-car → pricing theory + benchmarks
+- how-much-should-you-pay-for-a-car → budget + total cost framing
+- how-to-compare-car-deals → multi-deal comparison
+- best-way-to-check-if-a-car-deal-is-good → shortcut + why manual evaluation fails
+
+If any pages overlap more than ~20%, rewrite until distinct.
+
+---
+
+SPECIAL RULE FOR PAGE #6 (VERY IMPORTANT):
+
+/best-way-to-check-if-a-car-deal-is-good must:
+
+- focus on SPEED and SIMPLICITY
+- explain why manual evaluation is error-prone
+- NOT repeat full checklists from other pages
+- emphasize common mistakes:
+  • focusing on monthly payment
+  • missing fees
+  • ignoring add-ons
+- present a simplified “best method”:
+  1. check OTD price
+  2. identify fees
+  3. remove add-ons
+  4. verify APR/term
+- transition into why this is difficult manually
+
+This page should be the most conversion-oriented page in the cluster.
+
+---
+
+STRUCTURE REQUIREMENTS (ALL PAGES):
+
+- H1 (keyword or close variation)
+- 2–3 sentence intro (no fluff)
+- clear H2 sections
+- bullet points where useful
+- real-world examples
+- decision-focused sections (not theory)
+- “What to check before you sign” or similar
+- “What to say to the dealer” (when relevant)
+- mid-article CTA (after key realization)
+- bottom ArticleCta
+
+---
+
+CONTENT REQUIREMENTS:
+
+Across all pages reinforce:
+
+- OTD price is the only valid comparison number
+- monthly payment is a trap
+- fees + add-ons distort deals
+- missing info = red flag
+
+Include:
+- numbers and examples
+- good vs bad comparisons
+- realistic buyer scenarios
+
+---
+
+INTERNAL LINKING (VERY IMPORTANT):
+
+Each page must include at least 4 internal links:
+
+At least:
+- 1 OTD page
+- 1 add-ons page
+- 1 fees page
+- 1 dealer tactic page
+
+Preferred targets:
+
+OTD:
+- /out-the-door-price
+- /what-does-out-the-door-price-include
+- /out-the-door-price-example
+- /dealer-wont-give-otd-price
+
+Add-ons:
+- /are-dealer-add-ons-mandatory
+- /dealer-add-ons-explained
+- /how-to-remove-dealer-add-ons
+
+Fees:
+- /hidden-dealer-fees
+- /what-is-a-dealer-doc-fee
+- /are-dealer-fees-negotiable
+- /dealer-prep-fee
+- /dealer-reconditioning-fee
+
+Use natural anchor text (no repetition spam)
+
+---
+
+CTA REQUIREMENTS:
+
+Mid-article CTA:
+- placed after key insight
+- wording must vary per page
+- tone:
+  “If you're looking at a real quote right now…”
+
+Page #6 must have the STRONGEST CTA.
+
+Bottom CTA:
+- standard ArticleCta
+- emphasize:
+  • clear verdict
+  • avoid overpaying
+  • no signup required
+
+---
+
+SEO REQUIREMENTS:
+
+Each page must:
+- use setSeoMeta
+- title ≤ 60 characters
+- include keyword naturally
+- end with "| Odigos"
+- meta description 140–155 characters
+- specific (no generic filler)
+
+---
+
+IMPLEMENTATION:
+
+- use ArticleLayout
+- use ArticleCta
+- consistent with existing pages
+- register routes in App.tsx
+- add routes to scripts/prerender.mjs
+- do NOT modify existing pages
+
+---
+
+SELF-CHECK BEFORE FINISHING:
+
+For each page confirm:
+- clearly distinct angle
+- no duplication
+- internal links valid
+- metadata correct
+- useful + decision-focused
+- conversion-oriented without being pushy
+
+---
+
+Generate all 6 pages now.
