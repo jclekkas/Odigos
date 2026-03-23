@@ -91,7 +91,7 @@ export default function CarDealerFeesByState() {
                 </thead>
                 <tbody className="text-muted-foreground">
                   <tr className="border-b border-border/50"><td className="px-4 py-2">California</td><td className="px-4 py-2">~$85 (capped)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Florida</td><td className="px-4 py-2">$500–$900+ (no cap)</td></tr>
+                  <tr className="border-b border-border/50"><td className="px-4 py-2">Florida</td><td className="px-4 py-2">$500–$1,000+ (no cap)</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Texas</td><td className="px-4 py-2">$150–$225 typical (no cap)</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">New York</td><td className="px-4 py-2">~$175 (capped)</td></tr>
                   <tr className="border-b border-border/50"><td className="px-4 py-2">Illinois</td><td className="px-4 py-2">~$368 (capped)</td></tr>
