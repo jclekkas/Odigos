@@ -9,6 +9,7 @@ import { itemListSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 import stateFeeData from "@/data/state_fee_reference.json";
+import { STATE_FEES } from "@/data/stateFees";
 
 interface StateEntry {
   name: string;
@@ -226,6 +227,31 @@ export default function DealerDocFeeByState() {
             <p className="text-lg text-muted-foreground mb-8">
               If you already have a dealer quote and want to know whether the doc fee — or anything else — looks off, Odigos can analyze the full breakdown and flag anything that doesn't add up.
             </p>
+
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">State-by-state dealer fee guides</h2>
+
+            <p className="text-lg text-muted-foreground mb-6">
+              For full breakdowns of doc fees, local tax rates, and what to watch for in each state:
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-8">
+              {Object.values(STATE_FEES)
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((state) => (
+                  <Link
+                    key={state.slug}
+                    href={`/car-dealer-fees-${state.slug}`}
+                    className="flex items-center gap-2 px-3 py-2 rounded-md border border-border hover:bg-muted/50 transition-colors text-sm text-foreground"
+                    data-testid={`link-state-guide-${state.slug}`}
+                  >
+                    <span className="text-muted-foreground text-xs font-mono w-6 shrink-0">{state.abbreviation}</span>
+                    <span className="underline">{state.name}</span>
+                    {state.hasCap && (
+                      <span className="ml-auto text-xs text-green-600 dark:text-green-400 font-medium shrink-0">capped</span>
+                    )}
+                  </Link>
+                ))}
+            </div>
           </div>
 
 

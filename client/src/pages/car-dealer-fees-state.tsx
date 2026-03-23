@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "wouter";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
+import { Copy, Check } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import { faqPageSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
@@ -13,16 +14,16 @@ export default function CarDealerFeesState() {
   const params = useParams<{ state: string }>();
   const stateSlug = params?.state ?? "";
   const data = STATE_FEES[stateSlug];
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!data) return;
     return setSeoMeta({
-      title: `Car Dealer Fees in ${data.name}: Doc Fees, Taxes & What to Expect | Odigos`,
+      title: `Car Dealer Fees in ${data.name}: What You'll Actually Pay | Odigos`,
       description: data.metaDescription,
       path: `/car-dealer-fees-${data.slug}`,
     });
   }, [data]);
-
 
   if (!data) return <NotFound />;
 
@@ -45,8 +46,15 @@ export default function CarDealerFeesState() {
     },
   ];
 
+  function handleCopy() {
+    navigator.clipboard.writeText(data.dealerMessage).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
   return (
-    <ArticleLayout title={`Car Dealer Fees in ${data.name}`}>
+    <ArticleLayout title={`Car Dealer Fees in ${data.name}: What You'll Actually Pay`}>
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: faqQuestions }))}</script>
       </Helmet>
@@ -54,7 +62,7 @@ export default function CarDealerFeesState() {
         className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight"
         data-testid={`text-${data.slug}-headline`}
       >
-        Car Dealer Fees in {data.name}: What Buyers Should Expect
+        Car Dealer Fees in {data.name}: What You'll Actually Pay
       </h1>
 
       <div className="rounded-lg border border-border bg-muted/30 p-5 mb-8" data-testid={`block-snippet-${data.slug}`}>
@@ -75,7 +83,9 @@ export default function CarDealerFeesState() {
 
         <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-5 mb-8" data-testid={`cta-top-${data.slug}`}>
           <p className="text-base font-semibold text-foreground mb-2">{data.ctaHeading}</p>
-          <p className="text-sm text-muted-foreground mb-3">{data.ctaBody}</p>
+          <p className="text-sm text-muted-foreground mb-3">
+            Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.
+          </p>
           <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white font-semibold" data-testid={`button-cta-top-${data.slug}`}>
             <Link href="/analyze">Check my {data.name} quote</Link>
           </Button>
@@ -125,6 +135,17 @@ export default function CarDealerFeesState() {
           .
         </p>
 
+        {data.specialNotes && (
+          <>
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">
+              Special notes for {data.name} buyers
+            </h2>
+            <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-5 mb-8">
+              <p className="text-base text-muted-foreground">{data.specialNotes}</p>
+            </div>
+          </>
+        )}
+
         <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">
           What {data.name} buyers should watch for
         </h2>
@@ -173,6 +194,30 @@ export default function CarDealerFeesState() {
           — protection packages, paint sealant, nitrogen tires, VIN etching — are optional even when presented as part of the vehicle or as "standard." Removing or negotiating these down is one of the most effective ways to reduce a {data.name} OTD total.
         </p>
 
+        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">
+          What to say to the dealer
+        </h2>
+
+        <p className="text-lg text-muted-foreground mb-4">
+          Before visiting any {data.name} dealership, send this message to get a complete itemized quote you can actually compare:
+        </p>
+
+        <div className="relative rounded-lg border border-border bg-muted/50 p-5 mb-8" data-testid={`block-dealer-message-${data.slug}`}>
+          <p className="text-sm text-foreground leading-relaxed pr-10">{data.dealerMessage}</p>
+          <button
+            onClick={handleCopy}
+            className="absolute top-3 right-3 p-1.5 rounded border border-border bg-background hover:bg-muted transition-colors"
+            data-testid={`button-copy-dealer-message-${data.slug}`}
+            aria-label="Copy dealer message"
+          >
+            {copied ? (
+              <Check className="h-4 w-4 text-green-500" />
+            ) : (
+              <Copy className="h-4 w-4 text-muted-foreground" />
+            )}
+          </button>
+        </div>
+
         <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Related guides</h2>
 
         <ul className="space-y-2 mb-8 text-muted-foreground">
@@ -185,12 +230,34 @@ export default function CarDealerFeesState() {
             </li>
           ))}
         </ul>
+
+        {data.sources && data.sources.length > 0 && (
+          <>
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Sources</h2>
+            <ul className="space-y-2 mb-8 text-muted-foreground text-sm">
+              {data.sources.map((src) => (
+                <li key={src} className="flex items-start gap-2">
+                  <span>↗</span>
+                  <a
+                    href={src}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline text-foreground break-all"
+                    data-testid={`link-source-${data.slug}`}
+                  >
+                    {src}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
       </div>
 
       <ArticleCta />
 
       <p className="text-xs text-muted-foreground mt-12">
-        Not affiliated with any dealership. Fee ranges are approximate and based on commonly reported dealer practices. Regulations change — verify with your state's consumer protection office for current rules.
+        These figures are approximate and based on {data.lastVerified} source data. Verify with your state's attorney general or motor vehicle agency.
       </p>
     </ArticleLayout>
   );

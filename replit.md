@@ -74,7 +74,8 @@ Note: The database is used for metrics tracking and optional features. The core 
 ### Content Pages (SEO Articles)
 - All article pages follow a consistent pattern: `setSeoMeta` for meta tags/canonical, logo header linking to `/`, article body with dark theme styling, internal link to `/out-the-door-price`, one external link (FTC/Edmunds/KBB), CTA linking to `/analyze`, and footer disclaimer
 - **Pages**: `/out-the-door-price`, `/monthly-payment-trap`, `/is-this-a-good-car-deal`, `/dealer-wont-give-otd`, `/car-dealer-fees-explained`, `/dealer-doc-fee`, `/mandatory-dealer-add-ons`, `/out-the-door-price-calculator`, `/dealer-pricing-tactics`, `/dealer-wont-give-otd-price`, `/are-dealer-add-ons-mandatory`, `/dealer-added-fees-after-agreement`, `/market-adjustment-fee`, `/doc-fee-too-high`, `/dealer-changed-price-after-deposit`, `/finance-office-changed-the-numbers`, `/car-dealer-fees-by-state`, `/dealer-add-ons-list`, `/dealer-doc-fee-by-state`, `/car-dealer-fees-list`, `/calculate-out-the-door-price`
-- **Sitemap**: `sitemap.xml` (23 URLs, excludes `/guides` redirect and `/admin/metrics`)
+- **State-Specific Pages**: `/car-dealer-fees-:state` — 51 pages (all 50 US states + DC). Data in `client/src/data/stateFees.ts` (`STATE_FEES` record keyed by slug). Each state has: `name`, `abbreviation`, `slug`, `docFeeRange`, `hasCap`, `metaDescription`, `capNote`, `salesTaxNote`, `registrationNote`, `introAngle`, `snippetAnswer`, `watchFor[]`, `negotiationNote`, `ctaHeading`, `ctaBody`, `internalLinks[]`, `sources[]`, `specialNotes`, `dealerMessage`, `lastVerified`. 18 states have capped doc fees. Valid slugs enforced in `shared/routes.ts` `VALID_STATE_SLUGS`.
+- **Sitemap**: `sitemap.xml` (69 URLs total — 23 static + 46 new state pages, excludes `/guides` redirect and `/admin/metrics`)
 - **robots.txt**: Served via explicit Express route in `server/routes.ts`
 
 ### Prerendering (SEO)

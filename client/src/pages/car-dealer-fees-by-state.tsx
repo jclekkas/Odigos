@@ -9,6 +9,7 @@ import { itemListSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 import stateFeeData from "@/data/state_fee_reference.json";
+import { STATE_FEES } from "@/data/stateFees";
 
 interface StateEntry {
   name: string;
@@ -256,37 +257,28 @@ export default function CarDealerFeesByState() {
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">State-specific dealer fee guides</h2>
 
-            <p className="text-lg text-muted-foreground mb-4">
-              For state-by-state breakdowns covering doc fee ranges, local tax rates, and what buyers in each market should watch for:
+            <p className="text-lg text-muted-foreground mb-6">
+              For state-by-state breakdowns covering doc fee ranges, local tax rates, cap status, and what buyers in each market should watch for:
             </p>
 
-            <ul className="space-y-2 mb-8 text-muted-foreground">
-              <li className="flex items-start gap-2">
-                <span>→</span>
-                <Link href="/car-dealer-fees-california" className="underline text-foreground" data-testid="link-state-california">Car dealer fees in California</Link>
-                <span className="text-muted-foreground/70 text-sm ml-1">— capped doc fee (~$85), high local sales tax</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span>→</span>
-                <Link href="/car-dealer-fees-texas" className="underline text-foreground" data-testid="link-state-texas">Car dealer fees in Texas</Link>
-                <span className="text-muted-foreground/70 text-sm ml-1">— no cap, typically $150–$225, flat 6.25% tax</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span>→</span>
-                <Link href="/car-dealer-fees-florida" className="underline text-foreground" data-testid="link-state-florida">Car dealer fees in Florida</Link>
-                <span className="text-muted-foreground/70 text-sm ml-1">— no cap, commonly $499–$999 doc fee</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span>→</span>
-                <Link href="/car-dealer-fees-new-york" className="underline text-foreground" data-testid="link-state-new-york">Car dealer fees in New York</Link>
-                <span className="text-muted-foreground/70 text-sm ml-1">— modest doc fee, NYC combined tax up to 8.875%</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span>→</span>
-                <Link href="/car-dealer-fees-georgia" className="underline text-foreground" data-testid="link-state-georgia">Car dealer fees in Georgia</Link>
-                <span className="text-muted-foreground/70 text-sm ml-1">— 7% Title Ad Valorem Tax (replaces sales tax), no doc fee cap</span>
-              </li>
-            </ul>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-8">
+              {Object.values(STATE_FEES)
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((state) => (
+                  <Link
+                    key={state.slug}
+                    href={`/car-dealer-fees-${state.slug}`}
+                    className="flex items-center gap-2 px-3 py-2 rounded-md border border-border hover:bg-muted/50 transition-colors text-sm text-foreground"
+                    data-testid={`link-state-${state.slug}`}
+                  >
+                    <span className="text-muted-foreground text-xs font-mono w-6 shrink-0">{state.abbreviation}</span>
+                    <span className="underline">{state.name}</span>
+                    {state.hasCap && (
+                      <span className="ml-auto text-xs text-green-600 dark:text-green-400 font-medium shrink-0">capped</span>
+                    )}
+                  </Link>
+                ))}
+            </div>
           </div>
 
 
