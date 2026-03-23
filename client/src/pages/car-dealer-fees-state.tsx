@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Copy, Check } from "lucide-react";
@@ -11,8 +11,8 @@ import NotFound from "@/pages/not-found";
 import { STATE_FEES } from "@/data/stateFees";
 
 export default function CarDealerFeesState() {
-  const params = useParams<{ state: string }>();
-  const stateSlug = params?.state ?? "";
+  const [location] = useLocation();
+  const stateSlug = location.replace(/^\/car-dealer-fees-/, "").split(/[?#]/)[0];
   const data = STATE_FEES[stateSlug];
   const [copied, setCopied] = useState(false);
 
