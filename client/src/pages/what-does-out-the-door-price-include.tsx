@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -15,6 +17,9 @@ export default function WhatDoesOutTheDoorPriceInclude() {
 
   return (
     <ArticleLayout title="What Does Out-the-Door Price Include?">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "What Does Out-the-Door Price Include? | Odigos", description: "OTD price has six categories: vehicle price, sales tax, title, registration, doc fee, and add-ons. Here's what each line item means — and what to check.", path: "/what-does-out-the-door-price-include" }))}</script>
+      </Helmet>
       <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-otd-include-headline">
         What Does Out-the-Door Price Include?
       </h1>

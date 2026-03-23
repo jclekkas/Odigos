@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -16,6 +18,9 @@ export default function AreDealerFeesNegotiable() {
 
   return (
     <ArticleLayout title="Are Dealer Fees Negotiable?">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Are Dealer Fees Negotiable? What to Push Back On | Odigos", description: "Some dealer fees are fixed by law; others are dealer profit items. Learn which are negotiable, how to push back, and the OTD strategy that works.", path: "/are-dealer-fees-negotiable" }))}</script>
+      </Helmet>
       <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-fees-negotiable-headline">
         Are Dealer Fees Negotiable? What You Can Push Back On
       </h1>

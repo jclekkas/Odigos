@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
+import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
+import { itemListSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 import stateFeeData from "@/data/state_fee_reference.json";
@@ -64,6 +66,34 @@ export default function CarDealerFeesByState() {
 
   return (
     <ArticleLayout title="Car Dealer Fees by State: What Buyers Should Expect">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(itemListSchema({
+          name: "Car Dealer Fees by State",
+          description: "State-by-state guide to car dealer documentation fees, taxes, and what buyers should expect.",
+          items: [
+            { name: "Car dealer fees in California", url: "/car-dealer-fees-california" },
+            { name: "Car dealer fees in Texas", url: "/car-dealer-fees-texas" },
+            { name: "Car dealer fees in Florida", url: "/car-dealer-fees-florida" },
+            { name: "Car dealer fees in New York", url: "/car-dealer-fees-new-york" },
+            { name: "Car dealer fees in Georgia", url: "/car-dealer-fees-georgia" },
+            { name: "Car dealer fees in Illinois", url: "/car-dealer-fees-illinois" },
+            { name: "Car dealer fees in Pennsylvania", url: "/car-dealer-fees-pennsylvania" },
+            { name: "Car dealer fees in Ohio", url: "/car-dealer-fees-ohio" },
+            { name: "Car dealer fees in North Carolina", url: "/car-dealer-fees-north-carolina" },
+            { name: "Car dealer fees in Arizona", url: "/car-dealer-fees-arizona" },
+            { name: "Car dealer fees in Michigan", url: "/car-dealer-fees-michigan" },
+            { name: "Car dealer fees in Washington", url: "/car-dealer-fees-washington" },
+            { name: "Car dealer fees in Virginia", url: "/car-dealer-fees-virginia" },
+            { name: "Car dealer fees in New Jersey", url: "/car-dealer-fees-new-jersey" },
+            { name: "Car dealer fees in Massachusetts", url: "/car-dealer-fees-massachusetts" },
+            { name: "Car dealer fees in Colorado", url: "/car-dealer-fees-colorado" },
+            { name: "Car dealer fees in Minnesota", url: "/car-dealer-fees-minnesota" },
+            { name: "Car dealer fees in Wisconsin", url: "/car-dealer-fees-wisconsin" },
+            { name: "Car dealer fees in Nevada", url: "/car-dealer-fees-nevada" },
+            { name: "Car dealer fees in Tennessee", url: "/car-dealer-fees-tennessee" },
+          ]
+        }))}</script>
+      </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-fees-by-state-headline">
             Car Dealer Fees by State: What Buyers Should Expect
           </h1>

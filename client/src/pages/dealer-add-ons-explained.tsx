@@ -3,7 +3,9 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -39,6 +41,9 @@ export default function DealerAddOnsExplained() {
 
   return (
     <ArticleLayout title="Dealer Add-Ons Explained">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Add-Ons Explained: What Each One Actually Is | Odigos", description: "Plain-language explanations of every common dealer add-on — what it is, what the dealer says, what's actually true, and whether it's worth paying for.", path: "/dealer-add-ons-explained" }))}</script>
+      </Helmet>
       <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-explained-headline">
         Dealer Add-Ons Explained: What Each One Actually Is
       </h1>

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
+import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
+import { itemListSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 import stateFeeData from "@/data/state_fee_reference.json";
@@ -71,6 +73,44 @@ export default function DealerDocFeeByState() {
 
   return (
     <ArticleLayout title="Dealer Doc Fee by State: What Buyers Should Expect">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(itemListSchema({
+          name: "Dealer Doc Fee by State",
+          description: "Documentation fee ranges and caps by state — what dealers charge for paperwork across 30 states.",
+          items: [
+            { name: "Alabama dealer doc fee", url: "/dealer-doc-fee-by-state#alabama" },
+            { name: "Arizona dealer doc fee", url: "/dealer-doc-fee-by-state#arizona" },
+            { name: "California dealer doc fee", url: "/dealer-doc-fee-by-state#california" },
+            { name: "Colorado dealer doc fee", url: "/dealer-doc-fee-by-state#colorado" },
+            { name: "Connecticut dealer doc fee", url: "/dealer-doc-fee-by-state#connecticut" },
+            { name: "Florida dealer doc fee", url: "/dealer-doc-fee-by-state#florida" },
+            { name: "Georgia dealer doc fee", url: "/dealer-doc-fee-by-state#georgia" },
+            { name: "Illinois dealer doc fee", url: "/dealer-doc-fee-by-state#illinois" },
+            { name: "Indiana dealer doc fee", url: "/dealer-doc-fee-by-state#indiana" },
+            { name: "Louisiana dealer doc fee", url: "/dealer-doc-fee-by-state#louisiana" },
+            { name: "Maryland dealer doc fee", url: "/dealer-doc-fee-by-state#maryland" },
+            { name: "Massachusetts dealer doc fee", url: "/dealer-doc-fee-by-state#massachusetts" },
+            { name: "Michigan dealer doc fee", url: "/dealer-doc-fee-by-state#michigan" },
+            { name: "Minnesota dealer doc fee", url: "/dealer-doc-fee-by-state#minnesota" },
+            { name: "Missouri dealer doc fee", url: "/dealer-doc-fee-by-state#missouri" },
+            { name: "Nevada dealer doc fee", url: "/dealer-doc-fee-by-state#nevada" },
+            { name: "New Jersey dealer doc fee", url: "/dealer-doc-fee-by-state#new-jersey" },
+            { name: "New York dealer doc fee", url: "/dealer-doc-fee-by-state#new-york" },
+            { name: "North Carolina dealer doc fee", url: "/dealer-doc-fee-by-state#north-carolina" },
+            { name: "Ohio dealer doc fee", url: "/dealer-doc-fee-by-state#ohio" },
+            { name: "Oregon dealer doc fee", url: "/dealer-doc-fee-by-state#oregon" },
+            { name: "Pennsylvania dealer doc fee", url: "/dealer-doc-fee-by-state#pennsylvania" },
+            { name: "South Carolina dealer doc fee", url: "/dealer-doc-fee-by-state#south-carolina" },
+            { name: "Tennessee dealer doc fee", url: "/dealer-doc-fee-by-state#tennessee" },
+            { name: "Texas dealer doc fee", url: "/dealer-doc-fee-by-state#texas" },
+            { name: "Utah dealer doc fee", url: "/dealer-doc-fee-by-state#utah" },
+            { name: "Virginia dealer doc fee", url: "/dealer-doc-fee-by-state#virginia" },
+            { name: "Washington dealer doc fee", url: "/dealer-doc-fee-by-state#washington" },
+            { name: "Wisconsin dealer doc fee", url: "/dealer-doc-fee-by-state#wisconsin" },
+            { name: "Wyoming dealer doc fee", url: "/dealer-doc-fee-by-state#wyoming" },
+          ]
+        }))}</script>
+      </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-doc-fee-by-state-headline">
             Dealer Doc Fee by State: What Buyers Should Expect
           </h1>

@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { Link, useParams } from "wouter";
+import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { setSeoMeta } from "@/lib/seo";
+import { faqPageSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 import NotFound from "@/pages/not-found";
@@ -24,8 +26,30 @@ export default function CarDealerFeesState() {
 
   if (!data) return <NotFound />;
 
+  const faqQuestions = [
+    {
+      question: `What is the dealer doc fee in ${data.name}?`,
+      answer: `The typical dealer documentation fee in ${data.name} is ${data.docFeeRange}. ${data.capNote}`,
+    },
+    {
+      question: `What is the sales tax on cars in ${data.name}?`,
+      answer: data.salesTaxNote,
+    },
+    {
+      question: `What should ${data.name} car buyers watch out for?`,
+      answer: data.watchFor.join(" "),
+    },
+    {
+      question: `How can I negotiate a better deal in ${data.name}?`,
+      answer: data.negotiationNote,
+    },
+  ];
+
   return (
     <ArticleLayout title={`Car Dealer Fees in ${data.name}`}>
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: faqQuestions }))}</script>
+      </Helmet>
       <h1
         className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight"
         data-testid={`text-${data.slug}-headline`}

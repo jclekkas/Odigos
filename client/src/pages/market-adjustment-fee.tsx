@@ -3,7 +3,9 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -39,6 +41,9 @@ export default function MarketAdjustmentFee() {
 
   return (
     <ArticleLayout title="Market Adjustment Fees Explained: Can Dealers Charge Them?">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Market Adjustment Fee: What It Is and What to Do | Odigos", description: "Market adjustment fees add thousands above MSRP. Learn what they are, whether they're legal, how to negotiate them down, and what to watch for in quotes.", path: "/market-adjustment-fee" }))}</script>
+      </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-market-adjustment-headline">
             Market Adjustment Fees Explained: Can Dealers Charge Them?
           </h1>

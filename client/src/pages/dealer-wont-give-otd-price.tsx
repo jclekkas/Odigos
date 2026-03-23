@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Check, Copy } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -57,6 +59,9 @@ export default function DealerWontGiveOtdPrice() {
 
   return (
     <ArticleLayout title="Dealer Won't Give OTD Price? Here's What That Means">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Won't Give OTD Price? Here's What It Means | Odigos", description: "If a dealer won't give an out-the-door price, there's a reason. Learn the tactics they use, what to say back, and how to protect yourself before visiting.", path: "/dealer-wont-give-otd-price" }))}</script>
+      </Helmet>
           <p className="text-sm text-muted-foreground mb-4">
             <Link href="/dealer-pricing-tactics" className="underline text-foreground" data-testid="link-breadcrumb-hub">Dealer Pricing Tactics</Link> &rsaquo; This Article
           </p>

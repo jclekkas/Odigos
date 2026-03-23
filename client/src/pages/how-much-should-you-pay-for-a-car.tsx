@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -15,6 +17,9 @@ export default function HowMuchShouldYouPayForACar() {
 
   return (
     <ArticleLayout title="How Much Should You Pay for a Car?">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "How Much Should You Pay for a Car? | Odigos", description: "Monthly payment is the wrong number. Here's how to evaluate car cost correctly — OTD price, total loan cost, and a side-by-side comparison table.", path: "/how-much-should-you-pay-for-a-car" }))}</script>
+      </Helmet>
       <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-how-much-headline">
         How Much Should You Pay for a Car?
       </h1>

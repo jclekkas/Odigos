@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 
 const sections = [
@@ -127,6 +129,9 @@ export default function DealerPricingProblems() {
 
   return (
     <ArticleLayout title="Dealer Tactics" showBreadcrumbs={false}>
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Tactics: Pricing Tricks and Negotiation Guides | Odigos", description: "Guides on hidden dealer fees, forced add-ons, the monthly payment trap, out-the-door pricing, and common dealership tactics — written for U.S. car buyers.", path: "/dealer-pricing-problems" }))}</script>
+      </Helmet>
       <h1
         className="text-3xl md:text-4xl font-bold tracking-tight mb-4 leading-tight"
         data-testid="text-hub-headline"

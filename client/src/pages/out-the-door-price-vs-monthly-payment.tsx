@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -15,6 +17,9 @@ export default function OutTheDoorPriceVsMonthlyPayment() {
 
   return (
     <ArticleLayout title="Out-the-Door Price vs. Monthly Payment: What Dealers Hide">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "OTD Price vs. Monthly Payment: What Dealers Hide | Odigos", description: "Dealers leading with a monthly payment hide the sale price, APR, loan term, and rolled-in add-ons. Here's how that mechanic works and how to stop it.", path: "/out-the-door-price-vs-monthly-payment" }))}</script>
+      </Helmet>
       <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-otd-payment-headline">
         Out-the-Door Price vs. Monthly Payment: What Dealers Hide
       </h1>

@@ -3,7 +3,9 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -39,6 +41,9 @@ export default function CarDealerFeesList() {
 
   return (
     <ArticleLayout title="Car Dealer Fees List: Common Charges Explained">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Car Dealer Fees List: Common Dealer Charges and What They Mean | Odigos", description: "A complete list of common car dealer fees — from doc fees to market adjustments. Learn which charges are normal, which are negotiable, and how to compare dealers correctly.", path: "/car-dealer-fees-list" }))}</script>
+      </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-fees-list-headline">
             Car Dealer Fees List: Common Charges Explained
           </h1>

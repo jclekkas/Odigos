@@ -3,7 +3,9 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -39,6 +41,9 @@ export default function DocFeeTooHigh() {
 
   return (
     <ArticleLayout title="Dealer Doc Fee Too High? What You Can Actually Do">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Doc Fee Too High? What You Can Actually Do | Odigos", description: "Doc fees vary widely by state and dealer. Learn what's normal, whether you can negotiate, and what red flags to watch for when a dealer's documentation fee seems too high.", path: "/doc-fee-too-high" }))}</script>
+      </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-doc-fee-headline">
             Dealer Doc Fee Too High? What You Can Actually Do
           </h1>

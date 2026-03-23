@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -16,6 +18,9 @@ export default function DealerPrepFee() {
 
   return (
     <ArticleLayout title="Dealer Prep Fee">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Prep Fee: What It Is and Should You Pay It | Odigos", description: "Dealers charge a prep fee for getting a new car ready for delivery. Learn what it supposedly covers, why it's usually unjustified, and how to push back.", path: "/dealer-prep-fee" }))}</script>
+      </Helmet>
       <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-dealer-prep-fee-headline">
         Dealer Prep Fee: What It Is and Do You Have to Pay It?
       </h1>

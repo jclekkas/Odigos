@@ -3,7 +3,9 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -48,6 +50,9 @@ export default function OutTheDoorPriceCalculator() {
 
   return (
     <ArticleLayout title="Out-the-Door Price Calculator: Estimate Your Real Cost">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Out-the-Door Price Calculator | Odigos", description: "Estimate your OTD price and see what calculators miss: doc fees, dealer add-ons, and market adjustments. Includes a message to request an itemized quote.", path: "/out-the-door-price-calculator" }))}</script>
+      </Helmet>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-otd-calc-headline">
             Out-the-Door Price Calculator: Estimate Your Real Cost
           </h1>

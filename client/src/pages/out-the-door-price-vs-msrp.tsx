@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -15,6 +17,9 @@ export default function OutTheDoorPriceVsMsrp() {
 
   return (
     <ArticleLayout title="Out-the-Door Price vs. MSRP: The Gap Buyers Miss">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Out-the-Door Price vs. MSRP: The Gap Buyers Miss | Odigos", description: "MSRP is a suggestion, not what you pay. Taxes, fees, and add-ons push real cost 8–15% above the sticker. Here's how to use that gap to your advantage.", path: "/out-the-door-price-vs-msrp" }))}</script>
+      </Helmet>
       <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-otd-msrp-headline">
         Out-the-Door Price vs. MSRP: The Gap Buyers Miss
       </h1>

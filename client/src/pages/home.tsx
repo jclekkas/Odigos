@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "wouter";
+import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -7,6 +8,7 @@ import { z } from "zod";
 import { trackPageView, trackFormStart, trackFormFocus } from "@/lib/tracking";
 import { capture } from "@/lib/analytics";
 import { setSeoMeta } from "@/lib/seo";
+import { howToSchema } from "@/lib/jsonld";
 import { 
   ChevronDown, 
   ChevronUp, 
@@ -729,6 +731,9 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(howToSchema())}</script>
+      </Helmet>
 
       <main className="max-w-4xl mx-auto px-6 py-10 space-y-8">
         <div className="max-w-2xl mx-auto mb-2" data-testid="section-analyzer-context">

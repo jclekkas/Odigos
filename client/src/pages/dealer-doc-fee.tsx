@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -16,6 +18,9 @@ export default function DealerDocFee() {
 
   return (
     <ArticleLayout title="Are Dealer Documentation Fees Legit?">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Are Dealer Documentation Fees Legit? | Odigos", description: "Learn what dealer doc fees are, whether they're negotiable, how much is normal by state, and how to challenge inflated documentation fees before signing.", path: "/dealer-doc-fee" }))}</script>
+      </Helmet>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-doc-fee-headline">
             Are Dealer Documentation Fees Legit?
           </h1>

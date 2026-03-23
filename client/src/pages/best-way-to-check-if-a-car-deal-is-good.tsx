@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -16,6 +18,9 @@ export default function BestWayToCheckIfACarDealIsGood() {
 
   return (
     <ArticleLayout title="The Best Way to Check if a Car Deal Is Good">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Best Way to Check a Car Deal | Odigos", description: "Manual car deal evaluation fails because buyers focus on the wrong numbers. Here's why it's hard to do well — and the fastest way to get a real verdict.", path: "/best-way-to-check-if-a-car-deal-is-good" }))}</script>
+      </Helmet>
       <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-best-way-headline">
         The Best Way to Check if a Car Deal Is Good
       </h1>

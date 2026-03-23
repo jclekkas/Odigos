@@ -3,7 +3,9 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -39,6 +41,9 @@ export default function DealerChangedPriceAfterDeposit() {
 
   return (
     <ArticleLayout title="Dealer Changed the Price After Your Deposit? What It Means">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Changed the Price After Your Deposit? What It Means | Odigos", description: "If a dealer changed the price after you put down a deposit, here's why it happens, what protects you, and what to do next to get your money back or hold them to the original deal.", path: "/dealer-changed-price-after-deposit" }))}</script>
+      </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-deposit-headline">
             Dealer Changed the Price After Your Deposit? What It Means
           </h1>

@@ -3,7 +3,9 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -39,6 +41,9 @@ export default function FinanceOfficeChangedTheNumbers() {
 
   return (
     <ArticleLayout title="Why the Finance Office Numbers Look Different">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Why the Finance Office Numbers Look Different | Odigos", description: "You agreed on a price, but the finance office paperwork shows different numbers. Learn why this happens, what to check, and how to protect yourself before signing.", path: "/finance-office-changed-the-numbers" }))}</script>
+      </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-finance-office-headline">
             Why the Finance Office Numbers Look Different
           </h1>

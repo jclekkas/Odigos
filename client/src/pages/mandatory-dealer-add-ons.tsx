@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -16,6 +18,9 @@ export default function MandatoryDealerAddOns() {
 
   return (
     <ArticleLayout title="Are Dealer Add-Ons Really Mandatory?">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Mandatory Dealer Add-Ons Explained | Odigos", description: "Dealers claim add-ons are mandatory—but almost none are required by law. Learn what's truly required, what you can decline, and how to push back.", path: "/mandatory-dealer-add-ons" }))}</script>
+      </Helmet>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-add-ons-headline">
             Are Dealer Add-Ons Really Mandatory?
           </h1>

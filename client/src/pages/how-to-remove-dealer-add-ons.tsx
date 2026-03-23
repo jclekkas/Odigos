@@ -3,7 +3,9 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -39,6 +41,9 @@ export default function HowToRemoveDealerAddOns() {
 
   return (
     <ArticleLayout title="How to Remove Dealer Add-Ons">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "How to Remove Dealer Add-Ons: Step-by-Step Guide | Odigos", description: "A step-by-step guide to removing dealer add-ons before you sign. What to do before the visit, in the finance office, and after an initial refusal.", path: "/how-to-remove-dealer-add-ons" }))}</script>
+      </Helmet>
       <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-remove-headline">
         How to Remove Dealer Add-Ons: A Step-by-Step Guide
       </h1>

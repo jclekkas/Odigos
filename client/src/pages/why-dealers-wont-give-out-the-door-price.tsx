@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -15,6 +17,9 @@ export default function WhyDealersWontGiveOutTheDoorPrice() {
 
   return (
     <ArticleLayout title="Why Dealers Won't Give Out-the-Door Price">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Why Dealers Won't Give Out-the-Door Price | Odigos", description: "Dealers resist OTD pricing because it removes structural advantages. Here's the incentive structure behind the refusal and what you can do about it.", path: "/why-dealers-wont-give-out-the-door-price" }))}</script>
+      </Helmet>
       <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-why-dealers-headline">
         Why Dealers Won't Give Out-the-Door Price
       </h1>

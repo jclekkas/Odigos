@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -15,6 +17,9 @@ export default function IsThisAGoodCarDeal() {
 
   return (
     <ArticleLayout title="Is This a Good Car Deal?">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Is This a Good Car Deal? | Odigos", description: "Use this four-signal verdict framework to quickly assess whether a dealer quote is good, borderline, or a red flag — with a concrete example of each.", path: "/is-this-a-good-car-deal" }))}</script>
+      </Helmet>
       <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-good-deal-headline">
         Is This a Good Car Deal?
       </h1>

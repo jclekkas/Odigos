@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -15,6 +17,9 @@ export default function WhatIsAFairPriceForACar() {
 
   return (
     <ArticleLayout title="What Is a Fair Price for a Car?">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "What Is a Fair Price for a Car? | Odigos", description: "A fair car price means the all-in out-the-door total, not just the sticker. See how a $32,000 MSRP becomes $37,000+ OTD and what each step adds.", path: "/what-is-a-fair-price-for-a-car" }))}</script>
+      </Helmet>
       <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-fair-price-headline">
         What Is a Fair Price for a Car?
       </h1>

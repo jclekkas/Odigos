@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -16,6 +18,9 @@ export default function CarDealerFeesExplained() {
 
   return (
     <ArticleLayout title="Common Car Dealer Fees Explained: What You Should (and Shouldn't) Pay">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Common Car Dealer Fees Explained | Odigos", description: "When you buy a car, the sale price is only part of what you pay. Learn which dealer fees are required, which are optional, and how to protect yourself before signing.", path: "/car-dealer-fees-explained" }))}</script>
+      </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-fees-headline">
             Common Car Dealer Fees Explained: What You Should (and Shouldn't) Pay
           </h1>

@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -15,6 +17,9 @@ export default function HowToCompareCarDeals() {
 
   return (
     <ArticleLayout title="How to Compare Car Deals">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "How to Compare Car Deals | Odigos", description: "The only valid way to compare car deals is OTD to OTD. See how two quotes for the same vehicle can look different when fees and add-ons are hidden.", path: "/how-to-compare-car-deals" }))}</script>
+      </Helmet>
       <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-compare-deals-headline">
         How to Compare Car Deals
       </h1>

@@ -3,7 +3,9 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -39,6 +41,9 @@ export default function AreDealerAddOnsNegotiable() {
 
   return (
     <ArticleLayout title="Are Dealer Add-Ons Negotiable?">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Are Dealer Add-Ons Negotiable? What Dealers Will Actually Concede | Odigos", description: "Most dealer add-ons are negotiable, but not all. Learn which extras dealers will drop, when to push, and how to anchor your ask to get real concessions.", path: "/are-dealer-add-ons-negotiable" }))}</script>
+      </Helmet>
       <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-negotiable-headline">
         Are Dealer Add-Ons Negotiable? What Dealers Will Actually Concede
       </h1>

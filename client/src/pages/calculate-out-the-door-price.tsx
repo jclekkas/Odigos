@@ -3,7 +3,9 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -49,6 +51,9 @@ export default function CalculateOutTheDoorPrice() {
 
   return (
     <ArticleLayout title="How to Calculate Out-the-Door Price on a Car">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "How to Calculate Out-the-Door Price on a Car | Odigos", description: "OTD formula step-by-step: vehicle price + tax + title + doc fee + add-ons. Worked example, what dealers omit, and a message to get the full itemized price.", path: "/calculate-out-the-door-price" }))}</script>
+      </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-calc-otd-headline">
             How to Calculate Out-the-Door Price on a Car
           </h1>

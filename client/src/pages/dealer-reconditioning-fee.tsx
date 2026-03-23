@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -16,6 +18,9 @@ export default function DealerReconditioningFee() {
 
   return (
     <ArticleLayout title="Dealer Reconditioning Fee">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Reconditioning Fee: What It Covers | Odigos", description: "A dealer reconditioning fee covers used car refurbishment. Learn what is legitimate, when fees are inflated, red flags to watch for, and how to negotiate.", path: "/dealer-reconditioning-fee" }))}</script>
+      </Helmet>
       <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-dealer-reconditioning-fee-headline">
         Dealer Reconditioning Fee: What It Covers and When to Push Back
       </h1>

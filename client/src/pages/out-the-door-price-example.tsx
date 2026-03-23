@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -48,6 +50,9 @@ export default function OutTheDoorPriceExample() {
 
   return (
     <ArticleLayout title="Out-the-Door Price Example: Real Numbers, Line by Line">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Out-the-Door Price Example: Real Numbers | Odigos", description: "A $33,500 car becomes $37,947 after taxes, fees, and add-ons. Three real OTD scenarios with exact dollar amounts on every line so you know what to expect.", path: "/out-the-door-price-example" }))}</script>
+      </Helmet>
       <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-otd-example-headline">
         Out-the-Door Price Example: Real Numbers, Line by Line
       </h1>

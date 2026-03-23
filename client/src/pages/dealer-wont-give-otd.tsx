@@ -3,7 +3,9 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -39,6 +41,9 @@ export default function DealerWontGiveOtd() {
 
   return (
     <ArticleLayout title="What to Do When a Dealer Won't Give You the Out-the-Door Price">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Why Dealers Avoid Giving Out-the-Door Prices | Odigos", description: "When a dealer dodges your OTD question, it's not accidental. Learn why they avoid written pricing, what to say in response, and when to walk away.", path: "/dealer-wont-give-otd" }))}</script>
+      </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-dealer-otd-headline">
             What to Do When a Dealer Won't Give You the Out-the-Door Price
           </h1>
