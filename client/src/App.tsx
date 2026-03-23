@@ -118,7 +118,7 @@ function Router() {
       <Route path="/how-much-should-you-pay-for-a-car" component={HowMuchShouldYouPayForACar} />
       <Route path="/how-to-compare-car-deals" component={HowToCompareCarDeals} />
       <Route path="/best-way-to-check-if-a-car-deal-is-good" component={BestWayToCheckIfACarDealIsGood} />
-      <Route path="/car-dealer-fees-:state" component={CarDealerFeesState} />
+      <Route path="/car-dealer-fees-*" component={CarDealerFeesState} />
       <Route component={NotFound} />
     </Switch>
     </>
