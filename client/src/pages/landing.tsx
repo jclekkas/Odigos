@@ -11,6 +11,15 @@ import SiteHeader from "@/components/SiteHeader";
 import SeoHead from "@/components/SeoHead";
 import { productSchema } from "@/lib/jsonld";
 
+function scrollToHash(hash: string) {
+  if (window.location.pathname === "/") {
+    document.getElementById(hash)?.scrollIntoView({ behavior: "smooth" });
+    history.replaceState(null, "", `/#${hash}`);
+  } else {
+    window.location.href = `/#${hash}`;
+  }
+}
+
 const faqs = [
   {
     q: "What is an out-the-door price?",
@@ -593,15 +602,15 @@ export default function Landing() {
             </div>
 
             <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-              <Link href="/#features" className="transition-colors hover:text-foreground" data-testid="link-footer-features">
+              <button onClick={() => scrollToHash("features")} className="transition-colors hover:text-foreground" data-testid="link-footer-features">
                 What We Review
-              </Link>
-              <Link href="/#pricing" className="transition-colors hover:text-foreground" data-testid="link-footer-pricing">
+              </button>
+              <button onClick={() => scrollToHash("pricing")} className="transition-colors hover:text-foreground" data-testid="link-footer-pricing">
                 Pricing
-              </Link>
-              <Link href="/#faq" className="transition-colors hover:text-foreground" data-testid="link-footer-questions">
+              </button>
+              <button onClick={() => scrollToHash("faq")} className="transition-colors hover:text-foreground" data-testid="link-footer-questions">
                 Questions
-              </Link>
+              </button>
               <Link href="/privacy" className="transition-colors hover:text-foreground" data-testid="link-footer-privacy">
                 Privacy
               </Link>
