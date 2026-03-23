@@ -1,0 +1,28 @@
+About Odigos — Page Content Draft
+Page URL
+/about
+SEO Meta
+
+Title: About Odigos — The Independent Car Deal Guide
+Description: Odigos (Greek for "guide") is an independent tool that analyzes car dealer quotes for hidden fees and overcharges. No dealership affiliations. No referral fees. Just clarity before you sign.
+
+
+Page Content
+About Odigos
+Odigos (oh-dee-GOHS) is Greek for "guide." We built it because car buyers deserve to know what they're actually paying before they sign.
+What Odigos does
+You paste a dealer quote — an email, a text message, a photo of a worksheet — and Odigos tells you what's in it, what's missing, and whether you should proceed. The analysis checks for missing out-the-door pricing, inflated documentation fees, optional add-ons presented as mandatory, and vague financing terms.
+For 18 U.S. states that cap dealer doc fees by law, Odigos flags any fee that exceeds the legal limit — with the specific dollar overage and the statute behind it.
+What Odigos doesn't do
+We don't sell cars. We don't work with dealerships. We don't take referral fees from dealers or lenders. Odigos works entirely from the messages you already have. The analysis is independent.
+How it works
+The free preview gives you a GO / NO-GO verdict, a deal score, and the pricing terms found in the quote. The full review ($49, one-time) adds a complete breakdown of red flags, a checklist of missing information, and a copy-paste reply you can send directly to the dealer.
+Your submission is not shared with any dealership. PII-redacted text is deleted within 90 days.
+Why the name
+Odigos (Οδηγός) means "guide" in Greek. A car purchase is one of the largest financial decisions most people make, and the process is designed to favor the dealer. Odigos exists to guide the buyer through that process with accurate, specific information — not general advice.
+The data behind the tool
+Every state-specific claim on this site — doc fee caps, sales tax rates, trade-in credit rules — comes from a verified reference dataset covering all 50 states and Washington D.C. The data is sourced from state DMVs, departments of revenue, legislative records, and consumer protection offices. It's reviewed quarterly and cross-referenced against multiple sources.
+We don't use LLM training data for state-specific fee claims. The analyzer and the content pages pull from the same verified dataset.
+Contact
+Questions, corrections, or feedback: [your email here]
+If you find an error in our state fee data, we want to know. The data gets better when buyers help verify it.
