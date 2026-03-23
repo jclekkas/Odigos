@@ -6,6 +6,7 @@ export function productSchema() {
     "@type": "Product",
     "name": "Odigos Deal Analysis",
     "description": "AI-powered car dealer quote analysis. Paste a dealer quote, email, or text and get an instant GO/NO-GO recommendation with hidden fee detection.",
+    "image": `${SITE_URL}/og-image.png`,
     "brand": {
       "@type": "Brand",
       "name": "Odigos"
@@ -16,7 +17,39 @@ export function productSchema() {
       "priceCurrency": "USD",
       "availability": "https://schema.org/InStock",
       "priceValidUntil": "2026-12-31",
-      "url": `${SITE_URL}/`
+      "url": `${SITE_URL}/`,
+      "hasMerchantReturnPolicy": {
+        "@type": "MerchantReturnPolicy",
+        "applicableCountry": "US",
+        "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted"
+      },
+      "shippingDetails": {
+        "@type": "OfferShippingDetails",
+        "shippingRate": {
+          "@type": "MonetaryAmount",
+          "value": "0",
+          "currency": "USD"
+        },
+        "deliveryTime": {
+          "@type": "ShippingDeliveryTime",
+          "handlingTime": {
+            "@type": "QuantitativeValue",
+            "minValue": 0,
+            "maxValue": 0,
+            "unitCode": "DAY"
+          },
+          "transitTime": {
+            "@type": "QuantitativeValue",
+            "minValue": 0,
+            "maxValue": 0,
+            "unitCode": "DAY"
+          }
+        },
+        "shippingDestination": {
+          "@type": "DefinedRegion",
+          "addressCountry": "US"
+        }
+      }
     },
     "aggregateRating": {
       "@type": "AggregateRating",
