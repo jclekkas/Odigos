@@ -36,8 +36,8 @@ export default function DealerWontGiveOtdPrice() {
 
   useEffect(() => {
     return setSeoMeta({
-      title: "Dealer Won't Give OTD Price? Here's What It Means | Odigos",
-      description: "If a dealer won't give an out-the-door price, there's a reason. Learn the tactics they use, what to say back, and how to protect yourself before visiting.",
+      title: "Dealer Won't Give OTD Price? Scripts and Exact Next Steps | Odigos",
+      description: "Use these exact scripts and next steps when a dealer refuses to give an OTD price so you can protect yourself and move forward.",
       path: "/dealer-wont-give-otd-price",
     });
   }, []);
@@ -60,14 +60,14 @@ export default function DealerWontGiveOtdPrice() {
   return (
     <ArticleLayout title="Dealer Won't Give OTD Price? Here's What That Means">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Won't Give OTD Price? Here's What It Means | Odigos", description: "If a dealer won't give an out-the-door price, there's a reason. Learn the tactics they use, what to say back, and how to protect yourself before visiting.", path: "/dealer-wont-give-otd-price" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Won't Give OTD Price? Scripts and Exact Next Steps | Odigos", description: "Use these exact scripts and next steps when a dealer refuses to give an OTD price so you can protect yourself and move forward.", path: "/dealer-wont-give-otd-price" }))}</script>
       </Helmet>
           <p className="text-sm text-muted-foreground mb-4">
             <Link href="/dealer-pricing-tactics" className="underline text-foreground" data-testid="link-breadcrumb-hub">Dealer Pricing Tactics</Link> &rsaquo; This Article
           </p>
 
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3 leading-[1.15]" data-testid="text-otd-refuse-headline">
-            Dealer Won't Give OTD Price? Here's What That Means
+            Dealer Won't Give an OTD Price? Scripts and Exact Next Steps
           </h1>
 
           <p className="text-sm text-muted-foreground mb-8" data-testid="text-last-updated">Last updated: Feb 2026</p>

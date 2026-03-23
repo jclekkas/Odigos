@@ -9,8 +9,8 @@ import ArticleCta from "@/components/ArticleCta";
 export default function IsThisAGoodCarDeal() {
   useEffect(() => {
     return setSeoMeta({
-      title: "Is This a Good Car Deal? | Odigos",
-      description: "Use this four-signal verdict framework to quickly assess whether a dealer quote is good, borderline, or a red flag — with a concrete example of each.",
+      title: "Is This a Good Car Deal? 4 Signs It Is (and 3 Red Flags) | Odigos",
+      description: "Learn how to tell if a car deal is actually good using 4 key signals and 3 red flags most buyers miss before signing.",
       path: "/is-this-a-good-car-deal",
     });
   }, []);
@@ -18,10 +18,10 @@ export default function IsThisAGoodCarDeal() {
   return (
     <ArticleLayout title="Is This a Good Car Deal?">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Is This a Good Car Deal? | Odigos", description: "Use this four-signal verdict framework to quickly assess whether a dealer quote is good, borderline, or a red flag — with a concrete example of each.", path: "/is-this-a-good-car-deal" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Is This a Good Car Deal? 4 Signs It Is (and 3 Red Flags) | Odigos", description: "Learn how to tell if a car deal is actually good using 4 key signals and 3 red flags most buyers miss before signing.", path: "/is-this-a-good-car-deal" }))}</script>
       </Helmet>
       <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-good-deal-headline">
-        Is This a Good Car Deal?
+        Is This a Good Car Deal? 4 Signs It Is — and 3 Red Flags
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">

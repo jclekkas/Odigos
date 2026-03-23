@@ -9,8 +9,8 @@ import ArticleCta from "@/components/ArticleCta";
 export default function HowToCompareCarDeals() {
   useEffect(() => {
     return setSeoMeta({
-      title: "How to Compare Car Deals | Odigos",
-      description: "The only valid way to compare car deals is OTD to OTD. See how two quotes for the same vehicle can look different when fees and add-ons are hidden.",
+      title: "How to Compare Car Deals Side by Side (OTD to OTD) | Odigos",
+      description: "Compare car deals the right way by focusing on OTD price, not monthly payments, so you can avoid misleading financing tactics.",
       path: "/how-to-compare-car-deals",
     });
   }, []);
@@ -18,10 +18,10 @@ export default function HowToCompareCarDeals() {
   return (
     <ArticleLayout title="How to Compare Car Deals">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "How to Compare Car Deals | Odigos", description: "The only valid way to compare car deals is OTD to OTD. See how two quotes for the same vehicle can look different when fees and add-ons are hidden.", path: "/how-to-compare-car-deals" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "How to Compare Car Deals Side by Side (OTD to OTD) | Odigos", description: "Compare car deals the right way by focusing on OTD price, not monthly payments, so you can avoid misleading financing tactics.", path: "/how-to-compare-car-deals" }))}</script>
       </Helmet>
       <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-compare-deals-headline">
-        How to Compare Car Deals
+        How to Compare Car Deals the Right Way: OTD Price to OTD Price
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">

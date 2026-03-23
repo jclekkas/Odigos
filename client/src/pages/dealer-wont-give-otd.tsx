@@ -16,8 +16,8 @@ export default function DealerWontGiveOtd() {
 
   useEffect(() => {
     return setSeoMeta({
-      title: "Why Dealers Avoid Giving Out-the-Door Prices | Odigos",
-      description: "When a dealer dodges your OTD question, it's not accidental. Learn why they avoid written pricing, what to say in response, and when to walk away.",
+      title: "Why Dealers Avoid Giving Out-the-Door Prices (and What to Do) | Odigos",
+      description: "Learn why dealers avoid giving OTD prices, how it benefits them, and what it signals about the deal you're being offered.",
       path: "/dealer-wont-give-otd",
     });
   }, []);
@@ -42,10 +42,10 @@ export default function DealerWontGiveOtd() {
   return (
     <ArticleLayout title="What to Do When a Dealer Won't Give You the Out-the-Door Price">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Why Dealers Avoid Giving Out-the-Door Prices | Odigos", description: "When a dealer dodges your OTD question, it's not accidental. Learn why they avoid written pricing, what to say in response, and when to walk away.", path: "/dealer-wont-give-otd" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Why Dealers Avoid Giving Out-the-Door Prices (and What to Do) | Odigos", description: "Learn why dealers avoid giving OTD prices, how it benefits them, and what it signals about the deal you're being offered.", path: "/dealer-wont-give-otd" }))}</script>
       </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-dealer-otd-headline">
-            What to Do When a Dealer Won't Give You the Out-the-Door Price
+            Why Dealers Avoid Giving Out-the-Door Prices — and What to Do
           </h1>
           
           <div className="prose prose-lg dark:prose-invert max-w-none">

@@ -9,8 +9,8 @@ import ArticleCta from "@/components/ArticleCta";
 export default function HowToTellIfACarDealIsGood() {
   useEffect(() => {
     return setSeoMeta({
-      title: "How to Tell if a Car Deal Is Good | Odigos",
-      description: "A four-step evaluation process for car buyers: get OTD in writing, itemize fees, isolate add-ons, and verify financing terms before agreeing to anything.",
+      title: "How to Tell if a Car Deal Is Good: OTD, Fees, Add-Ons, Financing | Odigos",
+      description: "Use this four-step checklist to evaluate any car deal, including OTD price, hidden fees, add-ons, and financing traps.",
       path: "/how-to-tell-if-a-car-deal-is-good",
     });
   }, []);
@@ -18,10 +18,10 @@ export default function HowToTellIfACarDealIsGood() {
   return (
     <ArticleLayout title="How to Tell if a Car Deal Is Good">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "How to Tell if a Car Deal Is Good | Odigos", description: "A four-step evaluation process for car buyers: get OTD in writing, itemize fees, isolate add-ons, and verify financing terms before agreeing to anything.", path: "/how-to-tell-if-a-car-deal-is-good" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "How to Tell if a Car Deal Is Good: OTD, Fees, Add-Ons, Financing | Odigos", description: "Use this four-step checklist to evaluate any car deal, including OTD price, hidden fees, add-ons, and financing traps.", path: "/how-to-tell-if-a-car-deal-is-good" }))}</script>
       </Helmet>
       <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-how-to-tell-headline">
-        How to Tell if a Car Deal Is Good
+        How to Tell if a Car Deal Is Good: The Four-Step Checklist
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">

@@ -10,8 +10,8 @@ import ArticleCta from "@/components/ArticleCta";
 export default function MandatoryDealerAddOns() {
   useEffect(() => {
     return setSeoMeta({
-      title: "Mandatory Dealer Add-Ons Explained | Odigos",
-      description: "Dealers claim add-ons are mandatory—but almost none are required by law. Learn what's truly required, what you can decline, and how to push back.",
+      title: "Mandatory Dealer Add-Ons: Which Are Actually Required by the Dealer | Odigos",
+      description: "Understand which dealer add-ons are truly required, which are optional, and why dealers pre-install extras to increase profit.",
       path: "/mandatory-dealer-add-ons",
     });
   }, []);
@@ -19,10 +19,10 @@ export default function MandatoryDealerAddOns() {
   return (
     <ArticleLayout title="Are Dealer Add-Ons Really Mandatory?">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Mandatory Dealer Add-Ons Explained | Odigos", description: "Dealers claim add-ons are mandatory—but almost none are required by law. Learn what's truly required, what you can decline, and how to push back.", path: "/mandatory-dealer-add-ons" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Mandatory Dealer Add-Ons: Which Are Actually Required by the Dealer | Odigos", description: "Understand which dealer add-ons are truly required, which are optional, and why dealers pre-install extras to increase profit.", path: "/mandatory-dealer-add-ons" }))}</script>
       </Helmet>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-add-ons-headline">
-            Are Dealer Add-Ons Really Mandatory?
+            Mandatory Dealer Add-Ons: Which Are Actually Required
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">

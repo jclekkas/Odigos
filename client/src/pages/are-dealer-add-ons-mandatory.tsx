@@ -17,7 +17,7 @@ export default function AreDealerAddOnsMandatory() {
   useEffect(() => {
     return setSeoMeta({
       title: "Are Dealer Add-Ons Mandatory? What You Can Refuse | Odigos",
-      description: "Most dealer add-ons are optional even when presented as required. Learn which charges you can refuse, how to spot the difference, and what to say.",
+      description: "Are dealer add-ons mandatory? Learn which fees and add-ons you can refuse and how to push back without losing the deal.",
       path: "/are-dealer-add-ons-mandatory",
     });
   }, []);
@@ -42,10 +42,10 @@ export default function AreDealerAddOnsMandatory() {
   return (
     <ArticleLayout title="Are Dealer Add-Ons Mandatory? What You Can Actually Refuse">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Are Dealer Add-Ons Mandatory? What You Can Refuse | Odigos", description: "Most dealer add-ons are optional even when presented as required. Learn which charges you can refuse, how to spot the difference, and what to say.", path: "/are-dealer-add-ons-mandatory" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Are Dealer Add-Ons Mandatory? What You Can Refuse | Odigos", description: "Are dealer add-ons mandatory? Learn which fees and add-ons you can refuse and how to push back without losing the deal.", path: "/are-dealer-add-ons-mandatory" }))}</script>
       </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-addons-headline">
-            Are Dealer Add-Ons Mandatory? What You Can Actually Refuse
+            Are Dealer Add-Ons Mandatory? What You Can Refuse and What You Can't
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">

@@ -9,8 +9,8 @@ import ArticleCta from "@/components/ArticleCta";
 export default function HowMuchShouldYouPayForACar() {
   useEffect(() => {
     return setSeoMeta({
-      title: "How Much Should You Pay for a Car? | Odigos",
-      description: "Monthly payment is the wrong number. Here's how to evaluate car cost correctly — OTD price, total loan cost, and a side-by-side comparison table.",
+      title: "How Much Should You Pay for a Car? OTD Price vs. Monthly Payment | Odigos",
+      description: "Find out how much you should really pay for a car by comparing OTD price instead of monthly payments and avoiding common traps.",
       path: "/how-much-should-you-pay-for-a-car",
     });
   }, []);
@@ -18,10 +18,10 @@ export default function HowMuchShouldYouPayForACar() {
   return (
     <ArticleLayout title="How Much Should You Pay for a Car?">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "How Much Should You Pay for a Car? | Odigos", description: "Monthly payment is the wrong number. Here's how to evaluate car cost correctly — OTD price, total loan cost, and a side-by-side comparison table.", path: "/how-much-should-you-pay-for-a-car" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "How Much Should You Pay for a Car? OTD Price vs. Monthly Payment | Odigos", description: "Find out how much you should really pay for a car by comparing OTD price instead of monthly payments and avoiding common traps.", path: "/how-much-should-you-pay-for-a-car" }))}</script>
       </Helmet>
       <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-how-much-headline">
-        How Much Should You Pay for a Car?
+        How Much Should You Pay for a Car? Compare OTD, Not Monthly Payment
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">

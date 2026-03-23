@@ -9,8 +9,8 @@ import ArticleCta from "@/components/ArticleCta";
 export default function WhatIsAFairPriceForACar() {
   useEffect(() => {
     return setSeoMeta({
-      title: "What Is a Fair Price for a Car? | Odigos",
-      description: "A fair car price means the all-in out-the-door total, not just the sticker. See how a $32,000 MSRP becomes $37,000+ OTD and what each step adds.",
+      title: "What Is a Fair Price for a Car? (OTD, Not Sticker) | Odigos",
+      description: "A fair car price isn't the sticker—it's the OTD total. Learn how to evaluate true cost and avoid overpaying on your next deal.",
       path: "/what-is-a-fair-price-for-a-car",
     });
   }, []);
@@ -18,10 +18,10 @@ export default function WhatIsAFairPriceForACar() {
   return (
     <ArticleLayout title="What Is a Fair Price for a Car?">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "What Is a Fair Price for a Car? | Odigos", description: "A fair car price means the all-in out-the-door total, not just the sticker. See how a $32,000 MSRP becomes $37,000+ OTD and what each step adds.", path: "/what-is-a-fair-price-for-a-car" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "What Is a Fair Price for a Car? (OTD, Not Sticker) | Odigos", description: "A fair car price isn't the sticker—it's the OTD total. Learn how to evaluate true cost and avoid overpaying on your next deal.", path: "/what-is-a-fair-price-for-a-car" }))}</script>
       </Helmet>
       <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-fair-price-headline">
-        What Is a Fair Price for a Car?
+        What Is a Fair Price for a Car? It's the OTD Total, Not the Sticker
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
