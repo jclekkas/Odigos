@@ -118,7 +118,7 @@ export default function WhatDoesOutTheDoorPriceInclude() {
         <ul className="space-y-2 mb-4 text-muted-foreground">
           {[
             "Ranges from $50 to $999+ depending on the dealer and state",
-            "Some states cap it by law (e.g., California caps at ~$85, Florida allows up to ~$999)",
+            "Some states cap it by law (e.g., California caps at ~$85). States with no cap, like Florida, commonly see $500–$1,000+",
             "Many dealers treat it as non-negotiable — but you can sometimes negotiate the vehicle price to offset it",
             "It should always appear as its own line item, not buried in a catch-all \"dealer fee\"",
           ].map((item) => (

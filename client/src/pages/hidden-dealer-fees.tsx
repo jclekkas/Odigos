@@ -49,7 +49,7 @@ export default function HiddenDealerFees() {
 
         <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Documentation Fee (Doc Fee)</h2>
         <p className="text-muted-foreground mb-8">
-          A dealer-set charge for processing the paperwork involved in the sale — contracts, title transfer, and registration filing. It is not a government fee. In capped states like California or New York, it's limited by law. In no-cap states like Florida, it can reach $800–$1,000+. Texas has no formal cap, though most dealers there charge $150–$225. It's usually non-negotiable on its own but can be offset by negotiating the vehicle price. Learn more in our guide on <Link href="/dealer-doc-fee" className="underline text-foreground">dealer documentation fees</Link>.
+          A dealer-set charge for processing the paperwork involved in the sale — contracts, title transfer, and registration filing. It is not a government fee. In capped states like California or New York, it's limited by law. In no-cap states, fees vary by market: Florida commonly runs $500–$1,000+, while Georgia typically runs $400–$700. Texas has no formal cap, though most dealers there charge $150–$225. It's usually non-negotiable on its own but can be offset by negotiating the vehicle price. Learn more in our guide on <Link href="/dealer-doc-fee" className="underline text-foreground">dealer documentation fees</Link>.
         </p>
 
         <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">VIN Etching</h2>
