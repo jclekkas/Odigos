@@ -34,6 +34,7 @@ import Terms from "@/pages/terms";
 import DealerPricingProblems from "@/pages/dealer-pricing-problems";
 import HowOdigosWorks from "@/pages/how-odigos-works";
 import ExampleAnalysis from "@/pages/example-analysis";
+import About from "@/pages/about";
 import AreDealerAddOnsNegotiable from "@/pages/are-dealer-add-ons-negotiable";
 import HowToRemoveDealerAddOns from "@/pages/how-to-remove-dealer-add-ons";
 import AreDealerAddOnsRequiredByLaw from "@/pages/are-dealer-add-ons-required-by-law";
@@ -97,6 +98,7 @@ function Router() {
       <Route path="/dealer-pricing-problems" component={DealerPricingProblems} />
       <Route path="/how-odigos-works" component={HowOdigosWorks} />
       <Route path="/example-analysis" component={ExampleAnalysis} />
+      <Route path="/about" component={About} />
       <Route path="/are-dealer-add-ons-negotiable" component={AreDealerAddOnsNegotiable} />
       <Route path="/how-to-remove-dealer-add-ons" component={HowToRemoveDealerAddOns} />
       <Route path="/are-dealer-add-ons-required-by-law" component={AreDealerAddOnsRequiredByLaw} />

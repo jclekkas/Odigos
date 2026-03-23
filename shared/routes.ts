@@ -29,6 +29,7 @@ export const STATIC_ROUTES: string[] = [
   "/dealer-pricing-problems",
   "/how-odigos-works",
   "/example-analysis",
+  "/about",
   "/are-dealer-add-ons-negotiable",
   "/how-to-remove-dealer-add-ons",
   "/are-dealer-add-ons-required-by-law",
