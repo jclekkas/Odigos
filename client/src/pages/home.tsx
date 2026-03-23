@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
-import { trackPageView, trackFormStart, trackFormFocus } from "@/lib/tracking";
+import { trackPageView, trackFormStart, trackFormFocus, getSessionId } from "@/lib/tracking";
 import { capture } from "@/lib/analytics";
 import { setSeoMeta } from "@/lib/seo";
 import { howToSchema } from "@/lib/jsonld";
@@ -649,7 +649,7 @@ export default function Home() {
     setCheckoutLoading(true);
     
     try {
-      const response = await apiRequest("POST", "/api/checkout", { product: "deal_clarity" });
+      const response = await apiRequest("POST", "/api/checkout", { product: "deal_clarity", sessionId: getSessionId() });
       const data = await response.json();
       
       if (data.error === "PAYMENTS_NOT_CONFIGURED") {
@@ -698,6 +698,7 @@ export default function Home() {
         apr: data.apr ? parseFloat(data.apr) : undefined,
         termMonths: data.termMonths ? parseInt(data.termMonths) : undefined,
         downPayment: data.downPayment ? parseFloat(data.downPayment) : undefined,
+        sessionId: getSessionId(),
       };
       const response = await apiRequest("POST", "/api/analyze", payload);
       return response.json() as Promise<AnalysisResponse>;

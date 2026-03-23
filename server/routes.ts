@@ -376,10 +376,12 @@ GO/NO-GO/NEED-MORE-INFO:
       trackEvent("submission", {
         vehicle: data.vehicle,
         zipCode: data.zipCode,
+        sessionId: data.sessionId,
       });
       trackEvent("submission_score", {
         dealScore: finalResult.dealScore,
         vehicle: data.vehicle,
+        sessionId: data.sessionId,
       });
 
       res.json(finalResult);
@@ -495,7 +497,7 @@ GO/NO-GO/NEED-MORE-INFO:
 
   app.post("/api/checkout", async (req, res) => {
     try {
-      const { product } = req.body;
+      const { product, sessionId } = req.body;
       
       if (!product || !["deal_clarity", "negotiation_pack"].includes(product)) {
         return res.status(400).json({ error: "INVALID_PRODUCT" });
@@ -531,6 +533,12 @@ GO/NO-GO/NEED-MORE-INFO:
         line_items: [{ price: priceId, quantity: 1 }],
         success_url: `${baseUrl}/analyze?paid=1&product=${product}`,
         cancel_url: `${baseUrl}/analyze?paid=0`,
+        metadata: { product, sessionId: sessionId ?? "" },
+      });
+
+      trackEvent("checkout_started", {
+        stripeSessionId: session.id,
+        sessionId: sessionId,
       });
 
       res.json({ url: session.url });
@@ -547,7 +555,7 @@ GO/NO-GO/NEED-MORE-INFO:
         return res.status(503).json({ error: "Payments not configured" });
       }
 
-      const { analysisId, tier } = req.body;
+      const { analysisId, tier, sessionId } = req.body;
       if (!analysisId) {
         return res.status(400).json({ error: "Missing analysisId" });
       }
@@ -619,7 +627,13 @@ GO/NO-GO/NEED-MORE-INFO:
         line_items: [{ price: priceId, quantity: 1 }],
         success_url: `${baseUrl}/analyze?session_id={CHECKOUT_SESSION_ID}&analysisId=${analysisId}`,
         cancel_url: `${baseUrl}/analyze?canceled=1&analysisId=${analysisId}`,
-        metadata: { tier: selectedTier },
+        metadata: { tier: selectedTier, sessionId: sessionId ?? "" },
+      });
+
+      trackEvent("checkout_started", {
+        tier: selectedTier,
+        stripeSessionId: session.id,
+        sessionId: sessionId,
       });
 
       res.json({ url: session.url });
@@ -663,7 +677,8 @@ GO/NO-GO/NEED-MORE-INFO:
         }
       }
       
-      trackEvent("payment_completed", { tier });
+      const paymentSessionId = session.metadata?.sessionId || undefined;
+      trackEvent("payment_completed", { tier, sessionId: paymentSessionId, stripeSessionId: session_id });
       
       res.json({ paid: true, tier });
     } catch (error) {
@@ -897,7 +912,95 @@ GO/NO-GO/NEED-MORE-INFO:
     }
   });
 
-  app.get("/sitemap.xml", (_req, res) => {
+  // BI Dashboard endpoints
+  type DateRange = "today" | "week" | "month" | "all";
+  const VALID_RANGES: DateRange[] = ["today", "week", "month", "all"];
+
+  function requireAdminKey(req: Request, res: Response): boolean {
+    const configuredKey = process.env.ADMIN_KEY;
+    if (!configuredKey) { res.status(503).json({ error: "Admin access not configured" }); return false; }
+    if (req.query.key !== configuredKey) { res.status(401).json({ error: "Unauthorized" }); return false; }
+    return true;
+  }
+
+  function parseRange(req: Request): DateRange {
+    const r = req.query.range;
+    return (typeof r === "string" && VALID_RANGES.includes(r as DateRange)) ? (r as DateRange) : "all";
+  }
+
+  app.get("/api/admin/bi/funnel", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
+    try {
+      const range = parseRange(req);
+      const { getBIFunnel } = await import("./metrics");
+      res.json(await getBIFunnel(range));
+    } catch (e: any) { res.status(500).json({ error: e?.message }); }
+  });
+
+  app.get("/api/admin/bi/attribution", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
+    try {
+      const range = parseRange(req);
+      const { getBIPageAttribution } = await import("./metrics");
+      res.json(await getBIPageAttribution(range));
+    } catch (e: any) { res.status(500).json({ error: e?.message }); }
+  });
+
+  app.get("/api/admin/bi/behavior", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
+    try {
+      const range = parseRange(req);
+      const { getBIUserBehavior } = await import("./metrics");
+      res.json(await getBIUserBehavior(range));
+    } catch (e: any) { res.status(500).json({ error: e?.message }); }
+  });
+
+  app.get("/api/admin/bi/deal-outcome", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
+    try {
+      const range = parseRange(req);
+      const { getBIDealOutcome } = await import("./metrics");
+      res.setHeader("Cache-Control", "private, max-age=120");
+      res.json(await getBIDealOutcome(range));
+    } catch (e: any) { res.status(500).json({ error: e?.message }); }
+  });
+
+  app.get("/api/admin/bi/geographic", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
+    try {
+      const range = parseRange(req);
+      const { getBIGeographic } = await import("./metrics");
+      res.setHeader("Cache-Control", "private, max-age=120");
+      res.json(await getBIGeographic(range));
+    } catch (e: any) { res.status(500).json({ error: e?.message }); }
+  });
+
+  app.get("/api/admin/bi/acquisition", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
+    try {
+      const range = parseRange(req);
+      const { getBIAcquisition } = await import("./metrics");
+      res.json(await getBIAcquisition(range));
+    } catch (e: any) { res.status(500).json({ error: e?.message }); }
+  });
+
+  app.get("/api/admin/bi/revenue", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
+    try {
+      const range = parseRange(req);
+      const { getBIRevenue } = await import("./metrics");
+      res.json(await getBIRevenue(range));
+    } catch (e: any) { res.status(500).json({ error: e?.message }); }
+  });
+
+  app.get("/api/admin/bi/fallout", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
+    try {
+      const range = parseRange(req);
+      const { getBIFallout } = await import("./metrics");
+      res.json(await getBIFallout(range));
+    } catch (e: any) { res.status(500).json({ error: e?.message }); }
+  });
     res.type("application/xml");
     res.sendFile("sitemap.xml", { root: "." });
   });

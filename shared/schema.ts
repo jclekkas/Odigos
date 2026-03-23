@@ -11,6 +11,7 @@ export const analysisRequestSchema = z.object({
   termMonths: z.number().optional(),
   downPayment: z.number().optional(),
   source: z.enum(["paste", "upload"]).default("paste").optional(),
+  sessionId: z.string().optional(),
 });
 
 export type AnalysisRequest = z.infer<typeof analysisRequestSchema>;

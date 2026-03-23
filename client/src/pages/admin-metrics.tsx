@@ -647,6 +647,12 @@ export default function AdminMetrics() {
               </div>
             </div>
             <div className="flex items-center gap-3 flex-wrap">
+              <Link href={`/admin/business?key=${encodeURIComponent(adminKey)}`}>
+                <Button variant="outline" size="sm" data-testid="link-business-dashboard">
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  BI Dashboard
+                </Button>
+              </Link>
               <Button 
                 variant="outline" 
                 size="sm"

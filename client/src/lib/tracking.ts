@@ -9,7 +9,7 @@ interface TrackingMetadata {
   sessionId?: string;
 }
 
-function getSessionId(): string {
+export function getSessionId(): string {
   let sessionId = sessionStorage.getItem("odigos_session_id");
   if (!sessionId) {
     sessionId = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
