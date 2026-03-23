@@ -1,0 +1,126 @@
+Task: Fix Odigos social sharing previews so that when the site URL is shared in WhatsApp, Slack, iMessage, Facebook, X/Twitter, or similar apps, the correct current Odigos logo/preview image appears instead of the old Replit-generated one.
+
+Objective:
+Update the site’s metadata so link previews use the latest correct Odigos branding and no longer fall back to any old Replit default image, placeholder image, or outdated logo.
+
+Scope (STRICT):
+Audit and fix all metadata related to social sharing previews, especially for:
+- homepage
+- analyzer page
+- key article pages
+- any shared layout or SEO utility used across pages
+
+Relevant likely files may include:
+- shared layout files
+- index.html
+- SEO/meta helper utilities
+- page-level head/meta functions
+- favicon / manifest / public assets
+
+Do NOT:
+- redesign the site
+- change routing
+- change business logic
+- modify payment flow
+- alter copy except where necessary for metadata
+- add unnecessary packages
+
+What to fix:
+
+1. Open Graph metadata
+Ensure the final rendered HTML includes accurate tags such as:
+- og:title
+- og:description
+- og:image
+- og:image:alt
+- og:url
+- og:type
+- og:site_name
+
+The og:image must point to the current correct Odigos preview image/logo, not any old Replit image.
+
+Use an absolute URL, not a relative path.
+
+2. Twitter Card metadata
+Ensure the final rendered HTML includes:
+- twitter:card
+- twitter:title
+- twitter:description
+- twitter:image
+
+Use "summary_large_image" if appropriate.
+
+The image must be the current correct Odigos preview image, with an absolute public URL.
+
+3. Remove or override old Replit defaults
+Audit the codebase for any old default metadata, including:
+- Replit-generated preview images
+- placeholder social images
+- scaffolded manifest/icon references
+- hardcoded brand strings from the original template
+
+Remove them or override them so they cannot be served accidentally.
+
+4. Ensure image asset is production-safe
+The social preview image must:
+- be publicly accessible
+- be stable in production
+- not require auth
+- use PNG or JPG
+- be properly sized for social previews
+
+Recommended size:
+1200 x 630
+
+If a current Odigos branded image exists in the repo, use that. Do not invent a new brand direction.
+
+5. Homepage must be correct first
+Priority is the root URL (/)
+
+When someone shares https://odigos.replit.app, the preview must show:
+- correct Odigos branding
+- correct title
+- correct description
+- no Replit placeholder branding
+
+6. Keep page-level metadata intact
+If page-specific SEO metadata already exists, preserve it.
+
+Ensure:
+- homepage uses correct default share image
+- article pages fall back to correct default if needed
+- no old assets are used anywhere
+
+7. Favicon / icon audit
+Audit and fix if necessary:
+- favicon
+- apple-touch-icon
+- manifest icons
+
+Replace any outdated Replit branding with current Odigos assets already in the repo.
+
+Validation requirements:
+
+After implementation, verify:
+1. Homepage HTML contains correct Open Graph and Twitter tags
+2. og:image and twitter:image point to correct Odigos asset
+3. No old Replit image URLs remain
+4. No outdated logo/icon references remain
+5. No routing or app behavior is changed
+
+Deliverables:
+
+Return:
+1. Exact files changed
+2. Final metadata used for homepage sharing
+3. Exact image URL used for og:image
+4. Confirmation that old Replit assets were removed
+5. Note if caching may delay preview updates on Slack/iMessage/WhatsApp
+
+Out of scope:
+- no redesign
+- no new marketing copy beyond metadata
+- no analytics changes
+- no backend refactor
+
+End of task

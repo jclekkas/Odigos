@@ -1,0 +1,234 @@
+#79 - Fix Social Sharing Previews (Production-Safe)
+
+Task:
+Fix Odigos social sharing previews so that when any URL is shared (Slack, WhatsApp, iMessage, Facebook, X/Twitter), the correct Odigos branded image and metadata appear — never the old Replit placeholder.
+
+---
+
+Objective:
+Ensure all pages output complete, consistent Open Graph and Twitter metadata using the correct Odigos branding and a valid production image.
+
+---
+
+Scope (STRICT):
+Modify ONLY:
+- client/index.html
+- client/src/components/SeoHead.tsx
+- client/src/lib/seo.ts
+- client/src/lib/jsonld.ts (audit only if needed)
+- client/public/og-image.png
+- client/public/favicon.png
+- create: client/public/site.webmanifest
+
+DO NOT:
+- change routing
+- change business logic
+- touch analyzer logic
+- modify Stripe/payment
+- redesign UI
+- add dependencies
+
+---
+
+Core Requirements:
+
+All pages must include:
+- og:title
+- og:description
+- og:image
+- og:image:alt
+- og:url
+- og:type
+- og:site_name
+- twitter:card = summary_large_image
+- twitter:title
+- twitter:description
+- twitter:image
+
+All image URLs MUST:
+- be absolute
+- use https://odigos.replit.app
+- resolve publicly (no auth)
+
+---
+
+Tasks:
+
+1) Validate / Replace OG Image
+
+File:
+client/public/og-image.png
+
+Requirements:
+- 1200 × 630
+- Odigos branded (NOT Replit placeholder)
+- clean, readable in preview
+- no transparency issues
+
+If current image is incorrect:
+- replace it using existing Odigos branding asset (attached_assets/logo_1771101409527.png if needed)
+- ensure final path remains:
+  /og-image.png
+
+Verify:
+https://odigos.replit.app/og-image.png loads correctly
+
+---
+
+2) Fix index.html metadata
+
+File:
+client/index.html
+
+Add or ensure:
+
+<meta property="og:image" content="https://odigos.replit.app/og-image.png" />
+<meta property="og:image:alt" content="Odigos — Independent car deal analysis tool" />
+<meta property="og:site_name" content="Odigos" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://odigos.replit.app/og-image.png" />
+
+Add:
+
+<link rel="apple-touch-icon" href="/favicon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+
+Remove:
+- any Replit-branded meta
+- placeholder preview images
+- duplicate/conflicting tags
+
+---
+
+3) Add Web Manifest
+
+Create:
+client/public/site.webmanifest
+
+Content:
+
+{
+  "name": "Odigos",
+  "short_name": "Odigos",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#000000",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}
+
+---
+
+4) Fix SeoHead.tsx (GLOBAL PAGES)
+
+File:
+client/src/components/SeoHead.tsx
+
+Add defaults:
+
+const OG_IMAGE = "https://odigos.replit.app/og-image.png";
+
+Ensure tags exist:
+
+<meta property="og:image" content={OG_IMAGE} />
+<meta property="og:image:alt" content="Odigos — Independent car deal analysis tool" />
+<meta property="og:site_name" content="Odigos" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content={OG_IMAGE} />
+
+IMPORTANT:
+- preserve existing title/description props
+- only add missing fields
+- do NOT override page-specific metadata if already provided
+
+---
+
+5) Fix seo.ts (ANALYZER PAGE)
+
+File:
+client/src/lib/seo.ts
+
+Update logic to include:
+
+- og:image
+- twitter:image
+- twitter:card = summary_large_image
+
+Use same constant:
+
+const OG_IMAGE = "https://odigos.replit.app/og-image.png";
+
+Ensure:
+- tags are inserted if missing
+- tags are updated if incorrect
+- cleanup removes injected tags on unmount without breaking existing ones
+
+---
+
+6) Audit jsonld.ts (SAFE CHECK)
+
+File:
+client/src/lib/jsonld.ts
+
+Verify:
+- no references to old Replit branding
+- no image fields pointing to outdated assets
+
+No changes unless incorrect values are found.
+
+---
+
+7) Global Search & Destroy
+
+Search entire repo for:
+- old Replit preview image URLs
+- placeholder OG images
+- incorrect domains
+
+Remove or replace all occurrences.
+
+---
+
+Validation Checklist:
+
+- Sharing homepage URL shows correct Odigos image (NOT Replit)
+- og:image loads directly in browser
+- Slack / iMessage / WhatsApp previews show correct branding
+- All pages inherit correct fallback image
+- Analyzer page correctly sets OG + Twitter metadata
+- No duplicate or conflicting meta tags
+- No Replit branding remains anywhere
+
+---
+
+Deliverables:
+
+Return:
+1. Files modified
+2. Final OG image URL
+3. Confirmation OG image is 1200×630
+4. Confirmation no Replit assets remain
+5. Note: preview caching may delay updates (Slack, iMessage)
+
+---
+
+Out of Scope:
+
+- UI redesign
+- new features
+- analytics changes
+- backend refactor
+
+End of task
