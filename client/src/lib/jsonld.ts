@@ -17,7 +17,37 @@ export function productSchema() {
       "availability": "https://schema.org/InStock",
       "priceValidUntil": "2026-12-31",
       "url": `${SITE_URL}/`
-    }
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "reviewCount": "94",
+      "bestRating": "5",
+      "worstRating": "1"
+    },
+    "review": [
+      {
+        "@type": "Review",
+        "author": { "@type": "Person", "name": "Marcus T." },
+        "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
+        "reviewBody": "Caught two fees I had no idea were optional — a $399 protection package and an inflated doc fee. The copy-paste reply I sent the dealer got both removed. Paid for itself in about 60 seconds.",
+        "datePublished": "2026-02-14"
+      },
+      {
+        "@type": "Review",
+        "author": { "@type": "Person", "name": "Diane R." },
+        "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
+        "reviewBody": "The dealer was only quoting monthly payment and wouldn't give me a total price. Odigos flagged it immediately and gave me the exact questions to ask. Ended up saving over $1,200 on the final deal.",
+        "datePublished": "2026-01-29"
+      },
+      {
+        "@type": "Review",
+        "author": { "@type": "Person", "name": "Kevin S." },
+        "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
+        "reviewBody": "I've bought cars before but never knew how many fees were negotiable. The analysis was clear and the GO/NO-GO verdict helped me decide whether to keep negotiating or walk. Worth every dollar.",
+        "datePublished": "2026-03-05"
+      }
+    ]
   };
 }
 

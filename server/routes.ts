@@ -1001,6 +1001,8 @@ GO/NO-GO/NEED-MORE-INFO:
       res.json(await getBIFallout(range));
     } catch (e: any) { res.status(500).json({ error: e?.message }); }
   });
+
+  app.get("/sitemap.xml", (_req, res) => {
     res.type("application/xml");
     res.sendFile("sitemap.xml", { root: "." });
   });
