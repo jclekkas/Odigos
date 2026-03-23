@@ -22,6 +22,7 @@ export function productSchema() {
       "@type": "AggregateRating",
       "ratingValue": "4.8",
       "reviewCount": "94",
+      "ratingCount": "94",
       "bestRating": "5",
       "worstRating": "1"
     },
