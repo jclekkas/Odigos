@@ -1,0 +1,40 @@
+#11 - All 50-State + DC Dealer Fee Pages
+What & Why
+Expand the existing 5-state dealer fee pages to cover all 50 U.S. states plus Washington D.C. Every state URL currently 404s except the 5 hand-written entries. This is the highest-priority SEO gap: the hub pages at /car-dealer-fees-by-state and /dealer-doc-fee-by-state link to state pages that don't exist.
+
+Done looks like
+51 state pages live at the correct URLs (e.g. /car-dealer-fees-alabama, /car-dealer-fees-alaska, /car-dealer-fees-district-of-columbia)
+Each page contains all required sections: H1 matching "Car Dealer Fees in [State]: What You'll Actually Pay", intro paragraph, Doc Fee section (cap amount or "no cap" + typical range), Sales Tax section (state rate, max combined rate, trade-in credit), Title & Registration section, Special Notes (from specialNotes field), "What to say to the dealer" copy-paste message block, Odigos CTA with the exact prompt copy, clickable source hyperlinks, disclaimer citing the data source, and cross-links to all 5 related pages
+Both hub pages (/car-dealer-fees-by-state and /dealer-doc-fee-by-state) display links to all 51 state pages
+Each state page links back to both hub pages
+No 404s for any of the 51 state URLs
+Out of scope
+Rewriting the hub page content or layout beyond adding the state link grids (that is Task #4)
+State pages for U.S. territories (Puerto Rico, Guam, etc.)
+Translating pages or adding language variants
+Tasks
+Extend StateFeeData interface and populate all states — Add new fields to the StateFeeData interface: sources (array of URLs), specialNotes (string), dealerMessage (the copy-paste message block), and lastVerified (string). Use state_fee_reference.json as the authoritative source for all 51 entries (DC is included in the JSON as of v1.2.0 — do not create a manual DC entry). Populate all 51 entries in stateFees.ts, keeping the existing rich prose for the 5 hand-written states where possible and adding the new fields to them.
+
+Update the state page template — Modify car-dealer-fees-state.tsx to:
+
+Change H1 to "Car Dealer Fees in [State]: What You'll Actually Pay"
+Add a Special Notes section (render only when specialNotes is non-empty)
+Add a "What to say to the dealer" section with a styled copy-paste block containing dealerMessage
+Replace the Odigos CTA body with the exact text: "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual."
+Add source links as a "Sources" section with real clickable <a> tags (external, opens new tab)
+Update the disclaimer to: "These figures are approximate and based on [lastVerified source]. Verify with your state's attorney general or motor vehicle agency."
+Ensure cross-links include all five: /out-the-door-price, /dealer-doc-fee, /car-dealer-fees-list, /car-dealer-fees-by-state, /dealer-doc-fee-by-state
+Update both hub pages to link all 51 states — In car-dealer-fees-by-state.tsx and dealer-doc-fee-by-state.tsx, replace or augment any existing state link lists with a complete grid/list of all 51 state page links. Each state page must also include a reciprocal link back to both hubs.
+
+Register all 51 slugs in VALID_STATE_SLUGS — In shared/routes.ts, add all 51 state slugs (e.g. "alabama", "alaska", ..., "district-of-columbia") to the VALID_STATE_SLUGS set. This is required for the server-side 404 guard in server/vite.ts and server/static.ts to return HTTP 200 for the new pages in production. Missing this step means all new pages 404 in production even though the React component renders correctly in dev.
+
+Add all new state URLs to sitemap.xml — Append all 46 new state page URLs (the 5 existing ones are already present) to sitemap.xml so search engines discover them via the sitemap and not only through internal links.
+
+Relevant files
+client/src/data/stateFees.ts
+client/src/pages/car-dealer-fees-state.tsx
+client/src/pages/car-dealer-fees-by-state.tsx
+client/src/pages/dealer-doc-fee-by-state.tsx
+client/src/App.tsx
+shared/routes.ts
+sitemap.xml
