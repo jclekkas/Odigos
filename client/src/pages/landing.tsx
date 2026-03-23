@@ -601,6 +601,9 @@ export default function Landing() {
               <Link href="/privacy" className="transition-colors hover:text-foreground" data-testid="link-footer-privacy">
                 Privacy
               </Link>
+              <Link href="/terms" className="transition-colors hover:text-foreground" data-testid="link-footer-terms">
+                Terms
+              </Link>
             </nav>
           </div>
 

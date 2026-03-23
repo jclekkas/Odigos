@@ -30,6 +30,7 @@ import CalculateOutTheDoorPrice from "@/pages/calculate-out-the-door-price";
 import GuidesRedirect from "@/pages/guides-redirect";
 import AdminMetrics from "@/pages/admin-metrics";
 import Privacy from "@/pages/privacy";
+import Terms from "@/pages/terms";
 import DealerPricingProblems from "@/pages/dealer-pricing-problems";
 import HowOdigosWorks from "@/pages/how-odigos-works";
 import ExampleAnalysis from "@/pages/example-analysis";
@@ -92,6 +93,7 @@ function Router() {
       <Route path="/guides" component={GuidesRedirect} />
       <Route path="/admin/metrics" component={AdminMetrics} />
       <Route path="/privacy" component={Privacy} />
+      <Route path="/terms" component={Terms} />
       <Route path="/dealer-pricing-problems" component={DealerPricingProblems} />
       <Route path="/how-odigos-works" component={HowOdigosWorks} />
       <Route path="/example-analysis" component={ExampleAnalysis} />
