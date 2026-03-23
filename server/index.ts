@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import { trackEvent } from "./metrics";
 
 const app = express();
 const httpServer = createServer(app);
@@ -53,6 +54,31 @@ app.use((req, res, next) => {
       }
 
       log(logLine);
+
+      const trackedEndpoints = ["/api/analyze", "/api/extract-text", "/api/track", "/api/metrics", "/api/checkout"];
+      const matchedEndpoint = trackedEndpoints.find(e => path === e || path.startsWith(e + "/"));
+      if (matchedEndpoint) {
+        const statusCode = res.statusCode;
+        if (statusCode >= 400) {
+          const errorMessage = capturedJsonResponse
+            ? (capturedJsonResponse.message || capturedJsonResponse.error || undefined)
+            : undefined;
+          trackEvent("api_error", {
+            endpoint: matchedEndpoint,
+            method: req.method,
+            statusCode,
+            responseTimeMs: duration,
+            errorMessage: typeof errorMessage === "string" ? errorMessage : undefined,
+          });
+        } else {
+          trackEvent("api_request", {
+            endpoint: matchedEndpoint,
+            method: req.method,
+            statusCode,
+            responseTimeMs: duration,
+          });
+        }
+      }
     }
   });
 

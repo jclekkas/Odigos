@@ -10,7 +10,10 @@ export type EventType =
   | "api_request"
   | "api_error"
   | "system_health"
-  | "state_detection";
+  | "state_detection"
+  | "vitals"
+  | "file_processing"
+  | "stripe_webhook";
 
 export interface EventMetadata {
   dealScore?: "GREEN" | "YELLOW" | "RED";
@@ -30,6 +33,16 @@ export interface EventMetadata {
   ctaLabel?: string;
   fieldName?: string;
   sessionId?: string;
+  promptTokens?: number;
+  completionTokens?: number;
+  totalTokens?: number;
+  vitalsName?: string;
+  vitalsValue?: number;
+  vitalsRating?: string;
+  fileSuccess?: boolean;
+  fileFailReason?: string;
+  webhookEvent?: string;
+  webhookStatus?: string;
   [key: string]: unknown;
 }
 
@@ -398,5 +411,300 @@ export async function getMetricsSummary(): Promise<MetricsSummary> {
           .sort((a, b) => b.count - a.count),
       };
     })(),
+  };
+}
+
+export interface TechnicalSummary {
+  apiPerformance: Array<{
+    endpoint: string;
+    requestCount: number;
+    p50Ms: number;
+    p95Ms: number;
+    errorCount: number;
+    errorRate: number;
+    hourlyBuckets: Array<{ hour: string; count: number; avgMs: number }>;
+  }>;
+  errorLog: Array<{
+    timestamp: string;
+    endpoint: string;
+    statusCode: number;
+    message: string;
+  }>;
+  totalErrors: number;
+  totalRequests: number;
+  overallErrorRate: number;
+  errorsByEndpoint: Array<{ endpoint: string; errorCount: number; errorRate: number }>;
+  errorsByStatusCode: Array<{ statusCode: number; count: number }>;
+  hourlyErrorRate: Array<{ hour: string; errors: number; requests: number; errorRate: number }>;
+  aiUsage: {
+    callCount: number;
+    totalTokens: number;
+    promptTokens: number;
+    completionTokens: number;
+    estimatedCostUsd: number;
+    avgLatencyMs: number;
+    dailyBuckets: Array<{ date: string; calls: number; tokens: number; costUsd: number }>;
+  };
+  fileProcessing: {
+    uploadAttempts: number;
+    successes: number;
+    failures: number;
+    failureReasons: Array<{ reason: string; count: number }>;
+  };
+  stripeWebhooks: {
+    received: number;
+    succeeded: number;
+    failed: number;
+    lastEventAt: string | null;
+  };
+  webVitals: {
+    lcp: { avg: number | null; rating: string | null };
+    cls: { avg: number | null; rating: string | null };
+    fid: { avg: number | null; rating: string | null };
+    inp: { avg: number | null; rating: string | null };
+  };
+}
+
+const GPT4O_PROMPT_COST_PER_1K = 0.005;
+const GPT4O_COMPLETION_COST_PER_1K = 0.015;
+
+export async function getTechnicalSummary(): Promise<TechnicalSummary> {
+  const { events } = await loadMetrics();
+  
+  const allEvents = events.map(e => ({
+    ...e,
+    createdAt: new Date(e.createdAt),
+  }));
+
+  const now = new Date();
+  const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const last7d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+  const trackedEndpoints = ["/api/analyze", "/api/extract-text", "/api/track", "/api/metrics", "/api/checkout"];
+
+  const apiRequests = allEvents.filter(e => e.eventType === "api_request" && e.createdAt >= last24h);
+  const apiErrors = allEvents.filter(e => e.eventType === "api_error" && e.createdAt >= last24h);
+
+  const apiPerformance = trackedEndpoints.map(endpoint => {
+    const reqs = apiRequests.filter(e => e.metadata?.endpoint === endpoint);
+    const errs = apiErrors.filter(e => e.metadata?.endpoint === endpoint);
+    const allForEndpoint = [...reqs, ...errs];
+    const totalCount = allForEndpoint.length;
+    const latencies = allForEndpoint
+      .map(e => e.metadata?.responseTimeMs as number)
+      .filter(v => typeof v === "number")
+      .sort((a, b) => a - b);
+
+    const p50 = latencies.length > 0 ? latencies[Math.floor(latencies.length * 0.5)] : 0;
+    const p95 = latencies.length > 0 ? latencies[Math.floor(latencies.length * 0.95)] : 0;
+
+    const hourlyMap: Record<string, { count: number; totalMs: number }> = {};
+    for (let i = 0; i < 24; i++) {
+      const h = new Date(last24h.getTime() + i * 60 * 60 * 1000);
+      const key = h.toISOString().slice(0, 13);
+      hourlyMap[key] = { count: 0, totalMs: 0 };
+    }
+    allForEndpoint.forEach(e => {
+      const key = e.createdAt.toISOString().slice(0, 13);
+      if (hourlyMap[key]) {
+        hourlyMap[key].count++;
+        hourlyMap[key].totalMs += (e.metadata?.responseTimeMs as number) || 0;
+      }
+    });
+
+    const hourlyBuckets = Object.entries(hourlyMap)
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([hour, data]) => ({
+        hour: hour.slice(11) + ":00",
+        count: data.count,
+        avgMs: data.count > 0 ? Math.round(data.totalMs / data.count) : 0,
+      }));
+
+    return {
+      endpoint,
+      requestCount: totalCount,
+      p50Ms: p50,
+      p95Ms: p95,
+      errorCount: errs.length,
+      errorRate: totalCount > 0 ? (errs.length / totalCount) * 100 : 0,
+      hourlyBuckets,
+    };
+  });
+
+  const recentErrors = apiErrors
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    .slice(0, 20)
+    .map(e => ({
+      timestamp: e.createdAt.toISOString(),
+      endpoint: String(e.metadata?.endpoint || "unknown"),
+      statusCode: Number(e.metadata?.statusCode || 0),
+      message: String(e.metadata?.errorMessage || ""),
+    }));
+
+  const totalRequests = apiRequests.length + apiErrors.length;
+  const totalErrors = apiErrors.length;
+
+  const errorsByEndpointMap: Record<string, { errors: number; total: number }> = {};
+  trackedEndpoints.forEach(ep => { errorsByEndpointMap[ep] = { errors: 0, total: 0 }; });
+  apiRequests.forEach(e => {
+    const ep = String(e.metadata?.endpoint || "");
+    if (errorsByEndpointMap[ep]) errorsByEndpointMap[ep].total++;
+  });
+  apiErrors.forEach(e => {
+    const ep = String(e.metadata?.endpoint || "");
+    if (errorsByEndpointMap[ep]) { errorsByEndpointMap[ep].errors++; errorsByEndpointMap[ep].total++; }
+  });
+  const errorsByEndpoint = Object.entries(errorsByEndpointMap)
+    .map(([endpoint, data]) => ({
+      endpoint,
+      errorCount: data.errors,
+      errorRate: data.total > 0 ? (data.errors / data.total) * 100 : 0,
+    }))
+    .sort((a, b) => b.errorCount - a.errorCount);
+
+  const statusCodeMap: Record<number, number> = {};
+  apiErrors.forEach(e => {
+    const code = Number(e.metadata?.statusCode || 0);
+    statusCodeMap[code] = (statusCodeMap[code] || 0) + 1;
+  });
+  const errorsByStatusCode = Object.entries(statusCodeMap)
+    .map(([code, count]) => ({ statusCode: Number(code), count }))
+    .sort((a, b) => b.count - a.count);
+
+  const hourlyErrMap: Record<string, { errors: number; requests: number }> = {};
+  for (let i = 0; i < 24; i++) {
+    const h = new Date(last24h.getTime() + i * 60 * 60 * 1000);
+    const key = h.toISOString().slice(0, 13);
+    hourlyErrMap[key] = { errors: 0, requests: 0 };
+  }
+  apiRequests.forEach(e => {
+    const key = e.createdAt.toISOString().slice(0, 13);
+    if (hourlyErrMap[key]) hourlyErrMap[key].requests++;
+  });
+  apiErrors.forEach(e => {
+    const key = e.createdAt.toISOString().slice(0, 13);
+    if (hourlyErrMap[key]) { hourlyErrMap[key].errors++; hourlyErrMap[key].requests++; }
+  });
+  const hourlyErrorRate = Object.entries(hourlyErrMap)
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([key, data]) => ({
+      hour: key.slice(11) + ":00",
+      errors: data.errors,
+      requests: data.requests,
+      errorRate: data.requests > 0 ? Math.round((data.errors / data.requests) * 1000) / 10 : 0,
+    }));
+
+  const aiEvents = allEvents.filter(e => 
+    e.eventType === "api_request" && e.metadata?.endpoint === "openai_chat" && e.createdAt >= last7d
+  );
+  const aiErrorEvents = allEvents.filter(e =>
+    e.eventType === "api_error" && e.metadata?.endpoint === "openai_chat" && e.createdAt >= last7d
+  );
+  
+  const aiCallCount = aiEvents.length;
+  const totalTokens = aiEvents.reduce((sum, e) => sum + ((e.metadata?.totalTokens as number) || 0), 0);
+  const promptTokens = aiEvents.reduce((sum, e) => sum + ((e.metadata?.promptTokens as number) || 0), 0);
+  const completionTokens = aiEvents.reduce((sum, e) => sum + ((e.metadata?.completionTokens as number) || 0), 0);
+  const estimatedCostUsd = (promptTokens / 1000) * GPT4O_PROMPT_COST_PER_1K + (completionTokens / 1000) * GPT4O_COMPLETION_COST_PER_1K;
+  const aiLatencies = aiEvents.map(e => (e.metadata?.responseTimeMs as number) || 0).filter(v => v > 0);
+  const avgLatencyMs = aiLatencies.length > 0 ? Math.round(aiLatencies.reduce((a, b) => a + b, 0) / aiLatencies.length) : 0;
+
+  const aiDailyMap: Record<string, { calls: number; tokens: number; promptTok: number; completionTok: number }> = {};
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(last7d.getTime() + i * 24 * 60 * 60 * 1000);
+    const key = d.toISOString().split("T")[0];
+    aiDailyMap[key] = { calls: 0, tokens: 0, promptTok: 0, completionTok: 0 };
+  }
+  aiEvents.forEach(e => {
+    const key = e.createdAt.toISOString().split("T")[0];
+    if (aiDailyMap[key]) {
+      aiDailyMap[key].calls++;
+      aiDailyMap[key].tokens += (e.metadata?.totalTokens as number) || 0;
+      aiDailyMap[key].promptTok += (e.metadata?.promptTokens as number) || 0;
+      aiDailyMap[key].completionTok += (e.metadata?.completionTokens as number) || 0;
+    }
+  });
+  const aiDailyBuckets = Object.entries(aiDailyMap)
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([date, data]) => ({
+      date: date.slice(5),
+      calls: data.calls,
+      tokens: data.tokens,
+      costUsd: (data.promptTok / 1000) * GPT4O_PROMPT_COST_PER_1K + (data.completionTok / 1000) * GPT4O_COMPLETION_COST_PER_1K,
+    }));
+
+  const fileEvents = allEvents.filter(e => e.eventType === "file_processing");
+  const fileSuccesses = fileEvents.filter(e => e.metadata?.fileSuccess === true).length;
+  const fileFailures = fileEvents.filter(e => e.metadata?.fileSuccess === false).length;
+  const failReasonMap: Record<string, number> = {};
+  fileEvents.filter(e => e.metadata?.fileSuccess === false).forEach(e => {
+    const reason = String(e.metadata?.fileFailReason || "unknown");
+    failReasonMap[reason] = (failReasonMap[reason] || 0) + 1;
+  });
+  const failureReasons = Object.entries(failReasonMap)
+    .map(([reason, count]) => ({ reason, count }))
+    .sort((a, b) => b.count - a.count);
+
+  const webhookEvents = allEvents.filter(e => e.eventType === "stripe_webhook");
+  const webhookSucceeded = webhookEvents.filter(e => e.metadata?.webhookStatus === "success").length;
+  const webhookFailed = webhookEvents.filter(e => e.metadata?.webhookStatus === "failed").length;
+  const lastWebhook = webhookEvents.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0];
+
+  const vitalsEvents = allEvents.filter(e => e.eventType === "vitals");
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const todayVitals = vitalsEvents.filter(e => e.createdAt >= todayStart);
+
+  const computeVitalAvg = (name: string) => {
+    const vals = todayVitals
+      .filter(e => e.metadata?.vitalsName === name)
+      .map(e => e.metadata?.vitalsValue as number)
+      .filter(v => typeof v === "number" && v >= 0);
+    if (vals.length === 0) return { avg: null, rating: null };
+    const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+    const ratings = todayVitals
+      .filter(e => e.metadata?.vitalsName === name && e.metadata?.vitalsRating)
+      .map(e => String(e.metadata?.vitalsRating));
+    const ratingCount: Record<string, number> = {};
+    ratings.forEach(r => { ratingCount[r] = (ratingCount[r] || 0) + 1; });
+    const rating = Object.entries(ratingCount).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+    return { avg: Math.round(avg * 10) / 10, rating };
+  };
+
+  return {
+    apiPerformance,
+    errorLog: recentErrors,
+    totalErrors,
+    totalRequests,
+    overallErrorRate: totalRequests > 0 ? (totalErrors / totalRequests) * 100 : 0,
+    errorsByEndpoint,
+    errorsByStatusCode,
+    hourlyErrorRate,
+    aiUsage: {
+      callCount: aiCallCount,
+      totalTokens,
+      promptTokens,
+      completionTokens,
+      estimatedCostUsd: Math.round(estimatedCostUsd * 10000) / 10000,
+      avgLatencyMs,
+      dailyBuckets: aiDailyBuckets,
+    },
+    fileProcessing: {
+      uploadAttempts: fileEvents.length,
+      successes: fileSuccesses,
+      failures: fileFailures,
+      failureReasons,
+    },
+    stripeWebhooks: {
+      received: webhookEvents.length,
+      succeeded: webhookSucceeded,
+      failed: webhookFailed,
+      lastEventAt: lastWebhook ? lastWebhook.createdAt.toISOString() : null,
+    },
+    webVitals: {
+      lcp: computeVitalAvg("LCP"),
+      cls: computeVitalAvg("CLS"),
+      fid: computeVitalAvg("FID"),
+      inp: computeVitalAvg("INP"),
+    },
   };
 }

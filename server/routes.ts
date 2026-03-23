@@ -410,6 +410,8 @@ GO/NO-GO/NEED-MORE-INFO:
     try {
       await runUploadMiddleware(req, res);
     } catch (err: any) {
+      const reason = err?.code === "LIMIT_FILE_SIZE" ? "file_too_large" : "upload_error";
+      trackEvent("file_processing", { fileSuccess: false, fileFailReason: reason });
       const message = err?.code === "LIMIT_FILE_SIZE"
         ? "That file is too large to process. Please use a file under 10 MB."
         : "Something went wrong processing the file.";
@@ -418,12 +420,14 @@ GO/NO-GO/NEED-MORE-INFO:
 
     try {
       if (!req.file) {
+        trackEvent("file_processing", { fileSuccess: false, fileFailReason: "no_file" });
         return res.status(400).json({ message: "No file uploaded." });
       }
 
       const { mimetype, buffer } = req.file;
 
       if (!ALLOWED_MIME_TYPES.includes(mimetype)) {
+        trackEvent("file_processing", { fileSuccess: false, fileFailReason: "unsupported_mime_type" });
         return res.status(400).json({ message: "That file type isn't supported." });
       }
 
@@ -432,17 +436,26 @@ GO/NO-GO/NEED-MORE-INFO:
         text = await extractTextFromFile(buffer, mimetype);
       } catch (err) {
         console.error("Text extraction error:", err);
+        trackEvent("file_processing", {
+          fileSuccess: false,
+          fileFailReason: err instanceof Error ? err.message.slice(0, 100) : "extraction_error",
+        });
         return res.status(422).json({
           message: "We couldn't read enough text from that file. Try pasting the text or uploading a clearer image.",
         });
       }
 
       if (text.length < 20) {
+        trackEvent("file_processing", {
+          fileSuccess: false,
+          fileFailReason: "too_short",
+        });
         return res.status(422).json({
           message: "We couldn't read enough text from that file. Try pasting the text or uploading a clearer image.",
         });
       }
 
+      trackEvent("file_processing", { fileSuccess: true });
       res.json({ text });
     } catch (err) {
       console.error("extract-text error:", err);
@@ -659,6 +672,37 @@ GO/NO-GO/NEED-MORE-INFO:
     }
   });
 
+  app.post("/api/stripe-webhook", async (req, res) => {
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    const sig = req.headers["stripe-signature"];
+    let event: import("stripe").Stripe.Event;
+    
+    if (webhookSecret) {
+      if (!sig) {
+        trackEvent("stripe_webhook", { webhookStatus: "failed", errorMessage: "missing_signature" });
+        return res.status(400).json({ error: "Missing stripe-signature header" });
+      }
+      try {
+        const stripe = await getStripeClient();
+        const rawBody = req.rawBody instanceof Buffer ? req.rawBody : Buffer.from(req.rawBody as string ?? "");
+        event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
+      } catch (err) {
+        const errMsg = err instanceof Error ? err.message : "signature_verification_failed";
+        trackEvent("stripe_webhook", { webhookStatus: "failed", errorMessage: errMsg });
+        return res.status(400).json({ error: "Webhook signature verification failed" });
+      }
+    } else {
+      if (!req.body || typeof req.body !== "object") {
+        trackEvent("stripe_webhook", { webhookStatus: "failed", errorMessage: "invalid_payload" });
+        return res.status(400).json({ error: "Invalid webhook payload" });
+      }
+      event = req.body as import("stripe").Stripe.Event;
+    }
+    
+    trackEvent("stripe_webhook", { webhookEvent: event.type, webhookStatus: "success" });
+    res.json({ received: true });
+  });
+
   app.get("/api/metrics", async (req, res) => {
     const configuredKey = process.env.ADMIN_KEY;
     if (!configuredKey) {
@@ -799,6 +843,57 @@ GO/NO-GO/NEED-MORE-INFO:
         error: "Failed to import Stripe history",
         message: error?.message 
       });
+    }
+  });
+
+  app.get("/api/health", (_req, res) => {
+    const uptimeSeconds = process.uptime();
+    const mem = process.memoryUsage();
+    const heapUsedMb = Math.round(mem.heapUsed / 1024 / 1024 * 10) / 10;
+    const heapTotalMb = Math.round(mem.heapTotal / 1024 / 1024 * 10) / 10;
+    const rssM = Math.round(mem.rss / 1024 / 1024 * 10) / 10;
+    const status = rssM > 1536 ? "degraded" : "healthy";
+    res.json({
+      status,
+      uptimeSeconds: Math.round(uptimeSeconds),
+      memory: { heapUsedMb, heapTotalMb, rssMb: rssM },
+    });
+  });
+
+  app.post("/api/vitals", async (req, res) => {
+    try {
+      const { name, value, rating } = req.body;
+      const validNames = ["LCP", "CLS", "FID", "INP", "TTFB", "FCP"];
+      if (!name || !validNames.includes(name) || typeof value !== "number") {
+        return res.status(400).json({ error: "Invalid vitals payload" });
+      }
+      await trackEvent("vitals", {
+        vitalsName: name,
+        vitalsValue: value,
+        vitalsRating: rating || null,
+      });
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Vitals error:", error);
+      res.status(500).json({ error: "Failed to record vitals" });
+    }
+  });
+
+  app.get("/api/technical", async (req, res) => {
+    const configuredKey = process.env.ADMIN_KEY;
+    if (!configuredKey) {
+      return res.status(503).json({ error: "Admin access not configured" });
+    }
+    if (req.query.key !== configuredKey) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    try {
+      const { getTechnicalSummary } = await import("./metrics");
+      const summary = await getTechnicalSummary();
+      res.json(summary);
+    } catch (error: any) {
+      console.error("Technical metrics error:", error?.message || error);
+      res.status(500).json({ error: "Failed to fetch technical metrics", message: error?.message });
     }
   });
 

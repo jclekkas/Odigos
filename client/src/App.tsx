@@ -4,6 +4,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useWebVitals } from "@/hooks/use-web-vitals";
 import Landing from "@/pages/landing";
 import Analyze from "@/pages/home";
 import OutTheDoorPrice from "@/pages/out-the-door-price";
@@ -29,6 +30,7 @@ import CarDealerFeesList from "@/pages/car-dealer-fees-list";
 import CalculateOutTheDoorPrice from "@/pages/calculate-out-the-door-price";
 import GuidesRedirect from "@/pages/guides-redirect";
 import AdminMetrics from "@/pages/admin-metrics";
+import AdminTechnical from "@/pages/admin-technical";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import About from "@/pages/about";
@@ -93,6 +95,7 @@ function Router() {
       <Route path="/calculate-out-the-door-price" component={CalculateOutTheDoorPrice} />
       <Route path="/guides" component={GuidesRedirect} />
       <Route path="/admin/metrics" component={AdminMetrics} />
+      <Route path="/admin/technical" component={AdminTechnical} />
       <Route path="/about" component={About} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/terms" component={Terms} />
@@ -125,11 +128,17 @@ function Router() {
   );
 }
 
+function VitalsTracker() {
+  useWebVitals();
+  return null;
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
+        <VitalsTracker />
         <Router />
       </TooltipProvider>
     </QueryClientProvider>
