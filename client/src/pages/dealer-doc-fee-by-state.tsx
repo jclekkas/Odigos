@@ -6,6 +6,37 @@ import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import stateFeeData from "@/data/state_fee_reference.json";
+
+interface StateEntry {
+  name: string;
+  abbreviation: string;
+  docFeeCap: boolean;
+  docFeeCapAmount: number | null;
+  docFeeTypicalRange: [number, number];
+}
+
+const stateRows: StateEntry[] = Object.values(
+  stateFeeData.states as Record<string, StateEntry>
+).sort((a, b) => a.name.localeCompare(b.name));
+
+function formatCapStatus(state: StateEntry): string {
+  if (state.docFeeCap && state.docFeeCapAmount !== null) {
+    return `Capped at $${state.docFeeCapAmount.toLocaleString()}`;
+  }
+  return "No cap";
+}
+
+function formatTypicalFee(state: StateEntry): string {
+  if (state.docFeeCap && state.docFeeCapAmount !== null) {
+    return `Up to $${state.docFeeCapAmount.toLocaleString()}`;
+  }
+  const [low, high] = state.docFeeTypicalRange;
+  if (low === 0 && high === 0) return "Varies";
+  if (low === 0) return `Up to $${high.toLocaleString()}`;
+  if (low === high) return `~$${low.toLocaleString()}`;
+  return `$${low.toLocaleString()}–$${high.toLocaleString()}`;
+}
 
 const DOC_FEE_REQUEST_MESSAGE = `Hi — I'm comparing offers from a few dealerships. Before I come in, could you send me an itemized out-the-door price that breaks out the documentation fee as its own line? I'd also like to see taxes, title, and registration listed separately. Thanks.`;
 
@@ -70,7 +101,7 @@ export default function DealerDocFeeByState() {
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Doc fee ranges by state</h2>
 
             <p className="text-muted-foreground mb-4">
-              The table below shows approximate documentation fee ranges for 30 states. Where a state caps the fee, the cap is noted. In uncapped states, the ranges reflect what buyers commonly report. Always verify current limits with your state's attorney general or motor vehicle agency.
+              The table below shows approximate documentation fee ranges for all 50 states and Washington D.C. Where a state caps the fee, the cap is noted. In uncapped states, the ranges reflect what buyers commonly report. Always verify current limits with your state's attorney general or motor vehicle agency.
             </p>
 
             <div className="overflow-x-auto mb-4">
@@ -83,36 +114,13 @@ export default function DealerDocFeeByState() {
                   </tr>
                 </thead>
                 <tbody className="text-muted-foreground">
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Alabama</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$400–$700</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Arizona</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$400–$600</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">California</td><td className="px-4 py-2">Capped at $85</td><td className="px-4 py-2">~$85</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Colorado</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$400–$700</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Connecticut</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$300–$600</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Florida</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$500–$1,000+</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Georgia</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$400–$700</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Illinois</td><td className="px-4 py-2">Capped at ~$368</td><td className="px-4 py-2">~$368</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Indiana</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$200–$400</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Louisiana</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$200–$500</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Maryland</td><td className="px-4 py-2">Capped at $800</td><td className="px-4 py-2">Up to $800</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Massachusetts</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$300–$500</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Michigan</td><td className="px-4 py-2">Capped at $280</td><td className="px-4 py-2">$200–$280</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Minnesota</td><td className="px-4 py-2">Capped at $350</td><td className="px-4 py-2">Up to $350</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Missouri</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$200–$500</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Nevada</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$400–$700</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">New Jersey</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$300–$600</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">New York</td><td className="px-4 py-2">Capped at ~$175</td><td className="px-4 py-2">~$175</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">North Carolina</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$500–$800</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Ohio</td><td className="px-4 py-2">Capped at $387</td><td className="px-4 py-2">Up to $387</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Oregon</td><td className="px-4 py-2">Capped at ~$150</td><td className="px-4 py-2">~$150</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Pennsylvania</td><td className="px-4 py-2">Capped at ~$477</td><td className="px-4 py-2">Up to $477</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">South Carolina</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$400–$700</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Tennessee</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$300–$600</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Texas</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$150–$225</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Utah</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$300–$500</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Virginia</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$500–$800</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Washington</td><td className="px-4 py-2">Capped at ~$200</td><td className="px-4 py-2">~$200</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Wisconsin</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$200–$400</td></tr>
-                  <tr><td className="px-4 py-2">Wyoming</td><td className="px-4 py-2">No cap</td><td className="px-4 py-2">$200–$400</td></tr>
+                  {stateRows.map((state, idx) => (
+                    <tr key={state.abbreviation} className={idx < stateRows.length - 1 ? "border-b border-border/50" : ""} data-testid={`row-doc-fee-${state.abbreviation}`}>
+                      <td className="px-4 py-2">{state.name}</td>
+                      <td className="px-4 py-2">{formatCapStatus(state)}</td>
+                      <td className="px-4 py-2">{formatTypicalFee(state)}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

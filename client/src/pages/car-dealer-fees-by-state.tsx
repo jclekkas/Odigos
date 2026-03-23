@@ -6,6 +6,30 @@ import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import stateFeeData from "@/data/state_fee_reference.json";
+
+interface StateEntry {
+  name: string;
+  abbreviation: string;
+  docFeeCap: boolean;
+  docFeeCapAmount: number | null;
+  docFeeTypicalRange: [number, number];
+}
+
+const stateRows: StateEntry[] = Object.values(
+  stateFeeData.states as Record<string, StateEntry>
+).sort((a, b) => a.name.localeCompare(b.name));
+
+function formatDocFeeRange(state: StateEntry): string {
+  if (state.docFeeCap && state.docFeeCapAmount !== null) {
+    return `Up to $${state.docFeeCapAmount.toLocaleString()} (capped)`;
+  }
+  const [low, high] = state.docFeeTypicalRange;
+  if (low === 0 && high === 0) return "Varies (no cap)";
+  if (low === 0) return `Up to $${high.toLocaleString()} (no cap)`;
+  if (low === high) return `~$${low.toLocaleString()} (no cap)`;
+  return `$${low.toLocaleString()}–$${high.toLocaleString()} (no cap)`;
+}
 
 const FEE_REQUEST_MESSAGE = `Before I visit the dealership, could you please send the full out-the-door price including vehicle price, taxes, registration, doc fee, and any dealer add-ons? I'm comparing total pricing across multiple dealers.`;
 
@@ -78,7 +102,7 @@ export default function CarDealerFeesByState() {
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Typical dealer doc fee ranges by state</h2>
 
             <p className="text-muted-foreground mb-4">
-              The table below shows approximate documentation fee ranges for 20 major states. Some states set legal caps; others allow dealers to charge whatever they choose. Where there's no cap, the ranges shown reflect what buyers commonly report.
+              The table below shows approximate documentation fee ranges for all 50 states and Washington D.C. Some states set legal caps; others allow dealers to charge whatever they choose. Where there's no cap, the ranges shown reflect what buyers commonly report.
             </p>
 
             <div className="overflow-x-auto mb-4">
@@ -90,26 +114,12 @@ export default function CarDealerFeesByState() {
                   </tr>
                 </thead>
                 <tbody className="text-muted-foreground">
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">California</td><td className="px-4 py-2">~$85 (capped)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Florida</td><td className="px-4 py-2">$500–$1,000+ (no cap)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Texas</td><td className="px-4 py-2">$150–$225 typical (no cap)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">New York</td><td className="px-4 py-2">~$175 (capped)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Illinois</td><td className="px-4 py-2">~$368 (capped)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Pennsylvania</td><td className="px-4 py-2">Up to $477 (capped)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Ohio</td><td className="px-4 py-2">Up to $387 (capped)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Georgia</td><td className="px-4 py-2">$400–$700 (no cap)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">North Carolina</td><td className="px-4 py-2">$500–$800 (no cap)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Arizona</td><td className="px-4 py-2">$400–$600 typical</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Michigan</td><td className="px-4 py-2">$200–$280 (capped)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Washington</td><td className="px-4 py-2">~$200 (capped)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Virginia</td><td className="px-4 py-2">$500–$800 (no cap)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">New Jersey</td><td className="px-4 py-2">$300–$600 typical</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Massachusetts</td><td className="px-4 py-2">$300–$500 typical</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Colorado</td><td className="px-4 py-2">$400–$700 (no cap)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Minnesota</td><td className="px-4 py-2">Up to $350 (capped)</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Wisconsin</td><td className="px-4 py-2">$200–$400 typical</td></tr>
-                  <tr className="border-b border-border/50"><td className="px-4 py-2">Nevada</td><td className="px-4 py-2">$400–$700 (no cap)</td></tr>
-                  <tr><td className="px-4 py-2">Tennessee</td><td className="px-4 py-2">$300–$600 typical</td></tr>
+                  {stateRows.map((state, idx) => (
+                    <tr key={state.abbreviation} className={idx < stateRows.length - 1 ? "border-b border-border/50" : ""} data-testid={`row-state-fee-${state.abbreviation}`}>
+                      <td className="px-4 py-2">{state.name}</td>
+                      <td className="px-4 py-2">{formatDocFeeRange(state)}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
