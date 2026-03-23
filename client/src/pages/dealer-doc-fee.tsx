@@ -66,11 +66,11 @@ export default function DealerDocFee() {
             <ul className="space-y-2 mb-8 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                <span><strong className="text-foreground">Caps (examples):</strong> California ($85), New York ($175), Washington ($200), Maryland ($800 cap as of July 1, 2024).</span>
+                <span><strong className="text-foreground">Caps (examples):</strong> California ($85), New York ($175), Washington ($200), Texas ($225 as of July 2024), Maryland ($800 as of July 2024).</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                <span><strong className="text-foreground">No caps (examples):</strong> Florida, Georgia, Colorado — dealers can charge what they want, and $700–$1,000+ isn't unusual. Texas has no cap but market competition keeps most dealers in the $150–$225 range.</span>
+                <span><strong className="text-foreground">No caps (examples):</strong> Florida, Georgia, Colorado — dealers can charge what they want, and $700–$1,000+ isn't unusual.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>

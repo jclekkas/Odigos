@@ -89,7 +89,7 @@ export default function WhatIsADealerDocFee() {
           </li>
           <li className="flex items-start gap-2">
             <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-            <span><strong className="text-foreground">No-cap states:</strong> Florida, Georgia, Colorado, and many others have no statutory cap. Florida commonly sees $500–$1,000+, while Georgia and Colorado typically fall in the $400–$700 range. Texas also has no formal cap, though competitive market pressure keeps most Texas dealers in the $150–$225 range.</span>
+            <span><strong className="text-foreground">No-cap states:</strong> Florida, Georgia, Colorado, and many others have no statutory cap. Florida commonly sees $500–$1,000+, while Georgia and Colorado typically fall in the $400–$700 range.</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
