@@ -24,6 +24,7 @@ export const STATIC_ROUTES: string[] = [
   "/calculate-out-the-door-price",
   "/guides",
   "/admin/metrics",
+  "/about",
   "/privacy",
   "/terms",
   "/dealer-pricing-problems",

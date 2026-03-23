@@ -144,7 +144,7 @@ export default function About() {
                 Questions, corrections, or feedback:{" "}
                 <a
                   href="mailto:jclekkas@gmail.com"
-                  className="underline text-foreground hover:opacity-75 transition-opacity"
+                  className="underline text-foreground"
                   data-testid="link-contact-email"
                 >
                   jclekkas@gmail.com
@@ -159,21 +159,13 @@ export default function About() {
         </section>
 
         <div className="pt-4">
-          <Button
-            variant="cta"
-            asChild
-            size="lg"
-            className="gap-2"
-            data-testid="button-cta-about"
-          >
+          <Button variant="cta" asChild size="lg" className="gap-2" data-testid="button-cta-about">
             <Link href="/analyze">
               Check a Dealer Quote
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
-          <p className="mt-3 text-sm text-muted-foreground">
-            Takes 10 seconds. No signup required.
-          </p>
+          <p className="mt-3 text-sm text-muted-foreground">Takes 10 seconds. No signup required.</p>
         </div>
 
       </div>
