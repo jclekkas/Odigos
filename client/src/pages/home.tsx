@@ -1198,14 +1198,15 @@ export default function Home() {
       </main>
 
       <footer className="border-t border-border/50 mt-12">
-        <div className="max-w-4xl mx-auto px-6 py-6 text-center space-y-1">
+        <div className="max-w-4xl mx-auto px-6 py-6 text-center space-y-2">
           <p className="text-sm text-muted-foreground">
             Odigos provides estimates based on the information you share.
             Always verify details directly with the dealership.
           </p>
-          <p className="text-xs text-muted-foreground">
-            <a href="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</a>
-          </p>
+          <nav className="flex justify-center gap-4 text-xs text-muted-foreground">
+            <Link href="/privacy" className="hover:text-foreground transition-colors" data-testid="link-footer-privacy">Privacy</Link>
+            <Link href="/terms" className="hover:text-foreground transition-colors" data-testid="link-footer-terms">Terms</Link>
+          </nav>
         </div>
       </footer>
     </div>

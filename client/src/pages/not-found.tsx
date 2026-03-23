@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 import { ArrowRight } from "lucide-react";
 
 export default function NotFound() {
@@ -29,6 +30,7 @@ export default function NotFound() {
           </Button>
         </div>
       </main>
+      <SiteFooter />
     </div>
   );
 }

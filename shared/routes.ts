@@ -25,6 +25,7 @@ export const STATIC_ROUTES: string[] = [
   "/guides",
   "/admin/metrics",
   "/privacy",
+  "/terms",
   "/dealer-pricing-problems",
   "/how-odigos-works",
   "/example-analysis",

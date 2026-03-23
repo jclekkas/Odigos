@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { setSeoMeta } from "@/lib/seo";
 import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 
 export default function Terms() {
   useEffect(() => {
@@ -134,13 +135,7 @@ export default function Terms() {
         </article>
       </main>
 
-      <footer className="border-t border-border/50 mt-12">
-        <div className="max-w-2xl mx-auto px-6 py-6 text-center">
-          <p className="text-xs text-muted-foreground">
-            Odigos — Independent. Not affiliated with any dealership.
-          </p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

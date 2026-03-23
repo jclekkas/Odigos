@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 
 interface ArticleLayoutProps {
   children: React.ReactNode;
@@ -27,6 +28,7 @@ export default function ArticleLayout({ children, title, showBreadcrumbs = true 
           </article>
         </div>
       </main>
+      <SiteFooter />
     </div>
   );
 }
