@@ -1,0 +1,95 @@
+🧠 Overall Assessment
+This is a 9/10 plan.
+What it gets right:
+✅ Separate schemas (raw, core)
+✅ Doesn’t touch existing production tables (huge)
+✅ Defers ingestion (correct sequencing)
+✅ Uses Drizzle (fits your stack)
+✅ Materialized views included early (good for your homepage metric)
+What it’s missing (for your goals):
+❗ No explicit support for your “real deals analyzed” counter
+❗ No ingestion source tracking (critical for trust)
+❗ No guardrails for what counts as “analyzed”
+❗ Slight risk of metric inflation in national_stats
+🔥 The One Thing You MUST Add
+Before this gets implemented:
+👉 Add ingestion_source + “analyzed completeness”
+Right now you have:
+source (varchar: 'user_analysis', 'cfpb_derived', 'seed')
+That’s good—but not enough.
+✅ Upgrade It To This
+In core.listings:
+ingestion_source VARCHAR(50) NOT NULL, 
+-- 'user_submitted', 'cfpb', 'seed', 'internal_backfill'
+
+is_fully_analyzed BOOLEAN DEFAULT FALSE,
+analysis_version INT DEFAULT 1
+Why this matters:
+This powers:
+your homepage metric
+trust
+future ML filtering
+reproducibility
+🎯 Fix Your Metrics Layer (CRITICAL)
+Right now:
+core.national_stats is vague and risky
+You need a dedicated platform metrics view
+✅ Add This
+CREATE MATERIALIZED VIEW core.platform_metrics AS
+SELECT
+  COUNT(*) FILTER (
+    WHERE ingestion_source IN ('user_submitted', 'cfpb', 'internal_backfill')
+    AND is_fully_analyzed = TRUE
+  ) AS real_analyzed_deals,
+
+  COUNT(*) FILTER (
+    WHERE ingestion_source = 'user_submitted'
+  ) AS user_submissions,
+
+  COUNT(*) FILTER (
+    WHERE ingestion_source = 'cfpb'
+  ) AS enforcement_records,
+
+  COUNT(DISTINCT dealer_id) AS unique_dealers,
+
+  MAX(analyzed_at) AS last_updated_at
+FROM core.listings;
+🔥 This is your homepage number
+“X real deals analyzed”
+And it will be:
+accurate
+defensible
+auditable
+⚠️ Small But Important Schema Tweaks
+1. Dealer Matching Flexibility
+Right now:
+UNIQUE(dealer_name_normalized, city, state_code)
+👉 Keep it, but expect collisions later.
+No change needed now—but mentally mark it.
+2. Listings Source Naming
+They used:
+source: 'user_analysis', 'cfpb_derived', 'seed'
+👉 I’d standardize:
+'user_submitted'
+'cfpb'
+'seed'
+'internal_backfill'
+Consistency matters later for analytics.
+3. Add This Index (Important Early)
+CREATE INDEX idx_listings_ingestion_source 
+ON core.listings (ingestion_source);
+4. Add “flag_count”
+You’ll need it for scoring + ML:
+flag_count INT
+⚠️ Materialized View Risk (Fix This)
+They wrote:
+core.national_stats — cross-table aggregate
+🚨 This is dangerous if done wrong.
+DO NOT:
+cross join tables
+mix user analyses + listings incorrectly
+Safer pattern:
+SELECT
+  (SELECT COUNT(*) FROM core.listings) AS total_listings,
+  (SELECT COUNT(*) FROM raw.user_analyses) AS total_user_analyses,
+  (SELECT AVG(deal_score) FROM core.listings) AS avg_deal_score
