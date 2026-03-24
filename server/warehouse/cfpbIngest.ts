@@ -2,10 +2,11 @@
  * CFPB Vehicle Complaint Ingestion
  *
  * Pulls vehicle loan/lease complaint records from the CFPB public API,
- * inserts raw records into raw.enforcement_records, and normalizes them
- * into core.consumer_complaints with fuzzy dealer matching.
+ * inserts raw records into raw.enforcement_records, normalizes into
+ * core.consumer_complaints, AND writes a lightweight row to core.listings
+ * so that CFPB records appear in platform metrics.
  *
- * Run with: npm run warehouse:cfpb
+ * Run with: tsx server/warehouse/cfpbIngest.ts
  */
 import { db } from "../db";
 import { sql } from "drizzle-orm";
@@ -13,6 +14,7 @@ import {
   rawEnforcementRecords,
   coreConsumerComplaints,
   coreDealers,
+  coreListings,
 } from "@shared/warehouse";
 import { normalizeDealerName, refreshAllViews } from "./warehouseUtils";
 
@@ -98,6 +100,55 @@ function matchDealer(
   return null;
 }
 
+async function getOrCreateCfpbDealer(
+  companyName: string,
+  stateCode: string | null,
+  dealerMap: Map<string, string>
+): Promise<string | null> {
+  // First try fuzzy match against existing dealers
+  const matchedId = matchDealer(companyName, dealerMap);
+  if (matchedId) return matchedId;
+
+  // Create a new dealer record for the CFPB company
+  const normalized = normalizeDealerName(companyName);
+  if (!normalized) return null;
+  const effectiveState = stateCode ?? "XX";
+
+  try {
+    const inserted = await db
+      .insert(coreDealers)
+      .values({
+        dealerName: companyName,
+        dealerNameNormalized: normalized,
+        city: effectiveState,
+        stateCode: effectiveState !== "XX" ? effectiveState : null,
+      })
+      .onConflictDoNothing()
+      .returning({ id: coreDealers.id });
+
+    if (inserted.length > 0) {
+      dealerMap.set(normalized, inserted[0].id);
+      return inserted[0].id;
+    }
+
+    // Race condition — refetch
+    const refetch = await db
+      .select({ id: coreDealers.id })
+      .from(coreDealers)
+      .where(
+        sql`dealer_name_normalized = ${normalized} AND state_code ${effectiveState !== "XX" ? sql`= ${effectiveState}` : sql`IS NULL`} AND city = ${effectiveState}`
+      )
+      .limit(1);
+    if (refetch.length > 0) {
+      dealerMap.set(normalized, refetch[0].id);
+      return refetch[0].id;
+    }
+  } catch {
+    // Ignore dealer creation errors — listing will have null dealerId
+  }
+  return null;
+}
+
 async function ingestHits(hits: CfpbHit[]): Promise<number> {
   if (hits.length === 0) return 0;
 
@@ -111,7 +162,7 @@ async function ingestHits(hits: CfpbHit[]): Promise<number> {
     const complaintId = src.complaint_id ?? null;
     if (!complaintId) continue;
 
-    // Insert into raw.enforcement_records — skip if already present
+    // ── raw.enforcement_records ─────────────────────────────────────────────
     let rawRecordId: number | null = null;
     try {
       const rawResult = await db
@@ -125,7 +176,7 @@ async function ingestHits(hits: CfpbHit[]): Promise<number> {
         .returning({ id: rawEnforcementRecords.id });
 
       if (rawResult.length === 0) {
-        // Already exists — look up existing row's id
+        // Already present — check if listing already exists too
         const existing = await db
           .select({ id: rawEnforcementRecords.id })
           .from(rawEnforcementRecords)
@@ -134,6 +185,23 @@ async function ingestHits(hits: CfpbHit[]): Promise<number> {
           )
           .limit(1);
         rawRecordId = existing[0]?.id ?? null;
+
+        // Check if core.listings row already present for this raw record
+        if (rawRecordId) {
+          const listingExists = await db
+            .select({ id: coreListings.id })
+            .from(coreListings)
+            .where(
+              sql`ingestion_source = 'cfpb' AND dealer_id IN (
+                SELECT id FROM core.dealers WHERE dealer_name_normalized = ${normalizeDealerName(src.company ?? "")}
+              ) AND listing_date = ${(src.date_received ?? "").slice(0, 10)}`
+            )
+            .limit(1);
+          if (listingExists.length > 0) {
+            // Already fully ingested — skip
+            continue;
+          }
+        }
       } else {
         rawRecordId = rawResult[0].id;
       }
@@ -145,7 +213,7 @@ async function ingestHits(hits: CfpbHit[]): Promise<number> {
       continue;
     }
 
-    // Normalize into core.consumer_complaints
+    // ── Shared derived fields ───────────────────────────────────────────────
     const stateCode = src.state?.toUpperCase().slice(0, 2) ?? null;
     const companyName = src.company ?? null;
     const complaintType = src.issue ?? null;
@@ -157,8 +225,12 @@ async function ingestHits(hits: CfpbHit[]): Promise<number> {
         ? complaintDateStr.slice(0, 10)
         : null;
 
-    const dealerId = companyName ? matchDealer(companyName, dealerMap) : null;
+    // Dealer: fuzzy match or create new entry for the CFPB company
+    const dealerId = companyName
+      ? await getOrCreateCfpbDealer(companyName, stateCode, dealerMap)
+      : null;
 
+    // ── core.consumer_complaints ────────────────────────────────────────────
     try {
       await db.insert(coreConsumerComplaints).values({
         rawRecordId,
@@ -170,11 +242,40 @@ async function ingestHits(hits: CfpbHit[]): Promise<number> {
         complaintSubtype,
         companyResponse,
       });
+    } catch (err) {
+      // Likely duplicate — continue to still write core.listings
+      console.warn(
+        `[cfpb] consumer_complaint insert failed for ${complaintId}:`,
+        (err as Error).message
+      );
+    }
+
+    // ── core.listings — so CFPB records appear in platform metrics ──────────
+    // CFPB rows are complaint records; vehicle/pricing fields are null.
+    // counts_toward_real_deals = true so they contribute to real_analyzed_deals.
+    try {
+      const analyzedAt = complaintDate
+        ? new Date(complaintDate)
+        : new Date();
+
+      await db.insert(coreListings).values({
+        dealerId,
+        ingestionSource: "cfpb",
+        isFullyProcessed: true,
+        countsTowardRealDeals: true,
+        analysisVersion: 1,
+        isDuplicate: false,
+        isTestData: false,
+        hasPipelineError: false,
+        flagCount: 0,
+        stateCode,
+        listingDate: complaintDate ?? new Date().toISOString().slice(0, 10),
+        analyzedAt,
+      });
       inserted++;
     } catch (err) {
-      // Likely duplicate — swallow silently
       console.warn(
-        `[cfpb] complaint insert failed for ${complaintId}:`,
+        `[cfpb] listing insert failed for ${complaintId}:`,
         (err as Error).message
       );
     }

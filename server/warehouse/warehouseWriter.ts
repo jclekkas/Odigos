@@ -116,12 +116,45 @@ export async function writeSubmissionToWarehouse(
   });
 
   // ── (b) core.dealers ───────────────────────────────────────────────────────
+  // Try to extract dealer-identifying text from the analysis result.
+  // The LLM may include dealerName/dealership in detectedFields as extra JSONB keys,
+  // and the reasoning/summary often name the dealership.
   const effectiveState = stateCode ?? "XX";
   const sentinelCity = STATE_FULL_NAMES[effectiveState] ?? effectiveState;
-  const dealerName = `Unknown Dealer - ${effectiveState}`;
-  const dealerCity = sentinelCity;
 
-  const dealerId = await getOrCreateDealer(dealerName, dealerCity, effectiveState);
+  const detectedFieldsRaw = finalResult.detectedFields as Record<string, unknown>;
+  const extractedDealerName: string | null =
+    (detectedFieldsRaw?.dealerName as string | undefined) ??
+    (detectedFieldsRaw?.dealership as string | undefined) ??
+    null;
+
+  // Simple heuristic on request.dealerText: look for patterns like "at [Name]" or "[Name] Toyota"
+  let textDealerName: string | null = null;
+  if (!extractedDealerName && data.dealerText) {
+    const atMatch = data.dealerText.match(
+      /(?:from|at|with|visit(?:ing)?)\s+([A-Z][a-zA-Z0-9 &'-]{3,40}?)\s*(?:Toyota|Honda|Ford|Chevrolet|Chevy|Nissan|Hyundai|Kia|Ram|Dodge|Jeep|Subaru|Mazda|Volkswagen|VW|BMW|Mercedes|Audi|Lexus|Cadillac|Buick|GMC|Chrysler|Volvo|Tesla|Rivian|Lucid|Genesis|Infiniti|Acura|Lincoln|Mitsubishi|MINI|Porsche|Land Rover|Jaguar|Maserati)/i
+    );
+    if (atMatch?.[0]) {
+      // Extract just the dealer name portion
+      const fullMatch = atMatch[0];
+      const makeMatch = atMatch[0].match(
+        /Toyota|Honda|Ford|Chevrolet|Chevy|Nissan|Hyundai|Kia|Ram|Dodge|Jeep|Subaru|Mazda|Volkswagen|VW|BMW|Mercedes|Audi|Lexus|Cadillac|Buick|GMC|Chrysler|Volvo|Tesla|Rivian|Lucid|Genesis|Infiniti|Acura|Lincoln|Mitsubishi|MINI|Porsche|Land Rover|Jaguar|Maserati/i
+      );
+      if (makeMatch) {
+        const makeIdx = fullMatch.indexOf(makeMatch[0]);
+        const prefixClean = fullMatch
+          .slice(0, makeIdx + makeMatch[0].length)
+          .replace(/^(?:from|at|with|visit(?:ing)?)\s+/i, "")
+          .trim();
+        if (prefixClean.length >= 4) textDealerName = prefixClean;
+      }
+    }
+  }
+
+  const resolvedDealerName = extractedDealerName ?? textDealerName ?? `Unknown Dealer - ${effectiveState}`;
+  const dealerCity = extractedDealerName || textDealerName ? effectiveState : sentinelCity;
+
+  const dealerId = await getOrCreateDealer(resolvedDealerName, dealerCity, effectiveState);
 
   // ── (c) core.listings ─────────────────────────────────────────────────────
   const hasMarketAdj = fees.some((f) => /market.?adjust|markup|adm/i.test(f.name));

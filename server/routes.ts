@@ -1020,40 +1020,74 @@ GO/NO-GO/NEED-MORE-INFO:
       const { db } = await import("./db");
       const { sql } = await import("drizzle-orm");
 
-      // Try platform_metrics materialized view first
+      // ── Primary: core.platform_metrics materialized view ──────────────────
+      // view columns: real_deals_analyzed, user_submissions, enforcement_records,
+      //               unique_dealers, last_updated_at
       let viewRow: Record<string, unknown> | null = null;
+      let viewHasData = false;
       try {
-        const rows = await db.execute(
+        const viewResult = await db.execute(
           sql`SELECT * FROM core.platform_metrics LIMIT 1`,
         );
-        viewRow = (rows.rows?.[0] as Record<string, unknown>) ?? null;
+        const candidate = viewResult.rows?.[0] as Record<string, unknown> | undefined;
+        if (candidate && Number(candidate.real_deals_analyzed ?? 0) > 0) {
+          viewRow = candidate;
+          viewHasData = true;
+        }
       } catch {
         viewRow = null;
       }
 
-      // Always compute total_dataset_size + new_last_24h fresh (view may lag)
-      const totals = await db.execute(sql`
-        SELECT
-          COUNT(*) FILTER (WHERE ingestion_source IN ('user_submitted','internal_backfill') AND is_fully_processed = true) AS real_analyzed_deals,
-          COUNT(*) FILTER (WHERE ingestion_source = 'user_submitted') AS user_submissions,
-          COUNT(*) FILTER (WHERE ingestion_source = 'cfpb') AS cfpb_records,
-          COUNT(*) AS total_dataset_size,
-          COUNT(DISTINCT dealer_id) AS unique_dealers,
-          COUNT(*) FILTER (WHERE analyzed_at >= NOW() - INTERVAL '24 hours') AS new_last_24h,
-          MAX(analyzed_at) AS last_updated_at
-        FROM core.listings
-      `);
-      const row = totals.rows?.[0] as Record<string, unknown> | undefined;
+      // ── Fallback (view empty/unavailable): direct aggregate with identical semantics ─
+      // real_analyzed_deals = counts_toward_real_deals = TRUE
+      //   which includes user_submitted + cfpb + internal_backfill (all with is_fully_processed=true)
+      //   and EXCLUDES seed (counts_toward_real_deals always false for seed)
+      let fallbackRow: Record<string, unknown> | null = null;
+      if (!viewHasData) {
+        try {
+          const fbResult = await db.execute(sql`
+            SELECT
+              COUNT(*) FILTER (WHERE counts_toward_real_deals = TRUE)          AS real_deals_analyzed,
+              COUNT(*) FILTER (WHERE ingestion_source = 'user_submitted')      AS user_submissions,
+              COUNT(*) FILTER (WHERE ingestion_source = 'cfpb')                AS enforcement_records,
+              COUNT(DISTINCT dealer_id)                                         AS unique_dealers,
+              MAX(analyzed_at)                                                  AS last_updated_at
+            FROM core.listings
+          `);
+          fallbackRow = (fbResult.rows?.[0] as Record<string, unknown>) ?? null;
+        } catch {
+          fallbackRow = null;
+        }
+      }
+
+      const statsRow = viewRow ?? fallbackRow ?? {};
+
+      // ── Live supplements: total_dataset_size + new_last_24h (always fresh) ─
+      let totalDatasetSize = 0;
+      let newLast24h = 0;
+      try {
+        const liveResult = await db.execute(sql`
+          SELECT
+            COUNT(*) AS total_dataset_size,
+            COUNT(*) FILTER (WHERE analyzed_at >= NOW() - INTERVAL '24 hours') AS new_last_24h
+          FROM core.listings
+        `);
+        const lr = liveResult.rows?.[0] as Record<string, unknown> | undefined;
+        totalDatasetSize = Number(lr?.total_dataset_size ?? 0);
+        newLast24h = Number(lr?.new_last_24h ?? 0);
+      } catch {
+        // Ignore — return 0
+      }
 
       res.setHeader("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
       res.json({
-        real_analyzed_deals: Number(row?.real_analyzed_deals ?? viewRow?.real_deals_analyzed ?? 0),
-        user_submissions: Number(row?.user_submissions ?? viewRow?.user_submissions ?? 0),
-        cfpb_records: Number(row?.cfpb_records ?? viewRow?.enforcement_records ?? 0),
-        total_dataset_size: Number(row?.total_dataset_size ?? 0),
-        unique_dealers: Number(row?.unique_dealers ?? viewRow?.unique_dealers ?? 0),
-        new_last_24h: Number(row?.new_last_24h ?? 0),
-        last_updated_at: row?.last_updated_at ?? viewRow?.last_updated_at ?? null,
+        real_analyzed_deals: Number(statsRow.real_deals_analyzed ?? 0),
+        user_submissions: Number(statsRow.user_submissions ?? 0),
+        cfpb_records: Number(statsRow.enforcement_records ?? 0),
+        total_dataset_size: totalDatasetSize,
+        unique_dealers: Number(statsRow.unique_dealers ?? 0),
+        new_last_24h: newLast24h,
+        last_updated_at: statsRow.last_updated_at ?? null,
       });
     } catch (err) {
       console.error("[stats] /api/stats error:", err);
