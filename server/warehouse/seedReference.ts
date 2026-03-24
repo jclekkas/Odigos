@@ -97,9 +97,15 @@ export async function seedReferenceData(): Promise<void> {
   console.log("[seedReference] Reference data seeding complete.");
 }
 
-seedReferenceData()
-  .then(() => process.exit(0))
-  .catch((err) => {
-    console.error("[seedReference] Fatal error:", err);
-    process.exit(1);
-  });
+// Only auto-execute when this file is run directly as an ESM script
+const isMain = process.argv[1]?.endsWith("seedReference.ts") ||
+  process.argv[1]?.endsWith("seedReference.js");
+
+if (isMain) {
+  seedReferenceData()
+    .then(() => process.exit(0))
+    .catch((err) => {
+      console.error("[seedReference] Fatal error:", err);
+      process.exit(1);
+    });
+}
