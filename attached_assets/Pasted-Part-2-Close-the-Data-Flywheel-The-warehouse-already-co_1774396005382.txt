@@ -1,0 +1,39 @@
+Part 2: Close the Data Flywheel
+The warehouse already computes state-level stats and dealer-level metrics via materialized views, but none of this intelligence flows back into analysis responses. Fix that:
+
+Inject warehouse context into /api/analyze responses. After the GPT-4o analysis and rule engine processing, query the warehouse for contextual data:
+
+From core.state_stats (or the materialized view): get the average doc fee, average deal score, and total analyses for the detected state
+From core.dealers (if the dealer is recognized): get listing count, average deal score, and any dealer-specific patterns
+Add a new section to the analysis response called marketContext or warehouseInsights with fields like:
+
+
+
+     {
+       stateAvgDocFee: number | null,
+       stateAvgDealScore: number | null, 
+       stateTotalAnalyses: number | null,
+       dealerAnalysisCount: number | null,
+       dealerAvgScore: number | null,
+       docFeeVsStateAvg: number | null  // positive = above avg
+     }
+
+Only include this data if there are enough analyses to be statistically meaningful (minimum 10 state-level, 3 dealer-level)
+
+
+Surface warehouse insights in the frontend. In the analysis results component, add a "Market Context" or "How This Compares" section that displays the warehouse data in a user-friendly way:
+
+"We've analyzed X deals in [State] — this doc fee is $Y above/below the state average"
+"This dealer's average deal score across N analyses is X/10"
+Only show these when data exists and meets the minimum threshold
+Style it as a subtle info card, not the primary result — the deal verdict should still be the hero
+
+
+Add user feedback collection. After the analysis results are shown (both free and paid), add a simple thumbs up/thumbs down component with an optional one-line text field. Store this in a new dealFeedback table with columns: id, listingId (FK to the analysis), rating (boolean), comment (text, nullable), createdAt. This feedback is future training signal for improving the AI and rule engine.
+
+Important notes:
+
+Don't break existing functionality. The free preview and paid analysis flow must continue working exactly as they do now.
+Run the existing test suite after changes and fix any failures.
+The $79 tier code can stay in the codebase but should remain inactive/not shown in production.
+Use the existing Drizzle ORM patterns for any new database tables or queries.

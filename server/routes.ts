@@ -933,7 +933,10 @@ GO/NO-GO/NEED-MORE-INFO:
       const { getTechnicalSummary, getPiiExpiryStatus } = await import("./metrics");
       const [summary, piiRetention] = await Promise.all([
         getTechnicalSummary(),
-        getPiiExpiryStatus(),
+        getPiiExpiryStatus().catch((err: any) => {
+          console.warn("[technical] warehouse unavailable, returning empty PII status:", err?.message);
+          return { overdueCount: 0, oldestOverdueDays: null, warehouseUnavailable: true };
+        }),
       ]);
       res.json({ ...summary, piiRetention });
     } catch (error: any) {
