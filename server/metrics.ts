@@ -1458,3 +1458,42 @@ export async function getBIFallout(range: DateRange): Promise<BIFallout> {
 
   return { checkoutsWithoutPayment, avgMinutesSubmissionToCheckout, dropoffByHour };
 }
+
+export interface PiiExpiryStatus {
+  overdueCount: number;
+  oldestOverdueDays: number | null;
+}
+
+export async function getPiiExpiryStatus(): Promise<PiiExpiryStatus> {
+  const { db } = await import("./db");
+  const { sql } = await import("drizzle-orm");
+
+  const result = await db.execute(sql`
+    SELECT
+      SUM(overdue_count)::int AS overdue_count,
+      MAX(oldest_overdue_days)::int AS oldest_overdue_days
+    FROM (
+      SELECT
+        COUNT(*) AS overdue_count,
+        MAX(EXTRACT(EPOCH FROM (NOW() - raw_text_expires_at)) / 86400) AS oldest_overdue_days
+      FROM dealer_submissions
+      WHERE raw_text_expires_at < NOW()
+        AND raw_text_redacted IS NOT NULL
+      UNION ALL
+      SELECT
+        COUNT(*) AS overdue_count,
+        MAX(EXTRACT(EPOCH FROM (NOW() - retention_expires_at)) / 86400) AS oldest_overdue_days
+      FROM raw.user_analyses
+      WHERE retention_expires_at < NOW()
+        AND submitted_text_redacted IS NOT NULL
+    ) AS combined
+  `);
+
+  const row = result.rows[0] as { overdue_count: number | null; oldest_overdue_days: number | null };
+  const overdueCount = row.overdue_count ?? 0;
+
+  return {
+    overdueCount,
+    oldestOverdueDays: overdueCount === 0 ? null : (row.oldest_overdue_days ?? null),
+  };
+}

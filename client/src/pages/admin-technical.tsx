@@ -88,6 +88,10 @@ interface TechnicalSummary {
     fid: { avg: number | null; rating: string | null };
     inp: { avg: number | null; rating: string | null };
   };
+  piiRetention: {
+    overdueCount: number;
+    oldestOverdueDays: number | null;
+  };
 }
 
 function getAdminKey(): string {
@@ -276,6 +280,41 @@ export default function AdminTechnical() {
               </div>
             ) : (
               <p className="text-muted-foreground text-sm">Unable to load health data</p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card data-testid="panel-pii-retention">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Clock className="h-4 w-4" /> PII Retention
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {!tech ? (
+              <div className="h-12 bg-muted animate-pulse rounded" />
+            ) : tech.piiRetention.overdueCount === 0 ? (
+              <div className="flex items-center gap-2" data-testid="status-pii-retention">
+                <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                  All clear
+                </span>
+                <span className="text-sm text-muted-foreground">No overdue PII records</span>
+              </div>
+            ) : (
+              <div className="space-y-1" data-testid="status-pii-retention">
+                <div className="flex items-center gap-2">
+                  <XCircle className="h-4 w-4 text-red-500" />
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                    {tech.piiRetention.overdueCount} records overdue
+                  </span>
+                </div>
+                {tech.piiRetention.oldestOverdueDays !== null && (
+                  <p className="text-xs text-muted-foreground pl-6">
+                    oldest: {tech.piiRetention.oldestOverdueDays} {tech.piiRetention.oldestOverdueDays === 1 ? "day" : "days"} past due
+                  </p>
+                )}
+              </div>
             )}
           </CardContent>
         </Card>

@@ -930,9 +930,12 @@ GO/NO-GO/NEED-MORE-INFO:
       return res.status(401).json({ error: "Unauthorized" });
     }
     try {
-      const { getTechnicalSummary } = await import("./metrics");
-      const summary = await getTechnicalSummary();
-      res.json(summary);
+      const { getTechnicalSummary, getPiiExpiryStatus } = await import("./metrics");
+      const [summary, piiRetention] = await Promise.all([
+        getTechnicalSummary(),
+        getPiiExpiryStatus(),
+      ]);
+      res.json({ ...summary, piiRetention });
     } catch (error: any) {
       console.error("Technical metrics error:", error?.message || error);
       res.status(500).json({ error: "Failed to fetch technical metrics", message: error?.message });
