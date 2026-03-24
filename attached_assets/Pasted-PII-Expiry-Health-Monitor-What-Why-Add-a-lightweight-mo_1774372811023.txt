@@ -1,0 +1,111 @@
+PII Expiry Health Monitor
+What & Why
+Add a lightweight monitor that answers one operational question:
+“Do we currently have any expired PII that should have been cleared?”
+The 90-day cleanup job already runs every 24 hours. This task makes any enforcement gap visible immediately instead of silently persisting until someone checks logs or the next cleanup run.
+This is an admin observability feature, not a cleanup-job rewrite.
+Done looks like
+/admin/technical shows a new PII Retention status card
+Green / “All clear” when there are zero overdue rows
+Red / “X records overdue” when any row in:
+dealer_submissions
+raw.user_analyses
+has passed its expiry timestamp but still contains non-null text that should have been cleared
+In the red state, the card also shows the oldest overdue age
+example: oldest: 3 days past due
+The card refreshes with the rest of the dashboard every 60 seconds
+no extra polling
+No new route is added
+data is included in the existing /api/technical response
+The query is lightweight and safe for repeated polling
+Out of scope
+Triggering the cleanup job from the UI
+Alerting, email, Slack, or paging
+Per-row drill-down
+Showing any PII content
+Changes to the cleanup job, retention logic, or scheduler
+New admin routes
+Tasks
+1. Backend: PII expiry status query
+Add a getPiiExpiryStatus() function in:
+server/metrics.ts
+A small adjacent helper is acceptable only if server/metrics.ts becomes too crowded.
+Requirements:
+Use a single aggregate SQL query with UNION ALL across:
+dealer_submissions
+raw.user_analyses
+Each branch of the union must select rows where:
+the expiry timestamp is in the past
+the text field that should have been cleared is still non-null
+Use the exact column names already defined in the schema and cleanup job
+Do not duplicate or rewrite cleanup logic
+Do not load full rows into memory
+Do not return row contents
+Compute both:
+total overdue row count
+oldest overdue age in whole days
+Derive both values from this single consistent query path
+Return:
+{
+  overdueCount: number,
+  oldestOverdueDays: number | null
+}
+Rules:
+overdueCount = total overdue rows across both tables
+oldestOverdueDays = null when overdueCount === 0
+2. API: expose via existing /api/technical response
+Update the existing /api/technical handler in:
+server/routes.ts
+Requirements:
+Call getPiiExpiryStatus() inside the existing handler
+Add the result as a new piiRetention field on the response object
+Keep everything else in the response unchanged
+Do not add a new route
+Expected response addition:
+piiRetention: {
+  overdueCount: number,
+  oldestOverdueDays: number | null
+}
+3. Frontend: PII Retention status card
+Update:
+client/src/pages/admin-technical.tsx
+Add a new PII Retention card in the System Health section.
+Behavior:
+When overdueCount === 0
+show a green status badge
+label: All clear
+When overdueCount > 0
+show a red status badge
+label: X records overdue
+secondary line: oldest: N days past due
+Requirements:
+Match the existing dashboard card / status visual language
+No extra polling interval
+Rely on the dashboard’s existing 60-second refresh
+Do not show table names or raw data in the UI
+Acceptance report required
+At completion, output:
+Exact backend columns used for overdue detection in each table
+Exact shape added to /api/technical
+Where the new card was placed in /admin/technical
+Green-state behavior
+Red-state behavior
+How oldestOverdueDays is calculated
+Confirmation that no extra polling and no new route were added
+Relevant files
+server/metrics.ts
+server/routes.ts
+client/src/pages/admin-technical.tsx
+shared/schema.ts
+shared/warehouse.ts
+server/jobs/piiCleanup.ts
+Constraints
+Do NOT change the cleanup job itself
+Do NOT change the scheduler
+Do NOT add a new route
+Do NOT expose any PII values
+Keep the query lightweight because this endpoint refreshes every 60 seconds
+Reuse existing admin dashboard patterns and styling
+Be precise about which columns define:
+expiry
+uncleared text still present

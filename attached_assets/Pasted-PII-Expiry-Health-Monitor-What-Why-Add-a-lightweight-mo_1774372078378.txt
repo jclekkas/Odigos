@@ -1,0 +1,107 @@
+PII Expiry Health Monitor
+What & Why
+Add a lightweight monitor that answers one operational question:
+“Do we currently have any expired PII that should have been cleared?”
+The 90-day cleanup job already runs every 24 hours. This task makes any enforcement gap visible immediately instead of silently persisting until someone checks logs or the next cleanup run.
+This is an admin observability feature, not a cleanup-job rewrite.
+Done looks like
+/admin/technical shows a new PII Retention status card
+The card shows green / “All clear” when there are zero overdue rows
+The card shows red / “X records overdue” when any row in:
+dealer_submissions
+raw.user_analyses
+has passed its expiry timestamp but still contains non-null text that should have been cleared
+In the red state, the card also shows the oldest overdue age (example: oldest: 3 days past due)
+The card refreshes automatically with the rest of the dashboard (every 60 seconds, no extra polling)
+No new route is added; the data is included in the existing /api/technical response
+Query is lightweight and safe for repeated polling
+Out of scope
+Triggering the cleanup job from the UI
+Alerting, email, Slack, or paging
+Per-row drill-down
+Showing any PII content
+Changes to the cleanup job, retention logic, or scheduler
+New admin routes
+Tasks
+1. Backend: PII expiry status query
+Add a getPiiExpiryStatus() function in:
+server/metrics.ts
+If that file becomes too crowded, a very small adjacent helper is acceptable, but prefer keeping it in server/metrics.ts.
+The function should run two lightweight queries:
+Query 1 — dealer_submissions
+Count rows where:
+expiry timestamp is in the past
+text field is still non-null
+row is therefore overdue for clearing
+Use the correct existing columns from the current schema / cleanup implementation.
+Query 2 — raw.user_analyses
+Count rows where:
+expiry timestamp is in the past
+submitted text field is still non-null
+row is therefore overdue for clearing
+Also compute the oldest overdue record age in whole days across both tables.
+Return:
+{
+  overdueCount: number,
+  oldestOverdueDays: number | null
+}
+Rules:
+overdueCount = total overdue rows across both tables
+oldestOverdueDays = null when overdueCount === 0
+do not load full rows into memory
+do not return row contents
+do not duplicate cleanup logic; this is just a monitor
+2. API: expose via existing /api/technical response
+Update the existing technical/admin API response to include the new PII retention status.
+Do not add a new route.
+Add a new field to the existing /api/technical response object, for example:
+piiRetention: {
+  overdueCount: number,
+  oldestOverdueDays: number | null
+}
+Keep the rest of the response unchanged.
+Relevant file:
+server/routes.ts
+3. Frontend: add “PII Retention” status card
+Update:
+client/src/pages/admin-technical.tsx
+Add a new card in the System Health section.
+Behavior:
+When overdueCount === 0
+show green status
+label: All clear
+When overdueCount > 0
+show red status
+label: X records overdue
+also show: oldest: N days past due
+Requirements:
+Use the existing dashboard visual language / status-card style
+No extra polling interval; use the dashboard’s existing 60-second refresh
+Do not show table names or raw data in the UI
+Keep copy concise and operational
+Relevant files
+server/metrics.ts
+server/routes.ts
+client/src/pages/admin-technical.tsx
+shared/schema.ts
+shared/warehouse.ts
+server/jobs/piiCleanup.ts
+Constraints
+Do NOT change the cleanup job itself
+Do NOT change the scheduler
+Do NOT add a new route
+Do NOT expose any PII values
+Keep queries lightweight; this endpoint refreshes every 60 seconds
+Reuse existing admin dashboard patterns and styling
+Be precise about which columns define:
+expiry
+uncleared text still present
+Acceptance report (required)
+At completion, output:
+exact backend fields used for overdue detection in each table
+exact shape added to /api/technical
+where the new card was placed in /admin/technical
+green-state behavior
+red-state behavior
+how oldest overdue days is calculated
+confirmation that no extra polling and no new route were added
