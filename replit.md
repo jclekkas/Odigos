@@ -56,6 +56,13 @@ Note: The database is used for metrics tracking and optional features. The core 
 - **Admin Dashboard**: `/admin/metrics` displays key business metrics (private, not in sitemap)
 - **Tracked Data**: Submissions, payments, revenue, conversion rate, score distribution, activity timeline
 
+### API Endpoints (key)
+- `POST /api/analyze` — main deal analysis (OpenAI + rule engine)
+- `POST /api/extract-text` — OCR/PDF text extraction from uploaded file
+- `GET /api/state-fee/:state` — doc fee cap and tax data for a US state abbreviation
+- `GET /api/stripe-status` — whether Stripe is configured
+- `GET /api/health` — server health check
+
 ### Development vs Production
 - **Development**: Vite dev server with HMR, proxied through Express
 - **Production**: Vite builds static assets to `dist/public`, Express serves them with `serveStatic`
@@ -88,6 +95,38 @@ Note: The database is used for metrics tracking and optional features. The core 
 - **Express Serving**: `server/static.ts` checks for prerendered route HTML before SPA fallback
 - **Build Flow**: `npx vite build` → `node scripts/prerender.mjs` → deploy
 - **Adding New Routes**: Add route to `ROUTES` array in `scripts/prerender.mjs` and `PRERENDERED_ROUTES` in `server/static.ts`
+
+## Testing
+
+### Test Stack
+- **Vitest 4**: Unit, API integration, and component tests (`npx vitest run`)
+- **Playwright**: End-to-end browser tests (`npx playwright test`)
+- **@testing-library/react**: Component test rendering (jsdom)
+- **supertest**: HTTP-level API integration tests
+
+### Running Tests
+```bash
+npx vitest run                    # all 110 tests (unit + api + components)
+npx vitest run --project unit     # rule engine, state fee, PII redact, schema
+npx vitest run --project api      # /api/analyze, /api/extract-text, /api/state-fee
+npx vitest run --project components  # home, landing, about, privacy
+npx playwright test               # E2E (requires dev server on port 5000)
+```
+
+### Test Layout
+```
+tests/
+├── unit/         ruleEngine, stateFeeLookup, piiRedact, schema
+├── api/          analyze, extractText, stateFee endpoint
+├── components/   home, landing, about, privacy (jsdom + HelmetProvider)
+└── e2e/          analyzer.spec.ts (Playwright, all routes intercepted)
+```
+
+### Key Constraints
+- No real OpenAI or Stripe calls in any test — all mocked via `vi.mock()`
+- Component tests use `// @vitest-environment jsdom` docblocks (Vitest v4)
+- `vitest.config.ts` defines three separate projects: `unit`, `api`, `components`
+- See `TESTING.md` for full documentation
 
 ### Key NPM Packages
 - `openai`: OpenAI SDK for LLM calls

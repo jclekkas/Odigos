@@ -860,6 +860,15 @@ GO/NO-GO/NEED-MORE-INFO:
     }
   });
 
+  app.get("/api/state-fee/:state", (req, res) => {
+    const state = (req.params.state ?? "").toUpperCase();
+    const data = getStateFeeData(state);
+    if (!data) {
+      return res.status(404).json({ error: "Unknown state abbreviation" });
+    }
+    return res.json(data);
+  });
+
   app.get("/api/health", (_req, res) => {
     const uptimeSeconds = process.uptime();
     const mem = process.memoryUsage();

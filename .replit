@@ -29,6 +29,22 @@ author = "agent"
 task = "workflow.run"
 args = "Start application"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "test:unit"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "test:api"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "test:components"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "test"
+
 [[workflows.workflow]]
 name = "Start application"
 author = "agent"
@@ -40,6 +56,50 @@ waitForPort = 5000
 
 [workflows.workflow.metadata]
 outputType = "webview"
+
+[[workflows.workflow]]
+name = "test:unit"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx vitest run --project unit"
+
+[workflows.workflow.metadata]
+isValidation = true
+
+[[workflows.workflow]]
+name = "test:api"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx vitest run --project api"
+
+[workflows.workflow.metadata]
+isValidation = true
+
+[[workflows.workflow]]
+name = "test:components"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx vitest run --project components"
+
+[workflows.workflow.metadata]
+isValidation = true
+
+[[workflows.workflow]]
+name = "test"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx vitest run"
+
+[workflows.workflow.metadata]
+isValidation = true
 
 [agent]
 integrations = ["github:1.0.0"]

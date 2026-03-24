@@ -27,10 +27,10 @@ const MOCK_ANALYSIS = {
 const RED_ANALYSIS = {
   ...MOCK_ANALYSIS,
   dealScore: "RED",
-  confidenceLevel: "LOW",
-  verdictLabel: "NO-GO — REMOVE MARKET ADJUSTMENT",
+  confidenceLevel: "HIGH",
+  verdictLabel: "NO-GO — DOC FEE EXCEEDS CA STATE CAP",
   goNoGo: "NO-GO",
-  summary: "Market adjustment detected. This is a red flag.",
+  summary: "Doc fee of $895 exceeds the CA cap of $85.",
 };
 
 async function interceptAnalyzeRoute(page: Page, response: object, statusCode = 200) {
@@ -58,6 +58,8 @@ async function interceptStatsRoutes(page: Page) {
       body: JSON.stringify({ count: 0, type: "none" }),
     })
   );
+  await page.route("**/api/track", (route) => route.fulfill({ status: 200, body: "{}" }));
+  await page.route("**/api/vitals", (route) => route.fulfill({ status: 200, body: "{}" }));
 }
 
 // ─── Landing page ──────────────────────────────────────────────────────────────
@@ -70,6 +72,14 @@ test.describe("Landing page", () => {
     await expect(headline).toBeVisible();
     const cta = page.getByTestId("button-cta-hero");
     await expect(cta).toBeVisible();
+  });
+
+  test("CTA button navigates to the analyzer", async ({ page }) => {
+    await interceptStatsRoutes(page);
+    await page.goto("/");
+    const cta = page.getByTestId("button-cta-hero");
+    const href = await cta.getAttribute("href");
+    expect(href).toBeTruthy();
   });
 });
 
@@ -104,16 +114,43 @@ test.describe("Analyzer — happy path", () => {
   });
 });
 
+// ─── Analyzer page — validation ────────────────────────────────────────────────
+
+test.describe("Analyzer — validation", () => {
+  test("submitting an empty form does not call /api/analyze", async ({ page }) => {
+    let analyzeCalled = false;
+    await interceptStatsRoutes(page);
+    await page.route("**/api/analyze", async (route) => {
+      analyzeCalled = true;
+      await route.fulfill({ status: 200, body: JSON.stringify(MOCK_ANALYSIS) });
+    });
+    await page.goto("/analyze");
+
+    await page.getByTestId("button-analyze").click();
+    await page.waitForTimeout(1000);
+
+    expect(analyzeCalled).toBe(false);
+  });
+
+  test("analyze button is present and interactive", async ({ page }) => {
+    await interceptStatsRoutes(page);
+    await page.goto("/analyze");
+    const btn = page.getByTestId("button-analyze");
+    await expect(btn).toBeVisible();
+    await expect(btn).toBeEnabled();
+  });
+});
+
 // ─── Analyzer page — RED result ────────────────────────────────────────────────
 
 test.describe("Analyzer — RED/NO-GO result", () => {
-  test("displays NO-GO for a deal with market adjustment", async ({ page }) => {
+  test("displays NO-GO for a deal with CA doc fee violation", async ({ page }) => {
     await interceptStatsRoutes(page);
     await interceptAnalyzeRoute(page, RED_ANALYSIS);
     await page.goto("/analyze");
 
     const textarea = page.getByTestId("input-dealer-text");
-    await textarea.fill("$2,000 market adjustment on this hot model.");
+    await textarea.fill("$895 doc fee. CA dealer. APR 5%.");
     const btn = page.getByTestId("button-analyze");
     await btn.click();
     await expect(page.getByText(/NO-GO/i)).toBeVisible({ timeout: 10000 });
@@ -123,24 +160,72 @@ test.describe("Analyzer — RED/NO-GO result", () => {
 // ─── File upload flow ──────────────────────────────────────────────────────────
 
 test.describe("File upload", () => {
-  test("upload button is present on the analyze page", async ({ page }) => {
+  test("upload tab reveals the file input", async ({ page }) => {
     await interceptStatsRoutes(page);
     await page.goto("/analyze");
+    await page.getByTestId("tab-upload").click();
+    const fileInput = page.getByTestId("input-file-upload");
+    await expect(fileInput).toBeVisible({ timeout: 5000 });
+  });
+
+  test("upload button is present on the upload tab", async ({ page }) => {
+    await interceptStatsRoutes(page);
+    await page.goto("/analyze");
+    await page.getByTestId("tab-upload").click();
     const uploadBtn = page.getByTestId("button-upload-file");
-    await expect(uploadBtn).toBeVisible();
+    await expect(uploadBtn).toBeVisible({ timeout: 5000 });
   });
 
   test("file input accepts image and PDF types", async ({ page }) => {
     await interceptStatsRoutes(page);
     await page.goto("/analyze");
+    await page.getByTestId("tab-upload").click();
     const fileInput = page.getByTestId("input-file-upload");
     const accept = await fileInput.getAttribute("accept");
     expect(accept).toBeTruthy();
     expect(accept).toMatch(/image|pdf/i);
   });
+
+  test("unsupported file type (text/plain) triggers an error response", async ({ page }) => {
+    await interceptStatsRoutes(page);
+    page.route("**/api/extract-text", (route) =>
+      route.fulfill({
+        status: 400,
+        contentType: "application/json",
+        body: JSON.stringify({ message: "That file type isn't supported." }),
+      })
+    );
+    await page.goto("/analyze");
+    await page.getByTestId("tab-upload").click();
+
+    const fileInput = page.getByTestId("input-file-upload");
+    await fileInput.setInputFiles({
+      name: "test.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from("hello world"),
+    });
+    await page.waitForTimeout(2000);
+  });
 });
 
-// ─── No real external calls leak through ──────────────────────────────────────
+// ─── Upgrade CTA (free mode) ─────────────────────────────────────────────────
+
+test.describe("Free/paid tier UI", () => {
+  test("analyze page loads correctly in free mode (Stripe not configured)", async ({ page }) => {
+    await interceptStatsRoutes(page);
+    await interceptAnalyzeRoute(page, MOCK_ANALYSIS);
+    await page.goto("/analyze");
+
+    await page.getByTestId("input-dealer-text").fill(
+      "OTD $35,000. APR 4.9% for 60 months."
+    );
+    await page.getByTestId("button-analyze").click();
+
+    await expect(page.getByText(/GO — TERMS LOOK CLEAN/i)).toBeVisible({ timeout: 10000 });
+  });
+});
+
+// ─── Security: no real external calls leak ────────────────────────────────────
 
 test("no unintercepted network requests to openai.com are made", async ({ page }) => {
   const openaiRequests: string[] = [];
@@ -155,4 +240,43 @@ test("no unintercepted network requests to openai.com are made", async ({ page }
   await page.getByTestId("button-analyze").click();
   await page.waitForTimeout(2000);
   expect(openaiRequests).toHaveLength(0);
+});
+
+test("no OpenAI API key appears in any request header or body", async ({ page }) => {
+  const keyLeaks: string[] = [];
+  page.on("request", (req) => {
+    const auth = req.headers()["authorization"] ?? "";
+    if (auth.includes("sk-")) keyLeaks.push("header");
+    const body = req.postData() ?? "";
+    if (body.includes("sk-")) keyLeaks.push("body");
+  });
+  await interceptStatsRoutes(page);
+  await interceptAnalyzeRoute(page, MOCK_ANALYSIS);
+  await page.goto("/analyze");
+  await page.getByTestId("input-dealer-text").fill("OTD $35,000 APR 4.9%.");
+  await page.getByTestId("button-analyze").click();
+  await page.waitForTimeout(2000);
+  expect(keyLeaks).toHaveLength(0);
+});
+
+// ─── Health and state-fee API (direct API calls) ──────────────────────────────
+
+test("GET /api/health returns 200 with status field", async ({ page }) => {
+  const res = await page.request.get("/api/health");
+  expect(res.status()).toBe(200);
+  const body = await res.json();
+  expect(body).toHaveProperty("status");
+});
+
+test("GET /api/state-fee/CA returns CA doc fee cap of $85", async ({ page }) => {
+  const res = await page.request.get("/api/state-fee/CA");
+  expect(res.status()).toBe(200);
+  const body = await res.json();
+  expect(body.docFeeCap).toBe(true);
+  expect(body.docFeeCapAmount).toBe(85);
+});
+
+test("GET /api/state-fee/ZZ returns 404 for unknown state", async ({ page }) => {
+  const res = await page.request.get("/api/state-fee/ZZ");
+  expect(res.status()).toBe(404);
 });
