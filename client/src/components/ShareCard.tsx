@@ -138,7 +138,7 @@ export function drawScorecard(options: DrawScorecardOptions): string {
   ctx.font = "400 14px system-ui, -apple-system, 'Segoe UI', sans-serif";
   ctx.fillStyle = "#a1a1aa";
   ctx.textBaseline = "bottom";
-  ctx.fillText("Analyzed by Odigos • odigos.replit.app", padX, footerY);
+  ctx.fillText("Analyzed by Odigos • odigosauto.com", padX, footerY);
 
   return canvas.toDataURL("image/png");
 }

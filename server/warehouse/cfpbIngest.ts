@@ -95,8 +95,7 @@ function matchDealer(
 
   // Partial prefix match (at least 5 chars)
   if (normalized.length >= 5) {
-    const entries = Array.from(dealerMap.entries());
-    for (const [key, id] of entries) {
+    for (const [key, id] of dealerMap.entries()) {
       if (key.startsWith(normalized) || normalized.startsWith(key)) {
         return id;
       }

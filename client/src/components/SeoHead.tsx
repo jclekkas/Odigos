@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 
-const SITE_URL = "https://odigos.replit.app";
-const OG_IMAGE = "https://odigos.replit.app/og-image.png";
+const SITE_URL = "https://odigosauto.com";
+const OG_IMAGE = "https://odigosauto.com/og-image.png";
 const OG_IMAGE_ALT = "Odigos — Independent car deal analysis tool";
 
 interface SeoHeadProps {
