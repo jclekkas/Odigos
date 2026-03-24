@@ -1009,7 +1009,6 @@ GO/NO-GO/NEED-MORE-INFO:
         return res.json({
           real_analyzed_deals: 0,
           user_submissions: 0,
-          cfpb_records: 0,
           total_dataset_size: 0,
           unique_dealers: 0,
           new_last_24h: 0,
@@ -1021,8 +1020,7 @@ GO/NO-GO/NEED-MORE-INFO:
       const { sql } = await import("drizzle-orm");
 
       // ── Primary: core.platform_metrics materialized view ──────────────────
-      // view columns: real_deals_analyzed, user_submissions, enforcement_records,
-      //               unique_dealers, last_updated_at
+      // view columns: real_deals_analyzed, user_submissions, unique_dealers, last_updated_at
       let viewRow: Record<string, unknown> | null = null;
       let viewHasData = false;
       try {
@@ -1040,7 +1038,7 @@ GO/NO-GO/NEED-MORE-INFO:
 
       // ── Fallback (view empty/unavailable): direct aggregate with identical semantics ─
       // real_analyzed_deals = counts_toward_real_deals = TRUE
-      //   which includes user_submitted + cfpb + internal_backfill (all with is_fully_processed=true)
+      //   which includes user_submitted + internal_backfill (all with is_fully_processed=true)
       //   and EXCLUDES seed (counts_toward_real_deals always false for seed)
       let fallbackRow: Record<string, unknown> | null = null;
       if (!viewHasData) {
@@ -1049,7 +1047,6 @@ GO/NO-GO/NEED-MORE-INFO:
             SELECT
               COUNT(*) FILTER (WHERE counts_toward_real_deals = TRUE)          AS real_deals_analyzed,
               COUNT(*) FILTER (WHERE ingestion_source = 'user_submitted')      AS user_submissions,
-              COUNT(*) FILTER (WHERE ingestion_source = 'cfpb')                AS enforcement_records,
               COUNT(DISTINCT dealer_id)                                         AS unique_dealers,
               MAX(analyzed_at)                                                  AS last_updated_at
             FROM core.listings
@@ -1083,7 +1080,6 @@ GO/NO-GO/NEED-MORE-INFO:
       res.json({
         real_analyzed_deals: Number(statsRow.real_deals_analyzed ?? 0),
         user_submissions: Number(statsRow.user_submissions ?? 0),
-        cfpb_records: Number(statsRow.enforcement_records ?? 0),
         total_dataset_size: totalDatasetSize,
         unique_dealers: Number(statsRow.unique_dealers ?? 0),
         new_last_24h: newLast24h,
@@ -1105,14 +1101,9 @@ GO/NO-GO/NEED-MORE-INFO:
       const { sql } = await import("drizzle-orm");
 
       let count = 0;
-      let type: "real_deals" | "public_records" | "none" = "none";
+      let type: "real_deals" | "none" = "none";
 
-      // Always use direct queries so source filtering is exact.
-      // The platform_metrics view's real_deals_analyzed includes CFPB rows
-      // (counts_toward_real_deals=true), so the view cannot be used here
-      // without incorrectly labelling CFPB data as "real deals".
       try {
-        // 1. Buyer submissions only (user_submitted + internal_backfill)
         const realResult = await db.execute(
           sql`SELECT COUNT(*) AS cnt FROM core.listings
               WHERE counts_toward_real_deals = TRUE
@@ -1124,18 +1115,6 @@ GO/NO-GO/NEED-MORE-INFO:
         if (realDeals > 0) {
           count = realDeals;
           type = "real_deals";
-        } else {
-          // 2. Fallback: CFPB public records
-          const cfpbResult = await db.execute(
-            sql`SELECT COUNT(*) AS cnt FROM core.listings
-                WHERE ingestion_source = 'cfpb'`,
-          );
-          const cfpbRow = cfpbResult.rows?.[0] as Record<string, unknown> | undefined;
-          const cfpbCount = Number(cfpbRow?.cnt ?? 0);
-          if (cfpbCount > 0) {
-            count = cfpbCount;
-            type = "public_records";
-          }
         }
       } catch {
       }

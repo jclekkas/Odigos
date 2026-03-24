@@ -812,7 +812,7 @@ export default function Home() {
             <div className="mt-3" data-testid="container-deals-counter-analyzer">
               {statsLoading ? (
                 <Skeleton className="h-5 w-44 rounded-full" data-testid="skeleton-deals-counter-analyzer" />
-              ) : statsData && statsData.count > 0 && statsData.type !== "none" ? (
+              ) : statsData && statsData.count >= 100 && statsData.type !== "none" ? (
                 <span
                   className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/50 px-3 py-1 text-xs text-muted-foreground"
                   data-testid="text-deals-counter-analyzer"

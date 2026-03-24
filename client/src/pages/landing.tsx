@@ -132,7 +132,7 @@ export default function Landing() {
                   <div className="mt-5 flex justify-center lg:justify-start" data-testid="container-deals-counter">
                     {statsLoading ? (
                       <Skeleton className="h-6 w-48 rounded-full" data-testid="skeleton-deals-counter" />
-                    ) : statsData && statsData.count > 0 && statsData.type !== "none" ? (
+                    ) : statsData && statsData.count >= 100 && statsData.type !== "none" ? (
                       <span
                         className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/50 px-3 py-1 text-xs text-muted-foreground"
                         data-testid="text-deals-counter"
