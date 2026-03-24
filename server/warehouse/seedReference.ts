@@ -84,7 +84,7 @@ async function seedMetroAreas(): Promise<void> {
         stateCode: metro.stateCode,
         population: metro.population,
       })
-      .onConflictDoNothing();
+      .onConflictDoNothing({ target: [coreMetroAreas.metroName, coreMetroAreas.stateCode] });
   }
 
   console.log(`[seedReference] Inserted ${METRO_AREAS.length} metro areas into core.metro_areas.`);

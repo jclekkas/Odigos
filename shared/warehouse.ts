@@ -12,7 +12,9 @@ import {
   date,
   index,
   uniqueIndex,
+  check,
 } from "drizzle-orm/pg-core";
+import { dealerSubmissions } from "./schema";
 
 export const rawSchema = pgSchema("raw");
 export const coreSchema = pgSchema("core");
@@ -41,7 +43,7 @@ export const rawUserAnalyses = rawSchema.table(
   "user_analyses",
   {
     id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
-    dealerSubmissionId: varchar("dealer_submission_id", { length: 36 }),
+    dealerSubmissionId: varchar("dealer_submission_id").references(() => dealerSubmissions.id),
     submittedTextRedacted: text("submitted_text_redacted"),
     stateCode: text("state_code"),
     vehicleYear: integer("vehicle_year"),
@@ -88,6 +90,7 @@ export const coreMetroAreas = coreSchema.table(
   },
   (table) => ({
     stateIdx: index("core_metro_state_idx").on(table.stateCode),
+    metroNameStateUnique: uniqueIndex("core_metro_name_state_idx").on(table.metroName, table.stateCode),
   }),
 );
 
@@ -123,7 +126,7 @@ export const coreListings = coreSchema.table(
     id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
     dealerId: varchar("dealer_id", { length: 36 }).references(() => coreDealers.id),
 
-    // Ingestion tracking
+    // Ingestion tracking — allowed values enforced by CHECK constraint below
     ingestionSource: text("ingestion_source").notNull(),
     isFullyProcessed: boolean("is_fully_processed").notNull().default(false),
     countsTowardRealDeals: boolean("counts_toward_real_deals").notNull().default(false),
@@ -181,6 +184,10 @@ export const coreListings = coreSchema.table(
       table.vehicleMake,
       table.vehicleModel,
       table.vehicleYear,
+    ),
+    ingestionSourceCheck: check(
+      "listings_ingestion_source_check",
+      sql`${table.ingestionSource} IN ('user_submitted', 'cfpb', 'seed', 'internal_backfill')`,
     ),
   }),
 );
