@@ -1,0 +1,198 @@
+#87 - Fix Warehouse Schema in Production + Restart Dev
+
+What & Why
+The production database is missing the entire warehouse schema: both raw and core schemas, all warehouse tables, and all materialized views. Every user analysis since launch has silently failed to write to the warehouse.
+
+Root cause:
+scripts/post-merge.sh runs db:push interactively and aborts when it detects the materialized views would be dropped, so the schema push never completes in production.
+
+The dev server also needs a restart after a port conflict from the last merge.
+
+Objective:
+1. Make warehouse schema creation reliable in production
+2. Prevent future deploys from aborting on the db:push prompt
+3. Add a safe startup-time warehouse bootstrap
+4. Restart dev and confirm preview is running again
+
+--------------------------------------------------
+Done looks like
+--------------------------------------------------
+
+- Dev preview is running again with no port conflict error
+- Production no longer logs: raw.user_analyses does not exist
+- All warehouse tables exist in production:
+  - raw.user_analyses
+  - raw.enforcement_records
+  - core.dealers
+  - core.listings
+  - core.consumer_complaints
+  - core.states
+  - core.metro_areas
+- Materialized views exist in production:
+  - core.platform_metrics
+  - core.national_stats
+  - core.state_stats
+- Reference data is seeded:
+  - 51 states
+  - 25 metro areas
+- Future deploys no longer abort on the schema-push prompt
+
+--------------------------------------------------
+Out of scope
+--------------------------------------------------
+
+- Re-running historical backfills in production
+- Changing warehouse table definitions
+- Redesigning the warehouse model
+
+--------------------------------------------------
+Scope (STRICT)
+--------------------------------------------------
+
+Modify only what is required in:
+- scripts/post-merge.sh
+- server/index.ts
+- server/warehouse/setupViews.ts
+- server/warehouse/seedReference.ts
+- shared/warehouse.ts
+
+Do NOT:
+- change unrelated business logic
+- redesign warehouse definitions
+- add new warehouse entities
+- add new dependencies unless absolutely required
+
+--------------------------------------------------
+Tasks
+--------------------------------------------------
+
+1) Fix scripts/post-merge.sh for non-interactive schema push
+
+File:
+- scripts/post-merge.sh
+
+Problem:
+db:push aborts when it detects that materialized views would be dropped.
+
+Required behavior:
+- Before running db:push, explicitly drop these materialized views if they exist:
+  - core.platform_metrics
+  - core.national_stats
+  - core.state_stats
+- Use schema-qualified names
+- Then run db:push non-interactively using:
+  - --accept-data-loss
+  OR an equivalent fully non-interactive approach
+- After db:push succeeds, immediately re-run the warehouse view setup so the materialized views are recreated
+
+Requirements:
+- Script must be fully non-interactive
+- Script must be repeatable and production-safe
+- Script must fail clearly on any real error
+- Recreating views must happen only after a successful db:push
+- Do not swallow db:push failures unrelated to the views
+
+Implementation notes:
+- Preserve shell safety if already present (set -euo pipefail or equivalent)
+- Use explicit DROP MATERIALIZED VIEW IF EXISTS statements
+- Keep the flow deterministic:
+  1. drop views
+  2. push schema
+  3. recreate views
+
+2) Add ensureWarehouseSchema() to server startup
+
+File:
+- server/index.ts
+
+Add a new function:
+- ensureWarehouseSchema()
+
+Call it:
+- before the server begins listening
+
+Behavior:
+- Check whether raw.user_analyses exists
+- If it exists:
+  - log that warehouse schema already exists
+  - skip bootstrap
+- If it does not exist:
+  - create schemas if missing:
+    - raw
+    - core
+  - create all required warehouse tables if missing
+  - recreate/setup the materialized views
+  - seed core.states
+  - seed core.metro_areas
+
+Requirements:
+- Must be idempotent
+- Must be safe to run on every startup
+- Must reuse existing warehouse setup logic and shared definitions where possible
+- Must be wrapped in try/catch
+- Must log clearly whether bootstrap was skipped, executed, or failed
+- Must never crash the server on failure
+- Server startup must continue even if bootstrap fails
+
+3) Reuse existing warehouse setup logic where possible
+
+Relevant files:
+- server/warehouse/setupViews.ts
+- server/warehouse/seedReference.ts
+- shared/warehouse.ts
+
+Expectations:
+- Do not rewrite warehouse definitions from scratch if reusable logic already exists
+- Prefer extracting reusable helpers rather than duplicating setup logic
+- Keep definitions centralized and maintainable
+- Table creation should follow existing definitions in shared/warehouse.ts wherever possible
+
+4) Ensure idempotent reference seeding
+
+Reference data:
+- core.states = 51 rows
+- core.metro_areas = 25 rows
+
+Requirements:
+- Seeding must be idempotent
+- Do not create duplicate rows
+- Re-running startup bootstrap must be safe
+
+5) Restart dev workflow
+
+After code changes:
+- restart the Start application workflow
+- clear the port conflict
+- confirm the dev server starts cleanly
+
+--------------------------------------------------
+Validation Checklist
+--------------------------------------------------
+
+Confirm all of the following:
+
+1. scripts/post-merge.sh no longer blocks on an interactive db:push prompt
+2. core.platform_metrics, core.national_stats, and core.state_stats are dropped before db:push
+3. Materialized views are recreated after a successful push
+4. ensureWarehouseSchema() is called before app.listen/server.listen
+5. raw.user_analyses existence is checked before deciding whether to bootstrap
+6. Missing warehouse schema can be created automatically
+7. Startup bootstrap is wrapped in try/catch and does not crash the server
+8. Reference data is seeded idempotently
+9. Dev preview is running again with no port conflict
+10. Production missing-table errors are resolved
+
+--------------------------------------------------
+Deliverables
+--------------------------------------------------
+
+Return:
+1. Exact files changed
+2. Final post-merge flow in plain English
+3. Where ensureWarehouseSchema() is defined and where it is called
+4. How warehouse existence is checked
+5. How table creation reuses shared/warehouse.ts or existing utilities
+6. Confirmation that views are dropped before db:push and recreated after
+7. Confirmation that dev preview is running again
+
+End of task
