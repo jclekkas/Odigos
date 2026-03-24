@@ -113,19 +113,33 @@ async function main(): Promise<void> {
 
   for (const sub of submissions) {
     try {
-      // Idempotency check — skip if already in raw.user_analyses
-      const exists = await db
+      // ── Granular idempotency: check raw.user_analyses and core.listings independently ─
+      // This allows reruns to repair partial failures where only one table was written.
+      const rawExists = await db
         .select({ id: rawUserAnalyses.id })
         .from(rawUserAnalyses)
         .where(sql`dealer_submission_id = ${sub.id}`)
         .limit(1);
 
-      if (exists.length > 0) {
+      const listingExists = await db
+        .select({ id: coreListings.id })
+        .from(coreListings)
+        .where(
+          sql`ingestion_source = 'internal_backfill'
+              AND analyzed_at = ${sub.submittedAt}
+              AND state_code ${sub.stateCode ? sql`= ${sub.stateCode}` : sql`IS NULL`}`
+        )
+        .limit(1);
+
+      const rawAlreadyWritten = rawExists.length > 0;
+      const listingAlreadyWritten = listingExists.length > 0;
+
+      if (rawAlreadyWritten && listingAlreadyWritten) {
         skipped++;
         continue;
       }
 
-      // ── (a) Insert into raw.user_analyses ──────────────────────────────
+      // ── (a) Insert into raw.user_analyses (skip if already present) ────
       const detectedFields = sub.detectedFields as Record<string, unknown> | null;
 
       const vehicleYear: number | null = (() => {
@@ -139,32 +153,34 @@ async function main(): Promise<void> {
         (detectedFields?.vehicleModel as string | undefined) ?? null;
       const verdict: string | null = sub.goNoGo ?? null;
 
-      const rawRow = await db
-        .insert(rawUserAnalyses)
-        .values({
-          dealerSubmissionId: sub.id,
-          stateCode: sub.stateCode,
-          vehicleYear,
-          vehicleMake,
-          vehicleModel,
-          analysisResult: sub.detectedFields,
-          dealScore: sub.dealScore === "GREEN" ? 75
-            : sub.dealScore === "YELLOW" ? 50
-            : sub.dealScore === "RED" ? 25
-            : null,
-          verdict,
-          flags: [
-            ...(sub.flagMarketAdjustment ? ["market_adjustment"] : []),
-            ...(sub.flagPaymentOnly ? ["payment_only"] : []),
-            ...(sub.flagMissingOtd ? ["missing_otd"] : []),
-            ...(sub.flagVagueFees ? ["vague_fees"] : []),
-            ...(sub.flagHighCostAddons ? ["high_cost_addons"] : []),
-          ],
-          ingestionSource: "internal_backfill",
-          submittedAt: sub.submittedAt,
-          retentionExpiresAt: sub.rawTextExpiresAt,
-        })
-        .returning({ id: rawUserAnalyses.id });
+      if (!rawAlreadyWritten) {
+        await db
+          .insert(rawUserAnalyses)
+          .values({
+            dealerSubmissionId: sub.id,
+            stateCode: sub.stateCode,
+            vehicleYear,
+            vehicleMake,
+            vehicleModel,
+            analysisResult: sub.detectedFields,
+            dealScore: sub.dealScore === "GREEN" ? 75
+              : sub.dealScore === "YELLOW" ? 50
+              : sub.dealScore === "RED" ? 25
+              : null,
+            verdict,
+            flags: [
+              ...(sub.flagMarketAdjustment ? ["market_adjustment"] : []),
+              ...(sub.flagPaymentOnly ? ["payment_only"] : []),
+              ...(sub.flagMissingOtd ? ["missing_otd"] : []),
+              ...(sub.flagVagueFees ? ["vague_fees"] : []),
+              ...(sub.flagHighCostAddons ? ["high_cost_addons"] : []),
+            ],
+            ingestionSource: "internal_backfill",
+            submittedAt: sub.submittedAt,
+            retentionExpiresAt: sub.rawTextExpiresAt,
+          })
+          .returning({ id: rawUserAnalyses.id });
+      }
 
       // ── (b) Upsert core.dealers ────────────────────────────────────────
       // Try to extract a dealer name from detectedFields
@@ -190,7 +206,12 @@ async function main(): Promise<void> {
 
       const dealerId = await getOrCreateDealer(dealerName, dealerCity, dealerState);
 
-      // ── (c) Insert into core.listings ──────────────────────────────────
+      // ── (c) Insert into core.listings (only if not already written) ────
+      if (listingAlreadyWritten) {
+        processed++;
+        continue;
+      }
+
       const isFullyProcessed = sub.dealScore !== null;
       const countsTowardRealDeals = isFullyProcessed;
 
