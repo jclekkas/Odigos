@@ -1,7 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
   pgSchema,
-  pgTable,
   text,
   varchar,
   timestamp,
@@ -14,7 +13,6 @@ import {
   uniqueIndex,
   check,
 } from "drizzle-orm/pg-core";
-import { dealerSubmissions } from "./schema";
 
 export const rawSchema = pgSchema("raw");
 export const coreSchema = pgSchema("core");
@@ -42,8 +40,10 @@ export const rawEnforcementRecords = rawSchema.table(
 export const rawUserAnalyses = rawSchema.table(
   "user_analyses",
   {
+    // UUID stored as varchar(36) — FK to public.dealer_submissions added via SQL in setupViews.ts
     id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
-    dealerSubmissionId: varchar("dealer_submission_id").references(() => dealerSubmissions.id),
+    // References public.dealer_submissions.id — constraint applied as raw SQL (see setupViews.ts)
+    dealerSubmissionId: varchar("dealer_submission_id"),
     submittedTextRedacted: text("submitted_text_redacted"),
     stateCode: text("state_code"),
     vehicleYear: integer("vehicle_year"),
@@ -83,6 +83,7 @@ export const coreStates = coreSchema.table("states", {
 export const coreMetroAreas = coreSchema.table(
   "metro_areas",
   {
+    // UUID stored as varchar(36)
     id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
     metroName: text("metro_name").notNull(),
     stateCode: text("state_code").references(() => coreStates.stateCode),
@@ -97,6 +98,7 @@ export const coreMetroAreas = coreSchema.table(
 export const coreDealers = coreSchema.table(
   "dealers",
   {
+    // UUID stored as varchar(36)
     id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
     dealerName: text("dealer_name").notNull(),
     dealerNameNormalized: text("dealer_name_normalized").notNull(),
@@ -123,6 +125,7 @@ export const coreDealers = coreSchema.table(
 export const coreListings = coreSchema.table(
   "listings",
   {
+    // UUID stored as varchar(36)
     id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
     dealerId: varchar("dealer_id", { length: 36 }).references(() => coreDealers.id),
 
@@ -195,6 +198,7 @@ export const coreListings = coreSchema.table(
 export const coreConsumerComplaints = coreSchema.table(
   "consumer_complaints",
   {
+    // UUID stored as varchar(36)
     id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
     rawRecordId: integer("raw_record_id").references(() => rawEnforcementRecords.id),
     complaintDate: date("complaint_date"),

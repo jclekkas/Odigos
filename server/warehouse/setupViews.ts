@@ -5,6 +5,26 @@ export async function setupWarehouseViews(): Promise<void> {
   await db.execute(sql`CREATE SCHEMA IF NOT EXISTS raw`);
   await db.execute(sql`CREATE SCHEMA IF NOT EXISTS core`);
 
+  // FK from raw.user_analyses.dealer_submission_id -> public.dealer_submissions.id
+  // Added via SQL to avoid importing shared/schema.ts into the warehouse module.
+  await db.execute(sql`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint
+        WHERE conname = 'user_analyses_dealer_submission_id_dealer_submissions_id_fk'
+          AND conrelid = 'raw.user_analyses'::regclass
+      ) THEN
+        ALTER TABLE raw.user_analyses
+          ADD CONSTRAINT user_analyses_dealer_submission_id_dealer_submissions_id_fk
+          FOREIGN KEY (dealer_submission_id)
+          REFERENCES public.dealer_submissions(id)
+          ON DELETE SET NULL;
+      END IF;
+    END;
+    $$
+  `);
+
   await db.execute(sql`
     CREATE MATERIALIZED VIEW IF NOT EXISTS core.platform_metrics AS
     SELECT
@@ -40,5 +60,5 @@ export async function setupWarehouseViews(): Promise<void> {
     GROUP BY l.state_code
   `);
 
-  console.log("[warehouse] Materialized views created (or already exist).");
+  console.log("[warehouse] Schemas, FK constraint, and materialized views set up (idempotent).");
 }
