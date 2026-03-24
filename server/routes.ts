@@ -1001,6 +1001,109 @@ GO/NO-GO/NEED-MORE-INFO:
     } catch (e: any) { res.status(500).json({ error: e?.message }); }
   });
 
+  // ── Platform Stats ────────────────────────────────────────────────────────
+
+  app.get("/api/stats", async (_req, res) => {
+    try {
+      if (!process.env.DATABASE_URL) {
+        return res.json({
+          real_analyzed_deals: 0,
+          user_submissions: 0,
+          cfpb_records: 0,
+          total_dataset_size: 0,
+          unique_dealers: 0,
+          new_last_24h: 0,
+          last_updated_at: null,
+        });
+      }
+
+      const { db } = await import("./db");
+      const { sql } = await import("drizzle-orm");
+
+      // Try platform_metrics materialized view first
+      let viewRow: Record<string, unknown> | null = null;
+      try {
+        const rows = await db.execute(
+          sql`SELECT * FROM core.platform_metrics LIMIT 1`,
+        );
+        viewRow = (rows.rows?.[0] as Record<string, unknown>) ?? null;
+      } catch {
+        viewRow = null;
+      }
+
+      // Always compute total_dataset_size + new_last_24h fresh (view may lag)
+      const totals = await db.execute(sql`
+        SELECT
+          COUNT(*) FILTER (WHERE ingestion_source IN ('user_submitted','internal_backfill') AND is_fully_processed = true) AS real_analyzed_deals,
+          COUNT(*) FILTER (WHERE ingestion_source = 'user_submitted') AS user_submissions,
+          COUNT(*) FILTER (WHERE ingestion_source = 'cfpb') AS cfpb_records,
+          COUNT(*) AS total_dataset_size,
+          COUNT(DISTINCT dealer_id) AS unique_dealers,
+          COUNT(*) FILTER (WHERE analyzed_at >= NOW() - INTERVAL '24 hours') AS new_last_24h,
+          MAX(analyzed_at) AS last_updated_at
+        FROM core.listings
+      `);
+      const row = totals.rows?.[0] as Record<string, unknown> | undefined;
+
+      res.setHeader("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
+      res.json({
+        real_analyzed_deals: Number(row?.real_analyzed_deals ?? viewRow?.real_deals_analyzed ?? 0),
+        user_submissions: Number(row?.user_submissions ?? viewRow?.user_submissions ?? 0),
+        cfpb_records: Number(row?.cfpb_records ?? viewRow?.enforcement_records ?? 0),
+        total_dataset_size: Number(row?.total_dataset_size ?? 0),
+        unique_dealers: Number(row?.unique_dealers ?? viewRow?.unique_dealers ?? 0),
+        new_last_24h: Number(row?.new_last_24h ?? 0),
+        last_updated_at: row?.last_updated_at ?? viewRow?.last_updated_at ?? null,
+      });
+    } catch (err) {
+      console.error("[stats] /api/stats error:", err);
+      res.status(500).json({ error: "Failed to fetch stats" });
+    }
+  });
+
+  app.get("/api/warehouse/stats", async (_req, res) => {
+    try {
+      if (!process.env.DATABASE_URL) return res.json([]);
+      const { db } = await import("./db");
+      const { sql } = await import("drizzle-orm");
+      const rows = await db.execute(sql`SELECT * FROM core.national_stats LIMIT 1`);
+      res.json(rows.rows?.[0] ?? {});
+    } catch (err) {
+      console.error("[stats] /api/warehouse/stats error:", err);
+      res.status(500).json({ error: "Failed to fetch national stats" });
+    }
+  });
+
+  app.get("/api/warehouse/stats/state/:stateCode", async (req, res) => {
+    try {
+      if (!process.env.DATABASE_URL) return res.json(null);
+      const { db } = await import("./db");
+      const { sql } = await import("drizzle-orm");
+      const code = (req.params.stateCode ?? "").toUpperCase().slice(0, 2);
+      if (!code) return res.status(400).json({ error: "Invalid state code" });
+
+      const rows = await db.execute(sql`
+        SELECT
+          ss.*,
+          s.doc_fee_cap,
+          s.doc_fee_cap_type,
+          s.doc_fee_cap_statute,
+          s.sales_tax_base,
+          s.trade_in_credit
+        FROM core.state_stats ss
+        LEFT JOIN core.states s ON s.state_code = ss.state_code
+        WHERE ss.state_code = ${code}
+        LIMIT 1
+      `);
+      const row = rows.rows?.[0] ?? null;
+      if (!row) return res.status(404).json({ error: "State not found" });
+      res.json(row);
+    } catch (err) {
+      console.error("[stats] /api/warehouse/stats/state error:", err);
+      res.status(500).json({ error: "Failed to fetch state stats" });
+    }
+  });
+
   app.get("/sitemap.xml", (_req, res) => {
     res.type("application/xml");
     res.sendFile("sitemap.xml", { root: "." });

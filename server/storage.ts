@@ -12,7 +12,7 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  saveDealerSubmission(data: InsertDealerSubmission): Promise<void>;
+  saveDealerSubmission(data: InsertDealerSubmission): Promise<{ id: string } | null>;
 }
 
 export class MemStorage implements IStorage {
@@ -39,8 +39,9 @@ export class MemStorage implements IStorage {
     return user;
   }
 
-  async saveDealerSubmission(_data: InsertDealerSubmission): Promise<void> {
+  async saveDealerSubmission(_data: InsertDealerSubmission): Promise<{ id: string } | null> {
     // No-op in memory mode — DATABASE_URL not present
+    return null;
   }
 }
 
@@ -63,8 +64,9 @@ export class DrizzleStorage implements IStorage {
     return result[0];
   }
 
-  async saveDealerSubmission(data: InsertDealerSubmission): Promise<void> {
-    await db.insert(dealerSubmissions).values(data);
+  async saveDealerSubmission(data: InsertDealerSubmission): Promise<{ id: string } | null> {
+    const result = await db.insert(dealerSubmissions).values(data).returning({ id: dealerSubmissions.id });
+    return result[0] ?? null;
   }
 }
 

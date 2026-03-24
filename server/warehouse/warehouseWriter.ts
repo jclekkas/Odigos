@@ -1,0 +1,201 @@
+/**
+ * Live warehouse write path for user-submitted analyses.
+ *
+ * Called from server/ingestor.ts inside the setImmediate block, AFTER the
+ * dealer_submissions row has been successfully written.  All failures are
+ * caught by the caller — nothing here should ever throw to the user.
+ */
+import { db } from "../db";
+import { sql } from "drizzle-orm";
+import type { AnalysisResponse, AnalysisRequest } from "@shared/schema";
+import { rawUserAnalyses, coreDealers, coreListings } from "@shared/warehouse";
+import { normalizeDealerName } from "./warehouseUtils";
+
+export interface WarehouseWritePayload {
+  dealerSubmissionId: string;
+  request: AnalysisRequest;
+  result: AnalysisResponse;
+  stateCode: string | null;
+}
+
+function toStr(val: number | null | undefined): string | null {
+  if (val == null) return null;
+  return val.toFixed(2);
+}
+
+async function getOrCreateDealer(
+  dealerName: string,
+  city: string,
+  stateCode: string,
+): Promise<string> {
+  const normalized = normalizeDealerName(dealerName);
+
+  const existing = await db
+    .select({ id: coreDealers.id })
+    .from(coreDealers)
+    .where(
+      sql`dealer_name_normalized = ${normalized} AND state_code = ${stateCode} AND city = ${city}`,
+    )
+    .limit(1);
+
+  if (existing.length > 0) {
+    // Increment listing_count and refresh last_seen_at
+    await db.execute(
+      sql`UPDATE core.dealers
+          SET listing_count = listing_count + 1, last_seen_at = NOW()
+          WHERE id = ${existing[0].id}`,
+    );
+    return existing[0].id;
+  }
+
+  const inserted = await db
+    .insert(coreDealers)
+    .values({
+      dealerName,
+      dealerNameNormalized: normalized,
+      city,
+      stateCode,
+      listingCount: 1,
+    })
+    .onConflictDoNothing()
+    .returning({ id: coreDealers.id });
+
+  if (inserted.length > 0) return inserted[0].id;
+
+  // Race condition fallback
+  const refetch = await db
+    .select({ id: coreDealers.id })
+    .from(coreDealers)
+    .where(
+      sql`dealer_name_normalized = ${normalized} AND state_code = ${stateCode} AND city = ${city}`,
+    )
+    .limit(1);
+  return refetch[0].id;
+}
+
+const STATE_FULL_NAMES: Record<string, string> = {
+  AL: "Alabama", AK: "Alaska", AZ: "Arizona", AR: "Arkansas",
+  CA: "California", CO: "Colorado", CT: "Connecticut", DE: "Delaware",
+  FL: "Florida", GA: "Georgia", HI: "Hawaii", ID: "Idaho",
+  IL: "Illinois", IN: "Indiana", IA: "Iowa", KS: "Kansas",
+  KY: "Kentucky", LA: "Louisiana", ME: "Maine", MD: "Maryland",
+  MA: "Massachusetts", MI: "Michigan", MN: "Minnesota", MS: "Mississippi",
+  MO: "Missouri", MT: "Montana", NE: "Nebraska", NV: "Nevada",
+  NH: "New Hampshire", NJ: "New Jersey", NM: "New Mexico", NY: "New York",
+  NC: "North Carolina", ND: "North Dakota", OH: "Ohio", OK: "Oklahoma",
+  OR: "Oregon", PA: "Pennsylvania", RI: "Rhode Island", SC: "South Carolina",
+  SD: "South Dakota", TN: "Tennessee", TX: "Texas", UT: "Utah",
+  VT: "Vermont", VA: "Virginia", WA: "Washington", WV: "West Virginia",
+  WI: "Wisconsin", WY: "Wyoming", DC: "District of Columbia",
+};
+
+export async function writeSubmissionToWarehouse(
+  payload: WarehouseWritePayload,
+): Promise<void> {
+  const { dealerSubmissionId, request: data, result: finalResult, stateCode } = payload;
+  const fees = finalResult.detectedFields.fees ?? [];
+
+  // ── (a) raw.user_analyses ──────────────────────────────────────────────────
+  await db.insert(rawUserAnalyses).values({
+    dealerSubmissionId,
+    stateCode,
+    analysisResult: finalResult.detectedFields,
+    dealScore:
+      finalResult.dealScore === "GREEN" ? 75
+      : finalResult.dealScore === "YELLOW" ? 50
+      : finalResult.dealScore === "RED" ? 25
+      : null,
+    verdict: finalResult.goNoGo,
+    flags: [
+      ...(fees.some((f) => /market.?adjust|markup|adm/i.test(f.name)) ? ["market_adjustment"] : []),
+      ...(finalResult.detectedFields.outTheDoorPrice === null ? ["missing_otd"] : []),
+      ...(fees.some((f) => /protection|nitrogen|etch|ceramic|fabric|undercoat|pinstripe/i.test(f.name)) ? ["vague_fees"] : []),
+    ],
+    ingestionSource: "user_submitted",
+    retentionExpiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+  });
+
+  // ── (b) core.dealers ───────────────────────────────────────────────────────
+  const effectiveState = stateCode ?? "XX";
+  const sentinelCity = STATE_FULL_NAMES[effectiveState] ?? effectiveState;
+  const dealerName = `Unknown Dealer - ${effectiveState}`;
+  const dealerCity = sentinelCity;
+
+  const dealerId = await getOrCreateDealer(dealerName, dealerCity, effectiveState);
+
+  // ── (c) core.listings ─────────────────────────────────────────────────────
+  const hasMarketAdj = fees.some((f) => /market.?adjust|markup|adm/i.test(f.name));
+  const marketAdjustment = fees
+    .filter((f) => /market.?adjust|markup|adm/i.test(f.name))
+    .reduce((sum, f) => sum + (f.amount ?? 0), 0);
+
+  const addonTotal = fees
+    .filter(
+      (f) =>
+        /dealer.?add|add.?on|package/i.test(f.name) && (f.amount ?? 0) >= 500,
+    )
+    .reduce((sum, f) => sum + (f.amount ?? 0), 0);
+
+  const docFee =
+    fees.find((f) => /doc.?fee|document/i.test(f.name))?.amount ?? null;
+
+  const feeNames = Array.from(new Set(fees.map((f) => f.name.toLowerCase().trim())));
+
+  const flagList: string[] = [
+    ...(hasMarketAdj ? ["market_adjustment"] : []),
+    ...(finalResult.detectedFields.outTheDoorPrice === null ? ["missing_otd"] : []),
+    ...(fees.some((f) => /protection|nitrogen|etch|ceramic|fabric|undercoat|pinstripe/i.test(f.name)) ? ["vague_fees"] : []),
+  ];
+
+  const otdPrice = toStr(finalResult.detectedFields.outTheDoorPrice);
+  const totalFees = fees
+    .map((f) => f.amount)
+    .filter((a): a is number => a !== null)
+    .reduce((s, a) => s + a, 0);
+
+  const feeToPrice =
+    otdPrice && totalFees > 0
+      ? String(totalFees / Number(otdPrice))
+      : null;
+
+  const dealScoreNum =
+    finalResult.dealScore === "GREEN" ? 75
+    : finalResult.dealScore === "YELLOW" ? 50
+    : finalResult.dealScore === "RED" ? 25
+    : null;
+
+  const now = new Date();
+  await db.insert(coreListings).values({
+    dealerId,
+    ingestionSource: "user_submitted",
+    isFullyProcessed: true,
+    countsTowardRealDeals: true,
+    analysisVersion: 1,
+    isDuplicate: false,
+    isTestData: false,
+    hasPipelineError: false,
+    listedPrice: toStr(finalResult.detectedFields.salePrice),
+    otdPrice,
+    monthlyPayment: toStr(finalResult.detectedFields.monthlyPayment),
+    aprValue: toStr(finalResult.detectedFields.apr),
+    loanTermMonths: finalResult.detectedFields.termMonths ?? null,
+    downPayment: toStr(finalResult.detectedFields.downPayment),
+    docFee: docFee !== null ? String(docFee) : null,
+    docFeeOverStateCap: null,
+    marketAdjustment: hasMarketAdj && marketAdjustment > 0 ? String(marketAdjustment) : null,
+    addonTotal: addonTotal > 0 ? String(addonTotal) : null,
+    feeNames,
+    flagCount: flagList.length,
+    dealScore: dealScoreNum,
+    verdict: finalResult.goNoGo,
+    flags: flagList,
+    feeToPrice,
+    stateCode,
+    listingDate: now.toISOString().slice(0, 10),
+    analyzedAt: now,
+  });
+
+  console.log(
+    `[warehouse] Wrote submission ${dealerSubmissionId} to warehouse (state=${stateCode ?? "XX"}, score=${finalResult.dealScore})`,
+  );
+}

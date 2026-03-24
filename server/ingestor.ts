@@ -35,7 +35,7 @@ export function enqueueSubmission(payload: SubmissionPayload): void {
       const toNum = (n: number | null | undefined): string | null =>
         n != null ? String(n) : null;
 
-      await storage.saveDealerSubmission({
+      const submission = await storage.saveDealerSubmission({
         analysisVersion: "v1",
         dealScore: finalResult.dealScore,
         confidenceLevel: finalResult.confidenceLevel,
@@ -63,7 +63,7 @@ export function enqueueSubmission(payload: SubmissionPayload): void {
 
         // Fee intelligence
         feeCount: fees.length,
-        feeNames: [...new Set(fees.map((f) => f.name.toLowerCase().trim()))],
+        feeNames: Array.from(new Set(fees.map((f) => f.name.toLowerCase().trim()))),
 
         // Tactic flags
         flagMarketAdjustment: fees.some((f) =>
@@ -96,6 +96,27 @@ export function enqueueSubmission(payload: SubmissionPayload): void {
         rawTextStoredAt: new Date(),
         rawTextExpiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
       });
+
+      // ── Warehouse write path ────────────────────────────────────────────────
+      // Failures here are logged but never bubble up to the user's request.
+      try {
+        if (process.env.DATABASE_URL && submission?.id) {
+          const { writeSubmissionToWarehouse } = await import(
+            "./warehouse/warehouseWriter"
+          );
+          await writeSubmissionToWarehouse({
+            dealerSubmissionId: submission.id,
+            request: data,
+            result: finalResult,
+            stateCode,
+          });
+        }
+      } catch (warehouseErr) {
+        console.error(
+          "[submission-ingestor] warehouse write failed (non-fatal):",
+          warehouseErr,
+        );
+      }
     } catch (err) {
       console.error("[submission-ingestor] non-blocking write failed:", err);
       // Never rethrows — user already has their result
