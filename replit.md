@@ -137,3 +137,48 @@ tests/
 - `tailwindcss`: Utility-first CSS framework
 - `react-helmet-async`: Render-time SEO meta tags for prerendered pages
 - `puppeteer-core`: Headless browser for post-build prerendering
+- `@sentry/node`: Backend error tracking (v10)
+- `@sentry/react`: Frontend error tracking and Error Boundary (v10)
+
+## Error Tracking (Sentry)
+
+### Overview
+Sentry is integrated for production error tracking on both frontend and backend. It is disabled in development by default and is always a safe no-op when the DSN is not set.
+
+### Initialization Points
+- **Backend**: `server/index.ts` — `Sentry.init` runs before any route registration. Uses `expressIntegration()` and `setupExpressErrorHandler()`. Captures uncaught exceptions and unhandled promise rejections.
+- **Frontend**: `client/src/main.tsx` — `Sentry.init` runs before React renders. Uses `browserTracingIntegration()`.
+- **React Error Boundary**: `client/src/App.tsx` — `Sentry.ErrorBoundary` wraps the entire app to capture render failures. Shows a minimal fallback UI on crash.
+
+### Required Environment Variables (set in Replit Secrets)
+| Variable | Location | Purpose |
+|---|---|---|
+| `SENTRY_DSN` | Backend secret | Backend Sentry project DSN |
+| `VITE_SENTRY_DSN` | Frontend env var | Frontend Sentry project DSN |
+| `SENTRY_ENABLED` | Optional backend | Set to `"true"` to enable in development |
+| `VITE_SENTRY_ENABLED` | Optional frontend | Set to `"true"` to enable in development |
+
+> **Note**: Frontend and backend can use different Sentry projects/DSNs. A missing DSN always results in a safe no-op (no crash, no error).
+
+### What Is Captured
+- Uncaught frontend exceptions and unhandled promise rejections
+- React component render errors (via Error Boundary)
+- Backend route exceptions, unhandled rejections, and uncaught exceptions
+- Lightweight context tags on critical flows: `feature` and `route` on `/api/analyze`, `/api/extract-text`, `/api/checkout`, `/api/state-fee`
+
+### What Is Intentionally Excluded (Privacy)
+- Request bodies (`dealerText`, `text`, `content`, `rawBody`)
+- File data or buffers
+- Authentication headers (`authorization`, `cookie`)
+- Any user-submitted document or dealer communication content
+
+### Environment Behavior
+- **Production** (`NODE_ENV=production`): Sentry is active when DSN is set
+- **Development** (default): Sentry is silent even if DSN is set
+- **Development opt-in**: Set `SENTRY_ENABLED=true` (backend) or `VITE_SENTRY_ENABLED=true` (frontend)
+
+### Verification Steps
+1. Deploy to production with `SENTRY_DSN` and `VITE_SENTRY_DSN` set in Replit Secrets
+2. Trigger a test error by visiting an invalid route or submitting a bad request
+3. Confirm the error appears in the Sentry dashboard within ~30 seconds
+4. To test Error Boundary in development, temporarily throw from a component and check the fallback UI renders

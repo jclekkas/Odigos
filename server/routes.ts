@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
@@ -389,6 +390,12 @@ GO/NO-GO/NEED-MORE-INFO:
       enqueueSubmission({ request: data, result: finalResult });
     } catch (error) {
       console.error("Analysis error:", error);
+      Sentry.withScope((scope) => {
+        scope.setTag("feature", "analyze");
+        scope.setTag("route", "/api/analyze");
+        scope.setTag("error_type", error instanceof Error ? error.constructor.name : "unknown");
+        Sentry.captureException(error);
+      });
       
       let errorMessage = "Unknown error occurred";
       if (error instanceof Error) {
@@ -460,6 +467,12 @@ GO/NO-GO/NEED-MORE-INFO:
       res.json({ text });
     } catch (err) {
       console.error("extract-text error:", err);
+      Sentry.withScope((scope) => {
+        scope.setTag("feature", "extract-text");
+        scope.setTag("route", "/api/extract-text");
+        scope.setTag("error_type", err instanceof Error ? err.constructor.name : "unknown");
+        Sentry.captureException(err);
+      });
       res.status(500).json({ message: "Something went wrong. Please try again." });
     }
   });
@@ -543,6 +556,12 @@ GO/NO-GO/NEED-MORE-INFO:
       res.json({ url: session.url });
     } catch (error) {
       console.error("Checkout error:", error);
+      Sentry.withScope((scope) => {
+        scope.setTag("feature", "checkout");
+        scope.setTag("route", "/api/checkout");
+        scope.setTag("error_type", error instanceof Error ? error.constructor.name : "unknown");
+        Sentry.captureException(error);
+      });
       res.status(500).json({ error: "CHECKOUT_FAILED" });
     }
   });

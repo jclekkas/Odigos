@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/react";
 import { Switch, Route, useLocation } from "wouter";
 import { useEffect } from "react";
 import { queryClient } from "./lib/queryClient";
@@ -135,15 +136,35 @@ function VitalsTracker() {
   return null;
 }
 
+function ErrorFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center p-8 text-center">
+      <div>
+        <h1 className="text-2xl font-semibold mb-2">Something went wrong</h1>
+        <p className="text-muted-foreground mb-4">An unexpected error occurred. Please refresh the page to try again.</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm"
+          data-testid="button-error-reload"
+        >
+          Reload page
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <VitalsTracker />
-        <Router />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <VitalsTracker />
+          <Router />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </Sentry.ErrorBoundary>
   );
 }
 

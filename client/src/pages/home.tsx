@@ -9,6 +9,7 @@ import { z } from "zod";
 import { drawScorecard } from "@/components/ShareCard";
 import { trackPageView, trackFormStart, trackFormFocus, getSessionId } from "@/lib/tracking";
 import { capture } from "@/lib/analytics";
+import { tagFlow } from "@/lib/sentry";
 import { setSeoMeta } from "@/lib/seo";
 import { howToSchema } from "@/lib/jsonld";
 import { 
@@ -580,6 +581,7 @@ export default function Home() {
 
     setUploadLoading(true);
     try {
+      tagFlow("extract-text", "/api/extract-text");
       const formData = new FormData();
       formData.append("file", file);
       const response = await fetch("/api/extract-text", { method: "POST", body: formData });
@@ -590,7 +592,7 @@ export default function Home() {
       }
       form.setValue("dealerText", data.text);
       form.setValue("source", "upload");
-    } catch {
+    } catch (err) {
       setUploadError("Something went wrong. Please try again or paste the text manually.");
     } finally {
       setUploadLoading(false);
@@ -661,6 +663,7 @@ export default function Home() {
     setCheckoutLoading(true);
     
     try {
+      tagFlow("checkout", "/api/checkout");
       const response = await apiRequest("POST", "/api/checkout", { product: "deal_clarity", sessionId: getSessionId() });
       const data = await response.json();
       
@@ -746,6 +749,7 @@ export default function Home() {
 
   const analyzeMutation = useMutation({
     mutationFn: async (data: FormValues) => {
+      tagFlow("analyze", "/api/analyze");
       const payload = {
         dealerText: data.dealerText,
         condition: data.condition,

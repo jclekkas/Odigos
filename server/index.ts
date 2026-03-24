@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
@@ -5,6 +6,47 @@ import { createServer } from "http";
 import { trackEvent } from "./metrics";
 import { db } from "./db";
 import { sql } from "drizzle-orm";
+
+const SENSITIVE_KEYS = ["dealerText", "body", "text", "content", "rawBody", "file", "buffer", "password", "token"];
+
+function sanitizeEvent(event: Sentry.Event): Sentry.Event | null {
+  if (event.request) {
+    delete event.request.data;
+    if (event.request.headers) {
+      delete (event.request.headers as Record<string, unknown>)["authorization"];
+      delete (event.request.headers as Record<string, unknown>)["cookie"];
+    }
+  }
+  if (event.extra) {
+    for (const key of SENSITIVE_KEYS) {
+      if (key in event.extra) {
+        delete event.extra[key];
+      }
+    }
+  }
+  return event;
+}
+
+const sentryEnabled = !!(process.env.SENTRY_DSN &&
+  (process.env.NODE_ENV === "production" || process.env.SENTRY_ENABLED === "true"));
+
+if (sentryEnabled) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || "development",
+    integrations: [Sentry.expressIntegration()],
+    tracesSampleRate: 0.1,
+    beforeSend: sanitizeEvent,
+  });
+
+  process.on("unhandledRejection", (reason) => {
+    Sentry.captureException(reason);
+  });
+
+  process.on("uncaughtException", (err) => {
+    Sentry.captureException(err);
+  });
+}
 
 const app = express();
 const httpServer = createServer(app);
@@ -129,6 +171,10 @@ async function ensureWarehouseSchema(): Promise<void> {
   await ensureWarehouseSchema();
 
   await registerRoutes(httpServer, app);
+
+  if (sentryEnabled) {
+    Sentry.setupExpressErrorHandler(app);
+  }
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
