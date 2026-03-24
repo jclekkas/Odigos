@@ -601,7 +601,7 @@ export default function Home() {
     queryKey: ["/api/stripe-status"],
   });
 
-  const { data: statsData, isLoading: statsLoading, isError: statsError } = useQuery<{ count: number }>({
+  const { data: statsData, isLoading: statsLoading, isError: statsError } = useQuery<{ count: number; type: string }>({
     queryKey: ["/api/stats/count"],
     retry: false,
     staleTime: 5 * 60 * 1000,
@@ -812,13 +812,16 @@ export default function Home() {
             <div className="mt-3" data-testid="container-deals-counter-analyzer">
               {statsLoading ? (
                 <Skeleton className="h-5 w-44 rounded-full" data-testid="skeleton-deals-counter-analyzer" />
-              ) : statsData && statsData.count > 0 ? (
+              ) : statsData && statsData.count > 0 && statsData.type !== "none" ? (
                 <span
                   className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/50 px-3 py-1 text-xs text-muted-foreground"
                   data-testid="text-deals-counter-analyzer"
                 >
                   <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                  {statsData.count.toLocaleString()} real deals from buyer submissions
+                  {statsData.count.toLocaleString()}{" "}
+                  {statsData.type === "real_deals"
+                    ? "real deals analyzed"
+                    : "public auto-finance records analyzed"}
                 </span>
               ) : null}
             </div>

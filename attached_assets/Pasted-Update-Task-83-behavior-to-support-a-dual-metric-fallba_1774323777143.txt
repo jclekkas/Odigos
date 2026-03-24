@@ -1,0 +1,102 @@
+Update Task #83 behavior to support a dual-metric fallback for the public counter.
+
+Goal:
+- If we have real deals → show "X real deals analyzed"
+- If we do NOT have real deals yet → show "X public auto-finance records analyzed" (from CFPB)
+- Never label CFPB data as "deals"
+
+Do NOT change any warehouse logic or definitions.
+
+---
+
+Backend changes
+
+1. Add a new endpoint OR extend existing stats logic:
+
+Option A (preferred): extend GET /api/stats/count
+
+Return:
+{
+  count: number,
+  type: "real_deals" | "public_records"
+}
+
+Logic:
+- Query core.platform_metrics
+- If real_deals_analyzed > 0:
+    return { count: real_deals_analyzed, type: "real_deals" }
+
+- Else if enforcement_records > 0:
+    return { count: enforcement_records, type: "public_records" }
+
+- Else:
+    return { count: 0, type: "none" }
+
+Fallback:
+- If materialized view is unavailable:
+    - real deals fallback:
+      SELECT COUNT(*) FROM core.listings WHERE counts_toward_real_deals = true
+
+    - CFPB fallback:
+      SELECT COUNT(*) FROM core.listings WHERE ingestion_source = 'cfpb'
+
+- Preserve existing Cache-Control headers
+
+---
+
+Frontend changes
+
+Landing page (client/src/pages/landing.tsx)
+Analyzer page (client/src/pages/home.tsx)
+
+2. Update the existing useQuery for /api/stats/count to handle:
+
+{
+  count: number,
+  type: string
+}
+
+3. Render logic:
+
+IF type === "real_deals":
+  show:
+  "{count} real deals analyzed"
+
+ELSE IF type === "public_records":
+  show:
+  "{count} public auto-finance records analyzed"
+
+ELSE:
+  render nothing
+
+4. Keep existing behavior:
+- skeleton while loading
+- hide on error
+- hide when count = 0
+- format count with toLocaleString()
+
+5. Keep the SAME query key so cache is shared across pages
+
+---
+
+Constraints
+
+- Do NOT modify counts_toward_real_deals logic
+- Do NOT include CFPB in real deals
+- Do NOT include seed data anywhere in this counter
+- Do NOT introduce new dependencies
+- Do NOT change UI layout — only text/content
+
+---
+
+Success criteria
+
+- If there are 0 real deals but CFPB data exists:
+  UI shows:
+  "X public auto-finance records analyzed"
+
+- Once real deals exist:
+  UI automatically switches to:
+  "X real deals analyzed"
+
+- No scenario ever labels CFPB data as "deals"

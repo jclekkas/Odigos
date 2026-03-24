@@ -1098,30 +1098,50 @@ GO/NO-GO/NEED-MORE-INFO:
   app.get("/api/stats/count", async (_req, res) => {
     try {
       if (!process.env.DATABASE_URL) {
-        return res.json({ count: 0 });
+        return res.json({ count: 0, type: "none" });
       }
 
       const { db } = await import("./db");
       const { sql } = await import("drizzle-orm");
 
       let count = 0;
+      let type: "real_deals" | "public_records" | "none" = "none";
 
-      // Only count user_submitted and internal_backfill — CFPB records are
-      // a separate dataset and must never appear in the buyer deals counter.
+      // Always use direct queries so source filtering is exact.
+      // The platform_metrics view's real_deals_analyzed includes CFPB rows
+      // (counts_toward_real_deals=true), so the view cannot be used here
+      // without incorrectly labelling CFPB data as "real deals".
       try {
-        const result = await db.execute(
-          sql`SELECT COUNT(*) AS cnt
-              FROM core.listings
+        // 1. Buyer submissions only (user_submitted + internal_backfill)
+        const realResult = await db.execute(
+          sql`SELECT COUNT(*) AS cnt FROM core.listings
               WHERE counts_toward_real_deals = TRUE
                 AND ingestion_source IN ('user_submitted', 'internal_backfill')`,
         );
-        const row = result.rows?.[0] as Record<string, unknown> | undefined;
-        count = Number(row?.cnt ?? 0);
+        const realRow = realResult.rows?.[0] as Record<string, unknown> | undefined;
+        const realDeals = Number(realRow?.cnt ?? 0);
+
+        if (realDeals > 0) {
+          count = realDeals;
+          type = "real_deals";
+        } else {
+          // 2. Fallback: CFPB public records
+          const cfpbResult = await db.execute(
+            sql`SELECT COUNT(*) AS cnt FROM core.listings
+                WHERE ingestion_source = 'cfpb'`,
+          );
+          const cfpbRow = cfpbResult.rows?.[0] as Record<string, unknown> | undefined;
+          const cfpbCount = Number(cfpbRow?.cnt ?? 0);
+          if (cfpbCount > 0) {
+            count = cfpbCount;
+            type = "public_records";
+          }
+        }
       } catch {
       }
 
       res.setHeader("Cache-Control", "public, max-age=300, stale-while-revalidate=600");
-      res.json({ count });
+      res.json({ count, type });
     } catch (err) {
       console.error("[stats] /api/stats/count error:", err);
       res.status(500).json({ error: "Failed to fetch stats" });
