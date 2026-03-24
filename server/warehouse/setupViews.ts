@@ -59,3 +59,17 @@ export async function setupWarehouseViews(): Promise<void> {
 
   console.log("[warehouse] Schemas, FK constraint, and materialized views set up (idempotent).");
 }
+
+// Run directly: npx tsx server/warehouse/setupViews.ts
+const isMain =
+  process.argv[1]?.endsWith("setupViews.ts") ||
+  process.argv[1]?.endsWith("setupViews.js");
+
+if (isMain) {
+  setupWarehouseViews()
+    .then(() => process.exit(0))
+    .catch((err) => {
+      console.error("[warehouse] Fatal error:", err);
+      process.exit(1);
+    });
+}

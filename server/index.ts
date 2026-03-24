@@ -3,6 +3,8 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import { trackEvent } from "./metrics";
+import { db } from "./db";
+import { sql } from "drizzle-orm";
 
 const app = express();
 const httpServer = createServer(app);
@@ -85,7 +87,47 @@ app.use((req, res, next) => {
   next();
 });
 
+/**
+ * Ensures the warehouse schema exists on every server startup.
+ *
+ * Checks for the presence of raw.user_analyses. If it does not exist the full
+ * warehouse bootstrap runs (schemas → tables → materialized views → reference
+ * data). If it already exists nothing is touched. All errors are caught so the
+ * server always starts even if the warehouse is unavailable.
+ */
+async function ensureWarehouseSchema(): Promise<void> {
+  try {
+    const result = await db.execute(sql`
+      SELECT EXISTS (
+        SELECT 1 FROM pg_tables
+        WHERE schemaname = 'raw' AND tablename = 'user_analyses'
+      ) AS exists
+    `);
+
+    const exists = (result.rows[0] as { exists: boolean }).exists;
+
+    if (exists) {
+      console.log("[warehouse] Schema already exists — skipping bootstrap.");
+      return;
+    }
+
+    console.log("[warehouse] raw.user_analyses not found — running warehouse bootstrap...");
+
+    const { setupWarehouseViews } = await import("./warehouse/setupViews");
+    await setupWarehouseViews();
+
+    const { seedReferenceData } = await import("./warehouse/seedReference");
+    await seedReferenceData();
+
+    console.log("[warehouse] Bootstrap complete.");
+  } catch (err) {
+    console.error("[warehouse] Bootstrap failed (server will still start):", err);
+  }
+}
+
 (async () => {
+  await ensureWarehouseSchema();
+
   await registerRoutes(httpServer, app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
