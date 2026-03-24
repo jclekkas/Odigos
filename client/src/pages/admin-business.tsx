@@ -1216,6 +1216,22 @@ export default function AdminBusiness() {
     return () => clearInterval(interval);
   }, []);
 
+  const authQuery = useQuery({
+    queryKey: ["/api/admin/bi/__auth__", adminKey],
+    queryFn: async () => {
+      const res = await fetch(`/api/admin/bi/funnel?key=${encodeURIComponent(adminKey)}&range=all`);
+      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+      return res.json();
+    },
+    retry: 0,
+    staleTime: 300000,
+    refetchInterval: false,
+  });
+
+  const authErrorMsg = authQuery.isError ? ((authQuery.error as Error)?.message ?? "") : "";
+  const authIs503 = authErrorMsg.startsWith("503");
+  const authIs401 = authErrorMsg.startsWith("401");
+
   return (
     <div className="min-h-screen bg-background">
       <div className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
@@ -1261,6 +1277,26 @@ export default function AdminBusiness() {
           </div>
         </div>
       </div>
+
+      {authQuery.isError && (
+        <div className="max-w-7xl mx-auto px-6 pt-4">
+          <div className="flex items-start gap-3 p-4 rounded-lg border border-red-400 bg-red-50 dark:bg-red-950/20" data-testid="banner-admin-error">
+            <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-red-700 dark:text-red-400 font-semibold text-sm">
+                {authIs503 ? "Admin key not configured on server" : authIs401 ? "Invalid admin key" : "Failed to load dashboard data"}
+              </p>
+              <p className="text-red-600/80 dark:text-red-400/80 text-xs mt-0.5">
+                {authIs503
+                  ? "The ADMIN_KEY environment variable is not set. Set it in the Replit secrets panel and restart the server."
+                  : authIs401
+                  ? "The key in the URL does not match the configured ADMIN_KEY. Add ?key=<your-key> to the URL."
+                  : "An unexpected error occurred. Check the server logs for details."}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto p-6">
         {activePanel === "funnel" && <FunnelPanel adminKey={adminKey} range={range} />}

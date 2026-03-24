@@ -239,15 +239,32 @@ export default function AdminTechnical() {
           </div>
         </div>
 
-        {techQuery.isError && (
-          <Card className="border-red-400">
-            <CardContent className="pt-4">
-              <p className="text-red-600 dark:text-red-400 text-sm">
-                Failed to load technical metrics. Check your admin key.
-              </p>
-            </CardContent>
-          </Card>
-        )}
+        {techQuery.isError && (() => {
+          const msg = (techQuery.error as Error)?.message ?? "";
+          const is503 = msg.startsWith("503");
+          const is401 = msg.startsWith("401");
+          return (
+            <Card className="border-red-400 bg-red-50 dark:bg-red-950/20" data-testid="banner-admin-error">
+              <CardContent className="pt-4 pb-4">
+                <div className="flex items-start gap-3">
+                  <XCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-red-700 dark:text-red-400 font-semibold text-sm">
+                      {is503 ? "Admin key not configured on server" : is401 ? "Invalid admin key" : "Failed to load technical metrics"}
+                    </p>
+                    <p className="text-red-600/80 dark:text-red-400/80 text-xs mt-0.5">
+                      {is503
+                        ? "The ADMIN_KEY environment variable is not set. Set it in the Replit secrets panel and restart the server."
+                        : is401
+                        ? "The key in the URL does not match the configured ADMIN_KEY. Add ?key=<your-key> to the URL."
+                        : "An unexpected error occurred. Check the server logs for details."}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })()}
 
         <Card data-testid="panel-system-health">
           <CardHeader className="pb-3">
