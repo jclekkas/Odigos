@@ -9,7 +9,7 @@ import { sql } from "drizzle-orm";
 
 const SENSITIVE_KEYS = ["dealerText", "body", "text", "content", "rawBody", "file", "buffer", "password", "token"];
 
-function sanitizeEvent(event: Sentry.Event): Sentry.Event | null {
+function sanitizeEvent(event: Sentry.ErrorEvent): Sentry.ErrorEvent | null {
   if (event.request) {
     delete event.request.data;
     if (event.request.headers) {

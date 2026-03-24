@@ -230,7 +230,7 @@ async function main(): Promise<void> {
       const fees = Array.isArray(detectedFields?.fees)
         ? (detectedFields.fees as { name: string; amount: number | null }[])
         : [];
-      const feeNames = [...new Set(fees.map((f) => f.name.toLowerCase().trim()))];
+      const feeNames = Array.from(new Set(fees.map((f) => f.name.toLowerCase().trim())));
 
       const hasMarketAdj = sub.flagMarketAdjustment;
       const marketAdjustment = fees

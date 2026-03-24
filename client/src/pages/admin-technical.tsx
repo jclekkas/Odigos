@@ -87,6 +87,7 @@ interface TechnicalSummary {
     cls: { avg: number | null; rating: string | null };
     fid: { avg: number | null; rating: string | null };
     inp: { avg: number | null; rating: string | null };
+    fcp: { avg: number | null; rating: string | null };
   };
   piiRetention: {
     overdueCount: number;

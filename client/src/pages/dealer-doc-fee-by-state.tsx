@@ -20,7 +20,7 @@ interface StateEntry {
 }
 
 const stateRows: StateEntry[] = Object.values(
-  stateFeeData.states as Record<string, StateEntry>
+  stateFeeData.states as unknown as Record<string, StateEntry>
 ).sort((a, b) => a.name.localeCompare(b.name));
 
 function formatCapStatus(state: StateEntry): string {
