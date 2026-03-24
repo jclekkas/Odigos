@@ -1,0 +1,184 @@
+#87 - Fix Warehouse Schema in Production + Restart Dev
+
+What & Why
+The production database is missing the entire warehouse schema: both raw and core schemas, all warehouse tables, and all materialized views. As a result, every user analysis since launch has silently failed to write to the warehouse.
+
+Root cause:
+scripts/post-merge.sh runs db:push interactively. The push aborts when it detects the materialized views would be dropped, so the schema push never completes in production.
+
+The dev server also needs a restart. It crashed after the last merge with a port conflict and is currently down.
+
+Goal:
+1. Make warehouse schema creation reliable in production
+2. Prevent future deploys from aborting on materialized-view data-loss prompts
+3. Add a safe startup-time warehouse bootstrap
+4. Restart dev and confirm preview is running again
+
+--------------------------------------------------
+Done looks like
+--------------------------------------------------
+
+- Dev preview is running again with no port conflict error
+- Production no longer logs: raw.user_analyses does not exist
+- All warehouse tables exist in production, including:
+  - raw.user_analyses
+  - raw.enforcement_records
+  - core.dealers
+  - core.listings
+  - core.consumer_complaints
+  - core.states
+  - core.metro_areas
+- Materialized views exist in production:
+  - core.platform_metrics
+  - core.national_stats
+  - core.state_stats
+- Reference data is seeded in production:
+  - 51 states
+  - 25 metro areas
+- Future deploys no longer abort during schema push
+
+--------------------------------------------------
+Out of scope
+--------------------------------------------------
+
+- Re-running historical backfills in production
+- Changing warehouse table definitions
+- Redesigning the warehouse model
+- Adding new warehouse entities beyond what already exists
+
+--------------------------------------------------
+Tasks
+--------------------------------------------------
+
+1) Fix scripts/post-merge.sh so schema push is non-interactive and safe
+
+File:
+- scripts/post-merge.sh
+
+Problem:
+db:push aborts when it detects the materialized views would be dropped.
+
+Required fix:
+- Before running db:push, explicitly drop these materialized views if they exist:
+  - core.platform_metrics
+  - core.national_stats
+  - core.state_stats
+- Then run db:push non-interactively
+- Use either:
+  - --accept-data-loss
+  OR
+  - a safe non-interactive equivalent
+- After db:push completes, immediately re-run the warehouse view setup logic so the materialized views are recreated
+
+Requirements:
+- Script must be fully non-interactive
+- Script must fail clearly if db:push fails for another reason
+- Recreating views must happen only after a successful push
+- Keep behavior production-safe and repeatable
+
+2) Add startup-time warehouse bootstrap
+
+File:
+- server/index.ts
+
+Add a new function:
+- ensureWarehouseSchema()
+
+Call it before the server begins listening.
+
+Behavior:
+- Check whether raw.user_analyses exists
+- If it already exists, do nothing and continue startup
+- If it does not exist:
+  - create schemas if missing:
+    - raw
+    - core
+  - create all required warehouse tables if missing
+  - create/recreate the materialized views using existing warehouse setup logic
+  - seed reference data for:
+    - core.states
+    - core.metro_areas
+
+Requirements:
+- Must be idempotent and safe to run on every startup
+- Must use existing logic/files where possible instead of duplicating business definitions
+- Must be wrapped in try/catch
+- Any failure must be logged clearly
+- Startup bootstrap failure must NOT crash the server
+- Server should still start even if warehouse bootstrap fails
+
+3) Reuse existing warehouse setup logic where possible
+
+Relevant files:
+- server/warehouse/setupViews.ts
+- server/warehouse/seedReference.ts
+- shared/warehouse.ts
+
+Expectations:
+- Do not rewrite warehouse definitions from scratch if existing utilities already define them
+- Prefer extracting reusable helpers if needed
+- Keep implementation centralized and maintainable
+
+4) Restart dev workflow
+
+After code changes:
+- restart the Start application workflow
+- clear the port conflict
+- confirm the dev server starts cleanly
+
+--------------------------------------------------
+Implementation notes
+--------------------------------------------------
+
+For post-merge.sh:
+- Use explicit DROP MATERIALIZED VIEW IF EXISTS statements before db:push
+- Use schema-qualified names
+- Preserve script safety (set -e or equivalent if already used)
+
+For ensureWarehouseSchema():
+- Log whether bootstrap was skipped or executed
+- Keep logging concise but actionable
+- Do not block app startup forever on warehouse setup
+
+For seeding:
+- Ensure seed step is idempotent
+- Do not create duplicate states or metro areas
+
+--------------------------------------------------
+Validation Checklist
+--------------------------------------------------
+
+Confirm all of the following:
+
+1. scripts/post-merge.sh no longer hangs or aborts on db:push prompt
+2. Materialized views are recreated after the push
+3. ensureWarehouseSchema() runs before app.listen / server.listen
+4. Missing warehouse schema can be bootstrapped automatically
+5. Startup does not crash if warehouse bootstrap fails
+6. Dev preview runs again without port conflict
+7. Production warehouse missing-table errors are resolved
+8. Reference data exists for 51 states and 25 metro areas
+
+--------------------------------------------------
+Relevant files
+--------------------------------------------------
+
+- scripts/post-merge.sh
+- server/index.ts
+- server/warehouse/setupViews.ts
+- server/warehouse/seedReference.ts
+- shared/warehouse.ts
+
+--------------------------------------------------
+Deliverables
+--------------------------------------------------
+
+Return:
+1. Exact files changed
+2. Final post-merge flow in plain English
+3. Where ensureWarehouseSchema() is defined and where it is called
+4. How warehouse existence is checked
+5. Confirmation that materialized views are dropped before db:push and recreated after
+6. Confirmation that dev preview is running again
+
+End of task
