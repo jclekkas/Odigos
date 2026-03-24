@@ -45,17 +45,25 @@ args = "test:components"
 task = "workflow.run"
 args = "test"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "pii:cleanup"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "pii:cleanup:dry"
+
 [[workflows.workflow]]
 name = "Start application"
 author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
-
-[workflows.workflow.metadata]
-outputType = "webview"
 
 [[workflows.workflow]]
 name = "test:unit"
@@ -100,6 +108,28 @@ args = "npx vitest run"
 
 [workflows.workflow.metadata]
 isValidation = true
+
+[[workflows.workflow]]
+name = "pii:cleanup"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx tsx server/scripts/runPiiCleanup.ts"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "pii:cleanup:dry"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx tsx server/scripts/runPiiCleanup.ts --dry-run"
+
+[workflows.workflow.metadata]
+outputType = "console"
 
 [agent]
 integrations = ["github:1.0.0"]
