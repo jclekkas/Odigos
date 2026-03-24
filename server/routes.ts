@@ -1095,6 +1095,49 @@ GO/NO-GO/NEED-MORE-INFO:
     }
   });
 
+  app.get("/api/stats/count", async (_req, res) => {
+    try {
+      if (!process.env.DATABASE_URL) {
+        return res.json({ count: 0 });
+      }
+
+      const { db } = await import("./db");
+      const { sql } = await import("drizzle-orm");
+
+      let count = 0;
+      let viewAvailable = false;
+
+      try {
+        const viewResult = await db.execute(
+          sql`SELECT real_deals_analyzed FROM core.platform_metrics LIMIT 1`,
+        );
+        const row = viewResult.rows?.[0] as Record<string, unknown> | undefined;
+        if (row !== undefined) {
+          viewAvailable = true;
+          count = Number(row.real_deals_analyzed ?? 0);
+        }
+      } catch {
+      }
+
+      if (!viewAvailable) {
+        try {
+          const fbResult = await db.execute(
+            sql`SELECT COUNT(*) AS cnt FROM core.listings WHERE counts_toward_real_deals = TRUE`,
+          );
+          const row = fbResult.rows?.[0] as Record<string, unknown> | undefined;
+          count = Number(row?.cnt ?? 0);
+        } catch {
+        }
+      }
+
+      res.setHeader("Cache-Control", "public, max-age=300, stale-while-revalidate=600");
+      res.json({ count });
+    } catch (err) {
+      console.error("[stats] /api/stats/count error:", err);
+      res.status(500).json({ error: "Failed to fetch stats" });
+    }
+  });
+
   app.get("/api/warehouse/stats", async (_req, res) => {
     try {
       if (!process.env.DATABASE_URL) return res.json([]);

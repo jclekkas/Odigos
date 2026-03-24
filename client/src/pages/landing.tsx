@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { Helmet } from "react-helmet-async";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -10,6 +11,7 @@ import { capture } from "@/lib/analytics";
 import SiteHeader from "@/components/SiteHeader";
 import SeoHead from "@/components/SeoHead";
 import { productSchema } from "@/lib/jsonld";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function scrollToHash(hash: string) {
   if (window.location.pathname === "/") {
@@ -40,6 +42,12 @@ const faqs = [
 ];
 
 export default function Landing() {
+  const { data: statsData, isLoading: statsLoading, isError: statsError } = useQuery<{ count: number }>({
+    queryKey: ["/api/stats/count"],
+    retry: false,
+    staleTime: 5 * 60 * 1000,
+  });
+
   useEffect(() => {
     trackPageView("/");
   }, []);
@@ -119,6 +127,22 @@ export default function Landing() {
                     See an example.
                   </Link>
                 </p>
+
+                {!statsError && (
+                  <div className="mt-5 flex justify-center lg:justify-start" data-testid="container-deals-counter">
+                    {statsLoading ? (
+                      <Skeleton className="h-6 w-48 rounded-full" data-testid="skeleton-deals-counter" />
+                    ) : statsData && statsData.count > 0 ? (
+                      <span
+                        className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/50 px-3 py-1 text-xs text-muted-foreground"
+                        data-testid="text-deals-counter"
+                      >
+                        <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                        {statsData.count.toLocaleString()} real deals analyzed
+                      </span>
+                    ) : null}
+                  </div>
+                )}
               </div>
 
               {/* Static output preview card */}
