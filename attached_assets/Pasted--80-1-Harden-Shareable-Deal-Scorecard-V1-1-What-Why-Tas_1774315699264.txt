@@ -1,0 +1,157 @@
+#80.1 - Harden Shareable Deal Scorecard (V1.1)
+
+What & Why
+Task #80 is implemented and working:
+- "Copy summary" copies a plain-text scorecard
+- "Download scorecard" exports a branded 1200x630 PNG
+- data safety already strips dollar amounts and long numbers
+- topIssues currently come from sanitized missingInfo[].field
+
+This follow-up task is a polish and quality pass. The goal is to make the scorecard more human-readable, more reliable across browsers, and more share-friendly without changing feature scope or adding backend work.
+
+Done looks like
+- Copied summaries read naturally in iMessage, Slack, WhatsApp, and Notes
+- Issue labels are human-readable and not raw/mechanical field names
+- No dollar amounts, percentages, or long numeric strings appear anywhere in copied text or exported PNG
+- Downloaded PNG renders reliably in Chrome, Firefox, and Safari with no clipped text, missing background, or broken fonts
+- Zero-issue edge case is handled cleanly in both copy and PNG
+- Copy button gives lightweight success/failure feedback
+- Existing placement, free-tier visibility, and frontend-only implementation remain unchanged
+
+Out of scope
+- New features
+- Backend changes
+- Dynamic OG previews
+- Share links
+- Analytics changes
+- Redesigning the results page
+- Changing pricing or paywall logic
+- Adding new npm dependencies
+
+Tasks
+
+1) Improve issue phrasing
+Current top issues are derived from missingInfo[].field and sanitized, but they may still feel mechanical.
+
+Add a formatting layer to convert raw/internal field labels into short, user-facing phrases.
+
+Create a helper in client/src/pages/home.tsx or a nearby local utility:
+formatIssueLabel(field: string): string
+
+Rules:
+- Convert snake_case / key-like values into readable phrases
+- Remove underscores
+- Capitalize naturally
+- Prefer short, high-signal phrasing
+- No numbers
+- No dollar amounts
+- Keep each issue to one line if possible
+
+Examples:
+- apr_missing -> APR is missing — total cost is unclear
+- doc_fee_high -> Documentation fee appears unusually high
+- otd_missing -> Full out-the-door price not provided
+- addons_unclear -> Add-ons may not be optional
+
+Fallback:
+- replace underscores with spaces
+- trim
+- capitalize first letter
+
+Use this formatted label everywhere share content is generated:
+- copied summary
+- ShareCard PNG content
+
+2) Strengthen sanitization
+Enhance sanitizeIssueLabel() so it strips:
+- dollar amounts
+- percentages
+- long numeric strings
+- raw number-heavy fragments that could expose quote details
+
+Requirements:
+- no exact fee amounts
+- no exact APR values
+- no 4+ digit sequences
+- trim leftover punctuation/whitespace after sanitizing
+
+This rule must apply to both copied summary content and scorecard PNG content.
+
+3) Improve copy button UX
+In client/src/pages/home.tsx:
+- after successful copy, temporarily change button label to: Copied ✓
+- revert to Copy summary after about 1.5–2 seconds
+- if clipboard copy fails, show lightweight inline failure feedback or temporary text like Copy failed
+
+Do not add a toast library or any new dependency.
+
+4) Harden PNG generation reliability
+Keep the existing html-to-image approach, but make it more reliable.
+
+Ensure:
+- ShareCard has explicit width and height: 1200x630
+- solid background color is always rendered
+- off-screen render is used, not display:none
+- text has enough padding and does not clip
+- capture waits until the node is mounted and styled before export
+
+If needed, add a small rendering delay or requestAnimationFrame before calling html-to-image.
+
+Verify:
+- no clipped issue text
+- no transparent background bugs
+- badge and footer render correctly
+- Safari works reliably
+
+5) Add zero-issue fallback
+If there are no available issues after formatting/sanitization, use this exact fallback in both copied summary and PNG:
+
+No major issues surfaced in this summary
+
+Do not render empty bullets or awkward spacing.
+
+6) Polish copied summary format
+Ensure copied text uses this exact structure:
+
+Odigos Deal Scorecard
+Verdict: [GO / NO-GO / NEED-MORE-INFO]
+[verdictLabel]
+
+Issues flagged:
+• [issue 1]
+• [issue 2]
+• [issue 3]
+
+Analyzed by Odigos — odigos.replit.app
+
+Rules:
+- include only available issues
+- if none are available, include:
+  Issues flagged:
+  • No major issues surfaced in this summary
+- no trailing bullets
+- no extra blank lines
+- reads cleanly when pasted into iMessage, Slack, WhatsApp, Notes
+
+7) Preserve existing scope and placement
+Do not move the share buttons.
+Keep them:
+- in the results area
+- between verdict/score content and the deeper result cards
+- visible in the free tier
+
+Do not expand the feature beyond copy + PNG download.
+
+Relevant files
+- client/src/components/ShareCard.tsx
+- client/src/pages/home.tsx
+
+Deliverables
+Return:
+1. Exact files changed
+2. Updated helper logic for formatIssueLabel and sanitizeIssueLabel
+3. Confirmation that no numeric deal details appear in shared outputs
+4. Confirmation that PNG export was validated in Chrome, Firefox, and Safari
+5. One example of the final copied summary text
+
+End of task

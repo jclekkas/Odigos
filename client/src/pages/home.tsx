@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
+import { drawScorecard } from "@/components/ShareCard";
 import { trackPageView, trackFormStart, trackFormFocus, getSessionId } from "@/lib/tracking";
 import { capture } from "@/lib/analytics";
 import { setSeoMeta } from "@/lib/seo";
@@ -21,7 +22,9 @@ import {
   MessageSquare,
   Info,
   Lock,
-  Upload
+  Upload,
+  Download,
+  Share2
 } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
@@ -518,6 +521,8 @@ export default function Home() {
   const [formStartTracked, setFormStartTracked] = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [summaryCopied, setSummaryCopied] = useState<"idle" | "success" | "failed">("idle");
+  const [scorecardDownloading, setScorecardDownloading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const inputStartedRef = useRef(false);
   const resultFiredRef = useRef(false);
@@ -676,6 +681,52 @@ export default function Home() {
       setCheckoutLoading(false);
     }
   };
+
+  const formatIssueLabel = useCallback((field: string): string => {
+    const fieldMap: Record<string, string> = {
+      outTheDoorPrice: "Full out-the-door price not provided",
+      otd_missing: "Full out-the-door price not provided",
+      salePrice: "Sale price is unclear or missing",
+      msrp: "MSRP not listed for comparison",
+      monthlyPayment: "Monthly payment details are vague",
+      tradeInValue: "Trade-in value not specified",
+      apr: "APR is missing — total cost is unclear",
+      apr_missing: "APR is missing — total cost is unclear",
+      termMonths: "Loan term not clearly stated",
+      downPayment: "Down payment details are missing",
+      rebates: "Rebates or incentives not mentioned",
+      fees: "Itemized fees not broken out",
+      doc_fee_high: "Documentation fee appears unusually high",
+      addons_unclear: "Add-ons may not be optional",
+      addons: "Add-ons may not be optional",
+      protection_packages: "Protection packages included without explanation",
+      credit_score: "Credit requirements not disclosed",
+      warranty: "Warranty terms not specified",
+    };
+    if (fieldMap[field]) return fieldMap[field];
+    const humanized = field
+      .replace(/[_-]+/g, " ")
+      .replace(/([a-z])([A-Z])/g, "$1 $2")
+      .toLowerCase()
+      .replace(/^\w/, (c) => c.toUpperCase());
+    return humanized;
+  }, []);
+
+  const sanitizeIssueLabel = useCallback((field: string): string => {
+    const label = formatIssueLabel(field);
+    return label
+      .replace(/\$[\d,.]+/g, "")
+      .replace(/\b\d{4,}\b/g, "")
+      .replace(/\d+(\.\d+)?%/g, "")
+      .replace(/\d+\.\d{2,}/g, "")
+      .replace(/\s{2,}/g, " ")
+      .trim();
+  }, [formatIssueLabel]);
+
+  const getTopShareIssues = useCallback((): string[] => {
+    if (!result) return [];
+    return result.missingInfo.slice(0, 3).map((item) => sanitizeIssueLabel(item.field));
+  }, [result, sanitizeIssueLabel]);
 
   const purchaseType = form.watch("purchaseType");
 
@@ -1121,6 +1172,85 @@ export default function Home() {
               />
             </div>
 
+            <div className="flex items-center justify-center gap-3" data-testid="section-share-actions">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const topIssues = getTopShareIssues();
+                  const issueLines = topIssues.length > 0
+                    ? topIssues.map((i) => `• ${i}`).join("\n")
+                    : "• No major issues surfaced in this summary";
+                  const text = `Odigos Deal Scorecard\nVerdict: ${result.goNoGo}\n${result.verdictLabel}\n\nIssues flagged:\n${issueLines}\n\nAnalyzed by Odigos — odigos.replit.app`;
+                  navigator.clipboard.writeText(text).then(() => {
+                    setSummaryCopied("success");
+                    setTimeout(() => setSummaryCopied("idle"), 2000);
+                  }).catch(() => {
+                    setSummaryCopied("failed");
+                    setTimeout(() => setSummaryCopied("idle"), 2000);
+                  });
+                }}
+                data-testid="button-copy-summary"
+              >
+                {summaryCopied === "success" ? (
+                  <>
+                    <Check className="w-4 h-4 mr-2" />
+                    Copied!
+                  </>
+                ) : summaryCopied === "failed" ? (
+                  <>
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Copy failed
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Copy summary
+                  </>
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={scorecardDownloading}
+                onClick={() => {
+                  setScorecardDownloading(true);
+                  try {
+                    const dataUrl = drawScorecard({
+                      goNoGo: result.goNoGo,
+                      verdictLabel: result.verdictLabel,
+                      topIssues: getTopShareIssues(),
+                    });
+                    const link = document.createElement("a");
+                    link.download = "odigos-deal-scorecard.png";
+                    link.href = dataUrl;
+                    link.click();
+                  } catch {
+                    toast({
+                      title: "Download failed",
+                      description: "Could not generate the scorecard. Please try again.",
+                      variant: "destructive",
+                    });
+                  } finally {
+                    setScorecardDownloading(false);
+                  }
+                }}
+                data-testid="button-download-scorecard"
+              >
+                {scorecardDownloading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Generating…
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4 mr-2" />
+                    Download scorecard
+                  </>
+                )}
+              </Button>
+            </div>
+
             <Card>
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2 text-lg">
@@ -1210,6 +1340,7 @@ export default function Home() {
           </nav>
         </div>
       </footer>
+
     </div>
   );
 }
