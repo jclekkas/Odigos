@@ -1105,29 +1105,19 @@ GO/NO-GO/NEED-MORE-INFO:
       const { sql } = await import("drizzle-orm");
 
       let count = 0;
-      let viewAvailable = false;
 
+      // Only count user_submitted and internal_backfill — CFPB records are
+      // a separate dataset and must never appear in the buyer deals counter.
       try {
-        const viewResult = await db.execute(
-          sql`SELECT real_deals_analyzed FROM core.platform_metrics LIMIT 1`,
+        const result = await db.execute(
+          sql`SELECT COUNT(*) AS cnt
+              FROM core.listings
+              WHERE counts_toward_real_deals = TRUE
+                AND ingestion_source IN ('user_submitted', 'internal_backfill')`,
         );
-        const row = viewResult.rows?.[0] as Record<string, unknown> | undefined;
-        if (row !== undefined) {
-          viewAvailable = true;
-          count = Number(row.real_deals_analyzed ?? 0);
-        }
+        const row = result.rows?.[0] as Record<string, unknown> | undefined;
+        count = Number(row?.cnt ?? 0);
       } catch {
-      }
-
-      if (!viewAvailable) {
-        try {
-          const fbResult = await db.execute(
-            sql`SELECT COUNT(*) AS cnt FROM core.listings WHERE counts_toward_real_deals = TRUE`,
-          );
-          const row = fbResult.rows?.[0] as Record<string, unknown> | undefined;
-          count = Number(row?.cnt ?? 0);
-        } catch {
-        }
       }
 
       res.setHeader("Cache-Control", "public, max-age=300, stale-while-revalidate=600");

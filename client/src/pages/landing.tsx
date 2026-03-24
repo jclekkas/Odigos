@@ -138,7 +138,7 @@ export default function Landing() {
                         data-testid="text-deals-counter"
                       >
                         <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                        {statsData.count.toLocaleString()} real deals analyzed
+                        {statsData.count.toLocaleString()} real deals from buyer submissions
                       </span>
                     ) : null}
                   </div>
