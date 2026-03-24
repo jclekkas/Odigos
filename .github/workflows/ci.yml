@@ -1,0 +1,73 @@
+name: CI
+
+# Run on every pull request and every push to main.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  ci:
+    name: Install → Typecheck → Test → Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        # Node version read from .nvmrc (value: 20).
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      # ── 1. Install ──────────────────────────────────────────────────────────
+      - name: Install dependencies
+        run: npm ci
+
+      # ── 2. Typecheck ─────────────────────────────────────────────────────────
+      - name: Typecheck
+        run: npm run check
+
+      # ── 3. Tests (unit + api + components) ──────────────────────────────────
+      # Runs all three Vitest projects in one command.
+      #
+      # No PostgreSQL service container is needed: all database and external API
+      # calls (OpenAI, Stripe, pg) are fully mocked via vi.mock() in each test
+      # file. vitest.config.ts sets DATABASE_URL to a dummy value so no real
+      # connection is attempted.
+      #
+      # Playwright E2E tests are intentionally excluded from required CI:
+      #   - They require a fully running dev server on port 5000.
+      #   - Playwright browser installation adds significant runtime to every PR.
+      #   - All external API calls are intercepted via page.route(), but server
+      #     startup and Chromium setup still make E2E slow and flaky in CI.
+      #   - E2E can be added as a separate optional or scheduled workflow later.
+      - name: Run tests
+        run: npx vitest run
+
+      # ── 4. Build ─────────────────────────────────────────────────────────────
+      # The CI=true env var (set automatically by GitHub Actions) causes
+      # script/build.ts to skip the prerender step, which requires a Nix-specific
+      # Chromium binary unavailable on GitHub-hosted runners.
+      #
+      # Required env vars for build:
+      #   DATABASE_URL     — required by server/db.ts at module load time.
+      #                      No real DB connection is made during a build; any
+      #                      valid-looking URL is sufficient.
+      #   VITE_POSTHOG_KEY / VITE_POSTHOG_HOST / VITE_SITE_URL — Vite embeds
+      #                      VITE_-prefixed vars at build time. Empty strings are
+      #                      fine; PostHog is analytics-only and not required to
+      #                      compile.
+      #
+      # No GitHub Secrets are required for this workflow. All sensitive runtime
+      # credentials (OPENAI_API_KEY, STRIPE_SECRET_KEY, SESSION_SECRET) are only
+      # read at server startup, not at build time.
+      - name: Build
+        run: npm run build
+        env:
+          DATABASE_URL: "postgresql://ci:ci@localhost:5432/ci"
+          VITE_POSTHOG_KEY: ""
+          VITE_POSTHOG_HOST: ""
+          VITE_SITE_URL: ""

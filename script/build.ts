@@ -39,8 +39,12 @@ async function buildAll() {
   console.log("building client...");
   await viteBuild();
 
-  console.log("prerendering SEO routes...");
-  execSync("node scripts/prerender.mjs", { stdio: "inherit" });
+  if (process.env.CI) {
+    console.log("skipping prerender in CI (no Chromium available)");
+  } else {
+    console.log("prerendering SEO routes...");
+    execSync("node scripts/prerender.mjs", { stdio: "inherit" });
+  }
 
   console.log("building server...");
   const pkg = JSON.parse(await readFile("package.json", "utf-8"));

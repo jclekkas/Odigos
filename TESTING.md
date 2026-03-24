@@ -97,3 +97,44 @@ The `components` project includes `@vitejs/plugin-react` for JSX transformation 
 ## Playwright Configuration
 
 `playwright.config.ts` runs Chromium headless against `http://localhost:5000`. The dev server must be running before executing `npx playwright test`. All external API routes are intercepted via `page.route()`.
+
+---
+
+## CI (GitHub Actions)
+
+The workflow file is at `.github/workflows/ci.yml`.
+
+### Triggers
+
+- Every pull request (any branch)
+- Every push to `main`
+
+### Pipeline steps (in order)
+
+| Step | Command |
+|------|---------|
+| Install | `npm ci` |
+| Typecheck | `npm run check` |
+| Tests | `npx vitest run` |
+| Build | `npm run build` |
+
+### What must pass for a PR to be accepted
+
+All four steps must succeed: typecheck, all three Vitest projects (unit, api, components), and the production build. A single failing test, type error, or build error fails the entire workflow.
+
+### Required GitHub Secrets / env vars
+
+No GitHub Secrets are required. All sensitive runtime credentials (`OPENAI_API_KEY`, `STRIPE_SECRET_KEY`, `SESSION_SECRET`) are only read at server startup, not at build time.
+
+The workflow sets these non-sensitive build-time env vars directly in the workflow file (no secrets needed):
+
+| Variable | Purpose |
+|----------|---------|
+| `DATABASE_URL` | Required by `server/db.ts` at module load time. A placeholder value is used — no real connection is made during a build. |
+| `VITE_POSTHOG_KEY` | Embedded by Vite at build time. Empty string is fine; PostHog is analytics-only. |
+| `VITE_POSTHOG_HOST` | Same as above. |
+| `VITE_SITE_URL` | Same as above. |
+
+### Why E2E is excluded from required CI
+
+Playwright E2E tests are not run in the required CI pipeline because they require a fully running dev server on port 5000, browser installation (Chromium), and the prerender step in `script/build.ts` uses a Nix-specific Chromium binary unavailable on GitHub-hosted runners. These factors make E2E slow, environment-dependent, and prone to flakiness in every-PR CI. E2E can be added as a separate optional or scheduled workflow when needed.
