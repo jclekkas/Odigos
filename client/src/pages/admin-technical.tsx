@@ -92,6 +92,7 @@ interface TechnicalSummary {
   piiRetention: {
     overdueCount: number;
     oldestOverdueDays: number | null;
+    warehouseUnavailable?: boolean;
   };
 }
 
@@ -311,6 +312,14 @@ export default function AdminTechnical() {
           <CardContent>
             {!tech ? (
               <div className="h-12 bg-muted animate-pulse rounded" />
+            ) : tech.piiRetention.warehouseUnavailable ? (
+              <div className="flex items-center gap-2" data-testid="status-pii-retention">
+                <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+                  Warehouse unavailable
+                </span>
+                <span className="text-sm text-muted-foreground">PII data pending bootstrap</span>
+              </div>
             ) : tech.piiRetention.overdueCount === 0 ? (
               <div className="flex items-center gap-2" data-testid="status-pii-retention">
                 <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
