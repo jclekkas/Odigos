@@ -1,0 +1,157 @@
+89 - CI/CD via GitHub Actions (Odigos)
+
+What & Why
+Set up a practical, production-appropriate CI pipeline for Odigos using GitHub Actions. The automated test suite from Task #88 is now in place and passing, so the next step is to enforce it automatically on pull requests and key branch pushes. The goal is to prevent regressions from merging, increase shipping confidence, and make iteration faster without adding unnecessary complexity.
+
+This task is CI-first. It is not a full deployment platform redesign.
+
+Done looks like
+- A GitHub Actions workflow runs automatically on pull_request
+- The workflow also runs on push to the main branch
+- CI installs dependencies using the repo’s actual package manager and conventions
+- CI runs the correct validation pipeline in a sensible order
+- The existing test suite from Task #88 is enforced automatically
+- Failing checks correctly fail the workflow
+- The workflow is fast enough to be practical for normal development
+- The setup is understandable and maintainable by a future engineer
+- Any required environment variables are documented clearly
+- No production secrets are hardcoded into the repo
+
+Out of scope
+- Full CD / deployment orchestration
+- Infrastructure provisioning
+- Vercel/Replit deployment redesign
+- Release tagging/version automation
+- Preview environment automation unless already trivial and already supported
+- Rewriting the test suite itself except where small CI-related fixes are necessary
+
+CI Philosophy
+The CI pipeline should be:
+- minimal
+- credible
+- fast
+- deterministic
+- easy to maintain
+
+Do not overengineer this.
+Do not add unnecessary matrices, jobs, or abstractions unless the repo truly needs them.
+
+Quality Rules (CRITICAL)
+- Use the simplest implementation that satisfies the requirements
+- Fail loudly on real errors
+- Do not add checks that are flaky or not yet stable
+- Do not invent commands that do not match the repo
+- Prefer explicit, readable workflow steps over cleverness
+- Keep runtime reasonable for everyday PR use
+
+Tasks
+
+1. Inspect the repo and determine the actual validation commands
+Before creating the workflow, inspect the codebase and determine the correct commands for:
+- install
+- typecheck
+- test
+- test:unit
+- test:api
+- test:components
+- test:e2e
+- build
+- lint, only if a real stable lint command already exists
+
+Use the repo’s actual package manager and script conventions.
+Do not assume npm if the repo uses something else.
+Do not add a lint stage unless lint is already real and stable.
+
+2. Design the CI pipeline
+Create a GitHub Actions workflow that:
+- runs on pull_request
+- runs on push to main
+- uses an appropriate Node version for the repo
+- installs dependencies correctly
+- uses dependency caching where appropriate
+- runs validation in a sensible order
+
+Preferred validation order:
+1. install
+2. typecheck, if present and stable
+3. test (unit + api + components)
+4. build
+
+Do NOT run E2E in the main required CI job unless it is clearly practical and fast enough.
+If E2E should be separate, set it up as a separate workflow or separate non-blocking/optional job only if justified by actual runtime and reliability.
+
+3. Handle environment variables correctly
+Inspect whether tests/build require environment variables.
+
+Rules:
+- Do NOT hardcode secrets
+- Do NOT invent fake production secrets unless non-secret placeholders are genuinely needed
+- Prefer safe test defaults/mocks where possible
+- Clearly document any required GitHub secrets or env vars
+- If the repo can run CI safely without secrets, keep it that way
+
+4. Keep CI aligned with Task #88
+The workflow must enforce the existing automated test suite from Task #88.
+
+That includes:
+- unit tests
+- API integration tests
+- component tests
+
+Use the already-established commands from the repo.
+Do not duplicate logic unnecessarily.
+
+5. Add minimal CI-specific fixes only if needed
+If small changes are required to make the repo CI-safe, make only minimal, targeted changes.
+
+Examples:
+- stable test command wiring
+- environment guard for build/test
+- path or alias fix exposed only in CI
+- command normalization
+
+Do NOT use CI as an excuse to refactor unrelated app code.
+
+6. Document the CI setup
+Add a concise section to replit.md and/or TESTING.md documenting:
+- what the CI workflow runs
+- when it runs
+- any required GitHub secrets/env vars
+- what is required for a PR to pass
+
+Performance Constraints
+- The main CI workflow should be fast enough for everyday use
+- Prefer one clean required workflow over many fragmented jobs
+- Avoid slow or redundant steps
+- If E2E is excluded from required CI, explain why clearly
+
+Refactor Guardrail
+- Do NOT refactor production code unless necessary to make CI work
+- Any change must be minimal, isolated, and behavior-preserving
+- If a bug is discovered, fix it and document it clearly
+
+Relevant context
+Task #88 already established:
+- Vitest projects for unit/api/components
+- Playwright E2E
+- documented test commands
+- mocking of external services
+
+This task should build directly on that foundation.
+
+Deliverables (REQUIRED)
+When finished, provide:
+1. workflow file path(s)
+2. exact triggers used
+3. Node version used
+4. exact commands run in CI
+5. whether E2E is included, separate, or intentionally excluded from required CI
+6. any package/script/config changes made
+7. any required GitHub secrets or env vars
+8. any CI-specific issues discovered and how they were resolved
+
+Success criteria
+- Every PR automatically runs validation
+- Regressions are caught before merge
+- The workflow matches the actual repo structure
+- The CI pipeline is simple, reliable, and maintainable

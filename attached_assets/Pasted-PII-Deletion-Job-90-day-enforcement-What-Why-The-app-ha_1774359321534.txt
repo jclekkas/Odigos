@@ -1,0 +1,121 @@
+PII Deletion Job (90-day enforcement)
+What & Why
+The app has a stated 90-day retention policy for user-submitted PII, and the schema already includes expiry fields (rawTextExpiresAt, retention_expires_at) — but nothing enforces them. As a result, user-submitted text can persist indefinitely.
+This task implements enforcement: a safe, auditable, idempotent background job that clears expired PII on a schedule and on demand.
+This is a data minimization control, not a product feature.
+Done looks like
+A scheduled server-side job runs automatically (daily) and enforces the 90-day retention window across all PII-bearing tables
+All PII-bearing tables are covered with no gaps, including downstream warehouse tables (raw.user_analyses)
+A single canonical timestamp (submittedAt / created_at) is used for cutoff logic — no mixing of timestamps
+Hard delete is the default
+Field-level redaction is used only where the row must persist (specifically dealer_submissions and raw.user_analyses)
+Delete vs. redact decision is documented in code for every table
+The job is idempotent (safe to run repeatedly)
+Structured logs are emitted:
+pii_cleanup_started
+pii_cleanup_table_scanned
+pii_cleanup_table_deleted
+pii_cleanup_completed
+pii_cleanup_failed
+Each log includes: cutoff timestamp, table name, and row counts
+Manual execution works:
+npm run pii:cleanup
+npm run pii:cleanup:dry or --dry-run (no mutations)
+A short comment block in server/jobs/piiCleanup.ts explains:
+what the job does
+what tables it touches
+how to run dry-run/manual execution
+At completion, the executor outputs an acceptance report covering:
+all tables touched
+delete vs. redact decision per table
+exact cutoff logic
+scheduling mechanism
+sample dry-run output
+any exclusions with justification
+Tests confirm:
+records newer than 90 days are untouched
+records older than 90 days are cleared/deleted
+exact-boundary behavior is deterministic
+dry-run is a no-op
+repeated runs are idempotent
+per-table failures are isolated and logged
+Out of scope
+Redesigning the data model or adding new columns
+A user-facing privacy dashboard or deletion-request portal
+Reprocessing historical analytics or warehouse metrics without PII
+Changing pricing, routing, analyzer logic, or user-facing flows
+Adding accounts or dashboards
+Storing additional data “to help” with deletion later
+Deleting payment/accounting records (Stripe handles these)
+Full legal compliance review
+Tasks
+1. Inventory & decision note
+Identify every table/column storing user-submitted or identifying data, including:
+raw quote text
+extracted/uploaded text
+pasted messages/emails
+names, emails, phone numbers (if present)
+file metadata (if persisted)
+logs containing raw payloads
+analysis outputs that echo user input
+Add a single comment block in server/jobs/piiCleanup.ts listing:
+table name
+why it contains PII
+delete vs. redact decision
+Define a shared constant:
+PII_RETENTION_DAYS = 90
+2. Core cleanup job
+Implement:
+server/jobs/piiCleanup.ts
+Behavior:
+Compute cutoff: now - 90 days
+Use one canonical timestamp only (submittedAt or created_at)
+Process in batches (no large in-memory loads)
+Accept options: { dryRun, batchSize }
+Rules:
+Hard delete rows where the entire record is PII
+For dealer_submissions and raw.user_analyses:
+null out text fields (rawTextRedacted, submitted_text_redacted)
+set rawTextClearedAt
+Requirements:
+Emit all required structured logs
+Return per-table counters
+Be idempotent (already-cleared rows are a no-op)
+Failures in one table/batch must NOT stop others
+3. Manual script
+Implement:
+server/scripts/runPiiCleanup.ts
+Requirements:
+Parse --dry-run from process.argv
+Print human-readable summary:
+per-table counts
+cutoff used
+mode (dry vs normal)
+Wire to:
+npm run pii:cleanup
+npm run pii:cleanup:dry
+4. Scheduler hook
+Register the job in:
+server/warehouse/scheduler.ts
+Behavior:
+Run once on server startup (with short delay)
+Then run every 24 hours
+Follow existing refreshAllViews pattern
+Constraints:
+Must not block startup
+Must not crash server on failure
+5. Tests
+Add tests covering:
+records < 90 days → preserved
+records > 90 days → deleted/redacted
+exact 90-day boundary behavior
+dry-run → no mutations
+idempotency (repeat runs safe)
+per-table failure isolation
+Relevant files
+shared/schema.ts
+shared/warehouse.ts
+server/warehouse/scheduler.ts
+server/warehouse/warehouseWriter.ts
+server/piiRedact.ts
+server/index.ts
