@@ -1,0 +1,177 @@
+#87.1 - Verify Warehouse Schema in Production (Post-Fix Validation)
+
+What & Why
+Task #87 implemented the warehouse schema fix and startup bootstrap. Dev is confirmed working.
+
+This task verifies that the fix is actually working in PRODUCTION — specifically:
+- warehouse tables exist
+- writes are succeeding
+- no more missing-table errors
+- deploy flow is truly fixed
+
+This is a validation task, not a feature build.
+
+---
+
+Done looks like
+
+- Production database contains all warehouse tables:
+  - raw.user_analyses
+  - raw.enforcement_records
+  - core.dealers
+  - core.listings
+  - core.consumer_complaints
+  - core.states
+  - core.metro_areas
+
+- Production database contains materialized views:
+  - core.platform_metrics
+  - core.national_stats
+  - core.state_stats
+
+- Reference data is present:
+  - 51 rows in core.states
+  - 25 rows in core.metro_areas
+
+- No production logs contain:
+  raw.user_analyses does not exist
+
+- A new analysis performed in production successfully writes a row to raw.user_analyses
+
+- Latest deploy does NOT hang or abort on db:push
+
+---
+
+Scope (STRICT)
+
+- Do NOT change schema definitions
+- Do NOT add new features
+- Do NOT modify business logic
+- Do NOT run destructive operations
+- Only inspect, verify, and report
+
+---
+
+Tasks
+
+1) Verify warehouse tables in production
+
+Connect to production DB and confirm existence of:
+
+- raw.user_analyses
+- raw.enforcement_records
+- core.dealers
+- core.listings
+- core.consumer_complaints
+- core.states
+- core.metro_areas
+
+Return:
+- confirmation of existence
+- row counts where applicable (especially core.states and core.metro_areas)
+
+---
+
+2) Verify materialized views
+
+Confirm existence of:
+
+- core.platform_metrics
+- core.national_stats
+- core.state_stats
+
+Return:
+- confirmation that each view exists
+- whether they can be queried without error
+
+---
+
+3) Verify reference data
+
+Query:
+
+- SELECT COUNT(*) FROM core.states
+- SELECT COUNT(*) FROM core.metro_areas
+
+Return:
+- exact counts
+- confirm expected values (51 and 25)
+
+---
+
+4) Verify write path
+
+Simulate or trigger a real production analysis (non-destructive test input).
+
+Then confirm:
+
+- a new row is inserted into raw.user_analyses
+- timestamp is recent
+- no errors occurred during write
+
+Return:
+- confirmation of successful insert
+- sample row (sanitized if needed)
+
+---
+
+5) Check production logs
+
+Scan recent logs for:
+
+- "raw.user_analyses does not exist"
+- any warehouse-related errors
+
+Return:
+- confirmation that errors are gone
+- any remaining warnings
+
+---
+
+6) Verify deploy behavior
+
+Confirm that the most recent deploy:
+
+- did not block or abort during db:push
+- successfully completed schema push
+- ran post-merge.sh fully
+
+Return:
+- confirmation of successful deploy behavior
+- note any anomalies
+
+---
+
+7) Sanity check ensureWarehouseSchema()
+
+Confirm:
+
+- it runs in production startup logs
+- it correctly skips when schema exists
+- or successfully bootstraps when missing
+
+Return:
+- log evidence of execution
+
+---
+
+Deliverables
+
+Return:
+
+1. Table existence + counts
+2. Materialized view confirmation
+3. Reference data counts
+4. Proof of successful write to raw.user_analyses
+5. Log scan results
+6. Deploy verification result
+7. Final verdict: FIXED or NOT FULLY VERIFIED
+
+---
+
+Important
+
+Do NOT assume success based on dev behavior.
+Do NOT mark complete without confirming real production writes.
+
+End of task
