@@ -18,9 +18,9 @@ import {
   coreDealers,
   coreListings,
 } from "@shared/warehouse";
-import { normalizeDealerName, refreshAllViews } from "./warehouseUtils";
+import { normalizeDealerName, validateStateCode, refreshAllViews } from "./warehouseUtils";
 
-// Sentinel city value for unknown dealer rows (state name as city)
+// Sentinel city value for unknown dealer rows (state full name)
 const STATE_FULL_NAMES: Record<string, string> = {
   AL: "Alabama", AK: "Alaska", AZ: "Arizona", AR: "Arkansas",
   CA: "California", CO: "Colorado", CT: "Connecticut", DE: "Delaware",
@@ -37,59 +37,67 @@ const STATE_FULL_NAMES: Record<string, string> = {
   WI: "Wisconsin", WY: "Wyoming", DC: "District of Columbia",
 };
 
-function buildSentinelName(stateCode: string | null | undefined): {
+/**
+ * Builds sentinel dealer info for an unknown dealer.
+ * validStateCode may be null when state is unrecognized — the dealer name
+ * still includes the raw code for human readability.
+ */
+function buildSentinelName(rawCode: string | null | undefined): {
   dealerName: string;
   city: string;
-  stateCode: string;
+  validStateCode: string | null;
 } {
-  const code = (stateCode ?? "XX").toUpperCase();
+  const code = (rawCode ?? "XX").toUpperCase();
+  const validState = validateStateCode(code);
   const city = STATE_FULL_NAMES[code] ?? code;
   return {
     dealerName: `Unknown Dealer - ${code}`,
     city,
-    stateCode: code,
+    validStateCode: validState,
   };
 }
 
+/**
+ * Upsert a dealer row. validStateCode must already be validated (null or a
+ * seeded US state code) to avoid FK violations.
+ */
 async function getOrCreateDealer(
   dealerName: string,
   city: string,
-  stateCode: string
+  validStateCode: string | null,
 ): Promise<string> {
   const normalized = normalizeDealerName(dealerName);
 
-  // Attempt look up existing
+  const stateWhere = validStateCode
+    ? sql`state_code = ${validStateCode}`
+    : sql`state_code IS NULL`;
+
   const existing = await db
     .select({ id: coreDealers.id })
     .from(coreDealers)
-    .where(
-      sql`dealer_name_normalized = ${normalized} AND state_code = ${stateCode} AND city = ${city}`
-    )
+    .where(sql`dealer_name_normalized = ${normalized} AND ${stateWhere} AND city = ${city}`)
     .limit(1);
 
   if (existing.length > 0) return existing[0].id;
 
-  // Insert
   const inserted = await db
     .insert(coreDealers)
     .values({
       dealerName,
       dealerNameNormalized: normalized,
       city,
-      stateCode,
+      stateCode: validStateCode,
     })
     .onConflictDoNothing()
     .returning({ id: coreDealers.id });
 
   if (inserted.length > 0) return inserted[0].id;
 
-  // Race condition: another process inserted first — refetch
+  // Race condition — refetch
   const refetch = await db
     .select({ id: coreDealers.id })
     .from(coreDealers)
-    .where(
-      sql`dealer_name_normalized = ${normalized} AND state_code = ${stateCode} AND city = ${city}`
-    )
+    .where(sql`dealer_name_normalized = ${normalized} AND ${stateWhere} AND city = ${city}`)
     .limit(1);
   return refetch[0].id;
 }
@@ -121,13 +129,14 @@ async function main(): Promise<void> {
         .where(sql`dealer_submission_id = ${sub.id}`)
         .limit(1);
 
+      const _validStateForCheck = validateStateCode(sub.stateCode);
       const listingExists = await db
         .select({ id: coreListings.id })
         .from(coreListings)
         .where(
           sql`ingestion_source = 'internal_backfill'
               AND analyzed_at = ${sub.submittedAt}
-              AND state_code ${sub.stateCode ? sql`= ${sub.stateCode}` : sql`IS NULL`}`
+              AND state_code ${_validStateForCheck ? sql`= ${_validStateForCheck}` : sql`IS NULL`}`
         )
         .limit(1);
 
@@ -191,20 +200,23 @@ async function main(): Promise<void> {
 
       let dealerName: string;
       let dealerCity: string;
-      let dealerState: string;
+      let dealerValidState: string | null;
+
+      // Always validate state before writing to prevent FK violations
+      const validState = validateStateCode(sub.stateCode);
 
       if (detectedDealerName && sub.stateCode) {
         dealerName = detectedDealerName.trim();
-        dealerCity = sub.stateCode;
-        dealerState = sub.stateCode;
+        dealerCity = validState ?? sub.stateCode;
+        dealerValidState = validState;
       } else {
         const sentinel = buildSentinelName(sub.stateCode);
         dealerName = sentinel.dealerName;
         dealerCity = sentinel.city;
-        dealerState = sentinel.stateCode;
+        dealerValidState = sentinel.validStateCode;
       }
 
-      const dealerId = await getOrCreateDealer(dealerName, dealerCity, dealerState);
+      const dealerId = await getOrCreateDealer(dealerName, dealerCity, dealerValidState);
 
       // ── (c) Insert into core.listings (only if not already written) ────
       if (listingAlreadyWritten) {
@@ -289,7 +301,7 @@ async function main(): Promise<void> {
           ...(sub.flagHighCostAddons ? ["high_cost_addons"] : []),
         ],
         feeToPrice,
-        stateCode: sub.stateCode,
+        stateCode: validState,
         listingDate: sub.submittedAt.toISOString().slice(0, 10),
         analyzedAt: sub.submittedAt,
       });

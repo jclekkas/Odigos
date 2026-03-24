@@ -9,7 +9,7 @@ import { db } from "../db";
 import { sql } from "drizzle-orm";
 import type { AnalysisResponse, AnalysisRequest } from "@shared/schema";
 import { rawUserAnalyses, coreDealers, coreListings } from "@shared/warehouse";
-import { normalizeDealerName } from "./warehouseUtils";
+import { normalizeDealerName, validateStateCode } from "./warehouseUtils";
 
 export interface WarehouseWritePayload {
   dealerSubmissionId: string;
@@ -23,19 +23,26 @@ function toStr(val: number | null | undefined): string | null {
   return val.toFixed(2);
 }
 
+/**
+ * Upsert a dealer row. state_code must be a valid seeded US code or null
+ * to avoid FK violation on core.states.
+ */
 async function getOrCreateDealer(
   dealerName: string,
   city: string,
-  stateCode: string,
+  validStateCode: string | null,
 ): Promise<string> {
   const normalized = normalizeDealerName(dealerName);
+
+  // Build WHERE clause that handles null state correctly
+  const stateWhere = validStateCode
+    ? sql`state_code = ${validStateCode}`
+    : sql`state_code IS NULL`;
 
   const existing = await db
     .select({ id: coreDealers.id })
     .from(coreDealers)
-    .where(
-      sql`dealer_name_normalized = ${normalized} AND state_code = ${stateCode} AND city = ${city}`,
-    )
+    .where(sql`dealer_name_normalized = ${normalized} AND ${stateWhere} AND city = ${city}`)
     .limit(1);
 
   if (existing.length > 0) {
@@ -54,7 +61,7 @@ async function getOrCreateDealer(
       dealerName,
       dealerNameNormalized: normalized,
       city,
-      stateCode,
+      stateCode: validStateCode,
       listingCount: 1,
     })
     .onConflictDoNothing()
@@ -66,9 +73,7 @@ async function getOrCreateDealer(
   const refetch = await db
     .select({ id: coreDealers.id })
     .from(coreDealers)
-    .where(
-      sql`dealer_name_normalized = ${normalized} AND state_code = ${stateCode} AND city = ${city}`,
-    )
+    .where(sql`dealer_name_normalized = ${normalized} AND ${stateWhere} AND city = ${city}`)
     .limit(1);
   return refetch[0].id;
 }
@@ -95,10 +100,13 @@ export async function writeSubmissionToWarehouse(
   const { dealerSubmissionId, request: data, result: finalResult, stateCode } = payload;
   const fees = finalResult.detectedFields.fees ?? [];
 
+  // Validate state to prevent FK violations
+  const validState = validateStateCode(stateCode);
+
   // ── (a) raw.user_analyses ──────────────────────────────────────────────────
   await db.insert(rawUserAnalyses).values({
     dealerSubmissionId,
-    stateCode,
+    stateCode: validState,
     analysisResult: finalResult.detectedFields,
     dealScore:
       finalResult.dealScore === "GREEN" ? 75
@@ -117,27 +125,21 @@ export async function writeSubmissionToWarehouse(
 
   // ── (b) core.dealers ───────────────────────────────────────────────────────
   // Try to extract dealer-identifying text from the analysis result.
-  // The LLM may include dealerName/dealership in detectedFields as extra JSONB keys,
-  // and the reasoning/summary often name the dealership.
-  const effectiveState = stateCode ?? "XX";
-  const sentinelCity = STATE_FULL_NAMES[effectiveState] ?? effectiveState;
-
   const detectedFieldsRaw = finalResult.detectedFields as Record<string, unknown>;
   const extractedDealerName: string | null =
     (detectedFieldsRaw?.dealerName as string | undefined) ??
     (detectedFieldsRaw?.dealership as string | undefined) ??
     null;
 
-  // Simple heuristic on request.dealerText: look for patterns like "at [Name]" or "[Name] Toyota"
+  // Simple heuristic on request.dealerText
   let textDealerName: string | null = null;
   if (!extractedDealerName && data.dealerText) {
     const atMatch = data.dealerText.match(
       /(?:from|at|with|visit(?:ing)?)\s+([A-Z][a-zA-Z0-9 &'-]{3,40}?)\s*(?:Toyota|Honda|Ford|Chevrolet|Chevy|Nissan|Hyundai|Kia|Ram|Dodge|Jeep|Subaru|Mazda|Volkswagen|VW|BMW|Mercedes|Audi|Lexus|Cadillac|Buick|GMC|Chrysler|Volvo|Tesla|Rivian|Lucid|Genesis|Infiniti|Acura|Lincoln|Mitsubishi|MINI|Porsche|Land Rover|Jaguar|Maserati)/i
     );
     if (atMatch?.[0]) {
-      // Extract just the dealer name portion
       const fullMatch = atMatch[0];
-      const makeMatch = atMatch[0].match(
+      const makeMatch = fullMatch.match(
         /Toyota|Honda|Ford|Chevrolet|Chevy|Nissan|Hyundai|Kia|Ram|Dodge|Jeep|Subaru|Mazda|Volkswagen|VW|BMW|Mercedes|Audi|Lexus|Cadillac|Buick|GMC|Chrysler|Volvo|Tesla|Rivian|Lucid|Genesis|Infiniti|Acura|Lincoln|Mitsubishi|MINI|Porsche|Land Rover|Jaguar|Maserati/i
       );
       if (makeMatch) {
@@ -151,10 +153,15 @@ export async function writeSubmissionToWarehouse(
     }
   }
 
-  const resolvedDealerName = extractedDealerName ?? textDealerName ?? `Unknown Dealer - ${effectiveState}`;
-  const dealerCity = extractedDealerName || textDealerName ? effectiveState : sentinelCity;
+  // Resolve sentinel details — dealer name includes raw code for human readability
+  // but stateCode stored in DB is always null when state is unknown
+  const rawStateCode = stateCode ?? "XX";
+  const sentinelCity = STATE_FULL_NAMES[rawStateCode] ?? rawStateCode;
 
-  const dealerId = await getOrCreateDealer(resolvedDealerName, dealerCity, effectiveState);
+  const resolvedDealerName = extractedDealerName ?? textDealerName ?? `Unknown Dealer - ${rawStateCode}`;
+  const dealerCity = (extractedDealerName || textDealerName) ? (validState ?? rawStateCode) : sentinelCity;
+
+  const dealerId = await getOrCreateDealer(resolvedDealerName, dealerCity, validState);
 
   // ── (c) core.listings ─────────────────────────────────────────────────────
   const hasMarketAdj = fees.some((f) => /market.?adjust|markup|adm/i.test(f.name));
@@ -223,12 +230,12 @@ export async function writeSubmissionToWarehouse(
     verdict: finalResult.goNoGo,
     flags: flagList,
     feeToPrice,
-    stateCode,
+    stateCode: validState,
     listingDate: now.toISOString().slice(0, 10),
     analyzedAt: now,
   });
 
   console.log(
-    `[warehouse] Wrote submission ${dealerSubmissionId} to warehouse (state=${stateCode ?? "XX"}, score=${finalResult.dealScore})`,
+    `[warehouse] Wrote submission ${dealerSubmissionId} to warehouse (state=${validState ?? "unknown"}, score=${finalResult.dealScore})`,
   );
 }
