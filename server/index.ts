@@ -9,6 +9,7 @@ import { createServer } from "http";
 import { trackEvent } from "./metrics";
 import { db } from "./db";
 import { sql } from "drizzle-orm";
+import { writeAuditEvent } from "./audit";
 
 const SENSITIVE_KEYS = ["dealerText", "body", "text", "content", "rawBody", "file", "buffer", "password", "token"];
 
@@ -127,7 +128,15 @@ const generalLimiter = rateLimit({
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: "Too many requests", message: "Rate limit exceeded. Please try again in a minute." },
+  handler: async (req, res) => {
+    await writeAuditEvent(req, "rate_limit_breach", "failure", {
+      route: req.originalUrl,
+      method: req.method,
+      rateLimitBucket: "general",
+      statusCode: 429,
+    });
+    res.status(429).json({ error: "Too many requests", message: "Rate limit exceeded. Please try again in a minute." });
+  },
 });
 
 const analyzeLimiter = rateLimit({
@@ -135,7 +144,15 @@ const analyzeLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: "Too many requests", message: "Analysis rate limit exceeded. Please wait a minute before trying again." },
+  handler: async (req, res) => {
+    await writeAuditEvent(req, "rate_limit_breach", "failure", {
+      route: req.originalUrl,
+      method: req.method,
+      rateLimitBucket: "analyze",
+      statusCode: 429,
+    });
+    res.status(429).json({ error: "Too many requests", message: "Analysis rate limit exceeded. Please wait a minute before trying again." });
+  },
 });
 
 app.use("/api/", generalLimiter);
@@ -266,7 +283,45 @@ async function ensureAppSchema(): Promise<void> {
     `);
     console.log("[app-schema] deal_feedback table ensured.");
   } catch (err) {
-    console.error("[app-schema] Failed to ensure app schema (non-fatal):", err);
+    console.error("[app-schema] Failed to ensure deal_feedback schema (non-fatal):", err);
+  }
+
+  try {
+    await db.execute(sql`
+      DO $$ BEGIN
+        CREATE TYPE audit_event_type AS ENUM ('analyze', 'payment', 'admin_action', 'rate_limit_breach');
+      EXCEPTION WHEN duplicate_object THEN NULL;
+      END $$;
+    `);
+    await db.execute(sql`
+      DO $$ BEGIN
+        CREATE TYPE audit_outcome AS ENUM ('success', 'failure');
+      EXCEPTION WHEN duplicate_object THEN NULL;
+      END $$;
+    `);
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS audit_log (
+        id serial PRIMARY KEY,
+        event_type audit_event_type NOT NULL,
+        occurred_at timestamptz DEFAULT now() NOT NULL,
+        ip_hash text NOT NULL,
+        user_agent_hash text NOT NULL,
+        outcome audit_outcome NOT NULL,
+        meta jsonb NOT NULL DEFAULT '{}'
+      )
+    `);
+    await db.execute(sql`
+      CREATE INDEX IF NOT EXISTS audit_log_event_type_idx ON audit_log (event_type)
+    `);
+    await db.execute(sql`
+      CREATE INDEX IF NOT EXISTS audit_log_occurred_at_idx ON audit_log (occurred_at)
+    `);
+    await db.execute(sql`
+      CREATE INDEX IF NOT EXISTS audit_log_event_type_occurred_at_idx ON audit_log (event_type, occurred_at)
+    `);
+    console.log("[app-schema] audit_log table ensured.");
+  } catch (err) {
+    console.error("[app-schema] Failed to ensure audit_log schema (non-fatal):", err);
   }
 }
 

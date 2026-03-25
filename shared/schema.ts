@@ -94,8 +94,35 @@ import {
   serial,
   unique,
   index,
+  pgEnum,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
+
+export const auditEventTypeEnum = pgEnum("audit_event_type", [
+  "analyze", "payment", "admin_action", "rate_limit_breach",
+]);
+
+export const auditOutcomeEnum = pgEnum("audit_outcome", [
+  "success", "failure",
+]);
+
+export const auditLog = pgTable(
+  "audit_log",
+  {
+    id: serial("id").primaryKey(),
+    eventType: auditEventTypeEnum("event_type").notNull(),
+    occurredAt: timestamp("occurred_at", { withTimezone: true }).defaultNow().notNull(),
+    ipHash: text("ip_hash").notNull(),
+    userAgentHash: text("user_agent_hash").notNull(),
+    outcome: auditOutcomeEnum("outcome").notNull(),
+    meta: jsonb("meta").$type<Record<string, unknown>>().notNull().default({}),
+  },
+  (table) => ({
+    eventTypeIdx: index("audit_log_event_type_idx").on(table.eventType),
+    occurredAtIdx: index("audit_log_occurred_at_idx").on(table.occurredAt),
+    eventTypeOccurredAtIdx: index("audit_log_event_type_occurred_at_idx").on(table.eventType, table.occurredAt),
+  }),
+);
 
 // Metrics events table
 export const metricsEvents = pgTable("metrics_events", {

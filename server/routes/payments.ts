@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/node";
 import type { Express } from "express";
 import { getStripeClient, isStripeConfigured } from "../stripeClient";
 import { trackEvent } from "../events";
+import { writeAuditEvent } from "../audit";
 
 export function registerPaymentRoutes(app: Express): void {
   app.get("/api/stripe-status", async (_req, res) => {
@@ -179,9 +180,27 @@ export function registerPaymentRoutes(app: Express): void {
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : "signature_verification_failed";
       trackEvent("stripe_webhook", { webhookStatus: "failed", errorMessage: errMsg });
+      await writeAuditEvent(req, "payment", "failure", {
+        route: req.originalUrl,
+        method: req.method,
+        statusCode: 400,
+        provider: "stripe",
+        errorClass: err instanceof Error ? err.name : "UnknownError",
+      });
       return res.status(400).json({ error: "Webhook signature verification failed" });
     }
     trackEvent("stripe_webhook", { webhookEvent: event.type, webhookStatus: "success" });
+
+    const paymentIntentId = (event.data.object as any)?.payment_intent ?? null;
+    await writeAuditEvent(req, "payment", "success", {
+      route: req.originalUrl,
+      method: req.method,
+      statusCode: 200,
+      provider: "stripe",
+      stripeEventType: event.type,
+      paymentIntentId,
+    });
+
     res.json({ received: true });
   });
 }

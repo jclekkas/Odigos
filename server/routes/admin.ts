@@ -1,7 +1,9 @@
 import { timingSafeEqual } from "crypto";
-import type { Express, Request, Response } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { getStripeClient, isStripeConfigured } from "../stripeClient";
 import { getImportedSessionIds, importHistoricalEvents } from "../events";
+import { listAuditLog } from "../storage";
+import { writeAuditEvent } from "../audit";
 
 export function requireAdminKey(req: Request, res: Response): boolean {
   const configuredKey = process.env.ADMIN_KEY;
@@ -21,6 +23,18 @@ export function requireAdminKey(req: Request, res: Response): boolean {
     res.status(401).json({ error: "Unauthorized" }); return false;
   }
   return true;
+}
+
+function requireAdmin(req: Request, res: Response, next: NextFunction) {
+  const expected = process.env.ADMIN_KEY;
+  if (!expected) {
+    return res.status(503).json({ message: "Admin access not configured" });
+  }
+  const provided = req.header("x-admin-key");
+  if (provided !== expected) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  next();
 }
 
 export function registerAdminRoutes(app: Express): void {
@@ -123,6 +137,48 @@ export function registerAdminRoutes(app: Express): void {
     } catch (error: any) {
       console.error("Stripe import error:", error);
       res.status(500).json({ error: "Failed to import Stripe history", message: error?.message });
+    }
+  });
+
+  app.get("/api/admin/audit-log", requireAdmin, async (req, res, next) => {
+    try {
+      const limit = Math.min(Number(req.query.limit) || 100, 500);
+      const offset = Math.max(Number(req.query.offset) || 0, 0);
+      const VALID_EVENT_TYPES = ["analyze", "payment", "admin_action", "rate_limit_breach"] as const;
+      type ValidEventType = typeof VALID_EVENT_TYPES[number];
+      const rawEventType = typeof req.query.event_type === "string" ? req.query.event_type : undefined;
+      const eventType: ValidEventType | undefined = rawEventType && (VALID_EVENT_TYPES as readonly string[]).includes(rawEventType)
+        ? rawEventType as ValidEventType
+        : undefined;
+      const from = typeof req.query.from === "string" ? new Date(req.query.from) : undefined;
+      const to = typeof req.query.to === "string" ? new Date(req.query.to) : undefined;
+
+      const rows = await listAuditLog({
+        eventType,
+        from: from && !Number.isNaN(from.getTime()) ? from : undefined,
+        to: to && !Number.isNaN(to.getTime()) ? to : undefined,
+        limit,
+        offset,
+      });
+
+      await writeAuditEvent(req, "admin_action", "success", {
+        route: req.originalUrl,
+        method: req.method,
+        statusCode: 200,
+        action: "view_audit_log",
+        filters: { eventType: eventType ?? null, from: req.query.from ?? null, to: req.query.to ?? null, limit, offset },
+      });
+
+      res.json({ items: rows, limit, offset, count: rows.length });
+    } catch (err) {
+      await writeAuditEvent(req, "admin_action", "failure", {
+        route: req.originalUrl,
+        method: req.method,
+        statusCode: 500,
+        action: "view_audit_log",
+        errorClass: err instanceof Error ? err.name : "UnknownError",
+      });
+      next(err);
     }
   });
 }

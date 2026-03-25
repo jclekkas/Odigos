@@ -16,6 +16,7 @@ import { openai } from "../openaiClient";
 import { enqueueSubmission } from "../ingestor";
 import { storage } from "../storage";
 import { getMarketContext, getDealerStats } from "../marketContext";
+import { writeAuditEvent } from "../audit";
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -496,11 +497,28 @@ GO/NO-GO/NEED-MORE-INFO:
         responsePayload.marketContext = marketContext;
       }
 
+      await writeAuditEvent(req, "analyze", "success", {
+        route: req.originalUrl,
+        method: req.method,
+        statusCode: 200,
+        submissionId: listingId ?? null,
+        stateCode: stateDetection.state ?? null,
+        hasPdf: Boolean(req.file),
+      });
+
       res.json(responsePayload);
 
       enqueueSubmission({ request: data, result: finalResult, preSavedListingId: listingId });
     } catch (error) {
       console.error("Analysis error:", error);
+
+      await writeAuditEvent(req, "analyze", "failure", {
+        route: req.originalUrl,
+        method: req.method,
+        statusCode: 500,
+        errorClass: error instanceof Error ? error.name : "UnknownError",
+      });
+
       Sentry.withScope((scope) => {
         scope.setTag("feature", "analyze");
         scope.setTag("route", "/api/analyze");

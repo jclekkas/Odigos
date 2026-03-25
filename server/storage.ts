@@ -3,8 +3,55 @@ import {
   type InsertDealFeedback,
   dealerSubmissions,
   dealFeedback,
+  auditLog,
 } from "@shared/schema";
+import { and, desc, eq, gte, lte } from "drizzle-orm";
 import { db } from "./db";
+
+export type AuditEventType = "analyze" | "payment" | "admin_action" | "rate_limit_breach";
+export type AuditOutcome = "success" | "failure";
+
+export interface InsertAuditLogInput {
+  eventType: AuditEventType;
+  ipHash: string;
+  userAgentHash: string;
+  outcome: AuditOutcome;
+  meta: Record<string, unknown>;
+  occurredAt?: Date;
+}
+
+export interface ListAuditLogInput {
+  eventType?: AuditEventType;
+  from?: Date;
+  to?: Date;
+  limit?: number;
+  offset?: number;
+}
+
+export async function insertAuditLog(input: InsertAuditLogInput) {
+  const [row] = await db.insert(auditLog).values({
+    eventType: input.eventType,
+    occurredAt: input.occurredAt ?? new Date(),
+    ipHash: input.ipHash,
+    userAgentHash: input.userAgentHash,
+    outcome: input.outcome,
+    meta: input.meta,
+  }).returning();
+  return row;
+}
+
+export async function listAuditLog(input: ListAuditLogInput) {
+  const filters = [];
+  if (input.eventType) filters.push(eq(auditLog.eventType, input.eventType));
+  if (input.from) filters.push(gte(auditLog.occurredAt, input.from));
+  if (input.to) filters.push(lte(auditLog.occurredAt, input.to));
+
+  return db.select().from(auditLog)
+    .where(filters.length ? and(...filters) : undefined)
+    .orderBy(desc(auditLog.occurredAt), desc(auditLog.id))
+    .limit(Math.min(input.limit ?? 100, 500))
+    .offset(input.offset ?? 0);
+}
 
 export interface IStorage {
   saveDealerSubmission(data: InsertDealerSubmission): Promise<{ id: string } | null>;
