@@ -50,7 +50,7 @@ export default function CarDealerFeesExplained() {
             </li>
             <li className="flex items-start gap-2">
               <span className="text-muted-foreground">•</span>
-              <span><strong className="text-foreground">Dealer documentation fees</strong> — these cover the cost of processing paperwork and vary widely. Some states cap them at relatively low amounts, while others have no cap at all and you might see charges of $500 or more. It's worth checking what's typical in your area before negotiating.</span>
+              <span><strong className="text-foreground">Dealer documentation fees</strong> — these cover the cost of processing paperwork and vary widely. Some states cap them at relatively low amounts, while others have no cap at all and you might see charges of $500 or more. See <Link href="/car-dealer-fees-by-state" className="underline text-foreground">car dealer fees by state</Link> to know what's typical in your area before negotiating.</span>
             </li>
           </ul>
 

@@ -567,6 +567,13 @@ function MarketContextCard({ marketContext }: { marketContext: MarketContext }) 
             {line.text}
           </p>
         ))}
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Doc fee limits and other dealer fees vary by state. See our{" "}
+          <Link href="/car-dealer-fees-by-state" className="underline underline-offset-2 hover:text-foreground transition-colors" data-testid="link-fees-by-state-context">
+            car dealer fees by state
+          </Link>{" "}
+          breakdown.
+        </p>
       </CardContent>
     </Card>
   );
@@ -1550,6 +1557,7 @@ export default function Home() {
             <Link href="/car-dealer-fees-by-state" className="hover:text-foreground transition-colors" data-testid="link-footer-fees-by-state">Fees by State</Link>
             <Link href="/privacy" className="hover:text-foreground transition-colors" data-testid="link-footer-privacy">Privacy</Link>
             <Link href="/terms" className="hover:text-foreground transition-colors" data-testid="link-footer-terms">Terms</Link>
+            <Link href="/car-dealer-fees-by-state" className="hover:text-foreground transition-colors" data-testid="link-footer-fees-by-state">Dealer Fees by State</Link>
           </nav>
         </div>
       </footer>

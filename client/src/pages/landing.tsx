@@ -285,6 +285,13 @@ export default function Landing() {
             <p className="text-base text-foreground/75 leading-relaxed">
               The out-the-door price (OTD) is the total amount you'll pay to leave the dealership with the keys — including sale price, tax, title, registration, doc fees, and any add-ons. It's the only number that tells you what the car actually costs. Dealers often focus on the monthly payment instead, which can hide longer loan terms, higher rates, and fees you never agreed to. Odigos analyzes the quote you already have and tells you what's missing.
             </p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Doc fees and other dealer charges vary significantly from state to state — see our{" "}
+              <Link href="/car-dealer-fees-by-state" className="underline underline-offset-4 hover:text-foreground transition-colors" data-testid="link-fees-by-state-otd">
+                car dealer fees by state
+              </Link>{" "}
+              breakdown to know what's typical where you live.
+            </p>
           </div>
         </section>
 
@@ -647,6 +654,9 @@ export default function Landing() {
               </Link>
               <Link href="/terms" className="transition-colors hover:text-foreground" data-testid="link-footer-terms">
                 Terms
+              </Link>
+              <Link href="/car-dealer-fees-by-state" className="transition-colors hover:text-foreground" data-testid="link-footer-fees-by-state">
+                Dealer Fees by State
               </Link>
             </nav>
           </div>
