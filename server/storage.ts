@@ -2,7 +2,9 @@ import {
   type User,
   type InsertUser,
   type InsertDealerSubmission,
+  type InsertDealFeedback,
   dealerSubmissions,
+  dealFeedback,
   users,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
@@ -13,6 +15,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   saveDealerSubmission(data: InsertDealerSubmission): Promise<{ id: string } | null>;
+  createDealFeedback(input: InsertDealFeedback): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -43,6 +46,10 @@ export class MemStorage implements IStorage {
     // No-op in memory mode — DATABASE_URL not present
     return null;
   }
+
+  async createDealFeedback(_input: InsertDealFeedback): Promise<void> {
+    // No-op in memory mode — DATABASE_URL not present
+  }
 }
 
 export class DrizzleStorage implements IStorage {
@@ -67,6 +74,14 @@ export class DrizzleStorage implements IStorage {
   async saveDealerSubmission(data: InsertDealerSubmission): Promise<{ id: string } | null> {
     const result = await db.insert(dealerSubmissions).values(data).returning({ id: dealerSubmissions.id });
     return result[0] ?? null;
+  }
+
+  async createDealFeedback(input: InsertDealFeedback): Promise<void> {
+    // Idempotent: if a row already exists for this listingId, return without error
+    await db
+      .insert(dealFeedback)
+      .values(input)
+      .onConflictDoNothing();
   }
 }
 

@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/node";
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
+import { z } from "zod";
 import { analysisRequestSchema, analysisResponseSchema, type AnalysisResponse } from "@shared/schema";
 import { applyRuleEngine, checkDocFeeCap } from "./ruleEngine";
 import { detectStateFromText, getStateFeeData, getAmbiguousCityOptions } from "./stateFeeLookup";
@@ -10,6 +11,8 @@ import { trackEvent } from "./metrics";
 import { extractTextFromFile } from "./extractText";
 import { openai } from "./openaiClient";
 import { enqueueSubmission } from "./ingestor";
+import { storage } from "./storage";
+import { getMarketContext } from "./marketContext";
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -384,10 +387,98 @@ GO/NO-GO/NEED-MORE-INFO:
         sessionId: data.sessionId,
       });
 
-      res.json(finalResult);
+      // --- Pre-save dealer submission to obtain listingId before sending the response ---
+      // listingId === dealer_submissions.id (source of truth)
+      let listingId: string | null = null;
+      try {
+        const { zipToStateCode } = await import("./zipToState");
+        const { redactPII } = await import("./piiRedact");
+        const stateCode = zipToStateCode(data.zipCode);
+        const fees = finalResult.detectedFields.fees ?? [];
+        const feeAmounts = fees.map((f) => f.amount).filter((a): a is number => a !== null);
+        const toNum = (n: number | null | undefined): string | null => n != null ? String(n) : null;
 
-      // Non-blocking: fire after response is already sent to the client
-      enqueueSubmission({ request: data, result: finalResult });
+        const submissionRow = await storage.saveDealerSubmission({
+          analysisVersion: "v1",
+          dealScore: finalResult.dealScore,
+          confidenceLevel: finalResult.confidenceLevel,
+          goNoGo: finalResult.goNoGo,
+          verdictLabel: finalResult.verdictLabel,
+          condition: data.condition,
+          purchaseType: data.purchaseType,
+          source: data.source ?? "paste",
+          stateCode,
+          salePrice: toNum(finalResult.detectedFields.salePrice),
+          msrp: toNum(finalResult.detectedFields.msrp),
+          otdPrice: toNum(finalResult.detectedFields.outTheDoorPrice),
+          monthlyPayment: toNum(finalResult.detectedFields.monthlyPayment),
+          apr: toNum(finalResult.detectedFields.apr),
+          termMonths: finalResult.detectedFields.termMonths,
+          downPayment: toNum(finalResult.detectedFields.downPayment),
+          rebates: toNum(finalResult.detectedFields.rebates),
+          tradeInValue: toNum(finalResult.detectedFields.tradeInValue),
+          totalFeesAmount: feeAmounts.length > 0 ? String(feeAmounts.reduce((a, b) => a + b, 0)) : null,
+          feeCount: fees.length,
+          feeNames: Array.from(new Set(fees.map((f) => f.name.toLowerCase().trim()))),
+          flagMarketAdjustment: fees.some((f) => /market.?adjust|markup|adm/i.test(f.name)),
+          flagPaymentOnly: finalResult.detectedFields.monthlyPayment !== null && finalResult.detectedFields.salePrice === null && finalResult.detectedFields.outTheDoorPrice === null,
+          flagMissingOtd: finalResult.detectedFields.outTheDoorPrice === null,
+          flagVagueFees: fees.some((f) => /protection|nitrogen|etch|ceramic|fabric|undercoat|pinstripe/i.test(f.name)),
+          flagHighCostAddons: fees.filter((f) => /dealer.?add|add.?on|package/i.test(f.name) && (f.amount ?? 0) >= 500).length > 0,
+          highCostAddonCount: fees.filter((f) => (f.amount ?? 0) >= 500).length,
+          missingInfoCount: finalResult.missingInfo?.length ?? 0,
+          detectedFields: finalResult.detectedFields,
+          rawTextRedacted: redactPII(data.dealerText),
+          rawTextStoredAt: new Date(),
+          rawTextExpiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+        });
+        listingId = submissionRow?.id ?? null;
+      } catch (saveErr) {
+        console.error("[analyze] pre-save submission failed (non-fatal):", saveErr);
+      }
+
+      // --- Market context (best-effort, wrapped in timeout + try/catch) ---
+      // Decoupled from listingId: enrichment runs whenever state is present and DB is reachable,
+      // regardless of whether the pre-save succeeded.
+      let marketContext = null;
+      if (process.env.DATABASE_URL && stateDetection.state) {
+        try {
+          const detectedFees = finalResult.detectedFields.fees ?? [];
+          const docFeeEntry = detectedFees.find((f) => /doc.?fee|document/i.test(f.name));
+          const docFeeValue = docFeeEntry?.amount ?? null;
+
+          // Dealer name extracted from detectedFields (canonical pipeline output — no fuzzy)
+          const detectedFieldsRaw = finalResult.detectedFields as Record<string, unknown>;
+          const dealerNameForCtx: string | null =
+            (detectedFieldsRaw?.dealerName as string | undefined) ??
+            (detectedFieldsRaw?.dealership as string | undefined) ??
+            null;
+
+          marketContext = await getMarketContext({
+            state: stateDetection.state,
+            dealerName: dealerNameForCtx,
+            docFee: docFeeValue,
+          });
+        } catch (ctxErr) {
+          console.error("[analyze] getMarketContext failed (non-fatal):", ctxErr);
+          marketContext = null;
+        }
+      }
+
+      // Build response — always include listingId; include marketContext only when non-null
+      const responsePayload: Record<string, unknown> = { ...finalResult };
+      if (listingId) {
+        responsePayload.listingId = listingId;
+      }
+      if (marketContext !== null) {
+        responsePayload.marketContext = marketContext;
+      }
+
+      res.json(responsePayload);
+
+      // Non-blocking warehouse write — submission row already saved above
+      // Pass listingId so ingestor skips the saveDealerSubmission step
+      enqueueSubmission({ request: data, result: finalResult, preSavedListingId: listingId });
     } catch (error) {
       console.error("Analysis error:", error);
       Sentry.withScope((scope) => {
@@ -411,6 +502,34 @@ GO/NO-GO/NEED-MORE-INFO:
         error: "Failed to analyze deal",
         message: errorMessage
       });
+    }
+  });
+
+  app.post("/api/feedback", async (req, res) => {
+    try {
+      const feedbackSchema = z.object({
+        listingId: z.string().min(1),
+        rating: z.boolean(),
+        comment: z.string().trim().max(500).optional().transform((v) => (v === "" ? undefined : v)),
+      });
+
+      const parseResult = feedbackSchema.safeParse(req.body);
+      if (!parseResult.success) {
+        return res.status(400).json({ error: "Invalid request", details: parseResult.error.flatten() });
+      }
+
+      const { listingId, rating, comment } = parseResult.data;
+
+      await storage.createDealFeedback({
+        listingId,
+        rating,
+        comment: comment ?? null,
+      });
+
+      return res.json({ ok: true });
+    } catch (error) {
+      console.error("[feedback] POST /api/feedback error:", error);
+      return res.status(500).json({ error: "Failed to save feedback" });
     }
   });
 

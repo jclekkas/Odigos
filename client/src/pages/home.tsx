@@ -57,7 +57,13 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel } from "@shared/schema";
+import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel, MarketContext } from "@shared/schema";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
+
+type AnalysisResponseWithExtras = AnalysisResponse & {
+  listingId?: string;
+  marketContext?: MarketContext;
+};
 
 const formSchema = z.object({
   dealerText: z.string().min(1, "Please paste dealer text to analyze"),
@@ -498,6 +504,162 @@ function SuggestedReplyCard({ reply }: { reply: string }) {
   );
 }
 
+function MarketContextCard({ marketContext }: { marketContext: MarketContext }) {
+  const fmt = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+
+  const lines: { testId: string; label: string; value: string }[] = [];
+
+  if (marketContext.stateTotalAnalyses !== null) {
+    lines.push({
+      testId: "market-context-state-analyses",
+      label: "Deals analyzed in your state",
+      value: marketContext.stateTotalAnalyses.toLocaleString(),
+    });
+  }
+  if (marketContext.docFeeVsStateAvg !== null) {
+    const delta = marketContext.docFeeVsStateAvg;
+    const sign = delta >= 0 ? "+" : "";
+    lines.push({
+      testId: "market-context-doc-fee-delta",
+      label: "Doc fee vs state average",
+      value: `${sign}${fmt.format(delta)}`,
+    });
+  }
+  if (marketContext.stateAvgDealScore !== null) {
+    lines.push({
+      testId: "market-context-state-score",
+      label: "Avg deal score in your state",
+      value: marketContext.stateAvgDealScore.toFixed(1),
+    });
+  }
+  if (marketContext.dealerAvgDealScore !== null) {
+    lines.push({
+      testId: "market-context-dealer-score",
+      label: "Avg deal score for this dealer",
+      value: marketContext.dealerAvgDealScore.toFixed(1),
+    });
+  }
+
+  if (lines.length === 0) return null;
+
+  return (
+    <Card className="bg-muted/20 border-border/40" data-testid="market-context-card">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+          How This Compares
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {lines.map((line) => (
+          <div key={line.testId} className="flex items-center justify-between text-sm" data-testid={line.testId}>
+            <span className="text-muted-foreground">{line.label}</span>
+            <span className="font-medium text-foreground tabular-nums">{line.value}</span>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+type FeedbackStatus = "idle" | "submitting" | "submitted" | "error";
+
+function FeedbackWidget({ listingId }: { listingId: string }) {
+  const [rating, setRating] = useState<boolean | null>(null);
+  const [comment, setComment] = useState("");
+  const [status, setStatus] = useState<FeedbackStatus>("idle");
+
+  const handleSubmit = async () => {
+    if (rating === null) return;
+    setStatus("submitting");
+    try {
+      const body: Record<string, unknown> = { listingId, rating };
+      const trimmed = comment.trim();
+      if (trimmed) body.comment = trimmed;
+      const res = await apiRequest("POST", "/api/feedback", body);
+      if (!res.ok) throw new Error("server error");
+      setStatus("submitted");
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  const disabled = status === "submitting" || status === "submitted";
+
+  return (
+    <div className="border border-border/40 rounded-xl p-4 space-y-3 bg-muted/10" data-testid="feedback-widget">
+      <p className="text-sm font-medium text-foreground">Was this analysis helpful?</p>
+
+      {status === "submitted" ? (
+        <p className="text-sm text-muted-foreground" data-testid="feedback-confirmation">
+          Thanks for the feedback!
+        </p>
+      ) : (
+        <>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => !disabled && setRating(true)}
+              disabled={disabled}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm border transition-colors ${
+                rating === true
+                  ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-700 dark:text-emerald-400"
+                  : "border-border/50 text-muted-foreground hover:bg-muted/40"
+              } disabled:opacity-50`}
+              data-testid="feedback-thumb-up"
+            >
+              <ThumbsUp className="w-4 h-4" />
+              Yes
+            </button>
+            <button
+              type="button"
+              onClick={() => !disabled && setRating(false)}
+              disabled={disabled}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm border transition-colors ${
+                rating === false
+                  ? "bg-red-500/15 border-red-500/40 text-red-700 dark:text-red-400"
+                  : "border-border/50 text-muted-foreground hover:bg-muted/40"
+              } disabled:opacity-50`}
+              data-testid="feedback-thumb-down"
+            >
+              <ThumbsDown className="w-4 h-4" />
+              No
+            </button>
+          </div>
+          <textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value.slice(0, 500))}
+            disabled={disabled}
+            placeholder="Optional: share a quick note (max 500 chars)"
+            rows={2}
+            className="w-full text-sm rounded-lg border border-border/50 bg-background px-3 py-2 resize-none placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50"
+            data-testid="feedback-comment-input"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleSubmit}
+            disabled={disabled || rating === null}
+            data-testid="feedback-submit"
+          >
+            {status === "submitting" ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Submitting…
+              </>
+            ) : (
+              "Submit feedback"
+            )}
+          </Button>
+          {status === "error" && (
+            <p className="text-xs text-destructive">Something went wrong. Please try again.</p>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
 function getStoredTier(): UnlockTier {
   try {
     if (localStorage.getItem("paid_negotiation_pack") === "true") return "49";
@@ -516,7 +678,7 @@ const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
 export default function Home() {
   const [isOptionalOpen, setIsOptionalOpen] = useState(false);
-  const [result, setResult] = useState<AnalysisResponse | null>(null);
+  const [result, setResult] = useState<AnalysisResponseWithExtras | null>(null);
   const [unlockTier, setUnlockTier] = useState<UnlockTier>(getStoredTier);
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
@@ -763,7 +925,7 @@ export default function Home() {
         sessionId: getSessionId(),
       };
       const response = await apiRequest("POST", "/api/analyze", payload);
-      return response.json() as Promise<AnalysisResponse>;
+      return response.json() as Promise<AnalysisResponseWithExtras>;
     },
     onSuccess: (data) => {
       setResult(data);
@@ -1324,6 +1486,10 @@ export default function Home() {
 
             <DetectedFieldsCard fields={result.detectedFields} />
 
+            {result.marketContext && (
+              <MarketContextCard marketContext={result.marketContext} />
+            )}
+
             {unlockTier === "free" ? (
               <LockedTier2Section
                 onUnlock={() => handleUnlockTier()}
@@ -1353,6 +1519,10 @@ export default function Home() {
                   </CardContent>
                 </Card>
               </>
+            )}
+
+            {result.listingId && (
+              <FeedbackWidget listingId={result.listingId} />
             )}
           </div>
         )}

@@ -167,8 +167,28 @@ async function ensureWarehouseSchema(): Promise<void> {
   }
 }
 
+async function ensureAppSchema(): Promise<void> {
+  if (!process.env.DATABASE_URL) return;
+  try {
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS deal_feedback (
+        id serial PRIMARY KEY,
+        listing_id varchar NOT NULL REFERENCES dealer_submissions(id) ON DELETE CASCADE,
+        rating boolean NOT NULL,
+        comment text,
+        created_at timestamptz DEFAULT now() NOT NULL,
+        CONSTRAINT deal_feedback_listing_id_unique UNIQUE (listing_id)
+      )
+    `);
+    console.log("[app-schema] deal_feedback table ensured.");
+  } catch (err) {
+    console.error("[app-schema] Failed to ensure app schema (non-fatal):", err);
+  }
+}
+
 (async () => {
   await ensureWarehouseSchema();
+  await ensureAppSchema();
 
   await registerRoutes(httpServer, app);
 

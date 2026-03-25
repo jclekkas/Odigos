@@ -14,6 +14,18 @@ export const analysisRequestSchema = z.object({
   sessionId: z.string().optional(),
 });
 
+// Market context returned with analysis results (all keys always present, null for missing values)
+export const marketContextSchema = z.object({
+  stateTotalAnalyses: z.number().nullable(),
+  stateAvgDealScore: z.number().nullable(),
+  stateAvgDocFee: z.number().nullable(),
+  docFeeVsStateAvg: z.number().nullable(),
+  dealerAnalysisCount: z.number().nullable(),
+  dealerAvgDealScore: z.number().nullable(),
+});
+
+export type MarketContext = z.infer<typeof marketContextSchema>;
+
 export type AnalysisRequest = z.infer<typeof analysisRequestSchema>;
 
 // Fee item for itemized fees
@@ -78,6 +90,8 @@ import {
   numeric,
   integer,
   boolean,
+  serial,
+  unique,
   index,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
@@ -194,3 +208,31 @@ export const insertDealerSubmissionSchema = createInsertSchema(dealerSubmissions
 
 export type InsertDealerSubmission = z.infer<typeof insertDealerSubmissionSchema>;
 export type DealerSubmission = typeof dealerSubmissions.$inferSelect;
+
+// ---------------------------------------------------------------------------
+// Deal Feedback — thumbs up/down signal per submission
+// ---------------------------------------------------------------------------
+// UNIQUE constraint on listing_id: only one feedback row per submission.
+// listingId === dealer_submissions.id (source of truth)
+// ---------------------------------------------------------------------------
+export const dealFeedback = pgTable(
+  "deal_feedback",
+  {
+    id: serial("id").primaryKey(),
+    listingId: varchar("listing_id").notNull().references(() => dealerSubmissions.id, { onDelete: "cascade" }),
+    rating: boolean("rating").notNull(),
+    comment: text("comment"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => ({
+    listingIdUnique: unique("deal_feedback_listing_id_unique").on(table.listingId),
+  }),
+);
+
+export const insertDealFeedbackSchema = createInsertSchema(dealFeedback).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertDealFeedback = z.infer<typeof insertDealFeedbackSchema>;
+export type SelectDealFeedback = typeof dealFeedback.$inferSelect;
