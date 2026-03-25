@@ -462,6 +462,7 @@ export interface TechnicalSummary {
     cls: { avg: number | null; rating: string | null };
     fid: { avg: number | null; rating: string | null };
     inp: { avg: number | null; rating: string | null };
+    fcp: { avg: number | null; rating: string | null };
   };
 }
 
@@ -705,6 +706,7 @@ export async function getTechnicalSummary(): Promise<TechnicalSummary> {
       cls: computeVitalAvg("CLS"),
       fid: computeVitalAvg("FID"),
       inp: computeVitalAvg("INP"),
+      fcp: computeVitalAvg("FCP"),
     },
   };
 }
