@@ -1,4 +1,4 @@
-const SITE_URL = "https://odigos.replit.app";
+const SITE_URL = "https://odigosauto.com";
 
 export function productSchema() {
   return {

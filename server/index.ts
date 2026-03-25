@@ -105,6 +105,13 @@ const corsMiddleware = cors({
 });
 
 app.use((req, res, next) => {
+  if (req.hostname && req.hostname.endsWith(".replit.app")) {
+    return res.redirect(301, `https://odigosauto.com${req.originalUrl}`);
+  }
+  return next();
+});
+
+app.use((req, res, next) => {
   if (req.path === "/api/stripe-webhook" || req.path === "/api/health") {
     return next();
   }

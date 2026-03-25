@@ -1317,7 +1317,7 @@ GO/NO-GO/NEED-MORE-INFO:
   });
 
   app.get("/robots.txt", (_req, res) => {
-    const siteUrl = process.env.SITE_URL || "https://odigos.replit.app";
+    const siteUrl = process.env.SITE_URL || "https://odigosauto.com";
     res.type("text/plain");
     res.send(`User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml`);
   });

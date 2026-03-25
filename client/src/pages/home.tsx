@@ -1373,7 +1373,7 @@ export default function Home() {
                   const issueLines = topIssues.length > 0
                     ? topIssues.map((i) => `• ${i}`).join("\n")
                     : "• No major issues surfaced in this summary";
-                  const text = `Odigos Deal Scorecard\nVerdict: ${result.goNoGo}\n${result.verdictLabel}\n\nIssues flagged:\n${issueLines}\n\nAnalyzed by Odigos — odigos.replit.app`;
+                  const text = `Odigos Deal Scorecard\nVerdict: ${result.goNoGo}\n${result.verdictLabel}\n\nIssues flagged:\n${issueLines}\n\nAnalyzed by Odigos — odigosauto.com`;
                   navigator.clipboard.writeText(text).then(() => {
                     setSummaryCopied("success");
                     setTimeout(() => setSummaryCopied("idle"), 2000);
