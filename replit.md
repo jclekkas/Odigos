@@ -29,7 +29,19 @@ The frontend follows a single-page architecture with the main functionality on t
 - **API Design**: RESTful JSON API with Zod schema validation
 - **AI Integration**: OpenAI-compatible API via Replit AI Integrations
 
-The backend exposes a single primary endpoint `/api/analyze` that receives dealer text and optional context, sends it to an LLM for analysis, and returns structured JSON with deal scoring and extracted fields.
+The backend is organized into focused domain modules:
+- `server/routers/analyze.ts` — `/api/analyze`, `/api/feedback`, `/api/extract-text`
+- `server/routers/payments.ts` — all Stripe routes (`/api/checkout`, `/api/verify-session`, `/api/stripe-webhook`, etc.)
+- `server/routers/admin.ts` — admin/BI dashboard routes (`/api/metrics`, `/api/alerts`, `/api/technical`, `/api/admin/bi/*`)
+- `server/routers/stats.ts` — public stats and warehouse routes (`/api/stats`, `/api/warehouse/stats`)
+- `server/routers/public.ts` — tracking, experiments, state-fee, health, vitals, sitemap, robots
+- `server/routes.ts` — thin orchestrator that calls all five `register*Routes(app)` functions
+
+Metrics/events are split into three modules:
+- `server/events.ts` — KV store, `trackEvent`, event loading
+- `server/analytics.ts` — summaries, PII expiry, experiment stats
+- `server/bi.ts` — BI aggregations with singleton cache; exports `DateRange` type
+- `server/metrics.ts` — 3-line re-export shim for backward compatibility
 
 ### Data Flow
 1. User submits dealer text via form
