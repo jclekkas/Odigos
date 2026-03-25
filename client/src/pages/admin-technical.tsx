@@ -99,7 +99,7 @@ interface TechnicalSummary {
 function getAdminKey(): string {
   if (typeof window === "undefined") return "";
   const params = new URLSearchParams(window.location.search);
-  return params.get("key") || "odigos-admin-2024";
+  return params.get("key") || "";
 }
 
 function formatUptime(seconds: number): string {
@@ -183,7 +183,9 @@ export default function AdminTechnical() {
   const techQuery = useQuery<TechnicalSummary>({
     queryKey: ["/api/technical", adminKey],
     queryFn: async () => {
-      const res = await fetch(`/api/technical?key=${encodeURIComponent(adminKey)}`);
+      const res = await fetch(`/api/technical`, {
+        headers: { Authorization: `Bearer ${adminKey}` },
+      });
       if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
       return res.json();
     },

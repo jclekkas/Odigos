@@ -1,5 +1,8 @@
 import * as Sentry from "@sentry/node";
 import express, { type Request, Response, NextFunction } from "express";
+import helmet from "helmet";
+import cors from "cors";
+import rateLimit from "express-rate-limit";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
@@ -56,6 +59,80 @@ declare module "http" {
     rawBody: unknown;
   }
 }
+
+// ── Security headers ─────────────────────────────────────────────────────────
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "https://js.stripe.com", "'unsafe-inline'"],
+        connectSrc: [
+          "'self'",
+          "https://api.stripe.com",
+          "https://*.sentry.io",
+          "https://app.posthog.com",
+          "https://us.posthog.com",
+        ],
+        frameSrc: ["https://js.stripe.com"],
+        imgSrc: ["'self'", "data:", "https:"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        fontSrc: ["'self'", "data:"],
+      },
+    },
+    frameguard: { action: "deny" },
+    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+    hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+  })
+);
+
+// ── CORS ─────────────────────────────────────────────────────────────────────
+// Exclude /api/stripe-webhook and /api/health from CORS enforcement
+// (these are server-to-server routes)
+const corsMiddleware = cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (
+      origin === "https://odigosauto.com" ||
+      /^http:\/\/localhost(:\d+)?$/.test(origin)
+    ) {
+      return callback(null, true);
+    }
+    return callback(new Error("Not allowed by CORS"), false);
+  },
+  methods: ["GET", "POST"],
+  credentials: false,
+});
+
+app.use((req, res, next) => {
+  if (req.path === "/api/stripe-webhook" || req.path === "/api/health") {
+    return next();
+  }
+  if (req.path.startsWith("/api/")) {
+    return corsMiddleware(req, res, next);
+  }
+  return next();
+});
+
+// ── Rate limiting ─────────────────────────────────────────────────────────────
+const generalLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many requests", message: "Rate limit exceeded. Please try again in a minute." },
+});
+
+const analyzeLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many requests", message: "Analysis rate limit exceeded. Please wait a minute before trying again." },
+});
+
+app.use("/api/", generalLimiter);
+app.use("/api/analyze", analyzeLimiter);
 
 app.use(
   express.json({

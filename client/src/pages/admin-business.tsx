@@ -178,7 +178,9 @@ function FunnelPanel({ adminKey, range }: { adminKey: string; range: DateRange }
   const { data, isLoading } = useQuery<{ stages: FunnelStage[] }>({
     queryKey: ["/api/admin/bi/funnel", adminKey, range],
     queryFn: async () => {
-      const res = await fetch(`/api/admin/bi/funnel?key=${encodeURIComponent(adminKey)}&range=${range}`);
+      const res = await fetch(`/api/admin/bi/funnel?range=${range}`, {
+        headers: { Authorization: `Bearer ${adminKey}` },
+      });
       if (!res.ok) throw new Error("Failed");
       return res.json();
     },
@@ -278,9 +280,9 @@ function AttributionPanel({ adminKey, range }: { adminKey: string; range: DateRa
   const { data, isLoading } = useQuery<{ pages: PageAttribution[] }>({
     queryKey: ["/api/admin/bi/attribution", adminKey, range],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/admin/bi/attribution?key=${encodeURIComponent(adminKey)}&range=${range}`
-      );
+      const res = await fetch(`/api/admin/bi/attribution?range=${range}`, {
+        headers: { Authorization: `Bearer ${adminKey}` },
+      });
       if (!res.ok) throw new Error("Failed");
       return res.json();
     },
@@ -385,9 +387,9 @@ function BehaviorPanel({ adminKey, range }: { adminKey: string; range: DateRange
   const { data, isLoading } = useQuery<UserBehavior>({
     queryKey: ["/api/admin/bi/behavior", adminKey, range],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/admin/bi/behavior?key=${encodeURIComponent(adminKey)}&range=${range}`
-      );
+      const res = await fetch(`/api/admin/bi/behavior?range=${range}`, {
+        headers: { Authorization: `Bearer ${adminKey}` },
+      });
       if (!res.ok) throw new Error("Failed");
       return res.json();
     },
@@ -526,9 +528,9 @@ function DealOutcomePanel({ adminKey, range }: { adminKey: string; range: DateRa
   const { data, isLoading } = useQuery<DealOutcome>({
     queryKey: ["/api/admin/bi/deal-outcome", adminKey, range],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/admin/bi/deal-outcome?key=${encodeURIComponent(adminKey)}&range=${range}`
-      );
+      const res = await fetch(`/api/admin/bi/deal-outcome?range=${range}`, {
+        headers: { Authorization: `Bearer ${adminKey}` },
+      });
       if (!res.ok) throw new Error("Failed");
       return res.json();
     },
@@ -733,9 +735,9 @@ function GeographicPanel({ adminKey, range }: { adminKey: string; range: DateRan
   const { data, isLoading } = useQuery<{ states: GeoState[] }>({
     queryKey: ["/api/admin/bi/geographic", adminKey, range],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/admin/bi/geographic?key=${encodeURIComponent(adminKey)}&range=${range}`
-      );
+      const res = await fetch(`/api/admin/bi/geographic?range=${range}`, {
+        headers: { Authorization: `Bearer ${adminKey}` },
+      });
       if (!res.ok) throw new Error("Failed");
       return res.json();
     },
@@ -853,9 +855,9 @@ function AcquisitionPanel({ adminKey, range }: { adminKey: string; range: DateRa
   const { data, isLoading } = useQuery<{ sources: AcqSource[] }>({
     queryKey: ["/api/admin/bi/acquisition", adminKey, range],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/admin/bi/acquisition?key=${encodeURIComponent(adminKey)}&range=${range}`
-      );
+      const res = await fetch(`/api/admin/bi/acquisition?range=${range}`, {
+        headers: { Authorization: `Bearer ${adminKey}` },
+      });
       if (!res.ok) throw new Error("Failed");
       return res.json();
     },
@@ -982,9 +984,9 @@ function RevenuePanel({ adminKey, range }: { adminKey: string; range: DateRange 
   const { data, isLoading } = useQuery<RevenueHealth>({
     queryKey: ["/api/admin/bi/revenue", adminKey, range],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/admin/bi/revenue?key=${encodeURIComponent(adminKey)}&range=${range}`
-      );
+      const res = await fetch(`/api/admin/bi/revenue?range=${range}`, {
+        headers: { Authorization: `Bearer ${adminKey}` },
+      });
       if (!res.ok) throw new Error("Failed");
       return res.json();
     },
@@ -1112,9 +1114,9 @@ function FalloutPanel({ adminKey, range }: { adminKey: string; range: DateRange 
   const { data, isLoading } = useQuery<Fallout>({
     queryKey: ["/api/admin/bi/fallout", adminKey, range],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/admin/bi/fallout?key=${encodeURIComponent(adminKey)}&range=${range}`
-      );
+      const res = await fetch(`/api/admin/bi/fallout?range=${range}`, {
+        headers: { Authorization: `Bearer ${adminKey}` },
+      });
       if (!res.ok) throw new Error("Failed");
       return res.json();
     },
@@ -1208,7 +1210,7 @@ export default function AdminBusiness() {
   const [range, setRange] = useState<DateRange>("all");
   const [activePanel, setActivePanel] = useState("funnel");
   const urlParams = new URLSearchParams(window.location.search);
-  const adminKey = urlParams.get("key") || "odigos-admin-2024";
+  const adminKey = urlParams.get("key") || "";
 
   const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString());
   useEffect(() => {
@@ -1219,7 +1221,9 @@ export default function AdminBusiness() {
   const authQuery = useQuery({
     queryKey: ["/api/admin/bi/__auth__", adminKey],
     queryFn: async () => {
-      const res = await fetch(`/api/admin/bi/funnel?key=${encodeURIComponent(adminKey)}&range=all`);
+      const res = await fetch(`/api/admin/bi/funnel?range=all`, {
+        headers: { Authorization: `Bearer ${adminKey}` },
+      });
       if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
       return res.json();
     },

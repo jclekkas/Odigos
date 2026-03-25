@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/node";
+import { timingSafeEqual } from "crypto";
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
@@ -826,29 +827,24 @@ GO/NO-GO/NEED-MORE-INFO:
 
   app.post("/api/stripe-webhook", async (req, res) => {
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      console.error("[stripe-webhook] STRIPE_WEBHOOK_SECRET is not configured — rejecting webhook");
+      return res.status(500).json({ error: "Webhook signing secret is not configured" });
+    }
     const sig = req.headers["stripe-signature"];
+    if (!sig) {
+      trackEvent("stripe_webhook", { webhookStatus: "failed", errorMessage: "missing_signature" });
+      return res.status(400).json({ error: "Missing stripe-signature header" });
+    }
     let event: import("stripe").Stripe.Event;
-    
-    if (webhookSecret) {
-      if (!sig) {
-        trackEvent("stripe_webhook", { webhookStatus: "failed", errorMessage: "missing_signature" });
-        return res.status(400).json({ error: "Missing stripe-signature header" });
-      }
-      try {
-        const stripe = await getStripeClient();
-        const rawBody = req.rawBody instanceof Buffer ? req.rawBody : Buffer.from(req.rawBody as string ?? "");
-        event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
-      } catch (err) {
-        const errMsg = err instanceof Error ? err.message : "signature_verification_failed";
-        trackEvent("stripe_webhook", { webhookStatus: "failed", errorMessage: errMsg });
-        return res.status(400).json({ error: "Webhook signature verification failed" });
-      }
-    } else {
-      if (!req.body || typeof req.body !== "object") {
-        trackEvent("stripe_webhook", { webhookStatus: "failed", errorMessage: "invalid_payload" });
-        return res.status(400).json({ error: "Invalid webhook payload" });
-      }
-      event = req.body as import("stripe").Stripe.Event;
+    try {
+      const stripe = await getStripeClient();
+      const rawBody = req.rawBody instanceof Buffer ? req.rawBody : Buffer.from(req.rawBody as string ?? "");
+      event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : "signature_verification_failed";
+      trackEvent("stripe_webhook", { webhookStatus: "failed", errorMessage: errMsg });
+      return res.status(400).json({ error: "Webhook signature verification failed" });
     }
     
     trackEvent("stripe_webhook", { webhookEvent: event.type, webhookStatus: "success" });
@@ -856,13 +852,7 @@ GO/NO-GO/NEED-MORE-INFO:
   });
 
   app.get("/api/metrics", async (req, res) => {
-    const configuredKey = process.env.ADMIN_KEY;
-    if (!configuredKey) {
-      return res.status(503).json({ error: "Admin access not configured" });
-    }
-    if (req.query.key !== configuredKey) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    if (!requireAdminKey(req, res)) return;
     
     try {
       const { getMetricsSummary } = await import("./metrics");
@@ -879,13 +869,7 @@ GO/NO-GO/NEED-MORE-INFO:
   });
 
   app.post("/api/admin/import-stripe-history", async (req, res) => {
-    const configuredKey = process.env.ADMIN_KEY;
-    if (!configuredKey) {
-      return res.status(503).json({ error: "Admin access not configured" });
-    }
-    if (req.query.key !== configuredKey) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    if (!requireAdminKey(req, res)) return;
     
     try {
       const configured = await isStripeConfigured();
@@ -1041,13 +1025,7 @@ GO/NO-GO/NEED-MORE-INFO:
   });
 
   app.get("/api/technical", async (req, res) => {
-    const configuredKey = process.env.ADMIN_KEY;
-    if (!configuredKey) {
-      return res.status(503).json({ error: "Admin access not configured" });
-    }
-    if (req.query.key !== configuredKey) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    if (!requireAdminKey(req, res)) return;
     try {
       const { getTechnicalSummary, getPiiExpiryStatus } = await import("./metrics");
       const [summary, piiRetention] = await Promise.all([
@@ -1068,7 +1046,20 @@ GO/NO-GO/NEED-MORE-INFO:
   function requireAdminKey(req: Request, res: Response): boolean {
     const configuredKey = process.env.ADMIN_KEY;
     if (!configuredKey) { res.status(503).json({ error: "Admin access not configured" }); return false; }
-    if (req.query.key !== configuredKey) { res.status(401).json({ error: "Unauthorized" }); return false; }
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      res.status(401).json({ error: "Unauthorized" }); return false;
+    }
+    const providedKey = authHeader.slice("Bearer ".length);
+    try {
+      const a = Buffer.from(configuredKey);
+      const b = Buffer.from(providedKey);
+      if (a.length !== b.length || !timingSafeEqual(a, b)) {
+        res.status(401).json({ error: "Unauthorized" }); return false;
+      }
+    } catch {
+      res.status(401).json({ error: "Unauthorized" }); return false;
+    }
     return true;
   }
 

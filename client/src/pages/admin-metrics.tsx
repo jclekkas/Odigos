@@ -555,14 +555,15 @@ export default function AdminMetrics() {
   const [isImporting, setIsImporting] = useState(false);
   const [importResult, setImportResult] = useState<{ success: boolean; message: string } | null>(null);
   const urlParams = new URLSearchParams(window.location.search);
-  const adminKey = urlParams.get("key") || "odigos-admin-2024";
+  const adminKey = urlParams.get("key") || "";
   
   const handleImportStripeHistory = async () => {
     setIsImporting(true);
     setImportResult(null);
     try {
-      const res = await fetch(`/api/admin/import-stripe-history?key=${encodeURIComponent(adminKey)}`, {
+      const res = await fetch(`/api/admin/import-stripe-history`, {
         method: "POST",
+        headers: { Authorization: `Bearer ${adminKey}` },
       });
       const data = await res.json();
       if (res.ok) {
@@ -581,7 +582,9 @@ export default function AdminMetrics() {
   const { data: metrics, isLoading, error, refetch, isFetching, dataUpdatedAt } = useQuery<MetricsSummary>({
     queryKey: ["/api/metrics", adminKey],
     queryFn: async () => {
-      const res = await fetch(`/api/metrics?key=${encodeURIComponent(adminKey)}`);
+      const res = await fetch(`/api/metrics`, {
+        headers: { Authorization: `Bearer ${adminKey}` },
+      });
       if (!res.ok) throw new Error("Unauthorized or failed to fetch");
       return res.json();
     },
