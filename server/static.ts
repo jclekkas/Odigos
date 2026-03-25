@@ -20,6 +20,14 @@ export function serveStatic(app: Express) {
   app.use((req, res, next) => {
     const rawPath = req.path;
 
+    if (rawPath === "/pricing") {
+      return res.redirect(301, "/#pricing");
+    }
+
+    if (rawPath === "/dealer-tactics") {
+      return res.redirect(301, "/dealer-pricing-tactics");
+    }
+
     for (const route of PRERENDERED_ROUTES) {
       if (rawPath === `${route}/`) {
         const qs = req.originalUrl.includes("?")

@@ -17,7 +17,15 @@ function useScrollToHash() {
 }
 
 export default function SiteHeader() {
+  const [location] = useLocation();
   const scrollToHash = useScrollToHash();
+
+  function handleHashLink(e: React.MouseEvent<HTMLAnchorElement>, hash: string) {
+    if (location === "/") {
+      e.preventDefault();
+      scrollToHash(hash);
+    }
+  }
 
   return (
     <header
@@ -39,20 +47,22 @@ export default function SiteHeader() {
           >
             Dealer Tactics
           </Link>
-          <button
-            onClick={() => scrollToHash("pricing")}
+          <a
+            href="/#pricing"
+            onClick={(e) => handleHashLink(e, "pricing")}
             className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             data-testid="link-nav-pricing"
           >
             Pricing
-          </button>
-          <button
-            onClick={() => scrollToHash("faq")}
+          </a>
+          <a
+            href="/#faq"
+            onClick={(e) => handleHashLink(e, "faq")}
             className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             data-testid="link-nav-questions"
           >
             Questions
-          </button>
+          </a>
         </nav>
 
         <Button variant="cta" size="sm" asChild data-testid="button-cta-header">
