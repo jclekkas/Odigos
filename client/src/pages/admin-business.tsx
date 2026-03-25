@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useAdminKey } from "@/hooks/use-admin-key";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -1209,8 +1210,8 @@ const PANELS = [
 export default function AdminBusiness() {
   const [range, setRange] = useState<DateRange>("all");
   const [activePanel, setActivePanel] = useState("funnel");
-  const urlParams = new URLSearchParams(window.location.search);
-  const adminKey = urlParams.get("key") || "";
+  const [adminKey, setAdminKey, clearKey] = useAdminKey();
+  const [keyInput, setKeyInput] = useState("");
 
   const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString());
   useEffect(() => {
@@ -1230,11 +1231,42 @@ export default function AdminBusiness() {
     retry: 0,
     staleTime: 300000,
     refetchInterval: false,
+    enabled: !!adminKey,
   });
 
   const authErrorMsg = authQuery.isError ? ((authQuery.error as Error)?.message ?? "") : "";
   const authIs503 = authErrorMsg.startsWith("503");
   const authIs401 = authErrorMsg.startsWith("401");
+
+  if (!adminKey) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-full max-w-sm space-y-4 p-6">
+          <h1 className="text-xl font-bold text-center">Admin Access</h1>
+          <p className="text-sm text-muted-foreground text-center">Enter your admin key to continue</p>
+          <div className="flex gap-2">
+            <input
+              type="password"
+              className="flex-1 border rounded-md px-3 py-2 text-sm bg-background"
+              placeholder="Admin key"
+              value={keyInput}
+              onChange={(e) => setKeyInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && keyInput) setAdminKey(keyInput); }}
+              data-testid="input-admin-key"
+              autoFocus
+            />
+            <Button
+              onClick={() => { if (keyInput) setAdminKey(keyInput); }}
+              disabled={!keyInput}
+              data-testid="button-submit-admin-key"
+            >
+              Go
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -1242,7 +1274,7 @@ export default function AdminBusiness() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-4">
-              <Link href={`/admin/metrics?key=${encodeURIComponent(adminKey)}`}>
+              <Link href="/admin/metrics">
                 <Button variant="ghost" size="icon" data-testid="link-back-metrics">
                   <ArrowLeft className="h-5 w-5" />
                 </Button>
@@ -1294,9 +1326,18 @@ export default function AdminBusiness() {
                 {authIs503
                   ? "The ADMIN_KEY environment variable is not set. Set it in the Replit secrets panel and restart the server."
                   : authIs401
-                  ? "The key in the URL does not match the configured ADMIN_KEY. Add ?key=<your-key> to the URL."
+                  ? "The key does not match the configured ADMIN_KEY."
                   : "An unexpected error occurred. Check the server logs for details."}
               </p>
+              {authIs401 && (
+                <button
+                  onClick={clearKey}
+                  className="mt-2 text-xs text-red-600 dark:text-red-400 underline hover:no-underline"
+                  data-testid="button-clear-admin-key"
+                >
+                  Clear key and re-enter
+                </button>
+              )}
             </div>
           </div>
         </div>

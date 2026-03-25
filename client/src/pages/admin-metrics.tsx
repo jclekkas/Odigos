@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAdminKey } from "@/hooks/use-admin-key";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -554,8 +555,8 @@ export default function AdminMetrics() {
   const [activeTab, setActiveTab] = useState("overview");
   const [isImporting, setIsImporting] = useState(false);
   const [importResult, setImportResult] = useState<{ success: boolean; message: string } | null>(null);
-  const urlParams = new URLSearchParams(window.location.search);
-  const adminKey = urlParams.get("key") || "";
+  const [adminKey, setAdminKey, clearKey] = useAdminKey();
+  const [keyInput, setKeyInput] = useState("");
   
   const handleImportStripeHistory = async () => {
     setIsImporting(true);
@@ -589,7 +590,38 @@ export default function AdminMetrics() {
       return res.json();
     },
     refetchInterval: 30000,
+    enabled: !!adminKey,
   });
+
+  if (!adminKey) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-full max-w-sm space-y-4 p-6">
+          <h1 className="text-xl font-bold text-center">Admin Access</h1>
+          <p className="text-sm text-muted-foreground text-center">Enter your admin key to continue</p>
+          <div className="flex gap-2">
+            <input
+              type="password"
+              className="flex-1 border rounded-md px-3 py-2 text-sm bg-background"
+              placeholder="Admin key"
+              value={keyInput}
+              onChange={(e) => setKeyInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && keyInput) setAdminKey(keyInput); }}
+              data-testid="input-admin-key"
+              autoFocus
+            />
+            <Button
+              onClick={() => { if (keyInput) setAdminKey(keyInput); }}
+              disabled={!keyInput}
+              data-testid="button-submit-admin-key"
+            >
+              Go
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -613,12 +645,21 @@ export default function AdminMetrics() {
           <CardContent className="pt-6 text-center">
             <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
             <p className="text-muted-foreground mb-4">Unable to load metrics. Please check your access key.</p>
-            <Link href="/">
-              <Button variant="outline" data-testid="button-back-home">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Home
+            <div className="flex gap-2 justify-center">
+              <Button
+                variant="outline"
+                onClick={clearKey}
+                data-testid="button-clear-admin-key"
+              >
+                Clear key and re-enter
               </Button>
-            </Link>
+              <Link href="/">
+                <Button variant="ghost" data-testid="button-back-home">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back to Home
+                </Button>
+              </Link>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -650,7 +691,7 @@ export default function AdminMetrics() {
               </div>
             </div>
             <div className="flex items-center gap-3 flex-wrap">
-              <Link href={`/admin/business?key=${encodeURIComponent(adminKey)}`}>
+              <Link href="/admin/business">
                 <Button variant="outline" size="sm" data-testid="link-business-dashboard">
                   <BarChart3 className="h-4 w-4 mr-2" />
                   BI Dashboard

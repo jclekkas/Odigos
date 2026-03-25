@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useAdminKey } from "@/hooks/use-admin-key";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -123,11 +124,6 @@ interface AlertsStatusData {
   webhookUrlMasked: string | null;
 }
 
-function getAdminKey(): string {
-  if (typeof window === "undefined") return "";
-  const params = new URLSearchParams(window.location.search);
-  return params.get("key") || "";
-}
 
 function formatUptime(seconds: number): string {
   const d = Math.floor(seconds / 86400);
@@ -200,7 +196,8 @@ function AutoRefreshCountdown({ seconds }: { seconds: number }) {
 
 export default function AdminTechnical() {
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
-  const adminKey = getAdminKey();
+  const [adminKey, setAdminKey, clearKey] = useAdminKey();
+  const [keyInput, setKeyInput] = useState("");
 
   const healthQuery = useQuery<HealthData>({
     queryKey: ["/api/health"],
@@ -217,6 +214,7 @@ export default function AdminTechnical() {
       return res.json();
     },
     refetchInterval: 60000,
+    enabled: !!adminKey,
   });
 
   const alertsQuery = useQuery<AlertsStatusData>({
@@ -249,6 +247,36 @@ export default function AdminTechnical() {
   const tech = techQuery.data;
   const alerts = alertsQuery.data;
   const isLoading = healthQuery.isLoading || techQuery.isLoading;
+
+  if (!adminKey) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-full max-w-sm space-y-4 p-6">
+          <h1 className="text-xl font-bold text-center">Admin Access</h1>
+          <p className="text-sm text-muted-foreground text-center">Enter your admin key to continue</p>
+          <div className="flex gap-2">
+            <input
+              type="password"
+              className="flex-1 border rounded-md px-3 py-2 text-sm bg-background"
+              placeholder="Admin key"
+              value={keyInput}
+              onChange={(e) => setKeyInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && keyInput) setAdminKey(keyInput); }}
+              data-testid="input-admin-key"
+              autoFocus
+            />
+            <Button
+              onClick={() => { if (keyInput) setAdminKey(keyInput); }}
+              disabled={!keyInput}
+              data-testid="button-submit-admin-key"
+            >
+              Go
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -302,9 +330,18 @@ export default function AdminTechnical() {
                       {is503
                         ? "The ADMIN_KEY environment variable is not set. Set it in the Replit secrets panel and restart the server."
                         : is401
-                        ? "The key in the URL does not match the configured ADMIN_KEY. Add ?key=<your-key> to the URL."
+                        ? "The key does not match the configured ADMIN_KEY."
                         : "An unexpected error occurred. Check the server logs for details."}
                     </p>
+                    {is401 && (
+                      <button
+                        onClick={clearKey}
+                        className="mt-2 text-xs text-red-600 dark:text-red-400 underline hover:no-underline"
+                        data-testid="button-clear-admin-key"
+                      >
+                        Clear key and re-enter
+                      </button>
+                    )}
                   </div>
                 </div>
               </CardContent>
