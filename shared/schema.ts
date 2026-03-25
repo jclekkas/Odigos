@@ -207,6 +207,10 @@ export const dealerSubmissions = pgTable(
     rawTextStoredAt: timestamp("raw_text_stored_at"),
     rawTextExpiresAt: timestamp("raw_text_expires_at"),
     rawTextClearedAt: timestamp("raw_text_cleared_at"),
+
+    // --- Content deduplication ---
+    // SHA-256 hex hash of normalized submission text (CRLF→LF, outer whitespace trimmed)
+    contentHash: text("content_hash"),
   },
   (table) => ({
     submittedAtIdx: index("ds_submitted_at_idx").on(table.submittedAt),
@@ -252,3 +256,33 @@ export const insertDealFeedbackSchema = createInsertSchema(dealFeedback).omit({
 
 export type InsertDealFeedback = z.infer<typeof insertDealFeedbackSchema>;
 export type SelectDealFeedback = typeof dealFeedback.$inferSelect;
+
+// ---------------------------------------------------------------------------
+// Failed Warehouse Writes — Dead-Letter Queue (DLQ)
+// ---------------------------------------------------------------------------
+// Captures warehouse write failures after all retry attempts are exhausted.
+// Payload never contains raw document text (only structured metadata).
+// ---------------------------------------------------------------------------
+export const failedWarehouseWrites = pgTable(
+  "failed_warehouse_writes",
+  {
+    id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+    submissionId: varchar("submission_id").notNull().references(() => dealerSubmissions.id, { onDelete: "cascade" }),
+    payload: jsonb("payload").notNull().$type<Record<string, unknown>>(),
+    errorMessage: text("error_message").notNull(),
+    attemptCount: integer("attempt_count").notNull().default(3),
+    failedAt: timestamp("failed_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    submissionIdIdx: index("dlq_submission_id_idx").on(table.submissionId),
+    failedAtIdx: index("dlq_failed_at_idx").on(table.failedAt),
+  }),
+);
+
+export const insertFailedWarehouseWriteSchema = createInsertSchema(failedWarehouseWrites).omit({
+  id: true,
+  failedAt: true,
+});
+
+export type InsertFailedWarehouseWrite = z.infer<typeof insertFailedWarehouseWriteSchema>;
+export type FailedWarehouseWrite = typeof failedWarehouseWrites.$inferSelect;

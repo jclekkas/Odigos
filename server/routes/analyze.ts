@@ -458,10 +458,12 @@ GO/NO-GO/NEED-MORE-INFO:
       try {
         const { zipToStateCode } = await import("../zipToState");
         const { redactPII } = await import("../piiRedact");
+        const { normalizeSubmissionText, sha256Hex } = await import("../warehouse/warehouseUtils");
         const stateCode = zipToStateCode(data.zipCode);
         const fees = finalResult.detectedFields.fees ?? [];
         const feeAmounts = fees.map((f) => f.amount).filter((a): a is number => a !== null);
         const toNum = (n: number | null | undefined): string | null => n != null ? String(n) : null;
+        const contentHash = sha256Hex(normalizeSubmissionText(data.dealerText));
 
         const submissionRow = await storage.saveDealerSubmission({
           analysisVersion: "v2",
@@ -473,6 +475,7 @@ GO/NO-GO/NEED-MORE-INFO:
           purchaseType: data.purchaseType,
           source: data.source ?? "paste",
           stateCode,
+          contentHash,
           salePrice: toNum(finalResult.detectedFields.salePrice),
           msrp: toNum(finalResult.detectedFields.msrp),
           otdPrice: toNum(finalResult.detectedFields.outTheDoorPrice),

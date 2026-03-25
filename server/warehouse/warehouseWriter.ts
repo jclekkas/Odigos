@@ -6,16 +6,26 @@
  * caught by the caller — nothing here should ever throw to the user.
  */
 import { db } from "../db";
-import { sql } from "drizzle-orm";
+import { sql, eq, and } from "drizzle-orm";
 import type { AnalysisResponse, AnalysisRequest } from "@shared/schema";
+import { failedWarehouseWrites } from "@shared/schema";
 import { rawUserAnalyses, coreDealers, coreListings } from "@shared/warehouse";
-import { normalizeDealerName, validateStateCode } from "./warehouseUtils";
+import {
+  normalizeDealerName,
+  validateStateCode,
+  delay,
+  getBackoffMs,
+  validateFinancialBounds,
+  safeSerializePayload,
+  getErrorMessage,
+} from "./warehouseUtils";
 
 export interface WarehouseWritePayload {
   dealerSubmissionId: string;
   request: AnalysisRequest;
   result: AnalysisResponse;
   stateCode: string | null;
+  contentHash?: string | null;
 }
 
 function toStr(val: number | null | undefined): string | null {
@@ -94,10 +104,10 @@ const STATE_FULL_NAMES: Record<string, string> = {
   WI: "Wisconsin", WY: "Wyoming", DC: "District of Columbia",
 };
 
-export async function writeSubmissionToWarehouse(
-  payload: WarehouseWritePayload,
-): Promise<void> {
-  const { dealerSubmissionId, request: data, result: finalResult, stateCode } = payload;
+const MAX_ATTEMPTS = 3;
+
+async function performWarehouseWrite(payload: WarehouseWritePayload): Promise<void> {
+  const { dealerSubmissionId, request: data, result: finalResult, stateCode, contentHash } = payload;
   const fees = finalResult.detectedFields.fees ?? [];
 
   // Validate state to prevent FK violations
@@ -176,7 +186,7 @@ export async function writeSubmissionToWarehouse(
     )
     .reduce((sum, f) => sum + (f.amount ?? 0), 0);
 
-  const docFee =
+  const docFeeAmount =
     fees.find((f) => /doc.?fee|document/i.test(f.name))?.amount ?? null;
 
   const feeNames = Array.from(new Set(fees.map((f) => f.name.toLowerCase().trim())));
@@ -188,14 +198,14 @@ export async function writeSubmissionToWarehouse(
   ];
 
   const otdPrice = toStr(finalResult.detectedFields.outTheDoorPrice);
-  const totalFees = fees
+  const totalFeesAmount = fees
     .map((f) => f.amount)
     .filter((a): a is number => a !== null)
     .reduce((s, a) => s + a, 0);
 
   const feeToPrice =
-    otdPrice && totalFees > 0
-      ? String(totalFees / Number(otdPrice))
+    otdPrice && totalFeesAmount > 0
+      ? String(totalFeesAmount / Number(otdPrice))
       : null;
 
   const dealScoreNum =
@@ -203,6 +213,42 @@ export async function writeSubmissionToWarehouse(
     : finalResult.dealScore === "YELLOW" ? 50
     : finalResult.dealScore === "RED" ? 25
     : null;
+
+  const matchingAddons = fees.filter(
+    (f) => /dealer.?add|add.?on|package/i.test(f.name) && (f.amount ?? 0) >= 500,
+  );
+  const feeAmountsForValidation = fees.map((f) => f.amount).filter((a): a is number => a !== null);
+
+  // ── Financial sanity validation ────────────────────────────────────────────
+  const sanityFlags = validateFinancialBounds({
+    vehiclePrice: finalResult.detectedFields.salePrice,
+    tradeInValue: finalResult.detectedFields.tradeInValue,
+    docFee: docFeeAmount,
+    dealerAddonCost: matchingAddons.length > 0 ? addonTotal : null,
+    totalFees: feeAmountsForValidation.length > 0 ? totalFeesAmount : null,
+  });
+
+  // ── Content dedup: look for an existing non-duplicate listing with same hash ─
+  let isDuplicate = false;
+  let duplicateOfListingId: string | null = null;
+
+  if (contentHash) {
+    const existing = await db
+      .select({ id: coreListings.id })
+      .from(coreListings)
+      .where(
+        and(
+          eq(coreListings.contentHash, contentHash),
+          eq(coreListings.isDuplicate, false),
+        ),
+      )
+      .limit(1);
+
+    if (existing.length > 0) {
+      isDuplicate = true;
+      duplicateOfListingId = existing[0].id;
+    }
+  }
 
   const now = new Date();
   await db.insert(coreListings).values({
@@ -212,16 +258,19 @@ export async function writeSubmissionToWarehouse(
     isFullyProcessed: true,
     countsTowardRealDeals: true,
     analysisVersion: 1,
-    isDuplicate: false,
+    isDuplicate,
+    duplicateOfListingId,
     isTestData: false,
     hasPipelineError: false,
+    contentHash: contentHash ?? null,
+    sanityFlags,
     listedPrice: toStr(finalResult.detectedFields.salePrice),
     otdPrice,
     monthlyPayment: toStr(finalResult.detectedFields.monthlyPayment),
     aprValue: toStr(finalResult.detectedFields.apr),
     loanTermMonths: finalResult.detectedFields.termMonths ?? null,
     downPayment: toStr(finalResult.detectedFields.downPayment),
-    docFee: docFee !== null ? String(docFee) : null,
+    docFee: docFeeAmount !== null ? String(docFeeAmount) : null,
     docFeeOverStateCap: null,
     marketAdjustment: hasMarketAdj && marketAdjustment > 0 ? String(marketAdjustment) : null,
     addonTotal: addonTotal > 0 ? String(addonTotal) : null,
@@ -237,6 +286,53 @@ export async function writeSubmissionToWarehouse(
   });
 
   console.log(
-    `[warehouse] Wrote submission ${dealerSubmissionId} to warehouse (state=${validState ?? "unknown"}, score=${finalResult.dealScore})`,
+    `[warehouse] Wrote submission ${dealerSubmissionId} to warehouse (state=${validState ?? "unknown"}, score=${finalResult.dealScore}, duplicate=${isDuplicate})`,
   );
+}
+
+export async function writeSubmissionToWarehouse(
+  payload: WarehouseWritePayload,
+): Promise<void> {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const backoff = getBackoffMs(attempt);
+    if (backoff > 0) {
+      await delay(backoff);
+    }
+
+    try {
+      await performWarehouseWrite(payload);
+      return;
+    } catch (err) {
+      lastError = err;
+      console.warn(
+        `[warehouse] Write attempt ${attempt}/${MAX_ATTEMPTS} failed for submission ${payload.dealerSubmissionId}:`,
+        getErrorMessage(err),
+      );
+    }
+  }
+
+  // All attempts exhausted — write to DLQ
+  try {
+    await db.insert(failedWarehouseWrites).values({
+      submissionId: payload.dealerSubmissionId,
+      payload: safeSerializePayload({
+        dealerSubmissionId: payload.dealerSubmissionId,
+        stateCode: payload.stateCode,
+        dealScore: payload.result.dealScore,
+        verdict: payload.result.goNoGo,
+      }),
+      errorMessage: getErrorMessage(lastError),
+      attemptCount: MAX_ATTEMPTS,
+    });
+    console.error(
+      `[warehouse] All ${MAX_ATTEMPTS} attempts failed for submission ${payload.dealerSubmissionId}. Written to DLQ.`,
+    );
+  } catch (dlqErr) {
+    console.error(
+      `[warehouse] CRITICAL: Failed to write to DLQ for submission ${payload.dealerSubmissionId}:`,
+      getErrorMessage(dlqErr),
+    );
+  }
 }

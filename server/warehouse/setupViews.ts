@@ -114,9 +114,12 @@ export async function setupWarehouseViews(): Promise<void> {
       counts_toward_real_deals boolean NOT NULL DEFAULT false,
       analysis_version integer NOT NULL DEFAULT 1,
       is_duplicate boolean NOT NULL DEFAULT false,
+      duplicate_of_listing_id varchar(36),
       is_test_data boolean NOT NULL DEFAULT false,
       has_pipeline_error boolean NOT NULL DEFAULT false,
       pipeline_error_reason text,
+      content_hash text,
+      sanity_flags jsonb NOT NULL DEFAULT '[]'::jsonb,
       vehicle_year integer,
       vehicle_make text,
       vehicle_model text,
@@ -145,6 +148,10 @@ export async function setupWarehouseViews(): Promise<void> {
         CHECK (ingestion_source IN ('user_submitted', 'seed', 'internal_backfill'))
     )
   `);
+  // Add new columns to existing core.listings tables (idempotent)
+  await db.execute(sql`ALTER TABLE core.listings ADD COLUMN IF NOT EXISTS duplicate_of_listing_id varchar(36)`);
+  await db.execute(sql`ALTER TABLE core.listings ADD COLUMN IF NOT EXISTS content_hash text`);
+  await db.execute(sql`ALTER TABLE core.listings ADD COLUMN IF NOT EXISTS sanity_flags jsonb NOT NULL DEFAULT '[]'::jsonb`);
   await db.execute(sql`CREATE INDEX IF NOT EXISTS core_listings_dealer_idx ON core.listings (dealer_id)`);
   await db.execute(sql`CREATE INDEX IF NOT EXISTS core_listings_score_idx ON core.listings (deal_score)`);
   await db.execute(sql`CREATE INDEX IF NOT EXISTS core_listings_date_idx ON core.listings (listing_date)`);
@@ -174,6 +181,23 @@ export async function setupWarehouseViews(): Promise<void> {
   `);
   await db.execute(sql`CREATE INDEX IF NOT EXISTS core_complaints_state_idx ON core.consumer_complaints (state_code, complaint_date)`);
   await db.execute(sql`CREATE INDEX IF NOT EXISTS core_complaints_dealer_idx ON core.consumer_complaints (dealer_id)`);
+
+  // ── 3b. New columns for public.dealer_submissions (content hash dedup) ───────
+  await db.execute(sql`ALTER TABLE public.dealer_submissions ADD COLUMN IF NOT EXISTS content_hash text`);
+
+  // ── 3c. Dead-letter queue for failed warehouse writes ─────────────────────
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS public.failed_warehouse_writes (
+      id varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+      submission_id varchar NOT NULL REFERENCES public.dealer_submissions(id) ON DELETE CASCADE,
+      payload jsonb NOT NULL,
+      error_message text NOT NULL,
+      attempt_count integer NOT NULL DEFAULT 3,
+      failed_at timestamp DEFAULT now() NOT NULL
+    )
+  `);
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS dlq_submission_id_idx ON public.failed_warehouse_writes (submission_id)`);
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS dlq_failed_at_idx ON public.failed_warehouse_writes (failed_at DESC)`);
 
   // ── 4. FK constraint: raw.user_analyses → public.dealer_submissions ─────────
   // Added via SQL to avoid importing shared/schema.ts into the warehouse module.

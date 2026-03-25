@@ -11,6 +11,10 @@ import { storage } from "./storage";
 import { redactPII } from "./piiRedact";
 import { zipToStateCode } from "./zipToState";
 import type { AnalysisResponse, AnalysisRequest } from "@shared/schema";
+import { dealerSubmissions } from "@shared/schema";
+import { normalizeSubmissionText, sha256Hex } from "./warehouse/warehouseUtils";
+import { db } from "./db";
+import { eq, isNull } from "drizzle-orm";
 
 export interface SubmissionPayload {
   request: AnalysisRequest;
@@ -29,9 +33,19 @@ export function enqueueSubmission(payload: SubmissionPayload): void {
 
       const stateCode = zipToStateCode(data.zipCode);
 
-      // If the route already saved the dealer_submissions row (to obtain listingId),
-      // skip the save here to avoid a duplicate insert.
+      // Compute content hash for deduplication
+      const contentHash = sha256Hex(normalizeSubmissionText(data.dealerText));
+
       let submissionId: string | null = preSavedListingId ?? null;
+
+      if (submissionId) {
+        try {
+          await db.update(dealerSubmissions)
+            .set({ contentHash })
+            .where(eq(dealerSubmissions.id, submissionId));
+        } catch (_backfillErr) {
+        }
+      }
 
       if (!submissionId) {
         const fees = finalResult.detectedFields.fees ?? [];
@@ -54,6 +68,7 @@ export function enqueueSubmission(payload: SubmissionPayload): void {
           purchaseType: data.purchaseType,
           source: data.source ?? "paste",
           stateCode,
+          contentHash,
 
           // Financial signals
           salePrice: toNum(finalResult.detectedFields.salePrice),
@@ -109,24 +124,18 @@ export function enqueueSubmission(payload: SubmissionPayload): void {
       }
 
       // ── Warehouse write path ────────────────────────────────────────────────
-      // Failures here are logged but never bubble up to the user's request.
-      try {
-        if (process.env.DATABASE_URL && submissionId) {
-          const { writeSubmissionToWarehouse } = await import(
-            "./warehouse/warehouseWriter"
-          );
-          await writeSubmissionToWarehouse({
-            dealerSubmissionId: submissionId,
-            request: data,
-            result: finalResult,
-            stateCode,
-          });
-        }
-      } catch (warehouseErr) {
-        console.error(
-          "[submission-ingestor] warehouse write failed (non-fatal):",
-          warehouseErr,
+      // Retry logic and DLQ are handled inside writeSubmissionToWarehouse.
+      if (process.env.DATABASE_URL && submissionId) {
+        const { writeSubmissionToWarehouse } = await import(
+          "./warehouse/warehouseWriter"
         );
+        await writeSubmissionToWarehouse({
+          dealerSubmissionId: submissionId,
+          request: data,
+          result: finalResult,
+          stateCode,
+          contentHash,
+        });
       }
     } catch (err) {
       console.error("[submission-ingestor] non-blocking write failed:", err);

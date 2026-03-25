@@ -139,9 +139,16 @@ export const coreListings = coreSchema.table(
 
     // Quality / trust flags
     isDuplicate: boolean("is_duplicate").notNull().default(false),
+    duplicateOfListingId: varchar("duplicate_of_listing_id", { length: 36 }),
     isTestData: boolean("is_test_data").notNull().default(false),
     hasPipelineError: boolean("has_pipeline_error").notNull().default(false),
     pipelineErrorReason: text("pipeline_error_reason"),
+
+    // Content deduplication hash (SHA-256 of normalized submission text)
+    contentHash: text("content_hash"),
+
+    // Financial sanity flags — populated by validateFinancialBounds helper
+    sanityFlags: jsonb("sanity_flags").notNull().default(sql`'[]'::jsonb`),
 
     // Vehicle
     vehicleYear: integer("vehicle_year"),
