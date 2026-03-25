@@ -1,0 +1,107 @@
+#107 - Fix Analysis Completion UX
+
+Implement this task EXACTLY as specified. Keep changes minimal, surgical, and consistent with existing patterns. Do NOT introduce unrelated refactors.
+
+## What & Why
+Two UX failures undermine trust in the analysis flow:
+
+1. Misleading time copy
+The form tells users results arrive "in seconds" and a CTA component says "about 10 seconds," but real latency is 40+ seconds. First-time users waiting silently conclude something broke.
+
+2. Silent completion with no scroll
+When analysis finishes, the button quietly reverts to "Analyze Deal" while results appear below the fold. Users who haven't scrolled down assume the action failed and leave.
+
+## Done looks like
+- Time copy accurately reflects real latency in both the form subtext and the article CTA component
+- Use honest language such as "usually under a minute"
+- On analysis completion, the button enters a brief `Done — see your results ↓` state for about 1–2 seconds before reverting
+- The page auto-scrolls to the results section immediately after analysis completes successfully
+- Results are visible without manual scrolling
+- Loading state text and button behavior are otherwise unchanged
+
+## Out of scope
+- Backend speed improvements
+- Live progress indicators
+- Streaming responses
+- Any changes to the results UI itself
+- Unrelated refactors
+
+## Tasks
+
+### 1. Fix time estimate copy
+Update the misleading analysis timing copy in both places below to accurate, honest language that sets a realistic expectation.
+
+Relevant files:
+- `client/src/pages/home.tsx:985-1010,1395-1420,1428-1435`
+- `client/src/components/ArticleCta.tsx:10-20`
+
+Replace:
+- `in seconds`
+- `about 10 seconds`
+
+With honest wording in this spirit:
+- `usually under a minute`
+- `results usually take under a minute`
+
+Do NOT leave any wording that implies near-instant results.
+
+### 2. Add a brief completion signal on the button
+After the analysis mutation succeeds:
+- keep the existing loading behavior during the request
+- when the request finishes successfully, switch the button into a brief completion state
+- use this exact text unless existing UI constraints require a very close equivalent:
+  - `Done — see your results ↓`
+- keep that completion state visible for about 1–2 seconds
+- after that, revert the button to its normal idle label
+
+Important:
+- this completion state must happen only on successful completion
+- do not change error behavior
+- do not change disabled/loading behavior during submission
+- loading state text and behavior should otherwise remain unchanged
+
+### 3. Auto-scroll to the results section
+Immediately after a successful analysis completes:
+- programmatically scroll the results section into view
+- use smooth scrolling
+- ensure the results are mounted/rendered before scrolling
+- do not scroll on error
+- do not require any user interaction
+
+Implementation guidance:
+- add a ref to the results container
+- detect the transition from loading -> success with valid result data
+- trigger `scrollIntoView({ behavior: "smooth", block: "start" })`
+- coordinate the brief completion button state with the scroll so the user gets both:
+  - a visible completion signal
+  - immediate visibility of the results
+
+### 4. Preserve current behavior
+Do NOT change:
+- API behavior
+- mutation semantics
+- results UI contents/layout
+- scoring logic
+- error handling
+- loading state text except for the explicit time-estimate copy called out above
+- unrelated home page or article CTA behavior
+
+Keep this a focused frontend UX fix only.
+
+## Acceptance criteria
+- No analysis flow copy still says `in seconds` or `about 10 seconds`
+- The home page form subtext uses honest timing language
+- The article CTA uses honest timing language
+- After successful completion, the button briefly shows `Done — see your results ↓`
+- After successful completion, the page automatically scrolls to the results section
+- Errors do not trigger the completion state or auto-scroll
+- Existing loading state behavior is otherwise unchanged
+- App builds cleanly
+
+## Deliverable format
+Return:
+1. Files changed
+2. Exact copy updated
+3. How the brief completion state was implemented
+4. How the auto-scroll was implemented
+5. Confirmation that loading/error behavior was otherwise unchanged
