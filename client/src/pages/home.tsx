@@ -722,6 +722,7 @@ export default function Home() {
   const [formStartTracked, setFormStartTracked] = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [inputTab, setInputTab] = useState<"paste" | "upload">("paste");
   const [summaryCopied, setSummaryCopied] = useState<"idle" | "success" | "failed">("idle");
   const [scorecardDownloading, setScorecardDownloading] = useState(false);
   const [showDoneState, setShowDoneState] = useState(false);
@@ -807,6 +808,7 @@ export default function Home() {
       }
       form.setValue("dealerText", data.text);
       form.setValue("source", "upload");
+      setInputTab("paste");
     } catch (err) {
       const reason = "network_error";
       setUploadError("Something went wrong. Please try again or paste the text manually.");
@@ -1085,7 +1087,7 @@ export default function Home() {
                 <CardTitle className="text-base font-semibold">Paste Your Dealer Quote or Message</CardTitle>
               </CardHeader>
               <CardContent>
-                <Tabs defaultValue="paste" className="w-full" data-testid="tabs-input-mode">
+                <Tabs value={inputTab} onValueChange={(v) => setInputTab(v as "paste" | "upload")} className="w-full" data-testid="tabs-input-mode">
                   <TabsList className="w-full flex h-11 mb-4" data-testid="tabs-input-mode-list">
                     <TabsTrigger value="paste" className="flex-1 text-sm font-medium" data-testid="tab-paste-text">
                       <FileText className="h-4 w-4 mr-2" />
