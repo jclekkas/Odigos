@@ -30,18 +30,23 @@ The frontend follows a single-page architecture with the main functionality on t
 - **AI Integration**: OpenAI-compatible API via Replit AI Integrations
 
 The backend is organized into focused domain modules:
-- `server/routers/analyze.ts` — `/api/analyze`, `/api/feedback`, `/api/extract-text`
-- `server/routers/payments.ts` — all Stripe routes (`/api/checkout`, `/api/verify-session`, `/api/stripe-webhook`, etc.)
-- `server/routers/admin.ts` — admin/BI dashboard routes (`/api/metrics`, `/api/alerts`, `/api/technical`, `/api/admin/bi/*`)
-- `server/routers/stats.ts` — public stats and warehouse routes (`/api/stats`, `/api/warehouse/stats`)
-- `server/routers/public.ts` — tracking, experiments, state-fee, health, vitals, sitemap, robots
-- `server/routes.ts` — thin orchestrator that calls all five `register*Routes(app)` functions
+- `server/routes/analyze.ts` — `/api/analyze`, `/api/feedback`, `/api/extract-text`
+- `server/routes/payments.ts` — all Stripe routes (`/api/checkout`, `/api/verify-session`, `/api/stripe-webhook`, etc.)
+- `server/routes/admin.ts` — admin/BI dashboard routes (`/api/metrics`, `/api/alerts`, `/api/technical`, `/api/admin/import-stripe-history`)
+- `server/routes/bi.ts` — BI + stats + warehouse routes (`/api/admin/bi/**`, `/api/stats`, `/api/warehouse/**`)
+- `server/routes/tracking.ts` — tracking, experiments, and vitals routes
+- `server/routes/reference.ts` — state-fee, health, sitemap, robots
+- `server/routes/index.ts` — assembler that calls all `register*Routes` functions
+- `server/routes.ts` — thin shim re-exporting `registerRoutes` from `./routes/index`
 
-Metrics/events are split into three modules:
-- `server/events.ts` — KV store, `trackEvent`, event loading
-- `server/analytics.ts` — summaries, PII expiry, experiment stats
-- `server/bi.ts` — BI aggregations with singleton cache; exports `DateRange` type
-- `server/metrics.ts` — 3-line re-export shim for backward compatibility
+Metrics/events are organized under `server/metrics/` (canonical implementations):
+- `server/metrics/events.ts` — KV store, `trackEvent`, `loadMetrics`, `importHistoricalEvents`
+- `server/metrics/technical.ts` — `getMetricsSummary`, `getTechnicalSummary`, `getPiiExpiryStatus`, `getPaymentCountLastNHours`
+- `server/metrics/experiments.ts` — `getExperimentStats` and experiment interfaces
+- `server/metrics/bi.ts` — BI aggregations with in-memory cache; exports `DateRange` type and all `getBI*` functions
+- `server/metrics/index.ts` — barrel re-export of all four submodules
+- `server/events.ts`, `server/analytics.ts`, `server/bi.ts` — thin shims re-exporting from `server/metrics/*`
+- `server/metrics.ts` — shim re-exporting from `server/metrics/index`
 
 ### Data Flow
 1. User submits dealer text via form
