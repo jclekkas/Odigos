@@ -181,4 +181,28 @@ Sentry is integrated for production error tracking on both frontend and backend.
 1. Deploy to production with `SENTRY_DSN` and `VITE_SENTRY_DSN` set in Replit Secrets
 2. Trigger a test error by visiting an invalid route or submitting a bad request
 3. Confirm the error appears in the Sentry dashboard within ~30 seconds
-4. To test Error Boundary in development, temporarily throw from a component and check the fallback UI renders
+
+## A/B Test Infrastructure
+
+A lightweight, self-hosted A/B testing layer for measuring conversion impact of UI changes.
+
+### Architecture
+- **Config**: `client/src/lib/experiments.ts` — central `EXPERIMENTS` array defines active experiments (id, variants, trafficSplit). Adding a new experiment requires only a new entry here.
+- **Assignment**: `useExperiment(id)` hook deterministically assigns users to variants by hashing their session ID. Assignment is stored in localStorage for persistence across reloads.
+- **Tracking**: `experiment_assigned` events fire on first assignment; `experiment_converted` events fire alongside `paid_conversion` and carry all active experiment assignments.
+- **Backend**: Two new event types (`experiment_assigned`, `experiment_converted`) added to `server/metrics.ts`. `getExperimentStats()` queries the KV store and returns per-variant conversion rates.
+- **API**: `GET /api/experiments` returns per-experiment stats. `POST /api/track` now accepts `experiment_assigned` and `experiment_converted` event types.
+- **Dashboard**: `/admin/experiments` page shows per-experiment variant data including assignments, conversions, conversion rate, and a "winning" indicator.
+
+### Active Experiments
+| Experiment ID | Variants | What changes |
+|---|---|---|
+| `hero_headline` | control / urgency | Hero headline copy on landing page |
+| `unlock_cta` | control / value | Unlock CTA button text on analyze page and pricing section |
+
+### How to Add a New Experiment
+Add one entry to the `EXPERIMENTS` array in `client/src/lib/experiments.ts`:
+```ts
+{ id: "my_experiment", variants: ["control", "treatment"], trafficSplit: 0.5 }
+```
+Then use the `useExperiment("my_experiment")` hook in the relevant component.

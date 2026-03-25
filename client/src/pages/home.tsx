@@ -20,6 +20,7 @@ import {
   getSessionId,
 } from "@/lib/tracking";
 import { capture } from "@/lib/analytics";
+import { trackConversion, useExperiment } from "@/lib/experiments";
 import { tagFlow } from "@/lib/sentry";
 import { setSeoMeta } from "@/lib/seo";
 import { howToSchema } from "@/lib/jsonld";
@@ -349,9 +350,10 @@ interface LockedTier2Props {
   onUnlock: () => void;
   isLoading: boolean;
   stripeConfigured: boolean;
+  ctaLabel?: string;
 }
 
-function LockedTier2Section({ onUnlock, isLoading, stripeConfigured }: LockedTier2Props) {
+function LockedTier2Section({ onUnlock, isLoading, stripeConfigured, ctaLabel }: LockedTier2Props) {
   return (
     <Card className="border-border bg-muted/20">
       <CardHeader className="pb-3">
@@ -392,7 +394,7 @@ function LockedTier2Section({ onUnlock, isLoading, stripeConfigured }: LockedTie
           ) : !stripeConfigured ? (
             "Checkout unavailable"
           ) : (
-            "Unlock Full Deal Review — $49 (one-time)"
+            ctaLabel ?? "Unlock Full Deal Review — $49 (one-time)"
           )}
         </Button>
         <p className="text-xs text-muted-foreground text-center mt-2">
@@ -705,6 +707,11 @@ function getStoredTier(): UnlockTier {
 const ALLOWED_UPLOAD_TYPES = ["image/png", "image/jpeg", "image/webp", "application/pdf"];
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
+const UNLOCK_CTA_LABELS: Record<string, string> = {
+  control: "Unlock Full Deal Review — $49 (one-time)",
+  value: "Unlock Full Deal Review — $49 (Less Than Most Doc Fees)",
+};
+
 export default function Home() {
   const search = useSearch();
   const [isOptionalOpen, setIsOptionalOpen] = useState(false);
@@ -721,6 +728,11 @@ export default function Home() {
   const inputStartedRef = useRef(false);
   const resultFiredRef = useRef(false);
   const { toast } = useToast();
+
+  const unlockCtaVariant = useExperiment("unlock_cta");
+  const unlockCtaLabel = unlockCtaVariant
+    ? (UNLOCK_CTA_LABELS[unlockCtaVariant] ?? UNLOCK_CTA_LABELS.control)
+    : UNLOCK_CTA_LABELS.control;
 
   useEffect(() => {
     trackPageView("/analyze");
@@ -852,6 +864,7 @@ export default function Home() {
         if (product === "deal_clarity" || product === "negotiation_pack") {
           localStorage.setItem("paid_deal_clarity", "true");
           capture("paid_conversion", { product: "full_review" });
+          trackConversion("paid_conversion");
           setUnlockTier("49");
           toast({
             title: "Payment Successful",
@@ -1563,6 +1576,7 @@ export default function Home() {
                 onUnlock={() => handleUnlockTier()}
                 isLoading={checkoutLoading || isCheckingPayment}
                 stripeConfigured={stripeConfigured}
+                ctaLabel={unlockCtaLabel}
               />
             ) : (
               <>

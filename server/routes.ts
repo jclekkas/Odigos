@@ -8,7 +8,7 @@ import { analysisRequestSchema, analysisResponseSchema, type AnalysisResponse, t
 import { applyRuleEngine, checkDocFeeCap } from "./ruleEngine";
 import { detectStateFromText, getStateFeeData, getAmbiguousCityOptions } from "./stateFeeLookup";
 import { getStripeClient, isStripeConfigured } from "./stripeClient";
-import { trackEvent } from "./metrics";
+import { trackEvent, getExperimentStats } from "./metrics";
 import { extractTextFromFile } from "./extractText";
 import { openai } from "./openaiClient";
 import { enqueueSubmission } from "./ingestor";
@@ -659,6 +659,7 @@ GO/NO-GO/NEED-MORE-INFO:
         "page_view", "cta_click", "form_start", "form_focus",
         "file_upload_failed", "analysis_failed", "checkout_failed",
         "scorecard_downloaded", "copy_summary", "optional_details_expanded",
+        "experiment_assigned", "experiment_converted",
       ];
       if (!eventType || !validTypes.includes(eventType)) {
         return res.status(400).json({ error: "Invalid event type" });
@@ -673,6 +674,16 @@ GO/NO-GO/NEED-MORE-INFO:
     } catch (error) {
       console.error("Track error:", error);
       res.status(500).json({ error: "Failed to track event" });
+    }
+  });
+
+  app.get("/api/experiments", async (_req, res) => {
+    try {
+      const stats = await getExperimentStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Experiments error:", error);
+      res.status(500).json({ error: "Failed to fetch experiment stats" });
     }
   });
 

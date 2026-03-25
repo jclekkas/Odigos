@@ -8,6 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { AlertTriangle, ArrowRight, Check, CheckCircle2, Lock, XCircle } from "lucide-react";
 import { trackPageView, trackCtaClick } from "@/lib/tracking";
 import { capture } from "@/lib/analytics";
+import { useExperiment } from "@/lib/experiments";
 import SiteHeader from "@/components/SiteHeader";
 import SeoHead from "@/components/SeoHead";
 import { productSchema } from "@/lib/jsonld";
@@ -41,12 +42,33 @@ const faqs = [
   },
 ];
 
+const HERO_HEADLINES: Record<string, string> = {
+  control: "Spot dealer pricing tricks before you agree to anything.",
+  urgency: "Don't sign until you know what the dealer isn't telling you.",
+};
+
+const PRICING_CTA_TEXT: Record<string, string> = {
+  control: "Get Full Review — $49",
+  value: "Get Full Review — $49 (Less Than Most Doc Fees)",
+};
+
 export default function Landing() {
   const { data: statsData, isLoading: statsLoading, isError: statsError } = useQuery<{ count: number; type: string }>({
     queryKey: ["/api/stats/count"],
     retry: false,
     staleTime: 5 * 60 * 1000,
   });
+
+  const heroHeadlineVariant = useExperiment("hero_headline");
+  const unlockCtaVariant = useExperiment("unlock_cta");
+
+  const heroHeadline = heroHeadlineVariant
+    ? (HERO_HEADLINES[heroHeadlineVariant] ?? HERO_HEADLINES.control)
+    : HERO_HEADLINES.control;
+
+  const pricingCtaText = unlockCtaVariant
+    ? (PRICING_CTA_TEXT[unlockCtaVariant] ?? PRICING_CTA_TEXT.control)
+    : PRICING_CTA_TEXT.control;
 
   useEffect(() => {
     trackPageView("/");
@@ -102,7 +124,7 @@ export default function Landing() {
                 </p>
 
                 <h1 className="font-serif text-balance text-4xl font-bold tracking-tight sm:text-5xl text-foreground" data-testid="text-hero-headline">
-                  Spot dealer pricing tricks before you agree to anything.
+                  {heroHeadline}
                 </h1>
 
                 <p className="mt-5 text-base text-foreground/80 sm:text-lg leading-relaxed" data-testid="text-hero-subheadline">
@@ -502,7 +524,7 @@ export default function Landing() {
                   className="w-full"
                   data-testid="button-cta-full-review"
                 >
-                  <Link href="/analyze">Get Full Review — $49</Link>
+                  <Link href="/analyze">{pricingCtaText}</Link>
                 </Button>
               </div>
               {/* $79 Negotiation Pack - Hidden for single-tier pricing
