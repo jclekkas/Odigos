@@ -1,0 +1,73 @@
+modules
+#106 - Split server monolith into focused modules
+
+You are doing a pure refactor. Do not change behavior, endpoint paths, response shapes, business logic, frontend code, shared schema, or test files unless absolutely required for import-path compatibility. The goal is to make the backend navigable while preserving identical runtime behavior.
+
+Primary objective
+
+Split:
+
+server/metrics.ts (currently monolithic)
+server/routes.ts (currently monolithic)
+into focused modules with thin assembler / re-export shims so the rest of the app keeps working unchanged.
+
+Hard constraints
+
+NO API path changes
+NO response shape changes
+NO business logic rewrites
+NO frontend changes
+NO shared schema changes
+Existing tests must pass unchanged
+TypeScript must compile cleanly
+App must start and behave identically
+Preserve existing import compatibility wherever possible
+Done looks like
+
+server/routes.ts replaced by a thin assembler shim backed by 5–6 domain routers
+server/metrics.ts replaced by focused modules with a thin re-export layer
+All existing tests pass
+App behavior is unchanged
+/api/health works
+No endpoint or response changes
+Out of scope
+
+Changing any API endpoint paths or response shapes
+Migrating to microservices or separate processes
+Changing the frontend or shared schema
+Rewriting any business logic
+Tasks
+
+Split server/metrics.ts into focused modules — Create server/metrics/ directory:
+events.ts: KV storage helpers, loadMetrics, saveMetrics, trackEvent, importHistoricalEvents, getImportedSessionIds
+technical.ts: getMetricsSummary, getTechnicalSummary, getPiiExpiryStatus, getPaymentCountLastNHours, all associated interfaces/types
+bi.ts: all getBI* functions (getBIFunnel, getBIPageAttribution, getBIUserBehavior, getBIDealOutcome, getBIGeographic, getBIAcquisition, getBIRevenue, getBIFallout), shared cache helpers, shared BI filter helpers, any BI-only types
+experiments.ts: getExperimentStats, experiment-related types
+index.ts: re-exports every public symbol required by existing imports Keep server/metrics.ts as a shim that re-exports from ./metrics/index so existing import paths continue to work without broad call-site edits.
+Split server/routes.ts into domain routers — Create server/routes/ directory:
+analyze.ts: /api/analyze, /api/feedback, /api/extract-text
+payments.ts: /api/stripe-status, /api/checkout, /api/create-checkout-session, /api/verify-session, /api/stripe-webhook
+tracking.ts: /api/track, /api/vitals, /api/experiments
+admin.ts: /api/metrics, /api/technical, /api/alerts, /api/admin/import-stripe-history
+bi.ts: /api/admin/bi/, /api/stats, /api/stats/count, /api/warehouse/
+reference.ts: /api/state-fee/:state, /api/health, /sitemap.xml, /robots.txt
+index.ts: assembles all sub-routers, exports a single registerRoutes(app) matching the existing signature in server/index.ts Keep server/routes.ts as a shim re-exporting registerRoutes from ./routes/index.
+Verify correctness — Run the full test suite. Confirm all tests pass. Confirm TypeScript compiles cleanly. Start the server and confirm /api/health responds.
+Implementation guidance
+
+Reuse existing logic exactly; move code, don't redesign it.
+Extract shared helpers only when necessary to avoid duplication caused by the split.
+Keep middleware ordering, env checks, Stripe/raw-body handling, admin auth behavior, and route registration semantics identical.
+Be especially careful with: webhook parsing behavior, route-specific middleware, imported singleton state/caches, cross-module type dependencies, metrics cache behavior, BI filter normalization, health/sitemap/robots behavior.
+Prefer minimal necessary import updates over broad cleanup.
+Do not opportunistically rename unrelated symbols or reformat the entire codebase.
+Preserve comments where useful, especially around subtle behavior.
+Relevant files
+
+server/routes.ts
+server/metrics.ts
+server/index.ts
+server/alerts.ts
+server/ruleEngine.ts
+server/marketContext.ts
+server/storage.ts
