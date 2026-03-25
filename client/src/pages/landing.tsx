@@ -147,7 +147,7 @@ export default function Landing() {
                 </div>
 
                 <p className="mt-4 text-sm text-muted-foreground" data-testid="text-reassurance">
-                  Takes ~10 seconds. No signup required.{" "}
+                  Takes about a minute. No signup required.{" "}
                   <Link href="/example-analysis" className="underline underline-offset-4 hover:text-foreground/70 transition-colors" data-testid="link-example-analysis-hero">
                     See an example.
                   </Link>
@@ -621,7 +621,7 @@ export default function Landing() {
               </div>
               <div data-testid="card-why-free">
                 <h3 className="font-semibold mb-2 text-foreground">Free and Instant</h3>
-                <p className="text-sm text-muted-foreground">You can paste a dealer message and get feedback in seconds without creating an account.</p>
+                <p className="text-sm text-muted-foreground">You can paste a dealer message and get a full analysis without creating an account.</p>
               </div>
             </div>
           </div>

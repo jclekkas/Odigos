@@ -114,7 +114,7 @@ export default function HowToCompareCarDeals() {
         <div className="rounded-lg border border-border bg-muted/30 p-5 mb-8">
           <p className="text-sm font-medium text-foreground mb-2">Paste both quotes into Odigos</p>
           <p className="text-sm text-muted-foreground">
-            <Link href="/analyze" className="underline text-foreground">Odigos breaks down each quote</Link> — flagging hidden fees, identifying add-ons, and giving you a side-by-side breakdown in seconds. No signup required.
+            <Link href="/analyze" className="underline text-foreground">Odigos breaks down each quote</Link> — flagging hidden fees, identifying add-ons, and giving you a clear breakdown of each. Results take about a minute. No signup required.
           </p>
         </div>
 

@@ -129,7 +129,7 @@ export default function BestWayToCheckIfACarDealIsGood() {
         </ul>
 
         <p className="text-lg text-muted-foreground mb-8">
-          The result is a GO / NO-GO verdict with specific flags for anything that needs attention before you sign. No signup required — paste your quote and get an answer in seconds.
+          The result is a GO / NO-GO verdict with specific flags for anything that needs attention before you sign. No signup required — paste your quote and get a full analysis in about a minute.
         </p>
       </div>
 

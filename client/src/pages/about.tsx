@@ -165,7 +165,7 @@ export default function About() {
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
-          <p className="mt-3 text-sm text-muted-foreground">Takes 10 seconds. No signup required.</p>
+          <p className="mt-3 text-sm text-muted-foreground">Takes about a minute. No signup required.</p>
         </div>
 
       </div>

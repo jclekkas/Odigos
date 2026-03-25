@@ -727,6 +727,7 @@ export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const inputStartedRef = useRef(false);
   const resultFiredRef = useRef(false);
+  const resultsRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   const unlockCtaVariant = useExperiment("unlock_cta");
@@ -875,6 +876,12 @@ export default function Home() {
       window.history.replaceState({}, "", window.location.pathname);
     }
   }, [toast]);
+
+  useEffect(() => {
+    if (result && resultsRef.current) {
+      resultsRef.current.scrollIntoView?.({ behavior: "smooth", block: "start" });
+    }
+  }, [result]);
 
   const handleUnlockTier = async () => {
     setCheckoutLoading(true);
@@ -1397,15 +1404,21 @@ export default function Home() {
               {analyzeMutation.isPending ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Analyzing dealer pricing…
+                  Analyzing your deal…
                 </>
               ) : (
                 "Analyze Deal"
               )}
             </Button>
-            <p className="text-xs text-muted-foreground text-center mt-2" data-testid="text-what-happens-next">
-              You'll get a verdict and a breakdown in seconds.
-            </p>
+            {analyzeMutation.isPending ? (
+              <p className="text-xs text-muted-foreground text-center mt-2" data-testid="text-what-happens-next">
+                Still working — this is normal and usually takes 40–60 seconds. Stay on this page.
+              </p>
+            ) : (
+              <p className="text-xs text-muted-foreground text-center mt-2" data-testid="text-what-happens-next">
+                Results usually take about 40–60 seconds and will appear below.
+              </p>
+            )}
             <p className="text-xs text-muted-foreground text-center mt-3" data-testid="text-data-disclosure">
               Pricing signals (not your personal details) are stored anonymously to improve our dealer fee database. Your submission is not shared with any dealership.{" "}
               <a href="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</a>
@@ -1428,7 +1441,7 @@ export default function Home() {
         )}
 
         {result && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div ref={resultsRef} className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="border-t border-border/50 pt-8">
               <h2 className="text-sm font-medium text-muted-foreground text-center mb-4 uppercase tracking-wider">Your deal analysis</h2>
               

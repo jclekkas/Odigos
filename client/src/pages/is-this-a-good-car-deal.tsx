@@ -116,7 +116,7 @@ export default function IsThisAGoodCarDeal() {
         <div className="rounded-lg border border-border bg-muted/30 p-5 mb-8">
           <p className="text-sm font-medium text-foreground mb-2">If you're looking at a real quote right now</p>
           <p className="text-sm text-muted-foreground">
-            <Link href="/analyze" className="underline text-foreground">Paste it into Odigos</Link> and get a verdict in seconds. Odigos checks for all four signals and flags what's missing or risky — no signup required.
+            <Link href="/analyze" className="underline text-foreground">Paste it into Odigos</Link> and get a full verdict. Odigos checks for all four signals and flags what's missing or risky — results take about a minute, no signup required.
           </p>
         </div>
 

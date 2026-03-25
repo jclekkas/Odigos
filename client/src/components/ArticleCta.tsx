@@ -11,7 +11,7 @@ export default function ArticleCta() {
         Not sure if your dealer quote is complete?
       </h3>
       <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-        Paste the message or quote you received. Odigos checks for missing out-the-door pricing, hidden fees, and common dealer tactics — in about 10 seconds.
+        Paste the message or quote you received. Odigos checks for missing out-the-door pricing, hidden fees, and common dealer tactics — results usually take about a minute.
       </p>
       <Link href="/analyze">
         <Button variant="cta" size="lg" data-testid="button-cta-article">

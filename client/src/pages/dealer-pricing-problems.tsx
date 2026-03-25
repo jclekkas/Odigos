@@ -176,7 +176,7 @@ export default function DealerPricingProblems() {
           Have a dealer quote you want checked?
         </h3>
         <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-          Paste it into Odigos and get an instant GO/NO-GO verdict with hidden fee detection — in about 10 seconds. No signup required.
+          Paste it into Odigos and get a GO/NO-GO verdict with hidden fee detection — results usually take about a minute. No signup required.
         </p>
         <Link href="/analyze">
           <button

@@ -65,7 +65,7 @@ export function registerAnalyzeRoutes(app: Express): void {
         console.warn(`[stateDetection] State ${stateDetection.state} not found in reference JSON — skipping injection`);
       }
 
-      trackEvent("state_detection", {
+      void trackEvent("state_detection", {
         method: stateDetection.method ?? undefined,
         state: stateDetection.state ?? undefined,
       });
@@ -336,7 +336,7 @@ GO/NO-GO/NEED-MORE-INFO:
       console.log(
         `[stateDetection] method=${stateDetection.method ?? "null"} state=${stateDetection.state ?? "null"} capCheck=${capCheck} overage=${docFeeCapResult?.overage ?? 0}`
       );
-      trackEvent("state_detection", {
+      void trackEvent("state_detection", {
         method: stateDetection.method ?? undefined,
         state: stateDetection.state ?? undefined,
         capViolation,
@@ -400,12 +400,12 @@ GO/NO-GO/NEED-MORE-INFO:
       
       console.log("Analysis successful - Deal Score:", finalResult.dealScore, "Confidence:", finalResult.confidenceLevel);
       
-      trackEvent("submission", {
+      void trackEvent("submission", {
         vehicle: data.vehicle,
         zipCode: data.zipCode,
         sessionId: data.sessionId,
       });
-      trackEvent("submission_score", {
+      void trackEvent("submission_score", {
         dealScore: finalResult.dealScore,
         vehicle: data.vehicle,
         sessionId: data.sessionId,
@@ -497,7 +497,11 @@ GO/NO-GO/NEED-MORE-INFO:
         responsePayload.marketContext = marketContext;
       }
 
-      await writeAuditEvent(req, "analyze", "success", {
+      res.json(responsePayload);
+
+      enqueueSubmission({ request: data, result: finalResult, preSavedListingId: listingId });
+
+      void writeAuditEvent(req, "analyze", "success", {
         route: req.originalUrl,
         method: req.method,
         statusCode: 200,
@@ -505,10 +509,6 @@ GO/NO-GO/NEED-MORE-INFO:
         stateCode: stateDetection.state ?? null,
         hasPdf: Boolean(req.file),
       });
-
-      res.json(responsePayload);
-
-      enqueueSubmission({ request: data, result: finalResult, preSavedListingId: listingId });
     } catch (error) {
       console.error("Analysis error:", error);
 

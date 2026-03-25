@@ -115,7 +115,7 @@ export default function OutTheDoorPriceVsMsrp() {
         <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
           <p className="text-sm font-semibold text-foreground mb-2">If you're looking at a real quote…</p>
           <p className="text-sm text-muted-foreground mb-3">
-            Paste it into Odigos and see how your OTD price compares to what the dealer is presenting as the vehicle price. Takes about 10 seconds.
+            Paste it into Odigos and see how your OTD price compares to what the dealer is presenting as the vehicle price. Results usually take about a minute.
           </p>
           <Link href="/analyze">
             <button className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors" data-testid="button-cta-mid-article">
