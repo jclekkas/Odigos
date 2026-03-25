@@ -113,14 +113,18 @@ export async function getMarketContext({
     let dealerAnalysisCount: number | null = null;
     let dealerAvgDealScore: number | null = null;
 
+    let feedbackAgreementPct: number | undefined;
+    let feedbackCount: number | undefined;
+
     if (dealerName) {
       const normalized = normalizeDealerName(dealerName);
       const dealerResult = await db.execute<{
         listing_count: string;
         avg_deal_score: string | null;
+        id: string;
       }>(
         sql`
-          SELECT listing_count, avg_deal_score
+          SELECT id, listing_count, avg_deal_score
           FROM core.dealers
           WHERE dealer_name_normalized = ${normalized}
             AND state_code = ${state}
@@ -128,6 +132,9 @@ export async function getMarketContext({
         `,
       );
       const dealerRow = dealerResult.rows?.[0];
+      if (!dealerRow) {
+        console.log(`[marketContext] dealer lookup miss: name="${dealerName}" normalized="${normalized}" state=${state}`);
+      }
       if (dealerRow) {
         const count = Number(dealerRow.listing_count);
         // Dealer fields are included only when dealerAnalysisCount >= 3.
@@ -135,6 +142,34 @@ export async function getMarketContext({
         if (count >= 3) {
           dealerAnalysisCount = count;
           dealerAvgDealScore = dealerRow.avg_deal_score != null ? Number(dealerRow.avg_deal_score) : null;
+
+          // Fetch feedback stats from the dealer_feedback_stats view (best-effort).
+          try {
+            const fbResult = await db.execute<{
+              positive_feedback_count: string;
+              total_feedback_count: string;
+              feedback_agreement_pct: string | null;
+            }>(
+              sql`
+                SELECT positive_feedback_count, total_feedback_count, feedback_agreement_pct
+                FROM core.dealer_feedback_stats
+                WHERE dealer_id = ${dealerRow.id}
+                LIMIT 1
+              `,
+            );
+            const fbRow = fbResult.rows?.[0];
+            if (fbRow) {
+              const total = Number(fbRow.total_feedback_count);
+              if (total >= 3) {
+                feedbackCount = total;
+                feedbackAgreementPct = fbRow.feedback_agreement_pct != null
+                  ? Number(fbRow.feedback_agreement_pct)
+                  : undefined;
+              }
+            }
+          } catch {
+            // Feedback stats are optional — never fail the fetch.
+          }
         }
       }
     }
@@ -147,6 +182,7 @@ export async function getMarketContext({
       docFeeVsStateAvg,
       dealerAnalysisCount,
       dealerAvgDealScore,
+      ...(feedbackCount !== undefined ? { feedbackCount, feedbackAgreementPct } : {}),
     };
   })();
 

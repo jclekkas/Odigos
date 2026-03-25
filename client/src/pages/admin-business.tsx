@@ -1194,6 +1194,137 @@ function FalloutPanel({ adminKey, range }: { adminKey: string; range: DateRange 
 }
 
 // ============================================================================
+// Feedback Accuracy Panel
+// ============================================================================
+interface FeedbackAccuracyData {
+  overallAgreementRate: number | null;
+  byScoreColor: { GREEN: number | null; YELLOW: number | null; RED: number | null };
+  topDealers: Array<{
+    dealerName: string;
+    totalFeedbackCount: number;
+    positiveFeedbackCount: number;
+    agreementRate: number | null;
+  }>;
+}
+
+function FeedbackAccuracyPanel({ adminKey }: { adminKey: string }) {
+  const { data, isLoading, isError } = useQuery<FeedbackAccuracyData>({
+    queryKey: ["/api/admin/feedback-accuracy", adminKey],
+    queryFn: async () => {
+      const res = await fetch("/api/admin/feedback-accuracy", {
+        headers: { Authorization: `Bearer ${adminKey}` },
+      });
+      if (!res.ok) throw new Error("Failed to load feedback accuracy");
+      return res.json();
+    },
+    refetchInterval: 300000,
+  });
+
+  if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" data-testid="feedback-accuracy-loading" />;
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center h-40 text-muted-foreground gap-2" data-testid="feedback-accuracy-error">
+        <AlertTriangle className="h-8 w-8 opacity-40" />
+        <p className="text-sm">Failed to load feedback accuracy data</p>
+      </div>
+    );
+  }
+
+  const formatPct = (v: number | null | undefined) =>
+    v == null ? "—" : `${Math.round(v * 100)}%`;
+
+  const colorLabel = {
+    GREEN: { label: "Green Deals", color: "success" as const },
+    YELLOW: { label: "Yellow Deals", color: "warning" as const },
+    RED: { label: "Red Deals", color: "danger" as const },
+  };
+
+  const hasTopDealers = (data?.topDealers ?? []).length > 0;
+  const overall = data?.overallAgreementRate ?? null;
+
+  return (
+    <div className="space-y-6" data-testid="feedback-accuracy-panel">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          title="Overall Agreement Rate"
+          value={formatPct(overall)}
+          subtitle="Users agreeing with AI verdicts"
+          icon={CheckCircle}
+          color={overall == null ? "default" : overall >= 0.7 ? "success" : overall >= 0.5 ? "warning" : "danger"}
+        />
+        {(["GREEN", "YELLOW", "RED"] as const).map((color) => {
+          const rate = data?.byScoreColor?.[color] ?? null;
+          return (
+            <StatCard
+              key={color}
+              title={colorLabel[color].label}
+              value={formatPct(rate)}
+              subtitle={`Agreement rate for ${color} verdicts`}
+              icon={CheckCircle}
+              color={colorLabel[color].color}
+            />
+          );
+        })}
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Top Dealers by Feedback Volume
+          </CardTitle>
+          <p className="text-xs text-muted-foreground">Dealers with at least 3 feedback ratings, sorted by total feedback</p>
+        </CardHeader>
+        <CardContent>
+          {!hasTopDealers ? (
+            <EmptyState icon={Users} label="No dealers with 3+ feedback ratings yet" />
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm" data-testid="feedback-top-dealers-table">
+                <thead>
+                  <tr className="border-b text-left text-xs text-muted-foreground font-medium">
+                    <th className="pb-2 pr-4">Dealer</th>
+                    <th className="pb-2 pr-4 text-right">Total Feedback</th>
+                    <th className="pb-2 pr-4 text-right">Positive</th>
+                    <th className="pb-2 text-right">Agreement %</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data!.topDealers.map((dealer, i) => (
+                    <tr key={i} className="border-b last:border-0 hover:bg-muted/40 transition-colors" data-testid={`feedback-dealer-row-${i}`}>
+                      <td className="py-2 pr-4 font-medium">{dealer.dealerName}</td>
+                      <td className="py-2 pr-4 text-right text-muted-foreground">{dealer.totalFeedbackCount}</td>
+                      <td className="py-2 pr-4 text-right text-muted-foreground">{dealer.positiveFeedbackCount}</td>
+                      <td className="py-2 text-right font-semibold">
+                        <span
+                          className={
+                            dealer.agreementRate == null
+                              ? "text-muted-foreground"
+                              : dealer.agreementRate >= 0.7
+                              ? "text-green-600 dark:text-green-400"
+                              : dealer.agreementRate >= 0.5
+                              ? "text-yellow-600 dark:text-yellow-400"
+                              : "text-red-600 dark:text-red-400"
+                          }
+                          data-testid={`feedback-agreement-${i}`}
+                        >
+                          {formatPct(dealer.agreementRate)}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// ============================================================================
 // Main Page
 // ============================================================================
 const PANELS = [
@@ -1205,6 +1336,7 @@ const PANELS = [
   { id: "acquisition", label: "Acquisition" },
   { id: "revenue", label: "Revenue Health" },
   { id: "fallout", label: "Fallout" },
+  { id: "feedback-accuracy", label: "Feedback Accuracy" },
 ];
 
 export default function AdminBusiness() {
@@ -1352,6 +1484,7 @@ export default function AdminBusiness() {
         {activePanel === "acquisition" && <AcquisitionPanel adminKey={adminKey} range={range} />}
         {activePanel === "revenue" && <RevenuePanel adminKey={adminKey} range={range} />}
         {activePanel === "fallout" && <FalloutPanel adminKey={adminKey} range={range} />}
+        {activePanel === "feedback-accuracy" && <FeedbackAccuracyPanel adminKey={adminKey} />}
       </div>
     </div>
   );

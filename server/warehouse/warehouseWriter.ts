@@ -207,6 +207,7 @@ export async function writeSubmissionToWarehouse(
   const now = new Date();
   await db.insert(coreListings).values({
     dealerId,
+    dealerSubmissionId,
     ingestionSource: "user_submitted",
     isFullyProcessed: true,
     countsTowardRealDeals: true,

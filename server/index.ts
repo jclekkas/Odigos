@@ -251,6 +251,43 @@ async function ensureWarehouseSchema(): Promise<void> {
 
     if (exists) {
       console.log("[warehouse] Schema already exists — skipping bootstrap.");
+      // Ensure dealer_submission_id column exists on core.listings (idempotent).
+      try {
+        await db.execute(sql`
+          ALTER TABLE core.listings
+            ADD COLUMN IF NOT EXISTS dealer_submission_id varchar(36)
+        `);
+        await db.execute(sql`
+          CREATE INDEX IF NOT EXISTS core_listings_dealer_submission_idx
+            ON core.listings (dealer_submission_id)
+        `);
+        console.log("[warehouse] dealer_submission_id column ensured on core.listings.");
+      } catch (colErr) {
+        console.error("[warehouse] Failed to ensure dealer_submission_id column (non-fatal):", colErr);
+      }
+      // Ensure the dealer_feedback_stats view exists (idempotent via CREATE OR REPLACE).
+      try {
+        await db.execute(sql`
+          CREATE OR REPLACE VIEW core.dealer_feedback_stats AS
+          SELECT
+            cl.dealer_id,
+            SUM(CASE WHEN df.rating = true THEN 1 ELSE 0 END)::bigint AS positive_feedback_count,
+            COUNT(CASE WHEN df.rating IS NOT NULL THEN 1 END)::bigint AS total_feedback_count,
+            CASE
+              WHEN COUNT(CASE WHEN df.rating IS NOT NULL THEN 1 END) > 0
+              THEN SUM(CASE WHEN df.rating = true THEN 1 ELSE 0 END)::float
+                   / COUNT(CASE WHEN df.rating IS NOT NULL THEN 1 END)
+              ELSE NULL
+            END AS feedback_agreement_pct
+          FROM public.deal_feedback df
+          JOIN public.dealer_submissions ds ON ds.id = df.listing_id
+          JOIN core.listings cl ON cl.dealer_submission_id = ds.id
+          GROUP BY cl.dealer_id
+        `);
+        console.log("[warehouse] dealer_feedback_stats view ensured.");
+      } catch (viewErr) {
+        console.error("[warehouse] Failed to ensure dealer_feedback_stats view (non-fatal):", viewErr);
+      }
       return;
     }
 

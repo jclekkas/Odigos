@@ -228,6 +228,40 @@ export async function setupWarehouseViews(): Promise<void> {
     GROUP BY l.state_code
   `);
 
+  // ── 6. dealer_submission_id column on core.listings ─────────────────────────
+  // Bridges the feedback loop: deal_feedback → dealer_submissions → core.listings.
+  // Added idempotently via ALTER TABLE ... ADD COLUMN IF NOT EXISTS.
+  await db.execute(sql`
+    ALTER TABLE core.listings
+      ADD COLUMN IF NOT EXISTS dealer_submission_id varchar(36)
+  `);
+  await db.execute(sql`
+    CREATE INDEX IF NOT EXISTS core_listings_dealer_submission_idx
+      ON core.listings (dealer_submission_id)
+  `);
+
+  // ── 7. Dealer feedback aggregate view ───────────────────────────────────────
+  // Joins public.deal_feedback to public.dealer_submissions (via listing_id),
+  // then to core.listings via dealer_submission_id to resolve the dealer_id.
+  // Uses a regular view (not materialized) so it always reflects live feedback.
+  await db.execute(sql`
+    CREATE OR REPLACE VIEW core.dealer_feedback_stats AS
+    SELECT
+      cl.dealer_id,
+      SUM(CASE WHEN df.rating = true THEN 1 ELSE 0 END)::bigint AS positive_feedback_count,
+      COUNT(CASE WHEN df.rating IS NOT NULL THEN 1 END)::bigint AS total_feedback_count,
+      CASE
+        WHEN COUNT(CASE WHEN df.rating IS NOT NULL THEN 1 END) > 0
+        THEN SUM(CASE WHEN df.rating = true THEN 1 ELSE 0 END)::float
+             / COUNT(CASE WHEN df.rating IS NOT NULL THEN 1 END)
+        ELSE NULL
+      END AS feedback_agreement_pct
+    FROM public.deal_feedback df
+    JOIN public.dealer_submissions ds ON ds.id = df.listing_id
+    JOIN core.listings cl ON cl.dealer_submission_id = ds.id
+    GROUP BY cl.dealer_id
+  `);
+
   console.log("[warehouse] Schemas, tables, FK constraint, and materialized views set up (idempotent).");
 }
 

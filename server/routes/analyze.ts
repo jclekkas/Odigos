@@ -106,12 +106,35 @@ A STATE_FEE_REFERENCE block has been injected above for ${stateData.name}. Apply
 No state was detected. Do NOT make state-specific fee claims. Stick to general fee analysis.`}
 When state is unknown: omit all state-specific fee characterizations.`;
 
+      // Best-effort dealer name extraction from raw text before LLM call,
+      // so feedback signal can be included in the prompt if available.
+      let preLlmDealerName: string | null = null;
+      if (data.dealerText) {
+        const atMatch = data.dealerText.match(
+          /(?:from|at|with|visit(?:ing)?)\s+([A-Z][a-zA-Z0-9 &'-]{3,40}?)\s*(?:Toyota|Honda|Ford|Chevrolet|Chevy|Nissan|Hyundai|Kia|Ram|Dodge|Jeep|Subaru|Mazda|Volkswagen|VW|BMW|Mercedes|Audi|Lexus|Cadillac|Buick|GMC|Chrysler|Volvo|Tesla|Rivian|Lucid|Genesis|Infiniti|Acura|Lincoln|Mitsubishi|MINI|Porsche|Land Rover|Jaguar|Maserati)/i
+        );
+        if (atMatch?.[0]) {
+          const fullMatch = atMatch[0];
+          const makeMatch = fullMatch.match(
+            /Toyota|Honda|Ford|Chevrolet|Chevy|Nissan|Hyundai|Kia|Ram|Dodge|Jeep|Subaru|Mazda|Volkswagen|VW|BMW|Mercedes|Audi|Lexus|Cadillac|Buick|GMC|Chrysler|Volvo|Tesla|Rivian|Lucid|Genesis|Infiniti|Acura|Lincoln|Mitsubishi|MINI|Porsche|Land Rover|Jaguar|Maserati/i
+          );
+          if (makeMatch) {
+            const makeIdx = fullMatch.indexOf(makeMatch[0]);
+            const prefixClean = fullMatch
+              .slice(0, makeIdx + makeMatch[0].length)
+              .replace(/^(?:from|at|with|visit(?:ing)?)\s+/i, "")
+              .trim();
+            if (prefixClean.length >= 4) preLlmDealerName = prefixClean;
+          }
+        }
+      }
+
       let marketContext: MarketContext | null = null;
       if (process.env.DATABASE_URL && stateDetection.state) {
         try {
           marketContext = await getMarketContext({
             state: stateDetection.state,
-            dealerName: null,
+            dealerName: preLlmDealerName,
             docFee: null,
           });
         } catch (ctxErr) {
@@ -119,6 +142,22 @@ When state is unknown: omit all state-specific fee characterizations.`;
           marketContext = null;
         }
       }
+
+      const feedbackInjected =
+        marketContext != null &&
+        marketContext.feedbackCount != null &&
+        marketContext.feedbackCount >= 3 &&
+        marketContext.feedbackAgreementPct != null &&
+        Number.isFinite(marketContext.feedbackAgreementPct);
+
+      console.log(
+        `[analyze:feedback] dealerExtracted=${preLlmDealerName != null} dealer=${preLlmDealerName ?? "none"} feedbackInjected=${feedbackInjected}` +
+        (feedbackInjected ? ` count=${marketContext!.feedbackCount} agreement=${Math.round(marketContext!.feedbackAgreementPct! * 100)}%` : ""),
+      );
+      trackEvent("feedback_signal", {
+        dealerExtracted: preLlmDealerName != null,
+        feedbackInjected,
+      });
 
       let marketIntelligenceSection = "";
       if (marketContext) {
@@ -137,6 +176,10 @@ When state is unknown: omit all state-specific fee characterizations.`;
           if (mc.dealerAvgDealScore != null && mc.dealerAnalysisCount != null && Number.isFinite(mc.dealerAvgDealScore)) {
             const quoteWord = mc.dealerAnalysisCount === 1 ? "quote" : "quotes";
             miLines.push(`This dealer's average deal score is ${mc.dealerAvgDealScore} across ${mc.dealerAnalysisCount} analyzed ${quoteWord}`);
+          }
+          if (mc.feedbackCount != null && mc.feedbackCount >= 3 && mc.feedbackAgreementPct != null && Number.isFinite(mc.feedbackAgreementPct)) {
+            const pct = Math.round(mc.feedbackAgreementPct * 100);
+            miLines.push(`Users agreed with ${pct}% of past ${mc.feedbackCount} analyses for this dealer. Use this as a confidence-calibration signal: for borderline cases, avoid overstating certainty.`);
           }
           if (miLines.length > 0) {
             marketIntelligenceSection = `
@@ -421,7 +464,7 @@ GO/NO-GO/NEED-MORE-INFO:
         const toNum = (n: number | null | undefined): string | null => n != null ? String(n) : null;
 
         const submissionRow = await storage.saveDealerSubmission({
-          analysisVersion: "v1",
+          analysisVersion: "v2",
           dealScore: finalResult.dealScore,
           confidenceLevel: finalResult.confidenceLevel,
           goNoGo: finalResult.goNoGo,

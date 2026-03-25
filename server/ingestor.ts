@@ -45,7 +45,7 @@ export function enqueueSubmission(payload: SubmissionPayload): void {
           n != null ? String(n) : null;
 
         const submission = await storage.saveDealerSubmission({
-          analysisVersion: "v1",
+          analysisVersion: "v2",
           dealScore: finalResult.dealScore,
           confidenceLevel: finalResult.confidenceLevel,
           goNoGo: finalResult.goNoGo,

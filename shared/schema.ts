@@ -23,6 +23,8 @@ export const marketContextSchema = z.object({
   docFeeVsStateAvg: z.number().nullable(),
   dealerAnalysisCount: z.number().nullable(),
   dealerAvgDealScore: z.number().nullable(),
+  feedbackAgreementPct: z.number().optional(),
+  feedbackCount: z.number().optional(),
 });
 
 export type MarketContext = z.infer<typeof marketContextSchema>;
@@ -155,7 +157,7 @@ export const dealerSubmissions = pgTable(
     submittedAt: timestamp("submitted_at").defaultNow().notNull(),
 
     // Tracks prompt/extraction logic version so datasets are comparable over time
-    analysisVersion: text("analysis_version").notNull().default("v1"),
+    analysisVersion: text("analysis_version").notNull().default("v2"),
 
     // --- Scoring ---
     dealScore: text("deal_score").notNull(),

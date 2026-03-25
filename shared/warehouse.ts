@@ -128,6 +128,8 @@ export const coreListings = coreSchema.table(
     // UUID stored as varchar(36)
     id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
     dealerId: varchar("dealer_id", { length: 36 }).references(() => coreDealers.id),
+    // References public.dealer_submissions.id — bridges feedback loop back to the warehouse.
+    dealerSubmissionId: varchar("dealer_submission_id", { length: 36 }),
 
     // Ingestion tracking — allowed values enforced by CHECK constraint below
     ingestionSource: text("ingestion_source").notNull(),

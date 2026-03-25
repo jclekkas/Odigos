@@ -1,0 +1,60 @@
+The one thing you did that’s risky (and how to fix it)
+⚠️ Dealer name extraction via regex pre-LLM
+“Dealer name is extracted from raw input text using a regex heuristic”
+This is the weakest link in the system now.
+Why it matters:
+Your entire feedback loop depends on correct dealer attribution
+Regex will silently fail or mis-assign:
+“Toyota of Rockville” vs “Rockville Toyota”
+Missing dealer names in screenshots
+Multiple dealers in a thread
+Typos / formatting differences
+What to do next (not urgent, but important)
+Short-term (easy win):
+Log a dealer_match_confidence or boolean like:
+isDealerMatched: true/false
+Only apply feedback signal when match is high-confidence
+Medium-term (high ROI):
+Move dealer extraction into the LLM itself (structured output)
+You already trust it for analysis — this is easier
+Or normalize dealer names into a canonical table (fuzzy matching)
+Right now, this is the only part that can quietly poison your feedback loop.
+Subtle product insight you just unlocked (this is big)
+You now have:
+Ground truth disagreement between your model and real users
+That’s rare.
+Most AI products never get this.
+This enables:
+1. Calibration over time (huge)
+You can answer:
+“Are we too harsh on YELLOW?”
+“Are RED scores actually trusted?”
+“Which issues users disagree with most?”
+2. Dealer-level signal (future)
+You’re one step away from:
+“Users consistently disagree with analyses for this dealer”
+That becomes:
+fraud detection
+dealer pattern detection
+content generation (“this dealer often charges high fees”)
+3. Prompt evolution based on reality
+Not fine-tuning — just smarter instructions:
+“Users often disagree when doc fees are borderline”
+→ tighten or loosen logic intentionally
+One high-leverage next step (if you want to go further)
+If you do nothing else, do this:
+👉 Add disagreement by issue type
+You already track issues like:
+doc fee
+APR missing
+trade-in valuation
+Add:
+agreement rate per issue type
+This will tell you:
+“Users disagree with doc fee flags 40% of the time”
+vs
+“Users agree with APR issues 90% of the time”
+That’s your roadmap for:
+improving prompts
+tightening heuristics
+increasing trust

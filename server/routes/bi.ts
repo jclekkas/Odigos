@@ -58,6 +58,95 @@ export function registerBIRoutes(app: Express): void {
     catch (e: any) { res.status(500).json({ error: e?.message }); }
   });
 
+  app.get("/api/admin/feedback-accuracy", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
+    try {
+      if (!process.env.DATABASE_URL) {
+        return res.json({
+          overallAgreementRate: null,
+          byScoreColor: { GREEN: null, YELLOW: null, RED: null },
+          topDealers: [],
+        });
+      }
+      const { db } = await import("../db");
+      const { sql } = await import("drizzle-orm");
+
+      const overallResult = await db.execute<{ agreement_rate: string | null }>(sql`
+        SELECT
+          CASE
+            WHEN COUNT(CASE WHEN df.rating IS NOT NULL THEN 1 END) > 0
+            THEN SUM(CASE WHEN df.rating = true THEN 1 ELSE 0 END)::float
+                 / COUNT(CASE WHEN df.rating IS NOT NULL THEN 1 END)
+            ELSE NULL
+          END AS agreement_rate
+        FROM public.deal_feedback df
+      `);
+      const overallAgreementRate = overallResult.rows?.[0]?.agreement_rate != null
+        ? Number(overallResult.rows[0].agreement_rate)
+        : null;
+
+      const byColorResult = await db.execute<{ deal_score: string; agreement_rate: string | null }>(sql`
+        SELECT
+          ds.deal_score,
+          CASE
+            WHEN COUNT(CASE WHEN df.rating IS NOT NULL THEN 1 END) > 0
+            THEN SUM(CASE WHEN df.rating = true THEN 1 ELSE 0 END)::float
+                 / COUNT(CASE WHEN df.rating IS NOT NULL THEN 1 END)
+            ELSE NULL
+          END AS agreement_rate
+        FROM public.deal_feedback df
+        JOIN public.dealer_submissions ds ON ds.id = df.listing_id
+        WHERE ds.deal_score IN ('GREEN', 'YELLOW', 'RED')
+        GROUP BY ds.deal_score
+      `);
+      const byScoreColor: { GREEN: number | null; YELLOW: number | null; RED: number | null } = {
+        GREEN: null,
+        YELLOW: null,
+        RED: null,
+      };
+      for (const row of byColorResult.rows ?? []) {
+        const score = row.deal_score as "GREEN" | "YELLOW" | "RED";
+        byScoreColor[score] = row.agreement_rate != null ? Number(row.agreement_rate) : null;
+      }
+
+      const topDealersResult = await db.execute<{
+        dealer_name: string;
+        total_feedback_count: string;
+        positive_feedback_count: string;
+        agreement_rate: string | null;
+      }>(sql`
+        SELECT
+          d.dealer_name,
+          COUNT(CASE WHEN df.rating IS NOT NULL THEN 1 END)::bigint AS total_feedback_count,
+          SUM(CASE WHEN df.rating = true THEN 1 ELSE 0 END)::bigint AS positive_feedback_count,
+          CASE
+            WHEN COUNT(CASE WHEN df.rating IS NOT NULL THEN 1 END) > 0
+            THEN SUM(CASE WHEN df.rating = true THEN 1 ELSE 0 END)::float
+                 / COUNT(CASE WHEN df.rating IS NOT NULL THEN 1 END)
+            ELSE NULL
+          END AS agreement_rate
+        FROM public.deal_feedback df
+        JOIN public.dealer_submissions ds ON ds.id = df.listing_id
+        JOIN core.listings cl ON cl.dealer_submission_id = ds.id
+        JOIN core.dealers d ON d.id = cl.dealer_id
+        GROUP BY d.id, d.dealer_name
+        HAVING COUNT(CASE WHEN df.rating IS NOT NULL THEN 1 END) >= 3
+        ORDER BY total_feedback_count DESC
+        LIMIT 10
+      `);
+      const topDealers = (topDealersResult.rows ?? []).map((row) => ({
+        dealerName: row.dealer_name,
+        totalFeedbackCount: Number(row.total_feedback_count),
+        positiveFeedbackCount: Number(row.positive_feedback_count),
+        agreementRate: row.agreement_rate != null ? Number(row.agreement_rate) : null,
+      }));
+
+      res.json({ overallAgreementRate, byScoreColor, topDealers });
+    } catch (e: any) {
+      res.status(500).json({ error: e?.message });
+    }
+  });
+
   app.get("/api/stats", async (_req, res) => {
     try {
       if (!process.env.DATABASE_URL) {
