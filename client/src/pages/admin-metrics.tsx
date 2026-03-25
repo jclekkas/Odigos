@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAdminKey } from "@/hooks/use-admin-key";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -555,6 +556,7 @@ export default function AdminMetrics() {
   const [activeTab, setActiveTab] = useState("overview");
   const [isImporting, setIsImporting] = useState(false);
   const [importResult, setImportResult] = useState<{ success: boolean; message: string } | null>(null);
+  const { t } = useTranslation();
   const [adminKey, setAdminKey, clearKey] = useAdminKey();
   const [keyInput, setKeyInput] = useState("");
   
@@ -597,13 +599,13 @@ export default function AdminMetrics() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="w-full max-w-sm space-y-4 p-6">
-          <h1 className="text-xl font-bold text-center">Admin Access</h1>
-          <p className="text-sm text-muted-foreground text-center">Enter your admin key to continue</p>
+          <h1 className="text-xl font-bold text-center">{t("admin.authHeading")}</h1>
+          <p className="text-sm text-muted-foreground text-center">{t("admin.authEnterKey")}</p>
           <div className="flex gap-2">
             <input
               type="password"
               className="flex-1 border rounded-md px-3 py-2 text-sm bg-background"
-              placeholder="Admin key"
+              placeholder={t("admin.authKeyPlaceholderShort")}
               value={keyInput}
               onChange={(e) => setKeyInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter" && keyInput) setAdminKey(keyInput); }}
@@ -615,7 +617,7 @@ export default function AdminMetrics() {
               disabled={!keyInput}
               data-testid="button-submit-admin-key"
             >
-              Go
+              {t("admin.authGo")}
             </Button>
           </div>
         </div>
@@ -643,20 +645,20 @@ export default function AdminMetrics() {
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
         <Card className="max-w-md w-full">
           <CardContent className="pt-6 text-center">
-            <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
-            <p className="text-muted-foreground mb-4">Unable to load metrics. Please check your access key.</p>
+            <h2 className="text-xl font-semibold mb-2">{t("admin.accessDenied")}</h2>
+            <p className="text-muted-foreground mb-4">{t("admin.unableToLoadMetrics")}</p>
             <div className="flex gap-2 justify-center">
               <Button
                 variant="outline"
                 onClick={clearKey}
                 data-testid="button-clear-admin-key"
               >
-                Clear key and re-enter
+                {t("admin.clearKeyAndReenter")}
               </Button>
               <Link href="/">
                 <Button variant="ghost" data-testid="button-back-home">
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Home
+                  {t("admin.backToHome")}
                 </Button>
               </Link>
             </div>
@@ -681,12 +683,12 @@ export default function AdminMetrics() {
               </Link>
               <div>
                 <div className="flex items-center gap-3">
-                  <h1 className="text-2xl font-bold">Analytics Dashboard</h1>
+                  <h1 className="text-2xl font-bold">{t("admin.dashboardTitle")}</h1>
                   <LivePulse />
                 </div>
                 <p className="text-sm text-muted-foreground flex items-center gap-2">
                   <Clock className="h-3 w-3" />
-                  Last updated: {lastUpdated}
+                  {t("admin.lastUpdated")} {lastUpdated}
                 </p>
               </div>
             </div>
@@ -694,7 +696,7 @@ export default function AdminMetrics() {
               <Link href="/admin/business">
                 <Button variant="outline" size="sm" data-testid="link-business-dashboard">
                   <BarChart3 className="h-4 w-4 mr-2" />
-                  BI Dashboard
+                  {t("admin.biDashboard")}
                 </Button>
               </Link>
               <Button 
@@ -705,7 +707,7 @@ export default function AdminMetrics() {
                 data-testid="button-import-stripe"
               >
                 <Upload className={`h-4 w-4 mr-2 ${isImporting ? 'animate-pulse' : ''}`} />
-                {isImporting ? "Importing..." : "Import Stripe History"}
+                {isImporting ? t("admin.importing") : t("admin.importStripeHistory")}
               </Button>
               <Button 
                 variant="outline" 
@@ -714,7 +716,7 @@ export default function AdminMetrics() {
                 data-testid="button-export-csv"
               >
                 <Download className="h-4 w-4 mr-2" />
-                Export CSV
+                {t("admin.exportCsv")}
               </Button>
               <Button 
                 variant="outline" 
@@ -724,7 +726,7 @@ export default function AdminMetrics() {
                 data-testid="button-refresh-metrics"
               >
                 <RefreshCw className={`h-4 w-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
-                Refresh
+                {t("admin.refresh")}
               </Button>
             </div>
           </div>
@@ -736,17 +738,17 @@ export default function AdminMetrics() {
           <div className={`mb-4 p-4 rounded-md ${importResult.success ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200'}`}>
             <div className="flex items-center justify-between gap-4">
               <span>{importResult.message}</span>
-              <Button variant="ghost" size="sm" onClick={() => setImportResult(null)}>Dismiss</Button>
+              <Button variant="ghost" size="sm" onClick={() => setImportResult(null)}>{t("admin.dismiss")}</Button>
             </div>
           </div>
         )}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
-            <TabsTrigger value="overview" data-testid="tab-overview">Overview</TabsTrigger>
-            <TabsTrigger value="engagement" data-testid="tab-engagement">Engagement</TabsTrigger>
-            <TabsTrigger value="revenue" data-testid="tab-revenue">Revenue</TabsTrigger>
-            <TabsTrigger value="users" data-testid="tab-users">Users</TabsTrigger>
-            <TabsTrigger value="activity" data-testid="tab-activity">Activity</TabsTrigger>
+            <TabsTrigger value="overview" data-testid="tab-overview">{t("admin.metricsTab")}</TabsTrigger>
+            <TabsTrigger value="engagement" data-testid="tab-engagement">{t("admin.engagementFunnel")}</TabsTrigger>
+            <TabsTrigger value="revenue" data-testid="tab-revenue">{t("admin.revenue")}</TabsTrigger>
+            <TabsTrigger value="users" data-testid="tab-users">{t("admin.submissions")}</TabsTrigger>
+            <TabsTrigger value="activity" data-testid="tab-activity">{t("admin.recentActivity")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">

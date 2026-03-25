@@ -275,7 +275,10 @@ SCORING GUIDELINES:
 GO/NO-GO/NEED-MORE-INFO:
 - GO: Has enough information and reasonable terms to visit dealership
 - NEED-MORE-INFO: Missing critical details, buyer should ask questions first
-- NO-GO: Red flags detected, look elsewhere`;
+- NO-GO: Red flags detected, look elsewhere${data.language === "es" ? `
+
+LANGUAGE INSTRUCTION (MANDATORY):
+Respond entirely in Spanish. All text fields in your JSON response — including "summary", "reasoning", "verdictLabel", "issues" (label and explanation fields), "missingInfo", "suggestedReply", and any other human-readable text — must be written in Spanish. Keep all enum values (dealScore, goNoGo, confidenceLevel) in English as specified in the schema.` : ""}`;
 
       let userMessage = `Analyze this dealer communication:\n\n${data.dealerText}`;
 

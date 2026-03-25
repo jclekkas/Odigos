@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import { useTranslation } from "react-i18next";
 
 interface ArticleLayoutProps {
   children: React.ReactNode;
@@ -9,6 +10,8 @@ interface ArticleLayoutProps {
 }
 
 export default function ArticleLayout({ children, title, showBreadcrumbs = true }: ArticleLayoutProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
@@ -16,9 +19,9 @@ export default function ArticleLayout({ children, title, showBreadcrumbs = true 
         <div className="max-w-[700px] mx-auto">
           {showBreadcrumbs && title && (
             <nav className="text-sm text-muted-foreground mb-6" aria-label="Breadcrumb" data-testid="nav-breadcrumbs">
-              <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+              <Link href="/" className="hover:text-foreground transition-colors">{t("articleLayout.breadcrumbHome")}</Link>
               <span className="mx-1.5">/</span>
-              <Link href="/dealer-pricing-problems" className="hover:text-foreground transition-colors">Dealer Pricing Problems</Link>
+              <Link href="/dealer-pricing-problems" className="hover:text-foreground transition-colors">{t("articleLayout.breadcrumbDealer")}</Link>
               <span className="mx-1.5">/</span>
               <span className="text-foreground/70">{title}</span>
             </nav>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useAdminKey } from "@/hooks/use-admin-key";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -1342,6 +1343,7 @@ const PANELS = [
 export default function AdminBusiness() {
   const [range, setRange] = useState<DateRange>("all");
   const [activePanel, setActivePanel] = useState("funnel");
+  const { t } = useTranslation();
   const [adminKey, setAdminKey, clearKey] = useAdminKey();
   const [keyInput, setKeyInput] = useState("");
 
@@ -1374,13 +1376,13 @@ export default function AdminBusiness() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="w-full max-w-sm space-y-4 p-6">
-          <h1 className="text-xl font-bold text-center">Admin Access</h1>
-          <p className="text-sm text-muted-foreground text-center">Enter your admin key to continue</p>
+          <h1 className="text-xl font-bold text-center">{t("admin.authHeading")}</h1>
+          <p className="text-sm text-muted-foreground text-center">{t("admin.authEnterKey")}</p>
           <div className="flex gap-2">
             <input
               type="password"
               className="flex-1 border rounded-md px-3 py-2 text-sm bg-background"
-              placeholder="Admin key"
+              placeholder={t("admin.authKeyPlaceholderShort")}
               value={keyInput}
               onChange={(e) => setKeyInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter" && keyInput) setAdminKey(keyInput); }}
@@ -1392,7 +1394,7 @@ export default function AdminBusiness() {
               disabled={!keyInput}
               data-testid="button-submit-admin-key"
             >
-              Go
+              {t("admin.authGo")}
             </Button>
           </div>
         </div>
@@ -1413,12 +1415,12 @@ export default function AdminBusiness() {
               </Link>
               <div>
                 <div className="flex items-center gap-3">
-                  <h1 className="text-2xl font-bold">Business Intelligence</h1>
+                  <h1 className="text-2xl font-bold">{t("admin.biTitle")}</h1>
                   <LivePulse />
                 </div>
                 <p className="text-sm text-muted-foreground flex items-center gap-2">
                   <Clock className="h-3 w-3" />
-                  Last updated: {lastUpdated} · Auto-refreshes every 5 min
+                  {t("admin.lastUpdated")} {lastUpdated} · {t("admin.autoRefresh")}
                 </p>
               </div>
             </div>
@@ -1467,7 +1469,7 @@ export default function AdminBusiness() {
                   className="mt-2 text-xs text-red-600 dark:text-red-400 underline hover:no-underline"
                   data-testid="button-clear-admin-key"
                 >
-                  Clear key and re-enter
+                  {t("admin.clearKeyAndReenter")}
                 </button>
               )}
             </div>

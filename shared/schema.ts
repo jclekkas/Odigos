@@ -12,6 +12,7 @@ export const analysisRequestSchema = z.object({
   downPayment: z.number().optional(),
   source: z.enum(["paste", "upload"]).default("paste").optional(),
   sessionId: z.string().optional(),
+  language: z.enum(["en", "es"]).optional().default("en"),
 });
 
 // Market context returned with analysis results (all keys always present, null for missing values)
