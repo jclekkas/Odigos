@@ -62,7 +62,6 @@ import { ThumbsUp, ThumbsDown } from "lucide-react";
 
 type AnalysisResponseWithExtras = AnalysisResponse & {
   listingId?: string;
-  marketContext?: MarketContext;
 };
 
 const formSchema = z.object({
@@ -506,41 +505,54 @@ function SuggestedReplyCard({ reply }: { reply: string }) {
 
 function MarketContextCard({ marketContext }: { marketContext: MarketContext }) {
   const fmt = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+  const state = marketContext.stateCode ?? "your state";
 
-  const lines: { testId: string; label: string; value: string }[] = [];
+  const narratives: { testId: string; text: string }[] = [];
 
-  if (marketContext.stateTotalAnalyses !== null) {
-    lines.push({
-      testId: "market-context-state-analyses",
-      label: "Deals analyzed in your state",
-      value: marketContext.stateTotalAnalyses.toLocaleString(),
-    });
-  }
-  if (marketContext.docFeeVsStateAvg !== null) {
+  if (
+    marketContext.docFeeVsStateAvg != null &&
+    Number.isFinite(marketContext.docFeeVsStateAvg) &&
+    marketContext.stateTotalAnalyses != null
+  ) {
     const delta = marketContext.docFeeVsStateAvg;
-    const sign = delta >= 0 ? "+" : "";
-    lines.push({
+    const absDelta = fmt.format(Math.abs(delta));
+    const direction = delta >= 0 ? "above" : "below";
+    const dealWord = marketContext.stateTotalAnalyses === 1 ? "deal" : "deals";
+    narratives.push({
       testId: "market-context-doc-fee-delta",
-      label: "Doc fee vs state average",
-      value: `${sign}${fmt.format(delta)}`,
+      text: `Doc fee is ${absDelta} ${direction} the ${state} average across ${marketContext.stateTotalAnalyses.toLocaleString()} analyzed ${dealWord}.`,
     });
-  }
-  if (marketContext.stateAvgDealScore !== null) {
-    lines.push({
-      testId: "market-context-state-score",
-      label: "Avg deal score in your state",
-      value: marketContext.stateAvgDealScore.toFixed(1),
+  } else if (
+    marketContext.stateAvgDocFee != null &&
+    Number.isFinite(marketContext.stateAvgDocFee) &&
+    marketContext.stateTotalAnalyses != null
+  ) {
+    const dealWord = marketContext.stateTotalAnalyses === 1 ? "deal" : "deals";
+    narratives.push({
+      testId: "market-context-state-avg-doc-fee",
+      text: `Average doc fee in ${state} is ${fmt.format(marketContext.stateAvgDocFee)} across ${marketContext.stateTotalAnalyses.toLocaleString()} analyzed ${dealWord}.`,
     });
-  }
-  if (marketContext.dealerAvgDealScore !== null) {
-    lines.push({
-      testId: "market-context-dealer-score",
-      label: "Avg deal score for this dealer",
-      value: marketContext.dealerAvgDealScore.toFixed(1),
+  } else if (marketContext.stateTotalAnalyses != null) {
+    const dealWord = marketContext.stateTotalAnalyses === 1 ? "deal" : "deals";
+    narratives.push({
+      testId: "market-context-state-analyses",
+      text: `We have analyzed ${marketContext.stateTotalAnalyses.toLocaleString()} ${dealWord} in ${state}.`,
     });
   }
 
-  if (lines.length === 0) return null;
+  if (
+    marketContext.dealerAvgDealScore != null &&
+    Number.isFinite(marketContext.dealerAvgDealScore) &&
+    marketContext.dealerAnalysisCount != null
+  ) {
+    const quoteWord = marketContext.dealerAnalysisCount === 1 ? "quote" : "quotes";
+    narratives.push({
+      testId: "market-context-dealer-score",
+      text: `This dealer's average deal score is ${marketContext.dealerAvgDealScore.toFixed(1)} across ${marketContext.dealerAnalysisCount} analyzed ${quoteWord}.`,
+    });
+  }
+
+  if (narratives.length === 0) return null;
 
   return (
     <Card className="bg-muted/20 border-border/40" data-testid="market-context-card">
@@ -550,11 +562,10 @@ function MarketContextCard({ marketContext }: { marketContext: MarketContext }) 
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
-        {lines.map((line) => (
-          <div key={line.testId} className="flex items-center justify-between text-sm" data-testid={line.testId}>
-            <span className="text-muted-foreground">{line.label}</span>
-            <span className="font-medium text-foreground tabular-nums">{line.value}</span>
-          </div>
+        {narratives.map((line) => (
+          <p key={line.testId} className="text-sm text-muted-foreground leading-relaxed" data-testid={line.testId}>
+            {line.text}
+          </p>
         ))}
       </CardContent>
     </Card>

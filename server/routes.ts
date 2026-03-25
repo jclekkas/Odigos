@@ -4,7 +4,7 @@ import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
 import { z } from "zod";
-import { analysisRequestSchema, analysisResponseSchema, type AnalysisResponse } from "@shared/schema";
+import { analysisRequestSchema, analysisResponseSchema, type AnalysisResponse, type MarketContext } from "@shared/schema";
 import { applyRuleEngine, checkDocFeeCap } from "./ruleEngine";
 import { detectStateFromText, getStateFeeData, getAmbiguousCityOptions } from "./stateFeeLookup";
 import { getStripeClient, isStripeConfigured } from "./stripeClient";
@@ -13,7 +13,7 @@ import { extractTextFromFile } from "./extractText";
 import { openai } from "./openaiClient";
 import { enqueueSubmission } from "./ingestor";
 import { storage } from "./storage";
-import { getMarketContext } from "./marketContext";
+import { getMarketContext, getDealerStats } from "./marketContext";
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -112,6 +112,48 @@ A STATE_FEE_REFERENCE block has been injected above for ${stateData.name}. Apply
 No state was detected. Do NOT make state-specific fee claims. Stick to general fee analysis.`}
 When state is unknown: omit all state-specific fee characterizations.`;
 
+      // --- Market context pre-fetch (state-only, before LLM call) ---
+      let marketContext: MarketContext | null = null;
+      if (process.env.DATABASE_URL && stateDetection.state) {
+        try {
+          marketContext = await getMarketContext({
+            state: stateDetection.state,
+            dealerName: null,
+            docFee: null,
+          });
+        } catch (ctxErr) {
+          console.error("[analyze] getMarketContext pre-fetch failed (non-fatal):", ctxErr);
+          marketContext = null;
+        }
+      }
+
+      let marketIntelligenceSection = "";
+      if (marketContext) {
+        const mc = marketContext;
+        const hasUsable = mc.stateTotalAnalyses != null || mc.stateAvgDocFee != null || mc.dealerAvgDealScore != null;
+        if (hasUsable) {
+          const stCode = stateDetection.state!;
+          const miLines: string[] = [];
+          if (mc.stateTotalAnalyses != null && Number.isFinite(mc.stateTotalAnalyses)) {
+            const dealWord = mc.stateTotalAnalyses === 1 ? "deal" : "deals";
+            miLines.push(`In ${stCode}, we have analyzed ${mc.stateTotalAnalyses} ${dealWord}`);
+          }
+          if (mc.stateAvgDocFee != null && Number.isFinite(mc.stateAvgDocFee)) {
+            miLines.push(`Average doc fee in ${stCode} is $${Math.round(mc.stateAvgDocFee)}`);
+          }
+          if (mc.dealerAvgDealScore != null && mc.dealerAnalysisCount != null && Number.isFinite(mc.dealerAvgDealScore)) {
+            const quoteWord = mc.dealerAnalysisCount === 1 ? "quote" : "quotes";
+            miLines.push(`This dealer's average deal score is ${mc.dealerAvgDealScore} across ${mc.dealerAnalysisCount} analyzed ${quoteWord}`);
+          }
+          if (miLines.length > 0) {
+            marketIntelligenceSection = `
+MARKET_INTELLIGENCE
+${miLines.join("\n")}
+Reference these figures in your summary and reasoning when they are materially relevant to evaluating the deal. Do not force their use when they do not meaningfully help. Use the provided figures exactly as written. Do not estimate, round, or invent additional statistics.`;
+          }
+        }
+      }
+
       const systemPrompt = `You are an expert car buying advisor helping consumers evaluate car purchase offers. Your job is to analyze dealer quotes, texts, and emails to help buyers understand if they're getting a good deal.
 ${stateFeeSection}
 LANGUAGE SAFETY & CERTAINTY RULES (STRICT - MUST FOLLOW):
@@ -160,7 +202,7 @@ CRITICAL REQUIREMENTS:
 2. Extract all pricing information you can find (sale price, MSRP, fees, monthly payments, etc.)
 3. Flag any suspicious fees or unclear terms like market adjustments, dealer add-ons, protection packages.
 4. Never invent numbers or make claims about "market averages" without data.
-${stateFeeRulesSection}
+${stateFeeRulesSection}${marketIntelligenceSection}
 You must respond with a valid JSON object with this exact structure:
 {
   "dealScore": "GREEN" | "YELLOW" | "RED",
@@ -438,31 +480,34 @@ GO/NO-GO/NEED-MORE-INFO:
         console.error("[analyze] pre-save submission failed (non-fatal):", saveErr);
       }
 
-      // --- Market context (best-effort, wrapped in timeout + try/catch) ---
-      // Decoupled from listingId: enrichment runs whenever state is present and DB is reachable,
-      // regardless of whether the pre-save succeeded.
-      let marketContext = null;
-      if (process.env.DATABASE_URL && stateDetection.state) {
-        try {
-          const detectedFees = finalResult.detectedFields.fees ?? [];
-          const docFeeEntry = detectedFees.find((f) => /doc.?fee|document/i.test(f.name));
-          const docFeeValue = docFeeEntry?.amount ?? null;
+      // --- Enrich marketContext with doc fee delta + dealer stats after LLM response ---
+      if (marketContext) {
+        const detectedFees = finalResult.detectedFields.fees ?? [];
+        const docFeeEntry = detectedFees.find((f) => /doc.?fee|document/i.test(f.name));
+        const docFeeValue = docFeeEntry?.amount ?? null;
+        if (docFeeValue != null && marketContext.stateAvgDocFee != null && Number.isFinite(docFeeValue) && Number.isFinite(marketContext.stateAvgDocFee)) {
+          const delta = docFeeValue - marketContext.stateAvgDocFee;
+          marketContext.docFeeVsStateAvg = Math.abs(delta) > 2000 ? null : delta;
+        }
 
-          // Dealer name extracted from detectedFields (canonical pipeline output — no fuzzy)
-          const detectedFieldsRaw = finalResult.detectedFields as Record<string, unknown>;
-          const dealerNameForCtx: string | null =
-            (detectedFieldsRaw?.dealerName as string | undefined) ??
-            (detectedFieldsRaw?.dealership as string | undefined) ??
-            null;
-
-          marketContext = await getMarketContext({
-            state: stateDetection.state,
-            dealerName: dealerNameForCtx,
-            docFee: docFeeValue,
-          });
-        } catch (ctxErr) {
-          console.error("[analyze] getMarketContext failed (non-fatal):", ctxErr);
-          marketContext = null;
+        const detectedFieldsRaw = finalResult.detectedFields as Record<string, unknown>;
+        const dealerNameForCtx: string | null =
+          (detectedFieldsRaw?.dealerName as string | undefined) ??
+          (detectedFieldsRaw?.dealership as string | undefined) ??
+          null;
+        if (dealerNameForCtx && stateDetection.state) {
+          try {
+            const dealerStats = await getDealerStats({
+              state: stateDetection.state,
+              dealerName: dealerNameForCtx,
+            });
+            if (dealerStats) {
+              marketContext.dealerAnalysisCount = dealerStats.dealerAnalysisCount;
+              marketContext.dealerAvgDealScore = dealerStats.dealerAvgDealScore;
+            }
+          } catch {
+            // dealer enrichment is non-fatal
+          }
         }
       }
 

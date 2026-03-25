@@ -18,6 +18,49 @@ import { normalizeDealerName } from "./warehouse/warehouseUtils";
 
 const DOC_FEE_DELTA_MAX = 2000;
 
+export async function getDealerStats({
+  state,
+  dealerName,
+}: {
+  state: string;
+  dealerName: string;
+}): Promise<{ dealerAnalysisCount: number; dealerAvgDealScore: number | null } | null> {
+  const timeoutPromise = new Promise<null>((resolve) =>
+    setTimeout(() => resolve(null), 200),
+  );
+
+  const workPromise = (async () => {
+    const normalized = normalizeDealerName(dealerName);
+    const dealerResult = await db.execute<{
+      listing_count: string;
+      avg_deal_score: string | null;
+    }>(
+      sql`
+        SELECT listing_count, avg_deal_score
+        FROM core.dealers
+        WHERE dealer_name_normalized = ${normalized}
+          AND state_code = ${state}
+        LIMIT 1
+      `,
+    );
+    const dealerRow = dealerResult.rows?.[0];
+    if (!dealerRow) return null;
+    const count = Number(dealerRow.listing_count);
+    if (count < 3) return null;
+    return {
+      dealerAnalysisCount: count,
+      dealerAvgDealScore: dealerRow.avg_deal_score != null ? Number(dealerRow.avg_deal_score) : null,
+    };
+  })();
+
+  try {
+    return await Promise.race([workPromise, timeoutPromise]);
+  } catch (err) {
+    console.error("[marketContext] getDealerStats failed (non-fatal):", err);
+    return null;
+  }
+}
+
 export async function getMarketContext({
   state,
   dealerName,
@@ -97,6 +140,7 @@ export async function getMarketContext({
     }
 
     return {
+      stateCode: state,
       stateTotalAnalyses,
       stateAvgDealScore,
       stateAvgDocFee,

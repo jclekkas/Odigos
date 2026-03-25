@@ -16,6 +16,7 @@ export const analysisRequestSchema = z.object({
 
 // Market context returned with analysis results (all keys always present, null for missing values)
 export const marketContextSchema = z.object({
+  stateCode: z.string().nullable(),
   stateTotalAnalyses: z.number().nullable(),
   stateAvgDealScore: z.number().nullable(),
   stateAvgDocFee: z.number().nullable(),
@@ -75,6 +76,7 @@ export const analysisResponseSchema = z.object({
   missingInfo: z.array(missingInfoSchema),
   suggestedReply: z.string(),
   reasoning: z.string(),
+  marketContext: marketContextSchema.optional(),
 });
 
 export type AnalysisResponse = z.infer<typeof analysisResponseSchema>;
