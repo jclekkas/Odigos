@@ -11,6 +11,9 @@ export default function SiteFooter() {
           <Link href="/about" className="transition-colors hover:text-foreground" data-testid="link-footer-about">
             About
           </Link>
+          <Link href="/car-dealer-fees-by-state" className="transition-colors hover:text-foreground" data-testid="link-footer-fees-by-state">
+            Fees by State
+          </Link>
           <Link href="/privacy" className="transition-colors hover:text-foreground" data-testid="link-footer-privacy">
             Privacy
           </Link>

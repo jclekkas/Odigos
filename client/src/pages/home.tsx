@@ -1547,6 +1547,7 @@ export default function Home() {
             Always verify details directly with the dealership.
           </p>
           <nav className="flex justify-center gap-4 text-xs text-muted-foreground">
+            <Link href="/car-dealer-fees-by-state" className="hover:text-foreground transition-colors" data-testid="link-footer-fees-by-state">Fees by State</Link>
             <Link href="/privacy" className="hover:text-foreground transition-colors" data-testid="link-footer-privacy">Privacy</Link>
             <Link href="/terms" className="hover:text-foreground transition-colors" data-testid="link-footer-terms">Terms</Link>
           </nav>
