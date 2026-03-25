@@ -1,4 +1,14 @@
-type EventType = "page_view" | "cta_click" | "form_start" | "form_focus";
+type EventType =
+  | "page_view"
+  | "cta_click"
+  | "form_start"
+  | "form_focus"
+  | "file_upload_failed"
+  | "analysis_failed"
+  | "checkout_failed"
+  | "scorecard_downloaded"
+  | "copy_summary"
+  | "optional_details_expanded";
 
 interface TrackingMetadata {
   page?: string;
@@ -7,6 +17,9 @@ interface TrackingMetadata {
   fieldName?: string;
   referrer?: string;
   sessionId?: string;
+  reason?: string;
+  errorMessage?: string;
+  [key: string]: unknown;
 }
 
 export function getSessionId(): string {
@@ -51,4 +64,28 @@ export function trackFormStart(page: string): void {
 
 export function trackFormFocus(fieldName: string): void {
   track("form_focus", { fieldName, page: window.location.pathname });
+}
+
+export function trackFileUploadFailed(reason: string): void {
+  track("file_upload_failed", { reason, page: window.location.pathname });
+}
+
+export function trackAnalysisFailed(errorMessage: string): void {
+  track("analysis_failed", { errorMessage, page: window.location.pathname });
+}
+
+export function trackCheckoutFailed(reason: string): void {
+  track("checkout_failed", { reason, page: window.location.pathname });
+}
+
+export function trackScorecardDownloaded(): void {
+  track("scorecard_downloaded", { page: window.location.pathname });
+}
+
+export function trackCopySummary(): void {
+  track("copy_summary", { page: window.location.pathname });
+}
+
+export function trackOptionalDetailsExpanded(): void {
+  track("optional_details_expanded", { page: window.location.pathname });
 }

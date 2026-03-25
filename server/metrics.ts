@@ -13,7 +13,13 @@ export type EventType =
   | "state_detection"
   | "vitals"
   | "file_processing"
-  | "stripe_webhook";
+  | "stripe_webhook"
+  | "file_upload_failed"
+  | "analysis_failed"
+  | "checkout_failed"
+  | "scorecard_downloaded"
+  | "copy_summary"
+  | "optional_details_expanded";
 
 export interface EventMetadata {
   dealScore?: "GREEN" | "YELLOW" | "RED";
@@ -773,6 +779,9 @@ export async function getBIFunnel(range: DateRange = "all"): Promise<BIFunnelDat
     { name: "CTA Click", type: "cta_click" },
     { name: "Form Start", type: "form_start" },
     { name: "Submission", type: "submission" },
+    { name: "Optional Details Expanded", type: "optional_details_expanded" },
+    { name: "Scorecard Downloaded", type: "scorecard_downloaded" },
+    { name: "Summary Copied", type: "copy_summary" },
     { name: "Checkout Initiated", type: "checkout_started" },
     { name: "Payment Completed", type: "payment_completed" },
   ];

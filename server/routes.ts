@@ -655,7 +655,11 @@ GO/NO-GO/NEED-MORE-INFO:
     try {
       const { eventType, metadata } = req.body;
       
-      const validTypes = ["page_view", "cta_click", "form_start", "form_focus"];
+      const validTypes = [
+        "page_view", "cta_click", "form_start", "form_focus",
+        "file_upload_failed", "analysis_failed", "checkout_failed",
+        "scorecard_downloaded", "copy_summary", "optional_details_expanded",
+      ];
       if (!eventType || !validTypes.includes(eventType)) {
         return res.status(400).json({ error: "Invalid event type" });
       }

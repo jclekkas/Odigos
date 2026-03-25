@@ -7,7 +7,18 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { z } from "zod";
 import { drawScorecard } from "@/components/ShareCard";
-import { trackPageView, trackFormStart, trackFormFocus, getSessionId } from "@/lib/tracking";
+import {
+  trackPageView,
+  trackFormStart,
+  trackFormFocus,
+  trackFileUploadFailed,
+  trackAnalysisFailed,
+  trackCheckoutFailed,
+  trackScorecardDownloaded,
+  trackCopySummary,
+  trackOptionalDetailsExpanded,
+  getSessionId,
+} from "@/lib/tracking";
 import { capture } from "@/lib/analytics";
 import { tagFlow } from "@/lib/sentry";
 import { setSeoMeta } from "@/lib/seo";
@@ -752,11 +763,17 @@ export default function Home() {
     setUploadError(null);
 
     if (!ALLOWED_UPLOAD_TYPES.includes(file.type)) {
+      const reason = "unsupported_file_type";
       setUploadError("That file type isn't supported. Please upload a PNG, JPG, WEBP, or PDF.");
+      capture("file_upload_failed", { reason, file_type: file.type });
+      trackFileUploadFailed(reason);
       return;
     }
     if (file.size > MAX_UPLOAD_BYTES) {
+      const reason = "file_too_large";
       setUploadError("That file is too large to process. Please use a file under 10 MB.");
+      capture("file_upload_failed", { reason, file_size_bytes: file.size });
+      trackFileUploadFailed(reason);
       return;
     }
 
@@ -768,13 +785,19 @@ export default function Home() {
       const response = await fetch("/api/extract-text", { method: "POST", body: formData });
       const data = await response.json();
       if (!response.ok) {
+        const reason = data.message ?? "server_error";
         setUploadError(data.message ?? "We couldn't process that file. Please try again.");
+        capture("file_upload_failed", { reason, status: response.status });
+        trackFileUploadFailed(reason);
         return;
       }
       form.setValue("dealerText", data.text);
       form.setValue("source", "upload");
     } catch (err) {
+      const reason = "network_error";
       setUploadError("Something went wrong. Please try again or paste the text manually.");
+      capture("file_upload_failed", { reason });
+      trackFileUploadFailed(reason);
     } finally {
       setUploadLoading(false);
     }
@@ -849,6 +872,8 @@ export default function Home() {
       const data = await response.json();
       
       if (data.error === "PAYMENTS_NOT_CONFIGURED") {
+        capture("checkout_failed", { reason: "payments_not_configured" });
+        trackCheckoutFailed("payments_not_configured");
         toast({
           title: "Payments Not Configured",
           description: "Please check STRIPE_SECRET_KEY and price IDs.",
@@ -864,6 +889,9 @@ export default function Home() {
         throw new Error("No checkout URL returned");
       }
     } catch (error) {
+      const reason = error instanceof Error && error.message ? error.message : "unknown_error";
+      capture("checkout_failed", { reason });
+      trackCheckoutFailed(reason);
       toast({
         title: "Checkout Error",
         description: "Could not start checkout. Please try again.",
@@ -954,6 +982,9 @@ export default function Home() {
       }
     },
     onError: (error) => {
+      const errorMessage = error instanceof Error ? error.message : "unknown_error";
+      capture("analysis_failed", { errorMessage });
+      trackAnalysisFailed(errorMessage);
       toast({
         title: "Analysis Failed",
         description: error instanceof Error ? error.message : "Something went wrong",
@@ -1162,7 +1193,16 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Collapsible open={isOptionalOpen} onOpenChange={setIsOptionalOpen}>
+            <Collapsible
+              open={isOptionalOpen}
+              onOpenChange={(open) => {
+                setIsOptionalOpen(open);
+                if (open) {
+                  capture("optional_details_expanded");
+                  trackOptionalDetailsExpanded();
+                }
+              }}
+            >
               <Card>
                 <CollapsibleTrigger asChild>
                   <CardHeader className="cursor-pointer hover-elevate active-elevate-2 rounded-t-xl">
@@ -1216,6 +1256,7 @@ export default function Home() {
                                 {...field}
                                 placeholder="e.g., 2024 Toyota Camry XLE"
                                 data-testid="input-vehicle"
+                                onFocus={() => trackFormFocus("vehicle")}
                               />
                             </FormControl>
                           </FormItem>
@@ -1234,6 +1275,7 @@ export default function Home() {
                                 placeholder="e.g., 90210"
                                 maxLength={5}
                                 data-testid="input-zip"
+                                onFocus={() => trackFormFocus("zip_code")}
                               />
                             </FormControl>
                           </FormItem>
@@ -1279,6 +1321,7 @@ export default function Home() {
                                   step="0.01"
                                   placeholder="e.g., 5.99"
                                   data-testid="input-apr"
+                                  onFocus={() => trackFormFocus("apr")}
                                 />
                               </FormControl>
                             </FormItem>
@@ -1297,6 +1340,7 @@ export default function Home() {
                                   type="number"
                                   placeholder="e.g., 60"
                                   data-testid="input-term"
+                                  onFocus={() => trackFormFocus("term_months")}
                                 />
                               </FormControl>
                             </FormItem>
@@ -1315,6 +1359,7 @@ export default function Home() {
                                   type="number"
                                   placeholder="e.g., 5000"
                                   data-testid="input-down-payment"
+                                  onFocus={() => trackFormFocus("down_payment")}
                                 />
                               </FormControl>
                             </FormItem>
@@ -1396,6 +1441,8 @@ export default function Home() {
                   navigator.clipboard.writeText(text).then(() => {
                     setSummaryCopied("success");
                     setTimeout(() => setSummaryCopied("idle"), 2000);
+                    capture("copy_summary", { verdict: result.goNoGo });
+                    trackCopySummary();
                   }).catch(() => {
                     setSummaryCopied("failed");
                     setTimeout(() => setSummaryCopied("idle"), 2000);
@@ -1436,6 +1483,8 @@ export default function Home() {
                     link.download = "odigos-deal-scorecard.png";
                     link.href = dataUrl;
                     link.click();
+                    capture("scorecard_downloaded", { verdict: result.goNoGo });
+                    trackScorecardDownloaded();
                   } catch {
                     toast({
                       title: "Download failed",
