@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Link } from "wouter";
+import { Link, useSearch } from "wouter";
 import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -677,6 +677,7 @@ const ALLOWED_UPLOAD_TYPES = ["image/png", "image/jpeg", "image/webp", "applicat
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
 export default function Home() {
+  const search = useSearch();
   const [isOptionalOpen, setIsOptionalOpen] = useState(false);
   const [result, setResult] = useState<AnalysisResponseWithExtras | null>(null);
   const [unlockTier, setUnlockTier] = useState<UnlockTier>(getStoredTier);
@@ -774,9 +775,9 @@ export default function Home() {
   const stripeConfigured = stripeStatus?.configured ?? false;
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(search);
     const example = params.get("example");
-    
+
     if (example === "good") {
       form.setValue("dealerText", SAMPLE_GOOD_DEAL);
       window.history.replaceState({}, "", window.location.pathname);
@@ -784,7 +785,7 @@ export default function Home() {
       form.setValue("dealerText", SAMPLE_BAD_DEAL);
       window.history.replaceState({}, "", window.location.pathname);
     }
-  }, [form]);
+  }, [search, form]);
 
   useEffect(() => {
     setCheckoutLoading(false);

@@ -53,8 +53,11 @@ export default function Landing() {
   }, []);
 
   useEffect(() => {
-    const hash = window.location.hash.slice(1);
+    const hashFromStorage = sessionStorage.getItem("scrollToHash");
+    const hashFromUrl = window.location.hash.slice(1);
+    const hash = hashFromStorage || hashFromUrl;
     if (!hash) return;
+    if (hashFromStorage) sessionStorage.removeItem("scrollToHash");
     let attempts = 0;
     const maxAttempts = 20;
     function tryScroll() {

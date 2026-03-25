@@ -1,17 +1,24 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { capture } from "@/lib/analytics";
 
-function scrollToHash(hash: string) {
-  if (window.location.pathname === "/") {
-    document.getElementById(hash)?.scrollIntoView({ behavior: "smooth" });
-    history.replaceState(null, "", `/#${hash}`);
-  } else {
-    window.location.href = `/#${hash}`;
-  }
+function useScrollToHash() {
+  const [location, navigate] = useLocation();
+
+  return function scrollToHash(hash: string) {
+    if (location === "/") {
+      document.getElementById(hash)?.scrollIntoView({ behavior: "smooth" });
+      history.replaceState(null, "", `/#${hash}`);
+    } else {
+      sessionStorage.setItem("scrollToHash", hash);
+      navigate("/");
+    }
+  };
 }
 
 export default function SiteHeader() {
+  const scrollToHash = useScrollToHash();
+
   return (
     <header
       className="sticky top-0 z-50 w-full border-b border-border/80 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
