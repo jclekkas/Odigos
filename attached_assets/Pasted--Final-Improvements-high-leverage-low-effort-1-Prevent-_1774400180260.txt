@@ -1,0 +1,65 @@
+🟡 Final Improvements (high-leverage, low-effort)
+1) Prevent LLM hallucination of stats (very important)
+Right now you say:
+“reference these figures when materially relevant”
+That’s good — but not strong enough.
+Risk
+The model may:
+slightly alter numbers
+generalize (“around 800 deals”)
+mix state vs dealer stats
+Fix (add one sentence)
+Add this line to the prompt instruction:
+Use the provided figures exactly as written. Do not estimate, round, or invent additional statistics.
+2) Define doc fee comparison logic (frontend ambiguity)
+You say:
+“Doc fee is $340 above the TX average…”
+But you never explicitly say how to compute that.
+Risk
+Replit might:
+compute it incorrectly
+forget sign handling (above vs below)
+render raw values instead
+Fix (clarify logic)
+Add:
+When both the current deal’s doc fee and state average are available, compute the delta and render “above” or “below” accordingly. If only the average exists, render the average without comparison.
+3) Lock down “dealer threshold” ambiguity
+You say:
+“when threshold is met”
+But don’t define it.
+Risk
+Replit may:
+guess a threshold
+ignore threshold entirely
+expose weak / noisy data
+Fix
+Add:
+Use the same dealer sample-size threshold already enforced elsewhere in the codebase. Do not introduce a new threshold.
+4) Explicitly forbid blocking the request
+You imply it with timeout, but don’t say it directly.
+Fix
+Add:
+The warehouse lookup must never block or delay the LLM call beyond the timeout window.
+5) Make prompt injection placement deterministic
+You say:
+“append block”
+But not where relative to existing sections.
+Risk
+Replit may:
+insert it in the wrong place
+break prompt structure
+Fix
+Add:
+Append the MARKET_INTELLIGENCE block after existing state fee sections and before the user input content.
+🔥 Final Polished Version (only the delta you should add)
+You don’t need to rewrite the whole thing — just add these lines:
+In Constraints
+The warehouse lookup must never block or delay the LLM call beyond the timeout window
+In Prompt Instructions section
+Use the provided figures exactly as written. Do not estimate, round, or invent additional statistics.
+In Tasks → Prompt injection
+Append the MARKET_INTELLIGENCE block after the existing state fee sections and before the user input content.
+In Tasks → Frontend card
+When both the deal’s doc fee and state average are available, compute the delta and render “above” or “below” accordingly. If only the average exists, render the average without comparison.
+In Tasks → Dealer stats
+Use the same dealer sample-size threshold already enforced elsewhere in the codebase. Do not introduce a new threshold.

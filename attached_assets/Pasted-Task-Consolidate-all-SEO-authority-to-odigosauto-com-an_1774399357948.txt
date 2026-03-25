@@ -1,0 +1,72 @@
+Task: Consolidate all SEO authority to odigosauto.com and stop odigos.replit.app from competing in Google, while preserving my ability to keep building and deploying from Replit.
+
+Context
+- The app is built and maintained in Replit.
+- I do NOT care about the public Replit URL as a destination for users or search traffic.
+- I DO want to preserve and transfer as much historical SEO value as possible from odigos.replit.app to odigosauto.com.
+- The goal is to make odigosauto.com the single canonical domain everywhere.
+
+What I want implemented
+1. Add a permanent 301 redirect from the Replit deployment hostname to the custom domain.
+   - Any request to odigos.replit.app should 301 redirect to the exact matching URL on https://odigosauto.com
+   - Preserve path and query string
+   - Example:
+     - / → https://odigosauto.com/
+     - /analyze → https://odigosauto.com/analyze
+     - /car-dealer-fees-texas?x=1 → https://odigosauto.com/car-dealer-fees-texas?x=1
+   - Do NOT redirect requests that are already on odigosauto.com
+   - Use 301, not 302
+
+2. Add canonical tags across the site.
+   - Every indexable page should emit:
+     <link rel="canonical" href="https://odigosauto.com/[current-path]">
+   - Canonicals must always point to odigosauto.com, never the replit.app domain
+   - Use the exact route path for each page
+   - Normalize homepage to https://odigosauto.com/
+
+3. Ensure all SEO-related metadata uses odigosauto.com.
+   - Open Graph url
+   - twitter/share URLs if applicable
+   - sitemap entries
+   - robots.txt references if applicable
+   - any structured data URLs
+   - any hardcoded internal absolute URLs
+
+4. Prevent the Replit domain from being treated as a real public site.
+   - If there is any environment/config/domain setting that makes the Replit domain indexable alongside the custom domain, fix it
+   - The public intent should be: only odigosauto.com is indexable and canonical
+
+5. Do this without breaking development.
+   - I still need to build in Replit
+   - Do not remove or damage the Replit workspace, deployment flow, or local/dev behavior
+   - Redirect logic should only affect the deployed public hostname case where appropriate, not normal development localhost behavior
+
+Implementation requirements
+- First inspect the codebase carefully and identify:
+  - where request host/domain handling lives
+  - where SEO meta tags are generated
+  - where sitemap/robots/structured data are generated
+- Then implement the cleanest solution for this stack
+- Prefer one centralized redirect mechanism rather than scattered page-level hacks
+- Prefer one centralized canonical generation mechanism if possible
+
+Validation / done criteria
+- Visiting the Replit production URL 301 redirects to the corresponding odigosauto.com URL
+- The redirect preserves path and query params
+- Pages served on odigosauto.com contain canonical tags pointing to odigosauto.com
+- No canonical tags point to replit.app
+- Sitemap and structured data reference odigosauto.com only
+- No broken routes
+- No redirect loops
+- Dev environment still works normally
+- Provide a concise report listing:
+  - files changed
+  - exact redirect behavior implemented
+  - how canonical tags are generated
+  - any follow-up steps I should do in Google Search Console
+
+Important
+- Do not make unrelated refactors
+- Do not change page copy or UI unless required for this task
+- Do not just describe what should be done — actually implement it
+- If there is any framework-specific or Replit-specific nuance, handle it directly in code/config

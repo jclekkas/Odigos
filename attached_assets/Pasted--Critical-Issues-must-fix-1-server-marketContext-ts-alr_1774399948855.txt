@@ -1,0 +1,59 @@
+🔴 Critical Issues (must fix)
+1) server/marketContext.ts already exists → ❌ still wrong
+Your updated prompt now says:
+“server/marketContext.ts already exists. Review it…”
+This is incorrect for the current repo.
+➡️ There is no server/marketContext.ts file in Odigos.
+Why this matters
+Replit will:
+try to open a file that doesn’t exist
+assume it’s missing accidentally
+potentially hallucinate or incorrectly reconstruct logic
+Fix
+Change this to:
+Create a new helper module at server/marketContext.ts
+2) MarketContextCard already exists in home.tsx → ❌ still wrong
+You now say:
+“A MarketContextCard (or ‘How This Compares’ section) already exists…”
+This is also false.
+➡️ client/src/pages/home.tsx does not currently render any market context card.
+Why this matters
+Replit will:
+search for a component that doesn’t exist
+either fail or incorrectly modify unrelated UI
+Fix
+Change to:
+Create a new “How This Compares” card in home.tsx
+🟡 Subtle but Important Improvements
+3) Be explicit about WHERE prompt injection happens
+Right now you say:
+“append to system prompt”
+But in this repo, prompt building is inline string assembly inside server/routes.ts, not a clean “system prompt builder.”
+👉 You should anchor this to how the repo actually works.
+Fix (important clarity upgrade)
+Add:
+Extend the existing prompt string construction inside server/routes.ts (the same place where STATE_FEE_REFERENCE and STATE-SPECIFIC FEE RULES are assembled). Do not introduce a new prompt-building abstraction.
+4) Be explicit about dealer identifier limitations
+Right now you say:
+“accepts the detected state and exact dealer identifiers…”
+Reality:
+You likely don’t have reliable dealer IDs yet
+Only partial identifiers (name, maybe city/state)
+If you don’t clarify this, Replit might:
+overbuild matching logic (bad)
+introduce fuzzy matching (explicitly out of scope)
+Fix
+Add constraint:
+Use only the existing dealer identifier data already present in the analyze flow. Do not introduce fuzzy matching, normalization pipelines, or new matching logic.
+5) Clarify API shape stability more strongly
+You said:
+“extend schema if needed”
+That’s good, but tighten it:
+Fix
+Add marketContext as an optional field. Do not modify or rename any existing response fields.
+6) Tighten the timeout requirement
+Right now:
+“~200ms timeout guard”
+Make it operational:
+Fix
+Use a hard timeout (Promise.race or equivalent) of ~200ms. On timeout, return null and proceed without blocking the LLM call.

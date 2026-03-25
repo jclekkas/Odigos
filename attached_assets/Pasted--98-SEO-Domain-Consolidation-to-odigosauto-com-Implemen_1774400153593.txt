@@ -1,0 +1,72 @@
+#98 - SEO Domain Consolidation to odigosauto.com
+
+Implement this task directly in code. Do not give me a plan first. Inspect the repo, make the changes, then return a concise implementation report.
+
+What & Why
+Consolidate all SEO authority to odigosauto.com by adding a server-side 301 redirect from odigos.replit.app and fixing remaining references to the Replit domain in structured data, robots.txt fallback, and scorecard share text. This prevents Google from indexing two competing domains and helps transfer historical SEO equity to the canonical domain.
+
+Success criteria
+- Any request to odigos.replit.app returns a 301 redirect to the exact matching URL on https://odigosauto.com
+- Redirect preserves path and query string exactly
+- No redirect fires on localhost, 127.0.0.1, or odigosauto.com
+- No redirect loops
+- JSON-LD structured data site-wide uses https://odigosauto.com URLs, not odigos.replit.app
+- robots.txt fallback sitemap line points to https://odigosauto.com/sitemap.xml
+- The deal scorecard share text no longer contains odigos.replit.app
+- Canonical tags and OG metadata remain unchanged unless inspection proves they are not actually correct
+- Dev environment continues to work normally
+
+Out of scope
+- Changes to sitemap.xml unless inspection proves it is not actually correct
+- Changes to SeoHead.tsx or seo.ts unless inspection proves they are not actually correct
+- Any UI, copy, or content changes beyond the single share text domain replacement
+- Google Search Console changes
+
+Required changes
+
+1) Add redirect middleware in server/index.ts
+- Add this early in the middleware stack, before routes are registered
+- Safely inspect the incoming hostname
+- If and only if the hostname ends with .replit.app, issue a permanent 301 redirect to:
+  https://odigosauto.com + req.originalUrl
+- Use req.originalUrl specifically so path and query string are preserved exactly
+- Do not redirect localhost, 127.0.0.1, or odigosauto.com
+- Avoid redirect loops
+- Keep the implementation minimal and centralized
+
+2) Fix structured data URLs in client/src/lib/jsonld.ts
+- Change the hardcoded site URL constant from https://odigos.replit.app to https://odigosauto.com
+- Ensure all schema builders in that file now emit odigosauto.com URLs, including Product, HowTo, Article, FAQ, and any others present
+
+3) Fix robots.txt fallback in server/routes.ts
+- In the robots.txt handler, change the fallback SITE_URL from https://odigos.replit.app to https://odigosauto.com
+- The fallback sitemap line must resolve to:
+  https://odigosauto.com/sitemap.xml
+
+4) Fix share text in client/src/pages/home.tsx
+- Replace the odigos.replit.app reference in the deal scorecard share text with odigosauto.com
+- Do not alter surrounding copy or behavior beyond that domain replacement unless absolutely necessary
+
+Implementation instructions
+- Inspect the referenced files first and confirm the exact current code before editing
+- Make the smallest clean changes necessary
+- Preserve existing style and architecture
+- Do not make unrelated refactors
+- Verify whether canonical tags and OG metadata are already correct; if so, leave them untouched
+
+Relevant files
+- server/index.ts
+- server/routes.ts
+- client/src/lib/jsonld.ts
+- client/src/pages/home.tsx
+
+Expected report after implementation
+Return a concise report with:
+1. Files changed
+2. Exact redirect logic implemented
+3. Confirmation that req.originalUrl preserves path + query string
+4. Confirmation of the JSON-LD site URL fix
+5. Confirmation of the robots.txt fallback fix
+6. Confirmation of the scorecard share text fix
+7. Confirmation that canonical tags and OG metadata were inspected and left unchanged
+8. Recommended Google Search Console follow-up steps for me to do manually
