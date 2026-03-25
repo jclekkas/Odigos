@@ -724,6 +724,7 @@ export default function Home() {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [summaryCopied, setSummaryCopied] = useState<"idle" | "success" | "failed">("idle");
   const [scorecardDownloading, setScorecardDownloading] = useState(false);
+  const [showDoneState, setShowDoneState] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const inputStartedRef = useRef(false);
   const resultFiredRef = useRef(false);
@@ -996,6 +997,8 @@ export default function Home() {
     },
     onSuccess: (data) => {
       setResult(data);
+      setShowDoneState(true);
+      setTimeout(() => setShowDoneState(false), 1500);
       if (!resultFiredRef.current) {
         resultFiredRef.current = true;
         capture("analysis_completed", { result_available: true });
@@ -1015,6 +1018,7 @@ export default function Home() {
 
   const onSubmit = (data: FormValues) => {
     setResult(null);
+    setShowDoneState(false);
     resultFiredRef.current = false;
     capture("analysis_submitted", {
       input_mode: data.source ?? "paste",
@@ -1398,7 +1402,7 @@ export default function Home() {
               type="submit"
               size="lg"
               className="w-full"
-              disabled={analyzeMutation.isPending}
+              disabled={analyzeMutation.isPending || showDoneState}
               data-testid="button-analyze"
             >
               {analyzeMutation.isPending ? (
@@ -1406,6 +1410,8 @@ export default function Home() {
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                   Analyzing your deal…
                 </>
+              ) : showDoneState ? (
+                "Done — see your results ↓"
               ) : (
                 "Analyze Deal"
               )}
