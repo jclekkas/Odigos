@@ -1470,6 +1470,14 @@ export async function getBIFallout(range: DateRange): Promise<BIFallout> {
   return { checkoutsWithoutPayment, avgMinutesSubmissionToCheckout, dropoffByHour };
 }
 
+export async function getPaymentCountLastNHours(hours: number): Promise<number> {
+  const { events } = await loadMetrics();
+  const cutoff = Date.now() - hours * 60 * 60 * 1000;
+  return events.filter(
+    (e) => e.eventType === "payment_completed" && new Date(e.createdAt).getTime() >= cutoff
+  ).length;
+}
+
 export interface PiiExpiryStatus {
   overdueCount: number;
   oldestOverdueDays: number | null;

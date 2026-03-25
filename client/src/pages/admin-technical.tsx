@@ -19,6 +19,7 @@ import {
   Clock,
   Activity,
   TrendingUp,
+  Bell,
 } from "lucide-react";
 import {
   BarChart,
@@ -94,6 +95,32 @@ interface TechnicalSummary {
     oldestOverdueDays: number | null;
     warehouseUnavailable?: boolean;
   };
+}
+
+interface AlertStatus {
+  ruleId: string;
+  name: string;
+  description: string;
+  metric: string;
+  comparator: "lt" | "gt" | "eq";
+  threshold: number;
+  currentValue: number | null;
+  tripped: boolean;
+  lastFiredAt: string | null;
+}
+
+interface AlertFiredRecord {
+  ruleId: string;
+  firedAt: string;
+  value: number;
+}
+
+interface AlertsStatusData {
+  rules: AlertStatus[];
+  recentFired: AlertFiredRecord[];
+  webhookConfigured: boolean;
+  smtpConfigured: boolean;
+  webhookUrlMasked: string | null;
 }
 
 function getAdminKey(): string {
@@ -192,6 +219,19 @@ export default function AdminTechnical() {
     refetchInterval: 60000,
   });
 
+  const alertsQuery = useQuery<AlertsStatusData>({
+    queryKey: ["/api/alerts", adminKey],
+    queryFn: async () => {
+      const res = await fetch(`/api/alerts`, {
+        headers: { Authorization: `Bearer ${adminKey}` },
+      });
+      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+      return res.json();
+    },
+    refetchInterval: 60000,
+    enabled: !!adminKey,
+  });
+
   useEffect(() => {
     if (techQuery.dataUpdatedAt) {
       setLastUpdated(new Date(techQuery.dataUpdatedAt));
@@ -201,11 +241,13 @@ export default function AdminTechnical() {
   const handleRefresh = () => {
     healthQuery.refetch();
     techQuery.refetch();
+    alertsQuery.refetch();
     setLastUpdated(new Date());
   };
 
   const health = healthQuery.data;
   const tech = techQuery.data;
+  const alerts = alertsQuery.data;
   const isLoading = healthQuery.isLoading || techQuery.isLoading;
 
   return (
@@ -345,6 +387,119 @@ export default function AdminTechnical() {
                 )}
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        <Card data-testid="panel-alerts">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Bell className="h-4 w-4" /> Alerts
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {alertsQuery.isLoading ? (
+              <div className="h-32 bg-muted animate-pulse rounded" />
+            ) : alertsQuery.isError ? (
+              <p className="text-muted-foreground text-sm">Unable to load alert status</p>
+            ) : alerts ? (
+              <div className="space-y-5">
+                <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    Webhook:
+                    {alerts.webhookConfigured ? (
+                      <span className="text-green-600 dark:text-green-400 font-medium">
+                        {alerts.webhookUrlMasked ?? "configured"}
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground italic">not configured (set ALERT_WEBHOOK_URL)</span>
+                    )}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    Email:
+                    {alerts.smtpConfigured ? (
+                      <span className="text-green-600 dark:text-green-400 font-medium">configured</span>
+                    ) : (
+                      <span className="text-muted-foreground italic">not configured (set ALERT_SMTP_URL + ALERT_EMAIL_TO)</span>
+                    )}
+                  </span>
+                </div>
+
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground mb-2">Rule Status</p>
+                  <div className="space-y-2" data-testid="list-alert-rules">
+                    {alerts.rules.map((rule) => (
+                      <div
+                        key={rule.ruleId}
+                        className={`flex items-start gap-3 p-3 rounded-lg border ${
+                          rule.tripped
+                            ? "border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-950/20"
+                            : "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/10"
+                        }`}
+                        data-testid={`alert-rule-${rule.ruleId}`}
+                      >
+                        {rule.tripped ? (
+                          <XCircle className="h-4 w-4 text-red-500 flex-shrink-0 mt-0.5" />
+                        ) : (
+                          <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between flex-wrap gap-2">
+                            <p className="text-sm font-medium">{rule.name}</p>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                              {rule.currentValue !== null && (
+                                <span>
+                                  Current:{" "}
+                                  <span className={`font-semibold ${rule.tripped ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"}`}>
+                                    {rule.currentValue.toFixed(2)}
+                                  </span>
+                                </span>
+                              )}
+                              <span>
+                                Threshold: {rule.comparator === "lt" ? "<" : rule.comparator === "gt" ? ">" : "="} {rule.threshold}
+                              </span>
+                            </div>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-0.5">{rule.description}</p>
+                          {rule.lastFiredAt && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Last fired: {formatTime(rule.lastFiredAt)}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {alerts.recentFired.length > 0 && (
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground mb-2">Recent Fired Alerts (last 20)</p>
+                    <div className="max-h-48 overflow-y-auto space-y-1" data-testid="list-recent-alerts">
+                      {alerts.recentFired.map((record, idx) => {
+                        const ruleName = alerts.rules.find((r) => r.ruleId === record.ruleId)?.name ?? record.ruleId;
+                        return (
+                          <div key={idx} className="flex items-center gap-3 p-2 rounded bg-muted/40 text-sm">
+                            <AlertTriangle className="h-3.5 w-3.5 text-red-500 flex-shrink-0" />
+                            <span className="text-xs text-muted-foreground font-mono">{formatTime(record.firedAt)}</span>
+                            <span className="text-xs font-medium flex-1">{ruleName}</span>
+                            <Badge variant="destructive" className="text-xs px-1.5 py-0">
+                              {record.value.toFixed(2)}
+                            </Badge>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {alerts.recentFired.length === 0 && (
+                  <div className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm py-2">
+                    <CheckCircle className="h-4 w-4" />
+                    No alerts have fired recently
+                  </div>
+                )}
+              </div>
+            ) : null}
           </CardContent>
         </Card>
 

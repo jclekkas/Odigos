@@ -318,6 +318,13 @@ async function ensureAppSchema(): Promise<void> {
       } catch (err) {
         console.error("[scheduler] Failed to start daily scheduler:", err);
       }
+
+      try {
+        const { startAlertScheduler } = await import("./alerts");
+        startAlertScheduler();
+      } catch (err) {
+        console.error("[alerts] Failed to start alert scheduler:", err);
+      }
     },
   );
 })();

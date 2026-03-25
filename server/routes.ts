@@ -1073,6 +1073,18 @@ GO/NO-GO/NEED-MORE-INFO:
     }
   });
 
+  app.get("/api/alerts", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
+    try {
+      const { getAlertsStatus } = await import("./alerts");
+      const status = await getAlertsStatus();
+      res.json(status);
+    } catch (error: any) {
+      console.error("[alerts] /api/alerts error:", error?.message || error);
+      res.status(500).json({ error: "Failed to fetch alert status", message: error?.message });
+    }
+  });
+
   app.get("/api/technical", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
     try {
