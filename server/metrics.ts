@@ -1,3 +1,1 @@
-export * from "./events";
-export * from "./analytics";
-export * from "./bi";
+export * from "./metrics/index";
