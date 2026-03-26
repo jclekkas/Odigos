@@ -6,36 +6,13 @@ import { Link } from "wouter";
 import { ArrowLeft, FlaskConical, Trophy, Users, TrendingUp, RefreshCw, CheckCircle2, Clock } from "lucide-react";
 import { useTranslation, Trans } from "react-i18next";
 
-function normalCDF(z: number): number {
-  const t = 1 / (1 + 0.2316419 * Math.abs(z));
-  const poly =
-    t * (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
-  const pdf = Math.exp((-z * z) / 2) / Math.sqrt(2 * Math.PI);
-  const result = 1 - pdf * poly;
-  return z >= 0 ? result : 1 - result;
-}
-
-function zTestTwoProportions(
-  n1: number, x1: number,
-  n2: number, x2: number
-): { z: number; pValue: number; significant: boolean; lift: number } {
-  if (n1 === 0 || n2 === 0) return { z: 0, pValue: 1, significant: false, lift: 0 };
-  const p1 = x1 / n1;
-  const p2 = x2 / n2;
-  const pPool = (x1 + x2) / (n1 + n2);
-  const se = Math.sqrt(pPool * (1 - pPool) * (1 / n1 + 1 / n2));
-  if (se === 0) return { z: 0, pValue: 1, significant: false, lift: 0 };
-  const z = Math.abs(p1 - p2) / se;
-  const pValue = 2 * (1 - normalCDF(z));
-  const lift = p1 > 0 ? ((p2 - p1) / p1) * 100 : 0;
-  return { z, pValue, significant: pValue < 0.05, lift };
-}
-
 interface ExperimentVariantStats {
   variant: string;
   assignments: number;
   conversions: number;
   conversionRate: number;
+  pValue: number | null;
+  isSignificant: boolean;
 }
 
 interface ExperimentStats {
@@ -140,20 +117,20 @@ function VariantRow({ variant, isWinner, total }: { variant: ExperimentVariantSt
   );
 }
 
-function SignificanceBadge({ sig }: { sig: { z: number; pValue: number; significant: boolean; lift: number } }) {
-  if (sig.pValue >= 1) return null;
-  if (sig.significant) {
+function SignificanceBadge({ pValue, isSignificant, lift }: { pValue: number | null; isSignificant: boolean; lift: number }) {
+  if (pValue === null) return null;
+  if (isSignificant) {
     return (
       <Badge className="bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-500/30 gap-1 text-xs">
         <CheckCircle2 className="w-3 h-3" />
-        p={sig.pValue.toFixed(3)} · {sig.lift > 0 ? "+" : ""}{sig.lift.toFixed(1)}% lift
+        p={pValue.toFixed(3)} · {lift > 0 ? "+" : ""}{lift.toFixed(1)}% lift
       </Badge>
     );
   }
   return (
     <Badge variant="outline" className="text-muted-foreground gap-1 text-xs">
       <Clock className="w-3 h-3" />
-      Not significant (p={sig.pValue.toFixed(3)})
+      Not significant (p={pValue.toFixed(3)})
     </Badge>
   );
 }
@@ -164,14 +141,9 @@ function ExperimentCard({ exp }: { exp: ExperimentStats }) {
 
   const control = exp.variants.find(v => v.variant === "control") ?? exp.variants[0];
   const treatment = exp.variants.find(v => v.variant !== "control" && v !== control);
-
-  const significance =
-    control && treatment
-      ? zTestTwoProportions(
-          control.assignments, control.conversions,
-          treatment.assignments, treatment.conversions
-        )
-      : null;
+  const lift = control && treatment && control.assignments > 0
+    ? ((treatment.conversionRate - control.conversionRate) / (control.conversionRate || 1)) * 100
+    : 0;
 
   return (
     <Card data-testid={`experiment-card-${exp.experimentId}`}>
@@ -186,7 +158,13 @@ function ExperimentCard({ exp }: { exp: ExperimentStats }) {
           </div>
 
           <div className="flex items-center gap-2 flex-wrap justify-end">
-            {significance && <SignificanceBadge sig={significance} />}
+            {treatment && treatment.pValue !== null && (
+              <SignificanceBadge
+                pValue={treatment.pValue}
+                isSignificant={treatment.isSignificant}
+                lift={lift}
+              />
+            )}
             {exp.winner ? (
               <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30">
                 {t("admin.winner_label", { variant: exp.winner })}

@@ -75,6 +75,12 @@ export function registerBIRoutes(app: Express): void {
     } catch (e: any) { res.status(500).json({ error: e?.message }); }
   });
 
+  app.get("/api/admin/content", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
+    try { const { getBIContentMetrics } = await import("../bi"); res.json(await getBIContentMetrics(parseRange(req))); }
+    catch (e: any) { res.status(500).json({ error: e?.message }); }
+  });
+
   app.get("/api/admin/feedback-accuracy", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
     try {

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowLeft, Eye, TrendingUp, FileText, MousePointerClick, AlertTriangle, BarChart3 } from "lucide-react";
+import { ArrowLeft, Eye, TrendingUp, FileText, MousePointerClick, AlertTriangle, BarChart3, Users } from "lucide-react";
 import { useAdminKey } from "@/hooks/use-admin-key";
 import {
   BarChart,
@@ -25,15 +25,25 @@ const RANGE_LABELS: Record<DateRange, string> = {
   all: "All Time",
 };
 
-interface PageAttribution {
+interface ContentPage {
   page: string;
   views: number;
+  sessions: number;
+  analyzeStarts: number;
+  conversions: number;
+  conversionRate: number;
   ctaClicks: number;
-  ctaClickRate: number;
-  attributedSubmissions: number;
 }
 
-type SortKey = "views" | "ctaClickRate" | "attributedSubmissions" | "ctaClicks";
+interface ContentMetrics {
+  pages: ContentPage[];
+  totalViews: number;
+  totalSessions: number;
+  totalAnalyzeStarts: number;
+  totalConversions: number;
+}
+
+type SortKey = "views" | "sessions" | "analyzeStarts" | "conversions" | "conversionRate" | "ctaClicks";
 
 const TOOLTIP_STYLE = {
   backgroundColor: "hsl(var(--card))",
@@ -48,10 +58,10 @@ export default function AdminContent() {
   const [sortKey, setSortKey] = useState<SortKey>("views");
   const [showAll, setShowAll] = useState(false);
 
-  const { data, isLoading, isError } = useQuery<{ pages: PageAttribution[] }>({
-    queryKey: ["/api/admin/bi/attribution", adminKey, range],
+  const { data, isLoading, isError } = useQuery<ContentMetrics>({
+    queryKey: ["/api/admin/content", adminKey, range],
     queryFn: async () => {
-      const res = await fetch(`/api/admin/bi/attribution?range=${range}`, {
+      const res = await fetch(`/api/admin/content?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
       if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
@@ -97,16 +107,12 @@ export default function AdminContent() {
   const allPages = (data?.pages ?? []).slice().sort((a, b) => b[sortKey] - a[sortKey]);
   const visiblePages = showAll ? allPages : allPages.slice(0, 25);
 
-  const totalViews = allPages.reduce((s, p) => s + p.views, 0);
-  const totalCtaClicks = allPages.reduce((s, p) => s + p.ctaClicks, 0);
-  const totalSubmissions = allPages.reduce((s, p) => s + p.attributedSubmissions, 0);
-  const overallCtaRate = totalViews > 0 ? (totalCtaClicks / totalViews) * 100 : 0;
-
   const chartData = allPages.slice(0, 10).map(p => ({
     page: p.page.length > 28 ? "…" + p.page.slice(-25) : p.page,
     views: p.views,
-    ctaClicks: p.ctaClicks,
-    submissions: p.attributedSubmissions,
+    sessions: p.sessions,
+    analyzeStarts: p.analyzeStarts,
+    conversions: p.conversions,
   }));
 
   const SortBtn = ({ k, label }: { k: SortKey; label: string }) => (
@@ -122,6 +128,10 @@ export default function AdminContent() {
       {label}
     </button>
   );
+
+  const overallConversionRate = (data?.totalSessions ?? 0) > 0
+    ? ((data?.totalConversions ?? 0) / (data?.totalSessions ?? 1)) * 100
+    : 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -140,7 +150,7 @@ export default function AdminContent() {
                   SEO / Content Performance
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Last-touch attribution — which pages convert to submissions
+                  Per-page: sessions, analyze starts, conversions, conversion rate
                 </p>
               </div>
             </div>
@@ -184,32 +194,45 @@ export default function AdminContent() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <Card data-testid="stat-total-views">
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 mb-1">
                 <Eye className="h-4 w-4 text-muted-foreground" />
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">Total Page Views</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Page Views</p>
               </div>
-              <p className="text-3xl font-bold">{totalViews.toLocaleString()}</p>
+              <p className="text-3xl font-bold">{(data?.totalViews ?? 0).toLocaleString()}</p>
             </CardContent>
           </Card>
-          <Card data-testid="stat-total-cta">
+          <Card data-testid="stat-total-sessions">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-2 mb-1">
+                <Users className="h-4 w-4 text-muted-foreground" />
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Sessions</p>
+              </div>
+              <p className="text-3xl font-bold">{(data?.totalSessions ?? 0).toLocaleString()}</p>
+            </CardContent>
+          </Card>
+          <Card data-testid="stat-total-starts">
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 mb-1">
                 <MousePointerClick className="h-4 w-4 text-muted-foreground" />
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">CTA Clicks ({overallCtaRate.toFixed(1)}%)</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Analyze Starts</p>
               </div>
-              <p className="text-3xl font-bold">{totalCtaClicks.toLocaleString()}</p>
+              <p className="text-3xl font-bold">{(data?.totalAnalyzeStarts ?? 0).toLocaleString()}</p>
             </CardContent>
           </Card>
-          <Card data-testid="stat-total-submissions">
+          <Card data-testid="stat-total-conversions">
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 mb-1">
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">Attributed Submissions</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                  Conversions ({overallConversionRate.toFixed(1)}%)
+                </p>
               </div>
-              <p className="text-3xl font-bold">{totalSubmissions.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+                {(data?.totalConversions ?? 0).toLocaleString()}
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -219,7 +242,7 @@ export default function AdminContent() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5" />
-                Top 10 Pages — Views vs CTA Clicks
+                Top 10 Pages — Sessions, Analyze Starts, Conversions
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -235,8 +258,9 @@ export default function AdminContent() {
                       tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
                     />
                     <Tooltip contentStyle={TOOLTIP_STYLE} />
-                    <Bar dataKey="views" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} name="Views" />
-                    <Bar dataKey="ctaClicks" fill="#22c55e" radius={[0, 4, 4, 0]} name="CTA Clicks" />
+                    <Bar dataKey="sessions" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} name="Sessions" />
+                    <Bar dataKey="analyzeStarts" fill="#f59e0b" radius={[0, 4, 4, 0]} name="Analyze Starts" />
+                    <Bar dataKey="conversions" fill="#22c55e" radius={[0, 4, 4, 0]} name="Conversions" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -259,9 +283,10 @@ export default function AdminContent() {
               <div className="flex items-center gap-1 flex-wrap">
                 <span className="text-xs text-muted-foreground mr-1">Sort:</span>
                 <SortBtn k="views" label="Views" />
-                <SortBtn k="ctaClicks" label="CTA Clicks" />
-                <SortBtn k="ctaClickRate" label="CTA Rate" />
-                <SortBtn k="attributedSubmissions" label="Submissions" />
+                <SortBtn k="sessions" label="Sessions" />
+                <SortBtn k="analyzeStarts" label="Starts" />
+                <SortBtn k="conversions" label="Conv." />
+                <SortBtn k="conversionRate" label="Rate" />
               </div>
             </div>
           </CardHeader>
@@ -275,7 +300,7 @@ export default function AdminContent() {
             ) : allPages.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-muted-foreground gap-2">
                 <Eye className="h-8 w-8 opacity-40" />
-                <p className="text-sm">No page attribution data yet</p>
+                <p className="text-sm">No page data yet</p>
               </div>
             ) : (
               <>
@@ -286,9 +311,10 @@ export default function AdminContent() {
                         <th className="text-left py-2 pr-4 font-medium">#</th>
                         <th className="text-left py-2 pr-4 font-medium">Page</th>
                         <th className="text-right py-2 px-2 font-medium">Views</th>
-                        <th className="text-right py-2 px-2 font-medium">CTA Clicks</th>
-                        <th className="text-right py-2 px-2 font-medium">CTA Rate</th>
-                        <th className="text-right py-2 pl-2 font-medium">Submissions</th>
+                        <th className="text-right py-2 px-2 font-medium">Sessions</th>
+                        <th className="text-right py-2 px-2 font-medium">Starts</th>
+                        <th className="text-right py-2 px-2 font-medium">Conv.</th>
+                        <th className="text-right py-2 pl-2 font-medium">Rate</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -310,19 +336,24 @@ export default function AdminContent() {
                             </a>
                           </td>
                           <td className="text-right py-2 px-2 font-semibold">{p.views.toLocaleString()}</td>
-                          <td className="text-right py-2 px-2">{p.ctaClicks.toLocaleString()}</td>
+                          <td className="text-right py-2 px-2">{p.sessions.toLocaleString()}</td>
+                          <td className="text-right py-2 px-2">{p.analyzeStarts.toLocaleString()}</td>
                           <td className="text-right py-2 px-2">
-                            <Badge
-                              variant={p.ctaClickRate > 10 ? "default" : p.ctaClickRate > 5 ? "secondary" : "outline"}
-                              className="text-xs"
-                            >
-                              {p.ctaClickRate.toFixed(1)}%
-                            </Badge>
+                            <span className={p.conversions > 0 ? "font-semibold text-green-600 dark:text-green-400" : "text-muted-foreground"}>
+                              {p.conversions}
+                            </span>
                           </td>
                           <td className="text-right py-2 pl-2">
-                            <span className={p.attributedSubmissions > 0 ? "font-semibold text-green-600 dark:text-green-400" : "text-muted-foreground"}>
-                              {p.attributedSubmissions}
-                            </span>
+                            {p.sessions > 0 ? (
+                              <Badge
+                                variant={p.conversionRate > 5 ? "default" : p.conversionRate > 1 ? "secondary" : "outline"}
+                                className="text-xs"
+                              >
+                                {p.conversionRate.toFixed(1)}%
+                              </Badge>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">—</span>
+                            )}
                           </td>
                         </tr>
                       ))}

@@ -722,7 +722,10 @@ export interface BISubscriptionHealth {
   totalPayers: number;
   newPayersThisWeek: number;
   newPayersLastWeek: number;
+  weekOverWeekGrowthPct: number | null;
   checkoutConversionRate: number;
+  checkoutsWithoutPayment: number;
+  estimatedRevenue: number;
   tierBreakdown: { tier49: number; tier79: number; other: number };
   dailyNewPayers: Array<{ date: string; count: number }>;
 }
@@ -758,14 +761,27 @@ export async function getBISubscriptionHealth(range: DateRange): Promise<BISubsc
       .filter(Boolean)
   ).size;
 
+  const weekOverWeekGrowthPct = newPayersLastWeek > 0
+    ? ((newPayersThisWeek - newPayersLastWeek) / newPayersLastWeek) * 100
+    : null;
+
   const checkoutConversionRate = checkouts.length > 0 ? (payments.length / checkouts.length) * 100 : 0;
 
+  const paidStripeIds = new Set(
+    payments.map(e => e.metadata?.stripeSessionId as string | undefined).filter(Boolean)
+  );
+  const checkoutsWithoutPayment = checkouts.filter(e => {
+    const sid = e.metadata?.stripeSessionId as string | undefined;
+    return !sid || !paidStripeIds.has(sid);
+  }).length;
+
   const tierBreakdown = { tier49: 0, tier79: 0, other: 0 };
+  let estimatedRevenue = 0;
   payments.forEach(e => {
     const tier = e.metadata?.tier;
-    if (tier === "49") tierBreakdown.tier49++;
-    else if (tier === "79") tierBreakdown.tier79++;
-    else tierBreakdown.other++;
+    if (tier === "49") { tierBreakdown.tier49++; estimatedRevenue += 49; }
+    else if (tier === "79") { tierBreakdown.tier79++; estimatedRevenue += 79; }
+    else { tierBreakdown.other++; estimatedRevenue += 49; }
   });
 
   const thirtyDaysAgo = new Date(todayStart.getTime() - 30 * 86400000);
@@ -783,7 +799,7 @@ export async function getBISubscriptionHealth(range: DateRange): Promise<BISubsc
     .map(([date, sids]) => ({ date, count: sids.size }))
     .sort((a, b) => a.date.localeCompare(b.date));
 
-  return { totalPayers, newPayersThisWeek, newPayersLastWeek, checkoutConversionRate, tierBreakdown, dailyNewPayers };
+  return { totalPayers, newPayersThisWeek, newPayersLastWeek, weekOverWeekGrowthPct, checkoutConversionRate, checkoutsWithoutPayment, estimatedRevenue, tierBreakdown, dailyNewPayers };
 }
 
 export interface BIUserSession {
@@ -793,6 +809,8 @@ export interface BIUserSession {
   eventCount: number;
   eventTypes: string[];
   hasPaid: boolean;
+  verdicts: string[];
+  stripeSessionIds: string[];
 }
 
 export async function lookupUserSessions(query: string, limit = 20): Promise<BIUserSession[]> {
@@ -800,29 +818,26 @@ export async function lookupUserSessions(query: string, limit = 20): Promise<BIU
   const allEvents = events.map(e => ({ ...e, createdAt: new Date(e.createdAt) }));
 
   const q = query.trim().toLowerCase();
-  if (!q) {
-    const sessionMap: Record<string, typeof allEvents> = {};
-    allEvents.forEach(e => {
-      const sid = e.metadata?.sessionId as string | undefined;
-      if (!sid) return;
-      if (!sessionMap[sid]) sessionMap[sid] = [];
-      sessionMap[sid].push(e);
+
+  const sessionMatchesQuery = (sid: string, evts: Array<{ eventType: string; metadata?: Record<string, unknown> | null }>) => {
+    if (!q) return true;
+    if (sid.toLowerCase().includes(q)) return true;
+    return evts.some(e => {
+      const stripeSid = e.metadata?.stripeSessionId as string | undefined;
+      return stripeSid && stripeSid.toLowerCase().includes(q);
     });
-    return Object.entries(sessionMap)
-      .map(([sessionId, evts]) => buildSessionSummary(sessionId, evts))
-      .sort((a, b) => b.lastSeen.localeCompare(a.lastSeen))
-      .slice(0, limit);
-  }
+  };
 
   const sessionMap: Record<string, typeof allEvents> = {};
   allEvents.forEach(e => {
     const sid = e.metadata?.sessionId as string | undefined;
-    if (!sid || !sid.toLowerCase().includes(q)) return;
+    if (!sid) return;
     if (!sessionMap[sid]) sessionMap[sid] = [];
     sessionMap[sid].push(e);
   });
 
   return Object.entries(sessionMap)
+    .filter(([sid, evts]) => sessionMatchesQuery(sid, evts))
     .map(([sessionId, evts]) => buildSessionSummary(sessionId, evts))
     .sort((a, b) => b.lastSeen.localeCompare(a.lastSeen))
     .slice(0, limit);
@@ -832,6 +847,14 @@ function buildSessionSummary(sessionId: string, evts: Array<{ createdAt: Date; e
   const sorted = evts.slice().sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
   const types = Array.from(new Set(evts.map(e => e.eventType)));
   const hasPaid = types.includes("payment_completed");
+  const verdicts = evts
+    .filter(e => e.eventType === "submission" && e.metadata?.dealScore)
+    .map(e => e.metadata!.dealScore as string);
+  const stripeSessionIds = Array.from(new Set(
+    evts
+      .filter(e => e.metadata?.stripeSessionId)
+      .map(e => e.metadata!.stripeSessionId as string)
+  ));
   return {
     sessionId,
     firstSeen: sorted[0].createdAt.toISOString(),
@@ -839,5 +862,103 @@ function buildSessionSummary(sessionId: string, evts: Array<{ createdAt: Date; e
     eventCount: evts.length,
     eventTypes: types,
     hasPaid,
+    verdicts,
+    stripeSessionIds,
+  };
+}
+
+export interface BIContentPage {
+  page: string;
+  views: number;
+  sessions: number;
+  analyzeStarts: number;
+  conversions: number;
+  conversionRate: number;
+  ctaClicks: number;
+}
+
+export interface BIContentMetrics {
+  pages: BIContentPage[];
+  totalViews: number;
+  totalSessions: number;
+  totalAnalyzeStarts: number;
+  totalConversions: number;
+}
+
+export async function getBIContentMetrics(range: DateRange): Promise<BIContentMetrics> {
+  const { events } = await loadMetrics();
+  const allEvents = events.map(e => ({ ...e, createdAt: new Date(e.createdAt) }));
+  const ranged = filterByRange(allEvents, range);
+
+  const pageViews = ranged.filter(e => e.eventType === "page_view");
+  const submissions = ranged.filter(e => e.eventType === "submission");
+  const payments = ranged.filter(e => e.eventType === "payment_completed");
+  const ctaClicks = ranged.filter(e => e.eventType === "cta_click");
+
+  const sessionEntryPage: Record<string, string> = {};
+  const pageViewsSorted = pageViews.slice().sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+  pageViewsSorted.forEach(e => {
+    const sid = e.metadata?.sessionId as string | undefined;
+    const page = (e.metadata?.page as string) || "/";
+    if (sid && !sessionEntryPage[sid]) sessionEntryPage[sid] = page;
+  });
+
+  const pageStats: Record<string, {
+    views: number;
+    sessions: Set<string>;
+    analyzeStarts: number;
+    conversions: number;
+    ctaClicks: number;
+  }> = {};
+
+  const getOrCreate = (page: string) => {
+    if (!pageStats[page]) pageStats[page] = { views: 0, sessions: new Set(), analyzeStarts: 0, conversions: 0, ctaClicks: 0 };
+    return pageStats[page];
+  };
+
+  pageViews.forEach(e => {
+    const page = (e.metadata?.page as string) || "/";
+    const sid = e.metadata?.sessionId as string | undefined;
+    const ps = getOrCreate(page);
+    ps.views++;
+    if (sid) ps.sessions.add(sid);
+  });
+
+  ctaClicks.forEach(e => {
+    const sid = e.metadata?.sessionId as string | undefined;
+    const page = (sid && sessionEntryPage[sid]) || (e.metadata?.page as string) || "/";
+    getOrCreate(page).ctaClicks++;
+  });
+
+  submissions.forEach(e => {
+    const sid = e.metadata?.sessionId as string | undefined;
+    const page = (sid && sessionEntryPage[sid]) || "/";
+    getOrCreate(page).analyzeStarts++;
+  });
+
+  payments.forEach(e => {
+    const sid = e.metadata?.sessionId as string | undefined;
+    const page = (sid && sessionEntryPage[sid]) || "/";
+    getOrCreate(page).conversions++;
+  });
+
+  const pages: BIContentPage[] = Object.entries(pageStats)
+    .map(([page, data]) => ({
+      page,
+      views: data.views,
+      sessions: data.sessions.size,
+      analyzeStarts: data.analyzeStarts,
+      conversions: data.conversions,
+      conversionRate: data.sessions.size > 0 ? (data.conversions / data.sessions.size) * 100 : 0,
+      ctaClicks: data.ctaClicks,
+    }))
+    .sort((a, b) => b.views - a.views);
+
+  return {
+    pages,
+    totalViews: pages.reduce((s, p) => s + p.views, 0),
+    totalSessions: new Set(pageViews.map(e => e.metadata?.sessionId as string).filter(Boolean)).size,
+    totalAnalyzeStarts: submissions.length,
+    totalConversions: payments.length,
   };
 }

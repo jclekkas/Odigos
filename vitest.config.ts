@@ -56,6 +56,7 @@ export default defineConfig({
           globals: true,
           clearMocks: true,
           restoreMocks: true,
+          setupFiles: ["tests/setup.client.ts"],
           env: {
             NODE_ENV: "test",
           },

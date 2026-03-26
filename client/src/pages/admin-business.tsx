@@ -433,9 +433,9 @@ function BehaviorPanel({ adminKey, range }: { adminKey: string; range: DateRange
           color={(data?.bounceRate ?? 0) > 60 ? "danger" : "default"}
         />
         <StatCard
-          title="Return Visit Rate"
+          title="Multi-Day Session Rate"
           value={`${(data?.returnVisitRate ?? 0).toFixed(1)}%`}
-          subtitle="Sessions seen on 2+ distinct days"
+          subtitle="Sessions active on 2+ distinct days"
           icon={TrendingUp}
           color={(data?.returnVisitRate ?? 0) > 20 ? "success" : "default"}
         />
@@ -1377,7 +1377,10 @@ interface SubscriptionHealth {
   totalPayers: number;
   newPayersThisWeek: number;
   newPayersLastWeek: number;
+  weekOverWeekGrowthPct: number | null;
   checkoutConversionRate: number;
+  checkoutsWithoutPayment: number;
+  estimatedRevenue: number;
   tierBreakdown: { tier49: number; tier79: number; other: number };
   dailyNewPayers: Array<{ date: string; count: number }>;
 }
@@ -1436,25 +1439,28 @@ function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateR
           color="success"
         />
         <StatCard
+          title="Estimated Revenue"
+          value={`$${((data?.estimatedRevenue ?? 0)).toLocaleString()}`}
+          subtitle="Based on tier prices"
+          icon={CreditCard}
+          color="success"
+        />
+        <StatCard
           title="New This Week"
           value={data?.newPayersThisWeek ?? 0}
-          subtitle="vs last week"
+          subtitle={data?.weekOverWeekGrowthPct !== null && data?.weekOverWeekGrowthPct !== undefined
+            ? `${data.weekOverWeekGrowthPct >= 0 ? "+" : ""}${data.weekOverWeekGrowthPct.toFixed(1)}% vs last week`
+            : "vs last week"}
           icon={TrendingUp}
-          color="success"
+          color={(data?.weekOverWeekGrowthPct ?? 0) >= 0 ? "success" : "warning"}
           trend={{ current: data?.newPayersThisWeek ?? 0, previous: data?.newPayersLastWeek ?? 0 }}
         />
         <StatCard
-          title="Checkout → Payment"
-          value={`${(data?.checkoutConversionRate ?? 0).toFixed(1)}%`}
-          subtitle="Checkout conversion rate"
-          icon={CreditCard}
-          color={(data?.checkoutConversionRate ?? 0) > 40 ? "success" : "warning"}
-        />
-        <StatCard
-          title="Last Week Payers"
-          value={data?.newPayersLastWeek ?? 0}
-          subtitle="Previous 7-day window"
+          title="Abandoned Checkouts"
+          value={data?.checkoutsWithoutPayment ?? 0}
+          subtitle={`${(data?.checkoutConversionRate ?? 0).toFixed(1)}% checkout → payment rate`}
           icon={Activity}
+          color={(data?.checkoutConversionRate ?? 0) > 40 ? "success" : "warning"}
         />
       </div>
 
