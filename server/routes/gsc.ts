@@ -42,7 +42,40 @@ import * as fs from "fs";
 import * as path from "path";
 import { XMLParser } from "fast-xml-parser";
 
-const SITE_URL = (process.env.GSC_SITE_URL ?? "https://odigosauto.com/").replace(/\/?$/, "/");
+function buildSiteUrl(raw: string): string {
+  if (raw.startsWith("sc-domain:")) return raw;
+  return raw.replace(/\/?$/, "/");
+}
+
+const CONFIGURED_SITE_URL = process.env.GSC_SITE_URL
+  ? buildSiteUrl(process.env.GSC_SITE_URL)
+  : null;
+
+const URL_PREFIX_DEFAULT = "https://odigosauto.com/";
+const DOMAIN_PROPERTY_DEFAULT = "sc-domain:odigosauto.com";
+
+let _resolvedSiteUrl: string | null = CONFIGURED_SITE_URL;
+
+async function getResolvedSiteUrl(accessToken: string): Promise<string> {
+  if (_resolvedSiteUrl) return _resolvedSiteUrl;
+
+  for (const candidate of [URL_PREFIX_DEFAULT, DOMAIN_PROPERTY_DEFAULT]) {
+    try {
+      const result = await fetchSearchAnalyticsRaw(accessToken, candidate);
+      if (result.ok) {
+        console.log(`GSC: auto-detected site URL format: ${candidate}`);
+        _resolvedSiteUrl = candidate;
+        return candidate;
+      }
+      console.warn(`GSC: site URL candidate ${candidate} returned ${result.status}`);
+    } catch (e: any) {
+      console.warn(`GSC: site URL candidate ${candidate} error:`, e?.message);
+    }
+  }
+
+  _resolvedSiteUrl = URL_PREFIX_DEFAULT;
+  return _resolvedSiteUrl;
+}
 
 interface GscPageItem {
   url: string;
@@ -220,18 +253,20 @@ async function fetchUrlInspection(
   };
 }
 
-async function fetchSearchAnalytics(
-  accessToken: string,
-  siteUrl: string
-): Promise<Map<string, { clicks: number; impressions: number }>> {
+function buildAnalyticsRequestBody() {
   const endDate = new Date();
   endDate.setDate(endDate.getDate() - 1);
   const startDate = new Date(endDate);
   startDate.setDate(startDate.getDate() - 27);
-
   const fmt = (d: Date) => d.toISOString().slice(0, 10);
+  return { startDate: fmt(startDate), endDate: fmt(endDate), dimensions: ["page"], rowLimit: 5000 };
+}
 
-  const response = await fetch(
+async function fetchSearchAnalyticsRaw(
+  accessToken: string,
+  siteUrl: string
+): Promise<Response> {
+  return fetch(
     `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`,
     {
       method: "POST",
@@ -239,14 +274,16 @@ async function fetchSearchAnalytics(
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        startDate: fmt(startDate),
-        endDate: fmt(endDate),
-        dimensions: ["page"],
-        rowLimit: 5000,
-      }),
+      body: JSON.stringify(buildAnalyticsRequestBody()),
     }
   );
+}
+
+async function fetchSearchAnalytics(
+  accessToken: string,
+  siteUrl: string
+): Promise<Map<string, { clicks: number; impressions: number }>> {
+  const response = await fetchSearchAnalyticsRaw(accessToken, siteUrl);
 
   if (!response.ok) {
     const text = await response.text().catch(() => "");
@@ -278,12 +315,17 @@ export function registerGscRoutes(app: Express): void {
       const sitemapUrls = parseSitemapUrls();
       const apiWarnings: string[] = [];
 
+      const resolvedSiteUrl = await getResolvedSiteUrl(accessToken);
+
       let analyticsMap = new Map<string, { clicks: number; impressions: number }>();
       try {
-        analyticsMap = await fetchSearchAnalytics(accessToken, SITE_URL);
+        analyticsMap = await fetchSearchAnalytics(accessToken, resolvedSiteUrl);
       } catch (e: any) {
         console.warn("GSC analytics unavailable:", e?.message);
-        apiWarnings.push("Analytics data unavailable — check GSC permissions or verify the site property URL matches exactly.");
+        const hint = CONFIGURED_SITE_URL
+          ? `GSC_SITE_URL is set to "${CONFIGURED_SITE_URL}" — verify this matches the property URL in Search Console exactly.`
+          : `Set the GSC_SITE_URL environment variable to either "sc-domain:odigosauto.com" (Domain property) or "https://odigosauto.com/" (URL-prefix property) to match how the site is registered in Search Console.`;
+        apiWarnings.push(`Analytics data unavailable. ${hint}`);
       }
 
       const normalizeUrl = (u: string) => u.replace(/\/$/, "");
@@ -303,7 +345,7 @@ export function registerGscRoutes(app: Express): void {
         await Promise.all(
           batch.map(async (url) => {
             try {
-              const { verdict, coverageState } = await fetchUrlInspection(accessToken, SITE_URL, url);
+              const { verdict, coverageState } = await fetchUrlInspection(accessToken, resolvedSiteUrl, url);
               const { reason, nextStep } = mapStatusToPlainEnglish(verdict, coverageState);
               const perf = analyticsNormalizedMap.get(normalizeUrl(url)) ?? { clicks: 0, impressions: 0 };
               const item: GscPageItem = {
@@ -329,11 +371,16 @@ export function registerGscRoutes(app: Express): void {
         }
       }
 
-      const SITE_ORIGIN = SITE_URL.replace(/\/$/, "");
+      const SITE_ORIGIN = resolvedSiteUrl.startsWith("sc-domain:")
+        ? `https://${resolvedSiteUrl.slice("sc-domain:".length)}`
+        : resolvedSiteUrl.replace(/\/$/, "");
+      const SITE_PREFIX = resolvedSiteUrl.startsWith("sc-domain:")
+        ? `${SITE_ORIGIN}/`
+        : resolvedSiteUrl;
       const sitemapNormalizedSet = new Set(sitemapUrls.map(normalizeUrl));
       const notInSitemap: GscPageItem[] = [];
       for (const [url, perf] of analyticsMap.entries()) {
-        if (!sitemapNormalizedSet.has(normalizeUrl(url)) && (url.startsWith(SITE_URL) || url.startsWith(SITE_ORIGIN))) {
+        if (!sitemapNormalizedSet.has(normalizeUrl(url)) && (url.startsWith(SITE_PREFIX) || url.startsWith(SITE_ORIGIN))) {
           notInSitemap.push({
             url,
             status: "NOT_IN_SITEMAP",

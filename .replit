@@ -171,3 +171,4 @@ timeoutMs = 90000
 [userenv]
 
 [userenv.shared]
+GSC_SITE_URL = "sc-domain:odigosauto.com"
