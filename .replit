@@ -57,6 +57,10 @@ args = "pii:cleanup:dry"
 task = "workflow.run"
 args = "smoke"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "test:integration"
+
 [[workflows.workflow]]
 name = "Start application"
 author = "agent"
@@ -145,6 +149,14 @@ args = "npx tsx scripts/smoke-test.ts"
 
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[workflows.workflow]]
+name = "test:integration"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "E2E=true npx vitest run tests/api/analyze.integration.test.ts"
 
 [agent]
 integrations = ["github:1.0.0"]
