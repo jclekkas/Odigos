@@ -826,6 +826,14 @@ export async function getBISubscriptionHealth(range: DateRange): Promise<BISubsc
   return { totalPayers, newPayersThisWeek, newPayersLastWeek, weekOverWeekGrowthPct, checkoutConversionRate, checkoutsWithoutPayment, estimatedRevenue, tierBreakdown, dailyNewPayers };
 }
 
+export interface BIAnalysis {
+  timestamp: string;
+  verdict: string;
+  dealerId?: string;
+  vehicleYear?: number;
+  vehicleMake?: string;
+}
+
 export interface BIUserSession {
   sessionId: string;
   firstSeen: string;
@@ -835,6 +843,8 @@ export interface BIUserSession {
   hasPaid: boolean;
   verdicts: string[];
   stripeSessionIds: string[];
+  analysisHistory: BIAnalysis[];
+  paymentHistory: Array<{ timestamp: string; stripeSessionId: string }>;
 }
 
 export async function lookupUserSessions(query: string, limit = 50, stripeCustomerSessionIds: string[] = []): Promise<BIUserSession[]> {
@@ -882,6 +892,23 @@ function buildSessionSummary(sessionId: string, evts: Array<{ createdAt: Date; e
       .filter(e => e.metadata?.stripeSessionId)
       .map(e => e.metadata!.stripeSessionId as string)
   ));
+  const analysisHistory: BIAnalysis[] = evts
+    .filter(e => e.eventType === "submission" && e.metadata?.dealScore)
+    .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+    .map(e => ({
+      timestamp: e.createdAt.toISOString(),
+      verdict: e.metadata!.dealScore as string,
+      dealerId: e.metadata?.dealerId as string | undefined,
+      vehicleYear: e.metadata?.vehicleYear as number | undefined,
+      vehicleMake: e.metadata?.vehicleMake as string | undefined,
+    }));
+  const paymentHistory = evts
+    .filter(e => e.eventType === "payment_completed" && e.metadata?.stripeSessionId)
+    .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+    .map(e => ({
+      timestamp: e.createdAt.toISOString(),
+      stripeSessionId: e.metadata!.stripeSessionId as string,
+    }));
   return {
     sessionId,
     firstSeen: sorted[0].createdAt.toISOString(),
@@ -891,6 +918,8 @@ function buildSessionSummary(sessionId: string, evts: Array<{ createdAt: Date; e
     hasPaid,
     verdicts,
     stripeSessionIds,
+    analysisHistory,
+    paymentHistory,
   };
 }
 

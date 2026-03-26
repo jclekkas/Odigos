@@ -7,6 +7,14 @@ import { Link } from "wouter";
 import { ArrowLeft, Users, Search, User, CheckCircle, AlertTriangle, Clock } from "lucide-react";
 import { useAdminKey } from "@/hooks/use-admin-key";
 
+interface BIAnalysis {
+  timestamp: string;
+  verdict: string;
+  dealerId?: string;
+  vehicleYear?: number;
+  vehicleMake?: string;
+}
+
 interface UserSession {
   sessionId: string;
   firstSeen: string;
@@ -16,6 +24,8 @@ interface UserSession {
   hasPaid: boolean;
   verdicts: string[];
   stripeSessionIds: string[];
+  analysisHistory: BIAnalysis[];
+  paymentHistory: Array<{ timestamp: string; stripeSessionId: string }>;
 }
 
 const EVENT_TYPE_COLORS: Record<string, string> = {
@@ -107,9 +117,52 @@ function SessionCard({ session }: { session: UserSession }) {
       )}
 
       {expanded && (
-        <div className="pt-2 border-t border-muted/50 space-y-3">
+        <div className="pt-2 border-t border-muted/50 space-y-4">
+          {session.analysisHistory.length > 0 && (
+            <div>
+              <p className="text-xs text-muted-foreground font-semibold mb-2 uppercase tracking-wide">Analysis History ({session.analysisHistory.length})</p>
+              <div className="space-y-1.5">
+                {session.analysisHistory.map((a, i) => (
+                  <div key={i} className="flex items-center gap-2 text-xs p-2 rounded-md bg-muted/50">
+                    <Badge
+                      variant="outline"
+                      className={`text-xs font-mono shrink-0 ${
+                        a.verdict === "great_deal" || a.verdict === "GREEN" ? "border-green-500/50 text-green-700 dark:text-green-400" :
+                        a.verdict === "fair_deal" || a.verdict === "YELLOW" ? "border-yellow-500/50 text-yellow-700 dark:text-yellow-400" :
+                        a.verdict === "overpriced" || a.verdict === "RED" ? "border-red-500/50 text-red-700 dark:text-red-400" :
+                        "text-muted-foreground"
+                      }`}
+                    >
+                      {a.verdict}
+                    </Badge>
+                    <span className="text-muted-foreground">
+                      {new Date(a.timestamp).toLocaleString()}
+                      {a.vehicleYear && a.vehicleMake && ` · ${a.vehicleYear} ${a.vehicleMake}`}
+                      {a.dealerId && ` · Dealer: ${a.dealerId}`}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {session.paymentHistory.length > 0 && (
+            <div>
+              <p className="text-xs text-muted-foreground font-semibold mb-2 uppercase tracking-wide">Payment History ({session.paymentHistory.length})</p>
+              <div className="space-y-1">
+                {session.paymentHistory.map((p, i) => (
+                  <div key={i} className="flex items-center gap-2 text-xs">
+                    <CheckCircle className="h-3 w-3 text-green-500 shrink-0" />
+                    <span className="text-muted-foreground">{new Date(p.timestamp).toLocaleString()}</span>
+                    <span className="font-mono text-muted-foreground break-all">{p.stripeSessionId}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div>
-            <p className="text-xs text-muted-foreground font-medium mb-1">All event types:</p>
+            <p className="text-xs text-muted-foreground font-semibold mb-1 uppercase tracking-wide">All Event Types</p>
             <div className="flex gap-1 flex-wrap">
               {session.eventTypes.map(t => (
                 <span
@@ -124,48 +177,9 @@ function SessionCard({ session }: { session: UserSession }) {
             </div>
           </div>
 
-          {session.verdicts.length > 0 && (
-            <div>
-              <p className="text-xs text-muted-foreground font-medium mb-1">Analysis verdicts:</p>
-              <div className="flex gap-1 flex-wrap">
-                {session.verdicts.map((v, i) => (
-                  <Badge
-                    key={i}
-                    variant="outline"
-                    className={`text-xs font-mono ${
-                      v === "great_deal" ? "border-green-500/50 text-green-700 dark:text-green-400" :
-                      v === "fair_deal" ? "border-yellow-500/50 text-yellow-700 dark:text-yellow-400" :
-                      v === "overpriced" ? "border-red-500/50 text-red-700 dark:text-red-400" :
-                      "text-muted-foreground"
-                    }`}
-                  >
-                    {v}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {session.stripeSessionIds.length > 0 && (
-            <div>
-              <p className="text-xs text-muted-foreground font-medium mb-1">Stripe sessions:</p>
-              <div className="space-y-0.5">
-                {session.stripeSessionIds.map(sid => (
-                  <p key={sid} className="text-xs font-mono text-muted-foreground break-all">{sid}</p>
-                ))}
-              </div>
-            </div>
-          )}
-
           <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-            <div>
-              <span className="font-medium">First seen:</span>{" "}
-              {new Date(session.firstSeen).toLocaleString()}
-            </div>
-            <div>
-              <span className="font-medium">Last seen:</span>{" "}
-              {new Date(session.lastSeen).toLocaleString()}
-            </div>
+            <div><span className="font-medium">First seen:</span> {new Date(session.firstSeen).toLocaleString()}</div>
+            <div><span className="font-medium">Last seen:</span> {new Date(session.lastSeen).toLocaleString()}</div>
           </div>
         </div>
       )}

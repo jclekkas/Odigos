@@ -118,14 +118,20 @@ export function registerBIRoutes(app: Express): void {
       const limit = Math.min(parseInt(typeof req.query.limit === "string" ? req.query.limit : "50", 10) || 50, 100);
 
       let stripeSessionIdsFromCustomer: string[] = [];
-      if (q.toLowerCase().startsWith("cus_") && await isStripeConfigured()) {
+      if (q.startsWith("cus_") && await isStripeConfigured()) {
         try {
           const stripe = await getStripeClient();
-          const checkoutSessions = await stripe.checkout.sessions.list({
-            customer: q,
-            limit: 100,
-          });
-          stripeSessionIdsFromCustomer = checkoutSessions.data.map(s => s.id);
+          const isExactId = /^cus_[a-zA-Z0-9]{14,24}$/.test(q);
+          if (isExactId) {
+            const checkoutSessions = await stripe.checkout.sessions.list({ customer: q, limit: 100 });
+            stripeSessionIdsFromCustomer = checkoutSessions.data.map(s => s.id);
+          } else {
+            const allComplete = await stripe.checkout.sessions.list({ status: "complete", limit: 100 });
+            const matchingSessions = allComplete.data.filter(s =>
+              typeof s.customer === "string" && s.customer.toLowerCase().startsWith(q)
+            );
+            stripeSessionIdsFromCustomer = matchingSessions.map(s => s.id);
+          }
         } catch {
         }
       }
