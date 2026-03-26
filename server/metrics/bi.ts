@@ -170,6 +170,7 @@ export interface BIUserBehavior {
   fieldEngagement: Array<{ fieldName: string; focusCount: number; abandonCount: number }>;
   avgPagesPerSession: number;
   bounceRate: number;
+  returnVisitRate: number;
   topEntryPages: Array<{ page: string; count: number }>;
   topExitPages: Array<{ page: string; count: number }>;
 }
@@ -254,7 +255,19 @@ export async function getBIUserBehavior(range: DateRange): Promise<BIUserBehavio
     .sort((a, b) => b.count - a.count)
     .slice(0, 5);
 
-  return { fieldEngagement, avgPagesPerSession, bounceRate, topEntryPages, topExitPages };
+  const sessionDates: Record<string, Set<string>> = {};
+  pageViewEvents.forEach(e => {
+    const sid = e.metadata?.sessionId as string | undefined;
+    if (!sid) return;
+    const date = e.createdAt.toISOString().split("T")[0];
+    if (!sessionDates[sid]) sessionDates[sid] = new Set();
+    sessionDates[sid].add(date);
+  });
+  const allSessionIds = Object.keys(sessionDates);
+  const returningSessions = allSessionIds.filter(sid => sessionDates[sid].size > 1).length;
+  const returnVisitRate = allSessionIds.length > 0 ? (returningSessions / allSessionIds.length) * 100 : 0;
+
+  return { fieldEngagement, avgPagesPerSession, bounceRate, returnVisitRate, topEntryPages, topExitPages };
 }
 
 export interface BIDealOutcome {
@@ -703,4 +716,128 @@ export async function getBIFallout(range: DateRange): Promise<BIFallout> {
   }));
 
   return { checkoutsWithoutPayment, avgMinutesSubmissionToCheckout, dropoffByHour };
+}
+
+export interface BISubscriptionHealth {
+  totalPayers: number;
+  newPayersThisWeek: number;
+  newPayersLastWeek: number;
+  checkoutConversionRate: number;
+  tierBreakdown: { tier49: number; tier79: number; other: number };
+  dailyNewPayers: Array<{ date: string; count: number }>;
+}
+
+export async function getBISubscriptionHealth(range: DateRange): Promise<BISubscriptionHealth> {
+  const { events } = await loadMetrics();
+  const allEvents = events.map(e => ({ ...e, createdAt: new Date(e.createdAt) }));
+  const ranged = filterByRange(allEvents, range);
+
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const weekStart = new Date(todayStart.getTime() - 7 * 86400000);
+  const lastWeekStart = new Date(todayStart.getTime() - 14 * 86400000);
+
+  const payments = ranged.filter(e => e.eventType === "payment_completed");
+  const checkouts = ranged.filter(e => e.eventType === "checkout_started");
+
+  const totalPayers = new Set(
+    payments.map(e => e.metadata?.sessionId as string).filter(Boolean)
+  ).size;
+
+  const newPayersThisWeek = new Set(
+    allEvents
+      .filter(e => e.eventType === "payment_completed" && e.createdAt >= weekStart)
+      .map(e => e.metadata?.sessionId as string)
+      .filter(Boolean)
+  ).size;
+
+  const newPayersLastWeek = new Set(
+    allEvents
+      .filter(e => e.eventType === "payment_completed" && e.createdAt >= lastWeekStart && e.createdAt < weekStart)
+      .map(e => e.metadata?.sessionId as string)
+      .filter(Boolean)
+  ).size;
+
+  const checkoutConversionRate = checkouts.length > 0 ? (payments.length / checkouts.length) * 100 : 0;
+
+  const tierBreakdown = { tier49: 0, tier79: 0, other: 0 };
+  payments.forEach(e => {
+    const tier = e.metadata?.tier;
+    if (tier === "49") tierBreakdown.tier49++;
+    else if (tier === "79") tierBreakdown.tier79++;
+    else tierBreakdown.other++;
+  });
+
+  const thirtyDaysAgo = new Date(todayStart.getTime() - 30 * 86400000);
+  const recentPayments = allEvents.filter(e => e.eventType === "payment_completed" && e.createdAt >= thirtyDaysAgo);
+  const paysByDayMap: Record<string, Set<string>> = {};
+  recentPayments.forEach(e => {
+    const date = e.createdAt.toISOString().split("T")[0];
+    const sid = e.metadata?.sessionId as string | undefined;
+    if (!paysByDayMap[date]) paysByDayMap[date] = new Set();
+    if (sid) paysByDayMap[date].add(sid);
+    else paysByDayMap[date].add(`anon-${e.id ?? Math.random()}`);
+  });
+
+  const dailyNewPayers = Object.entries(paysByDayMap)
+    .map(([date, sids]) => ({ date, count: sids.size }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  return { totalPayers, newPayersThisWeek, newPayersLastWeek, checkoutConversionRate, tierBreakdown, dailyNewPayers };
+}
+
+export interface BIUserSession {
+  sessionId: string;
+  firstSeen: string;
+  lastSeen: string;
+  eventCount: number;
+  eventTypes: string[];
+  hasPaid: boolean;
+}
+
+export async function lookupUserSessions(query: string, limit = 20): Promise<BIUserSession[]> {
+  const { events } = await loadMetrics();
+  const allEvents = events.map(e => ({ ...e, createdAt: new Date(e.createdAt) }));
+
+  const q = query.trim().toLowerCase();
+  if (!q) {
+    const sessionMap: Record<string, typeof allEvents> = {};
+    allEvents.forEach(e => {
+      const sid = e.metadata?.sessionId as string | undefined;
+      if (!sid) return;
+      if (!sessionMap[sid]) sessionMap[sid] = [];
+      sessionMap[sid].push(e);
+    });
+    return Object.entries(sessionMap)
+      .map(([sessionId, evts]) => buildSessionSummary(sessionId, evts))
+      .sort((a, b) => b.lastSeen.localeCompare(a.lastSeen))
+      .slice(0, limit);
+  }
+
+  const sessionMap: Record<string, typeof allEvents> = {};
+  allEvents.forEach(e => {
+    const sid = e.metadata?.sessionId as string | undefined;
+    if (!sid || !sid.toLowerCase().includes(q)) return;
+    if (!sessionMap[sid]) sessionMap[sid] = [];
+    sessionMap[sid].push(e);
+  });
+
+  return Object.entries(sessionMap)
+    .map(([sessionId, evts]) => buildSessionSummary(sessionId, evts))
+    .sort((a, b) => b.lastSeen.localeCompare(a.lastSeen))
+    .slice(0, limit);
+}
+
+function buildSessionSummary(sessionId: string, evts: Array<{ createdAt: Date; eventType: string; metadata?: Record<string, unknown> | null }>): BIUserSession {
+  const sorted = evts.slice().sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+  const types = Array.from(new Set(evts.map(e => e.eventType)));
+  const hasPaid = types.includes("payment_completed");
+  return {
+    sessionId,
+    firstSeen: sorted[0].createdAt.toISOString(),
+    lastSeen: sorted[sorted.length - 1].createdAt.toISOString(),
+    eventCount: evts.length,
+    eventTypes: types,
+    hasPaid,
+  };
 }

@@ -58,6 +58,23 @@ export function registerBIRoutes(app: Express): void {
     catch (e: any) { res.status(500).json({ error: e?.message }); }
   });
 
+  app.get("/api/admin/bi/subscription", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
+    try { const { getBISubscriptionHealth } = await import("../bi"); res.json(await getBISubscriptionHealth(parseRange(req))); }
+    catch (e: any) { res.status(500).json({ error: e?.message }); }
+  });
+
+  app.get("/api/admin/users/lookup", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
+    try {
+      const { lookupUserSessions } = await import("../bi");
+      const q = typeof req.query.q === "string" ? req.query.q : "";
+      const limit = Math.min(parseInt(typeof req.query.limit === "string" ? req.query.limit : "20", 10) || 20, 100);
+      const sessions = await lookupUserSessions(q, limit);
+      res.json({ sessions });
+    } catch (e: any) { res.status(500).json({ error: e?.message }); }
+  });
+
   app.get("/api/admin/feedback-accuracy", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
     try {

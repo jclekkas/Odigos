@@ -1,0 +1,184 @@
+Perform a full canonical, indexability, and sitemap hardening pass across the entire Odigos site. This is NOT a one-off fix — the goal is to eliminate the root cause and prevent recurring SEO indexing issues.
+
+Context:
+Google Search Console is reporting “Alternate page with proper canonical tag” for primary pages that should be independently indexed. Additionally, critical pages (e.g. /calculate-out-the-door-price) are missing from sitemap.xml, which slows or prevents proper discovery.
+
+Known affected pages:
+
+* /car-dealer-fees-ohio
+* /car-dealer-fees-florida
+* /car-dealer-fees-new-york
+* /dealer-doc-fee
+* /how-much-should-you-pay-for-a-car
+
+Known sitemap issue:
+
+* /calculate-out-the-door-price is NOT included in sitemap.xml but should be indexed
+
+Objective:
+Create a durable, system-wide solution so:
+
+1. Every indexable page has a correct self-referencing canonical
+2. No page is accidentally treated as an alternate
+3. The sitemap is complete, accurate, and automatically maintained
+4. This class of issue does NOT recur as new pages are added
+
+---
+
+Tasks:
+
+1. Full SEO + indexing audit:
+
+   * canonical generation (SeoHead, seo.ts, setSeoMeta)
+   * route-level metadata
+   * dynamic state templates
+   * article templates
+   * structured data (JSON-LD)
+   * Open Graph URLs
+   * sitemap.xml generation
+   * robots.txt sitemap reference
+   * redirect/domain normalization logic
+
+---
+
+2. Identify root cause of canonical issue:
+
+   * shared/static canonical values
+   * default canonical overriding page-specific canonical
+   * route changes not updating metadata
+   * hub page canonical leaking into child pages
+   * trailing slash inconsistencies
+   * mixed domains (replit.app vs odigosauto.com)
+   * duplicate route rendering
+   * dynamic template bugs
+
+---
+
+3. Implement a site-wide canonical policy:
+
+   * every indexable page outputs exactly ONE canonical
+   * canonical must be self-referencing unless explicitly intentional
+   * canonical must always use https://odigosauto.com
+   * canonical must match the resolved pathname
+   * og:url and structured data URLs must match canonical
+   * no page can inherit another page’s canonical accidentally
+
+---
+
+4. Create a central canonical utility:
+
+   * single function used everywhere
+   * normalized origin (https://odigosauto.com)
+   * consistent pathname + trailing slash handling
+   * prevents empty, stale, duplicate, or fallback canonicals
+   * safe override behavior for page-specific canonical
+
+---
+
+5. Harden dynamic and template pages:
+
+   * state pages → canonical from actual state slug
+   * article pages → canonical from article slug
+   * hub pages → self-canonical only
+   * prevent hub pages from becoming canonical for detail pages
+
+---
+
+6. Sitemap overhaul (CRITICAL):
+
+   * Ensure sitemap.xml includes ALL indexable pages, including:
+
+     * /calculate-out-the-door-price (currently missing)
+     * all state pages
+     * all article pages
+     * all hub pages
+     * all primary landing pages
+   * Remove any non-canonical or duplicate URLs from sitemap
+   * Ensure sitemap URLs match canonical URLs exactly
+   * Ensure sitemap only includes odigosauto.com (no replit.app)
+   * Ensure sitemap is dynamically generated or centrally maintained to avoid omissions
+   * Ensure robots.txt correctly references sitemap.xml
+
+---
+
+7. Full route audit:
+
+   * identify ALL indexable routes across the app
+   * confirm each has:
+
+     * correct canonical
+     * correct title/description
+     * correct og:url
+     * inclusion in sitemap
+   * flag any additional at-risk pages beyond the known 5
+
+---
+
+8. Add regression protection (prevents this happening again):
+
+   * automated tests for canonical correctness across:
+
+     * state pages
+     * article pages
+     * static pages
+   * tests that verify:
+
+     * canonical is self-referencing
+     * og:url matches canonical
+     * structured data URLs match canonical
+     * no mixed-domain URLs
+     * no duplicate canonical reuse
+   * tests that fail if:
+
+     * a page is missing canonical
+     * multiple canonicals are rendered
+     * sitemap is missing known routes
+
+---
+
+9. Add developer safeguards:
+
+   * warning or test failure if:
+
+     * canonical does not match route
+     * canonical is empty or reused
+     * sitemap is missing a registered route
+
+---
+
+10. Verification:
+
+* inspect rendered HTML for affected pages
+* confirm correct canonical tag per page
+* confirm sitemap contains all expected URLs
+* confirm alignment across:
+
+  * canonical
+  * og:url
+  * structured data
+  * sitemap
+
+---
+
+Constraints:
+
+* Keep the odigos.replit.app → odigosauto.com redirect intact
+* Do NOT remove canonical tags
+* Do NOT apply noindex unless explicitly required
+* Do NOT make unrelated SEO changes
+* Preserve routing unless a routing bug is the cause
+* Prefer a centralized, durable fix over page-by-page patches
+
+---
+
+Deliverables:
+
+* implement all fixes
+* list all files changed
+* explain the root cause
+* define the new canonical policy
+* confirm sitemap completeness
+* list any additional at-risk pages found
+* describe tests added
+* show final canonical for affected pages
+* confirm canonical / og:url / structured data / sitemap alignment

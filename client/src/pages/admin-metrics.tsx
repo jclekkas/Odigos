@@ -699,6 +699,18 @@ export default function AdminMetrics() {
                   {t("admin.biDashboard")}
                 </Button>
               </Link>
+              <Link href="/admin/content">
+                <Button variant="outline" size="sm" data-testid="link-content-dashboard">
+                  <FileText className="h-4 w-4 mr-2" />
+                  Content
+                </Button>
+              </Link>
+              <Link href="/admin/users">
+                <Button variant="outline" size="sm" data-testid="link-users-dashboard">
+                  <Users className="h-4 w-4 mr-2" />
+                  Users
+                </Button>
+              </Link>
               <Button 
                 variant="outline" 
                 size="sm"

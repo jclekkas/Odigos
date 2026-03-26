@@ -3,8 +3,33 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowLeft, FlaskConical, Trophy, Users, TrendingUp, RefreshCw } from "lucide-react";
+import { ArrowLeft, FlaskConical, Trophy, Users, TrendingUp, RefreshCw, CheckCircle2, Clock } from "lucide-react";
 import { useTranslation, Trans } from "react-i18next";
+
+function normalCDF(z: number): number {
+  const t = 1 / (1 + 0.2316419 * Math.abs(z));
+  const poly =
+    t * (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+  const pdf = Math.exp((-z * z) / 2) / Math.sqrt(2 * Math.PI);
+  const result = 1 - pdf * poly;
+  return z >= 0 ? result : 1 - result;
+}
+
+function zTestTwoProportions(
+  n1: number, x1: number,
+  n2: number, x2: number
+): { z: number; pValue: number; significant: boolean; lift: number } {
+  if (n1 === 0 || n2 === 0) return { z: 0, pValue: 1, significant: false, lift: 0 };
+  const p1 = x1 / n1;
+  const p2 = x2 / n2;
+  const pPool = (x1 + x2) / (n1 + n2);
+  const se = Math.sqrt(pPool * (1 - pPool) * (1 / n1 + 1 / n2));
+  if (se === 0) return { z: 0, pValue: 1, significant: false, lift: 0 };
+  const z = Math.abs(p1 - p2) / se;
+  const pValue = 2 * (1 - normalCDF(z));
+  const lift = p1 > 0 ? ((p2 - p1) / p1) * 100 : 0;
+  return { z, pValue, significant: pValue < 0.05, lift };
+}
 
 interface ExperimentVariantStats {
   variant: string;
@@ -115,9 +140,38 @@ function VariantRow({ variant, isWinner, total }: { variant: ExperimentVariantSt
   );
 }
 
+function SignificanceBadge({ sig }: { sig: { z: number; pValue: number; significant: boolean; lift: number } }) {
+  if (sig.pValue >= 1) return null;
+  if (sig.significant) {
+    return (
+      <Badge className="bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-500/30 gap-1 text-xs">
+        <CheckCircle2 className="w-3 h-3" />
+        p={sig.pValue.toFixed(3)} · {sig.lift > 0 ? "+" : ""}{sig.lift.toFixed(1)}% lift
+      </Badge>
+    );
+  }
+  return (
+    <Badge variant="outline" className="text-muted-foreground gap-1 text-xs">
+      <Clock className="w-3 h-3" />
+      Not significant (p={sig.pValue.toFixed(3)})
+    </Badge>
+  );
+}
+
 function ExperimentCard({ exp }: { exp: ExperimentStats }) {
   const { t } = useTranslation();
   const total = exp.variants.reduce((sum, v) => sum + v.assignments, 0);
+
+  const control = exp.variants.find(v => v.variant === "control") ?? exp.variants[0];
+  const treatment = exp.variants.find(v => v.variant !== "control" && v !== control);
+
+  const significance =
+    control && treatment
+      ? zTestTwoProportions(
+          control.assignments, control.conversions,
+          treatment.assignments, treatment.conversions
+        )
+      : null;
 
   return (
     <Card data-testid={`experiment-card-${exp.experimentId}`}>
@@ -131,19 +185,22 @@ function ExperimentCard({ exp }: { exp: ExperimentStats }) {
             <p className="text-xs text-muted-foreground mt-1 font-mono">{exp.experimentId}</p>
           </div>
 
-          {exp.winner ? (
-            <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30">
-              {t("admin.winner_label", { variant: exp.winner })}
-            </Badge>
-          ) : total > 0 ? (
-            <Badge variant="outline" className="text-muted-foreground">
-              {t("admin.noWinnerYet")}
-            </Badge>
-          ) : (
-            <Badge variant="outline" className="text-muted-foreground">
-              {t("admin.noData")}
-            </Badge>
-          )}
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            {significance && <SignificanceBadge sig={significance} />}
+            {exp.winner ? (
+              <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30">
+                {t("admin.winner_label", { variant: exp.winner })}
+              </Badge>
+            ) : total > 0 ? (
+              <Badge variant="outline" className="text-muted-foreground">
+                {t("admin.noWinnerYet")}
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="text-muted-foreground">
+                {t("admin.noData")}
+              </Badge>
+            )}
+          </div>
         </div>
       </CardHeader>
 
@@ -252,7 +309,7 @@ export default function AdminExperiments() {
             <li>• <Trans i18nKey="admin.howToReadAssignments"><strong>Assignments</strong>: users deterministically bucketed into this variant (stable across reloads)</Trans></li>
             <li>• <Trans i18nKey="admin.howToReadConversions"><strong>Conversions</strong>: paid conversions attributed to users in this variant</Trans></li>
             <li>• <Trans i18nKey="admin.howToReadRate"><strong>Conv. Rate</strong>: conversions / assignments. Lower sample sizes are less reliable.</Trans></li>
-            <li>• <Trans i18nKey="admin.howToReadWinner"><strong>Winner</strong>: variant with the higher conversion rate (no statistical significance test applied)</Trans></li>
+            <li>• <Trans i18nKey="admin.howToReadWinner"><strong>Winner</strong>: variant with the higher conversion rate. Statistical significance shown as a badge (two-proportion z-test, α=0.05). "Not significant" means more data is needed.</Trans></li>
           </ul>
         </div>
       </div>

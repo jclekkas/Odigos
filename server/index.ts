@@ -128,6 +128,9 @@ app.use((req, res, next) => {
   return next();
 });
 
+// ── Proxy trust (required for rate limiter to work behind Replit/CF reverse proxy) ───
+app.set("trust proxy", 1);
+
 // ── Rate limiting ─────────────────────────────────────────────────────────────
 const generalLimiter = rateLimit({
   windowMs: 60 * 1000,

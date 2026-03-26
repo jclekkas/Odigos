@@ -26,6 +26,7 @@ import {
   Activity,
   Zap,
   CheckCircle,
+  CreditCard,
 } from "lucide-react";
 import {
   AreaChart,
@@ -389,6 +390,7 @@ interface UserBehavior {
   fieldEngagement: Array<{ fieldName: string; focusCount: number; abandonCount: number }>;
   avgPagesPerSession: number;
   bounceRate: number;
+  returnVisitRate: number;
   topEntryPages: Array<{ page: string; count: number }>;
   topExitPages: Array<{ page: string; count: number }>;
 }
@@ -416,7 +418,7 @@ function BehaviorPanel({ adminKey, range }: { adminKey: string; range: DateRange
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard
           title="Avg Pages / Session"
           value={(data?.avgPagesPerSession ?? 0).toFixed(1)}
@@ -429,6 +431,13 @@ function BehaviorPanel({ adminKey, range }: { adminKey: string; range: DateRange
           subtitle="Single-page sessions"
           icon={TrendingDown}
           color={(data?.bounceRate ?? 0) > 60 ? "danger" : "default"}
+        />
+        <StatCard
+          title="Return Visit Rate"
+          value={`${(data?.returnVisitRate ?? 0).toFixed(1)}%`}
+          subtitle="Sessions seen on 2+ distinct days"
+          icon={TrendingUp}
+          color={(data?.returnVisitRate ?? 0) > 20 ? "success" : "default"}
         />
       </div>
 
@@ -1362,6 +1371,184 @@ function FeedbackAccuracyPanel({ adminKey }: { adminKey: string }) {
 }
 
 // ============================================================================
+// Subscription Health Panel
+// ============================================================================
+interface SubscriptionHealth {
+  totalPayers: number;
+  newPayersThisWeek: number;
+  newPayersLastWeek: number;
+  checkoutConversionRate: number;
+  tierBreakdown: { tier49: number; tier79: number; other: number };
+  dailyNewPayers: Array<{ date: string; count: number }>;
+}
+
+function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateRange }) {
+  const { data, isLoading, isError } = useQuery<SubscriptionHealth>({
+    queryKey: ["/api/admin/bi/subscription", adminKey, range],
+    queryFn: async () => {
+      const res = await fetch(`/api/admin/bi/subscription?range=${range}`, {
+        headers: { Authorization: `Bearer ${adminKey}` },
+      });
+      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+      return res.json();
+    },
+    refetchInterval: q => {
+      const errMsg = (q.state.error as Error)?.message ?? "";
+      return errMsg.startsWith("401") ? false : 300000;
+    },
+    enabled: !!adminKey,
+  });
+
+  if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center h-40 text-muted-foreground gap-2">
+        <AlertTriangle className="h-8 w-8 opacity-40" />
+        <p className="text-sm">Failed to load subscription health data</p>
+      </div>
+    );
+  }
+
+  const tier49 = data?.tierBreakdown.tier49 ?? 0;
+  const tier79 = data?.tierBreakdown.tier79 ?? 0;
+  const tierOther = data?.tierBreakdown.other ?? 0;
+  const tierTotal = tier49 + tier79 + tierOther;
+  const tierData = [
+    { name: "$49 Standard", value: tier49, color: "hsl(var(--primary))" },
+    { name: "$79 Premium", value: tier79, color: "#22c55e" },
+    ...(tierOther > 0 ? [{ name: "Other", value: tierOther, color: "#94a3b8" }] : []),
+  ].filter(d => d.value > 0);
+
+  const chartData = (data?.dailyNewPayers ?? []).map(d => ({
+    date: d.date.slice(5),
+    payers: d.count,
+  }));
+
+  return (
+    <div className="space-y-6" data-testid="panel-subscription-health">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          title="Total Payers"
+          value={data?.totalPayers ?? 0}
+          subtitle="Unique paying sessions"
+          icon={Users}
+          color="success"
+        />
+        <StatCard
+          title="New This Week"
+          value={data?.newPayersThisWeek ?? 0}
+          subtitle="vs last week"
+          icon={TrendingUp}
+          color="success"
+          trend={{ current: data?.newPayersThisWeek ?? 0, previous: data?.newPayersLastWeek ?? 0 }}
+        />
+        <StatCard
+          title="Checkout → Payment"
+          value={`${(data?.checkoutConversionRate ?? 0).toFixed(1)}%`}
+          subtitle="Checkout conversion rate"
+          icon={CreditCard}
+          color={(data?.checkoutConversionRate ?? 0) > 40 ? "success" : "warning"}
+        />
+        <StatCard
+          title="Last Week Payers"
+          value={data?.newPayersLastWeek ?? 0}
+          subtitle="Previous 7-day window"
+          icon={Activity}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              New Payers — Last 30 Days
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {chartData.length === 0 ? (
+              <EmptyState icon={TrendingUp} label="No payment data yet" />
+            ) : (
+              <div className="h-56">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData}>
+                    <defs>
+                      <linearGradient id="payerGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis dataKey="date" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
+                    <YAxis tick={{ fill: "hsl(var(--muted-foreground))" }} allowDecimals={false} />
+                    <Tooltip
+                      contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }}
+                      formatter={(v: number) => [v, "New Payers"]}
+                    />
+                    <Area type="monotone" dataKey="payers" stroke="hsl(var(--primary))" fill="url(#payerGrad)" strokeWidth={2} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5" />
+              Revenue Tier Breakdown
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">Distribution of payment tiers</p>
+          </CardHeader>
+          <CardContent>
+            {tierTotal === 0 ? (
+              <EmptyState icon={CreditCard} label="No payment tier data yet" />
+            ) : (
+              <div className="space-y-4">
+                <div className="h-48">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={tierData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={50}
+                        outerRadius={75}
+                        paddingAngle={2}
+                        dataKey="value"
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        labelLine={false}
+                      >
+                        {tierData.map((entry, i) => (
+                          <Cell key={i} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="flex justify-center gap-4">
+                  {tierData.map(d => (
+                    <div key={d.name} className="flex items-center gap-1">
+                      <div className="h-3 w-3 rounded-full" style={{ backgroundColor: d.color }} />
+                      <span className="text-xs text-muted-foreground">{d.name}: {d.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
 // Main Page
 // ============================================================================
 const PANELS = [
@@ -1374,6 +1561,7 @@ const PANELS = [
   { id: "revenue", label: "Revenue Health" },
   { id: "fallout", label: "Fallout" },
   { id: "feedback-accuracy", label: "Feedback Accuracy" },
+  { id: "subscription", label: "Subscription Health" },
 ];
 
 export default function AdminBusiness() {
@@ -1530,6 +1718,7 @@ export default function AdminBusiness() {
         {activePanel === "revenue" && <RevenuePanel adminKey={adminKey} range={range} />}
         {activePanel === "fallout" && <FalloutPanel adminKey={adminKey} range={range} />}
         {activePanel === "feedback-accuracy" && <FeedbackAccuracyPanel adminKey={adminKey} />}
+        {activePanel === "subscription" && <SubscriptionPanel adminKey={adminKey} range={range} />}
       </div>
     </div>
   );

@@ -35,6 +35,8 @@ import AdminMetrics from "@/pages/admin-metrics";
 import AdminTechnical from "@/pages/admin-technical";
 import AdminBusiness from "@/pages/admin-business";
 import AdminExperiments from "@/pages/admin-experiments";
+import AdminContent from "@/pages/admin-content";
+import AdminUsers from "@/pages/admin-users";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import About from "@/pages/about";
@@ -102,6 +104,8 @@ function Router() {
       <Route path="/admin/technical" component={AdminTechnical} />
       <Route path="/admin/business" component={AdminBusiness} />
       <Route path="/admin/experiments" component={AdminExperiments} />
+      <Route path="/admin/content" component={AdminContent} />
+      <Route path="/admin/users" component={AdminUsers} />
       <Route path="/about" component={About} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/terms" component={Terms} />
