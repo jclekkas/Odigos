@@ -332,6 +332,22 @@ async function ensureAppSchema(): Promise<void> {
     console.error("[app-schema] Failed to ensure deal_feedback schema (non-fatal):", err);
   }
 
+  // ── DLQ replay columns migration (idempotent) ────────────────────────────
+  try {
+    await db.execute(sql`ALTER TABLE failed_warehouse_writes ADD COLUMN IF NOT EXISTS status varchar(16) NOT NULL DEFAULT 'pending'`);
+    await db.execute(sql`ALTER TABLE failed_warehouse_writes ADD COLUMN IF NOT EXISTS max_attempts integer NOT NULL DEFAULT 5`);
+    await db.execute(sql`ALTER TABLE failed_warehouse_writes ADD COLUMN IF NOT EXISTS next_attempt_at timestamptz NOT NULL DEFAULT now()`);
+    await db.execute(sql`ALTER TABLE failed_warehouse_writes ADD COLUMN IF NOT EXISTS first_failed_at timestamptz NOT NULL DEFAULT now()`);
+    await db.execute(sql`ALTER TABLE failed_warehouse_writes ADD COLUMN IF NOT EXISTS last_failed_at timestamptz NOT NULL DEFAULT now()`);
+    await db.execute(sql`ALTER TABLE failed_warehouse_writes ADD COLUMN IF NOT EXISTS lease_expires_at timestamptz`);
+    await db.execute(sql`ALTER TABLE failed_warehouse_writes ADD COLUMN IF NOT EXISTS last_error_code varchar(64)`);
+    await db.execute(sql`ALTER TABLE failed_warehouse_writes ADD COLUMN IF NOT EXISTS last_error_message text`);
+    await db.execute(sql`CREATE INDEX IF NOT EXISTS dlq_status_next_attempt_idx ON failed_warehouse_writes (status, next_attempt_at)`);
+    console.log("[app-schema] DLQ replay columns ensured.");
+  } catch (err) {
+    console.error("[app-schema] Failed to ensure DLQ replay columns (non-fatal):", err);
+  }
+
   try {
     await db.execute(sql`
       DO $$ BEGIN
@@ -425,6 +441,13 @@ async function ensureAppSchema(): Promise<void> {
         startAlertScheduler();
       } catch (err) {
         console.error("[alerts] Failed to start alert scheduler:", err);
+      }
+
+      try {
+        const { startDlqReplayWorker } = await import("./warehouse/dlqReplay");
+        startDlqReplayWorker();
+      } catch (err) {
+        console.error("[dlq-replay] Failed to start DLQ replay worker (non-fatal):", err);
       }
     },
   );

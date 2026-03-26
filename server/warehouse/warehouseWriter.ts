@@ -7,8 +7,8 @@
  */
 import { db } from "../db";
 import { sql, eq, and } from "drizzle-orm";
-import type { AnalysisResponse, AnalysisRequest } from "@shared/schema";
-import { failedWarehouseWrites } from "@shared/schema";
+import type { AnalysisResponse, AnalysisRequest, DetectedFields } from "@shared/schema";
+import { failedWarehouseWrites, detectedFieldsSchema } from "@shared/schema";
 import { rawUserAnalyses, coreDealers, coreListings } from "@shared/warehouse";
 import {
   normalizeDealerName,
@@ -34,10 +34,14 @@ function toStr(val: number | null | undefined): string | null {
 }
 
 /**
- * Upsert a dealer row. state_code must be a valid seeded US code or null
- * to avoid FK violation on core.states.
+ * Upsert a dealer row. Returns the dealer ID without touching listing_count.
+ * The caller is responsible for incrementing the counter only when a new
+ * listing row is actually inserted (not on conflict / replay).
+ *
+ * state_code must be a valid seeded US code or null to avoid FK violation
+ * on core.states.
  */
-async function getOrCreateDealer(
+async function getOrCreateDealerRow(
   dealerName: string,
   city: string,
   validStateCode: string | null,
@@ -55,15 +59,7 @@ async function getOrCreateDealer(
     .where(sql`dealer_name_normalized = ${normalized} AND ${stateWhere} AND city = ${city}`)
     .limit(1);
 
-  if (existing.length > 0) {
-    // Increment listing_count and refresh last_seen_at
-    await db.execute(
-      sql`UPDATE core.dealers
-          SET listing_count = listing_count + 1, last_seen_at = NOW()
-          WHERE id = ${existing[0].id}`,
-    );
-    return existing[0].id;
-  }
+  if (existing.length > 0) return existing[0].id;
 
   const inserted = await db
     .insert(coreDealers)
@@ -72,7 +68,7 @@ async function getOrCreateDealer(
       dealerNameNormalized: normalized,
       city,
       stateCode: validStateCode,
-      listingCount: 1,
+      listingCount: 0,
     })
     .onConflictDoNothing()
     .returning({ id: coreDealers.id });
@@ -86,6 +82,15 @@ async function getOrCreateDealer(
     .where(sql`dealer_name_normalized = ${normalized} AND ${stateWhere} AND city = ${city}`)
     .limit(1);
   return refetch[0].id;
+}
+
+/** Increment listing_count on a dealer row after a confirmed new listing insert. */
+async function incrementDealerListingCount(dealerId: string): Promise<void> {
+  await db.execute(
+    sql`UPDATE core.dealers
+        SET listing_count = listing_count + 1, last_seen_at = NOW()
+        WHERE id = ${dealerId}`,
+  );
 }
 
 const STATE_FULL_NAMES: Record<string, string> = {
@@ -113,7 +118,9 @@ async function performWarehouseWrite(payload: WarehouseWritePayload): Promise<vo
   // Validate state to prevent FK violations
   const validState = validateStateCode(stateCode);
 
-  // ── (a) raw.user_analyses ──────────────────────────────────────────────────
+  // ── (a) raw.user_analyses — idempotent via dealer_submission_id ────────────
+  // ON CONFLICT DO NOTHING ensures replaying the same DLQ row doesn't create
+  // a duplicate raw.user_analyses record.
   await db.insert(rawUserAnalyses).values({
     dealerSubmissionId,
     stateCode: validState,
@@ -131,7 +138,7 @@ async function performWarehouseWrite(payload: WarehouseWritePayload): Promise<vo
     ],
     ingestionSource: "user_submitted",
     retentionExpiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-  });
+  }).onConflictDoNothing();
 
   // ── (b) core.dealers ───────────────────────────────────────────────────────
   // Try to extract dealer-identifying text from the analysis result.
@@ -171,7 +178,7 @@ async function performWarehouseWrite(payload: WarehouseWritePayload): Promise<vo
   const resolvedDealerName = extractedDealerName ?? textDealerName ?? `Unknown Dealer - ${rawStateCode}`;
   const dealerCity = (extractedDealerName || textDealerName) ? (validState ?? rawStateCode) : sentinelCity;
 
-  const dealerId = await getOrCreateDealer(resolvedDealerName, dealerCity, validState);
+  const dealerId = await getOrCreateDealerRow(resolvedDealerName, dealerCity, validState);
 
   // ── (c) core.listings ─────────────────────────────────────────────────────
   const hasMarketAdj = fees.some((f) => /market.?adjust|markup|adm/i.test(f.name));
@@ -251,7 +258,10 @@ async function performWarehouseWrite(payload: WarehouseWritePayload): Promise<vo
   }
 
   const now = new Date();
-  await db.insert(coreListings).values({
+  // Idempotent insert: if a listing for this submission already exists (on DLQ
+  // replay or duplicate request), ON CONFLICT DO NOTHING returns an empty array.
+  // We only increment the dealer listing_count when a genuinely new row is inserted.
+  const insertedListings = await db.insert(coreListings).values({
     dealerId,
     dealerSubmissionId,
     ingestionSource: "user_submitted",
@@ -283,10 +293,19 @@ async function performWarehouseWrite(payload: WarehouseWritePayload): Promise<vo
     stateCode: validState,
     listingDate: now.toISOString().slice(0, 10),
     analyzedAt: now,
-  });
+  }).onConflictDoNothing().returning({ id: coreListings.id });
+
+  const newListingInserted = insertedListings.length > 0;
+
+  // Only increment the dealer aggregate counter when a truly new listing row was
+  // inserted. On DLQ replay the listing already exists (conflict), so we skip
+  // the increment to keep replay side effects fully idempotent.
+  if (newListingInserted) {
+    await incrementDealerListingCount(dealerId);
+  }
 
   console.log(
-    `[warehouse] Wrote submission ${dealerSubmissionId} to warehouse (state=${validState ?? "unknown"}, score=${finalResult.dealScore}, duplicate=${isDuplicate})`,
+    `[warehouse] Wrote submission ${dealerSubmissionId} to warehouse (state=${validState ?? "unknown"}, score=${finalResult.dealScore}, duplicate=${isDuplicate}, newListing=${newListingInserted})`,
   );
 }
 
@@ -315,6 +334,7 @@ export async function writeSubmissionToWarehouse(
 
   // All attempts exhausted — write to DLQ
   try {
+    const now = new Date();
     await db.insert(failedWarehouseWrites).values({
       submissionId: payload.dealerSubmissionId,
       payload: safeSerializePayload({
@@ -324,8 +344,14 @@ export async function writeSubmissionToWarehouse(
         verdict: payload.result.goNoGo,
       }),
       errorMessage: getErrorMessage(lastError),
-      attemptCount: MAX_ATTEMPTS,
-    });
+      attemptCount: 0,
+      status: "pending",
+      maxAttempts: 5,
+      nextAttemptAt: now,
+      firstFailedAt: now,
+      lastFailedAt: now,
+      lastErrorMessage: getErrorMessage(lastError).slice(0, 500),
+    }).onConflictDoNothing();
     console.error(
       `[warehouse] All ${MAX_ATTEMPTS} attempts failed for submission ${payload.dealerSubmissionId}. Written to DLQ.`,
     );
@@ -335,4 +361,75 @@ export async function writeSubmissionToWarehouse(
       getErrorMessage(dlqErr),
     );
   }
+}
+
+/**
+ * Exported for DLQ replay: re-attempt a warehouse write for a given submission.
+ * Reconstructs the payload from the dealer_submissions table and performs the write.
+ * The write is idempotent — duplicate records are silently skipped.
+ */
+export async function performWarehouseWriteById(
+  submissionId: string,
+  _dlqPayload: Record<string, unknown>,
+): Promise<void> {
+  const { storage } = await import("../storage");
+  const submission = await storage.getDealerSubmission(submissionId);
+  if (!submission) {
+    throw new Error(`DLQ replay: submission ${submissionId} not found in dealer_submissions`);
+  }
+
+  const { zipToStateCode } = await import("../zipToState");
+  const { normalizeSubmissionText, sha256Hex } = await import("./warehouseUtils");
+
+  // Reconstruct a minimal WarehouseWritePayload from the stored submission row
+  const stateCode = submission.stateCode ?? zipToStateCode(submission.zipCode ?? "");
+  const contentHash = submission.contentHash ?? (
+    submission.rawTextRedacted ? sha256Hex(normalizeSubmissionText(submission.rawTextRedacted)) : null
+  );
+
+  // We don't have the original AnalysisRequest/AnalysisResponse objects for DLQ replay,
+  // so we synthesize minimal ones from the stored submission data.
+  const fallbackDetectedFields: DetectedFields = {
+    salePrice: submission.salePrice != null ? Number(submission.salePrice) : null,
+    msrp: submission.msrp != null ? Number(submission.msrp) : null,
+    rebates: null,
+    fees: [],
+    outTheDoorPrice: submission.otdPrice != null ? Number(submission.otdPrice) : null,
+    monthlyPayment: submission.monthlyPayment != null ? Number(submission.monthlyPayment) : null,
+    tradeInValue: null,
+    apr: null,
+    termMonths: null,
+    downPayment: null,
+  };
+
+  const parsedDetectedFields = detectedFieldsSchema.safeParse(submission.detectedFields);
+  const detectedFields: DetectedFields = parsedDetectedFields.success
+    ? parsedDetectedFields.data
+    : fallbackDetectedFields;
+
+  const syntheticRequest: AnalysisRequest = {
+    dealerText: submission.rawTextRedacted ?? "",
+    condition: (submission.condition as AnalysisRequest["condition"]) ?? "unknown",
+    purchaseType: (submission.purchaseType as AnalysisRequest["purchaseType"]) ?? "unknown",
+  };
+
+  const syntheticResult: AnalysisResponse = {
+    dealScore: (submission.dealScore as AnalysisResponse["dealScore"]) ?? "YELLOW",
+    confidenceLevel: (submission.confidenceLevel as AnalysisResponse["confidenceLevel"]) ?? "MEDIUM",
+    verdictLabel: submission.verdictLabel ?? "",
+    goNoGo: (submission.goNoGo as AnalysisResponse["goNoGo"]) ?? "NEED-MORE-INFO",
+    summary: "",
+    detectedFields,
+    missingInfo: [],
+    suggestedReply: "",
+    reasoning: "",
+  };
+
+  await performWarehouseWrite({
+    dealerSubmissionId: submissionId,
+    request: syntheticRequest,
+    result: syntheticResult,
+    stateCode,
+    contentHash,
+  });
 }

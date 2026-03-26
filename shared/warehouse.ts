@@ -61,7 +61,7 @@ export const rawUserAnalyses = rawSchema.table(
   (table) => ({
     stateIdx: index("raw_ua_state_idx").on(table.stateCode),
     submittedAtIdx: index("raw_ua_submitted_at_idx").on(table.submittedAt),
-    dealerSubmissionIdx: index("raw_ua_dealer_submission_idx").on(table.dealerSubmissionId),
+    dealerSubmissionUnique: uniqueIndex("raw_ua_dealer_submission_unique_idx").on(table.dealerSubmissionId),
   }),
 );
 
@@ -196,6 +196,9 @@ export const coreListings = coreSchema.table(
       table.vehicleMake,
       table.vehicleModel,
       table.vehicleYear,
+    ),
+    dealerSubmissionUnique: uniqueIndex("core_listings_dealer_submission_unique_idx").on(
+      table.dealerSubmissionId,
     ),
     ingestionSourceCheck: check(
       "listings_ingestion_source_check",

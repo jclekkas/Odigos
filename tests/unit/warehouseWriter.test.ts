@@ -248,7 +248,7 @@ describe("writeSubmissionToWarehouse — persistent failure → DLQ", () => {
 
     expect(dlqInsertValues).toHaveLength(1);
     expect(dlqInsertValues[0].submissionId).toBe("sub-001");
-    expect(dlqInsertValues[0].attemptCount).toBe(3);
+    expect(dlqInsertValues[0].attemptCount).toBe(0);
     expect(typeof dlqInsertValues[0].errorMessage).toBe("string");
     expect((dlqInsertValues[0].errorMessage as string).length).toBeGreaterThan(0);
   });

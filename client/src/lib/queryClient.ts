@@ -1,4 +1,5 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { isClientRetriableError, clientBackoffMs } from "@shared/reliability";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -48,7 +49,11 @@ export const queryClient = new QueryClient({
       refetchInterval: false,
       refetchOnWindowFocus: false,
       staleTime: Infinity,
-      retry: false,
+      retry: (failureCount, error) => {
+        if (failureCount >= 2) return false;
+        return isClientRetriableError(error);
+      },
+      retryDelay: (attemptIndex) => clientBackoffMs(attemptIndex),
     },
     mutations: {
       retry: false,

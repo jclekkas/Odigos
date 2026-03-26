@@ -148,14 +148,14 @@ describe("POST /api/analyze", () => {
     expect(res.body.goNoGo).toBe("NO-GO");
   });
 
-  it("returns 500 when OpenAI throws", async () => {
-    (openai.chat.completions.create as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+  it("returns 502 when OpenAI throws (AI error after retries)", async () => {
+    (openai.chat.completions.create as ReturnType<typeof vi.fn>).mockRejectedValue(
       new Error("OpenAI unavailable")
     );
     const res = await request(app)
       .post("/api/analyze")
       .send({ dealerText: "Some dealer text here." });
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(502);
     expect(res.body).toHaveProperty("error");
   });
 

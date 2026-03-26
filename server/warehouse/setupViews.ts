@@ -62,7 +62,7 @@ export async function setupWarehouseViews(): Promise<void> {
   `);
   await db.execute(sql`CREATE INDEX IF NOT EXISTS raw_ua_state_idx ON raw.user_analyses (state_code)`);
   await db.execute(sql`CREATE INDEX IF NOT EXISTS raw_ua_submitted_at_idx ON raw.user_analyses (submitted_at)`);
-  await db.execute(sql`CREATE INDEX IF NOT EXISTS raw_ua_dealer_submission_idx ON raw.user_analyses (dealer_submission_id)`);
+  await db.execute(sql`CREATE UNIQUE INDEX IF NOT EXISTS raw_ua_dealer_submission_unique_idx ON raw.user_analyses (dealer_submission_id)`);
 
   // ── 3. Tables with FK dependencies ─────────────────────────────────────────
 
@@ -260,7 +260,7 @@ export async function setupWarehouseViews(): Promise<void> {
       ADD COLUMN IF NOT EXISTS dealer_submission_id varchar(36)
   `);
   await db.execute(sql`
-    CREATE INDEX IF NOT EXISTS core_listings_dealer_submission_idx
+    CREATE UNIQUE INDEX IF NOT EXISTS core_listings_dealer_submission_unique_idx
       ON core.listings (dealer_submission_id)
   `);
 

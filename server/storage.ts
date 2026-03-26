@@ -1,6 +1,7 @@
 import {
   type InsertDealerSubmission,
   type InsertDealFeedback,
+  type DealerSubmission,
   dealerSubmissions,
   dealFeedback,
   auditLog,
@@ -55,11 +56,16 @@ export async function listAuditLog(input: ListAuditLogInput) {
 
 export interface IStorage {
   saveDealerSubmission(data: InsertDealerSubmission): Promise<{ id: string } | null>;
+  getDealerSubmission(id: string): Promise<DealerSubmission | null>;
   createDealFeedback(input: InsertDealFeedback): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
   async saveDealerSubmission(_data: InsertDealerSubmission): Promise<{ id: string } | null> {
+    return null;
+  }
+
+  async getDealerSubmission(_id: string): Promise<DealerSubmission | null> {
     return null;
   }
 
@@ -72,6 +78,15 @@ export class DrizzleStorage implements IStorage {
   async saveDealerSubmission(data: InsertDealerSubmission): Promise<{ id: string } | null> {
     const result = await db.insert(dealerSubmissions).values(data).returning({ id: dealerSubmissions.id });
     return result[0] ?? null;
+  }
+
+  async getDealerSubmission(id: string): Promise<DealerSubmission | null> {
+    const rows = await db
+      .select()
+      .from(dealerSubmissions)
+      .where(eq(dealerSubmissions.id, id))
+      .limit(1);
+    return rows[0] ?? null;
   }
 
   async createDealFeedback(input: InsertDealFeedback): Promise<void> {

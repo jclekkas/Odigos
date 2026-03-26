@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/react";
 import { Switch, Route, useLocation } from "wouter";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -144,15 +144,48 @@ function VitalsTracker() {
   return null;
 }
 
-function ErrorFallback() {
+export interface ErrorFallbackProps {
+  resetError: () => void;
+}
+
+export function ErrorFallback({ resetError }: ErrorFallbackProps) {
+  const [recovering, setRecovering] = useState(false);
+  const [recoveryFailed, setRecoveryFailed] = useState(false);
+
+  const handleRetry = async () => {
+    setRecovering(true);
+    try {
+      await queryClient.resetQueries();
+      await queryClient.refetchQueries({ type: "active" });
+      resetError();
+    } catch {
+      setRecovering(false);
+      setRecoveryFailed(true);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-8 text-center">
       <div>
         <h1 className="text-2xl font-semibold mb-2">Something went wrong</h1>
-        <p className="text-muted-foreground mb-4">An unexpected error occurred. Please refresh the page to try again.</p>
+        <p className="text-muted-foreground mb-4">An unexpected error occurred.</p>
+        {!recoveryFailed ? (
+          <button
+            onClick={handleRetry}
+            disabled={recovering}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm mr-2 disabled:opacity-50"
+            data-testid="button-error-retry"
+          >
+            {recovering ? "Recovering…" : "Try again"}
+          </button>
+        ) : (
+          <p className="text-sm text-muted-foreground mb-4">
+            Recovery failed. Please reload the page.
+          </p>
+        )}
         <button
           onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm"
+          className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md text-sm"
           data-testid="button-error-reload"
         >
           Reload page
@@ -164,7 +197,7 @@ function ErrorFallback() {
 
 function App() {
   return (
-    <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
+    <Sentry.ErrorBoundary fallback={({ resetError }) => <ErrorFallback resetError={resetError} />}>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />

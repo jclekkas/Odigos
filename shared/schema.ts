@@ -271,12 +271,22 @@ export const failedWarehouseWrites = pgTable(
     submissionId: varchar("submission_id").notNull().references(() => dealerSubmissions.id, { onDelete: "cascade" }),
     payload: jsonb("payload").notNull().$type<Record<string, unknown>>(),
     errorMessage: text("error_message").notNull(),
-    attemptCount: integer("attempt_count").notNull().default(3),
+    attemptCount: integer("attempt_count").notNull().default(0),
     failedAt: timestamp("failed_at").defaultNow().notNull(),
+    // Replay tracking columns
+    status: varchar("status", { length: 16 }).notNull().default("pending"),
+    maxAttempts: integer("max_attempts").notNull().default(5),
+    nextAttemptAt: timestamp("next_attempt_at").defaultNow().notNull(),
+    firstFailedAt: timestamp("first_failed_at").defaultNow().notNull(),
+    lastFailedAt: timestamp("last_failed_at").defaultNow().notNull(),
+    leaseExpiresAt: timestamp("lease_expires_at"),
+    lastErrorCode: varchar("last_error_code", { length: 64 }),
+    lastErrorMessage: text("last_error_message"),
   },
   (table) => ({
     submissionIdIdx: index("dlq_submission_id_idx").on(table.submissionId),
     failedAtIdx: index("dlq_failed_at_idx").on(table.failedAt),
+    statusNextAttemptIdx: index("dlq_status_next_attempt_idx").on(table.status, table.nextAttemptAt),
   }),
 );
 
