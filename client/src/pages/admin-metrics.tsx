@@ -588,7 +588,7 @@ export default function AdminMetrics() {
       const res = await fetch(`/api/metrics`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error("Unauthorized or failed to fetch");
+      if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
     refetchInterval: 30000,

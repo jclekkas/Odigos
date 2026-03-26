@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowLeft, FlaskConical, Trophy, Users, TrendingUp, RefreshCw, CheckCircle2, Clock } from "lucide-react";
+import { ArrowLeft, FlaskConical, Trophy, Users, TrendingUp, RefreshCw, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
 import { useTranslation, Trans } from "react-i18next";
 
 interface ExperimentVariantStats {
@@ -206,8 +206,13 @@ function ExperimentCard({ exp }: { exp: ExperimentStats }) {
 
 export default function AdminExperiments() {
   const { t } = useTranslation();
-  const { data, isLoading, isError, refetch, isFetching } = useQuery<ExperimentStats[]>({
+  const { data, isLoading, isError, error, refetch, isFetching } = useQuery<ExperimentStats[]>({
     queryKey: ["/api/experiments"],
+    queryFn: async () => {
+      const res = await fetch("/api/experiments");
+      if (!res.ok) throw new Error(`${res.status}`);
+      return res.json();
+    },
     staleTime: 60 * 1000,
   });
 
@@ -258,9 +263,16 @@ export default function AdminExperiments() {
             ))}
           </div>
         ) : isError ? (
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-sm text-destructive">{t("admin.failedToLoadExperiments")}</p>
+          <Card className="border-red-400 bg-red-50 dark:bg-red-950/20">
+            <CardContent className="pt-4 pb-4">
+              <div className="flex items-start gap-3" data-testid="error-experiments">
+                <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm text-red-700 dark:text-red-400 font-medium">
+                    {t("admin.failedToLoadExperiments")} {(error as Error)?.message ? `(HTTP ${(error as Error).message})` : ""}
+                  </p>
+                </div>
+              </div>
             </CardContent>
           </Card>
         ) : !data || data.length === 0 ? (

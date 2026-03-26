@@ -1,6 +1,7 @@
 import type { Express, Request } from "express";
 import type { DateRange } from "../bi";
 import { requireAdminKey } from "./admin";
+import { getStripeClient, isStripeConfigured } from "../stripeClient";
 
 const VALID_RANGES: DateRange[] = ["today", "week", "month", "all"];
 
@@ -60,19 +61,56 @@ export function registerBIRoutes(app: Express): void {
 
   app.get("/api/admin/bi/subscription", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
-    try { const { getBISubscriptionHealth } = await import("../bi"); res.json(await getBISubscriptionHealth(parseRange(req))); }
-    catch (e: any) { res.status(500).json({ error: e?.message }); }
+    try {
+      const { getBISubscriptionHealth } = await import("../bi");
+      const health = await getBISubscriptionHealth(parseRange(req));
+
+      let stripeFailedPayments: number | null = null;
+      let stripeActiveCustomers: number | null = null;
+      if (await isStripeConfigured()) {
+        try {
+          const stripe = await getStripeClient();
+          const [expired, paid] = await Promise.all([
+            stripe.checkout.sessions.list({ status: "expired", limit: 100 }),
+            stripe.checkout.sessions.list({ payment_status: "paid", limit: 100 }),
+          ]);
+          stripeFailedPayments = expired.data.length;
+          stripeActiveCustomers = new Set(paid.data.map(s => s.customer ?? s.id)).size;
+        } catch {
+        }
+      }
+
+      res.json({ ...health, stripeFailedPayments, stripeActiveCustomers });
+    } catch (e: any) { res.status(500).json({ error: e?.message }); }
   });
 
-  app.get("/api/admin/users/lookup", async (req, res) => {
+  app.get("/api/admin/users/search", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
     try {
       const { lookupUserSessions } = await import("../bi");
-      const q = typeof req.query.q === "string" ? req.query.q : "";
-      const limit = Math.min(parseInt(typeof req.query.limit === "string" ? req.query.limit : "20", 10) || 20, 100);
-      const sessions = await lookupUserSessions(q, limit);
+      const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
+      const limit = Math.min(parseInt(typeof req.query.limit === "string" ? req.query.limit : "50", 10) || 50, 100);
+
+      let stripeSessionIdsFromCustomer: string[] = [];
+      if (q.toLowerCase().startsWith("cus_") && await isStripeConfigured()) {
+        try {
+          const stripe = await getStripeClient();
+          const checkoutSessions = await stripe.checkout.sessions.list({
+            customer: q,
+            limit: 100,
+          });
+          stripeSessionIdsFromCustomer = checkoutSessions.data.map(s => s.id);
+        } catch {
+        }
+      }
+
+      const sessions = await lookupUserSessions(q, limit, stripeSessionIdsFromCustomer);
       res.json({ sessions });
     } catch (e: any) { res.status(500).json({ error: e?.message }); }
+  });
+
+  app.get("/api/admin/users/lookup", async (req, res) => {
+    res.redirect(301, `/api/admin/users/search?${new URLSearchParams(req.query as Record<string, string>).toString()}`);
   });
 
   app.get("/api/admin/content", async (req, res) => {

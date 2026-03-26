@@ -184,7 +184,7 @@ function FunnelPanel({ adminKey, range }: { adminKey: string; range: DateRange }
       const res = await fetch(`/api/admin/bi/funnel?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+      if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
     refetchInterval: q => {
@@ -290,7 +290,7 @@ function AttributionPanel({ adminKey, range }: { adminKey: string; range: DateRa
       const res = await fetch(`/api/admin/bi/attribution?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+      if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
     refetchInterval: q => {
@@ -402,7 +402,7 @@ function BehaviorPanel({ adminKey, range }: { adminKey: string; range: DateRange
       const res = await fetch(`/api/admin/bi/behavior?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+      if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
     refetchInterval: q => {
@@ -433,9 +433,9 @@ function BehaviorPanel({ adminKey, range }: { adminKey: string; range: DateRange
           color={(data?.bounceRate ?? 0) > 60 ? "danger" : "default"}
         />
         <StatCard
-          title="Multi-Day Session Rate"
+          title="Return Visit Rate"
           value={`${(data?.returnVisitRate ?? 0).toFixed(1)}%`}
-          subtitle="Sessions active on 2+ distinct days"
+          subtitle="IP-hashed sessions seen on 2+ occasions"
           icon={TrendingUp}
           color={(data?.returnVisitRate ?? 0) > 20 ? "success" : "default"}
         />
@@ -554,7 +554,7 @@ function DealOutcomePanel({ adminKey, range }: { adminKey: string; range: DateRa
       const res = await fetch(`/api/admin/bi/deal-outcome?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+      if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
     refetchInterval: q => {
@@ -765,7 +765,7 @@ function GeographicPanel({ adminKey, range }: { adminKey: string; range: DateRan
       const res = await fetch(`/api/admin/bi/geographic?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+      if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
     refetchInterval: q => {
@@ -889,7 +889,7 @@ function AcquisitionPanel({ adminKey, range }: { adminKey: string; range: DateRa
       const res = await fetch(`/api/admin/bi/acquisition?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+      if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
     refetchInterval: q => {
@@ -1022,7 +1022,7 @@ function RevenuePanel({ adminKey, range }: { adminKey: string; range: DateRange 
       const res = await fetch(`/api/admin/bi/revenue?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+      if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
     refetchInterval: q => {
@@ -1156,7 +1156,7 @@ function FalloutPanel({ adminKey, range }: { adminKey: string; range: DateRange 
       const res = await fetch(`/api/admin/bi/fallout?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+      if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
     refetchInterval: q => {
@@ -1250,13 +1250,13 @@ interface FeedbackAccuracyData {
 }
 
 function FeedbackAccuracyPanel({ adminKey }: { adminKey: string }) {
-  const { data, isLoading, isError } = useQuery<FeedbackAccuracyData>({
+  const { data, isLoading, isError, error } = useQuery<FeedbackAccuracyData>({
     queryKey: ["/api/admin/feedback-accuracy", adminKey],
     queryFn: async () => {
       const res = await fetch("/api/admin/feedback-accuracy", {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+      if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
     refetchInterval: q => {
@@ -1269,10 +1269,11 @@ function FeedbackAccuracyPanel({ adminKey }: { adminKey: string }) {
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" data-testid="feedback-accuracy-loading" />;
 
   if (isError) {
+    const errMsg = (error as Error)?.message ?? "";
     return (
-      <div className="flex flex-col items-center justify-center h-40 text-muted-foreground gap-2" data-testid="feedback-accuracy-error">
-        <AlertTriangle className="h-8 w-8 opacity-40" />
-        <p className="text-sm">Failed to load feedback accuracy data</p>
+      <div className="flex flex-col items-center justify-center h-40 gap-2 p-4 rounded-lg border border-red-300 bg-red-50 dark:bg-red-950/20" data-testid="feedback-accuracy-error">
+        <AlertTriangle className="h-8 w-8 text-red-500 opacity-80" />
+        <p className="text-sm text-red-700 dark:text-red-400 font-medium">Failed to load feedback accuracy data {errMsg ? `(${errMsg})` : ""}</p>
       </div>
     );
   }
@@ -1383,16 +1384,18 @@ interface SubscriptionHealth {
   estimatedRevenue: number;
   tierBreakdown: { tier49: number; tier79: number; other: number };
   dailyNewPayers: Array<{ date: string; count: number }>;
+  stripeFailedPayments: number | null;
+  stripeActiveCustomers: number | null;
 }
 
 function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateRange }) {
-  const { data, isLoading, isError } = useQuery<SubscriptionHealth>({
+  const { data, isLoading, isError, error } = useQuery<SubscriptionHealth>({
     queryKey: ["/api/admin/bi/subscription", adminKey, range],
     queryFn: async () => {
       const res = await fetch(`/api/admin/bi/subscription?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+      if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
     refetchInterval: q => {
@@ -1405,10 +1408,11 @@ function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateR
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
 
   if (isError) {
+    const errMsg = (error as Error)?.message ?? "";
     return (
-      <div className="flex flex-col items-center justify-center h-40 text-muted-foreground gap-2">
-        <AlertTriangle className="h-8 w-8 opacity-40" />
-        <p className="text-sm">Failed to load subscription health data</p>
+      <div className="flex flex-col items-center justify-center h-40 gap-2 p-4 rounded-lg border border-red-300 bg-red-50 dark:bg-red-950/20" data-testid="error-subscription">
+        <AlertTriangle className="h-8 w-8 text-red-500 opacity-80" />
+        <p className="text-sm text-red-700 dark:text-red-400 font-medium">Failed to load subscription health data {errMsg ? `(${errMsg})` : ""}</p>
       </div>
     );
   }
@@ -1428,20 +1432,23 @@ function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateR
     payers: d.count,
   }));
 
+  const stripeActiveCustomers = data?.stripeActiveCustomers;
+  const stripeFailedPayments = data?.stripeFailedPayments;
+
   return (
     <div className="space-y-6" data-testid="panel-subscription-health">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <StatCard
-          title="Total Payers"
-          value={data?.totalPayers ?? 0}
-          subtitle="Unique paying sessions"
+          title="Active Customers"
+          value={stripeActiveCustomers !== null && stripeActiveCustomers !== undefined ? stripeActiveCustomers : data?.totalPayers ?? 0}
+          subtitle={stripeActiveCustomers !== null && stripeActiveCustomers !== undefined ? "Unique Stripe customers (paid)" : "Unique paying sessions (event-derived)"}
           icon={Users}
           color="success"
         />
         <StatCard
-          title="Estimated Revenue"
+          title="Trailing Revenue"
           value={`$${((data?.estimatedRevenue ?? 0)).toLocaleString()}`}
-          subtitle="Based on tier prices"
+          subtitle="Revenue in selected period (tier-priced)"
           icon={CreditCard}
           color="success"
         />
@@ -1455,11 +1462,23 @@ function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateR
           color={(data?.weekOverWeekGrowthPct ?? 0) >= 0 ? "success" : "warning"}
           trend={{ current: data?.newPayersThisWeek ?? 0, previous: data?.newPayersLastWeek ?? 0 }}
         />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <StatCard
-          title="Abandoned Checkouts"
-          value={data?.checkoutsWithoutPayment ?? 0}
-          subtitle={`${(data?.checkoutConversionRate ?? 0).toFixed(1)}% checkout → payment rate`}
+          title="Failed / Expired Checkouts"
+          value={stripeFailedPayments !== null && stripeFailedPayments !== undefined ? stripeFailedPayments : data?.checkoutsWithoutPayment ?? 0}
+          subtitle={stripeFailedPayments !== null && stripeFailedPayments !== undefined
+            ? `Stripe expired sessions (all-time) · ${(data?.checkoutConversionRate ?? 0).toFixed(1)}% event-based conversion`
+            : `Abandoned before payment · ${(data?.checkoutConversionRate ?? 0).toFixed(1)}% checkout → payment rate`}
           icon={Activity}
+          color={(data?.checkoutConversionRate ?? 0) > 40 ? "success" : "warning"}
+        />
+        <StatCard
+          title="Checkout Conversion Rate"
+          value={`${(data?.checkoutConversionRate ?? 0).toFixed(1)}%`}
+          subtitle="checkout_started → payment_completed"
+          icon={TrendingUp}
           color={(data?.checkoutConversionRate ?? 0) > 40 ? "success" : "warning"}
         />
       </div>
@@ -1589,7 +1608,7 @@ export default function AdminBusiness() {
       const res = await fetch(`/api/admin/bi/funnel?range=all`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+      if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
     retry: 0,

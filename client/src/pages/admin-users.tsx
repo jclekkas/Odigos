@@ -179,15 +179,15 @@ export default function AdminUsers() {
   const [searchInput, setSearchInput] = useState("");
   const [query, setQuery] = useState("");
 
-  const { data, isLoading, isError } = useQuery<{ sessions: UserSession[] }>({
-    queryKey: ["/api/admin/users/lookup", adminKey, query],
+  const { data, isLoading, isError, error } = useQuery<{ sessions: UserSession[] }>({
+    queryKey: ["/api/admin/users/search", adminKey, query],
     queryFn: async () => {
       const params = new URLSearchParams({ limit: "50" });
       if (query) params.set("q", query);
-      const res = await fetch(`/api/admin/users/lookup?${params}`, {
+      const res = await fetch(`/api/admin/users/search?${params}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+      if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
     refetchInterval: q => {
@@ -269,9 +269,14 @@ export default function AdminUsers() {
 
       <div className="max-w-5xl mx-auto p-6 space-y-6">
         {isError && (
-          <div className="flex items-start gap-3 p-4 rounded-lg border border-red-400 bg-red-50 dark:bg-red-950/20">
+          <div className="flex items-start gap-3 p-4 rounded-lg border border-red-400 bg-red-50 dark:bg-red-950/20" data-testid="error-user-lookup">
             <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-            <p className="text-red-700 dark:text-red-400 text-sm">Failed to load session data. Check your admin key.</p>
+            <div>
+              <p className="text-red-700 dark:text-red-400 text-sm font-medium">
+                Failed to load session data {(error as Error)?.message ? `(${(error as Error).message})` : ""}
+              </p>
+              <p className="text-red-600 dark:text-red-500 text-xs mt-0.5">Check your admin key or try again.</p>
+            </div>
           </div>
         )}
 
@@ -281,7 +286,7 @@ export default function AdminUsers() {
             <input
               type="text"
               className="w-full border rounded-md pl-9 pr-4 py-2 text-sm bg-background"
-              placeholder="Search by session ID (partial match)..."
+              placeholder="Search by session ID or Stripe customer ID (cus_...)..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               data-testid="input-session-search"

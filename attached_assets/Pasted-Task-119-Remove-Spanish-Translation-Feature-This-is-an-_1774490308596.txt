@@ -1,0 +1,111 @@
+Task #119 — Remove Spanish Translation Feature
+
+This is an implementation task in the existing Odigos codebase. Make concrete code changes. Do not provide a plan or strategy.
+
+Objective
+Remove the partially-implemented Spanish/i18n translation system from the frontend and restore all affected UI to hardcoded English text.
+
+Requirements
+- Remove all i18next / react-i18next usage
+- Remove all useTranslation and Trans imports/usages
+- Delete all locale JSON files
+- Delete the i18n bootstrap/config file
+- Remove the language toggle from the header
+- Remove any i18n.changeLanguage / language persistence logic tied to the toggle
+
+Done looks like
+- No i18next, react-i18next, useTranslation, or Trans imports remain anywhere in the codebase
+- client/src/i18n.ts is deleted
+- client/src/locales/en.json is deleted
+- client/src/locales/es.json is deleted
+- The language toggle button is gone from the site header
+- All affected pages/components still render the same English text as before, now hardcoded
+- The app compiles and runs with no TypeScript or runtime errors related to this removal
+- No references remain to the deleted locale files or i18n config
+
+Out of scope
+- Do not remove i18next packages from package.json
+- Do not make unrelated UI or copy changes
+- Do not refactor beyond what is required to remove i18n cleanly
+
+Implementation requirements
+
+1. Delete i18n infrastructure
+- Delete:
+  - client/src/i18n.ts
+  - client/src/locales/en.json
+  - client/src/locales/es.json
+- Remove any import of ./i18n or equivalent from App.tsx, main.tsx, or any other file
+
+2. Remove header language toggle
+In client/src/components/SiteHeader.tsx:
+- Remove LangToggle completely
+- Remove any useTranslation import
+- Remove any i18n import
+- Remove any i18n.changeLanguage logic
+- Remove any localStorage language persistence related to language switching
+- Replace all translated strings with hardcoded English text matching the existing English copy from en.json
+
+3. Inline English strings everywhere
+For each affected page/component:
+- Remove useTranslation and/or Trans imports
+- Replace every t('...') call with the exact English string equivalent from en.json
+- Replace every <Trans> usage with equivalent hardcoded English JSX/text
+- Preserve existing formatting, links, emphasis, and layout
+- Do not paraphrase or rewrite copy unless absolutely necessary for JSX syntax
+
+Affected files
+- client/src/App.tsx
+- client/src/main.tsx
+- client/src/components/SiteHeader.tsx
+- client/src/components/SiteFooter.tsx
+- client/src/components/ArticleLayout.tsx
+- client/src/components/ArticleCta.tsx
+- client/src/pages/home.tsx
+- client/src/pages/landing.tsx
+- client/src/pages/about.tsx
+- client/src/pages/how-odigos-works.tsx
+- client/src/pages/example-analysis.tsx
+- client/src/pages/privacy.tsx
+- client/src/pages/terms.tsx
+- client/src/pages/not-found.tsx
+- client/src/pages/admin-business.tsx
+- client/src/pages/admin-technical.tsx
+- client/src/pages/admin-metrics.tsx
+- client/src/pages/admin-experiments.tsx
+
+4. Keep English behavior identical
+- The site should read exactly as it did in English before
+- Do not change routes
+- Do not change component behavior except removing translation/language-switching behavior
+- Do not introduce placeholder text
+
+5. Verify cleanup
+After edits, confirm there are no remaining references to:
+- i18next
+- react-i18next
+- useTranslation
+- Trans
+- changeLanguage
+- client/src/i18n.ts
+- locales/en.json
+- locales/es.json
+
+6. Verify build
+- Run the appropriate build/typecheck/dev validation steps
+- Fix any compile/runtime issues caused by the removal
+- Confirm the app starts cleanly
+
+Working style
+- Be surgical and minimal
+- Prefer direct replacement over broad refactors
+- Use the English copy already present in en.json as the source of truth
+- If a translated value was used in multiple places, hardcode it locally in each place unless a tiny shared constant is clearly cleaner and does not broaden scope
+
+Required final output
+1. Summary of files changed
+2. List of deleted files
+3. Confirmation that all i18n/react-i18next references are gone
+4. Confirmation that the language toggle is removed
+5. Confirmation that build/typecheck/dev startup passed
+6. Any small deviations, if unavoidable

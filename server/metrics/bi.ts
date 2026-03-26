@@ -255,17 +255,41 @@ export async function getBIUserBehavior(range: DateRange): Promise<BIUserBehavio
     .sort((a, b) => b.count - a.count)
     .slice(0, 5);
 
-  const sessionDates: Record<string, Set<string>> = {};
-  pageViewEvents.forEach(e => {
+  const sessionFirstSeen: Record<string, Date> = {};
+  const sessionIpHash: Record<string, string> = {};
+  const sortedPageViews = allEvents
+    .filter(e => e.eventType === "page_view")
+    .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+  sortedPageViews.forEach(e => {
     const sid = e.metadata?.sessionId as string | undefined;
+    const ip = e.metadata?.ipHash as string | undefined;
     if (!sid) return;
-    const date = e.createdAt.toISOString().split("T")[0];
-    if (!sessionDates[sid]) sessionDates[sid] = new Set();
-    sessionDates[sid].add(date);
+    if (!sessionFirstSeen[sid]) {
+      sessionFirstSeen[sid] = e.createdAt;
+      if (ip) sessionIpHash[sid] = ip;
+    }
   });
-  const allSessionIds = Object.keys(sessionDates);
-  const returningSessions = allSessionIds.filter(sid => sessionDates[sid].size > 1).length;
-  const returnVisitRate = allSessionIds.length > 0 ? (returningSessions / allSessionIds.length) * 100 : 0;
+
+  const ipEarliestSession: Record<string, { sid: string; firstSeen: Date }> = {};
+  Object.entries(sessionFirstSeen)
+    .sort(([, a], [, b]) => a.getTime() - b.getTime())
+    .forEach(([sid, firstSeen]) => {
+      const ip = sessionIpHash[sid];
+      if (!ip) return;
+      if (!ipEarliestSession[ip]) {
+        ipEarliestSession[ip] = { sid, firstSeen };
+      }
+    });
+
+  const rangedSessionIds = Object.keys(sessionPages);
+  const returningSessions = rangedSessionIds.filter(sid => {
+    const ip = sessionIpHash[sid];
+    if (!ip) return false;
+    const earliest = ipEarliestSession[ip];
+    if (!earliest) return false;
+    return earliest.sid !== sid;
+  }).length;
+  const returnVisitRate = rangedSessionIds.length > 0 ? (returningSessions / rangedSessionIds.length) * 100 : 0;
 
   return { fieldEngagement, avgPagesPerSession, bounceRate, returnVisitRate, topEntryPages, topExitPages };
 }
@@ -813,18 +837,21 @@ export interface BIUserSession {
   stripeSessionIds: string[];
 }
 
-export async function lookupUserSessions(query: string, limit = 20): Promise<BIUserSession[]> {
+export async function lookupUserSessions(query: string, limit = 50, stripeCustomerSessionIds: string[] = []): Promise<BIUserSession[]> {
   const { events } = await loadMetrics();
   const allEvents = events.map(e => ({ ...e, createdAt: new Date(e.createdAt) }));
 
   const q = query.trim().toLowerCase();
+  const customerSessionSet = new Set(stripeCustomerSessionIds.map(s => s.toLowerCase()));
 
   const sessionMatchesQuery = (sid: string, evts: Array<{ eventType: string; metadata?: Record<string, unknown> | null }>) => {
     if (!q) return true;
     if (sid.toLowerCase().includes(q)) return true;
     return evts.some(e => {
       const stripeSid = e.metadata?.stripeSessionId as string | undefined;
-      return stripeSid && stripeSid.toLowerCase().includes(q);
+      if (stripeSid && stripeSid.toLowerCase().includes(q)) return true;
+      if (customerSessionSet.size > 0 && stripeSid && customerSessionSet.has(stripeSid.toLowerCase())) return true;
+      return false;
     });
   };
 

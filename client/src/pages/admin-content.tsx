@@ -58,13 +58,13 @@ export default function AdminContent() {
   const [sortKey, setSortKey] = useState<SortKey>("views");
   const [showAll, setShowAll] = useState(false);
 
-  const { data, isLoading, isError } = useQuery<ContentMetrics>({
+  const { data, isLoading, isError, error } = useQuery<ContentMetrics>({
     queryKey: ["/api/admin/content", adminKey, range],
     queryFn: async () => {
       const res = await fetch(`/api/admin/content?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+      if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
     refetchInterval: q => {
@@ -188,9 +188,14 @@ export default function AdminContent() {
 
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {isError && (
-          <div className="flex items-start gap-3 p-4 rounded-lg border border-red-400 bg-red-50 dark:bg-red-950/20">
+          <div className="flex items-start gap-3 p-4 rounded-lg border border-red-400 bg-red-50 dark:bg-red-950/20" data-testid="error-content">
             <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-            <p className="text-red-700 dark:text-red-400 text-sm">Failed to load content data. Check your admin key.</p>
+            <div>
+              <p className="text-red-700 dark:text-red-400 text-sm font-medium">
+                Failed to load content data {(error as Error)?.message ? `(HTTP ${(error as Error).message})` : ""}
+              </p>
+              <p className="text-red-600 dark:text-red-500 text-xs mt-0.5">Check your admin key or try again.</p>
+            </div>
           </div>
         )}
 

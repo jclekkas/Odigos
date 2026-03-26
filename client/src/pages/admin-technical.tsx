@@ -212,7 +212,7 @@ export default function AdminTechnical() {
       const res = await fetch(`/api/technical`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+      if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
     refetchInterval: techQuery => {
@@ -228,7 +228,7 @@ export default function AdminTechnical() {
       const res = await fetch(`/api/alerts`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+      if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
     refetchInterval: alertsQuery => {
@@ -771,25 +771,35 @@ export default function AdminTechnical() {
               <div className="h-40 bg-muted animate-pulse rounded" />
             ) : (
               <div className="space-y-4">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                   <div>
                     <p className="text-xs text-muted-foreground">API Calls</p>
                     <p className="text-2xl font-bold" data-testid="stat-ai-calls">{tech.aiUsage.callCount}</p>
+                    <p className="text-xs text-muted-foreground">last 7 days</p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">Total Tokens</p>
+                    <p className="text-xs text-muted-foreground">Cost per Analysis</p>
+                    <p className="text-2xl font-bold text-amber-600 dark:text-amber-400" data-testid="stat-ai-cost-per-analysis">
+                      {tech.aiUsage.callCount > 0 ? `$${(tech.aiUsage.estimatedCostUsd / tech.aiUsage.callCount).toFixed(4)}` : "—"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">avg per call</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Total Token Spend</p>
                     <p className="text-2xl font-bold" data-testid="stat-ai-tokens">{tech.aiUsage.totalTokens.toLocaleString()}</p>
-                    <p className="text-xs text-muted-foreground">{tech.aiUsage.promptTokens.toLocaleString()} prompt + {tech.aiUsage.completionTokens.toLocaleString()} completion</p>
+                    <p className="text-xs text-muted-foreground">{tech.aiUsage.promptTokens.toLocaleString()} prompt / {tech.aiUsage.completionTokens.toLocaleString()} completion</p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">Est. Cost (GPT-4o)</p>
+                    <p className="text-xs text-muted-foreground">Est. Total Cost (GPT-4o)</p>
                     <p className="text-2xl font-bold text-green-700 dark:text-green-400" data-testid="stat-ai-cost">
                       ${tech.aiUsage.estimatedCostUsd.toFixed(4)}
                     </p>
+                    <p className="text-xs text-muted-foreground">7-day window</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Avg Latency</p>
                     <p className="text-2xl font-bold" data-testid="stat-ai-latency">{tech.aiUsage.avgLatencyMs > 0 ? `${tech.aiUsage.avgLatencyMs}ms` : "—"}</p>
+                    <p className="text-xs text-muted-foreground">per OpenAI call</p>
                   </div>
                 </div>
                 <div>

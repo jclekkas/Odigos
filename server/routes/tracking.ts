@@ -1,6 +1,13 @@
+import { createHash } from "crypto";
 import type { Express } from "express";
 import { trackEvent } from "../events";
 import { getExperimentStats } from "../analytics";
+
+function hashIp(req: { ip?: string; headers: Record<string, string | string[] | undefined> }): string {
+  const forwarded = req.headers["x-forwarded-for"];
+  const raw = (Array.isArray(forwarded) ? forwarded[0] : forwarded)?.split(",")[0]?.trim() || req.ip || "unknown";
+  return createHash("sha256").update("odigos-ip:" + raw).digest("hex").slice(0, 16);
+}
 
 export function registerTrackingRoutes(app: Express): void {
   app.post("/api/track", async (req, res) => {
@@ -18,6 +25,7 @@ export function registerTrackingRoutes(app: Express): void {
       await trackEvent(eventType, {
         ...metadata,
         referrer: req.headers.referer || metadata?.referrer,
+        ipHash: hashIp(req),
       });
       res.json({ success: true });
     } catch (error) {
