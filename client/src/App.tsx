@@ -1,4 +1,3 @@
-import "./i18n";
 import * as Sentry from "@sentry/react";
 import { Switch, Route, useLocation } from "wouter";
 import { useEffect } from "react";

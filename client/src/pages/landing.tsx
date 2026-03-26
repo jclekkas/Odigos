@@ -13,7 +13,6 @@ import SiteHeader from "@/components/SiteHeader";
 import SeoHead from "@/components/SeoHead";
 import { productSchema } from "@/lib/jsonld";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useTranslation, Trans } from "react-i18next";
 
 function scrollToHash(hash: string) {
   if (window.location.pathname === "/") {
@@ -43,8 +42,17 @@ const faqsSchema = [
   },
 ];
 
+const HERO_HEADLINES: Record<string, string> = {
+  control: "Spot dealer pricing tricks before you agree to anything.",
+  urgency: "Don't sign until you know what the dealer isn't telling you.",
+};
+
+const PRICING_CTA_LABELS: Record<string, string> = {
+  control: "Get Full Review — $49",
+  value: "Get Full Review — $49 (Less Than Most Doc Fees)",
+};
+
 export default function Landing() {
-  const { t } = useTranslation();
   const { data: statsData, isLoading: statsLoading, isError: statsError } = useQuery<{ count: number; type: string }>({
     queryKey: ["/api/stats/count"],
     retry: false,
@@ -54,14 +62,14 @@ export default function Landing() {
   const heroHeadlineVariant = useExperiment("hero_headline");
   const unlockCtaVariant = useExperiment("unlock_cta");
 
-  const heroHeadline = t(`landing.heroHeadline_${heroHeadlineVariant || "control"}`);
-  const pricingCtaText = t(`landing.paidTierCta_${unlockCtaVariant || "control"}`);
+  const heroHeadline = HERO_HEADLINES[heroHeadlineVariant || "control"] ?? HERO_HEADLINES.control;
+  const pricingCtaText = PRICING_CTA_LABELS[unlockCtaVariant || "control"] ?? PRICING_CTA_LABELS.control;
 
   const faqs = [
-    { q: t("landing.faq1Q"), a: t("landing.faq1A") },
-    { q: t("landing.faq2Q"), a: t("landing.faq2A") },
-    { q: t("landing.faq3Q"), a: t("landing.faq3A") },
-    { q: t("landing.faq4Q"), a: t("landing.faq4A") },
+    { q: "What is an out-the-door price?", a: "The total cost to purchase a vehicle — sale price, sales tax, title, registration, doc fees, and any add-ons. It's the check you'd write to leave with the car today." },
+    { q: "Why won't the dealer give me an OTD price?", a: "Some dealers prefer to negotiate around monthly payments because it gives them more flexibility to adjust terms and fees. Requesting the OTD in writing forces transparency." },
+    { q: "Is Odigos free?", a: "The preview is free and gives you a Green/Yellow/Red verdict with a deal score. The full analysis with red flags, missing info checklist, and a copy-paste dealer reply is $49 one-time. No subscriptions." },
+    { q: "Do you store my messages?", a: "Submitted text is PII-redacted and stored for up to 90 days for service quality purposes, then deleted. We do not sell or share your data." },
   ];
 
   useEffect(() => {
@@ -95,7 +103,7 @@ export default function Landing() {
         className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:bg-background focus:text-foreground focus:px-4 focus:py-2 focus:rounded-md focus:border focus:border-border"
         data-testid="link-skip-to-content"
       >
-        {t("landing.skipToContent")}
+        Skip to main content
       </a>
       <SiteHeader />
       <SeoHead
@@ -114,7 +122,7 @@ export default function Landing() {
               {/* Hero text column */}
               <div className="flex-1 text-center lg:text-left">
                 <p className="mb-4 text-xs font-semibold tracking-widest uppercase text-muted-foreground" data-testid="text-authority-framing">
-                  {t("landing.authorityFraming")}
+                  Independent Quote Review
                 </p>
 
                 <h1 className="font-serif text-balance text-4xl font-bold tracking-tight sm:text-5xl text-foreground" data-testid="text-hero-headline">
@@ -122,27 +130,27 @@ export default function Landing() {
                 </h1>
 
                 <p className="mt-5 text-base text-foreground/80 sm:text-lg leading-relaxed" data-testid="text-hero-subheadline">
-                  {t("landing.heroSubheadline")}
+                  Paste a dealer quote, email, or text. Odigos flags missing out-the-door pricing, hidden fees, and common dealership tactics.
                 </p>
 
                 <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
                   <Button variant="cta" size="lg" className="gap-2 font-semibold shadow" asChild data-testid="button-cta-hero">
-                    <Link href="/analyze" onClick={() => { trackCtaClick("hero-analyze", t("landing.ctaHero")); capture("landing_cta_clicked", { location: "hero", cta_text: t("landing.ctaHero") }); }}>
-                      {t("landing.ctaHero")}
+                    <Link href="/analyze" onClick={() => { trackCtaClick("hero-analyze", "Check a Dealer Quote"); capture("landing_cta_clicked", { location: "hero", cta_text: "Check a Dealer Quote" }); }}>
+                      Check a Dealer Quote
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
                   <Button variant="outline" size="lg" className="text-muted-foreground" asChild data-testid="button-try-bad">
-                    <Link href="/analyze?example=bad" onClick={() => { trackCtaClick("hero-bad-example", t("landing.ctaTryBad")); capture("landing_cta_clicked", { location: "hero", cta_text: t("landing.ctaTryBad") }); }}>
-                      {t("landing.ctaTryBad")}
+                    <Link href="/analyze?example=bad" onClick={() => { trackCtaClick("hero-bad-example", "Try a bad deal example"); capture("landing_cta_clicked", { location: "hero", cta_text: "Try a bad deal example" }); }}>
+                      Try a bad deal example
                     </Link>
                   </Button>
                 </div>
 
                 <p className="mt-4 text-sm text-muted-foreground" data-testid="text-reassurance">
-                  {t("landing.reassurance")}{" "}
+                  Takes about a minute. No signup required.{" "}
                   <Link href="/example-analysis" className="underline underline-offset-4 hover:text-foreground/70 transition-colors" data-testid="link-example-analysis-hero">
-                    {t("landing.seeExample")}
+                    See an example.
                   </Link>
                 </p>
 
@@ -158,8 +166,8 @@ export default function Landing() {
                         <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
                         {statsData.count.toLocaleString()}{" "}
                         {statsData.type === "real_deals"
-                          ? t("landing.realDealsAnalyzed")
-                          : t("landing.publicRecordsAnalyzed")}
+                          ? "real deals analyzed"
+                          : "public auto-finance records analyzed"}
                       </span>
                     ) : null}
                   </div>
@@ -172,7 +180,7 @@ export default function Landing() {
 
                   {/* Header */}
                   <p className="text-[10px] font-semibold uppercase tracking-widest text-amber-600/70 dark:text-amber-400/60">
-                    {t("landing.sampleResult")}
+                    Sample result
                   </p>
 
                   {/* Verdict chips + heading */}
@@ -182,26 +190,26 @@ export default function Landing() {
                         NO-GO
                       </span>
                       <span className="text-xs text-muted-foreground border border-border/60 px-2 py-0.5 rounded bg-muted/40">
-                        {t("landing.highConfidence")}
+                        High confidence
                       </span>
                     </div>
                     <p className="text-sm font-semibold leading-snug text-amber-700 dark:text-amber-400">
-                      {t("landing.sampleVerdict")}
+                      Significant red flags — key pricing information is missing
                     </p>
                     <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                      {t("landing.sampleBody")}
+                      This quote has enough gaps that visiting the dealership without resolving them first is high-risk.
                     </p>
                   </div>
 
                   {/* Issues */}
                   <div className="border-t border-amber-500/15 pt-3 space-y-2">
                     <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                      {t("landing.keyIssuesFound")}
+                      Key issues found
                     </p>
                     {[
-                      { field: t("landing.otdPrice"), note: t("landing.otdNote") },
-                      { field: t("landing.addOnFees"), note: t("landing.addOnNote") },
-                      { field: t("landing.financingTerms"), note: t("landing.financingNote") },
+                      { field: "OTD price", note: "No out-the-door total was provided" },
+                      { field: "Add-on fees", note: "$1,995 protection package not itemized" },
+                      { field: "Financing terms", note: "Monthly payment shown without APR or term" },
                     ].map((item) => (
                       <div key={item.field} className="flex items-start gap-2">
                         <AlertTriangle className="w-3.5 h-3.5 text-amber-500 mt-0.5 shrink-0" />
@@ -219,10 +227,10 @@ export default function Landing() {
                       <div className="flex items-center gap-1.5 mb-1">
                         <Lock className="w-3 h-3 text-muted-foreground/60" />
                         <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-                          {t("landing.fullReview")}
+                          Full review
                         </p>
                       </div>
-                      {[t("landing.missingInfoChecklist"), t("landing.copyPasteDealerReply"), t("landing.negotiationGuidance")].map((line) => (
+                      {["Missing info checklist", "Copy-paste dealer reply", "Negotiation guidance"].map((line) => (
                         <div key={line} className="flex items-center gap-2 opacity-40 select-none">
                           <Check className="w-3 h-3 text-muted-foreground shrink-0" />
                           <p className="text-xs text-muted-foreground">{line}</p>
@@ -241,9 +249,13 @@ export default function Landing() {
 
         <section className="py-12 px-6 bg-muted/30">
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center" data-testid="text-how-it-works-heading">{t("landing.howItWorksHeading")}</h2>
+            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center" data-testid="text-how-it-works-heading">How it works</h2>
             <ol className="space-y-4">
-              {[t("landing.step1"), t("landing.step2"), t("landing.step3")].map((step, idx) => (
+              {[
+                "Paste the dealer text or quote",
+                "Odigos flags what's missing or risky",
+                "Get a copy-paste reply to send the dealer (Full Review)",
+              ].map((step, idx) => (
                 <li key={idx} className="flex items-start gap-3">
                   <span className="bg-muted text-foreground font-semibold text-sm rounded-full h-6 w-6 flex items-center justify-center shrink-0 mt-0.5">{idx + 1}</span>
                   <span className="text-base text-muted-foreground">{step}</span>
@@ -257,33 +269,33 @@ export default function Landing() {
           <div className="mx-auto max-w-4xl px-4 sm:px-6">
             <div className="mx-auto max-w-2xl text-center mb-16">
               <h2 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl" data-testid="text-checks-heading">
-                {t("landing.checksHeading")}
+                What Odigos Checks For
               </h2>
               <p className="mt-4 text-muted-foreground text-sm">
-                {t("landing.checksSubheading")}
+                The review focuses on pricing transparency and disclosure practices.
               </p>
             </div>
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="rounded-lg border border-border bg-card p-5" data-testid="card-check-otd">
-                <h3 className="font-medium">{t("landing.checkOtdTitle")}</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{t("landing.checkOtdBody")}</p>
+                <h3 className="font-medium">Missing Out-the-Door Price</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">Many dealer quotes hide the full price. Odigos flags when tax, registration, documentation fees, or add-ons are not clearly included.</p>
               </div>
               <div className="rounded-lg border border-border bg-card p-5" data-testid="card-check-addons">
-                <h3 className="font-medium">{t("landing.checkAddOnsTitle")}</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{t("landing.checkAddOnsBody")}</p>
+                <h3 className="font-medium">Dealer Add-Ons</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">Dealers often present optional add-ons like nitrogen tires or paint protection as mandatory. Odigos highlights language that suggests this.</p>
               </div>
               <div className="rounded-lg border border-border bg-card p-5" data-testid="card-check-fees">
-                <h3 className="font-medium">{t("landing.checkFeesTitle")}</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{t("landing.checkFeesBody")}</p>
+                <h3 className="font-medium">Unclear Fees</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">Dealer documentation fees, prep fees, and appearance packages are sometimes buried in quotes. Odigos helps surface them.</p>
               </div>
               <div className="rounded-lg border border-border bg-card p-5" data-testid="card-check-language">
-                <h3 className="font-medium">{t("landing.checkLanguageTitle")}</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{t("landing.checkLanguageBody")}</p>
+                <h3 className="font-medium">Vague Pricing Language</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">If a dealer message avoids committing to a full price or conditions the deal on financing or add-ons, Odigos calls it out.</p>
               </div>
             </div>
             <p className="mx-auto mt-16 max-w-2xl text-center text-xs text-muted-foreground" data-testid="text-privacy-note">
-              {t("landing.privacyNote")}{" "}
-              <Link href="/privacy" className="underline hover:text-foreground">{t("header.privacy")}</Link>
+              Pricing signals are stored anonymously to improve dealer fee benchmarks. Submitted text is PII-redacted and deleted after 90 days.{" "}
+              <Link href="/privacy" className="underline hover:text-foreground">Privacy Policy</Link>
             </p>
           </div>
         </section>
@@ -291,19 +303,17 @@ export default function Landing() {
         <section className="py-12 px-6">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-xl md:text-2xl font-bold mb-4 text-center" data-testid="text-otd-explainer-heading">
-              {t("landing.otdExplainerHeading")}
+              What is an out-the-door price?
             </h2>
             <p className="text-base text-foreground/75 leading-relaxed">
-              {t("landing.otdExplainerBody")}
+              The out-the-door price (OTD) is the total amount you'll pay to leave the dealership with the keys — including sale price, tax, title, registration, doc fees, and any add-ons. It's the only number that tells you what the car actually costs. Dealers often focus on the monthly payment instead, which can hide longer loan terms, higher rates, and fees you never agreed to. Odigos analyzes the quote you already have and tells you what's missing.
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
-              <Trans i18nKey="landing.otdExplainerLinkContext">
-                Doc fees and other dealer charges vary significantly from state to state — see our{" "}
-                <Link href="/car-dealer-fees-by-state" className="underline underline-offset-4 hover:text-foreground transition-colors" data-testid="link-fees-by-state-otd">
-                  car dealer fees by state
-                </Link>
-                {" "}breakdown to know what's typical where you live.
-              </Trans>
+              Doc fees and other dealer charges vary significantly from state to state — see our{" "}
+              <Link href="/car-dealer-fees-by-state" className="underline underline-offset-4 hover:text-foreground transition-colors" data-testid="link-fees-by-state-otd">
+                car dealer fees by state
+              </Link>
+              {" "}breakdown to know what's typical where you live.
             </p>
           </div>
         </section>
@@ -311,10 +321,15 @@ export default function Landing() {
         <section className="py-16 px-6 bg-muted/30">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
-              {t("landing.inMinutesHeading")}
+              In minutes, you'll know:
             </h2>
             <ul className="space-y-3">
-              {[t("landing.verdictBullet"), t("landing.missingBullet"), t("landing.redFlagsBullet"), t("landing.copyPasteBullet")].map((item, idx) => (
+              {[
+                "Green / Yellow / Red verdict",
+                "What's missing (OTD, APR, fees, term)",
+                "Red flags & dealer add-ons",
+                "Copy-paste reply to send the dealer (paid)",
+              ].map((item, idx) => (
                 <li key={idx} className="flex items-center gap-3">
                   <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
                   <span className="text-base text-muted-foreground">{item}</span>
@@ -327,10 +342,10 @@ export default function Landing() {
         <section className="py-16 px-6">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-xl md:text-2xl font-bold mb-4">
-              {t("landing.whyItMattersHeading")}
+              Why it matters
             </h2>
             <p className="text-base text-foreground/75 leading-relaxed">
-              {t("landing.whyItMattersBody")}
+              Dealers often quote monthly payments, add packages later, or ask you to "come in to talk numbers." Odigos turns the messages you already have into a clear next step.
             </p>
           </div>
         </section>
@@ -338,32 +353,30 @@ export default function Landing() {
         <section className="py-16 px-6 bg-muted/30">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
-              {t("landing.realExampleHeading")}
+              Real example (anonymized)
             </h2>
             <Card>
               <CardContent className="pt-6">
                 <p className="text-sm text-muted-foreground mb-3">
-                  <Trans i18nKey="landing.realExampleQuote">
-                    Dealer quoted <span className="font-medium text-foreground">$589/month</span> for a 2025 SUV.
-                  </Trans>
+                  Dealer quoted <span className="font-medium text-foreground">$589/month</span> for a 2025 SUV.
                 </p>
-                <p className="text-sm font-medium text-muted-foreground mb-2">{t("landing.odiogosFlagged")}</p>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Odigos flagged:</p>
                 <ul className="space-y-2 mb-4">
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-muted-foreground">{t("landing.flagNoOtd")}</span>
+                    <span className="text-sm text-muted-foreground">No out-the-door price provided</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-muted-foreground">{t("landing.flagNoApr")}</span>
+                    <span className="text-sm text-muted-foreground">APR not specified</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-muted-foreground">{t("landing.flagProtection")}</span>
+                    <span className="text-sm text-muted-foreground">Protection package added without cost</span>
                   </li>
                 </ul>
                 <p className="text-sm text-muted-foreground italic">
-                  {t("landing.smallGaps")}
+                  Small gaps like these can cost thousands.
                 </p>
               </CardContent>
             </Card>
@@ -373,10 +386,10 @@ export default function Landing() {
         <section className="py-12 px-6">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-xl md:text-2xl font-bold mb-4" data-testid="text-built-for-heading">
-              {t("landing.builtForHeading")}
+              Built for real car buyers
             </h2>
             <p className="text-base text-foreground/75 leading-relaxed">
-              {t("landing.builtForBody")}
+              We don't sell cars. We don't work with dealerships. We don't take referral fees. Odigos is an independent tool that works entirely from the messages you already have. No account required. PII-redacted submitted text is deleted within 90 days. Just clarity before you sign.
             </p>
           </div>
         </section>
@@ -384,10 +397,10 @@ export default function Landing() {
         <section className="border-t border-border py-24 sm:py-32" data-testid="section-sample-output">
           <div className="mx-auto max-w-3xl px-4 sm:px-6">
             <h2 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl">
-              {t("landing.sampleOutputHeading")}
+              What the analysis looks like
             </h2>
             <p className="mt-4 text-sm text-muted-foreground">
-              {t("landing.sampleOutputSubheading")}
+              Sample output from a real car dealer quote (anonymized)
             </p>
 
             <div className="mt-12 rounded-lg border border-border bg-card overflow-hidden">
@@ -395,30 +408,30 @@ export default function Landing() {
                 <div className="flex items-center gap-3">
                   <XCircle className="h-5 w-5 text-destructive shrink-0" />
                   <div>
-                    <span className="font-medium">{t("landing.verdictNogo")}</span>
-                    <span className="text-sm text-muted-foreground ml-2">{t("landing.highConfidence")}</span>
+                    <span className="font-medium">Verdict: NO-GO</span>
+                    <span className="text-sm text-muted-foreground ml-2">High confidence</span>
                     <span className="text-sm text-muted-foreground ml-2">· Deal Score: 38/100</span>
                   </div>
                 </div>
                 <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-                  {t("landing.sampleOutputBody")}
+                  This quote is missing critical pricing details. Do not proceed without a complete out-the-door breakdown.
                 </p>
               </div>
 
               <div className="p-5">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-4">{t("landing.detectedIssues")}</p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-4">Detected issues</p>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3">
                     <AlertTriangle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
-                    <span className="text-sm">{t("landing.issue1")}</span>
+                    <span className="text-sm">No out-the-door price — only monthly payment quoted</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <AlertTriangle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
-                    <span className="text-sm">{t("landing.issue2")}</span>
+                    <span className="text-sm">APR not disclosed — rate described as "competitive"</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <AlertTriangle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
-                    <span className="text-sm">{t("landing.issue3")}</span>
+                    <span className="text-sm">$895 'protection package' added without a disclosed price</span>
                   </li>
                 </ul>
               </div>
@@ -426,7 +439,7 @@ export default function Landing() {
               <div className="px-5 pb-5">
                 <div className="rounded border border-border bg-secondary/20 p-4">
                   <p className="text-xs text-muted-foreground">
-                    {t("landing.fullAnalysisNote")}
+                    Full analysis includes: the specific questions to request before signing, a copy-paste reply to send the dealer, and a line-by-line explanation of each flag detected.
                   </p>
                 </div>
               </div>
@@ -438,16 +451,16 @@ export default function Landing() {
           <div className="mx-auto max-w-4xl px-4 sm:px-6">
             <div className="mx-auto max-w-2xl text-center mb-16">
               <h2 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl">
-                {t("landing.pricingHeading")}
+                Simple pricing
               </h2>
               <p className="mt-4 text-muted-foreground text-sm">
-                {t("landing.pricingSubheading")}
+                No subscription. No upsells. One-time purchase per analysis.
               </p>
             </div>
             <div className="grid gap-6 md:grid-cols-2 max-w-2xl mx-auto">
               <div className="rounded-lg border border-border bg-card p-6" data-testid="card-pricing-tier1">
                 <div className="mb-5">
-                  <h3 className="font-medium">{t("landing.freeTierName")}</h3>
+                  <h3 className="font-medium">Free Preview</h3>
                   <div className="mt-2 flex items-baseline gap-1">
                     <span className="text-2xl font-semibold">$0</span>
                   </div>
@@ -455,15 +468,15 @@ export default function Landing() {
                 <ul className="mb-6 space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>{t("landing.freeFeature1")}</span>
+                    <span>Verdict (Green/Yellow/Red)</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>{t("landing.freeFeature2")}</span>
+                    <span>Deal score & confidence</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>{t("landing.freeFeature3")}</span>
+                    <span>Pricing terms found in the quote</span>
                   </li>
                 </ul>
                 <Button
@@ -472,38 +485,38 @@ export default function Landing() {
                   className="w-full"
                   data-testid="button-cta-free-preview"
                 >
-                  <Link href="/analyze">{t("landing.freeTierName")}</Link>
+                  <Link href="/analyze">Free Preview</Link>
                 </Button>
               </div>
               <div className="rounded-lg border border-primary bg-primary/5 p-6" data-testid="card-pricing-tier2">
                 <div className="mb-5">
-                  <h3 className="font-medium">{t("landing.paidTierName")}</h3>
+                  <h3 className="font-medium">Full Deal Review</h3>
                   <div className="mt-2 flex items-baseline gap-1">
                     <span className="text-2xl font-semibold">$49</span>
                     <span className="text-xs font-normal text-muted-foreground">(one-time)</span>
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground">{t("landing.paidTierBadge")}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Less than most dealer doc fees</p>
                 </div>
                 <ul className="mb-6 space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>{t("landing.paidFeature1")}</span>
+                    <span>Everything in Free</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>{t("landing.paidFeature2")}</span>
+                    <span>Red flags & hidden fees</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>{t("landing.paidFeature3")}</span>
+                    <span>Missing info checklist</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>{t("landing.paidFeature4")}</span>
+                    <span>Copy-paste dealer reply</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>{t("landing.paidFeature5")}</span>
+                    <span>Full analysis reasoning</span>
                   </li>
                 </ul>
                 <Button
@@ -536,7 +549,7 @@ export default function Landing() {
           </Helmet>
           <div className="mx-auto max-w-3xl px-4 sm:px-6">
             <h2 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl mb-12" data-testid="text-faq-heading">
-              {t("landing.faqHeading")}
+              Common questions
             </h2>
             <Accordion type="single" collapsible className="w-full">
               {faqs.map((faq, idx) => (
@@ -559,10 +572,10 @@ export default function Landing() {
         <section className="py-16 px-6">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-2xl md:text-3xl font-bold mb-6">
-              {t("landing.finalCtaHeading")}
+              Don't walk into a $30–$60k decision blind.
             </h2>
             <Button variant="cta" asChild size="lg" className="text-base rounded-lg" data-testid="button-cta-final">
-              <Link href="/analyze">{t("landing.finalCtaButton")}</Link>
+              <Link href="/analyze">Check This Deal</Link>
             </Button>
           </div>
         </section>
@@ -570,20 +583,20 @@ export default function Landing() {
         <section className="py-16 px-6">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-xl md:text-2xl font-bold mb-8 text-center" data-testid="text-why-heading">
-              {t("landing.whyHeading")}
+              Why Use Odigos?
             </h2>
             <div className="grid md:grid-cols-3 gap-6">
               <div data-testid="card-why-clarity">
-                <h3 className="font-semibold mb-2 text-foreground">{t("landing.whyClarityTitle")}</h3>
-                <p className="text-sm text-muted-foreground">{t("landing.whyClarityBody")}</p>
+                <h3 className="font-semibold mb-2 text-foreground">Clarity Before You Visit</h3>
+                <p className="text-sm text-muted-foreground">Dealership pricing conversations often leave out important details. Odigos helps identify what's missing before you step into the showroom.</p>
               </div>
               <div data-testid="card-why-tactics">
-                <h3 className="font-semibold mb-2 text-foreground">{t("landing.whyTacticsTitle")}</h3>
-                <p className="text-sm text-muted-foreground">{t("landing.whyTacticsBody")}</p>
+                <h3 className="font-semibold mb-2 text-foreground">Built Around Real Dealer Tactics</h3>
+                <p className="text-sm text-muted-foreground">The checks Odigos performs are based on common dealership pricing practices buyers frequently encounter.</p>
               </div>
               <div data-testid="card-why-free">
-                <h3 className="font-semibold mb-2 text-foreground">{t("landing.whyFreeTitle")}</h3>
-                <p className="text-sm text-muted-foreground">{t("landing.whyFreeBody")}</p>
+                <h3 className="font-semibold mb-2 text-foreground">Free and Instant</h3>
+                <p className="text-sm text-muted-foreground">You can paste a dealer message and get a full analysis without creating an account.</p>
               </div>
             </div>
           </div>
@@ -591,23 +604,23 @@ export default function Landing() {
 
         <section className="py-12 px-6">
           <div className="max-w-2xl mx-auto">
-            <h3 className="text-base font-semibold mb-2 text-foreground" data-testid="text-scope-heading">{t("landing.scopeHeading")}</h3>
+            <h3 className="text-base font-semibold mb-2 text-foreground" data-testid="text-scope-heading">What Odigos does NOT do</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              {t("landing.scopeBody")}
+              Odigos analyzes pricing transparency and financing terms. It does not evaluate vehicle condition, mechanical reliability, or accident history.
             </p>
           </div>
         </section>
 
         <section className="py-12 px-6 bg-muted/30">
           <div className="max-w-2xl mx-auto">
-            <h3 className="text-base font-semibold mb-4 text-foreground" data-testid="text-tactics-heading">{t("landing.tacticsHeading")}</h3>
+            <h3 className="text-base font-semibold mb-4 text-foreground" data-testid="text-tactics-heading">Common Dealer Pricing Tactics Buyers Ask About</h3>
             <ul className="space-y-2">
-              <li><Link href="/dealer-wont-give-otd-price" className="text-sm underline text-foreground" data-testid="link-tactic-otd">{t("landing.tacticOtd")}</Link></li>
-              <li><Link href="/are-dealer-add-ons-mandatory" className="text-sm underline text-foreground" data-testid="link-tactic-addons">{t("landing.tacticAddons")}</Link></li>
-              <li><Link href="/dealer-doc-fee" className="text-sm underline text-foreground" data-testid="link-tactic-docfee">{t("landing.tacticDocFee")}</Link></li>
-              <li><Link href="/market-adjustment-fee" className="text-sm underline text-foreground" data-testid="link-tactic-market">{t("landing.tacticMarket")}</Link></li>
-              <li><Link href="/dealer-added-fees-after-agreement" className="text-sm underline text-foreground" data-testid="link-tactic-added-fees">{t("landing.tacticAddedFees")}</Link></li>
-              <li><Link href="/car-dealer-fees-by-state" className="text-sm underline text-foreground" data-testid="link-tactic-fees-by-state">{t("landing.tacticFeesByState")}</Link></li>
+              <li><Link href="/dealer-wont-give-otd-price" className="text-sm underline text-foreground" data-testid="link-tactic-otd">Dealer Won't Give Out-the-Door Price</Link></li>
+              <li><Link href="/are-dealer-add-ons-mandatory" className="text-sm underline text-foreground" data-testid="link-tactic-addons">Are Dealer Add-Ons Mandatory?</Link></li>
+              <li><Link href="/dealer-doc-fee" className="text-sm underline text-foreground" data-testid="link-tactic-docfee">Dealer Documentation Fee Explained</Link></li>
+              <li><Link href="/market-adjustment-fee" className="text-sm underline text-foreground" data-testid="link-tactic-market">Dealer Market Adjustment Fees</Link></li>
+              <li><Link href="/dealer-added-fees-after-agreement" className="text-sm underline text-foreground" data-testid="link-tactic-added-fees">Dealer Added Fees After Agreement</Link></li>
+              <li><Link href="/car-dealer-fees-by-state" className="text-sm underline text-foreground" data-testid="link-tactic-fees-by-state">Car Dealer Fees by State</Link></li>
             </ul>
           </div>
         </section>
@@ -619,35 +632,35 @@ export default function Landing() {
             <div>
               <span className="font-serif font-semibold">Odigos</span>
               <p className="mt-1 text-xs text-muted-foreground">
-                {t("landing.footerTagline")}
+                Independent dealer quote review
               </p>
             </div>
 
             <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
               <button onClick={() => scrollToHash("features")} className="transition-colors hover:text-foreground" data-testid="link-footer-features">
-                {t("landing.footerWhatWeReview")}
+                What We Review
               </button>
               <button onClick={() => scrollToHash("pricing")} className="transition-colors hover:text-foreground" data-testid="link-footer-pricing">
-                {t("landing.footerPricing")}
+                Pricing
               </button>
               <button onClick={() => scrollToHash("faq")} className="transition-colors hover:text-foreground" data-testid="link-footer-questions">
-                {t("landing.footerQuestions")}
+                Questions
               </button>
               <Link href="/privacy" className="transition-colors hover:text-foreground" data-testid="link-footer-privacy">
-                {t("landing.footerPrivacy")}
+                Privacy
               </Link>
               <Link href="/terms" className="transition-colors hover:text-foreground" data-testid="link-footer-terms">
-                {t("landing.footerTerms")}
+                Terms
               </Link>
               <Link href="/car-dealer-fees-by-state" className="transition-colors hover:text-foreground" data-testid="link-footer-fees-by-state">
-                {t("landing.footerFeesByState")}
+                Dealer Fees by State
               </Link>
             </nav>
           </div>
 
           <div className="mt-8 pt-6 border-t border-border text-center text-xs text-muted-foreground leading-relaxed">
             <p>
-              {t("landing.footerDisclaimer")}
+              Odigos reviews pricing transparency and disclosure practices in dealer quotes. It does not provide legal, financial, or mechanical advice. Consult appropriate professionals for those assessments.
             </p>
           </div>
         </div>

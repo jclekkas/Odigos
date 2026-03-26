@@ -1,7 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { capture } from "@/lib/analytics";
-import { useTranslation } from "react-i18next";
 
 function useScrollToHash() {
   const [location, navigate] = useLocation();
@@ -17,30 +16,7 @@ function useScrollToHash() {
   };
 }
 
-function LangToggle() {
-  const { i18n: i18nInstance } = useTranslation();
-  const currentLang = i18nInstance.language;
-
-  function toggle() {
-    const next = currentLang === "en" ? "es" : "en";
-    i18nInstance.changeLanguage(next);
-    try { localStorage.setItem("lang", next); } catch { /* ignore */ }
-  }
-
-  return (
-    <button
-      onClick={toggle}
-      className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded border border-border/60 hover:border-border"
-      data-testid="button-lang-toggle"
-      aria-label={currentLang === "en" ? "Switch to Spanish" : "Cambiar a inglés"}
-    >
-      {currentLang === "en" ? "ES" : "EN"}
-    </button>
-  );
-}
-
 export default function SiteHeader() {
-  const { t } = useTranslation();
   const [location] = useLocation();
   const scrollToHash = useScrollToHash();
 
@@ -69,7 +45,7 @@ export default function SiteHeader() {
             className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             data-testid="link-nav-dealer-tactics"
           >
-            {t("header.navDealerTactics")}
+            Dealer Tactics
           </Link>
           <a
             href="/#pricing"
@@ -77,7 +53,7 @@ export default function SiteHeader() {
             className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             data-testid="link-nav-pricing"
           >
-            {t("header.navPricing")}
+            Pricing
           </a>
           <a
             href="/#faq"
@@ -85,15 +61,14 @@ export default function SiteHeader() {
             className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             data-testid="link-nav-questions"
           >
-            {t("header.navQuestions")}
+            Questions
           </a>
         </nav>
 
         <div className="flex items-center gap-3">
-          <LangToggle />
           <Button variant="cta" size="sm" asChild data-testid="button-cta-header">
-            <Link href="/analyze" onClick={() => capture("landing_cta_clicked", { location: "header", cta_text: t("header.ctaButton") })}>
-              {t("header.ctaButton")}
+            <Link href="/analyze" onClick={() => capture("landing_cta_clicked", { location: "header", cta_text: "Check a Dealer Quote" })}>
+              Check a Dealer Quote
             </Link>
           </Button>
         </div>

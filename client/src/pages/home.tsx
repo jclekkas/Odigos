@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import { Link, useSearch } from "wouter";
 import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
@@ -714,7 +713,6 @@ const UNLOCK_CTA_LABELS: Record<string, string> = {
 };
 
 export default function Home() {
-  const { t, i18n } = useTranslation();
   const search = useSearch();
   const [isOptionalOpen, setIsOptionalOpen] = useState(false);
   const [result, setResult] = useState<AnalysisResponseWithExtras | null>(null);
@@ -735,7 +733,7 @@ export default function Home() {
   const { toast } = useToast();
 
   const unlockCtaVariant = useExperiment("unlock_cta");
-  const unlockCtaLabel = t(`home.unlockCta_${unlockCtaVariant || "control"}`);
+  const unlockCtaLabel = UNLOCK_CTA_LABELS[unlockCtaVariant || "control"] ?? UNLOCK_CTA_LABELS.control;
 
   useEffect(() => {
     trackPageView("/analyze");
@@ -925,16 +923,31 @@ export default function Home() {
   };
 
   const formatIssueLabel = useCallback((field: string): string => {
-    const key = `home.issue_${field}`;
-    const translated = t(key);
-    if (translated !== key) return translated;
-    const humanized = field
+    const ISSUE_LABELS: Record<string, string> = {
+      out_the_door_price: "Out-the-door price",
+      sale_price: "Sale price",
+      monthly_payment: "Monthly payment",
+      apr: "APR",
+      loan_term: "Loan term",
+      down_payment: "Down payment",
+      doc_fee: "Documentation fee",
+      dealer_fee: "Dealer fee",
+      add_on: "Add-on",
+      trade_in_value: "Trade-in value",
+      residual_value: "Residual value",
+      money_factor: "Money factor",
+      mileage_limit: "Mileage limit",
+      taxes: "Taxes",
+      registration_fee: "Registration fee",
+      title_fee: "Title fee",
+    };
+    if (ISSUE_LABELS[field]) return ISSUE_LABELS[field];
+    return field
       .replace(/[_-]+/g, " ")
       .replace(/([a-z])([A-Z])/g, "$1 $2")
       .toLowerCase()
       .replace(/^\w/, (c) => c.toUpperCase());
-    return humanized;
-  }, [t]);
+  }, []);
 
   const sanitizeIssueLabel = useCallback((field: string): string => {
     const label = formatIssueLabel(field);
@@ -975,7 +988,7 @@ export default function Home() {
         termMonths: data.termMonths ? parseInt(data.termMonths) : undefined,
         downPayment: data.downPayment ? parseFloat(data.downPayment) : undefined,
         sessionId: getSessionId(),
-        language: (i18n.language === "es" ? "es" : "en") as "en" | "es",
+        language: "en" as "en" | "es",
       };
       const response = await apiRequest("POST", "/api/analyze", payload);
       return response.json() as Promise<AnalysisResponseWithExtras>;
@@ -1021,16 +1034,16 @@ export default function Home() {
 
       <main className="max-w-4xl mx-auto px-6 py-10 space-y-8">
         <div className="max-w-2xl mx-auto mb-2" data-testid="section-analyzer-context">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground" data-testid="text-analyzer-heading">{t("home.heading")}</h1>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground" data-testid="text-analyzer-heading">Analyze Your Car Dealer Quote</h1>
           <p className="text-sm text-muted-foreground mt-2 leading-relaxed" data-testid="text-analyzer-description">
-            {t("home.description")}
+            Paste a dealer quote, email, or text message. Odigos flags missing out-the-door pricing, hidden fees, and common dealership tactics.
           </p>
           <a
             href="/how-odigos-works"
             className="inline-block mt-2 text-sm text-muted-foreground underline-offset-4 hover:underline hover:text-foreground transition-colors"
             data-testid="link-methodology"
           >
-            {t("home.howItWorksLink")}
+            How does Odigos work? →
           </a>
 
           {!statsError && (
@@ -1045,20 +1058,20 @@ export default function Home() {
                   <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
                   {statsData.count.toLocaleString()}{" "}
                   {statsData.type === "real_deals"
-                    ? t("home.realDealsAnalyzed")
-                    : t("home.publicRecordsAnalyzed")}
+                    ? "real deals analyzed"
+                    : "public auto-finance records analyzed"}
                 </span>
               ) : null}
             </div>
           )}
         </div>
         <div className="max-w-2xl mx-auto" data-testid="section-what-you-get">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">{t("home.whatYouGetLabel")}</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Free preview includes:</p>
           <ul className="space-y-1 text-sm text-muted-foreground" data-testid="list-what-you-get">
-            <li>{t("home.whatYouGet1")}</li>
-            <li>{t("home.whatYouGet2")}</li>
-            <li>{t("home.whatYouGet3")}</li>
-            <li>{t("home.whatYouGet4")}</li>
+            <li>GO / NO-GO verdict with confidence level</li>
+            <li>Deal score out of 100</li>
+            <li>Pricing terms found in the quote</li>
+            <li>Top issues detected (full list in paid review)</li>
           </ul>
         </div>
 
@@ -1067,18 +1080,18 @@ export default function Home() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <Card className="border-border/50">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base font-semibold">{t("home.quoteCardTitle")}</CardTitle>
+                <CardTitle className="text-base font-semibold">Your Dealer Quote</CardTitle>
               </CardHeader>
               <CardContent>
                 <Tabs value={inputTab} onValueChange={(v) => setInputTab(v as "paste" | "upload")} className="w-full" data-testid="tabs-input-mode">
                   <TabsList className="w-full flex h-11 mb-4" data-testid="tabs-input-mode-list">
                     <TabsTrigger value="paste" className="flex-1 text-sm font-medium" data-testid="tab-paste-text">
                       <FileText className="h-4 w-4 mr-2" />
-                      {t("home.tabPasteText")}
+                      Paste Text
                     </TabsTrigger>
                     <TabsTrigger value="upload" className="flex-1 text-sm font-medium" data-testid="tab-upload">
                       <Upload className="h-4 w-4 mr-2" />
-                      {t("home.tabUpload")}
+                      Upload Image / PDF
                     </TabsTrigger>
                   </TabsList>
 
@@ -1091,7 +1104,7 @@ export default function Home() {
                         onClick={() => form.setValue("dealerText", SAMPLE_GOOD_DEAL)}
                         data-testid="button-sample-good"
                       >
-                        {t("home.sampleGoodLabel")}
+                        Try a good deal example
                       </Button>
                       <Button
                         type="button"
@@ -1100,7 +1113,7 @@ export default function Home() {
                         onClick={() => form.setValue("dealerText", SAMPLE_BAD_DEAL)}
                         data-testid="button-sample-bad"
                       >
-                        {t("home.sampleBadLabel")}
+                        Try a bad deal example
                       </Button>
                     </div>
 

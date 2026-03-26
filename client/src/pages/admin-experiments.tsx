@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { ArrowLeft, FlaskConical, Trophy, Users, TrendingUp, RefreshCw, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
-import { useTranslation, Trans } from "react-i18next";
 
 interface ExperimentVariantStats {
   variant: string;
@@ -46,18 +45,16 @@ function experimentLabel(experimentId: string): string {
 }
 
 function WinnerBadge({ isWinner }: { isWinner: boolean }) {
-  const { t } = useTranslation();
   if (!isWinner) return null;
   return (
     <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30 gap-1">
       <Trophy className="w-3 h-3" />
-      {t("admin.winning")}
+      Winner
     </Badge>
   );
 }
 
 function VariantRow({ variant, isWinner, total }: { variant: ExperimentVariantStats; isWinner: boolean; total: number }) {
-  const { t } = useTranslation();
   const pct = total > 0 ? (variant.assignments / total) * 100 : 0;
 
   return (
@@ -76,18 +73,18 @@ function VariantRow({ variant, isWinner, total }: { variant: ExperimentVariantSt
         <div>
           <p className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5 flex items-center gap-1">
             <Users className="w-3 h-3" />
-            {t("admin.assignments")}
+            Assignments
           </p>
           <p className="text-lg font-semibold tabular-nums" data-testid={`variant-assignments-${variant.variant}`}>
             {variant.assignments.toLocaleString()}
           </p>
-          <p className="text-xs text-muted-foreground">{pct.toFixed(1)}% {t("admin.ofTotal")}</p>
+          <p className="text-xs text-muted-foreground">{pct.toFixed(1)}% of total</p>
         </div>
 
         <div>
           <p className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5 flex items-center gap-1">
             <TrendingUp className="w-3 h-3" />
-            {t("admin.conversions")}
+            Conversions
           </p>
           <p className="text-lg font-semibold tabular-nums" data-testid={`variant-conversions-${variant.variant}`}>
             {variant.conversions.toLocaleString()}
@@ -95,7 +92,7 @@ function VariantRow({ variant, isWinner, total }: { variant: ExperimentVariantSt
         </div>
 
         <div>
-          <p className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">{t("admin.convRate")}</p>
+          <p className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">Conv. Rate</p>
           <p
             className={`text-lg font-semibold tabular-nums ${isWinner ? "text-emerald-700 dark:text-emerald-400" : ""}`}
             data-testid={`variant-rate-${variant.variant}`}
@@ -136,7 +133,6 @@ function SignificanceBadge({ pValue, isSignificant, lift }: { pValue: number | n
 }
 
 function ExperimentCard({ exp }: { exp: ExperimentStats }) {
-  const { t } = useTranslation();
   const total = exp.variants.reduce((sum, v) => sum + v.assignments, 0);
 
   const control = exp.variants.find(v => v.variant === "control") ?? exp.variants[0];
@@ -167,15 +163,15 @@ function ExperimentCard({ exp }: { exp: ExperimentStats }) {
             )}
             {exp.winner ? (
               <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30">
-                {t("admin.winner_label", { variant: exp.winner })}
+                Winner: {exp.winner}
               </Badge>
             ) : total > 0 ? (
               <Badge variant="outline" className="text-muted-foreground">
-                {t("admin.noWinnerYet")}
+                No winner yet
               </Badge>
             ) : (
               <Badge variant="outline" className="text-muted-foreground">
-                {t("admin.noData")}
+                No data
               </Badge>
             )}
           </div>
@@ -184,7 +180,7 @@ function ExperimentCard({ exp }: { exp: ExperimentStats }) {
 
       <CardContent className="space-y-3">
         {exp.variants.length === 0 ? (
-          <p className="text-sm text-muted-foreground italic">{t("admin.noVariantData")}</p>
+          <p className="text-sm text-muted-foreground italic">No variant data available.</p>
         ) : (
           exp.variants.map((v) => (
             <VariantRow
@@ -197,7 +193,7 @@ function ExperimentCard({ exp }: { exp: ExperimentStats }) {
         )}
 
         <p className="text-xs text-muted-foreground pt-1">
-          {t("admin.totalSample")} {total.toLocaleString()} {t("admin.assignment_other")}
+          Total sample: {total.toLocaleString()} assignments
         </p>
       </CardContent>
     </Card>
@@ -205,7 +201,6 @@ function ExperimentCard({ exp }: { exp: ExperimentStats }) {
 }
 
 export default function AdminExperiments() {
-  const { t } = useTranslation();
   const { data, isLoading, isError, error, refetch, isFetching } = useQuery<ExperimentStats[]>({
     queryKey: ["/api/experiments"],
     queryFn: async () => {
@@ -224,15 +219,15 @@ export default function AdminExperiments() {
             <Link href="/admin/metrics">
               <Button variant="outline" size="sm" className="gap-2" data-testid="button-back-admin">
                 <ArrowLeft className="w-4 h-4" />
-                {t("admin.admin_back")}
+                Admin
               </Button>
             </Link>
             <div>
               <h1 className="text-xl font-semibold flex items-center gap-2">
                 <FlaskConical className="w-5 h-5 text-muted-foreground" />
-                {t("admin.experimentsTitle")}
+                A/B Experiments
               </h1>
-              <p className="text-sm text-muted-foreground">{t("admin.experimentsSubtitle")}</p>
+              <p className="text-sm text-muted-foreground">Variant performance and statistical significance</p>
             </div>
           </div>
 
@@ -245,7 +240,7 @@ export default function AdminExperiments() {
             data-testid="button-refresh-experiments"
           >
             <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} />
-            {t("admin.refresh")}
+            Refresh
           </Button>
         </div>
 
@@ -269,7 +264,7 @@ export default function AdminExperiments() {
                 <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm text-red-700 dark:text-red-400 font-medium">
-                    {t("admin.failedToLoadExperiments")} {(error as Error)?.message ? `(HTTP ${(error as Error).message})` : ""}
+                    Failed to load experiments. Check your connection or admin key.{(error as Error)?.message ? ` (HTTP ${(error as Error).message})` : ""}
                   </p>
                 </div>
               </div>
@@ -279,9 +274,9 @@ export default function AdminExperiments() {
           <Card>
             <CardContent className="pt-6 text-center space-y-3">
               <FlaskConical className="w-8 h-8 text-muted-foreground mx-auto" />
-              <p className="text-sm font-medium">{t("admin.noExperimentData")}</p>
+              <p className="text-sm font-medium">No experiment data yet</p>
               <p className="text-xs text-muted-foreground max-w-xs mx-auto">
-                {t("admin.noExperimentDataDesc")}
+                Experiments will appear here once users have been bucketed into variants and conversions have been tracked.
               </p>
             </CardContent>
           </Card>
@@ -294,12 +289,12 @@ export default function AdminExperiments() {
         )}
 
         <div className="border border-border/40 rounded-lg p-4 bg-muted/10 space-y-2">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("admin.howToReadHeading")}</p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">How to read this</p>
           <ul className="text-xs text-muted-foreground space-y-1">
-            <li>• <Trans i18nKey="admin.howToReadAssignments"><strong>Assignments</strong>: users deterministically bucketed into this variant (stable across reloads)</Trans></li>
-            <li>• <Trans i18nKey="admin.howToReadConversions"><strong>Conversions</strong>: paid conversions attributed to users in this variant</Trans></li>
-            <li>• <Trans i18nKey="admin.howToReadRate"><strong>Conv. Rate</strong>: conversions / assignments. Lower sample sizes are less reliable.</Trans></li>
-            <li>• <Trans i18nKey="admin.howToReadWinner"><strong>Winner</strong>: variant with the higher conversion rate. Statistical significance shown as a badge (two-proportion z-test, α=0.05). "Not significant" means more data is needed.</Trans></li>
+            <li>• <strong>Assignments</strong>: users deterministically bucketed into this variant (stable across reloads)</li>
+            <li>• <strong>Conversions</strong>: paid conversions attributed to users in this variant</li>
+            <li>• <strong>Conv. Rate</strong>: conversions / assignments. Lower sample sizes are less reliable.</li>
+            <li>• <strong>Winner</strong>: variant with the higher conversion rate. Statistical significance shown as a badge (two-proportion z-test, α=0.05). "Not significant" means more data is needed.</li>
           </ul>
         </div>
       </div>

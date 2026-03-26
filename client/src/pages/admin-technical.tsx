@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
+
 import { useAdminKey } from "@/hooks/use-admin-key";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -202,7 +202,6 @@ function AutoRefreshCountdown({ seconds }: { seconds: number }) {
 
 export default function AdminTechnical() {
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
-  const { t } = useTranslation();
   const [adminKey, setAdminKey, clearKey] = useAdminKey();
   const [keyInput, setKeyInput] = useState("");
 
@@ -273,13 +272,13 @@ export default function AdminTechnical() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="w-full max-w-sm space-y-4 p-6">
-          <h1 className="text-xl font-bold text-center">{t("admin.authHeading")}</h1>
-          <p className="text-sm text-muted-foreground text-center">{t("admin.authEnterKey")}</p>
+          <h1 className="text-xl font-bold text-center">Admin Access</h1>
+          <p className="text-sm text-muted-foreground text-center">Enter your admin key to continue</p>
           <div className="flex gap-2">
             <input
               type="password"
               className="flex-1 border rounded-md px-3 py-2 text-sm bg-background"
-              placeholder={t("admin.authKeyPlaceholderShort")}
+              placeholder="Admin key"
               value={keyInput}
               onChange={(e) => setKeyInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter" && keyInput) setAdminKey(keyInput); }}
@@ -291,7 +290,7 @@ export default function AdminTechnical() {
               disabled={!keyInput}
               data-testid="button-submit-admin-key"
             >
-              {t("admin.authGo")}
+              Go
             </Button>
           </div>
         </div>
@@ -306,13 +305,13 @@ export default function AdminTechnical() {
           <div className="flex items-center gap-3">
             <Link href="/admin/metrics">
               <Button variant="ghost" size="sm" data-testid="link-back-metrics">
-                <ArrowLeft className="h-4 w-4 mr-1" /> {t("admin.metrics")}
+                <ArrowLeft className="h-4 w-4 mr-1" /> Metrics
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl font-bold">{t("admin.technicalTitle")}</h1>
+              <h1 className="text-2xl font-bold">Technical &amp; Ops Dashboard</h1>
               <p className="text-sm text-muted-foreground">
-                {t("admin.technicalSubtitle")}
+                Engineering health, reliability, and operational efficiency
               </p>
             </div>
           </div>
