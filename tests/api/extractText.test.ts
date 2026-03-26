@@ -39,6 +39,7 @@ vi.mock("../../server/db", () => ({
     where: vi.fn().mockReturnThis(),
     insert: vi.fn().mockReturnThis(),
     values: vi.fn().mockReturnThis(),
+    returning: vi.fn().mockResolvedValue([{ id: "mock-submission-id" }]),
     onConflictDoNothing: vi.fn().mockResolvedValue([]),
   },
 }));
