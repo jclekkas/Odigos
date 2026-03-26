@@ -24,7 +24,7 @@ import express from "express";
 import { createServer } from "http";
 import request from "supertest";
 
-const RUN_E2E = Boolean(process.env.E2E);
+const RUN_E2E = process.env.E2E === "true";
 
 vi.mock("../../server/metrics", () => ({
   trackEvent: vi.fn(),
