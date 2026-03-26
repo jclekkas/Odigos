@@ -345,6 +345,93 @@ describe("writeSubmissionToWarehouse — sanity_flags populated but listing stil
   });
 });
 
+// ─── Vehicle make/model/year — wired into both raw and listing inserts ────────
+
+describe("writeSubmissionToWarehouse — vehicle fields", () => {
+  it("persists vehicle_make, vehicle_model, vehicle_year from detectedFields into raw and listing rows", async () => {
+    vi.clearAllMocks();
+    mockExecute.mockResolvedValue({ rowCount: 1 });
+    mockSelect.mockReturnValue(buildSelectChain([]));
+
+    let rawValues: Record<string, unknown> | null = null;
+    let listingValues: Record<string, unknown> | null = null;
+
+    mockInsert.mockImplementation(() =>
+      buildFullInsertChain((vals) => {
+        if ("dealerSubmissionId" in vals && !("isDuplicate" in vals)) {
+          rawValues = vals;
+        }
+        if ("isDuplicate" in vals) {
+          listingValues = vals;
+        }
+      })
+    );
+
+    await writeSubmissionToWarehouse({
+      ...BASE_PAYLOAD,
+      result: makeResult({
+        detectedFields: {
+          salePrice: 32000,
+          msrp: 33000,
+          rebates: null,
+          fees: [],
+          outTheDoorPrice: 35000,
+          monthlyPayment: 500,
+          tradeInValue: null,
+          apr: 4.9,
+          termMonths: 60,
+          downPayment: 3000,
+          vehicle_make: "Toyota",
+          vehicle_model: "Camry",
+          vehicle_year: 2024,
+        },
+      }),
+    });
+
+    expect(rawValues).not.toBeNull();
+    expect(rawValues!.vehicleMake).toBe("Toyota");
+    expect(rawValues!.vehicleModel).toBe("Camry");
+    expect(rawValues!.vehicleYear).toBe(2024);
+
+    expect(listingValues).not.toBeNull();
+    expect(listingValues!.vehicleMake).toBe("Toyota");
+    expect(listingValues!.vehicleModel).toBe("Camry");
+    expect(listingValues!.vehicleYear).toBe(2024);
+  });
+
+  it("stores null for vehicle fields when not present in detectedFields", async () => {
+    vi.clearAllMocks();
+    mockExecute.mockResolvedValue({ rowCount: 1 });
+    mockSelect.mockReturnValue(buildSelectChain([]));
+
+    let rawValues: Record<string, unknown> | null = null;
+    let listingValues: Record<string, unknown> | null = null;
+
+    mockInsert.mockImplementation(() =>
+      buildFullInsertChain((vals) => {
+        if ("dealerSubmissionId" in vals && !("isDuplicate" in vals)) {
+          rawValues = vals;
+        }
+        if ("isDuplicate" in vals) {
+          listingValues = vals;
+        }
+      })
+    );
+
+    await writeSubmissionToWarehouse(BASE_PAYLOAD);
+
+    expect(rawValues).not.toBeNull();
+    expect(rawValues!.vehicleMake).toBeNull();
+    expect(rawValues!.vehicleModel).toBeNull();
+    expect(rawValues!.vehicleYear).toBeNull();
+
+    expect(listingValues).not.toBeNull();
+    expect(listingValues!.vehicleMake).toBeNull();
+    expect(listingValues!.vehicleModel).toBeNull();
+    expect(listingValues!.vehicleYear).toBeNull();
+  });
+});
+
 // ─── Doc-fee cap logic unchanged ─────────────────────────────────────────────
 
 describe("ruleEngine doc-fee cap — unchanged behavior", () => {

@@ -124,6 +124,9 @@ async function performWarehouseWrite(payload: WarehouseWritePayload): Promise<vo
   await db.insert(rawUserAnalyses).values({
     dealerSubmissionId,
     stateCode: validState,
+    vehicleMake: finalResult.detectedFields.vehicle_make ?? null,
+    vehicleModel: finalResult.detectedFields.vehicle_model ?? null,
+    vehicleYear: finalResult.detectedFields.vehicle_year ?? null,
     analysisResult: finalResult.detectedFields,
     dealScore:
       finalResult.dealScore === "GREEN" ? 75
@@ -274,6 +277,9 @@ async function performWarehouseWrite(payload: WarehouseWritePayload): Promise<vo
     hasPipelineError: false,
     contentHash: contentHash ?? null,
     sanityFlags,
+    vehicleMake: finalResult.detectedFields.vehicle_make ?? null,
+    vehicleModel: finalResult.detectedFields.vehicle_model ?? null,
+    vehicleYear: finalResult.detectedFields.vehicle_year ?? null,
     listedPrice: toStr(finalResult.detectedFields.salePrice),
     otdPrice,
     monthlyPayment: toStr(finalResult.detectedFields.monthlyPayment),

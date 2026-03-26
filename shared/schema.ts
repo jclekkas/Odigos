@@ -52,6 +52,9 @@ export const detectedFieldsSchema = z.object({
   apr: z.number().nullable(),
   termMonths: z.number().nullable(),
   downPayment: z.number().nullable(),
+  vehicle_make: z.string().nullable().optional(),
+  vehicle_model: z.string().nullable().optional(),
+  vehicle_year: z.number().int().nullable().optional(),
 });
 
 export type DetectedFields = z.infer<typeof detectedFieldsSchema>;

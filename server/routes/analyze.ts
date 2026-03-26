@@ -240,6 +240,7 @@ CRITICAL REQUIREMENTS:
 2. Extract all pricing information you can find (sale price, MSRP, fees, monthly payments, etc.)
 3. Flag any suspicious fees or unclear terms like market adjustments, dealer add-ons, protection packages.
 4. Never invent numbers or make claims about "market averages" without data.
+5. For vehicle_make, vehicle_model, and vehicle_year: extract from the dealer text or the user-provided Vehicle field. Return null for any field that is not clearly determinable — do not guess.
 ${stateFeeRulesSection}${marketIntelligenceSection}
 You must respond with a valid JSON object with this exact structure:
 {
@@ -258,7 +259,10 @@ You must respond with a valid JSON object with this exact structure:
     "tradeInValue": number or null,
     "apr": number or null,
     "termMonths": number or null,
-    "downPayment": number or null
+    "downPayment": number or null,
+    "vehicle_make": string or null,
+    "vehicle_model": string or null,
+    "vehicle_year": number (4-digit integer) or null
   },
   "missingInfo": [
     {"field": "What's missing", "question": "Exact question to ask the dealer"}
