@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AdminNav } from "@/components/admin-nav";
 import { useAdminKey } from "@/hooks/use-admin-key";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -333,36 +334,6 @@ export default function AdminSeo() {
     staleTime: 5 * 60 * 1000,
   });
 
-  if (!adminKey) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-full max-w-sm space-y-4 p-6">
-          <h1 className="text-xl font-bold text-center">Admin Access</h1>
-          <p className="text-sm text-muted-foreground text-center">Enter your admin key to continue.</p>
-          <div className="flex gap-2">
-            <input
-              type="password"
-              className="flex-1 border rounded-md px-3 py-2 text-sm bg-background"
-              placeholder="Admin key"
-              value={keyInput}
-              onChange={(e) => setKeyInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter" && keyInput) setAdminKey(keyInput); }}
-              data-testid="input-admin-key"
-              autoFocus
-            />
-            <Button
-              onClick={() => { if (keyInput) setAdminKey(keyInput); }}
-              disabled={!keyInput}
-              data-testid="button-submit-admin-key"
-            >
-              Go
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const data = gscQuery.data;
   const isLoading = gscQuery.isLoading;
   const isError = gscQuery.isError;
@@ -370,7 +341,37 @@ export default function AdminSeo() {
   const setupRequired = data?.setup_required === true;
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-background">
+      <AdminNav />
+      {!adminKey && (
+        <div className="flex items-center justify-center py-24">
+          <div className="w-full max-w-sm space-y-4 p-6">
+            <h1 className="text-xl font-bold text-center">Admin Access</h1>
+            <p className="text-sm text-muted-foreground text-center">Enter your admin key to continue.</p>
+            <div className="flex gap-2">
+              <input
+                type="password"
+                className="flex-1 border rounded-md px-3 py-2 text-sm bg-background"
+                placeholder="Admin key"
+                value={keyInput}
+                onChange={(e) => setKeyInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter" && keyInput) setAdminKey(keyInput); }}
+                data-testid="input-admin-key"
+                autoFocus
+              />
+              <Button
+                onClick={() => { if (keyInput) setAdminKey(keyInput); }}
+                disabled={!keyInput}
+                data-testid="button-submit-admin-key"
+              >
+                Go
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      {adminKey && (
+      <div className="p-6">
       <div className="max-w-5xl mx-auto space-y-6">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-3">
@@ -519,6 +520,8 @@ export default function AdminSeo() {
 
         <GlossaryAccordion />
       </div>
+      </div>
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { AdminNav } from "@/components/admin-nav";
 import { useAdminKey } from "@/hooks/use-admin-key";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -594,39 +595,39 @@ export default function AdminMetrics() {
     enabled: !!adminKey,
   });
 
-  if (!adminKey) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-full max-w-sm space-y-4 p-6">
-          <h1 className="text-xl font-bold text-center">Admin Access</h1>
-          <p className="text-sm text-muted-foreground text-center">Enter your admin key to continue</p>
-          <div className="flex gap-2">
-            <input
-              type="password"
-              className="flex-1 border rounded-md px-3 py-2 text-sm bg-background"
-              placeholder="Admin key"
-              value={keyInput}
-              onChange={(e) => setKeyInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter" && keyInput) setAdminKey(keyInput); }}
-              data-testid="input-admin-key"
-              autoFocus
-            />
-            <Button
-              onClick={() => { if (keyInput) setAdminKey(keyInput); }}
-              disabled={!keyInput}
-              data-testid="button-submit-admin-key"
-            >
-              Go
-            </Button>
+  const lastUpdated = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString() : "Never";
+
+  return (
+    <div className="min-h-screen bg-background">
+      <AdminNav />
+      {!adminKey && (
+        <div className="flex items-center justify-center py-24">
+          <div className="w-full max-w-sm space-y-4 p-6">
+            <h1 className="text-xl font-bold text-center">Admin Access</h1>
+            <p className="text-sm text-muted-foreground text-center">Enter your admin key to continue</p>
+            <div className="flex gap-2">
+              <input
+                type="password"
+                className="flex-1 border rounded-md px-3 py-2 text-sm bg-background"
+                placeholder="Admin key"
+                value={keyInput}
+                onChange={(e) => setKeyInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter" && keyInput) setAdminKey(keyInput); }}
+                data-testid="input-admin-key"
+                autoFocus
+              />
+              <Button
+                onClick={() => { if (keyInput) setAdminKey(keyInput); }}
+                disabled={!keyInput}
+                data-testid="button-submit-admin-key"
+              >
+                Go
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background">
+      )}
+      {adminKey && isLoading && (
         <div className="max-w-7xl mx-auto p-6">
           <div className="animate-pulse space-y-6">
             <div className="h-10 bg-muted rounded w-64" />
@@ -635,43 +636,34 @@ export default function AdminMetrics() {
             </div>
           </div>
         </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-6">
-        <Card className="max-w-md w-full">
-          <CardContent className="pt-6 text-center">
-            <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
-            <p className="text-muted-foreground mb-4">Unable to load metrics. Please check your access key.</p>
-            <div className="flex gap-2 justify-center">
-              <Button
-                variant="outline"
-                onClick={clearKey}
-                data-testid="button-clear-admin-key"
-              >
-                Clear key and re-enter
-              </Button>
-              <Link href="/">
-                <Button variant="ghost" data-testid="button-back-home">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Home
+      )}
+      {adminKey && error && (
+        <div className="flex items-center justify-center p-6 py-24">
+          <Card className="max-w-md w-full">
+            <CardContent className="pt-6 text-center">
+              <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
+              <p className="text-muted-foreground mb-4">Unable to load metrics. Please check your access key.</p>
+              <div className="flex gap-2 justify-center">
+                <Button
+                  variant="outline"
+                  onClick={clearKey}
+                  data-testid="button-clear-admin-key"
+                >
+                  Clear key and re-enter
                 </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  const lastUpdated = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString() : "Never";
-
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+                <Link href="/">
+                  <Button variant="ghost" data-testid="button-back-home">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to Home
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+      {adminKey && !isLoading && !error && (<>
+      <div className="border-b bg-card/50 backdrop-blur-sm sticky top-12 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-4">
@@ -1179,6 +1171,7 @@ export default function AdminMetrics() {
           </TabsContent>
         </Tabs>
       </div>
+      </>)}
     </div>
   );
 }

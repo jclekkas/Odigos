@@ -1,49 +1,54 @@
-import { useState, useEffect } from "react";
+import { useSyncExternalStore, useCallback, useEffect } from "react";
 
 const STORAGE_KEY = "admin_key";
+const EVENT_NAME = "admin-key-change";
+
+function readFromStorage(): string {
+  try {
+    return localStorage.getItem(STORAGE_KEY) ?? "";
+  } catch {
+    return "";
+  }
+}
+
+function writeToStorage(key: string): void {
+  try {
+    if (key) {
+      localStorage.setItem(STORAGE_KEY, key);
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  } catch {}
+  window.dispatchEvent(new CustomEvent(EVENT_NAME));
+}
+
+function subscribe(callback: () => void): () => void {
+  window.addEventListener(EVENT_NAME, callback);
+  window.addEventListener("storage", callback);
+  return () => {
+    window.removeEventListener(EVENT_NAME, callback);
+    window.removeEventListener("storage", callback);
+  };
+}
 
 export function useAdminKey(): [string, (key: string) => void, () => void] {
-  const getInitialKey = (): string => {
-    const params = new URLSearchParams(window.location.search);
-    const urlKey = params.get("key");
-    if (urlKey) {
-      try {
-        localStorage.setItem(STORAGE_KEY, urlKey);
-      } catch {}
-      return urlKey;
-    }
-    try {
-      return localStorage.getItem(STORAGE_KEY) ?? "";
-    } catch {}
-    return "";
-  };
-
-  const [adminKey, setAdminKeyState] = useState<string>(getInitialKey);
+  const adminKey = useSyncExternalStore(subscribe, readFromStorage, () => "");
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const urlKey = params.get("key");
-    if (urlKey) {
-      try {
-        localStorage.setItem(STORAGE_KEY, urlKey);
-      } catch {}
-      setAdminKeyState(urlKey);
+    if (urlKey && urlKey !== readFromStorage()) {
+      writeToStorage(urlKey);
     }
   }, []);
 
-  const setAdminKey = (key: string) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, key);
-    } catch {}
-    setAdminKeyState(key);
-  };
+  const setAdminKey = useCallback((key: string) => {
+    writeToStorage(key);
+  }, []);
 
-  const clearKey = () => {
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch {}
-    setAdminKeyState("");
-  };
+  const clearKey = useCallback(() => {
+    writeToStorage("");
+  }, []);
 
   return [adminKey, setAdminKey, clearKey];
 }

@@ -1,3 +1,4 @@
+import { AdminNav } from "@/components/admin-nav";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -213,6 +214,7 @@ export default function AdminExperiments() {
 
   return (
     <div className="min-h-screen bg-background">
+      <AdminNav />
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3">

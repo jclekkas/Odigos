@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 
+import { AdminNav } from "@/components/admin-nav";
 import { useAdminKey } from "@/hooks/use-admin-key";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -1694,39 +1695,38 @@ export default function AdminBusiness() {
   const authIs503 = authErrorMsg.startsWith("503");
   const authIs401 = authErrorMsg.startsWith("401");
 
-  if (!adminKey) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-full max-w-sm space-y-4 p-6">
-          <h1 className="text-xl font-bold text-center">Admin Access</h1>
-          <p className="text-sm text-muted-foreground text-center">Enter your admin key to continue</p>
-          <div className="flex gap-2">
-            <input
-              type="password"
-              className="flex-1 border rounded-md px-3 py-2 text-sm bg-background"
-              placeholder="Admin key"
-              value={keyInput}
-              onChange={(e) => setKeyInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter" && keyInput) setAdminKey(keyInput); }}
-              data-testid="input-admin-key"
-              autoFocus
-            />
-            <Button
-              onClick={() => { if (keyInput) setAdminKey(keyInput); }}
-              disabled={!keyInput}
-              data-testid="button-submit-admin-key"
-            >
-              Go
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background">
-      <div className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+      <AdminNav />
+      {!adminKey && (
+        <div className="flex items-center justify-center py-24">
+          <div className="w-full max-w-sm space-y-4 p-6">
+            <h1 className="text-xl font-bold text-center">Admin Access</h1>
+            <p className="text-sm text-muted-foreground text-center">Enter your admin key to continue</p>
+            <div className="flex gap-2">
+              <input
+                type="password"
+                className="flex-1 border rounded-md px-3 py-2 text-sm bg-background"
+                placeholder="Admin key"
+                value={keyInput}
+                onChange={(e) => setKeyInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter" && keyInput) setAdminKey(keyInput); }}
+                data-testid="input-admin-key"
+                autoFocus
+              />
+              <Button
+                onClick={() => { if (keyInput) setAdminKey(keyInput); }}
+                disabled={!keyInput}
+                data-testid="button-submit-admin-key"
+              >
+                Go
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      {adminKey && (<>
+      <div className="border-b bg-card/50 backdrop-blur-sm sticky top-12 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-4">
@@ -1811,6 +1811,7 @@ export default function AdminBusiness() {
         {activePanel === "feedback-accuracy" && <FeedbackAccuracyPanel adminKey={adminKey} />}
         {activePanel === "subscription" && <SubscriptionPanel adminKey={adminKey} range={range} />}
       </div>
+      </>)}
     </div>
   );
 }

@@ -30,6 +30,7 @@ import DealerDocFeeByState from "@/pages/dealer-doc-fee-by-state";
 import CarDealerFeesList from "@/pages/car-dealer-fees-list";
 import CalculateOutTheDoorPrice from "@/pages/calculate-out-the-door-price";
 import GuidesRedirect from "@/pages/guides-redirect";
+import AdminHub from "@/pages/admin-hub";
 import AdminMetrics from "@/pages/admin-metrics";
 import AdminTechnical from "@/pages/admin-technical";
 import AdminBusiness from "@/pages/admin-business";
@@ -100,6 +101,7 @@ function Router() {
       <Route path="/car-dealer-fees-list" component={CarDealerFeesList} />
       <Route path="/calculate-out-the-door-price" component={CalculateOutTheDoorPrice} />
       <Route path="/guides" component={GuidesRedirect} />
+      <Route path="/admin" component={AdminHub} />
       <Route path="/admin/metrics" component={AdminMetrics} />
       <Route path="/admin/technical" component={AdminTechnical} />
       <Route path="/admin/business" component={AdminBusiness} />
