@@ -1,13 +1,16 @@
 /**
  * Integration test for POST /api/analyze — REAL OpenAI call.
  *
- * These tests are opt-in. They will be SKIPPED unless E2E=true is set,
- * so normal `npx vitest run` (and `test:api`) are never affected.
+ * All tests are SKIPPED unless E2E=true is set in the environment.
+ * Normal `npx vitest run` (and `test:api`) are never affected.
  *
- * Run manually:
+ * Run manually from the shell:
  *   E2E=true npx vitest run tests/api/analyze.integration.test.ts
  *
- * Or via the `test:integration` workflow in the Replit UI.
+ * The `test:integration` workflow in the Replit UI runs this file WITHOUT
+ * E2E=true so it is safe to trigger from the Project button — all tests skip,
+ * no OpenAI calls are made. Set E2E=true in the shell when you want a real
+ * live-call verification.
  *
  * Why this exists:
  *   Every other test that touches /api/analyze mocks the OpenAI client.
@@ -57,20 +60,6 @@ vi.mock("../../server/db", () => ({
 
 import { registerRoutes } from "../../server/routes";
 
-let app: express.Express;
-let server: ReturnType<typeof createServer>;
-
-beforeAll(async () => {
-  app = express();
-  app.use(express.json());
-  server = createServer(app);
-  await registerRoutes(server, app);
-});
-
-afterAll(() => {
-  server.close();
-});
-
 const CLEAR_QUOTE =
   "2024 Toyota Camry LE. " +
   "OTD price confirmed in writing at $29,500. " +
@@ -80,6 +69,20 @@ const CLEAR_QUOTE =
 describe.skipIf(!RUN_E2E)(
   "POST /api/analyze — real OpenAI call (E2E=true required)",
   () => {
+    let app: express.Express;
+    let server: ReturnType<typeof createServer>;
+
+    beforeAll(async () => {
+      app = express();
+      app.use(express.json());
+      server = createServer(app);
+      await registerRoutes(server, app);
+    });
+
+    afterAll(() => {
+      server.close();
+    });
+
     it(
       "returns HTTP 200 with a fully structured analysis response",
       async () => {

@@ -156,7 +156,10 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "E2E=true npx vitest run tests/api/analyze.integration.test.ts"
+args = "npx vitest run tests/api/analyze.integration.test.ts"
+
+[workflows.workflow.metadata]
+outputType = "console"
 
 [agent]
 integrations = ["github:1.0.0"]
