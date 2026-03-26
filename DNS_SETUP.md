@@ -56,7 +56,7 @@ BASE_URL=https://odigosauto.com npx tsx scripts/smoke-test.ts
 ```
 
 The script checks:
-- `/api/health` → 200, JSON body with `status: "ok"` (normal) or `"degraded"` (memory pressure)
+- `/api/health` → 200, JSON body with `status: "ok"` (smoke fails on any other value, including `"degraded"`)
 - `/api/stats/count` → 200, JSON body with `count` field
 - `/robots.txt` → 200, valid robots file, no staging domain references
 - `/sitemap.xml` → 200, valid XML, no staging domain references

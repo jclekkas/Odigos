@@ -47,14 +47,16 @@ function fail(label: string, detail: string): void {
   console.error(`       ${detail}`);
 }
 
-const ALLOWED_HOSTS: ReadonlySet<string> = new Set([
-  "odigosauto.com",
-  "www.odigosauto.com",
-  ...(BASE_URL.startsWith("http://localhost") ? ["localhost"] : []),
-]);
+const ALLOWED_HOSTS: ReadonlySet<string> = (() => {
+  const hosts = new Set(["odigosauto.com", "www.odigosauto.com"]);
+  try {
+    hosts.add(new URL(BASE_URL).hostname);
+  } catch {
+  }
+  return hosts;
+})();
 
 function isOnDomain(rawLocation: string, currentUrl: string): boolean {
-  if (rawLocation.startsWith("/")) return true;
   try {
     const resolved = new URL(rawLocation, currentUrl);
     return ALLOWED_HOSTS.has(resolved.hostname);
