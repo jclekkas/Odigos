@@ -53,6 +53,10 @@ args = "pii:cleanup"
 task = "workflow.run"
 args = "pii:cleanup:dry"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "smoke"
+
 [[workflows.workflow]]
 name = "Start application"
 author = "agent"
@@ -127,6 +131,17 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npx tsx server/scripts/runPiiCleanup.ts --dry-run"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "smoke"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx tsx scripts/smoke-test.ts"
 
 [workflows.workflow.metadata]
 outputType = "console"
