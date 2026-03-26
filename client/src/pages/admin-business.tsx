@@ -183,10 +183,14 @@ function FunnelPanel({ adminKey, range }: { adminKey: string; range: DateRange }
       const res = await fetch(`/api/admin/bi/funnel?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error("Failed");
+      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
       return res.json();
     },
-    refetchInterval: 300000,
+    refetchInterval: q => {
+      const errMsg = (q.state.error as Error)?.message ?? "";
+      return errMsg.startsWith("401") ? false : 300000;
+    },
+    enabled: !!adminKey,
   });
 
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
@@ -285,10 +289,14 @@ function AttributionPanel({ adminKey, range }: { adminKey: string; range: DateRa
       const res = await fetch(`/api/admin/bi/attribution?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error("Failed");
+      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
       return res.json();
     },
-    refetchInterval: 300000,
+    refetchInterval: q => {
+      const errMsg = (q.state.error as Error)?.message ?? "";
+      return errMsg.startsWith("401") ? false : 300000;
+    },
+    enabled: !!adminKey,
   });
 
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
@@ -392,10 +400,14 @@ function BehaviorPanel({ adminKey, range }: { adminKey: string; range: DateRange
       const res = await fetch(`/api/admin/bi/behavior?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error("Failed");
+      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
       return res.json();
     },
-    refetchInterval: 300000,
+    refetchInterval: q => {
+      const errMsg = (q.state.error as Error)?.message ?? "";
+      return errMsg.startsWith("401") ? false : 300000;
+    },
+    enabled: !!adminKey,
   });
 
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
@@ -533,10 +545,14 @@ function DealOutcomePanel({ adminKey, range }: { adminKey: string; range: DateRa
       const res = await fetch(`/api/admin/bi/deal-outcome?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error("Failed");
+      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
       return res.json();
     },
-    refetchInterval: 300000,
+    refetchInterval: q => {
+      const errMsg = (q.state.error as Error)?.message ?? "";
+      return errMsg.startsWith("401") ? false : 300000;
+    },
+    enabled: !!adminKey,
   });
 
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
@@ -740,10 +756,14 @@ function GeographicPanel({ adminKey, range }: { adminKey: string; range: DateRan
       const res = await fetch(`/api/admin/bi/geographic?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error("Failed");
+      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
       return res.json();
     },
-    refetchInterval: 300000,
+    refetchInterval: q => {
+      const errMsg = (q.state.error as Error)?.message ?? "";
+      return errMsg.startsWith("401") ? false : 300000;
+    },
+    enabled: !!adminKey,
   });
 
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
@@ -860,10 +880,14 @@ function AcquisitionPanel({ adminKey, range }: { adminKey: string; range: DateRa
       const res = await fetch(`/api/admin/bi/acquisition?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error("Failed");
+      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
       return res.json();
     },
-    refetchInterval: 300000,
+    refetchInterval: q => {
+      const errMsg = (q.state.error as Error)?.message ?? "";
+      return errMsg.startsWith("401") ? false : 300000;
+    },
+    enabled: !!adminKey,
   });
 
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
@@ -989,10 +1013,14 @@ function RevenuePanel({ adminKey, range }: { adminKey: string; range: DateRange 
       const res = await fetch(`/api/admin/bi/revenue?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error("Failed");
+      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
       return res.json();
     },
-    refetchInterval: 300000,
+    refetchInterval: q => {
+      const errMsg = (q.state.error as Error)?.message ?? "";
+      return errMsg.startsWith("401") ? false : 300000;
+    },
+    enabled: !!adminKey,
   });
 
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
@@ -1119,10 +1147,14 @@ function FalloutPanel({ adminKey, range }: { adminKey: string; range: DateRange 
       const res = await fetch(`/api/admin/bi/fallout?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error("Failed");
+      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
       return res.json();
     },
-    refetchInterval: 300000,
+    refetchInterval: q => {
+      const errMsg = (q.state.error as Error)?.message ?? "";
+      return errMsg.startsWith("401") ? false : 300000;
+    },
+    enabled: !!adminKey,
   });
 
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
@@ -1215,10 +1247,14 @@ function FeedbackAccuracyPanel({ adminKey }: { adminKey: string }) {
       const res = await fetch("/api/admin/feedback-accuracy", {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error("Failed to load feedback accuracy");
+      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
       return res.json();
     },
-    refetchInterval: 300000,
+    refetchInterval: q => {
+      const errMsg = (q.state.error as Error)?.message ?? "";
+      return errMsg.startsWith("401") ? false : 300000;
+    },
+    enabled: !!adminKey,
   });
 
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" data-testid="feedback-accuracy-loading" />;
@@ -1367,6 +1403,13 @@ export default function AdminBusiness() {
     refetchInterval: false,
     enabled: !!adminKey,
   });
+
+  useEffect(() => {
+    const errMsg = (authQuery.error as Error)?.message ?? "";
+    if (errMsg.startsWith("401")) {
+      clearKey();
+    }
+  }, [authQuery.error]);
 
   const authErrorMsg = authQuery.isError ? ((authQuery.error as Error)?.message ?? "") : "";
   const authIs503 = authErrorMsg.startsWith("503");

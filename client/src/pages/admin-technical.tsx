@@ -215,7 +215,10 @@ export default function AdminTechnical() {
       if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
       return res.json();
     },
-    refetchInterval: 60000,
+    refetchInterval: techQuery => {
+      const errMsg = (techQuery.state.error as Error)?.message ?? "";
+      return errMsg.startsWith("401") ? false : 60000;
+    },
     enabled: !!adminKey,
   });
 
@@ -228,9 +231,20 @@ export default function AdminTechnical() {
       if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
       return res.json();
     },
-    refetchInterval: 60000,
+    refetchInterval: alertsQuery => {
+      const errMsg = (alertsQuery.state.error as Error)?.message ?? "";
+      return errMsg.startsWith("401") ? false : 60000;
+    },
     enabled: !!adminKey,
   });
+
+  useEffect(() => {
+    const techErr = (techQuery.error as Error)?.message ?? "";
+    const alertsErr = (alertsQuery.error as Error)?.message ?? "";
+    if (techErr.startsWith("401") || alertsErr.startsWith("401")) {
+      clearKey();
+    }
+  }, [techQuery.error, alertsQuery.error]);
 
   useEffect(() => {
     if (techQuery.dataUpdatedAt) {
