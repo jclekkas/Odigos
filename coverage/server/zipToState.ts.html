@@ -1,0 +1,742 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for server/zipToState.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">server</a> zipToState.ts</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>4/4</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">83.33% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>5/6</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>1/1</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>3/3</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line high'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a>
+<a name='L188'></a><a href='#L188'>188</a>
+<a name='L189'></a><a href='#L189'>189</a>
+<a name='L190'></a><a href='#L190'>190</a>
+<a name='L191'></a><a href='#L191'>191</a>
+<a name='L192'></a><a href='#L192'>192</a>
+<a name='L193'></a><a href='#L193'>193</a>
+<a name='L194'></a><a href='#L194'>194</a>
+<a name='L195'></a><a href='#L195'>195</a>
+<a name='L196'></a><a href='#L196'>196</a>
+<a name='L197'></a><a href='#L197'>197</a>
+<a name='L198'></a><a href='#L198'>198</a>
+<a name='L199'></a><a href='#L199'>199</a>
+<a name='L200'></a><a href='#L200'>200</a>
+<a name='L201'></a><a href='#L201'>201</a>
+<a name='L202'></a><a href='#L202'>202</a>
+<a name='L203'></a><a href='#L203'>203</a>
+<a name='L204'></a><a href='#L204'>204</a>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a>
+<a name='L207'></a><a href='#L207'>207</a>
+<a name='L208'></a><a href='#L208'>208</a>
+<a name='L209'></a><a href='#L209'>209</a>
+<a name='L210'></a><a href='#L210'>210</a>
+<a name='L211'></a><a href='#L211'>211</a>
+<a name='L212'></a><a href='#L212'>212</a>
+<a name='L213'></a><a href='#L213'>213</a>
+<a name='L214'></a><a href='#L214'>214</a>
+<a name='L215'></a><a href='#L215'>215</a>
+<a name='L216'></a><a href='#L216'>216</a>
+<a name='L217'></a><a href='#L217'>217</a>
+<a name='L218'></a><a href='#L218'>218</a>
+<a name='L219'></a><a href='#L219'>219</a>
+<a name='L220'></a><a href='#L220'>220</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+ * Maps the first 3 digits of a US ZIP code to a 2-letter state code.
+ * ~400 entries covering all 50 states + DC, PR, GU, VI, AA.
+ * No external dependency, no network call.
+ */
+const ZIP_PREFIX_TO_STATE: Record&lt;string, string&gt; = {
+  "005": "NY", "006": "NY", "007": "NJ", "008": "NJ", "009": "PR",
+  "010": "MA", "011": "MA", "012": "MA", "013": "MA", "014": "MA",
+  "015": "MA", "016": "MA", "017": "MA", "018": "MA", "019": "MA",
+  "020": "MA", "021": "MA", "022": "MA", "023": "MA", "024": "MA",
+  "025": "MA", "026": "MA", "027": "MA",
+  "028": "RI", "029": "RI",
+  "030": "NH", "031": "NH", "032": "NH", "033": "NH", "034": "NH",
+  "035": "NH", "036": "NH", "037": "NH", "038": "NH",
+  "039": "ME", "040": "ME", "041": "ME", "042": "ME", "043": "ME",
+  "044": "ME", "045": "ME", "046": "ME", "047": "ME", "048": "ME", "049": "ME",
+  "050": "VT", "051": "VT", "052": "VT", "053": "VT", "054": "VT",
+  "056": "VT", "057": "VT", "058": "VT", "059": "VT",
+  "060": "CT", "061": "CT", "062": "CT", "063": "CT", "064": "CT",
+  "065": "CT", "066": "CT", "067": "CT", "068": "CT", "069": "CT",
+  "070": "NJ", "071": "NJ", "072": "NJ", "073": "NJ", "074": "NJ",
+  "075": "NJ", "076": "NJ", "077": "NJ", "078": "NJ", "079": "NJ",
+  "080": "NJ", "081": "NJ", "082": "NJ", "083": "NJ", "084": "NJ",
+  "085": "NJ", "086": "NJ", "087": "NJ", "088": "NJ", "089": "NJ",
+  "100": "NY", "101": "NY", "102": "NY", "103": "NJ", "104": "NY",
+  "105": "NY", "106": "NY", "107": "NY", "108": "NY", "109": "NY",
+  "110": "NY", "111": "NY", "112": "NY", "113": "NY", "114": "NY",
+  "115": "NY", "116": "NY", "117": "NY", "118": "NY", "119": "NY",
+  "120": "NY", "121": "NY", "122": "NY", "123": "NY", "124": "NY",
+  "125": "NY", "126": "NY", "127": "NY", "128": "NY", "129": "NY",
+  "130": "NY", "131": "NY", "132": "NY", "133": "NY", "134": "NY",
+  "135": "NY", "136": "NY", "137": "NY", "138": "NY", "139": "NY",
+  "140": "NY", "141": "NY", "142": "NY", "143": "NY", "144": "NY",
+  "145": "NY", "146": "NY", "147": "NY", "148": "NY", "149": "NY",
+  "150": "PA", "151": "PA", "152": "PA", "153": "PA", "154": "PA",
+  "155": "PA", "156": "PA", "157": "PA", "158": "PA", "159": "PA",
+  "160": "PA", "161": "PA", "162": "PA", "163": "PA", "164": "PA",
+  "165": "PA", "166": "PA", "167": "PA", "168": "PA", "169": "PA",
+  "170": "PA", "171": "PA", "172": "PA", "173": "PA", "174": "PA",
+  "175": "PA", "176": "PA", "177": "PA", "178": "PA", "179": "PA",
+  "180": "PA", "181": "PA", "182": "PA", "183": "PA", "184": "PA",
+  "185": "PA", "186": "PA", "187": "PA", "188": "PA", "189": "PA",
+  "190": "PA", "191": "PA", "192": "PA", "193": "PA", "194": "PA",
+  "195": "PA", "196": "PA",
+  "197": "DE", "198": "DE", "199": "DE",
+  "200": "DC", "201": "VA", "202": "DC", "203": "DC", "204": "DC", "205": "DC",
+  "206": "MD", "207": "MD", "208": "MD", "209": "MD",
+  "210": "MD", "211": "MD", "212": "MD", "214": "MD", "215": "MD",
+  "216": "MD", "217": "MD", "218": "MD", "219": "MD",
+  "220": "VA", "221": "VA", "222": "VA", "223": "VA", "224": "VA",
+  "225": "VA", "226": "VA", "227": "VA", "228": "VA", "229": "VA",
+  "230": "VA", "231": "VA", "232": "VA", "233": "VA", "234": "VA",
+  "235": "VA", "236": "VA", "237": "VA", "238": "VA", "239": "VA",
+  "240": "VA", "241": "VA", "242": "VA", "243": "VA", "244": "VA",
+  "245": "VA", "246": "VA",
+  "247": "WV", "248": "WV", "249": "WV",
+  "250": "WV", "251": "WV", "252": "WV", "253": "WV", "254": "WV",
+  "255": "WV", "256": "WV", "257": "WV", "258": "WV", "259": "WV",
+  "260": "WV", "261": "WV", "262": "WV", "263": "WV", "264": "WV",
+  "265": "WV", "266": "WV", "267": "WV", "268": "WV",
+  "270": "NC", "271": "NC", "272": "NC", "273": "NC", "274": "NC",
+  "275": "NC", "276": "NC", "277": "NC", "278": "NC", "279": "NC",
+  "280": "NC", "281": "NC", "282": "NC", "283": "NC", "284": "NC",
+  "285": "NC", "286": "NC", "287": "NC", "288": "NC", "289": "NC",
+  "290": "SC", "291": "SC", "292": "SC", "293": "SC", "294": "SC",
+  "295": "SC", "296": "SC", "297": "SC", "298": "SC", "299": "SC",
+  "300": "GA", "301": "GA", "302": "GA", "303": "GA", "304": "GA",
+  "305": "GA", "306": "GA", "307": "GA", "308": "GA", "309": "GA",
+  "310": "GA", "311": "GA", "312": "GA", "313": "GA", "314": "GA",
+  "315": "GA", "316": "GA", "317": "GA", "318": "GA", "319": "GA",
+  "320": "FL", "321": "FL", "322": "FL", "323": "FL", "324": "FL",
+  "325": "FL", "326": "FL", "327": "FL", "328": "FL", "329": "FL",
+  "330": "FL", "331": "FL", "332": "FL", "333": "FL", "334": "FL",
+  "335": "FL", "336": "FL", "337": "FL", "338": "FL", "339": "FL",
+  "340": "AA", "341": "FL", "342": "FL", "344": "FL", "346": "FL",
+  "347": "FL", "349": "FL",
+  "350": "AL", "351": "AL", "352": "AL", "354": "AL", "355": "AL",
+  "356": "AL", "357": "AL", "358": "AL", "359": "AL",
+  "360": "AL", "361": "AL", "362": "AL", "363": "AL", "364": "AL",
+  "365": "AL", "366": "AL", "367": "AL", "368": "AL", "369": "AL",
+  "370": "TN", "371": "TN", "372": "TN", "373": "TN", "374": "TN",
+  "375": "TN", "376": "TN", "377": "TN", "378": "TN", "379": "TN",
+  "380": "TN", "381": "TN", "382": "TN", "383": "TN", "384": "TN",
+  "385": "TN",
+  "386": "MS", "387": "MS", "388": "MS", "389": "MS",
+  "390": "MS", "391": "MS", "392": "MS", "393": "MS", "394": "MS",
+  "395": "MS", "396": "MS", "397": "MS",
+  "398": "GA", "399": "GA",
+  "400": "KY", "401": "KY", "402": "KY", "403": "KY", "404": "KY",
+  "405": "KY", "406": "KY", "407": "KY", "408": "KY", "409": "KY",
+  "410": "KY", "411": "KY", "412": "KY", "413": "KY", "414": "KY",
+  "415": "KY", "416": "KY", "417": "KY", "418": "KY",
+  "420": "KY", "421": "KY", "422": "KY", "423": "KY", "424": "KY",
+  "425": "KY", "426": "KY", "427": "KY",
+  "430": "OH", "431": "OH", "432": "OH", "433": "OH", "434": "OH",
+  "435": "OH", "436": "OH", "437": "OH", "438": "OH", "439": "OH",
+  "440": "OH", "441": "OH", "442": "OH", "443": "OH", "444": "OH",
+  "445": "OH", "446": "OH", "447": "OH", "448": "OH", "449": "OH",
+  "450": "OH", "451": "OH", "452": "OH", "453": "OH", "454": "OH",
+  "455": "OH", "456": "OH", "457": "OH", "458": "OH",
+  "460": "IN", "461": "IN", "462": "IN", "463": "IN", "464": "IN",
+  "465": "IN", "466": "IN", "467": "IN", "468": "IN", "469": "IN",
+  "470": "IN", "471": "IN", "472": "IN", "473": "IN", "474": "IN",
+  "475": "IN", "476": "IN", "477": "IN", "478": "IN", "479": "IN",
+  "480": "MI", "481": "MI", "482": "MI", "483": "MI", "484": "MI",
+  "485": "MI", "486": "MI", "487": "MI", "488": "MI", "489": "MI",
+  "490": "MI", "491": "MI", "492": "MI", "493": "MI", "494": "MI",
+  "495": "MI", "496": "MI", "497": "MI", "498": "MI", "499": "MI",
+  "500": "IA", "501": "IA", "502": "IA", "503": "IA", "504": "IA",
+  "505": "IA", "506": "IA", "507": "IA", "508": "IA", "509": "IA",
+  "510": "IA", "511": "IA", "512": "IA", "513": "IA", "514": "IA",
+  "515": "IA", "516": "IA",
+  "520": "IA", "521": "IA", "522": "IA", "523": "IA", "524": "IA",
+  "525": "IA", "526": "IA", "527": "IA", "528": "IA",
+  "530": "WI", "531": "WI", "532": "WI", "534": "WI", "535": "WI",
+  "537": "WI", "538": "WI", "539": "WI",
+  "540": "WI", "541": "WI", "542": "WI", "543": "WI", "544": "WI",
+  "545": "WI", "546": "WI", "547": "WI", "548": "WI", "549": "WI",
+  "550": "MN", "551": "MN", "553": "MN", "554": "MN", "555": "MN",
+  "556": "MN", "557": "MN", "558": "MN", "559": "MN",
+  "560": "MN", "561": "MN", "562": "MN", "563": "MN", "564": "MN",
+  "565": "MN", "566": "MN", "567": "MN",
+  "570": "SD", "571": "SD", "572": "SD", "573": "SD", "574": "SD",
+  "575": "SD", "576": "SD", "577": "SD",
+  "580": "ND", "581": "ND", "582": "ND", "583": "ND", "584": "ND",
+  "585": "ND", "586": "ND", "587": "ND", "588": "ND",
+  "590": "MT", "591": "MT", "592": "MT", "593": "MT", "594": "MT",
+  "595": "MT", "596": "MT", "597": "MT", "598": "MT", "599": "MT",
+  "600": "IL", "601": "IL", "602": "IL", "603": "IL", "604": "IL",
+  "605": "IL", "606": "IL", "607": "IL", "608": "IL", "609": "IL",
+  "610": "IL", "611": "IL", "612": "IL", "613": "IL", "614": "IL",
+  "615": "IL", "616": "IL", "617": "IL", "618": "IL", "619": "IL",
+  "620": "IL", "621": "IL", "622": "IL", "623": "IL", "624": "IL",
+  "625": "IL", "626": "IL", "627": "IL", "628": "IL", "629": "IL",
+  "630": "MO", "631": "MO", "633": "MO", "634": "MO", "635": "MO",
+  "636": "MO", "637": "MO", "638": "MO", "639": "MO",
+  "640": "MO", "641": "MO", "644": "MO", "645": "MO", "646": "MO",
+  "647": "MO", "648": "MO",
+  "650": "MO", "651": "MO", "652": "MO", "653": "MO", "654": "MO",
+  "655": "MO", "656": "MO", "657": "MO", "658": "MO",
+  "660": "KS", "661": "KS", "662": "KS", "664": "KS", "665": "KS",
+  "666": "KS", "667": "KS", "668": "KS", "669": "KS",
+  "670": "KS", "671": "KS", "672": "KS", "673": "KS", "674": "KS",
+  "675": "KS", "676": "KS", "677": "KS", "678": "KS", "679": "KS",
+  "680": "NE", "681": "NE", "683": "NE", "684": "NE", "685": "NE",
+  "686": "NE", "687": "NE", "688": "NE", "689": "NE",
+  "690": "NE", "691": "NE", "692": "NE", "693": "NE",
+  "700": "LA", "701": "LA", "703": "LA", "704": "LA", "705": "LA",
+  "706": "LA", "707": "LA", "708": "LA",
+  "710": "LA", "711": "LA", "712": "LA", "713": "LA", "714": "LA",
+  "716": "AR", "717": "AR", "718": "AR", "719": "AR",
+  "720": "AR", "721": "AR", "722": "AR", "723": "AR", "724": "AR",
+  "725": "AR", "726": "AR", "727": "AR", "728": "AR", "729": "AR",
+  "730": "OK", "731": "OK", "733": "TX", "734": "OK", "735": "OK",
+  "736": "OK", "737": "OK", "738": "OK", "739": "OK",
+  "740": "OK", "741": "OK", "743": "OK", "744": "OK", "745": "OK",
+  "746": "OK", "747": "OK", "748": "OK", "749": "OK",
+  "750": "TX", "751": "TX", "752": "TX", "753": "TX", "754": "TX",
+  "755": "TX", "756": "TX", "757": "TX", "758": "TX", "759": "TX",
+  "760": "TX", "761": "TX", "762": "TX", "763": "TX", "764": "TX",
+  "765": "TX", "766": "TX", "767": "TX", "768": "TX", "769": "TX",
+  "770": "TX", "772": "TX", "773": "TX", "774": "TX", "775": "TX",
+  "776": "TX", "777": "TX", "778": "TX", "779": "TX",
+  "780": "TX", "781": "TX", "782": "TX", "783": "TX", "784": "TX",
+  "785": "TX", "786": "TX", "787": "TX", "788": "TX", "789": "TX",
+  "790": "TX", "791": "TX", "792": "TX", "793": "TX", "794": "TX",
+  "795": "TX", "796": "TX", "797": "TX", "798": "TX", "799": "TX",
+  "800": "CO", "801": "CO", "802": "CO", "803": "CO", "804": "CO",
+  "805": "CO", "806": "CO", "807": "CO", "808": "CO", "809": "CO",
+  "810": "CO", "811": "CO", "812": "CO", "813": "CO", "814": "CO",
+  "815": "CO", "816": "CO",
+  "820": "WY", "821": "WY", "822": "WY", "823": "WY", "824": "WY",
+  "825": "WY", "826": "WY", "827": "WY", "828": "WY", "829": "WY",
+  "830": "WY", "831": "WY",
+  "832": "ID", "833": "ID", "834": "ID", "835": "ID", "836": "ID",
+  "837": "ID", "838": "ID",
+  "840": "UT", "841": "UT", "842": "UT", "843": "UT", "844": "UT",
+  "845": "UT", "846": "UT", "847": "UT",
+  "850": "AZ", "851": "AZ", "852": "AZ", "853": "AZ", "855": "AZ",
+  "856": "AZ", "857": "AZ", "859": "AZ",
+  "860": "AZ", "863": "AZ", "864": "AZ", "865": "AZ",
+  "870": "NM", "871": "NM", "872": "NM", "873": "NM", "874": "NM",
+  "875": "NM", "877": "NM", "878": "NM", "879": "NM",
+  "880": "NM", "881": "NM", "882": "NM", "883": "NM", "884": "NM",
+  "885": "TX",
+  "890": "NV", "891": "NV", "893": "NV", "894": "NV", "895": "NV",
+  "897": "NV", "898": "NV",
+  "900": "CA", "901": "CA", "902": "CA", "903": "CA", "904": "CA",
+  "905": "CA", "906": "CA", "907": "CA", "908": "CA",
+  "910": "CA", "911": "CA", "912": "CA", "913": "CA", "914": "CA",
+  "915": "CA", "916": "CA", "917": "CA", "918": "CA", "919": "CA",
+  "920": "CA", "921": "CA", "922": "CA", "923": "CA", "924": "CA",
+  "925": "CA", "926": "CA", "927": "CA", "928": "CA",
+  "930": "CA", "931": "CA", "932": "CA", "933": "CA", "934": "CA",
+  "935": "CA", "936": "CA", "937": "CA", "938": "CA", "939": "CA",
+  "940": "CA", "941": "CA", "942": "CA", "943": "CA", "944": "CA",
+  "945": "CA", "946": "CA", "947": "CA", "948": "CA", "949": "CA",
+  "950": "CA", "951": "CA", "952": "CA", "953": "CA", "954": "CA",
+  "955": "CA", "956": "CA", "957": "CA", "958": "CA", "959": "CA",
+  "960": "CA", "961": "CA",
+  "967": "HI", "968": "HI",
+  "969": "GU",
+  "970": "OR", "971": "OR", "972": "OR", "973": "OR", "974": "OR",
+  "975": "OR", "976": "OR", "977": "OR", "978": "OR", "979": "OR",
+  "980": "WA", "981": "WA", "982": "WA", "983": "WA", "984": "WA",
+  "985": "WA", "986": "WA", "988": "WA", "989": "WA", "990": "WA",
+  "991": "WA", "992": "WA", "993": "WA", "994": "WA",
+  "995": "AK", "996": "AK", "997": "AK", "998": "AK", "999": "AK",
+};
+&nbsp;
+/**
+ * Derives a 2-letter state code from the first 3 digits of a US ZIP code.
+ * Returns null if zip is undefined, shorter than 3 chars, or prefix not found.
+ * ZIP itself is never stored — only the derived state code is persisted.
+ */
+export function zipToStateCode(zip: string | undefined): string | null {
+  if (!zip || zip.length &lt; 3) return null;
+  return ZIP_PREFIX_TO_STATE[zip.substring(0, 3)] ?? <span class="branch-1 cbranch-no" title="branch not covered" >null;</span>
+}
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-03-26T10:36:55.910Z
+            </div>
+        <script src="../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
+    </body>
+</html>
+    

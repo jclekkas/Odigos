@@ -1,0 +1,508 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for client/src/pages/is-this-a-good-car-deal.tsx</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">client/src/pages</a> is-this-a-good-car-deal.tsx</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>0/3</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/0</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/2</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>0/3</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { useEffect } from "react";
+import { Link } from "wouter";
+import { Helmet } from "react-helmet-async";
+import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
+import ArticleLayout from "@/components/ArticleLayout";
+import ArticleCta from "@/components/ArticleCta";
+&nbsp;
+export default function <span class="fstat-no" title="function not covered" >IsThisAGoodCarDeal() {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; {</span></span>
+<span class="cstat-no" title="statement not covered" >    return setSeoMeta({</span>
+      title: "Is This a Good Car Deal? 4 Signs It Is (and 3 Red Flags) | Odigos",
+      description: "Learn how to tell if a car deal is actually good using 4 key signals and 3 red flags most buyers miss before signing.",
+      path: "/is-this-a-good-car-deal",
+    });
+  }, []);
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    &lt;ArticleLayout title="Is This a Good Car Deal?"&gt;
+      &lt;Helmet&gt;
+        &lt;script type="application/ld+json"&gt;{JSON.stringify(articleSchema({ title: "Is This a Good Car Deal? 4 Signs It Is (and 3 Red Flags) | Odigos", description: "Learn how to tell if a car deal is actually good using 4 key signals and 3 red flags most buyers miss before signing.", path: "/is-this-a-good-car-deal" }))}&lt;/script&gt;
+      &lt;/Helmet&gt;
+      &lt;h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-good-deal-headline"&gt;
+        Is This a Good Car Deal? 4 Signs It Is — and 3 Red Flags
+      &lt;/h1&gt;
+&nbsp;
+      &lt;div className="prose prose-lg dark:prose-invert max-w-none"&gt;
+        &lt;p className="text-lg text-muted-foreground mb-6"&gt;
+          Most dealer quotes are missing at least one critical piece of information. That's not always intentional — but it does make a quote hard to evaluate fairly. The fastest way to assess a deal is to check four signals. If all four are present and clean, the deal is worth considering. If one or more are missing, you have a problem.
+        &lt;/p&gt;
+&nbsp;
+        &lt;h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground"&gt;The four signals that separate good deals from bad ones&lt;/h2&gt;
+&nbsp;
+        &lt;p className="text-lg text-muted-foreground mb-4"&gt;
+          Run through these before you go further with any dealer:
+        &lt;/p&gt;
+&nbsp;
+        &lt;ul className="space-y-4 mb-8 text-muted-foreground"&gt;
+          &lt;li className="flex items-start gap-3"&gt;
+            &lt;span className="font-bold text-foreground mt-1"&gt;1.&lt;/span&gt;
+            &lt;div&gt;
+              &lt;strong className="text-foreground"&gt;Out-the-door price is provided in writing.&lt;/strong&gt;
+              &lt;span className="block mt-1"&gt;The OTD price is the total you pay to drive the car home — vehicle price, taxes, title, registration, doc fee, and any add-ons all included. If the dealer hasn't given you a single, final number, you can't evaluate the deal. A &lt;Link href="/out-the-door-price" className="underline text-foreground"&gt;full breakdown of what the OTD price includes&lt;/Link&gt; explains what should be on that line.&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/li&gt;
+          &lt;li className="flex items-start gap-3"&gt;
+            &lt;span className="font-bold text-foreground mt-1"&gt;2.&lt;/span&gt;
+            &lt;div&gt;
+              &lt;strong className="text-foreground"&gt;Every fee is itemized, not bundled.&lt;/strong&gt;
+              &lt;span className="block mt-1"&gt;Doc fees, preparation fees, and dealer charges should appear as individual line items. If you see a single "dealer fees" line covering everything, something may be buried. &lt;Link href="/hidden-dealer-fees" className="underline text-foreground"&gt;Hidden dealer fees&lt;/Link&gt; are one of the most common sources of surprise charges at signing.&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/li&gt;
+          &lt;li className="flex items-start gap-3"&gt;
+            &lt;span className="font-bold text-foreground mt-1"&gt;3.&lt;/span&gt;
+            &lt;div&gt;
+              &lt;strong className="text-foreground"&gt;Add-ons are listed separately with individual prices.&lt;/strong&gt;
+              &lt;span className="block mt-1"&gt;Protection packages, paint sealant, VIN etching, and extended warranties should each appear as separate, named line items. If they're bundled together or missing from the quote entirely but appear in the OTD total, you're paying for something you didn't see. &lt;Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground"&gt;Dealer add-ons are rarely mandatory&lt;/Link&gt; — but they are easy to miss.&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/li&gt;
+          &lt;li className="flex items-start gap-3"&gt;
+            &lt;span className="font-bold text-foreground mt-1"&gt;4.&lt;/span&gt;
+            &lt;div&gt;
+              &lt;strong className="text-foreground"&gt;Financing terms are disclosed: APR, loan term, and monthly payment.&lt;/strong&gt;
+              &lt;span className="block mt-1"&gt;A quote that shows only a monthly payment tells you almost nothing about the deal. You need the interest rate and the loan length to know what you're actually agreeing to. Dealers who lead with monthly payment are often using it to obscure the &lt;Link href="/monthly-payment-trap" className="underline text-foreground"&gt;real cost of the loan&lt;/Link&gt;.&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/li&gt;
+        &lt;/ul&gt;
+&nbsp;
+        &lt;h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground"&gt;Good, borderline, and bad — what each looks like&lt;/h2&gt;
+&nbsp;
+        &lt;p className="text-lg text-muted-foreground mb-6"&gt;
+          Running all four signals against a real quote gives you a verdict tier:
+        &lt;/p&gt;
+&nbsp;
+        &lt;div className="space-y-6 mb-8"&gt;
+          &lt;div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-5"&gt;
+            &lt;p className="font-semibold text-emerald-700 dark:text-emerald-400 mb-2" data-testid="verdict-good"&gt;Good deal (all 4 signals present)&lt;/p&gt;
+            &lt;p className="text-sm text-muted-foreground mb-2"&gt;Example: Quote shows $34,800 OTD with a line-item breakdown: $31,200 vehicle price, $895 doc fee, $2,200 sales tax, $305 title/registration, zero add-ons. Financing: 60 months at 6.4% APR, $525/month.&lt;/p&gt;
+            &lt;p className="text-sm text-muted-foreground"&gt;This is evaluable. You can compare it to other quotes, verify the doc fee is reasonable for your state, and decide whether the APR is competitive. The deal may or may not be great — but you have what you need to decide.&lt;/p&gt;
+          &lt;/div&gt;
+&nbsp;
+          &lt;div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-5"&gt;
+            &lt;p className="font-semibold text-amber-700 dark:text-amber-400 mb-2" data-testid="verdict-borderline"&gt;Borderline (1–2 signals missing or unclear)&lt;/p&gt;
+            &lt;p className="text-sm text-muted-foreground mb-2"&gt;Example: Quote shows a vehicle price and a monthly payment, but no OTD total. Fees are listed as a single "$1,850 dealer fees" line. No itemized add-ons. APR is mentioned as "depending on credit."&lt;/p&gt;
+            &lt;p className="text-sm text-muted-foreground"&gt;The deal might be fine, but you don't have the information to know. Before proceeding, ask for the full OTD breakdown in writing and an itemized fee list. The dealer's response to that request is itself informative.&lt;/p&gt;
+          &lt;/div&gt;
+&nbsp;
+          &lt;div className="rounded-lg border border-red-500/20 bg-red-500/5 p-5"&gt;
+            &lt;p className="font-semibold text-red-700 dark:text-red-400 mb-2" data-testid="verdict-bad"&gt;Red flag (3–4 signals missing)&lt;/p&gt;
+            &lt;p className="text-sm text-muted-foreground mb-2"&gt;Example: Quote leads with "$599/month" and mentions the vehicle as "only $44,900 with all the upgrades." No OTD price, no fee breakdown, no itemized add-ons, no APR disclosed. The "upgrades" are not listed.&lt;/p&gt;
+            &lt;p className="text-sm text-muted-foreground"&gt;This isn't a quote — it's a pitch. Do not visit the dealership without getting a full OTD price in writing first. &lt;Link href="/dealer-pricing-tactics" className="underline text-foreground"&gt;Common dealer pricing tactics&lt;/Link&gt; explain why quotes are often structured this way deliberately.&lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+&nbsp;
+        &lt;h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground"&gt;What to check before you sign&lt;/h2&gt;
+&nbsp;
+        &lt;ul className="space-y-2 mb-6 text-muted-foreground"&gt;
+          &lt;li className="flex items-start gap-2"&gt;
+            &lt;span className="text-muted-foreground"&gt;•&lt;/span&gt;
+            &lt;span&gt;Is the OTD price in writing with individual line items? If not, request it before any further negotiation.&lt;/span&gt;
+          &lt;/li&gt;
+          &lt;li className="flex items-start gap-2"&gt;
+            &lt;span className="text-muted-foreground"&gt;•&lt;/span&gt;
+            &lt;span&gt;Does the doc fee match what's typical for your state? Fees vary widely — a $995 doc fee in a state that caps at $85 is a red flag.&lt;/span&gt;
+          &lt;/li&gt;
+          &lt;li className="flex items-start gap-2"&gt;
+            &lt;span className="text-muted-foreground"&gt;•&lt;/span&gt;
+            &lt;span&gt;Are add-ons listed with individual names and prices? If you see a bundled "protection package," ask to see each item and its price separately.&lt;/span&gt;
+          &lt;/li&gt;
+          &lt;li className="flex items-start gap-2"&gt;
+            &lt;span className="text-muted-foreground"&gt;•&lt;/span&gt;
+            &lt;span&gt;Do you know the APR and loan term — not just the monthly payment? Run the numbers: multiply monthly payment × number of payments and subtract the vehicle price. The difference is what you're paying in interest and fees.&lt;/span&gt;
+          &lt;/li&gt;
+        &lt;/ul&gt;
+&nbsp;
+        &lt;div className="rounded-lg border border-border bg-muted/30 p-5 mb-8"&gt;
+          &lt;p className="text-sm font-medium text-foreground mb-2"&gt;If you're looking at a real quote right now&lt;/p&gt;
+          &lt;p className="text-sm text-muted-foreground"&gt;
+            &lt;Link href="/analyze" className="underline text-foreground"&gt;Paste it into Odigos&lt;/Link&gt; and get a full verdict. Odigos checks for all four signals and flags what's missing or risky — results take about a minute, no signup required.
+          &lt;/p&gt;
+        &lt;/div&gt;
+&nbsp;
+        &lt;h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground"&gt;Why dealers sometimes leave signals out&lt;/h2&gt;
+&nbsp;
+        &lt;p className="text-lg text-muted-foreground mb-6"&gt;
+          A missing OTD price or bundled fee line isn't always deliberate. Dealership workflows vary, and some staff send quotes in whatever format they habitually use. But missing information — whatever the reason — puts the buyer at a disadvantage. You're being asked to make a large financial decision without the full picture.
+        &lt;/p&gt;
+&nbsp;
+        &lt;p className="text-lg text-muted-foreground mb-8"&gt;
+          When you ask for a complete, itemized OTD price in writing, a cooperative dealer will provide it promptly. If a dealer resists or says the numbers "depend on financing" before you've agreed to anything, that's a signal about how the rest of the transaction will go. For a step-by-step evaluation process, see &lt;Link href="/how-to-tell-if-a-car-deal-is-good" className="underline text-foreground"&gt;how to tell if a car deal is good&lt;/Link&gt;.
+        &lt;/p&gt;
+      &lt;/div&gt;
+&nbsp;
+      &lt;ArticleCta /&gt;
+&nbsp;
+      &lt;p className="text-xs text-muted-foreground mt-12"&gt;
+        Not affiliated with any dealership. Optimized for U.S. car purchases.
+      &lt;/p&gt;
+    &lt;/ArticleLayout&gt;
+  );
+}
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-03-26T10:36:55.910Z
+            </div>
+        <script src="../../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../../sorter.js"></script>
+        <script src="../../../block-navigation.js"></script>
+    </body>
+</html>
+    

@@ -1,0 +1,643 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for client/src/pages/dealer-add-ons-explained.tsx</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">client/src/pages</a> dealer-add-ons-explained.tsx</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">5% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>1/20</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/2</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/5</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">5.55% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>1/18</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { useEffect, useState } from "react";
+import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Check, Copy } from "lucide-react";
+import { Helmet } from "react-helmet-async";
+import { setSeoMeta } from "@/lib/seo";
+import { articleSchema } from "@/lib/jsonld";
+import ArticleLayout from "@/components/ArticleLayout";
+import ArticleCta from "@/components/ArticleCta";
+&nbsp;
+const SELECTIVE_REFUSAL_MESSAGE = `After reviewing the add-ons in the quote, I'd like to proceed without the following items: [list each add-on by name]. I'm fine keeping [any item you want to keep], but I'd like an updated out-the-door price that reflects the removal of the items listed above. Please confirm this is possible before I come in.`;
+&nbsp;
+export default function <span class="fstat-no" title="function not covered" >DealerAddOnsExplained() {</span>
+  const [copied, setCopied<span class="cstat-no" title="statement not covered" >] = useState(false);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; {</span></span>
+<span class="cstat-no" title="statement not covered" >    return setSeoMeta({</span>
+      title: "Dealer Add-Ons Explained: What Each One Actually Is | Odigos",
+      description: "Plain-language explanations of every common dealer add-on — what it is, what the dealer says, what's actually true, and whether it's worth paying for.",
+      path: "/dealer-add-ons-explained",
+    });
+  }, []);
+&nbsp;
+  const handleCopy = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async () =&gt; {</span></span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="cstat-no" title="statement not covered" >      await navigator.clipboard.writeText(SELECTIVE_REFUSAL_MESSAGE);</span>
+<span class="cstat-no" title="statement not covered" >      setCopied(true);</span>
+<span class="cstat-no" title="statement not covered" >      setTimeout(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >s</span>etCopied(false), 2</span>500);</span>
+    } catch {
+      const textarea = <span class="cstat-no" title="statement not covered" >document.createElement("textarea");</span>
+<span class="cstat-no" title="statement not covered" >      textarea.value = SELECTIVE_REFUSAL_MESSAGE;</span>
+<span class="cstat-no" title="statement not covered" >      document.body.appendChild(textarea);</span>
+<span class="cstat-no" title="statement not covered" >      textarea.select();</span>
+<span class="cstat-no" title="statement not covered" >      document.execCommand("copy");</span>
+<span class="cstat-no" title="statement not covered" >      document.body.removeChild(textarea);</span>
+<span class="cstat-no" title="statement not covered" >      setCopied(true);</span>
+<span class="cstat-no" title="statement not covered" >      setTimeout(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >s</span>etCopied(false), 2</span>500);</span>
+    }
+  };
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    &lt;ArticleLayout title="Dealer Add-Ons Explained"&gt;
+      &lt;Helmet&gt;
+        &lt;script type="application/ld+json"&gt;{JSON.stringify(articleSchema({ title: "Dealer Add-Ons Explained: What Each One Actually Is | Odigos", description: "Plain-language explanations of every common dealer add-on — what it is, what the dealer says, what's actually true, and whether it's worth paying for.", path: "/dealer-add-ons-explained" }))}&lt;/script&gt;
+      &lt;/Helmet&gt;
+      &lt;h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-explained-headline"&gt;
+        Dealer Add-Ons Explained: What Each One Actually Is
+      &lt;/h1&gt;
+&nbsp;
+      &lt;div className="prose prose-lg dark:prose-invert max-w-none"&gt;
+        &lt;p className="text-lg text-muted-foreground mb-6"&gt;
+          Dealer add-ons show up on quotes with names that sound official, protective, or manufacturer-backed. Most aren't any of those things. This guide explains what each common add-on actually is, what the dealer typically says about it, what's actually true, and whether it's worth paying for.
+        &lt;/p&gt;
+&nbsp;
+        &lt;p className="text-lg text-muted-foreground mb-6"&gt;
+          This is about understanding the products — not the pricing. For a breakdown of typical costs and markup ranges, the &lt;Link href="/dealer-add-ons-list" className="underline text-foreground"&gt;dealer add-ons list&lt;/Link&gt; covers that in detail. If you're trying to determine which add-ons you're actually obligated to pay for, see &lt;Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground"&gt;are dealer add-ons mandatory&lt;/Link&gt;.
+        &lt;/p&gt;
+&nbsp;
+        &lt;p className="text-sm text-muted-foreground mb-6"&gt;
+          Already have a quote with add-ons? &lt;Link href="/analyze" className="underline text-foreground"&gt;Paste it here&lt;/Link&gt; and see what's actually in it.
+        &lt;/p&gt;
+&nbsp;
+        &lt;h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground"&gt;Paint protection film / paint sealant&lt;/h2&gt;
+&nbsp;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What it is:&lt;/strong&gt; Either a clear physical film applied over paint panels, or a liquid polymer sealant applied to the entire exterior. Film (PPF) and sealant are very different products, but dealers sometimes use the terms interchangeably.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What the dealer says:&lt;/strong&gt; It protects your paint from chips, scratches, and UV damage and maintains resale value.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What's actually true:&lt;/strong&gt; High-quality PPF from a reputable installer does offer real protection, especially on high-impact areas. Dealer-applied sealant is often a basic product that wears off within months. The issue isn't the concept — it's that dealers charge $500–$1,500 for something that costs them $50–$150 and may be applied hastily before delivery.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-6"&gt;&lt;strong className="text-foreground"&gt;Verdict:&lt;/strong&gt; Decide for yourself. If paint protection matters to you, get a quote from a dedicated detailing shop or PPF installer. You'll get better work for less.&lt;/p&gt;
+&nbsp;
+        &lt;h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground"&gt;Fabric / upholstery protection&lt;/h2&gt;
+&nbsp;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What it is:&lt;/strong&gt; A spray-on treatment applied to seats and carpets, similar to Scotchgard. Sometimes marketed as "leather conditioning" for leather interiors.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What the dealer says:&lt;/strong&gt; It repels stains and spills and extends the life of your interior.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What's actually true:&lt;/strong&gt; Fabric protection sprays are real products with real utility — but the version a dealer applies before delivery is typically a commodity spray that costs them $30–$75. You can buy equivalent products at any auto parts store and apply them yourself in 20 minutes.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-6"&gt;&lt;strong className="text-foreground"&gt;Verdict:&lt;/strong&gt; Skip. Buy your own if you want it.&lt;/p&gt;
+&nbsp;
+        &lt;h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground"&gt;VIN etching&lt;/h2&gt;
+&nbsp;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What it is:&lt;/strong&gt; Your Vehicle Identification Number (VIN) is etched or chemically applied to your windows. The idea is that thieves won't steal a car with traceable glass.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What the dealer says:&lt;/strong&gt; It deters theft and some insurance companies offer a discount for it.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What's actually true:&lt;/strong&gt; VIN etching has a marginal deterrent effect at best. The "insurance discount" claim is often exaggerated or doesn't apply to your insurer. The process takes a few minutes and costs the dealer $20–$30. Dealers charge $200–$400. The National Insurance Crime Bureau offers free VIN etching kits, and many auto clubs do as well.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-6"&gt;&lt;strong className="text-foreground"&gt;Verdict:&lt;/strong&gt; Skip. Not worth the markup.&lt;/p&gt;
+&nbsp;
+        &lt;h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground"&gt;Nitrogen-filled tires&lt;/h2&gt;
+&nbsp;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What it is:&lt;/strong&gt; Your tires are inflated with pure nitrogen instead of regular air (which is 78% nitrogen anyway).&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What the dealer says:&lt;/strong&gt; Nitrogen maintains tire pressure more consistently, improves fuel economy, and extends tire life.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What's actually true:&lt;/strong&gt; The benefits are real but negligible for everyday passenger vehicles — the differences in pressure stability are measured in fractions of a PSI. Race teams and aircraft use nitrogen because pressure consistency is critical at high performance. For your daily driver, it's not meaningful. Many tire shops offer nitrogen top-offs for free.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-6"&gt;&lt;strong className="text-foreground"&gt;Verdict:&lt;/strong&gt; Skip. The benefit doesn't justify any charge.&lt;/p&gt;
+&nbsp;
+        &lt;div className="rounded-lg border border-border bg-muted/30 p-5 mb-8"&gt;
+          &lt;p className="text-sm font-medium text-foreground mb-2"&gt;Seeing add-ons in your quote?&lt;/p&gt;
+          &lt;p className="text-sm text-muted-foreground"&gt;
+            &lt;Link href="/analyze" className="underline text-foreground"&gt;Paste your dealer quote into Odigos&lt;/Link&gt; and we'll identify each add-on, flag the ones with the highest markup, and show you your real out-the-door price without the extras.
+          &lt;/p&gt;
+        &lt;/div&gt;
+&nbsp;
+        &lt;h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground"&gt;Window tint&lt;/h2&gt;
+&nbsp;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What it is:&lt;/strong&gt; A film applied to the inside of your windows to reduce heat, glare, and UV exposure. Dealers sometimes apply it before delivery; other times it's listed as a service to be completed at pickup.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What the dealer says:&lt;/strong&gt; It reduces interior heat, protects upholstery from UV, and improves privacy.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What's actually true:&lt;/strong&gt; These benefits are legitimate. Quality window tint does all of these things. The issue is dealer pricing ($300–$800) versus aftermarket shops ($100–$250 for comparable work, often with a warranty). Tint darkness is also regulated by state law — confirm the dealer is applying a legal tint level for your state.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-6"&gt;&lt;strong className="text-foreground"&gt;Verdict:&lt;/strong&gt; Decide for yourself — but get it done at a dedicated tint shop for less.&lt;/p&gt;
+&nbsp;
+        &lt;h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground"&gt;Door edge guards / door sill protectors&lt;/h2&gt;
+&nbsp;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What it is:&lt;/strong&gt; Plastic or rubber trim strips applied to door edges to prevent minor dings when opening doors near other cars.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What the dealer says:&lt;/strong&gt; Prevents scratches and protects resale value.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What's actually true:&lt;/strong&gt; Door edge guards work. They're also $15–$40 on Amazon and take about ten minutes to install. Dealers charge $100–$300.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-6"&gt;&lt;strong className="text-foreground"&gt;Verdict:&lt;/strong&gt; Skip from the dealer. Buy and install your own if you want them.&lt;/p&gt;
+&nbsp;
+        &lt;h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground"&gt;Wheel locks&lt;/h2&gt;
+&nbsp;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What it is:&lt;/strong&gt; A set of lug nuts with a unique pattern that requires a special key to remove — preventing wheel theft.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What the dealer says:&lt;/strong&gt; Protects your wheels from theft, especially on vehicles with desirable rims.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What's actually true:&lt;/strong&gt; Wheel locks have genuine utility if you have aftermarket or desirable wheels. A standard set costs $20–$40 at any auto parts store. Dealers charge $75–$200.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-6"&gt;&lt;strong className="text-foreground"&gt;Verdict:&lt;/strong&gt; Decide for yourself — but buy them yourself if you want them.&lt;/p&gt;
+&nbsp;
+        &lt;h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground"&gt;All-weather floor mats&lt;/h2&gt;
+&nbsp;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What it is:&lt;/strong&gt; Heavy-duty rubber or thermoplastic mats that fit the vehicle's floor. Often presented as "OEM-compatible" or vehicle-specific.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What the dealer says:&lt;/strong&gt; Custom fit, durable, and protect your factory carpet.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What's actually true:&lt;/strong&gt; Good all-weather mats are genuinely useful. The dealer version might be the actual OEM product or an equivalent generic. Dealer price: $150–$400. Aftermarket brands like WeatherTech or Husky Liners: $100–$150 with custom fit and a warranty.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-6"&gt;&lt;strong className="text-foreground"&gt;Verdict:&lt;/strong&gt; Decide for yourself — but compare to aftermarket first.&lt;/p&gt;
+&nbsp;
+        &lt;h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground"&gt;Theft deterrent / GPS tracking system&lt;/h2&gt;
+&nbsp;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What it is:&lt;/strong&gt; A dealer-installed GPS unit or alarm system — sometimes branded as LoJack, Ravelco, or a proprietary system. Allows vehicle recovery if stolen.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What the dealer says:&lt;/strong&gt; Protects your vehicle against theft and may reduce your insurance premium.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What's actually true:&lt;/strong&gt; GPS-based recovery systems have legitimate value in high-theft areas or for high-value vehicles. The problem is that dealers charge $300–$1,000 and often pre-install the unit, then claim it can't be removed. Many modern vehicles already have factory-integrated theft protection. Check your vehicle's specs before paying for a duplicate.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-6"&gt;&lt;strong className="text-foreground"&gt;Verdict:&lt;/strong&gt; Decide for yourself — but verify whether your vehicle already has this feature and compare prices before accepting the dealer's version.&lt;/p&gt;
+&nbsp;
+        &lt;h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground"&gt;"Protection package" (bundled add-ons)&lt;/h2&gt;
+&nbsp;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What it is:&lt;/strong&gt; A single line item that bundles several of the above add-ons — typically paint protection, fabric protection, and VIN etching — under one price.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What the dealer says:&lt;/strong&gt; A complete protection solution at a bundled rate.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What's actually true:&lt;/strong&gt; Bundling makes it harder to evaluate each item individually. The "bundled rate" is almost always more than what individual items would cost separately, and each item in the bundle is itself marked up significantly. Always ask for the bundle to be broken out into individual items with separate pricing.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-6"&gt;&lt;strong className="text-foreground"&gt;Verdict:&lt;/strong&gt; Skip until itemized. Ask for individual pricing before agreeing to anything.&lt;/p&gt;
+&nbsp;
+        &lt;h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground"&gt;Extended warranty / service contract&lt;/h2&gt;
+&nbsp;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What it is:&lt;/strong&gt; A service contract that extends coverage beyond the manufacturer's warranty. Not technically a warranty — these are contracts with specific terms and exclusions.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What the dealer says:&lt;/strong&gt; Peace of mind coverage for major repairs after the factory warranty expires.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-2"&gt;&lt;strong className="text-foreground"&gt;What's actually true:&lt;/strong&gt; Service contracts can have real value — but they're never a good deal at dealer prices ($1,500–$4,000). Third-party providers offer equivalent or broader coverage for significantly less. You can also purchase them after the sale, giving you time to research and compare. Read the contract carefully for deductibles, exclusions, and the claims process before agreeing to anything.&lt;/p&gt;
+        &lt;p className="text-lg text-muted-foreground mb-6"&gt;&lt;strong className="text-foreground"&gt;Verdict:&lt;/strong&gt; Decide for yourself — but don't buy at the dealer and don't buy during the sale. Research and purchase separately.&lt;/p&gt;
+&nbsp;
+        &lt;p className="text-lg text-muted-foreground mb-6"&gt;
+          If you're working through what to do with the add-ons in your specific quote, &lt;Link href="/how-to-remove-dealer-add-ons" className="underline text-foreground"&gt;how to remove dealer add-ons&lt;/Link&gt; walks through the process step by step. If you're wondering whether &lt;Link href="/are-dealer-add-ons-negotiable" className="underline text-foreground"&gt;add-ons are negotiable&lt;/Link&gt;, that depends on which ones and when — that guide covers the tactics in detail.
+        &lt;/p&gt;
+&nbsp;
+        &lt;h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground"&gt;What to say to the dealer&lt;/h2&gt;
+&nbsp;
+        &lt;p className="text-muted-foreground mb-4"&gt;
+          Once you've reviewed the add-ons and decided which ones you don't want, use this message to decline specific items while keeping others. Replace the bracketed sections with the actual item names:
+        &lt;/p&gt;
+&nbsp;
+        &lt;Card className="relative p-5 bg-muted/50 mb-4"&gt;
+          &lt;blockquote className="text-sm md:text-base text-foreground leading-relaxed italic pr-10"&gt;
+            {SELECTIVE_REFUSAL_MESSAGE}
+          &lt;/blockquote&gt;
+          &lt;Button
+            variant="outline"
+            size="icon"
+            className="absolute top-3 right-3"
+            onClick={handleCopy}
+            data-testid="button-copy-explained-message"
+            aria-label="Copy message"
+          &gt;
+            {copied ? &lt;Check className="h-4 w-4 text-green-500" /&gt; : &lt;Copy className="h-4 w-4" /&gt;}
+          &lt;/Button&gt;
+        &lt;/Card&gt;
+&nbsp;
+        &lt;p className="text-muted-foreground mb-8"&gt;
+          This message works because it's selective, not blanket. You're showing that you've actually read the quote, you know which items are in it, and you're making informed decisions — not just trying to strip everything out. It's harder for a dealer to refuse when you're being specific and professional.
+        &lt;/p&gt;
+      &lt;/div&gt;
+&nbsp;
+      &lt;ArticleCta /&gt;
+&nbsp;
+      &lt;p className="text-xs text-muted-foreground mt-12"&gt;
+        Not affiliated with any dealership. Optimized for U.S. car purchases.
+      &lt;/p&gt;
+    &lt;/ArticleLayout&gt;
+  );
+}
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-03-26T10:36:55.910Z
+            </div>
+        <script src="../../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../../sorter.js"></script>
+        <script src="../../../block-navigation.js"></script>
+    </body>
+</html>
+    
