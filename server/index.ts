@@ -274,6 +274,16 @@ async function ensureWarehouseSchema(): Promise<void> {
       } catch (colErr) {
         console.error("[warehouse] Failed to ensure dealer_submission_id column (non-fatal):", colErr);
       }
+      // Ensure content_hash column exists on core.listings (idempotent).
+      try {
+        await db.execute(sql`
+          ALTER TABLE core.listings
+            ADD COLUMN IF NOT EXISTS content_hash text
+        `);
+        console.log("[warehouse] content_hash column ensured on core.listings.");
+      } catch (hashColErr) {
+        console.error("[warehouse] Failed to ensure content_hash column (non-fatal):", hashColErr);
+      }
       // Ensure the dealer_feedback_stats view exists (idempotent via CREATE OR REPLACE).
       try {
         await db.execute(sql`
