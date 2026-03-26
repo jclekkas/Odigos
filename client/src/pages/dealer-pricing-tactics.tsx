@@ -1,8 +1,9 @@
+import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
-import SeoHead from "@/components/SeoHead";
+import { setSeoMeta } from "@/lib/seo";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -22,6 +23,14 @@ const tactics = [
 ];
 
 export default function DealerPricingTactics() {
+  useEffect(() => {
+    return setSeoMeta({
+      title: "Dealer Pricing Tactics: Complete Guide (2026) | Odigos",
+      description: "Learn how car dealers use pricing tactics to keep buyers in the dark — and exactly what to say to get a fair, transparent deal.",
+      path: "/dealer-pricing-tactics",
+    });
+  }, []);
+
   return (
     <ArticleLayout title="Dealer Pricing Tactics: Complete Guide (2026)">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-tactics-headline">

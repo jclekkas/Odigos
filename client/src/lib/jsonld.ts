@@ -1,3 +1,5 @@
+import { buildCanonical } from "./seo";
+
 const SITE_URL = "https://odigosauto.com";
 
 export function productSchema() {
@@ -17,7 +19,7 @@ export function productSchema() {
       "priceCurrency": "USD",
       "availability": "https://schema.org/InStock",
       "priceValidUntil": "2026-12-31",
-      "url": `${SITE_URL}/`,
+      "url": buildCanonical("/"),
       "hasMerchantReturnPolicy": {
         "@type": "MerchantReturnPolicy",
         "applicableCountry": "US",
@@ -140,7 +142,7 @@ export function articleSchema({
     "@type": "Article",
     "headline": title,
     "description": description,
-    "url": `${SITE_URL}${path}`,
+    "url": buildCanonical(path),
     "datePublished": datePublished,
     "dateModified": dateModified,
     "author": {
@@ -150,7 +152,7 @@ export function articleSchema({
     "publisher": {
       "@type": "Organization",
       "name": "Odigos",
-      "url": SITE_URL
+      "url": buildCanonical("/")
     }
   };
 }
@@ -172,7 +174,7 @@ export function itemListSchema({ name, description, items }: ItemListSchemaOptio
       "@type": "ListItem",
       "position": index + 1,
       "name": item.name,
-      "url": `${SITE_URL}${item.url}`
+      "url": buildCanonical(item.url)
     }))
   };
 }

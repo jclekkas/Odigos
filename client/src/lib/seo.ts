@@ -1,6 +1,11 @@
-const SITE_URL = import.meta.env.VITE_SITE_URL || "https://odigosauto.com";
+const CANONICAL_ORIGIN = "https://odigosauto.com";
 const OG_IMAGE = "https://odigosauto.com/og-image.png";
 const OG_IMAGE_ALT = "Odigos — Independent car deal analysis tool";
+
+export function buildCanonical(path: string): string {
+  const normalized = path.endsWith("/") && path !== "/" ? path.slice(0, -1) : path;
+  return `${CANONICAL_ORIGIN}${normalized}`;
+}
 
 interface SeoMeta {
   title: string;
@@ -34,7 +39,7 @@ function upsertCanonical(href: string): HTMLLinkElement {
 export function setSeoMeta({ title, description, path }: SeoMeta) {
   document.title = title;
 
-  const url = `${SITE_URL}${path}`;
+  const url = buildCanonical(path);
 
   const descEl = upsertMeta("description", description, false);
   const ogTitle = upsertMeta("og:title", title);
@@ -47,12 +52,11 @@ export function setSeoMeta({ title, description, path }: SeoMeta) {
   const twTitle = upsertMeta("twitter:title", title, false);
   const twDesc = upsertMeta("twitter:description", description, false);
   const twImage = upsertMeta("twitter:image", OG_IMAGE, false);
-  const canonical = upsertCanonical(url);
+  upsertCanonical(url);
 
   return () => {
     document.title = "Free Car Deal Analyzer — Check Hidden Fees Before You Sign | Odigos";
     descEl.setAttribute("content", "Paste dealer texts or emails. Odigos flags what's missing, risky, or unclear before you go to the dealership.");
     [ogTitle, ogDesc, ogUrl, ogType, ogImage, ogImageAlt, twCard, twTitle, twDesc, twImage].forEach((el) => el.remove());
-    canonical.remove();
   };
 }

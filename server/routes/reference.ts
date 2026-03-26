@@ -31,8 +31,8 @@ export function registerReferenceRoutes(app: Express): void {
   });
 
   app.get("/robots.txt", (_req, res) => {
-    const siteUrl = process.env.SITE_URL || "https://odigosauto.com";
+    const CANONICAL_ORIGIN = "https://odigosauto.com";
     res.type("text/plain");
-    res.send(`User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml`);
+    res.send(`User-agent: *\nAllow: /\nSitemap: ${CANONICAL_ORIGIN}/sitemap.xml`);
   });
 }

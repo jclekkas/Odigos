@@ -10,7 +10,7 @@ import { trackPageView, trackCtaClick } from "@/lib/tracking";
 import { capture } from "@/lib/analytics";
 import { useExperiment } from "@/lib/experiments";
 import SiteHeader from "@/components/SiteHeader";
-import SeoHead from "@/components/SeoHead";
+import { setSeoMeta } from "@/lib/seo";
 import { productSchema } from "@/lib/jsonld";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -77,6 +77,14 @@ export default function Landing() {
   }, []);
 
   useEffect(() => {
+    return setSeoMeta({
+      title: "Odigos — Independent Dealer Quote Analysis for Car Buyers",
+      description: "Paste a dealer quote, text, or email. Odigos checks for missing out-the-door pricing, hidden fees, and common dealership tactics. Free preview, full analysis $49.",
+      path: "/",
+    });
+  }, []);
+
+  useEffect(() => {
     const hashFromStorage = sessionStorage.getItem("scrollToHash");
     const hashFromUrl = window.location.hash.slice(1);
     const hash = hashFromStorage || hashFromUrl;
@@ -106,11 +114,6 @@ export default function Landing() {
         Skip to main content
       </a>
       <SiteHeader />
-      <SeoHead
-        title="Odigos — Independent Dealer Quote Analysis for Car Buyers"
-        description="Paste a dealer quote, text, or email. Odigos checks for missing out-the-door pricing, hidden fees, and common dealership tactics. Free preview, full analysis $49."
-        path="/"
-      />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(productSchema())}</script>
       </Helmet>
