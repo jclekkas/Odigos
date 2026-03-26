@@ -6,6 +6,7 @@ import { registerTrackingRoutes } from "./tracking";
 import { registerAdminRoutes } from "./admin";
 import { registerBIRoutes } from "./bi";
 import { registerReferenceRoutes } from "./reference";
+import { registerGscRoutes } from "./gsc";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -17,5 +18,6 @@ export async function registerRoutes(
   registerAdminRoutes(app);
   registerBIRoutes(app);
   registerReferenceRoutes(app);
+  registerGscRoutes(app);
   return httpServer;
 }

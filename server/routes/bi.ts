@@ -80,26 +80,34 @@ export function registerBIRoutes(app: Express): void {
           const thirtyDaysAgoSec = Math.floor((nowMs - 30 * 24 * 60 * 60 * 1000) / 1000);
           const sixtyDaysAgoSec = Math.floor((nowMs - 60 * 24 * 60 * 60 * 1000) / 1000);
 
-          const [expired, allSessions, recentSessions, prevSessions] = await Promise.all([
+          const [expired, allPaid, monthlyPaid, prevPaid] = await Promise.all([
             stripe.checkout.sessions.list({ status: "expired", limit: 100 }),
-            stripe.checkout.sessions.list({ status: "complete", limit: 100 }),
-            stripe.checkout.sessions.list({ status: "complete", limit: 100, created: { gte: thirtyDaysAgoSec } }),
-            stripe.checkout.sessions.list({ status: "complete", limit: 100, created: { gte: sixtyDaysAgoSec, lt: thirtyDaysAgoSec } }),
+            stripe.checkout.sessions.list({ payment_status: "paid", limit: 100 }),
+            stripe.checkout.sessions.list({
+              payment_status: "paid",
+              limit: 100,
+              created: { gte: thirtyDaysAgoSec },
+            }),
+            stripe.checkout.sessions.list({
+              payment_status: "paid",
+              limit: 100,
+              created: { gte: sixtyDaysAgoSec, lt: thirtyDaysAgoSec },
+            }),
           ]);
 
           stripeFailedPayments = expired.data.length;
 
-          const allCustomerIds = allSessions.data.map(s => s.customer as string | null ?? s.id);
+          const allCustomerIds = allPaid.data.map(s => s.customer as string | null ?? s.id);
           const customerPurchaseCounts: Record<string, number> = {};
           allCustomerIds.forEach(id => { customerPurchaseCounts[id] = (customerPurchaseCounts[id] ?? 0) + 1; });
           stripeActiveCustomers = new Set(allCustomerIds).size;
           stripeRepeatCustomers = Object.values(customerPurchaseCounts).filter(c => c > 1).length;
 
-          stripeRevenueCents = allSessions.data.reduce((sum, s) => sum + (s.amount_total ?? 0), 0);
-          stripeMonthlyRevenueCents = recentSessions.data.reduce((sum, s) => sum + (s.amount_total ?? 0), 0);
+          stripeRevenueCents = allPaid.data.reduce((sum, s) => sum + (s.amount_total ?? 0), 0);
+          stripeMonthlyRevenueCents = monthlyPaid.data.reduce((sum, s) => sum + (s.amount_total ?? 0), 0);
 
-          const recentCustomerIds = new Set(recentSessions.data.map(s => s.customer as string | null ?? s.id));
-          const prevCustomerIds = new Set(prevSessions.data.map(s => s.customer as string | null ?? s.id));
+          const recentCustomerIds = new Set(monthlyPaid.data.map(s => s.customer as string | null ?? s.id));
+          const prevCustomerIds = new Set(prevPaid.data.map(s => s.customer as string | null ?? s.id));
           const churnedCustomers = Array.from(prevCustomerIds).filter(id => !recentCustomerIds.has(id));
           stripeChurnThisPeriod = churnedCustomers.length;
         } catch {

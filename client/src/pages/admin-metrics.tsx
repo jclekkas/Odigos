@@ -710,6 +710,12 @@ export default function AdminMetrics() {
                   Users
                 </Button>
               </Link>
+              <Link href="/admin/seo">
+                <Button variant="outline" size="sm" data-testid="link-seo-dashboard">
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  SEO
+                </Button>
+              </Link>
               <Button 
                 variant="outline" 
                 size="sm"
