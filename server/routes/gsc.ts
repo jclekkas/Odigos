@@ -42,7 +42,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { XMLParser } from "fast-xml-parser";
 
-const SITE_URL = "https://odigosauto.com";
+const SITE_URL = (process.env.GSC_SITE_URL ?? "https://odigosauto.com/").replace(/\/?$/, "/");
 
 interface GscPageItem {
   url: string;
@@ -62,6 +62,7 @@ interface GscSummary {
   totalSitemapUrls: number;
   totalIndexed: number;
   totalNeedingAttention: number;
+  apiWarnings?: string[];
 }
 
 function mapStatusToPlainEnglish(verdict: string, coverageState: string): { reason: string; nextStep: string } {
@@ -247,12 +248,12 @@ async function fetchSearchAnalytics(
     }
   );
 
-  const map = new Map<string, { clicks: number; impressions: number }>();
   if (!response.ok) {
-    console.warn("GSC search analytics request failed:", response.status);
-    return map;
+    const text = await response.text().catch(() => "");
+    throw new Error(`GSC search analytics request failed: ${response.status} ${text}`);
   }
 
+  const map = new Map<string, { clicks: number; impressions: number }>();
   const data = await response.json() as any;
   for (const row of data?.rows ?? []) {
     const url: string = row.keys?.[0] ?? "";
@@ -275,7 +276,22 @@ export function registerGscRoutes(app: Express): void {
     try {
       const accessToken = await getGoogleAccessToken(serviceAccountJson);
       const sitemapUrls = parseSitemapUrls();
-      const analyticsMap = await fetchSearchAnalytics(accessToken, SITE_URL);
+      const apiWarnings: string[] = [];
+
+      let analyticsMap = new Map<string, { clicks: number; impressions: number }>();
+      try {
+        analyticsMap = await fetchSearchAnalytics(accessToken, SITE_URL);
+      } catch (e: any) {
+        console.warn("GSC analytics unavailable:", e?.message);
+        apiWarnings.push("Analytics data unavailable — check GSC permissions or verify the site property URL matches exactly.");
+      }
+
+      const normalizeUrl = (u: string) => u.replace(/\/$/, "");
+
+      const analyticsNormalizedMap = new Map<string, { clicks: number; impressions: number }>();
+      for (const [url, perf] of analyticsMap.entries()) {
+        analyticsNormalizedMap.set(normalizeUrl(url), perf);
+      }
 
       const indexed: GscPageItem[] = [];
       const discoveredNotIndexed: GscPageItem[] = [];
@@ -289,7 +305,7 @@ export function registerGscRoutes(app: Express): void {
             try {
               const { verdict, coverageState } = await fetchUrlInspection(accessToken, SITE_URL, url);
               const { reason, nextStep } = mapStatusToPlainEnglish(verdict, coverageState);
-              const perf = analyticsMap.get(url) ?? { clicks: 0, impressions: 0 };
+              const perf = analyticsNormalizedMap.get(normalizeUrl(url)) ?? { clicks: 0, impressions: 0 };
               const item: GscPageItem = {
                 url,
                 status: coverageState || verdict,
@@ -313,10 +329,11 @@ export function registerGscRoutes(app: Express): void {
         }
       }
 
-      const sitemapUrlSet = new Set(sitemapUrls);
+      const SITE_ORIGIN = SITE_URL.replace(/\/$/, "");
+      const sitemapNormalizedSet = new Set(sitemapUrls.map(normalizeUrl));
       const notInSitemap: GscPageItem[] = [];
       for (const [url, perf] of analyticsMap.entries()) {
-        if (!sitemapUrlSet.has(url) && url.startsWith(SITE_URL)) {
+        if (!sitemapNormalizedSet.has(normalizeUrl(url)) && (url.startsWith(SITE_URL) || url.startsWith(SITE_ORIGIN))) {
           notInSitemap.push({
             url,
             status: "NOT_IN_SITEMAP",
@@ -340,6 +357,7 @@ export function registerGscRoutes(app: Express): void {
         totalSitemapUrls: sitemapUrls.length,
         totalIndexed: indexed.length,
         totalNeedingAttention,
+        ...(apiWarnings.length > 0 ? { apiWarnings } : {}),
       };
 
       res.json(summary);

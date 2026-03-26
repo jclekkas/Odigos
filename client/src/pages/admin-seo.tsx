@@ -41,6 +41,7 @@ interface GscSummary {
   totalIndexed: number;
   totalNeedingAttention: number;
   setup_required?: boolean;
+  apiWarnings?: string[];
 }
 
 const GLOSSARY_TERMS = [
@@ -420,6 +421,21 @@ export default function AdminSeo() {
                       Clear key and re-enter
                     </button>
                   )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {!setupRequired && !isLoading && data?.apiWarnings && data.apiWarnings.length > 0 && (
+          <Card className="border-amber-400 bg-amber-50 dark:bg-amber-950/20" data-testid="banner-api-warnings">
+            <CardContent className="pt-4 pb-4">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  {data.apiWarnings.map((w, i) => (
+                    <p key={i} className="text-amber-700 dark:text-amber-400 text-sm">{w}</p>
+                  ))}
                 </div>
               </div>
             </CardContent>
