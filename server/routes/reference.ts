@@ -17,7 +17,7 @@ export function registerReferenceRoutes(app: Express): void {
     const heapUsedMb = Math.round(mem.heapUsed / 1024 / 1024 * 10) / 10;
     const heapTotalMb = Math.round(mem.heapTotal / 1024 / 1024 * 10) / 10;
     const rssM = Math.round(mem.rss / 1024 / 1024 * 10) / 10;
-    const status = rssM > 1536 ? "degraded" : "healthy";
+    const status = rssM > 1536 ? "degraded" : "ok";
     res.json({
       status,
       uptimeSeconds: Math.round(uptimeSeconds),

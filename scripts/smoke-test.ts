@@ -1,25 +1,27 @@
 /**
  * Production smoke test for odigosauto.com.
  *
- * Checks each endpoint with redirect: "manual" first so any off-domain
- * redirect (e.g. a residual registrar URL-forwarding rule) is caught before
- * the redirect is followed. Body assertions are made against the final
- * response after verifying all intermediate redirects stay on-domain.
+ * Redirect detection strategy:
+ *   Each endpoint is first fetched with redirect:"manual". The script iterates
+ *   through the full redirect chain (up to MAX_HOPS hops), checking that every
+ *   Location header remains on-domain. Only after the chain is confirmed safe
+ *   is a follow-redirect request made for HTTP status and body assertions.
+ *
+ * Health endpoint contract (server/routes/reference.ts):
+ *   GET /api/health → 200  { status: "ok" | "degraded", uptimeSeconds, memory }
+ *   "ok"       = rss memory < 1536 MB (normal operation)
+ *   "degraded" = rss memory >= 1536 MB (memory pressure)
  *
  * Usage:
  *   npx tsx scripts/smoke-test.ts                  # tests https://odigosauto.com
  *   BASE_URL=http://localhost:5000 npx tsx scripts/smoke-test.ts
  *
- * Exit codes: 0 = all assertions passed, 1 = one or more failures.
- *
- * Health endpoint contract:
- *   GET /api/health → 200  { status: "healthy" | "degraded", uptimeSeconds, memory }
- *   "healthy" = memory < 1536 MB, "degraded" = memory >= 1536 MB.
- *   (The test suite verifies HTTP 200 only; body schema is asserted here.)
+ * Exit: 0 = all passed, 1 = one or more failures.
  */
 
 const BASE_URL = (process.env.BASE_URL ?? "https://odigosauto.com").replace(/\/$/, "");
 const TIMEOUT_MS = 15_000;
+const MAX_HOPS = 5;
 
 interface CheckResult {
   label: string;
@@ -65,9 +67,41 @@ async function fetchWithTimeout(url: string, init: RequestInit): Promise<Respons
 }
 
 /**
- * Check one endpoint:
- * 1. Fetch with redirect:"manual" — fail immediately if any redirect goes off-domain.
- * 2. Fetch with redirect:"follow" — assert expected status and run optional body assertion.
+ * Walk the full redirect chain for `startUrl` using redirect:"manual".
+ * Returns null if every hop stays on-domain, or an error string if an
+ * off-domain Location is detected or the hop limit is exceeded.
+ */
+async function validateRedirectChain(startUrl: string): Promise<string | null> {
+  let currentUrl = startUrl;
+  const headers = { "User-Agent": "OdigosAutoSmokeTest/1.0" };
+
+  for (let hop = 0; hop < MAX_HOPS; hop++) {
+    let res: Response;
+    try {
+      res = await fetchWithTimeout(currentUrl, { redirect: "manual", headers });
+    } catch (err: unknown) {
+      return `Request failed at hop ${hop + 1}: ${errorMessage(err)}`;
+    }
+
+    if (res.status < 300 || res.status >= 400) {
+      return null;
+    }
+
+    const location = res.headers.get("location") ?? "";
+    if (!isOnDomain(location)) {
+      return `Off-domain redirect detected at hop ${hop + 1} — Location: ${location}`;
+    }
+    currentUrl = location.startsWith("/") ? `${BASE_URL}${location}` : location;
+  }
+
+  return `Redirect chain exceeded ${MAX_HOPS} hops — possible redirect loop`;
+}
+
+/**
+ * Check one endpoint end-to-end:
+ * 1. Walk the redirect chain with redirect:"manual"; fail on any off-domain hop.
+ * 2. Fetch with redirect:"follow" and assert the expected HTTP status.
+ * 3. Run optional body assertion on the final response text.
  */
 async function checkEndpoint(
   path: string,
@@ -81,27 +115,17 @@ async function checkEndpoint(
   const label = `${path} → ${expectedStatus}`;
   const headers = { "User-Agent": "OdigosAutoSmokeTest/1.0" };
 
-  let manualRes: Response;
-  try {
-    manualRes = await fetchWithTimeout(url, { redirect: "manual", headers });
-  } catch (err: unknown) {
-    fail(label, `Request failed (manual): ${errorMessage(err)}`);
+  const chainError = await validateRedirectChain(url);
+  if (chainError !== null) {
+    fail(label, chainError);
     return;
-  }
-
-  if (manualRes.status >= 300 && manualRes.status < 400) {
-    const location = manualRes.headers.get("location") ?? "";
-    if (!isOnDomain(location)) {
-      fail(label, `Off-domain redirect detected — Location: ${location}`);
-      return;
-    }
   }
 
   let res: Response;
   try {
     res = await fetchWithTimeout(url, { redirect: "follow", headers });
   } catch (err: unknown) {
-    fail(label, `Request failed (follow): ${errorMessage(err)}`);
+    fail(label, `Request failed: ${errorMessage(err)}`);
     return;
   }
 
@@ -143,8 +167,8 @@ async function run(): Promise<void> {
         return `Missing "status" field in health response: ${body.slice(0, 120)}`;
       }
       const { status } = parsed;
-      if (status !== "healthy" && status !== "degraded") {
-        return `Unexpected health status "${status}" (expected "healthy" or "degraded")`;
+      if (status !== "ok" && status !== "degraded") {
+        return `Unexpected health status "${status}" (expected "ok" or "degraded")`;
       }
       return null;
     },
@@ -191,8 +215,8 @@ async function run(): Promise<void> {
 
   await checkEndpoint("/", {
     bodyAssert: (body) => {
-      if (!body.includes("Odigos") && !body.includes("odigos") && !body.includes("<!DOCTYPE html>")) {
-        return `Homepage HTML does not contain expected app content`;
+      if (!body.includes("Free Car Deal Analyzer")) {
+        return `Homepage HTML missing expected app title "Free Car Deal Analyzer"`;
       }
       return null;
     },
@@ -201,7 +225,6 @@ async function run(): Promise<void> {
   console.log();
   const failed = results.filter((r) => !r.passed);
   const passed = results.filter((r) => r.passed);
-
   console.log(`Results: ${passed.length} passed, ${failed.length} failed\n`);
 
   if (failed.length > 0) {
