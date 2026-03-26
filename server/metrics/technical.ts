@@ -279,6 +279,11 @@ export interface TechnicalSummary {
     estimatedCostUsd: number;
     avgLatencyMs: number;
     dailyBuckets: Array<{ date: string; calls: number; tokens: number; costUsd: number }>;
+    monthly: {
+      callCount: number;
+      totalTokens: number;
+      estimatedCostUsd: number;
+    };
   };
   fileProcessing: {
     uploadAttempts: number;
@@ -441,6 +446,14 @@ export async function getTechnicalSummary(): Promise<TechnicalSummary> {
   const aiLatencies = aiEvents.map(e => (e.metadata?.responseTimeMs as number) || 0).filter(v => v > 0);
   const avgLatencyMs = aiLatencies.length > 0 ? Math.round(aiLatencies.reduce((a, b) => a + b, 0) / aiLatencies.length) : 0;
 
+  const last30d = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const aiEventsMonthly = allEvents.filter(e =>
+    e.eventType === "api_request" && e.metadata?.endpoint === "openai_chat" && e.createdAt >= last30d
+  );
+  const monthlyPromptTokens = aiEventsMonthly.reduce((sum, e) => sum + ((e.metadata?.promptTokens as number) || 0), 0);
+  const monthlyCompletionTokens = aiEventsMonthly.reduce((sum, e) => sum + ((e.metadata?.completionTokens as number) || 0), 0);
+  const monthlyEstimatedCostUsd = (monthlyPromptTokens / 1000) * GPT4O_PROMPT_COST_PER_1K + (monthlyCompletionTokens / 1000) * GPT4O_COMPLETION_COST_PER_1K;
+
   const aiDailyMap: Record<string, { calls: number; tokens: number; promptTok: number; completionTok: number }> = {};
   for (let i = 0; i < 7; i++) {
     const d = new Date(last7d.getTime() + i * 24 * 60 * 60 * 1000);
@@ -519,6 +532,11 @@ export async function getTechnicalSummary(): Promise<TechnicalSummary> {
       estimatedCostUsd: Math.round(estimatedCostUsd * 10000) / 10000,
       avgLatencyMs,
       dailyBuckets: aiDailyBuckets,
+      monthly: {
+        callCount: aiEventsMonthly.length,
+        totalTokens: monthlyPromptTokens + monthlyCompletionTokens,
+        estimatedCostUsd: Math.round(monthlyEstimatedCostUsd * 10000) / 10000,
+      },
     },
     fileProcessing: {
       uploadAttempts: fileEvents.length,

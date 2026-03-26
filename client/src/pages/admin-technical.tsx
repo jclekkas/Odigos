@@ -72,6 +72,11 @@ interface TechnicalSummary {
     estimatedCostUsd: number;
     avgLatencyMs: number;
     dailyBuckets: Array<{ date: string; calls: number; tokens: number; costUsd: number }>;
+    monthly: {
+      callCount: number;
+      totalTokens: number;
+      estimatedCostUsd: number;
+    };
   };
   fileProcessing: {
     uploadAttempts: number;
@@ -790,11 +795,18 @@ export default function AdminTechnical() {
                     <p className="text-xs text-muted-foreground">{tech.aiUsage.promptTokens.toLocaleString()} prompt / {tech.aiUsage.completionTokens.toLocaleString()} completion</p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">Est. Total Cost (GPT-4o)</p>
+                    <p className="text-xs text-muted-foreground">7-Day Cost (GPT-4o)</p>
                     <p className="text-2xl font-bold text-green-700 dark:text-green-400" data-testid="stat-ai-cost">
                       ${tech.aiUsage.estimatedCostUsd.toFixed(4)}
                     </p>
                     <p className="text-xs text-muted-foreground">7-day window</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">30-Day Cost (GPT-4o)</p>
+                    <p className="text-2xl font-bold text-blue-700 dark:text-blue-400" data-testid="stat-ai-cost-monthly">
+                      ${tech.aiUsage.monthly.estimatedCostUsd.toFixed(4)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{tech.aiUsage.monthly.callCount} calls · {tech.aiUsage.monthly.totalTokens.toLocaleString()} tokens</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Avg Latency</p>

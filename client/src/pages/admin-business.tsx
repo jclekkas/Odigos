@@ -165,6 +165,21 @@ const TOOLTIP_STYLE = {
   borderRadius: "8px",
 };
 
+function PanelErrorCard({ error, label }: { error: unknown; label?: string }) {
+  const msg = (error as Error)?.message ?? "";
+  return (
+    <div className="flex items-start gap-3 p-4 rounded-lg border border-red-400 bg-red-50 dark:bg-red-950/20" data-testid="panel-error-card">
+      <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+      <div>
+        <p className="text-red-700 dark:text-red-400 text-sm font-medium">
+          Failed to load {label ?? "panel data"} {msg ? `(HTTP ${msg})` : ""}
+        </p>
+        <p className="text-red-600 dark:text-red-500 text-xs mt-0.5">Check your admin key or reload the page.</p>
+      </div>
+    </div>
+  );
+}
+
 // ============================================================================
 // Funnel Panel
 // ============================================================================
@@ -178,7 +193,7 @@ interface FunnelStage {
 }
 
 function FunnelPanel({ adminKey, range }: { adminKey: string; range: DateRange }) {
-  const { data, isLoading } = useQuery<{ stages: FunnelStage[] }>({
+  const { data, isLoading, isError, error } = useQuery<{ stages: FunnelStage[] }>({
     queryKey: ["/api/admin/bi/funnel", adminKey, range],
     queryFn: async () => {
       const res = await fetch(`/api/admin/bi/funnel?range=${range}`, {
@@ -195,6 +210,7 @@ function FunnelPanel({ adminKey, range }: { adminKey: string; range: DateRange }
   });
 
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
+  if (isError) return <PanelErrorCard error={error} label="funnel data" />;
 
   const stages = data?.stages ?? [];
   const maxAllTime = Math.max(...stages.map((s) => s.allTime), 1);
@@ -284,7 +300,7 @@ type AttributionSortKey = "views" | "ctaClickRate" | "attributedSubmissions";
 function AttributionPanel({ adminKey, range }: { adminKey: string; range: DateRange }) {
   const [sortKey, setSortKey] = useState<AttributionSortKey>("views");
 
-  const { data, isLoading } = useQuery<{ pages: PageAttribution[] }>({
+  const { data, isLoading, isError, error } = useQuery<{ pages: PageAttribution[] }>({
     queryKey: ["/api/admin/bi/attribution", adminKey, range],
     queryFn: async () => {
       const res = await fetch(`/api/admin/bi/attribution?range=${range}`, {
@@ -301,6 +317,7 @@ function AttributionPanel({ adminKey, range }: { adminKey: string; range: DateRa
   });
 
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
+  if (isError) return <PanelErrorCard error={error} label="attribution data" />;
 
   const pages = (data?.pages ?? [])
     .slice()
@@ -396,7 +413,7 @@ interface UserBehavior {
 }
 
 function BehaviorPanel({ adminKey, range }: { adminKey: string; range: DateRange }) {
-  const { data, isLoading } = useQuery<UserBehavior>({
+  const { data, isLoading, isError, error } = useQuery<UserBehavior>({
     queryKey: ["/api/admin/bi/behavior", adminKey, range],
     queryFn: async () => {
       const res = await fetch(`/api/admin/bi/behavior?range=${range}`, {
@@ -413,6 +430,7 @@ function BehaviorPanel({ adminKey, range }: { adminKey: string; range: DateRange
   });
 
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
+  if (isError) return <PanelErrorCard error={error} label="behavior data" />;
 
   const maxFocus = Math.max(...(data?.fieldEngagement ?? []).map((f) => f.focusCount), 1);
 
@@ -548,7 +566,7 @@ interface DealOutcome {
 }
 
 function DealOutcomePanel({ adminKey, range }: { adminKey: string; range: DateRange }) {
-  const { data, isLoading } = useQuery<DealOutcome>({
+  const { data, isLoading, isError, error } = useQuery<DealOutcome>({
     queryKey: ["/api/admin/bi/deal-outcome", adminKey, range],
     queryFn: async () => {
       const res = await fetch(`/api/admin/bi/deal-outcome?range=${range}`, {
@@ -565,6 +583,7 @@ function DealOutcomePanel({ adminKey, range }: { adminKey: string; range: DateRa
   });
 
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
+  if (isError) return <PanelErrorCard error={error} label="deal outcome data" />;
 
   const dist = data?.scoreDistribution ?? { green: 0, yellow: 0, red: 0 };
   const total = dist.green + dist.yellow + dist.red;
@@ -759,7 +778,7 @@ type GeoSortKey = "submissionCount" | "paymentRate" | "avgScore";
 function GeographicPanel({ adminKey, range }: { adminKey: string; range: DateRange }) {
   const [sortKey, setSortKey] = useState<GeoSortKey>("submissionCount");
 
-  const { data, isLoading } = useQuery<{ states: GeoState[] }>({
+  const { data, isLoading, isError, error } = useQuery<{ states: GeoState[] }>({
     queryKey: ["/api/admin/bi/geographic", adminKey, range],
     queryFn: async () => {
       const res = await fetch(`/api/admin/bi/geographic?range=${range}`, {
@@ -776,6 +795,7 @@ function GeographicPanel({ adminKey, range }: { adminKey: string; range: DateRan
   });
 
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
+  if (isError) return <PanelErrorCard error={error} label="geographic data" />;
 
   const states = (data?.states ?? []).slice().sort((a, b) => b[sortKey] - a[sortKey]);
 
@@ -883,7 +903,7 @@ interface AcqSource {
 }
 
 function AcquisitionPanel({ adminKey, range }: { adminKey: string; range: DateRange }) {
-  const { data, isLoading } = useQuery<{ sources: AcqSource[] }>({
+  const { data, isLoading, isError, error } = useQuery<{ sources: AcqSource[] }>({
     queryKey: ["/api/admin/bi/acquisition", adminKey, range],
     queryFn: async () => {
       const res = await fetch(`/api/admin/bi/acquisition?range=${range}`, {
@@ -900,6 +920,7 @@ function AcquisitionPanel({ adminKey, range }: { adminKey: string; range: DateRa
   });
 
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
+  if (isError) return <PanelErrorCard error={error} label="acquisition data" />;
 
   const sources = (data?.sources ?? []).slice(0, 15);
   const chartData = sources.slice(0, 8).map((s) => ({
@@ -1016,7 +1037,7 @@ interface RevenueHealth {
 }
 
 function RevenuePanel({ adminKey, range }: { adminKey: string; range: DateRange }) {
-  const { data, isLoading } = useQuery<RevenueHealth>({
+  const { data, isLoading, isError, error } = useQuery<RevenueHealth>({
     queryKey: ["/api/admin/bi/revenue", adminKey, range],
     queryFn: async () => {
       const res = await fetch(`/api/admin/bi/revenue?range=${range}`, {
@@ -1033,6 +1054,7 @@ function RevenuePanel({ adminKey, range }: { adminKey: string; range: DateRange 
   });
 
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
+  if (isError) return <PanelErrorCard error={error} label="revenue data" />;
 
   const revenueChartData = (data?.revenueByDay ?? []).map((d) => ({
     date: d.date.slice(5),
@@ -1150,7 +1172,7 @@ interface Fallout {
 }
 
 function FalloutPanel({ adminKey, range }: { adminKey: string; range: DateRange }) {
-  const { data, isLoading } = useQuery<Fallout>({
+  const { data, isLoading, isError, error } = useQuery<Fallout>({
     queryKey: ["/api/admin/bi/fallout", adminKey, range],
     queryFn: async () => {
       const res = await fetch(`/api/admin/bi/fallout?range=${range}`, {
@@ -1167,6 +1189,7 @@ function FalloutPanel({ adminKey, range }: { adminKey: string; range: DateRange 
   });
 
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
+  if (isError) return <PanelErrorCard error={error} label="fallout data" />;
 
   const avgMins = data?.avgMinutesSubmissionToCheckout;
   const avgMinsDisplay =
@@ -1386,6 +1409,10 @@ interface SubscriptionHealth {
   dailyNewPayers: Array<{ date: string; count: number }>;
   stripeFailedPayments: number | null;
   stripeActiveCustomers: number | null;
+  stripeRevenueDollars: number | null;
+  stripeMonthlyRevenueDollars: number | null;
+  stripeRepeatCustomers: number | null;
+  stripeUpcomingRenewals: number;
 }
 
 function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateRange }) {
@@ -1434,22 +1461,43 @@ function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateR
 
   const stripeActiveCustomers = data?.stripeActiveCustomers;
   const stripeFailedPayments = data?.stripeFailedPayments;
+  const stripeRevenueDollars = data?.stripeRevenueDollars;
+  const stripeMonthlyRevenueDollars = data?.stripeMonthlyRevenueDollars;
+  const stripeRepeatCustomers = data?.stripeRepeatCustomers;
+  const hasStripe = stripeActiveCustomers !== null && stripeActiveCustomers !== undefined;
 
   return (
     <div className="space-y-6" data-testid="panel-subscription-health">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {hasStripe && (
+        <p className="text-xs text-muted-foreground italic">
+          * Odigos is a one-time payment product — MRR and renewal metrics are not applicable. Showing Stripe-verified payment data instead.
+        </p>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Active Customers"
-          value={stripeActiveCustomers !== null && stripeActiveCustomers !== undefined ? stripeActiveCustomers : data?.totalPayers ?? 0}
-          subtitle={stripeActiveCustomers !== null && stripeActiveCustomers !== undefined ? "Unique Stripe customers (paid)" : "Unique paying sessions (event-derived)"}
+          title="Total Customers"
+          value={hasStripe ? (stripeActiveCustomers ?? 0) : data?.totalPayers ?? 0}
+          subtitle={hasStripe ? "Unique Stripe customers (all-time, paid)" : "Unique paying sessions (event-derived)"}
           icon={Users}
           color="success"
         />
         <StatCard
-          title="Trailing Revenue"
-          value={`$${((data?.estimatedRevenue ?? 0)).toLocaleString()}`}
-          subtitle="Revenue in selected period (tier-priced)"
+          title="All-Time Revenue"
+          value={stripeRevenueDollars !== null && stripeRevenueDollars !== undefined
+            ? `$${stripeRevenueDollars.toLocaleString()}`
+            : `$${((data?.estimatedRevenue ?? 0)).toLocaleString()}`}
+          subtitle={stripeRevenueDollars !== null ? "From Stripe checkout sessions (all-time)" : "Estimated from tier prices"}
           icon={CreditCard}
+          color="success"
+        />
+        <StatCard
+          title="30-Day Revenue"
+          value={stripeMonthlyRevenueDollars !== null && stripeMonthlyRevenueDollars !== undefined
+            ? `$${stripeMonthlyRevenueDollars.toLocaleString()}`
+            : "—"}
+          subtitle={stripeMonthlyRevenueDollars !== null ? "Stripe payments in last 30 days" : "Stripe not configured"}
+          icon={TrendingUp}
           color="success"
         />
         <StatCard
@@ -1464,22 +1512,29 @@ function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateR
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatCard
           title="Failed / Expired Checkouts"
           value={stripeFailedPayments !== null && stripeFailedPayments !== undefined ? stripeFailedPayments : data?.checkoutsWithoutPayment ?? 0}
-          subtitle={stripeFailedPayments !== null && stripeFailedPayments !== undefined
-            ? `Stripe expired sessions (all-time) · ${(data?.checkoutConversionRate ?? 0).toFixed(1)}% event-based conversion`
-            : `Abandoned before payment · ${(data?.checkoutConversionRate ?? 0).toFixed(1)}% checkout → payment rate`}
+          subtitle={stripeFailedPayments !== null
+            ? `Stripe expired sessions · ${(data?.checkoutConversionRate ?? 0).toFixed(1)}% checkout→payment`
+            : `Abandoned before payment · ${(data?.checkoutConversionRate ?? 0).toFixed(1)}% conversion rate`}
           icon={Activity}
           color={(data?.checkoutConversionRate ?? 0) > 40 ? "success" : "warning"}
         />
         <StatCard
-          title="Checkout Conversion Rate"
-          value={`${(data?.checkoutConversionRate ?? 0).toFixed(1)}%`}
-          subtitle="checkout_started → payment_completed"
-          icon={TrendingUp}
-          color={(data?.checkoutConversionRate ?? 0) > 40 ? "success" : "warning"}
+          title="Repeat Customers"
+          value={stripeRepeatCustomers !== null && stripeRepeatCustomers !== undefined ? stripeRepeatCustomers : "—"}
+          subtitle="Customers with 2+ Stripe sessions (churn proxy inverted)"
+          icon={Users}
+          color={(stripeRepeatCustomers ?? 0) > 0 ? "success" : "default"}
+        />
+        <StatCard
+          title="Upcoming Renewals"
+          value={0}
+          subtitle="One-time payment product — no subscriptions"
+          icon={Activity}
+          color="default"
         />
       </div>
 

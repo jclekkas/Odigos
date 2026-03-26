@@ -67,20 +67,46 @@ export function registerBIRoutes(app: Express): void {
 
       let stripeFailedPayments: number | null = null;
       let stripeActiveCustomers: number | null = null;
+      let stripeRevenueCents: number | null = null;
+      let stripeMonthlyRevenueCents: number | null = null;
+      let stripeRepeatCustomers: number | null = null;
+      let stripeUpcomingRenewals: number = 0;
+
       if (await isStripeConfigured()) {
         try {
           const stripe = await getStripeClient();
-          const [expired, paid] = await Promise.all([
+          const nowMs = Date.now();
+          const thirtyDaysAgoSec = Math.floor((nowMs - 30 * 24 * 60 * 60 * 1000) / 1000);
+
+          const [expired, allSessions, recentSessions] = await Promise.all([
             stripe.checkout.sessions.list({ status: "expired", limit: 100 }),
-            stripe.checkout.sessions.list({ payment_status: "paid", limit: 100 }),
+            stripe.checkout.sessions.list({ status: "complete", limit: 100 }),
+            stripe.checkout.sessions.list({ status: "complete", limit: 100, created: { gte: thirtyDaysAgoSec } }),
           ]);
+
           stripeFailedPayments = expired.data.length;
-          stripeActiveCustomers = new Set(paid.data.map(s => s.customer ?? s.id)).size;
+
+          const allCustomerIds = allSessions.data.map(s => s.customer as string | null ?? s.id);
+          const customerPurchaseCounts: Record<string, number> = {};
+          allCustomerIds.forEach(id => { customerPurchaseCounts[id] = (customerPurchaseCounts[id] ?? 0) + 1; });
+          stripeActiveCustomers = new Set(allCustomerIds).size;
+          stripeRepeatCustomers = Object.values(customerPurchaseCounts).filter(c => c > 1).length;
+
+          stripeRevenueCents = allSessions.data.reduce((sum, s) => sum + (s.amount_total ?? 0), 0);
+          stripeMonthlyRevenueCents = recentSessions.data.reduce((sum, s) => sum + (s.amount_total ?? 0), 0);
         } catch {
         }
       }
 
-      res.json({ ...health, stripeFailedPayments, stripeActiveCustomers });
+      res.json({
+        ...health,
+        stripeFailedPayments,
+        stripeActiveCustomers,
+        stripeRevenueDollars: stripeRevenueCents !== null ? stripeRevenueCents / 100 : null,
+        stripeMonthlyRevenueDollars: stripeMonthlyRevenueCents !== null ? stripeMonthlyRevenueCents / 100 : null,
+        stripeRepeatCustomers,
+        stripeUpcomingRenewals,
+      });
     } catch (e: any) { res.status(500).json({ error: e?.message }); }
   });
 
