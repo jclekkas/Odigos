@@ -9,8 +9,8 @@
  *
  * Health endpoint contract (server/routes/reference.ts):
  *   GET /api/health → 200  { status: "ok" | "degraded", uptimeSeconds, memory }
- *   "ok"       = rss memory < 1536 MB (normal operation)
- *   "degraded" = rss memory >= 1536 MB (memory pressure)
+ *   "ok"       = rss memory < 1536 MB (normal operation) — smoke test requires this value
+ *   "degraded" = rss memory >= 1536 MB (memory pressure) — smoke test fails on this value
  *
  * Usage:
  *   npx tsx scripts/smoke-test.ts                  # tests https://odigosauto.com
@@ -47,13 +47,20 @@ function fail(label: string, detail: string): void {
   console.error(`       ${detail}`);
 }
 
-function isOnDomain(location: string): boolean {
-  return (
-    location.startsWith("/") ||
-    location.startsWith(BASE_URL) ||
-    location.startsWith("https://odigosauto.com") ||
-    location.startsWith("http://localhost")
-  );
+const ALLOWED_HOSTS: ReadonlySet<string> = new Set([
+  "odigosauto.com",
+  "www.odigosauto.com",
+  ...(BASE_URL.startsWith("http://localhost") ? ["localhost"] : []),
+]);
+
+function isOnDomain(rawLocation: string, currentUrl: string): boolean {
+  if (rawLocation.startsWith("/")) return true;
+  try {
+    const resolved = new URL(rawLocation, currentUrl);
+    return ALLOWED_HOSTS.has(resolved.hostname);
+  } catch {
+    return false;
+  }
 }
 
 async function fetchWithTimeout(url: string, init: RequestInit): Promise<Response> {
@@ -88,7 +95,7 @@ async function validateRedirectChain(startUrl: string): Promise<string | null> {
     }
 
     const location = res.headers.get("location") ?? "";
-    if (!isOnDomain(location)) {
+    if (!isOnDomain(location, currentUrl)) {
       return `Off-domain redirect detected at hop ${hop + 1} — Location: ${location}`;
     }
     currentUrl = location.startsWith("/") ? `${BASE_URL}${location}` : location;
@@ -167,8 +174,8 @@ async function run(): Promise<void> {
         return `Missing "status" field in health response: ${body.slice(0, 120)}`;
       }
       const { status } = parsed;
-      if (status !== "ok" && status !== "degraded") {
-        return `Unexpected health status "${status}" (expected "ok" or "degraded")`;
+      if (status !== "ok") {
+        return `Unexpected health status "${status}" (expected "ok" — service may be degraded or unhealthy)`;
       }
       return null;
     },
