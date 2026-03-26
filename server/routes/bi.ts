@@ -71,17 +71,20 @@ export function registerBIRoutes(app: Express): void {
       let stripeMonthlyRevenueCents: number | null = null;
       let stripeRepeatCustomers: number | null = null;
       let stripeUpcomingRenewals: number = 0;
+      let stripeChurnThisPeriod: number | null = null;
 
       if (await isStripeConfigured()) {
         try {
           const stripe = await getStripeClient();
           const nowMs = Date.now();
           const thirtyDaysAgoSec = Math.floor((nowMs - 30 * 24 * 60 * 60 * 1000) / 1000);
+          const sixtyDaysAgoSec = Math.floor((nowMs - 60 * 24 * 60 * 60 * 1000) / 1000);
 
-          const [expired, allSessions, recentSessions] = await Promise.all([
+          const [expired, allSessions, recentSessions, prevSessions] = await Promise.all([
             stripe.checkout.sessions.list({ status: "expired", limit: 100 }),
             stripe.checkout.sessions.list({ status: "complete", limit: 100 }),
             stripe.checkout.sessions.list({ status: "complete", limit: 100, created: { gte: thirtyDaysAgoSec } }),
+            stripe.checkout.sessions.list({ status: "complete", limit: 100, created: { gte: sixtyDaysAgoSec, lt: thirtyDaysAgoSec } }),
           ]);
 
           stripeFailedPayments = expired.data.length;
@@ -94,12 +97,22 @@ export function registerBIRoutes(app: Express): void {
 
           stripeRevenueCents = allSessions.data.reduce((sum, s) => sum + (s.amount_total ?? 0), 0);
           stripeMonthlyRevenueCents = recentSessions.data.reduce((sum, s) => sum + (s.amount_total ?? 0), 0);
+
+          const recentCustomerIds = new Set(recentSessions.data.map(s => s.customer as string | null ?? s.id));
+          const prevCustomerIds = new Set(prevSessions.data.map(s => s.customer as string | null ?? s.id));
+          const churnedCustomers = Array.from(prevCustomerIds).filter(id => !recentCustomerIds.has(id));
+          stripeChurnThisPeriod = churnedCustomers.length;
         } catch {
         }
       }
 
       res.json({
         ...health,
+        activeSubscribers: stripeActiveCustomers ?? health.totalPayers,
+        mrr: stripeMonthlyRevenueCents !== null ? stripeMonthlyRevenueCents / 100 : null,
+        churnThisPeriod: stripeChurnThisPeriod,
+        failedPayments: stripeFailedPayments,
+        upcomingRenewals: stripeUpcomingRenewals,
         stripeFailedPayments,
         stripeActiveCustomers,
         stripeRevenueDollars: stripeRevenueCents !== null ? stripeRevenueCents / 100 : null,

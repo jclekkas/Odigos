@@ -1407,6 +1407,11 @@ interface SubscriptionHealth {
   estimatedRevenue: number;
   tierBreakdown: { tier49: number; tier79: number; other: number };
   dailyNewPayers: Array<{ date: string; count: number }>;
+  activeSubscribers: number;
+  mrr: number | null;
+  churnThisPeriod: number | null;
+  failedPayments: number | null;
+  upcomingRenewals: number;
   stripeFailedPayments: number | null;
   stripeActiveCustomers: number | null;
   stripeRevenueDollars: number | null;
@@ -1459,27 +1464,36 @@ function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateR
     payers: d.count,
   }));
 
-  const stripeActiveCustomers = data?.stripeActiveCustomers;
-  const stripeFailedPayments = data?.stripeFailedPayments;
+  const activeSubscribers = data?.activeSubscribers ?? data?.stripeActiveCustomers ?? data?.totalPayers ?? 0;
+  const mrr = data?.mrr ?? data?.stripeMonthlyRevenueDollars ?? null;
+  const churnThisPeriod = data?.churnThisPeriod ?? null;
+  const failedPayments = data?.failedPayments ?? data?.stripeFailedPayments ?? data?.checkoutsWithoutPayment ?? 0;
+  const upcomingRenewals = data?.upcomingRenewals ?? 0;
   const stripeRevenueDollars = data?.stripeRevenueDollars;
-  const stripeMonthlyRevenueDollars = data?.stripeMonthlyRevenueDollars;
   const stripeRepeatCustomers = data?.stripeRepeatCustomers;
-  const hasStripe = stripeActiveCustomers !== null && stripeActiveCustomers !== undefined;
+  const hasStripe = data?.stripeActiveCustomers !== null && data?.stripeActiveCustomers !== undefined;
 
   return (
     <div className="space-y-6" data-testid="panel-subscription-health">
       {hasStripe && (
         <p className="text-xs text-muted-foreground italic">
-          * Odigos is a one-time payment product — MRR and renewal metrics are not applicable. Showing Stripe-verified payment data instead.
+          * Odigos is a one-time payment product — upcomingRenewals is 0 and MRR reflects 30-day revenue. Showing Stripe-verified payment data.
         </p>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Total Customers"
-          value={hasStripe ? (stripeActiveCustomers ?? 0) : data?.totalPayers ?? 0}
+          title="Active Subscribers"
+          value={activeSubscribers}
           subtitle={hasStripe ? "Unique Stripe customers (all-time, paid)" : "Unique paying sessions (event-derived)"}
           icon={Users}
+          color="success"
+        />
+        <StatCard
+          title="MRR (30-Day Revenue)"
+          value={mrr !== null ? `$${mrr.toLocaleString()}` : "—"}
+          subtitle={mrr !== null ? "Stripe payments in last 30 days" : "Stripe not configured"}
+          icon={TrendingUp}
           color="success"
         />
         <StatCard
@@ -1489,15 +1503,6 @@ function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateR
             : `$${((data?.estimatedRevenue ?? 0)).toLocaleString()}`}
           subtitle={stripeRevenueDollars !== null ? "From Stripe checkout sessions (all-time)" : "Estimated from tier prices"}
           icon={CreditCard}
-          color="success"
-        />
-        <StatCard
-          title="30-Day Revenue"
-          value={stripeMonthlyRevenueDollars !== null && stripeMonthlyRevenueDollars !== undefined
-            ? `$${stripeMonthlyRevenueDollars.toLocaleString()}`
-            : "—"}
-          subtitle={stripeMonthlyRevenueDollars !== null ? "Stripe payments in last 30 days" : "Stripe not configured"}
-          icon={TrendingUp}
           color="success"
         />
         <StatCard
@@ -1512,26 +1517,33 @@ function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateR
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <StatCard
-          title="Failed / Expired Checkouts"
-          value={stripeFailedPayments !== null && stripeFailedPayments !== undefined ? stripeFailedPayments : data?.checkoutsWithoutPayment ?? 0}
-          subtitle={stripeFailedPayments !== null
+          title="Failed Payments"
+          value={failedPayments}
+          subtitle={hasStripe
             ? `Stripe expired sessions · ${(data?.checkoutConversionRate ?? 0).toFixed(1)}% checkout→payment`
             : `Abandoned before payment · ${(data?.checkoutConversionRate ?? 0).toFixed(1)}% conversion rate`}
           icon={Activity}
           color={(data?.checkoutConversionRate ?? 0) > 40 ? "success" : "warning"}
         />
         <StatCard
+          title="Churn This Period"
+          value={churnThisPeriod !== null ? churnThisPeriod : "—"}
+          subtitle="Customers active prev 30d but not current 30d"
+          icon={Users}
+          color={(churnThisPeriod ?? 0) === 0 ? "success" : "warning"}
+        />
+        <StatCard
           title="Repeat Customers"
           value={stripeRepeatCustomers !== null && stripeRepeatCustomers !== undefined ? stripeRepeatCustomers : "—"}
-          subtitle="Customers with 2+ Stripe sessions (churn proxy inverted)"
+          subtitle="Customers with 2+ Stripe sessions"
           icon={Users}
           color={(stripeRepeatCustomers ?? 0) > 0 ? "success" : "default"}
         />
         <StatCard
           title="Upcoming Renewals"
-          value={0}
+          value={upcomingRenewals}
           subtitle="One-time payment product — no subscriptions"
           icon={Activity}
           color="default"

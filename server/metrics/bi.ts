@@ -947,15 +947,19 @@ export async function getBIContentMetrics(range: DateRange): Promise<BIContentMe
   const ranged = filterByRange(allEvents, range);
 
   const pageViews = ranged.filter(e => e.eventType === "page_view");
-  const submissions = ranged.filter(e => e.eventType === "submission");
+  const analyzeStarts = ranged.filter(e => e.eventType === "analyze_start" || e.eventType === "submission");
   const payments = ranged.filter(e => e.eventType === "payment_completed");
   const ctaClicks = ranged.filter(e => e.eventType === "cta_click");
+
+  const getPageSlug = (e: { metadata?: Record<string, unknown> | null }): string => {
+    return (e.metadata?.page_slug as string) || (e.metadata?.page as string) || "/";
+  };
 
   const sessionEntryPage: Record<string, string> = {};
   const pageViewsSorted = pageViews.slice().sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
   pageViewsSorted.forEach(e => {
     const sid = e.metadata?.sessionId as string | undefined;
-    const page = (e.metadata?.page as string) || "/";
+    const page = getPageSlug(e);
     if (sid && !sessionEntryPage[sid]) sessionEntryPage[sid] = page;
   });
 
@@ -973,7 +977,7 @@ export async function getBIContentMetrics(range: DateRange): Promise<BIContentMe
   };
 
   pageViews.forEach(e => {
-    const page = (e.metadata?.page as string) || "/";
+    const page = getPageSlug(e);
     const sid = e.metadata?.sessionId as string | undefined;
     const ps = getOrCreate(page);
     ps.views++;
@@ -982,13 +986,14 @@ export async function getBIContentMetrics(range: DateRange): Promise<BIContentMe
 
   ctaClicks.forEach(e => {
     const sid = e.metadata?.sessionId as string | undefined;
-    const page = (sid && sessionEntryPage[sid]) || (e.metadata?.page as string) || "/";
+    const page = (sid && sessionEntryPage[sid]) || getPageSlug(e);
     getOrCreate(page).ctaClicks++;
   });
 
-  submissions.forEach(e => {
+  analyzeStarts.forEach(e => {
+    const slug = getPageSlug(e);
     const sid = e.metadata?.sessionId as string | undefined;
-    const page = (sid && sessionEntryPage[sid]) || "/";
+    const page = slug !== "/" ? slug : (sid && sessionEntryPage[sid]) || "/";
     getOrCreate(page).analyzeStarts++;
   });
 
@@ -1014,7 +1019,7 @@ export async function getBIContentMetrics(range: DateRange): Promise<BIContentMe
     pages,
     totalViews: pages.reduce((s, p) => s + p.views, 0),
     totalSessions: new Set(pageViews.map(e => e.metadata?.sessionId as string).filter(Boolean)).size,
-    totalAnalyzeStarts: submissions.length,
+    totalAnalyzeStarts: analyzeStarts.length,
     totalConversions: payments.length,
   };
 }
