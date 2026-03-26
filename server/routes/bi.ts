@@ -261,7 +261,8 @@ export function registerBIRoutes(app: Express): void {
     }
   });
 
-  app.get("/api/stats", async (_req, res) => {
+  app.get("/api/stats", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
     try {
       if (!process.env.DATABASE_URL) {
         return res.json({ real_analyzed_deals: 0, user_submissions: 0, total_dataset_size: 0, unique_dealers: 0, new_last_24h: 0, last_updated_at: null });
@@ -294,7 +295,7 @@ export function registerBIRoutes(app: Express): void {
         newLast24h = Number(lr?.new_last_24h ?? 0);
       } catch {}
 
-      res.setHeader("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
+      res.setHeader("Cache-Control", "private, max-age=60, stale-while-revalidate=300");
       res.json({ real_analyzed_deals: Number(statsRow.real_deals_analyzed ?? 0), user_submissions: Number(statsRow.user_submissions ?? 0), total_dataset_size: totalDatasetSize, unique_dealers: Number(statsRow.unique_dealers ?? 0), new_last_24h: newLast24h, last_updated_at: statsRow.last_updated_at ?? null });
     } catch (err) {
       console.error("[stats] /api/stats error:", err);
@@ -322,7 +323,8 @@ export function registerBIRoutes(app: Express): void {
     }
   });
 
-  app.get("/api/warehouse/stats", async (_req, res) => {
+  app.get("/api/warehouse/stats", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
     try {
       if (!process.env.DATABASE_URL) return res.json([]);
       const { db } = await import("../db");
@@ -336,6 +338,7 @@ export function registerBIRoutes(app: Express): void {
   });
 
   app.get("/api/warehouse/stats/state/:stateCode", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
     try {
       if (!process.env.DATABASE_URL) return res.json(null);
       const { db } = await import("../db");
