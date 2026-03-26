@@ -1,0 +1,94 @@
+I do not want a generic brainstorm. I want a concrete recommendation for whether Odigos should pursue Spanish-language SEO and Spanish product support.
+
+You are acting as:
+- a senior SEO strategist
+- a bilingual content strategist
+- a startup growth operator
+
+Business context:
+Odigos is a consumer protection tool for car buyers. It already has English pages around dealer fees, doc fees, out-the-door pricing, and state-specific fee pages. I am considering a Spanish-language expansion and want to know whether this is a serious SEO and business opportunity.
+
+Your task:
+Evaluate whether Spanish-language pages are worth building, and if so, exactly how to do it in a high-leverage, low-waste way.
+
+Rules:
+- Do not give vague “it depends” advice
+- Do not suggest translating the whole site
+- Do not assume a language toggle alone is enough
+- Do not provide filler about localization best practices unless directly relevant
+- Prioritize ROI, leverage, and moat creation
+- Be blunt
+
+Answer in this exact format:
+
+1. Verdict
+Give a direct recommendation:
+- Do it now
+- Do it later
+- Do not do it
+Then explain why in no more than 200 words.
+
+2. Strategic rationale
+Explain:
+- why Spanish SEO may or may not be a real wedge
+- whether Spanish-speaking users are meaningfully underserved here
+- whether proven English winners should be the starting point
+- whether this can become a trust and conversion advantage
+
+3. Required SEO structure
+Tell me the correct structure:
+- whether I need dedicated Spanish URLs
+- whether I need /es/ pages
+- whether I need hreflang
+- whether a toggle alone is insufficient
+Be specific.
+
+4. Top 10 Spanish pages to build first
+Rank the best first 10 Spanish pages or topics.
+For each one include:
+- English source page/topic
+- recommended Spanish page concept
+- why it should be prioritized
+- likely search intent
+
+5. Search intent translation
+For the following concepts, map real Spanish-language search behavior:
+- dealer doc fee
+- out the door price
+- car dealer fees by state
+- APR missing
+- inflated dealer fees
+- can a dealer refuse to give OTD price
+Do not give only literal translations. Include mixed-language possibilities when realistic.
+
+6. Lean rollout plan
+Give me a realistic phased rollout:
+- Phase 1: minimum viable launch
+- Phase 2: scale-up
+- Phase 3: full expansion
+Each phase should say what to build and why.
+
+7. Product dependency
+Tell me whether Spanish SEO works if the core analyzer does not support Spanish input/output well.
+Be direct about the downside if the content ranks but the product experience breaks.
+
+8. Biggest mistakes
+List the 7 biggest mistakes I could make here.
+
+9. 30-day plan
+Give me a week-by-week plan for the first 30 days.
+
+10. Final answer
+End with:
+- one paragraph summary
+- one ranked list of the first 10 pages to build
+- one sentence on what I should do this week
+
+Use Odigos’ actual strengths in your reasoning:
+- consumer protection angle
+- state fee content
+- dealer fee and doc fee topics
+- trust-sensitive buying decision
+- existing English traction
+
+Optimize for what would actually move the business, not what sounds good in a strategy deck.
