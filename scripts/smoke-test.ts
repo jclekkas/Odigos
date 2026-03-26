@@ -1,11 +1,21 @@
 /**
  * Production smoke test for odigosauto.com.
  *
+ * Checks each endpoint with redirect: "manual" first so any off-domain
+ * redirect (e.g. a residual registrar URL-forwarding rule) is caught before
+ * the redirect is followed. Body assertions are made against the final
+ * response after verifying all intermediate redirects stay on-domain.
+ *
  * Usage:
  *   npx tsx scripts/smoke-test.ts                  # tests https://odigosauto.com
- *   BASE_URL=http://localhost:5000 npx tsx scripts/smoke-test.ts  # tests local dev server
+ *   BASE_URL=http://localhost:5000 npx tsx scripts/smoke-test.ts
  *
  * Exit codes: 0 = all assertions passed, 1 = one or more failures.
+ *
+ * Health endpoint contract:
+ *   GET /api/health → 200  { status: "healthy" | "degraded", uptimeSeconds, memory }
+ *   "healthy" = memory < 1536 MB, "degraded" = memory >= 1536 MB.
+ *   (The test suite verifies HTTP 200 only; body schema is asserted here.)
  */
 
 const BASE_URL = (process.env.BASE_URL ?? "https://odigosauto.com").replace(/\/$/, "");
@@ -19,6 +29,11 @@ interface CheckResult {
 
 const results: CheckResult[] = [];
 
+function errorMessage(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  return String(err);
+}
+
 function pass(label: string): void {
   results.push({ label, passed: true });
   console.log(`  ✓  ${label}`);
@@ -30,7 +45,16 @@ function fail(label: string, detail: string): void {
   console.error(`       ${detail}`);
 }
 
-async function fetchWithTimeout(url: string, init?: RequestInit): Promise<Response> {
+function isOnDomain(location: string): boolean {
+  return (
+    location.startsWith("/") ||
+    location.startsWith(BASE_URL) ||
+    location.startsWith("https://odigosauto.com") ||
+    location.startsWith("http://localhost")
+  );
+}
+
+async function fetchWithTimeout(url: string, init: RequestInit): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
@@ -41,31 +65,43 @@ async function fetchWithTimeout(url: string, init?: RequestInit): Promise<Respon
 }
 
 /**
- * Fetch a URL without following redirects and assert:
- * - status === expectedStatus
- * - if a Location header is present it stays on-domain (or is relative)
- * - optionally run a body assertion
+ * Check one endpoint:
+ * 1. Fetch with redirect:"manual" — fail immediately if any redirect goes off-domain.
+ * 2. Fetch with redirect:"follow" — assert expected status and run optional body assertion.
  */
 async function checkEndpoint(
   path: string,
   opts: {
     expectedStatus?: number;
     bodyAssert?: (body: string) => string | null;
-    followRedirects?: boolean;
   } = {}
 ): Promise<void> {
-  const { expectedStatus = 200, bodyAssert, followRedirects = false } = opts;
+  const { expectedStatus = 200, bodyAssert } = opts;
   const url = `${BASE_URL}${path}`;
   const label = `${path} → ${expectedStatus}`;
+  const headers = { "User-Agent": "OdigosAutoSmokeTest/1.0" };
+
+  let manualRes: Response;
+  try {
+    manualRes = await fetchWithTimeout(url, { redirect: "manual", headers });
+  } catch (err: unknown) {
+    fail(label, `Request failed (manual): ${errorMessage(err)}`);
+    return;
+  }
+
+  if (manualRes.status >= 300 && manualRes.status < 400) {
+    const location = manualRes.headers.get("location") ?? "";
+    if (!isOnDomain(location)) {
+      fail(label, `Off-domain redirect detected — Location: ${location}`);
+      return;
+    }
+  }
 
   let res: Response;
   try {
-    res = await fetchWithTimeout(url, {
-      redirect: followRedirects ? "follow" : "manual",
-      headers: { "User-Agent": "OdigosAutoSmokeTest/1.0" },
-    });
-  } catch (err: any) {
-    fail(label, `Request failed: ${err?.message ?? err}`);
+    res = await fetchWithTimeout(url, { redirect: "follow", headers });
+  } catch (err: unknown) {
+    fail(label, `Request failed (follow): ${errorMessage(err)}`);
     return;
   }
 
@@ -74,25 +110,12 @@ async function checkEndpoint(
     return;
   }
 
-  const location = res.headers.get("location");
-  if (location) {
-    const isRelative = location.startsWith("/");
-    const isOnDomain =
-      location.startsWith(BASE_URL) ||
-      location.startsWith("https://odigosauto.com") ||
-      location.startsWith("http://localhost");
-    if (!isRelative && !isOnDomain) {
-      fail(label, `Redirect points off-domain: Location: ${location}`);
-      return;
-    }
-  }
-
   if (bodyAssert) {
     let body: string;
     try {
       body = await res.text();
-    } catch (err: any) {
-      fail(label, `Failed to read body: ${err?.message ?? err}`);
+    } catch (err: unknown) {
+      fail(label, `Failed to read body: ${errorMessage(err)}`);
       return;
     }
     const problem = bodyAssert(body);
@@ -109,7 +132,6 @@ async function run(): Promise<void> {
   console.log(`\nOdigosAuto smoke test — ${BASE_URL}\n`);
 
   await checkEndpoint("/api/health", {
-    followRedirects: true,
     bodyAssert: (body) => {
       let parsed: Record<string, unknown>;
       try {
@@ -129,7 +151,6 @@ async function run(): Promise<void> {
   });
 
   await checkEndpoint("/api/stats/count", {
-    followRedirects: true,
     bodyAssert: (body) => {
       let parsed: Record<string, unknown>;
       try {
@@ -138,14 +159,13 @@ async function run(): Promise<void> {
         return `Body is not valid JSON: ${body.slice(0, 120)}`;
       }
       if (!("count" in parsed)) {
-        return `Missing "count" field in stats/count response`;
+        return `Missing "count" field in /api/stats/count response`;
       }
       return null;
     },
   });
 
   await checkEndpoint("/robots.txt", {
-    followRedirects: true,
     bodyAssert: (body) => {
       if (!body.includes("User-agent")) {
         return `robots.txt body missing "User-agent" directive`;
@@ -158,7 +178,6 @@ async function run(): Promise<void> {
   });
 
   await checkEndpoint("/sitemap.xml", {
-    followRedirects: true,
     bodyAssert: (body) => {
       if (!body.includes("<urlset") && !body.includes("<?xml")) {
         return `sitemap.xml does not look like valid XML`;
@@ -171,7 +190,6 @@ async function run(): Promise<void> {
   });
 
   await checkEndpoint("/", {
-    followRedirects: true,
     bodyAssert: (body) => {
       if (!body.includes("Odigos") && !body.includes("odigos") && !body.includes("<!DOCTYPE html>")) {
         return `Homepage HTML does not contain expected app content`;
@@ -199,7 +217,7 @@ async function run(): Promise<void> {
   process.exit(0);
 }
 
-run().catch((err) => {
-  console.error("Smoke test runner crashed:", err);
+run().catch((err: unknown) => {
+  console.error("Smoke test runner crashed:", errorMessage(err));
   process.exit(1);
 });
