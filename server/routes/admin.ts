@@ -1,5 +1,5 @@
 import { timingSafeEqual } from "crypto";
-import type { Express, Request, Response, NextFunction } from "express";
+import type { Express, Request, Response } from "express";
 import { getStripeClient, isStripeConfigured } from "../stripeClient";
 import { getImportedSessionIds, importHistoricalEvents } from "../events";
 import { listAuditLog } from "../storage";
@@ -23,18 +23,6 @@ export function requireAdminKey(req: Request, res: Response): boolean {
     res.status(401).json({ error: "Unauthorized" }); return false;
   }
   return true;
-}
-
-function requireAdmin(req: Request, res: Response, next: NextFunction) {
-  const expected = process.env.ADMIN_KEY;
-  if (!expected) {
-    return res.status(503).json({ message: "Admin access not configured" });
-  }
-  const provided = req.header("x-admin-key");
-  if (provided !== expected) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-  next();
 }
 
 export function registerAdminRoutes(app: Express): void {
@@ -140,7 +128,8 @@ export function registerAdminRoutes(app: Express): void {
     }
   });
 
-  app.get("/api/admin/audit-log", requireAdmin, async (req, res, next) => {
+  app.get("/api/admin/audit-log", async (req, res, next) => {
+    if (!requireAdminKey(req, res)) return;
     try {
       const limit = Math.min(Number(req.query.limit) || 100, 500);
       const offset = Math.max(Number(req.query.offset) || 0, 0);
