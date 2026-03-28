@@ -1,0 +1,76 @@
+#145 - Analysis progress bar during wait
+
+Make concrete code changes in the existing Odigos codebase. This is an implementation task, not a planning task.
+
+Objective
+Add a reassuring, time-based animated progress bar to the deal analysis flow so users see visible progress during the 40–60 second wait.
+
+Why
+The current loading state only shows a small spinner on the Analyze Deal button plus a short text note. That is too easy to miss and can make the app feel stuck. Add a progress bar below the button that animates from 0% to about 90% over roughly 50 seconds, then holds there until the response returns.
+
+Requirements
+- Keep the existing Loader2 spinner on the Analyze Deal button exactly as-is
+- Do not change backend behavior
+- Do not add server-sent progress events
+- Do not change the API
+- Add a new `AnalysisProgressBar` component
+- Show it only while `analyzeMutation.isPending` is true
+- Render it directly below the Analyze Deal button
+- Progress must be purely client-side and time-based
+- Animate smoothly from 0% to about 90% over ~50 seconds
+- Once progress reaches ~90%, hold there until `isPending` becomes false
+- Never show 100% before the request actually finishes
+- On success or error, remove the progress bar cleanly
+- Include rotating status messages during the wait, for example:
+  - Reading fee structure…
+  - Checking state caps…
+  - Scoring the deal…
+- Clean up all timers/intervals correctly to avoid leaks or stale updates
+- TypeScript must compile cleanly
+
+Done looks like
+- While analysis is pending, an animated progress bar appears below the Analyze Deal button
+- The bar fills from 0 to ~90% over about 50 seconds
+- The bar pauses near the end until the response arrives
+- Rotating status text appears while waiting
+- The progress UI disappears immediately and cleanly on success or error
+- The existing button spinner remains unchanged
+- No regressions to the current analyze flow
+
+Implementation guidance
+- Create a reusable component, e.g. `client/src/components/AnalysisProgressBar.tsx`
+- Use `useEffect` plus `setInterval` or `requestAnimationFrame` for the progress animation
+- Reset progress to 0 whenever a new pending cycle begins
+- Stop and clean up timers on unmount and when pending ends
+- Rotate the status messages on a separate timer or derive them from elapsed time
+- Keep styling consistent with the current Odigos UI
+- Prefer simple, robust logic over overengineering
+
+Suggested behavior
+- Progress target: 90%
+- Duration to reach target: 50,000 ms
+- Update cadence: every 100–250 ms is fine
+- Message rotation cadence: every 2–4 seconds is fine
+- When `isPending` flips from false to true, start fresh from 0
+- When `isPending` flips to false, unmount/hide the component without lingering state
+
+Files to update
+- `client/src/pages/home.tsx:1395-1425`
+
+Files to add
+- `client/src/components/AnalysisProgressBar.tsx`
+
+Tasks
+1. Add `AnalysisProgressBar`
+2. Implement a time-based animated fill from 0 to ~90% over ~50 seconds
+3. Hold near 90% until `isPending` becomes false
+4. Add rotating status messages
+5. Render the component conditionally below the Analyze Deal button when `analyzeMutation.isPending` is true
+6. Ensure timer cleanup and no stale state updates
+7. Keep the existing Loader2 spinner untouched
+
+Out of scope
+- Real progress events from the backend
+- Backend changes
+- API changes
+- Replacing the existing button spinner
