@@ -11,6 +11,15 @@ const aliases = {
 export default defineConfig({
   test: {
     reporters: ["verbose"],
+    coverage: {
+      provider: "v8",
+      thresholds: {
+        lines: 32,
+        functions: 21,
+        branches: 20,
+        statements: 30,
+      },
+    },
     projects: [
       {
         plugins: [],

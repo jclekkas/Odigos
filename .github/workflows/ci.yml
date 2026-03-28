@@ -45,7 +45,7 @@ jobs:
       #     startup and Chromium setup still make E2E slow and flaky in CI.
       #   - E2E can be added as a separate optional or scheduled workflow later.
       - name: Run tests
-        run: npx vitest run
+        run: npx vitest run --coverage
 
       # ── 4. Build ─────────────────────────────────────────────────────────────
       # The CI=true env var (set automatically by GitHub Actions) causes

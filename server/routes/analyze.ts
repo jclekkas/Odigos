@@ -7,10 +7,13 @@ import { trackEvent } from "../events";
 import { extractTextFromFile } from "../extractText";
 import { storage } from "../storage";
 import { writeAuditEvent } from "../audit";
-import { runAnalysis } from "../services/analyzeService";
+import { runAnalysis, AnalyzeServiceError } from "../services/analyzeService";
+
+console.log("OpenAI configured with base URL:", process.env.AI_INTEGRATIONS_OPENAI_BASE_URL ? "set" : "not set");
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 const ALLOWED_MIME_TYPES = ["image/png", "image/jpeg", "image/webp", "application/pdf"];
+const SHORT_TEXT_MSG = "We couldn't read enough text from that file. Try pasting the text or uploading a clearer image.";
 
 function runUploadMiddleware(req: Request, res: Response): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -18,30 +21,27 @@ function runUploadMiddleware(req: Request, res: Response): Promise<void> {
   });
 }
 
-console.log("OpenAI configured with base URL:", process.env.AI_INTEGRATIONS_OPENAI_BASE_URL ? "set" : "not set");
-
 export function registerAnalyzeRoutes(app: Express): void {
   app.post("/api/analyze", async (req, res) => {
+    const parseResult = analysisRequestSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return res.status(400).json({ error: "Invalid request", details: parseResult.error.flatten() });
+    }
     try {
-      const parseResult = analysisRequestSchema.safeParse(req.body);
-      if (!parseResult.success) {
-        return res.status(400).json({ error: "Invalid request", details: parseResult.error.flatten() });
-      }
-      const serviceResult = await runAnalysis(parseResult.data, req);
-      if (!serviceResult.ok) {
-        switch (serviceResult.error.kind) {
-          case "circuit_open":
-            return res.status(503).json({ error: "Service temporarily unavailable", message: "The analysis service is temporarily unavailable. Please try again in a moment." });
-          case "ai_exhausted":
-            return res.status(502).json({ error: "AI service error", message: "Unable to analyze the deal at this time. Please try again." });
-          case "incomplete_response":
-            return res.status(502).json({ error: "Incomplete AI response", message: "The AI did not provide sufficient analysis. Please try again." });
-          case "invalid_response":
-            return res.status(502).json({ error: "Invalid AI response", message: "The AI returned an unexpected response format. Please try again." });
-        }
-      }
-      return res.json(serviceResult.result.response);
+      const result = await runAnalysis(parseResult.data);
+      res.json(result.payload);
+      void writeAuditEvent(req, "analyze", "success", {
+        route: req.originalUrl, method: req.method, statusCode: 200,
+        submissionId: result.listingId ?? null, stateCode: result.stateCode ?? null,
+        hasPdf: Boolean(req.file),
+      });
     } catch (error) {
+      if (error instanceof AnalyzeServiceError) {
+        void writeAuditEvent(req, "analyze", "failure", {
+          route: req.originalUrl, method: req.method, statusCode: error.statusCode,
+        });
+        return res.status(error.statusCode).json(error.body);
+      }
       console.error("Analysis error:", error);
       await writeAuditEvent(req, "analyze", "failure", {
         route: req.originalUrl, method: req.method, statusCode: 500,
@@ -59,7 +59,7 @@ export function registerAnalyzeRoutes(app: Express): void {
         if (error.message.includes("timeout") || error.message.includes("ETIMEDOUT")) errorMessage = "Request timed out. Please try again.";
         else if (error.message.includes("rate limit")) errorMessage = "Too many requests. Please wait a moment and try again.";
       }
-      return res.status(500).json({ error: "Failed to analyze deal", message: errorMessage });
+      res.status(500).json({ error: "Failed to analyze deal", message: errorMessage });
     }
   });
 
@@ -111,11 +111,11 @@ export function registerAnalyzeRoutes(app: Express): void {
       } catch (err) {
         console.error("Text extraction error:", err);
         trackEvent("file_processing", { fileSuccess: false, fileFailReason: err instanceof Error ? err.message.slice(0, 100) : "extraction_error" });
-        return res.status(422).json({ message: "We couldn't read enough text from that file. Try pasting the text or uploading a clearer image." });
+        return res.status(422).json({ message: SHORT_TEXT_MSG });
       }
       if (text.length < 20) {
         trackEvent("file_processing", { fileSuccess: false, fileFailReason: "too_short" });
-        return res.status(422).json({ message: "We couldn't read enough text from that file. Try pasting the text or uploading a clearer image." });
+        return res.status(422).json({ message: SHORT_TEXT_MSG });
       }
       trackEvent("file_processing", { fileSuccess: true });
       return res.json({ text });
@@ -127,7 +127,7 @@ export function registerAnalyzeRoutes(app: Express): void {
         scope.setTag("error_type", err instanceof Error ? err.constructor.name : "unknown");
         Sentry.captureException(err);
       });
-      return res.status(500).json({ message: "Something went wrong. Please try again." });
+      res.status(500).json({ message: "Something went wrong. Please try again." });
     }
   });
 }

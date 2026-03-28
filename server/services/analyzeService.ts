@@ -1,8 +1,8 @@
 import * as Sentry from "@sentry/node";
-import type { Request } from "express";
+import { z } from "zod";
 import {
+  analysisRequestSchema,
   analysisResponseSchema,
-  type AnalysisRequest,
   type AnalysisResponse,
   type MarketContext,
 } from "@shared/schema";
@@ -13,88 +13,170 @@ import { openai } from "../openaiClient";
 import { enqueueSubmission } from "../ingestor";
 import { storage } from "../storage";
 import { getMarketContext, getDealerStats } from "../marketContext";
-import { writeAuditEvent } from "../audit";
 import { withJitteredBackoff, isRetriableError } from "../lib/reliability";
 import { aiCircuitBreaker, CircuitOpenError } from "../lib/circuitBreaker";
+
+export type AnalyzeInput = z.infer<typeof analysisRequestSchema>;
+
+export interface AnalyzeServiceResult {
+  payload: Record<string, unknown>;
+  listingId: string | null;
+  stateCode: string | null;
+}
+
+export class AnalyzeServiceError extends Error {
+  constructor(
+    public readonly statusCode: number,
+    public readonly body: Record<string, unknown>,
+  ) {
+    super((body.error as string) ?? "Service error");
+  }
+}
 
 const AI_MAX_RETRIES = 2;
 const AI_ATTEMPT_TIMEOUT_MS = 30_000;
 const AI_TOTAL_BUDGET_MS = 75_000;
 
-export type AnalysisInput = AnalysisRequest;
+export async function runAnalysis(data: AnalyzeInput): Promise<AnalyzeServiceResult> {
+  console.log("=== NEW DEAL SUBMISSION ===");
+  console.log("Timestamp:", new Date().toISOString());
+  console.log("Vehicle:", data.vehicle || "Not specified");
+  console.log("Condition:", data.condition);
+  console.log("Purchase Type:", data.purchaseType);
+  console.log("Dealer Text:", data.dealerText);
+  console.log("===========================");
 
-export type AnalysisServiceResult = {
-  response: Record<string, unknown>;
-  listingId: string | null;
-};
+  const stateDetection = detectStateFromText(data.dealerText, data.zipCode);
+  const stateData = stateDetection.state ? getStateFeeData(stateDetection.state) : null;
 
-export type AnalysisServiceError =
-  | { kind: "circuit_open" }
-  | { kind: "ai_exhausted" }
-  | { kind: "incomplete_response" }
-  | { kind: "invalid_response" };
-
-function buildStateFeeSection(stateData: ReturnType<typeof getStateFeeData>): string {
-  if (!stateData) return "";
-  const capLine = stateData.docFeeCap
-    ? `  Cap: YES — $${stateData.docFeeCapAmount} (dealers may NOT charge more)`
-    : `  Cap: NO — no state-imposed limit`;
-  const rangeLine = `  Typical range: $${stateData.docFeeTypicalRange[0]}–$${stateData.docFeeTypicalRange[1]}`;
-  const taxLine = `  State sales tax: ${(stateData.stateSalesTaxRate * 100).toFixed(2)}%`;
-  const tradeInLine = `  Trade-in tax credit: ${stateData.tradeInTaxCredit ? "YES" : "NO"}`;
-  const notesLine = stateData.specialNotes ? `  Special notes: ${stateData.specialNotes}` : "";
-  return `\nSTATE_FEE_REFERENCE (${stateData.name}):\n${capLine}\n${rangeLine}\n${taxLine}\n${tradeInLine}${notesLine ? `\n${notesLine}` : ""}`;
-}
-
-function buildStateFeeRulesSection(stateData: ReturnType<typeof getStateFeeData>): string {
-  if (!stateData) {
-    return `\nSTATE-SPECIFIC FEE RULES (STRICT — MUST FOLLOW):\n\nNo state was detected. Do NOT make state-specific fee claims. Stick to general fee analysis.\nWhen state is unknown: omit all state-specific fee characterizations.`;
+  if (!stateData && stateDetection.state) {
+    console.warn(`[stateDetection] State ${stateDetection.state} not found in reference JSON — skipping injection`);
   }
-  const docFeeRule = stateData.docFeeCap
-    ? `- ${stateData.name} has a $${stateData.docFeeCapAmount} doc fee cap. If a doc fee in the quote exceeds this:\n     - Flag it clearly in summary and reasoning as a HARD violation\n     - State the cap amount, the charged amount, the overage ($charged - $cap), and any statute reference\n     - Statute citation rule: if specialNotes contains a statute number or code citation, include it. If not, reference only the state name and cap amount — NEVER fabricate a statute citation.\n     - In the suggestedReply (paid tier): include a direct challenge referencing the cap amount and overage.`
-    : `- ${stateData.name} has NO state doc fee cap. Compare the detected doc fee against the typical range ($${stateData.docFeeTypicalRange[0]}–$${stateData.docFeeTypicalRange[1]}). Characterize it as: below typical / within typical / high end / above typical.`;
-  return `\nSTATE-SPECIFIC FEE RULES (STRICT — MUST FOLLOW):\n\nA STATE_FEE_REFERENCE block has been injected above for ${stateData.name}. Apply these rules:\n1. Use ONLY the injected STATE_FEE_REFERENCE data for any state-specific claims — NOT general training knowledge.\n2. Doc fee cap analysis:\n   ${docFeeRule}\n3. For the suggestedReply: when a cap is violated AND specialNotes contains a statute reference, include a statutory challenge phrase. When no statute reference is present, challenge the fee by dollar amount only.\n\nWhen state is unknown: omit all state-specific fee characterizations.`;
-}
 
-function buildMarketIntelligenceSection(
-  marketContext: MarketContext,
-  stateCode: string,
-): string {
-  const mc = marketContext;
-  const hasUsable = mc.stateTotalAnalyses != null || mc.stateAvgDocFee != null || mc.dealerAvgDealScore != null;
-  if (!hasUsable) return "";
-  const miLines: string[] = [];
-  if (mc.stateTotalAnalyses != null && Number.isFinite(mc.stateTotalAnalyses)) {
-    const dealWord = mc.stateTotalAnalyses === 1 ? "deal" : "deals";
-    miLines.push(`In ${stateCode}, we have analyzed ${mc.stateTotalAnalyses} ${dealWord}`);
-  }
-  if (mc.stateAvgDocFee != null && Number.isFinite(mc.stateAvgDocFee)) {
-    miLines.push(`Average doc fee in ${stateCode} is $${Math.round(mc.stateAvgDocFee)}`);
-  }
-  if (mc.dealerAvgDealScore != null && mc.dealerAnalysisCount != null && Number.isFinite(mc.dealerAvgDealScore)) {
-    const quoteWord = mc.dealerAnalysisCount === 1 ? "quote" : "quotes";
-    miLines.push(`This dealer's average deal score is ${mc.dealerAvgDealScore} across ${mc.dealerAnalysisCount} analyzed ${quoteWord}`);
-  }
-  if (mc.feedbackCount != null && mc.feedbackCount >= 3 && mc.feedbackAgreementPct != null && Number.isFinite(mc.feedbackAgreementPct)) {
-    const pct = Math.round(mc.feedbackAgreementPct * 100);
-    miLines.push(`Users agreed with ${pct}% of past ${mc.feedbackCount} analyses for this dealer. Use this as a confidence-calibration signal: for borderline cases, avoid overstating certainty.`);
-  }
-  if (miLines.length === 0) return "";
-  return `\nMARKET_INTELLIGENCE\n${miLines.join("\n")}\nReference these figures in your summary and reasoning when they are materially relevant to evaluating the deal. Do not force their use when they do not meaningfully help. Use the provided figures exactly as written. Do not estimate, round, or invent additional statistics.`;
-}
+  void trackEvent("state_detection", {
+    method: stateDetection.method ?? undefined,
+    state: stateDetection.state ?? undefined,
+  });
 
-function buildSystemPrompt(
-  stateData: ReturnType<typeof getStateFeeData>,
-  marketContext: MarketContext | null,
-  stateCode: string | null,
-  language?: string,
-): string {
-  const stateFeeSection = buildStateFeeSection(stateData);
-  const stateFeeRulesSection = buildStateFeeRulesSection(stateData);
-  const marketIntelligenceSection =
-    marketContext && stateCode ? buildMarketIntelligenceSection(marketContext, stateCode) : "";
+  let stateFeeSection = "";
+  if (stateData) {
+    const capLine = stateData.docFeeCap
+      ? `  Cap: YES — $${stateData.docFeeCapAmount} (dealers may NOT charge more)`
+      : `  Cap: NO — no state-imposed limit`;
+    const rangeLine = `  Typical range: $${stateData.docFeeTypicalRange[0]}–$${stateData.docFeeTypicalRange[1]}`;
+    const taxLine = `  State sales tax: ${(stateData.stateSalesTaxRate * 100).toFixed(2)}%`;
+    const tradeInLine = `  Trade-in tax credit: ${stateData.tradeInTaxCredit ? "YES" : "NO"}`;
+    const notesLine = stateData.specialNotes ? `  Special notes: ${stateData.specialNotes}` : "";
 
-  return `You are an expert car buying advisor helping consumers evaluate car purchase offers. Your job is to analyze dealer quotes, texts, and emails to help buyers understand if they're getting a good deal.
+    stateFeeSection = `
+STATE_FEE_REFERENCE (${stateData.name}):
+${capLine}
+${rangeLine}
+${taxLine}
+${tradeInLine}${notesLine ? `\n${notesLine}` : ""}`;
+  }
+
+  const stateFeeRulesSection = `
+STATE-SPECIFIC FEE RULES (STRICT — MUST FOLLOW):
+${stateData ? `
+A STATE_FEE_REFERENCE block has been injected above for ${stateData.name}. Apply these rules:
+1. Use ONLY the injected STATE_FEE_REFERENCE data for any state-specific claims — NOT general training knowledge.
+2. Doc fee cap analysis:
+   ${stateData.docFeeCap
+     ? `- ${stateData.name} has a $${stateData.docFeeCapAmount} doc fee cap. If a doc fee in the quote exceeds this:
+     - Flag it clearly in summary and reasoning as a HARD violation
+     - State the cap amount, the charged amount, the overage ($charged - $cap), and any statute reference
+     - Statute citation rule: if specialNotes contains a statute number or code citation, include it. If not, reference only the state name and cap amount — NEVER fabricate a statute citation.
+     - In the suggestedReply (paid tier): include a direct challenge referencing the cap amount and overage.`
+     : `- ${stateData.name} has NO state doc fee cap. Compare the detected doc fee against the typical range ($${stateData.docFeeTypicalRange[0]}–$${stateData.docFeeTypicalRange[1]}). Characterize it as: below typical / within typical / high end / above typical.`}
+3. For the suggestedReply: when a cap is violated AND specialNotes contains a statute reference, include a statutory challenge phrase. When no statute reference is present, challenge the fee by dollar amount only.
+` : `
+No state was detected. Do NOT make state-specific fee claims. Stick to general fee analysis.`}
+When state is unknown: omit all state-specific fee characterizations.`;
+
+  let preLlmDealerName: string | null = null;
+  if (data.dealerText) {
+    const atMatch = data.dealerText.match(
+      /(?:from|at|with|visit(?:ing)?)\s+([A-Z][a-zA-Z0-9 &'-]{3,40}?)\s*(?:Toyota|Honda|Ford|Chevrolet|Chevy|Nissan|Hyundai|Kia|Ram|Dodge|Jeep|Subaru|Mazda|Volkswagen|VW|BMW|Mercedes|Audi|Lexus|Cadillac|Buick|GMC|Chrysler|Volvo|Tesla|Rivian|Lucid|Genesis|Infiniti|Acura|Lincoln|Mitsubishi|MINI|Porsche|Land Rover|Jaguar|Maserati)/i
+    );
+    if (atMatch?.[0]) {
+      const fullMatch = atMatch[0];
+      const makeMatch = fullMatch.match(
+        /Toyota|Honda|Ford|Chevrolet|Chevy|Nissan|Hyundai|Kia|Ram|Dodge|Jeep|Subaru|Mazda|Volkswagen|VW|BMW|Mercedes|Audi|Lexus|Cadillac|Buick|GMC|Chrysler|Volvo|Tesla|Rivian|Lucid|Genesis|Infiniti|Acura|Lincoln|Mitsubishi|MINI|Porsche|Land Rover|Jaguar|Maserati/i
+      );
+      if (makeMatch) {
+        const makeIdx = fullMatch.indexOf(makeMatch[0]);
+        const prefixClean = fullMatch
+          .slice(0, makeIdx + makeMatch[0].length)
+          .replace(/^(?:from|at|with|visit(?:ing)?)\s+/i, "")
+          .trim();
+        if (prefixClean.length >= 4) preLlmDealerName = prefixClean;
+      }
+    }
+  }
+
+  let marketContext: MarketContext | null = null;
+  if (process.env.DATABASE_URL && stateDetection.state) {
+    try {
+      marketContext = await getMarketContext({
+        state: stateDetection.state,
+        dealerName: preLlmDealerName,
+        docFee: null,
+      });
+    } catch (ctxErr) {
+      console.error("[analyze] getMarketContext pre-fetch failed (non-fatal):", ctxErr);
+      marketContext = null;
+    }
+  }
+
+  const feedbackInjected =
+    marketContext != null &&
+    marketContext.feedbackCount != null &&
+    marketContext.feedbackCount >= 3 &&
+    marketContext.feedbackAgreementPct != null &&
+    Number.isFinite(marketContext.feedbackAgreementPct);
+
+  console.log(
+    `[analyze:feedback] dealerExtracted=${preLlmDealerName != null} dealer=${preLlmDealerName ?? "none"} feedbackInjected=${feedbackInjected}` +
+    (feedbackInjected ? ` count=${marketContext!.feedbackCount} agreement=${Math.round(marketContext!.feedbackAgreementPct! * 100)}%` : ""),
+  );
+  trackEvent("feedback_signal", {
+    dealerExtracted: preLlmDealerName != null,
+    feedbackInjected,
+  });
+
+  let marketIntelligenceSection = "";
+  if (marketContext) {
+    const mc = marketContext;
+    const hasUsable = mc.stateTotalAnalyses != null || mc.stateAvgDocFee != null || mc.dealerAvgDealScore != null;
+    if (hasUsable) {
+      const stCode = stateDetection.state!;
+      const miLines: string[] = [];
+      if (mc.stateTotalAnalyses != null && Number.isFinite(mc.stateTotalAnalyses)) {
+        const dealWord = mc.stateTotalAnalyses === 1 ? "deal" : "deals";
+        miLines.push(`In ${stCode}, we have analyzed ${mc.stateTotalAnalyses} ${dealWord}`);
+      }
+      if (mc.stateAvgDocFee != null && Number.isFinite(mc.stateAvgDocFee)) {
+        miLines.push(`Average doc fee in ${stCode} is $${Math.round(mc.stateAvgDocFee)}`);
+      }
+      if (mc.dealerAvgDealScore != null && mc.dealerAnalysisCount != null && Number.isFinite(mc.dealerAvgDealScore)) {
+        const quoteWord = mc.dealerAnalysisCount === 1 ? "quote" : "quotes";
+        miLines.push(`This dealer's average deal score is ${mc.dealerAvgDealScore} across ${mc.dealerAnalysisCount} analyzed ${quoteWord}`);
+      }
+      if (mc.feedbackCount != null && mc.feedbackCount >= 3 && mc.feedbackAgreementPct != null && Number.isFinite(mc.feedbackAgreementPct)) {
+        const pct = Math.round(mc.feedbackAgreementPct * 100);
+        miLines.push(`Users agreed with ${pct}% of past ${mc.feedbackCount} analyses for this dealer. Use this as a confidence-calibration signal: for borderline cases, avoid overstating certainty.`);
+      }
+      if (miLines.length > 0) {
+        marketIntelligenceSection = `
+MARKET_INTELLIGENCE
+${miLines.join("\n")}
+Reference these figures in your summary and reasoning when they are materially relevant to evaluating the deal. Do not force their use when they do not meaningfully help. Use the provided figures exactly as written. Do not estimate, round, or invent additional statistics.`;
+      }
+    }
+  }
+
+  const systemPrompt = `You are an expert car buying advisor helping consumers evaluate car purchase offers. Your job is to analyze dealer quotes, texts, and emails to help buyers understand if they're getting a good deal.
 ${stateFeeSection}
 LANGUAGE SAFETY & CERTAINTY RULES (STRICT - MUST FOLLOW):
 1. NEVER say "all key details are clear" unless ALL of the following are explicitly present:
@@ -183,50 +265,30 @@ SCORING GUIDELINES:
 GO/NO-GO/NEED-MORE-INFO:
 - GO: Has enough information and reasonable terms to visit dealership
 - NEED-MORE-INFO: Missing critical details, buyer should ask questions first
-- NO-GO: Red flags detected, look elsewhere${language === "es" ? `
+- NO-GO: Red flags detected, look elsewhere${data.language === "es" ? `
 
 LANGUAGE INSTRUCTION (MANDATORY):
 Respond entirely in Spanish. All text fields in your JSON response — including "summary", "reasoning", "verdictLabel", "issues" (label and explanation fields), "missingInfo", "suggestedReply", and any other human-readable text — must be written in Spanish. Keep all enum values (dealScore, goNoGo, confidenceLevel) in English as specified in the schema.` : ""}`;
-}
 
-function buildUserMessage(data: AnalysisInput): string {
-  let msg = `Analyze this dealer communication:\n\n${data.dealerText}`;
-  if (data.condition !== "unknown") msg += `\n\nVehicle condition: ${data.condition}`;
-  if (data.vehicle) msg += `\nVehicle: ${data.vehicle}`;
-  if (data.zipCode) msg += `\nBuyer's ZIP code: ${data.zipCode}`;
-  if (data.purchaseType !== "unknown") msg += `\nPurchase type: ${data.purchaseType}`;
-  if (data.apr) msg += `\nQuoted APR: ${data.apr}%`;
-  if (data.termMonths) msg += `\nLoan term: ${data.termMonths} months`;
-  if (data.downPayment) msg += `\nDown payment: $${data.downPayment}`;
-  return msg;
-}
+  let userMessage = `Analyze this dealer communication:\n\n${data.dealerText}`;
+  if (data.condition !== "unknown") userMessage += `\n\nVehicle condition: ${data.condition}`;
+  if (data.vehicle) userMessage += `\nVehicle: ${data.vehicle}`;
+  if (data.zipCode) userMessage += `\nBuyer's ZIP code: ${data.zipCode}`;
+  if (data.purchaseType !== "unknown") userMessage += `\nPurchase type: ${data.purchaseType}`;
+  if (data.apr) userMessage += `\nQuoted APR: ${data.apr}%`;
+  if (data.termMonths) userMessage += `\nLoan term: ${data.termMonths} months`;
+  if (data.downPayment) userMessage += `\nDown payment: $${data.downPayment}`;
 
-function extractPreLlmDealerName(dealerText: string): string | null {
-  const atMatch = dealerText.match(
-    /(?:from|at|with|visit(?:ing)?)\s+([A-Z][a-zA-Z0-9 &'-]{3,40}?)\s*(?:Toyota|Honda|Ford|Chevrolet|Chevy|Nissan|Hyundai|Kia|Ram|Dodge|Jeep|Subaru|Mazda|Volkswagen|VW|BMW|Mercedes|Audi|Lexus|Cadillac|Buick|GMC|Chrysler|Volvo|Tesla|Rivian|Lucid|Genesis|Infiniti|Acura|Lincoln|Mitsubishi|MINI|Porsche|Land Rover|Jaguar|Maserati)/i,
-  );
-  if (!atMatch?.[0]) return null;
-  const fullMatch = atMatch[0];
-  const makeMatch = fullMatch.match(
-    /Toyota|Honda|Ford|Chevrolet|Chevy|Nissan|Hyundai|Kia|Ram|Dodge|Jeep|Subaru|Mazda|Volkswagen|VW|BMW|Mercedes|Audi|Lexus|Cadillac|Buick|GMC|Chrysler|Volvo|Tesla|Rivian|Lucid|Genesis|Infiniti|Acura|Lincoln|Mitsubishi|MINI|Porsche|Land Rover|Jaguar|Maserati/i,
-  );
-  if (!makeMatch) return null;
-  const makeIdx = fullMatch.indexOf(makeMatch[0]);
-  const prefixClean = fullMatch
-    .slice(0, makeIdx + makeMatch[0].length)
-    .replace(/^(?:from|at|with|visit(?:ing)?)\s+/i, "")
-    .trim();
-  return prefixClean.length >= 4 ? prefixClean : null;
-}
+  console.log("Making OpenAI API call with model: gpt-4o");
+  console.log("User message length:", userMessage.length);
 
-async function callAI(systemPrompt: string, userMessage: string): Promise<
-  { ok: true; content: string } | { ok: false; error: AnalysisServiceError }
-> {
-  let response: Awaited<ReturnType<typeof openai.chat.completions.create>>;
+  let aiResponse: Awaited<ReturnType<typeof openai.chat.completions.create>>;
   try {
-    response = await withJitteredBackoff(
+    aiResponse = await withJitteredBackoff(
       async (attempt) => {
-        if (attempt > 1) console.log(`[analyze] AI retry attempt ${attempt}/${AI_MAX_RETRIES + 1}`);
+        if (attempt > 1) {
+          console.log(`[analyze] AI retry attempt ${attempt}/${AI_MAX_RETRIES + 1}`);
+        }
         return aiCircuitBreaker.execute(() =>
           Promise.race([
             openai.chat.completions.create({
@@ -242,9 +304,9 @@ async function callAI(systemPrompt: string, userMessage: string): Promise<
               setTimeout(
                 () => reject(new Error(`AI attempt ${attempt} timed out after ${AI_ATTEMPT_TIMEOUT_MS}ms`)),
                 AI_ATTEMPT_TIMEOUT_MS,
-              ),
+              )
             ),
-          ]),
+          ])
         );
       },
       {
@@ -254,7 +316,9 @@ async function callAI(systemPrompt: string, userMessage: string): Promise<
         totalBudgetMs: AI_TOTAL_BUDGET_MS,
         onRetry: (attempt, err, delayMs) => {
           const msg = err instanceof Error ? err.message : String(err);
-          console.warn(`[analyze] AI call failed on attempt ${attempt}, retrying in ${Math.round(delayMs)}ms. reason=${msg}`);
+          console.warn(
+            `[analyze] AI call failed on attempt ${attempt}, retrying in ${Math.round(delayMs)}ms. reason=${msg}`,
+          );
           Sentry.addBreadcrumb({
             category: "ai-retry",
             message: `AI retry attempt ${attempt + 1}`,
@@ -268,31 +332,36 @@ async function callAI(systemPrompt: string, userMessage: string): Promise<
     if (aiErr instanceof CircuitOpenError) {
       console.error("[analyze] AI circuit breaker is OPEN — fast-failing");
       Sentry.captureException(aiErr, { level: "error" });
-      return { ok: false, error: { kind: "circuit_open" } };
+      throw new AnalyzeServiceError(503, {
+        error: "Service temporarily unavailable",
+        message: "The analysis service is temporarily unavailable. Please try again in a moment.",
+      });
     }
     const isRetriable = isRetriableError(aiErr as Error);
     console.error(`[analyze] AI call exhausted retries. retriable=${isRetriable}`, aiErr);
-    Sentry.captureException(aiErr, { extra: { maxRetries: AI_MAX_RETRIES, budgetMs: AI_TOTAL_BUDGET_MS } });
-    return { ok: false, error: { kind: "ai_exhausted" } };
+    Sentry.captureException(aiErr, {
+      level: "error",
+      extra: { maxRetries: AI_MAX_RETRIES, budgetMs: AI_TOTAL_BUDGET_MS },
+    });
+    throw new AnalyzeServiceError(502, {
+      error: "AI service error",
+      message: "Unable to analyze the deal at this time. Please try again.",
+    });
   }
 
   console.log("OpenAI API response received");
-  console.log("Response choices count:", response.choices?.length || 0);
-  console.log("Finish reason:", response.choices[0]?.finish_reason);
+  console.log("Response choices count:", aiResponse.choices?.length || 0);
+  console.log("Finish reason:", aiResponse.choices[0]?.finish_reason);
 
-  const content = response.choices[0]?.message?.content;
+  const content = aiResponse.choices[0]?.message?.content;
   if (!content) {
-    console.error("Empty content in response. Full response:", JSON.stringify(response, null, 2));
+    console.error("Empty content in response. Full response:", JSON.stringify(aiResponse, null, 2));
     throw new Error("No response from AI - empty content received");
   }
-  console.log("Response content length:", content.length);
-  return { ok: true, content };
-}
 
-function parseAndValidateAIResponse(content: string): {
-  ok: true; result: AnalysisResponse;
-} | { ok: false; error: AnalysisServiceError } {
-  let rawResult: unknown;
+  console.log("Response content length:", content.length);
+
+  let rawResult: Record<string, unknown>;
   try {
     rawResult = JSON.parse(content);
   } catch {
@@ -300,37 +369,52 @@ function parseAndValidateAIResponse(content: string): {
     throw new Error("AI returned invalid JSON format");
   }
 
-  const raw = rawResult as Record<string, unknown>;
-  if (!raw.reasoning) {
+  if (!rawResult.reasoning) {
     console.warn("AI response missing 'reasoning' field - using summary as fallback");
-    if (raw.summary) {
-      raw.reasoning = raw.summary;
+    if (rawResult.summary) {
+      rawResult.reasoning = rawResult.summary;
     } else {
       console.error("AI response missing both 'reasoning' and 'summary' fields");
-      return { ok: false, error: { kind: "incomplete_response" } };
+      throw new AnalyzeServiceError(502, {
+        error: "Incomplete AI response",
+        message: "The AI did not provide sufficient analysis. Please try again.",
+      });
     }
   }
 
-  if (raw.detectedFields && (raw.detectedFields as Record<string, unknown>).fees === null) {
-    (raw.detectedFields as Record<string, unknown>).fees = [];
+  if (rawResult.detectedFields) {
+    const df = rawResult.detectedFields as Record<string, unknown>;
+    if (df.fees === null) df.fees = [];
   }
-  if (raw.missingInfo === null) raw.missingInfo = [];
+  if (rawResult.missingInfo === null) rawResult.missingInfo = [];
 
-  const validationResult = analysisResponseSchema.safeParse(raw);
+  const validationResult = analysisResponseSchema.safeParse(rawResult);
   if (!validationResult.success) {
     console.error("AI response validation failed:", validationResult.error.flatten());
-    console.error("Raw result keys:", Object.keys(raw));
-    return { ok: false, error: { kind: "invalid_response" } };
+    console.error("Raw result keys:", Object.keys(rawResult));
+    throw new AnalyzeServiceError(502, {
+      error: "Invalid AI response",
+      message: "The AI returned an unexpected response format. Please try again.",
+    });
   }
-  return { ok: true, result: validationResult.data };
-}
 
-function applyDocFeeCapOverrides(
-  llmResult: AnalysisResponse,
-  docFeeCapResult: ReturnType<typeof checkDocFeeCap>,
-  stateData: ReturnType<typeof getStateFeeData>,
-  stateDetection: ReturnType<typeof detectStateFromText>,
-): AnalysisResponse {
+  const llmResult = validationResult.data;
+
+  const docFeeCapResult = stateData
+    ? checkDocFeeCap(llmResult.detectedFields.fees, stateData)
+    : null;
+
+  const capCheck = !!stateData;
+  const capViolation = docFeeCapResult?.violated ?? false;
+  console.log(
+    `[stateDetection] method=${stateDetection.method ?? "null"} state=${stateDetection.state ?? "null"} capCheck=${capCheck} overage=${docFeeCapResult?.overage ?? 0}`
+  );
+  void trackEvent("state_detection", {
+    method: stateDetection.method ?? undefined,
+    state: stateDetection.state ?? undefined,
+    capViolation,
+  });
+
   if (!stateDetection.state) {
     const missingInfoArr = Array.isArray(llmResult.missingInfo) ? [...llmResult.missingInfo] : [];
     if (stateDetection.ambiguousCity) {
@@ -366,27 +450,39 @@ function applyDocFeeCapOverrides(
     if (!llmResult.summary.includes(String(capAmount))) {
       llmResult.summary = `${capViolationPrefix} ${llmResult.summary}`;
     }
-
     if (!llmResult.reasoning.includes(String(overage))) {
       llmResult.reasoning = `Doc fee cap violation: ${stateName} cap is $${capAmount}${statuteCitation}. Charged: $${chargedAmount}. Overage: $${overage}. This is a hard NO-GO regardless of other deal terms. ` + llmResult.reasoning;
     }
-
     if (!llmResult.suggestedReply.includes(String(capAmount)) && !llmResult.suggestedReply.includes(String(overage))) {
       const replyStatuteNote = statuteCitation ? ` per state law${statuteCitation}` : " to comply with state law";
-      llmResult.suggestedReply =
-        `I noticed the documentation fee of $${chargedAmount} exceeds the ${stateName} state cap of $${capAmount} by $${overage}. Please adjust the doc fee${replyStatuteNote}. ` +
-        llmResult.suggestedReply;
+      llmResult.suggestedReply = `I noticed the documentation fee of $${chargedAmount} exceeds the ${stateName} state cap of $${capAmount} by $${overage}. Please adjust the doc fee${replyStatuteNote}. ` + llmResult.suggestedReply;
     }
   }
 
-  return llmResult;
-}
+  const ruleEngineAdjustments = applyRuleEngine(llmResult, llmResult.detectedFields, docFeeCapResult);
 
-async function saveSubmissionAndEnqueue(
-  data: AnalysisInput,
-  finalResult: AnalysisResponse,
-  stateDetection: ReturnType<typeof detectStateFromText>,
-): Promise<string | null> {
+  const finalResult: AnalysisResponse = {
+    ...llmResult,
+    dealScore: ruleEngineAdjustments.dealScore,
+    confidenceLevel: ruleEngineAdjustments.confidenceLevel,
+    verdictLabel: ruleEngineAdjustments.verdictLabel,
+    goNoGo: ruleEngineAdjustments.goNoGo,
+  };
+
+  console.log("Analysis successful - Deal Score:", finalResult.dealScore, "Confidence:", finalResult.confidenceLevel);
+
+  void trackEvent("submission", {
+    vehicle: data.vehicle,
+    zipCode: data.zipCode,
+    sessionId: data.sessionId,
+  });
+  void trackEvent("submission_score", {
+    dealScore: finalResult.dealScore,
+    vehicle: data.vehicle,
+    sessionId: data.sessionId,
+  });
+
+  let listingId: string | null = null;
   try {
     const { zipToStateCode } = await import("../zipToState");
     const { redactPII } = await import("../piiRedact");
@@ -394,7 +490,7 @@ async function saveSubmissionAndEnqueue(
     const stateCode = zipToStateCode(data.zipCode);
     const fees = finalResult.detectedFields.fees ?? [];
     const feeAmounts = fees.map((f) => f.amount).filter((a): a is number => a !== null);
-    const toNum = (n: number | null | undefined): string | null => (n != null ? String(n) : null);
+    const toNum = (n: number | null | undefined): string | null => n != null ? String(n) : null;
     const contentHash = sha256Hex(normalizeSubmissionText(data.dealerText));
 
     const submissionRow = await storage.saveDealerSubmission({
@@ -421,14 +517,10 @@ async function saveSubmissionAndEnqueue(
       feeCount: fees.length,
       feeNames: Array.from(new Set(fees.map((f) => f.name.toLowerCase().trim()))),
       flagMarketAdjustment: fees.some((f) => /market.?adjust|markup|adm/i.test(f.name)),
-      flagPaymentOnly:
-        finalResult.detectedFields.monthlyPayment !== null &&
-        finalResult.detectedFields.salePrice === null &&
-        finalResult.detectedFields.outTheDoorPrice === null,
+      flagPaymentOnly: finalResult.detectedFields.monthlyPayment !== null && finalResult.detectedFields.salePrice === null && finalResult.detectedFields.outTheDoorPrice === null,
       flagMissingOtd: finalResult.detectedFields.outTheDoorPrice === null,
       flagVagueFees: fees.some((f) => /protection|nitrogen|etch|ceramic|fabric|undercoat|pinstripe/i.test(f.name)),
-      flagHighCostAddons:
-        fees.filter((f) => /dealer.?add|add.?on|package/i.test(f.name) && (f.amount ?? 0) >= 500).length > 0,
+      flagHighCostAddons: fees.filter((f) => /dealer.?add|add.?on|package/i.test(f.name) && (f.amount ?? 0) >= 500).length > 0,
       highCostAddonCount: fees.filter((f) => (f.amount ?? 0) >= 500).length,
       missingInfoCount: finalResult.missingInfo?.length ?? 0,
       detectedFields: finalResult.detectedFields,
@@ -436,163 +528,46 @@ async function saveSubmissionAndEnqueue(
       rawTextStoredAt: new Date(),
       rawTextExpiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
     });
-    return submissionRow?.id ?? null;
+    listingId = submissionRow?.id ?? null;
   } catch (saveErr) {
     console.error("[analyze] pre-save submission failed (non-fatal):", saveErr);
-    return null;
   }
-}
-
-async function enrichMarketContext(
-  marketContext: MarketContext,
-  finalResult: AnalysisResponse,
-  stateDetection: ReturnType<typeof detectStateFromText>,
-): Promise<MarketContext> {
-  const mc = { ...marketContext };
-  const detectedFees = finalResult.detectedFields.fees ?? [];
-  const docFeeEntry = detectedFees.find((f) => /doc.?fee|document/i.test(f.name));
-  const docFeeValue = docFeeEntry?.amount ?? null;
-  if (
-    docFeeValue != null &&
-    mc.stateAvgDocFee != null &&
-    Number.isFinite(docFeeValue) &&
-    Number.isFinite(mc.stateAvgDocFee)
-  ) {
-    const delta = docFeeValue - mc.stateAvgDocFee;
-    mc.docFeeVsStateAvg = Math.abs(delta) > 2000 ? null : delta;
-  }
-
-  const detectedFieldsRaw = finalResult.detectedFields as Record<string, unknown>;
-  const dealerNameForCtx: string | null =
-    (detectedFieldsRaw?.dealerName as string | undefined) ??
-    (detectedFieldsRaw?.dealership as string | undefined) ??
-    null;
-  if (dealerNameForCtx && stateDetection.state) {
-    try {
-      const dealerStats = await getDealerStats({ state: stateDetection.state, dealerName: dealerNameForCtx });
-      if (dealerStats) {
-        mc.dealerAnalysisCount = dealerStats.dealerAnalysisCount;
-        mc.dealerAvgDealScore = dealerStats.dealerAvgDealScore;
-      }
-    } catch {
-      // dealer enrichment is non-fatal
-    }
-  }
-  return mc;
-}
-
-export async function runAnalysis(
-  data: AnalysisInput,
-  req: Request,
-): Promise<{ ok: true; result: AnalysisServiceResult } | { ok: false; error: AnalysisServiceError }> {
-  console.log("=== NEW DEAL SUBMISSION ===");
-  console.log("Timestamp:", new Date().toISOString());
-  console.log("Vehicle:", data.vehicle || "Not specified");
-  console.log("Condition:", data.condition);
-  console.log("Purchase Type:", data.purchaseType);
-  console.log("Dealer Text:", data.dealerText);
-  console.log("===========================");
-
-  const stateDetection = detectStateFromText(data.dealerText, data.zipCode);
-  const stateData = stateDetection.state ? getStateFeeData(stateDetection.state) : null;
-
-  if (!stateData && stateDetection.state) {
-    console.warn(`[stateDetection] State ${stateDetection.state} not found in reference JSON — skipping injection`);
-  }
-
-  void trackEvent("state_detection", {
-    method: stateDetection.method ?? undefined,
-    state: stateDetection.state ?? undefined,
-  });
-
-  const preLlmDealerName = data.dealerText ? extractPreLlmDealerName(data.dealerText) : null;
-
-  let marketContext: MarketContext | null = null;
-  if (process.env.DATABASE_URL && stateDetection.state) {
-    try {
-      marketContext = await getMarketContext({ state: stateDetection.state, dealerName: preLlmDealerName, docFee: null });
-    } catch (ctxErr) {
-      console.error("[analyze] getMarketContext pre-fetch failed (non-fatal):", ctxErr);
-    }
-  }
-
-  const feedbackInjected =
-    marketContext != null &&
-    marketContext.feedbackCount != null &&
-    marketContext.feedbackCount >= 3 &&
-    marketContext.feedbackAgreementPct != null &&
-    Number.isFinite(marketContext.feedbackAgreementPct);
-
-  console.log(
-    `[analyze:feedback] dealerExtracted=${preLlmDealerName != null} dealer=${preLlmDealerName ?? "none"} feedbackInjected=${feedbackInjected}` +
-      (feedbackInjected
-        ? ` count=${marketContext!.feedbackCount} agreement=${Math.round(marketContext!.feedbackAgreementPct! * 100)}%`
-        : ""),
-  );
-  trackEvent("feedback_signal", { dealerExtracted: preLlmDealerName != null, feedbackInjected });
-
-  const systemPrompt = buildSystemPrompt(stateData, marketContext, stateDetection.state ?? null, data.language);
-  const userMessage = buildUserMessage(data);
-
-  console.log("Making OpenAI API call with model: gpt-4o");
-  console.log("User message length:", userMessage.length);
-
-  const aiResult = await callAI(systemPrompt, userMessage);
-  if (!aiResult.ok) return aiResult;
-
-  const parseResult = parseAndValidateAIResponse(aiResult.content);
-  if (!parseResult.ok) return parseResult;
-
-  let llmResult = parseResult.result;
-
-  const docFeeCapResult = stateData ? checkDocFeeCap(llmResult.detectedFields.fees, stateData) : null;
-  const capCheck = !!stateData;
-  const capViolation = docFeeCapResult?.violated ?? false;
-  console.log(
-    `[stateDetection] method=${stateDetection.method ?? "null"} state=${stateDetection.state ?? "null"} capCheck=${capCheck} overage=${docFeeCapResult?.overage ?? 0}`,
-  );
-  void trackEvent("state_detection", {
-    method: stateDetection.method ?? undefined,
-    state: stateDetection.state ?? undefined,
-    capViolation,
-  });
-
-  llmResult = applyDocFeeCapOverrides(llmResult, docFeeCapResult, stateData, stateDetection);
-
-  const ruleEngineAdjustments = applyRuleEngine(llmResult, llmResult.detectedFields, docFeeCapResult);
-  const finalResult: AnalysisResponse = {
-    ...llmResult,
-    dealScore: ruleEngineAdjustments.dealScore,
-    confidenceLevel: ruleEngineAdjustments.confidenceLevel,
-    verdictLabel: ruleEngineAdjustments.verdictLabel,
-    goNoGo: ruleEngineAdjustments.goNoGo,
-  };
-
-  console.log("Analysis successful - Deal Score:", finalResult.dealScore, "Confidence:", finalResult.confidenceLevel);
-
-  void trackEvent("submission", { vehicle: data.vehicle, zipCode: data.zipCode, sessionId: data.sessionId });
-  void trackEvent("submission_score", { dealScore: finalResult.dealScore, vehicle: data.vehicle, sessionId: data.sessionId });
-
-  const listingId = await saveSubmissionAndEnqueue(data, finalResult, stateDetection);
 
   if (marketContext) {
-    marketContext = await enrichMarketContext(marketContext, finalResult, stateDetection);
+    const detectedFees = finalResult.detectedFields.fees ?? [];
+    const docFeeEntry = detectedFees.find((f) => /doc.?fee|document/i.test(f.name));
+    const docFeeValue = docFeeEntry?.amount ?? null;
+    if (docFeeValue != null && marketContext.stateAvgDocFee != null && Number.isFinite(docFeeValue) && Number.isFinite(marketContext.stateAvgDocFee)) {
+      const delta = docFeeValue - marketContext.stateAvgDocFee;
+      marketContext.docFeeVsStateAvg = Math.abs(delta) > 2000 ? null : delta;
+    }
+
+    const detectedFieldsRaw = finalResult.detectedFields as Record<string, unknown>;
+    const dealerNameForCtx: string | null =
+      (detectedFieldsRaw?.dealerName as string | undefined) ??
+      (detectedFieldsRaw?.dealership as string | undefined) ??
+      null;
+    if (dealerNameForCtx && stateDetection.state) {
+      try {
+        const dealerStats = await getDealerStats({
+          state: stateDetection.state,
+          dealerName: dealerNameForCtx,
+        });
+        if (dealerStats) {
+          marketContext.dealerAnalysisCount = dealerStats.dealerAnalysisCount;
+          marketContext.dealerAvgDealScore = dealerStats.dealerAvgDealScore;
+        }
+      } catch {
+        // dealer enrichment is non-fatal
+      }
+    }
   }
 
-  const responsePayload: Record<string, unknown> = { ...finalResult };
-  if (listingId) responsePayload.listingId = listingId;
-  if (marketContext !== null) responsePayload.marketContext = marketContext;
+  const payload: Record<string, unknown> = { ...finalResult };
+  if (listingId) payload.listingId = listingId;
+  if (marketContext !== null) payload.marketContext = marketContext;
 
   enqueueSubmission({ request: data, result: finalResult, preSavedListingId: listingId });
 
-  void writeAuditEvent(req, "analyze", "success", {
-    route: req.originalUrl,
-    method: req.method,
-    statusCode: 200,
-    submissionId: listingId ?? null,
-    stateCode: stateDetection.state ?? null,
-    hasPdf: Boolean(req.file),
-  });
-
-  return { ok: true, result: { response: responsePayload, listingId } };
+  return { payload, listingId, stateCode: stateDetection.state ?? null };
 }
