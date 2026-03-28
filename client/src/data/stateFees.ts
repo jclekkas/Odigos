@@ -1334,7 +1334,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     hasCap: true,
     pageTitle: "New York Dealer Doc Fee Cap (2026): What Dealers Are Allowed to Charge",
     metaDescription:
-      "New York caps dealer doc fees at $175 (set Aug 2021, still current in 2026). NYC buyers pay 8.875% combined sales tax. Upstate rates range from 6–8%. See the full NY OTD breakdown.",
+      "New York caps dealer doc fees at $175 (set Aug 2021, still current). NYC buyers pay 8.875% sales tax. Upstate rates range from 6–8%. See the NY OTD breakdown.",
     capNote:
       "New York caps dealer documentation fees at $175 per 15 NYCRR §78.19, set August 18, 2021 and still current as of March 2026. Dealers cannot legally charge more than $175 for documentation.",
     salesTaxNote:
