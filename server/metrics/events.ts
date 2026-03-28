@@ -72,6 +72,11 @@ export interface StoredEvent {
 
 const MAX_EVENTS = 5000;
 
+async function saveMetrics(_events: StoredEvent[], _nextId: number): Promise<void> {
+  // No-op: persistence is now handled row-by-row in PostgreSQL.
+  // Retained for interface compatibility.
+}
+
 export async function loadMetrics(): Promise<{ events: StoredEvent[]; nextId: number }> {
   try {
     const rows = await db.execute<{ id: number; event_type: string; created_at: Date; metadata: unknown }>(sql`
@@ -141,11 +146,13 @@ export async function importHistoricalEvents(newEvents: Array<{
 }>): Promise<void> {
   if (newEvents.length === 0) return;
   try {
-    for (const evt of newEvents) {
+    const sorted = [...newEvents].sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+    for (const evt of sorted) {
       await db.execute(sql`
         INSERT INTO metrics_events (event_type, created_at, metadata)
         VALUES (${evt.eventType}, ${evt.createdAt}::timestamptz, ${JSON.stringify(evt.metadata)}::jsonb)
-        ON CONFLICT DO NOTHING
       `);
     }
 
