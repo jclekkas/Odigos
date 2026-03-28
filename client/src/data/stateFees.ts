@@ -198,7 +198,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     hasCap: true,
     pageTitle: "California Dealer Doc Fee (2026): $85 State Cap — What Dealers Can Legally Charge",
     metaDescription:
-      "California caps dealer doc fees at ~$85 — one of the lowest caps in the country. Local tax rates range from 7.25% to 10.75%. See the full CA out-the-door breakdown for 2026.",
+      "California caps dealer doc fees at $85 — one of the lowest state caps. Local tax rates reach 10.75%. See the full CA out-the-door breakdown for 2026.",
     capNote:
       "California law limits the documentation fee dealers can charge. Most buyers see a doc fee at or near $85 — dealers cannot legally charge more. This cap is one of the strongest consumer protections in the country for car buyers.",
     salesTaxNote:
@@ -424,7 +424,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     hasCap: false,
     pageTitle: "Florida Dealer Fees (2026): No State Cap — What to Watch Out For",
     metaDescription:
-      "Florida has no cap on dealer doc fees — $499–$999 is common, among the highest in the country. State tax is 6% plus county surtax that varies by location. See the full FL OTD picture for 2026.",
+      "Florida has no doc fee cap — $499–$999 is common, among the highest nationwide. State tax is 6% plus county surtax. See the full FL OTD picture for 2026.",
     capNote:
       "Florida has no cap on dealer documentation fees. Florida routinely has some of the highest doc fees in the country. Fees of $500–$999 are common, and some dealers charge even more. Because there's no state limit, the doc fee is whatever the dealership decides — and it's often the first major surprise buyers see at the finance desk.",
     salesTaxNote:
@@ -1477,7 +1477,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     hasCap: true,
     pageTitle: "Ohio Dealer Fees (2026): What Dealers Can Legally Charge You",
     metaDescription:
-      "Ohio caps dealer doc fees at $387 or 10% of the vehicle cash price — whichever is lower. State tax is 5.75% plus county additions. Title fee increased in January 2026. See the full OH OTD breakdown.",
+      "Ohio caps doc fees at $387 or 10% of the vehicle price, whichever is lower. State tax 5.75% plus county adds. Title fee rose in January 2026. Full OH breakdown.",
     capNote:
       "Ohio caps dealer documentation fees at $387 OR 10% of the vehicle's cash price, whichever is lower (per Ohio Revised Code §4517.261). For most vehicles above about $3,870, the $387 flat limit applies. For cheaper vehicles, the 10% cap limits the fee further. A title fee increase of $3 took effect January 1, 2026.",
     salesTaxNote:
@@ -1792,7 +1792,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     hasCap: true,
     pageTitle: "Texas Dealer Doc Fees (2026): What Dealers Can Legally Charge You",
     metaDescription:
-      "Texas caps dealer doc fees at $225 as of July 2024 — dealers must file a cost analysis to go higher. State tax is 6.25% flat. See what Houston, Dallas, and San Antonio buyers actually pay OTD.",
+      "Texas caps dealer doc fees at $225 as of July 2024. State tax is 6.25% flat. See what Houston, Dallas, and San Antonio buyers actually pay OTD.",
     capNote:
       "Texas caps dealer documentation fees at $225 — a 'presumed reasonable' limit effective July 11, 2024 (raised from approximately $150 previously). Dealers can charge above $225 only by filing a cost analysis with the OCCC (Texas Administrative Code §84.205). Most Texas dealers charge $150–$225.",
     salesTaxNote:

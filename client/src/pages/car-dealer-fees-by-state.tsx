@@ -113,7 +113,7 @@ export default function CarDealerFeesByState() {
             </p>
 
             <p className="text-muted-foreground mb-6">
-              Jump to a popular state: <Link href="/car-dealer-fees-texas" className="underline text-foreground">Texas</Link>, <Link href="/car-dealer-fees-california" className="underline text-foreground">California</Link>, <Link href="/car-dealer-fees-florida" className="underline text-foreground">Florida</Link>, <Link href="/car-dealer-fees-new-york" className="underline text-foreground">New York</Link>, <Link href="/car-dealer-fees-ohio" className="underline text-foreground">Ohio</Link>.
+              Jump to a popular state: <Link href="/car-dealer-fees-texas" className="underline text-foreground">Texas</Link>, <Link href="/car-dealer-fees-california" className="underline text-foreground">California</Link>, <Link href="/car-dealer-fees-florida" className="underline text-foreground">Florida</Link>, <Link href="/car-dealer-fees-new-york" className="underline text-foreground">New York</Link>.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why dealer fees vary by state</h2>

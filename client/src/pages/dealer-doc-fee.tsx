@@ -38,7 +38,7 @@ export default function DealerDocFee() {
   useEffect(() => {
     return setSeoMeta({
       title: "Dealer Doc Fee (2026): What It Is and What Dealers Can Legally Charge",
-      description: "Dealer documentation fees range from $85 (California cap) to $999+ in uncapped states like Florida. Learn which states cap fees, whether it's negotiable, and how to push back.",
+      description: "Doc fees range from $85 (CA cap) to $999+ in uncapped states like Florida. See which states cap them, whether it's negotiable, and how to push back on it.",
       path: "/dealer-doc-fee",
     });
   }, []);
@@ -46,7 +46,7 @@ export default function DealerDocFee() {
   return (
     <ArticleLayout title="Dealer Doc Fee (2026): What It Is and What Dealers Can Legally Charge">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Doc Fee (2026): What It Is and What Dealers Can Legally Charge", description: "Dealer documentation fees range from $85 (California cap) to $999+ in uncapped states like Florida. Learn which states cap fees, whether it's negotiable, and how to push back.", path: "/dealer-doc-fee" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Doc Fee (2026): What It Is and What Dealers Can Legally Charge", description: "Doc fees range from $85 (CA cap) to $999+ in uncapped states like Florida. See which states cap them, whether it's negotiable, and how to push back on it.", path: "/dealer-doc-fee" }))}</script>
         <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: faqItems.map((f) => ({ question: f.question, answer: f.answer })) }))}</script>
       </Helmet>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-doc-fee-headline">
