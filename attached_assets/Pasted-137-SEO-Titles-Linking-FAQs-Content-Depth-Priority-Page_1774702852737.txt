@@ -1,0 +1,89 @@
+137 - SEO: Titles, Linking, FAQs & Content Depth — Priority Pages
+
+What & Why
+Google Search Console shows impressions but low CTR on several high-opportunity pages. Two combined briefs drive this task:
+
+Brief A — Push pages into top-5 by strengthening titles/meta, targeted internal links, and FAQs where a real content gap exists.
+Brief B — Push selected pages into top-3 by adding query expansion ("Common Questions" sections), direct-answer snippet blocks, one actionable competitor-gap section per page, and subtle entity/term enrichment.
+
+Focus is strictly on these pages:
+- /dealer-wont-give-otd-price (highest priority)
+- /dealer-doc-fee
+- /car-dealer-fees-by-state (title/meta + state links only)
+- Texas, New York, California, Florida, Ohio state pages (titles/meta for all 5; deep content additions for TX, NY, CA only)
+
+Done looks like
+
+Titles & Meta (all priority pages)
+- Every priority page has a fully rewritten title that includes the year (2026), an intent-matching keyword (doc fee, OTD, dealer fee, legal/limit language), and a clear user benefit. No generic titles.
+- Target titles:
+  - /dealer-wont-give-otd-price → "Dealer Won't Give an OTD Price? Here's Exactly What to Do (2026 Guide)"
+  - /dealer-doc-fee → "Dealer Doc Fee (2026): What It Is and What Dealers Can Legally Charge"
+  - /car-dealer-fees-by-state → "Car Dealer Fees by State (2026): Caps, Limits, and What Dealers Can Charge You"
+  - TX → "Texas Dealer Doc Fees (2026): What Dealers Can Legally Charge You"
+  - NY → "New York Dealer Doc Fee Cap (2026): What Dealers Are Allowed to Charge"
+  - CA → "California Dealer Doc Fee (2026): $85 State Cap — What Dealers Can Legally Charge"
+  - FL → "Florida Dealer Fees (2026): No State Cap — What to Watch Out For"
+  - OH → "Ohio Dealer Fees (2026): What Dealers Can Legally Charge You"
+- Every priority page's meta description is 140–160 chars, names the user benefit, and includes at least one target keyword.
+
+Content additions — /dealer-wont-give-otd-price
+- One direct-answer snippet block (2–3 sentences) near the top answering the core query.
+- One "Common Questions" section with 4–6 tightly scoped questions targeting real search variations. Answers must be 2–4 sentences max.
+- One short actionable section competitors miss (≤150 words).
+- One contextual in-paragraph link to /calculate-out-the-door-price.
+- Do not add more than 4 new internal links to this page.
+- FAQ JSON-LD updated to cover the Common Questions using existing JSON-LD utilities, and it may coexist with the existing article schema in the same Helmet block.
+
+Content additions — /dealer-doc-fee
+- One direct-answer snippet block near the top.
+- 2–4 net-new FAQs in an existing or new FAQ section covering: which states cap the doc fee, whether it's government-required, how to negotiate around it, what "same fee for all customers" means legally.
+- One "Common Questions" section (can merge with FAQs) with 4–6 questions targeting search variants.
+- One short actionable competitor-gap section (≤150 words).
+- 2–3 contextual links to CA, TX, and NY state fee pages.
+- FAQ JSON-LD exactly matching visible FAQ/Common Questions content.
+- Do not add more than 4 new internal links to this page.
+
+Content additions — TX, NY, CA state pages
+- One direct-answer snippet block (the quick-answer box may satisfy this if rewritten to directly answer the core query).
+- One "Common Questions" section with 4–6 state-specific questions. Answers 2–4 sentences max.
+- One short actionable competitor-gap section per state (≤150 words).
+- Each state page already has FAQ schema — extend it to cover the new visible questions using existing JSON-LD utilities. Do not break existing schema.
+- Add one contextual sentence in the shared template linking back to /car-dealer-fees-by-state so all state pages benefit.
+
+Content additions — FL and OH
+- Titles/meta only. No deep content additions required beyond the shared template hub link if implemented there.
+
+/car-dealer-fees-by-state
+- Title/meta rewritten.
+- Add 3–4 natural links to top state pages (TX, CA, FL, NY, OH) using either brief in-paragraph mentions or one compact inline “Jump to popular states” sentence.
+- Do not add a large standalone link block.
+
+Technical / SEO safety
+- Canonical tags remain written exclusively by setSeoMeta in useEffect. Do NOT add a second canonical system or manually inject <link rel="canonical">.
+- JSON-LD must be injected via Helmet using existing utilities from client/src/lib/jsonld.ts only. Do not add new schema types.
+- Multiple schema blocks may coexist in one Helmet block. Do not add multiple Helmet blocks to the same component.
+- Do not repeat exact same question wording across multiple pages. Questions should be adapted to each page’s topic and intent.
+- Competitor-gap sections must be ≤150 words and actionable.
+
+Tasks
+1. Rewrite titles, meta, and add snippet + content to /dealer-wont-give-otd-price.
+2. Rewrite titles, meta, and add snippet + FAQs + content to /dealer-doc-fee.
+3. Rewrite title and meta for /car-dealer-fees-by-state and add state links.
+4. Rewrite titles and meta for all five state pages; add shared hub link in the state template.
+5. Add Common Questions + competitor-gap sections to TX, NY, CA state pages using the existing shared data/template architecture. A pageTitle/commonQuestions/competitorGapSection data-driven extension is acceptable if it fits the current structure.
+6. Validate:
+   - run `npx vitest run`
+   - run build/typecheck if available
+   - inspect the updated SEO helper usage to verify no second canonical writer was introduced
+   - verify canonical, og:url, and JSON-LD URL inputs are aligned in code
+   - if automated tests do not explicitly cover canonical uniqueness or rendered head output, say that clearly instead of claiming it was tested
+
+Relevant files
+- client/src/pages/dealer-wont-give-otd-price.tsx
+- client/src/pages/dealer-doc-fee.tsx
+- client/src/pages/car-dealer-fees-by-state.tsx
+- client/src/pages/car-dealer-fees-state.tsx
+- client/src/data/stateFees.ts
+- client/src/lib/seo.ts
+- client/src/lib/jsonld.ts
