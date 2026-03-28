@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/react";
-import { Switch, Route, useLocation } from "wouter";
+import { Switch, Route, Redirect, useLocation } from "wouter";
 import { useEffect, useState } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -100,6 +100,9 @@ function Router() {
       <Route path="/dealer-doc-fee-by-state" component={DealerDocFeeByState} />
       <Route path="/car-dealer-fees-list" component={CarDealerFeesList} />
       <Route path="/calculate-out-the-door-price" component={CalculateOutTheDoorPrice} />
+      <Route path="/questions">
+        <Redirect to="/#faq" />
+      </Route>
       <Route path="/guides" component={GuidesRedirect} />
       <Route path="/admin" component={AdminHub} />
       <Route path="/admin/metrics" component={AdminMetrics} />
