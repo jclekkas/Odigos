@@ -1,0 +1,20 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "efn5Lq0XrCTcUCY-ZXsF3"
+uri = "file://attached_assets/generated_images/dokimos_logo_option1_touchstone.png"
+type = "image"
+title = "Option 1 — The Touchstone"
+
+[[outputs]]
+id = "HIi5yuPcRuhPGgz2pfcWB"
+uri = "file://attached_assets/generated_images/dokimos_logo_option2_seal.png"
+type = "image"
+title = "Option 2 — The Assayer's Seal"
+
+[[outputs]]
+id = "uU-V7otTtTo3xLItiSmU9"
+uri = "file://attached_assets/generated_images/dokimos_logo_option3_calibration.png"
+type = "image"
+title = "Option 3 — The Calibration Mark"
