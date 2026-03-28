@@ -3,27 +3,60 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
-import { articleSchema } from "@/lib/jsonld";
+import { articleSchema, faqPageSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+
+const faqItems = [
+  {
+    question: "Which states cap dealer documentation fees?",
+    answer: "A number of states impose a legal cap. California caps doc fees at around $85. New York's limit is $175. Texas raised its cap to $225 in July 2024. Arkansas caps 'service and handling fees' at $129. Ohio caps fees at $387 or 10% of the cash price, whichever is lower. Oregon's cap is $250 (or $200 without an integrator system). States with no cap include Florida, Georgia, Colorado, and Illinois — where dealers can charge whatever they choose.",
+  },
+  {
+    question: "Is the doc fee required by law or government?",
+    answer: "No. The documentation fee is a dealer-imposed charge, not a government fee. It is not set by the state, county, or any regulatory body. Dealers set it themselves. If a dealer says the fee is 'required by law,' that is misleading — the dealer's own policy requires it, not any statute.",
+  },
+  {
+    question: "How do you negotiate around a dealer doc fee?",
+    answer: "In many states, dealers are required to charge the same doc fee to every customer — so they won't reduce the fee itself. But you can ask them to lower the vehicle price by the same amount. If the doc fee is $799, request $799 off the sale price. The net result is identical. The key is negotiating the total out-the-door price, not individual line items.",
+  },
+  {
+    question: "What does 'same fee for all customers' mean legally?",
+    answer: "Several states require dealers to charge a uniform doc fee to every customer — they cannot waive it for one buyer and charge another. This prevents discriminatory pricing. However, it does not prevent you from negotiating other parts of the deal. The vehicle price, add-ons, and trade-in value are all separate from the doc fee and remain negotiable regardless of state policy.",
+  },
+  {
+    question: "Can a doc fee be above the state cap?",
+    answer: "Only in limited circumstances. In Texas, dealers can charge above $225 by filing a cost analysis with the state agency (OCCC). In most capped states, the cap is a hard limit — dealers cannot legally exceed it. If you see a doc fee above your state's cap, ask the dealer to explain the justification or provide their state filing.",
+  },
+  {
+    question: "What's a normal doc fee amount in states with no cap?",
+    answer: "In uncapped states, $400–$900 is common depending on the region. Florida averages $499–$999. Georgia and North Carolina see $300–$800. Colorado and Illinois typically run $400–$700. Any single fee is hard to call 'normal' because each dealership sets its own amount. The most practical approach: compare the total out-the-door price across multiple dealers rather than focusing on any single line item.",
+  },
+];
 
 export default function DealerDocFee() {
   useEffect(() => {
     return setSeoMeta({
-      title: "Are Dealer Documentation Fees Legit? | Odigos",
-      description: "Learn what dealer doc fees are, whether they're negotiable, how much is normal by state, and how to challenge inflated documentation fees before signing.",
+      title: "Dealer Doc Fee (2026): What It Is and What Dealers Can Legally Charge",
+      description: "Dealer documentation fees range from $85 (California cap) to $999+ in uncapped states like Florida. Learn which states cap fees, whether it's negotiable, and how to push back.",
       path: "/dealer-doc-fee",
     });
   }, []);
 
   return (
-    <ArticleLayout title="Are Dealer Documentation Fees Legit?">
+    <ArticleLayout title="Dealer Doc Fee (2026): What It Is and What Dealers Can Legally Charge">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Are Dealer Documentation Fees Legit? | Odigos", description: "Learn what dealer doc fees are, whether they're negotiable, how much is normal by state, and how to challenge inflated documentation fees before signing.", path: "/dealer-doc-fee" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Doc Fee (2026): What It Is and What Dealers Can Legally Charge", description: "Dealer documentation fees range from $85 (California cap) to $999+ in uncapped states like Florida. Learn which states cap fees, whether it's negotiable, and how to push back.", path: "/dealer-doc-fee" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: faqItems.map((f) => ({ question: f.question, answer: f.answer })) }))}</script>
       </Helmet>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-doc-fee-headline">
-            Are Dealer Documentation Fees Legit?
+            Dealer Doc Fee (2026): What It Is and What Dealers Can Legally Charge
           </h1>
+
+          <div className="rounded-lg border border-border bg-muted/30 p-5 mb-8" data-testid="block-snippet-doc-fee">
+            <p className="text-sm font-semibold text-foreground mb-2">Quick answer</p>
+            <p className="text-sm text-muted-foreground">A dealer documentation fee is a dealer-imposed charge — not a government fee — that covers paperwork processing. It ranges from $85 in capped states like California to $999 or more in uncapped states like Florida. In states with no cap, dealers set their own amount and it is often negotiable through the vehicle price, even when the fee line item itself is "fixed."</p>
+          </div>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-4">
@@ -66,11 +99,11 @@ export default function DealerDocFee() {
             <ul className="space-y-2 mb-8 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                <span><strong className="text-foreground">Caps (examples):</strong> California ($85), New York ($175), Washington ($200), Texas ($225 as of July 2024), Maryland ($800 as of July 2024).</span>
+                <span><strong className="text-foreground">Caps (examples):</strong> <Link href="/car-dealer-fees-california" className="underline text-foreground">California</Link> ($85), <Link href="/car-dealer-fees-new-york" className="underline text-foreground">New York</Link> ($175), Washington ($200), <Link href="/car-dealer-fees-texas" className="underline text-foreground">Texas</Link> ($225 as of July 2024), Maryland ($800 as of July 2024).</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                <span><strong className="text-foreground">No caps (examples):</strong> Florida, Georgia, Colorado — dealers can charge what they want, and $700–$1,000+ isn't unusual.</span>
+                <span><strong className="text-foreground">No caps (examples):</strong> <Link href="/car-dealer-fees-florida" className="underline text-foreground">Florida</Link>, Georgia, Colorado — dealers can charge what they want, and $700–$1,000+ isn't unusual.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
@@ -131,6 +164,27 @@ export default function DealerDocFee() {
             <p className="text-muted-foreground mb-8">
               This keeps the negotiation professional and focused on what matters — the amount you're actually paying. Most dealers will work with you on the overall number even if they can't change the doc fee line item.
             </p>
+
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What Most Buyers Miss About Doc Fees</h2>
+            <p className="text-muted-foreground mb-4">
+              The doc fee is often the last thing buyers look at — but it's also one of the most reliable signals about a dealer's overall pricing approach. A dealer charging $899 in a state where competitors charge $399 is almost certainly making up the difference somewhere else too.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              Before visiting any dealer, ask for the full itemized OTD price by email. The doc fee will appear in that breakdown. If it's above average for your state, use it as a negotiating lever on the vehicle price. If they won't itemize at all, that itself tells you something.
+            </p>
+            <p className="text-muted-foreground mb-8">
+              Comparing dealers isn't just about the vehicle price — it's about the total package. Two dealers can quote the same MSRP and differ by $1,000 in actual out-the-door cost based on fees alone.
+            </p>
+
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Frequently Asked Questions About Doc Fees</h2>
+            <div className="space-y-6 mb-8">
+              {faqItems.map((faq, idx) => (
+                <div key={idx}>
+                  <h3 className="text-base font-semibold text-foreground mb-1" data-testid={`text-doc-faq-q-${idx}`}>{faq.question}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{faq.answer}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
 

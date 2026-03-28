@@ -5,6 +5,7 @@ export interface StateFeeData {
   docFeeRange: string;
   hasCap: boolean;
   metaDescription: string;
+  pageTitle?: string;
   capNote: string;
   salesTaxNote: string;
   registrationNote: string;
@@ -19,6 +20,8 @@ export interface StateFeeData {
   specialNotes: string | null;
   dealerMessage: string;
   lastVerified: string;
+  commonQuestions?: { q: string; a: string }[];
+  competitorGapSection?: string;
 }
 
 const STANDARD_LINKS = [
@@ -193,8 +196,9 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     slug: "california",
     docFeeRange: "Typically $85 or under",
     hasCap: true,
+    pageTitle: "California Dealer Doc Fee (2026): $85 State Cap — What Dealers Can Legally Charge",
     metaDescription:
-      "California caps dealer doc fees at ~$85 — one of the few states with a hard limit. Local tax rates reach 10.75%. See the full CA out-the-door breakdown.",
+      "California caps dealer doc fees at ~$85 — one of the lowest caps in the country. Local tax rates range from 7.25% to 10.75%. See the full CA out-the-door breakdown for 2026.",
     capNote:
       "California law limits the documentation fee dealers can charge. Most buyers see a doc fee at or near $85 — dealers cannot legally charge more. This cap is one of the strongest consumer protections in the country for car buyers.",
     salesTaxNote:
@@ -226,6 +230,30 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     dealerMessage:
       "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (California law caps this at ~$85), all additional dealer fees, California sales tax (state + local rate for your city), title fee, and registration/VLF costs? I'd like to see the complete total. Thank you.",
     lastVerified: "2026-03",
+    commonQuestions: [
+      {
+        q: "What is the California doc fee cap in 2026?",
+        a: "California caps dealer documentation fees at approximately $85 for most dealers ($85 for DMV private industry partners, $70 for others). A bill that would have raised this to $260 (SB 791) was vetoed by Governor Newsom in October 2025. The $85 cap remains in effect as of 2026.",
+      },
+      {
+        q: "Why is California's local sales tax so different from the state rate?",
+        a: "California's base state sales tax is 7.25%, but local districts can add their own taxes on top. Buyers in Los Angeles pay 10.25%, Alameda County buyers pay 10.75%, and many other counties and cities fall somewhere in between. Always confirm the effective rate for your dealer's specific ZIP code, not just the city.",
+      },
+      {
+        q: "What is the California Vehicle License Fee?",
+        a: "The Vehicle License Fee (VLF) is a state charge calculated at 0.65% of the vehicle's market value, included in registration costs. On a $45,000 vehicle, that's roughly $293. It decreases as the vehicle ages. This is different from the base registration fee and appears as a separate line in California registration totals.",
+      },
+      {
+        q: "Can a California dealer charge more than $85 for documentation?",
+        a: "Not legally. The California cap is a hard limit — dealers who charge more are out of compliance. If you see a doc fee above $85 on a California dealer's quote, ask for it to be corrected before signing anything.",
+      },
+      {
+        q: "Are dealer add-ons negotiable in California?",
+        a: "Yes. California's low doc fee cap means dealers have less margin on paperwork, which can push them toward pre-installed protection packages and accessories. These are almost never required and are negotiable. Ask for the base MSRP before any dealer-installed options are added.",
+      },
+    ],
+    competitorGapSection:
+      "Most California car-buying guides emphasize the $85 doc fee cap but don't explain the local tax rate variation clearly. The practical gap: buyers in high-tax districts pay 10–10.75% sales tax — more than 3 percentage points above the 7.25% base. On a $40,000 vehicle, that's a $1,200+ difference in tax alone. Before comparing OTD quotes, confirm the effective sales tax rate at each dealer's specific address. Two dealers in the same city can be in different tax districts. The California CDTFA website lets you look up rates by zip code in under a minute.",
   },
 
   colorado: {
@@ -394,8 +422,9 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     slug: "florida",
     docFeeRange: "Commonly $499–$999",
     hasCap: false,
+    pageTitle: "Florida Dealer Fees (2026): No State Cap — What to Watch Out For",
     metaDescription:
-      "Florida has no cap on dealer doc fees — $499–$999 is common, among the highest in the country. State tax is 6% plus county surtax. See the full FL picture.",
+      "Florida has no cap on dealer doc fees — $499–$999 is common, among the highest in the country. State tax is 6% plus county surtax that varies by location. See the full FL OTD picture for 2026.",
     capNote:
       "Florida has no cap on dealer documentation fees. Florida routinely has some of the highest doc fees in the country. Fees of $500–$999 are common, and some dealers charge even more. Because there's no state limit, the doc fee is whatever the dealership decides — and it's often the first major surprise buyers see at the finance desk.",
     salesTaxNote:
@@ -1303,8 +1332,9 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     slug: "new-york",
     docFeeRange: "Capped at $175",
     hasCap: true,
+    pageTitle: "New York Dealer Doc Fee Cap (2026): What Dealers Are Allowed to Charge",
     metaDescription:
-      "New York caps dealer doc fees at $175 (set Aug 2021, current as of March 2026). NYC buyers pay 8.875% combined sales tax. Upstate buyers pay less. See the full NY OTD picture.",
+      "New York caps dealer doc fees at $175 (set Aug 2021, still current in 2026). NYC buyers pay 8.875% combined sales tax. Upstate rates range from 6–8%. See the full NY OTD breakdown.",
     capNote:
       "New York caps dealer documentation fees at $175 per 15 NYCRR §78.19, set August 18, 2021 and still current as of March 2026. Dealers cannot legally charge more than $175 for documentation.",
     salesTaxNote:
@@ -1335,6 +1365,30 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     dealerMessage:
       "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (New York caps this at $175), all additional dealer fees, New York sales tax (state + local rate for your county/city), title fee ($50), and registration costs? I'd like to see the complete total. Thank you.",
     lastVerified: "2026-03",
+    commonQuestions: [
+      {
+        q: "What is the New York doc fee cap in 2026?",
+        a: "New York caps dealer documentation fees at $175, set by 15 NYCRR §78.19 on August 18, 2021. This limit is still current as of 2026. Any dealer charging above $175 for documentation is out of compliance with state regulations.",
+      },
+      {
+        q: "How much is sales tax on a car in New York City?",
+        a: "New York City buyers pay a combined vehicle sales tax rate of 8.875% — 4% state, 4.5% NYC, and 0.375% MTA surcharge. On a $35,000 vehicle, that equals $3,106 in sales tax alone. Buyers in suburbs or upstate counties pay lower combined rates, often 6–7.5%.",
+      },
+      {
+        q: "Is the doc fee the same at every New York dealership?",
+        a: "Not necessarily. The cap is $175 but dealers can charge less. Many New York dealers charge exactly $175. Others charge a lower amount. The cap means no dealer can legally charge more — it doesn't mean all dealers charge the same.",
+      },
+      {
+        q: "What is the MCTD surcharge on New York vehicle registration?",
+        a: "The Metropolitan Commuter Transportation District surcharge is an additional registration fee for buyers in New York City and several surrounding counties (Westchester, Rockland, Nassau, Suffolk, Putnam, Orange, Dutchess). It appears as a line item on registration costs and is a government fee, not a dealer charge.",
+      },
+      {
+        q: "Are dealer add-ons negotiable at New York dealers?",
+        a: "Yes. Pre-installed protection packages, paint sealant, and window tinting appear on many New York metro dealer invoices. These are dealer-imposed charges, not required by state law, and are often negotiable in price even when presented as standard on the vehicle.",
+      },
+    ],
+    competitorGapSection:
+      "Most New York car-buying guides focus on the $175 doc fee cap without addressing the tax rate gap between NYC and upstate markets. The practical implication: a buyer in New York City purchasing a $40,000 vehicle pays roughly $3,550 in sales tax. The same buyer in a rural upstate county paying 6.5% pays $2,600 — a $950 difference. If you're buying near a county line, confirming which jurisdiction's rate applies to your dealer's location is worth a few minutes. Ask the dealer to confirm the applicable sales tax rate and county before agreeing to any price.",
   },
 
   "north-carolina": {
@@ -1421,8 +1475,9 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     slug: "ohio",
     docFeeRange: "Capped at $387 or 10% of cash price (whichever is lower)",
     hasCap: true,
+    pageTitle: "Ohio Dealer Fees (2026): What Dealers Can Legally Charge You",
     metaDescription:
-      "Ohio caps dealer doc fees at $387 or 10% of the cash price — whichever is lower. State tax is 5.75% plus county additions. See the OH OTD breakdown.",
+      "Ohio caps dealer doc fees at $387 or 10% of the vehicle cash price — whichever is lower. State tax is 5.75% plus county additions. Title fee increased in January 2026. See the full OH OTD breakdown.",
     capNote:
       "Ohio caps dealer documentation fees at $387 OR 10% of the vehicle's cash price, whichever is lower (per Ohio Revised Code §4517.261). For most vehicles above about $3,870, the $387 flat limit applies. For cheaper vehicles, the 10% cap limits the fee further. A title fee increase of $3 took effect January 1, 2026.",
     salesTaxNote:
@@ -1735,8 +1790,9 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     slug: "texas",
     docFeeRange: "Typically $150–$225 (capped at $225)",
     hasCap: true,
+    pageTitle: "Texas Dealer Doc Fees (2026): What Dealers Can Legally Charge You",
     metaDescription:
-      "Texas caps dealer doc fees at $225 (effective July 2024, raised from ~$150). The state tax is a flat 6.25%. See what buyers in Houston, Dallas, and San Antonio pay OTD.",
+      "Texas caps dealer doc fees at $225 as of July 2024 — dealers must file a cost analysis to go higher. State tax is 6.25% flat. See what Houston, Dallas, and San Antonio buyers actually pay OTD.",
     capNote:
       "Texas caps dealer documentation fees at $225 — a 'presumed reasonable' limit effective July 11, 2024 (raised from approximately $150 previously). Dealers can charge above $225 only by filing a cost analysis with the OCCC (Texas Administrative Code §84.205). Most Texas dealers charge $150–$225.",
     salesTaxNote:
@@ -1767,6 +1823,30 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     dealerMessage:
       "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (Texas's cap is $225 as of July 2024), all additional dealer fees, Texas sales tax (6.25% flat), title fee ($30), and registration costs? I'd like to see the complete total. Thank you.",
     lastVerified: "2026-03",
+    commonQuestions: [
+      {
+        q: "What is the maximum doc fee a Texas dealer can charge in 2026?",
+        a: "Texas dealers are capped at $225 under the 'presumed reasonable' limit effective July 11, 2024 (raised from ~$150). A dealer can charge more only by filing a cost justification with the OCCC. Most Texas dealers operate at or below the $225 cap.",
+      },
+      {
+        q: "Do all Texas dealers charge the same doc fee?",
+        a: "No. Many dealers charge between $150 and $225, but the specific amount varies by dealership. Some dealers charge exactly at the $225 cap while others charge less. Always ask for the doc fee to be disclosed before visiting.",
+      },
+      {
+        q: "Is Texas sales tax the same everywhere in the state?",
+        a: "Mostly, yes. Texas charges a flat 6.25% state motor vehicle sales tax with very limited local additions, making the effective rate consistent across most Texas markets. This is simpler than states like California or New York where local rates vary significantly.",
+      },
+      {
+        q: "What fees do Texas EV buyers pay?",
+        a: "Texas EV buyers pay a $400 first-time registration fee plus $200 annually — charges intended to offset road-use taxes that EV owners don't pay through fuel. Budget for these when estimating your full OTD cost.",
+      },
+      {
+        q: "Can I negotiate the doc fee at a Texas dealership?",
+        a: "Directly reducing the doc fee is difficult since many Texas dealers charge the same amount to all customers. The more effective approach is negotiating the vehicle price down to offset the doc fee — request the same amount off the sale price as the doc fee represents above what you consider reasonable.",
+      },
+    ],
+    competitorGapSection:
+      "Most Texas car-buying guides stop at quoting the $225 cap without explaining when dealers can exceed it. The key detail: dealers who file a cost analysis with the OCCC can legally charge above $225, and some do. Before visiting, ask the specific dealer what their current doc fee is — don't assume the cap applies. If the fee exceeds $225, ask to see the justification or request that the vehicle price be reduced to offset it. Also note that market adjustment markups on high-demand vehicles are a separate line item from the doc fee and are fully negotiable.",
   },
 
   utah: {

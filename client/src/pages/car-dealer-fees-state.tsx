@@ -21,7 +21,7 @@ export default function CarDealerFeesState() {
   useEffect(() => {
     if (!data) return;
     return setSeoMeta({
-      title: `Car Dealer Fees in ${data.name}: What You'll Actually Pay | Odigos`,
+      title: data.pageTitle ?? `Car Dealer Fees in ${data.name}: What You'll Actually Pay | Odigos`,
       description: data.metaDescription,
       path: `/car-dealer-fees-${data.slug}`,
     });
@@ -29,7 +29,7 @@ export default function CarDealerFeesState() {
 
   if (!data) return <NotFound />;
 
-  const faqQuestions = [
+  const baseFaqQuestions = [
     {
       question: `What is the dealer doc fee in ${data.name}?`,
       answer: `The typical dealer documentation fee in ${data.name} is ${data.docFeeRange}. ${data.capNote}`,
@@ -48,6 +48,13 @@ export default function CarDealerFeesState() {
     },
   ];
 
+  const commonQsFaqFormat = (data.commonQuestions ?? []).map((cq) => ({
+    question: cq.q,
+    answer: cq.a,
+  }));
+
+  const allFaqsForSchema = [...baseFaqQuestions, ...commonQsFaqFormat];
+
   function handleCopy() {
     navigator.clipboard.writeText(data.dealerMessage).then(() => {
       setCopied(true);
@@ -55,16 +62,20 @@ export default function CarDealerFeesState() {
     });
   }
 
+  const pageHeading = data.pageTitle
+    ? data.pageTitle.replace(/ \| Odigos$/, "")
+    : `Car Dealer Fees in ${data.name}: What You'll Actually Pay`;
+
   return (
-    <ArticleLayout title={`Car Dealer Fees in ${data.name}: What You'll Actually Pay`}>
+    <ArticleLayout title={pageHeading}>
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: faqQuestions }))}</script>
+        <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: allFaqsForSchema }))}</script>
       </Helmet>
       <h1
         className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight"
         data-testid={`text-${data.slug}-headline`}
       >
-        Car Dealer Fees in {data.name}: What You'll Actually Pay
+        {pageHeading}
       </h1>
 
       <div className="rounded-lg border border-border bg-muted/30 p-5 mb-8" data-testid={`block-snippet-${data.slug}`}>
@@ -196,6 +207,15 @@ export default function CarDealerFeesState() {
           — protection packages, paint sealant, nitrogen tires, VIN etching — are optional even when presented as part of the vehicle or as "standard." Removing or negotiating these down is one of the most effective ways to reduce a {data.name} OTD total.
         </p>
 
+        {data.competitorGapSection && (
+          <>
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">
+              What most guides miss for {data.name} buyers
+            </h2>
+            <p className="text-lg text-muted-foreground mb-8">{data.competitorGapSection}</p>
+          </>
+        )}
+
         <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">
           What to say to the dealer
         </h2>
@@ -219,6 +239,22 @@ export default function CarDealerFeesState() {
             )}
           </button>
         </div>
+
+        {data.commonQuestions && data.commonQuestions.length > 0 && (
+          <>
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">
+              Common questions from {data.name} buyers
+            </h2>
+            <div className="space-y-6 mb-8">
+              {data.commonQuestions.map((cq, idx) => (
+                <div key={idx}>
+                  <h3 className="text-base font-semibold text-foreground mb-1" data-testid={`text-common-q-${data.slug}-${idx}`}>{cq.q}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{cq.a}</p>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Related guides</h2>
 

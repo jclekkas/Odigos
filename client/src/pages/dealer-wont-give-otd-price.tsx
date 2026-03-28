@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Check, Copy } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
-import { articleSchema } from "@/lib/jsonld";
+import { articleSchema, faqPageSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 
@@ -31,13 +31,36 @@ const faqs = [
   },
 ];
 
+const commonQuestions = [
+  {
+    q: "What does 'out-the-door price' actually include?",
+    a: "An OTD price includes the vehicle sale price, all taxes (state and local), registration and title fees, the dealer documentation fee, and any add-ons or accessories. It is the total you hand over to leave with the keys — nothing held back.",
+  },
+  {
+    q: "Can a dealer change the price after you agree?",
+    a: "If you agreed on a price verbally or in writing, raising it later can be a deceptive trade practice under most state consumer protection laws. The FTC also has guidance prohibiting bait-and-switch pricing. Always get any agreed price confirmed in writing before visiting.",
+  },
+  {
+    q: "What if the dealer says they 'can't' email a price?",
+    a: "This is a sales tactic, not a policy requirement. There is no law preventing a dealer from sending a written OTD quote. Some stores prefer in-person negotiations — you can acknowledge that while still asking for the full itemized total in writing before you make the drive.",
+  },
+  {
+    q: "How do I compare OTD quotes across multiple dealers?",
+    a: "Request the identical vehicle (same year, make, model, trim, and color) from each dealer and ask for a full itemized OTD breakdown. Compare the total bottom line — not individual line items. You can use a tool like Odigos to check each quote for missing or suspicious charges.",
+  },
+  {
+    q: "Does the doc fee count toward the OTD price?",
+    a: "Yes. The documentation fee is a dealer-imposed charge and must be part of the full OTD total. Some dealers quote a 'price' that excludes the doc fee and reveal it at signing. Always confirm the OTD includes taxes, registration, the doc fee, and any add-ons.",
+  },
+];
+
 export default function DealerWontGiveOtdPrice() {
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
   useEffect(() => {
     return setSeoMeta({
-      title: "Dealer Won't Give OTD Price? Scripts and Exact Next Steps | Odigos",
-      description: "Use these exact scripts and next steps when a dealer refuses to give an OTD price so you can protect yourself and move forward.",
+      title: "Dealer Won't Give an OTD Price? Here's Exactly What to Do (2026 Guide)",
+      description: "When a dealer refuses to give an out-the-door price, here's what it means, why they do it, and the exact scripts to use to get full pricing — or walk away.",
       path: "/dealer-wont-give-otd-price",
     });
   }, []);
@@ -57,20 +80,31 @@ export default function DealerWontGiveOtdPrice() {
     setTimeout(() => setCopiedIdx(null), 2500);
   };
 
+  const allFaqsForSchema = [
+    ...faqs.map((f) => ({ question: f.q, answer: f.a })),
+    ...commonQuestions.map((f) => ({ question: f.q, answer: f.a })),
+  ];
+
   return (
     <ArticleLayout title="Dealer Won't Give OTD Price? Here's What That Means">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Won't Give OTD Price? Scripts and Exact Next Steps | Odigos", description: "Use these exact scripts and next steps when a dealer refuses to give an OTD price so you can protect yourself and move forward.", path: "/dealer-wont-give-otd-price" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Won't Give an OTD Price? Here's Exactly What to Do (2026 Guide)", description: "When a dealer refuses to give an out-the-door price, here's what it means, why they do it, and the exact scripts to use to get full pricing — or walk away.", path: "/dealer-wont-give-otd-price" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: allFaqsForSchema }))}</script>
       </Helmet>
           <p className="text-sm text-muted-foreground mb-4">
             <Link href="/dealer-pricing-tactics" className="underline text-foreground" data-testid="link-breadcrumb-hub">Dealer Pricing Tactics</Link> &rsaquo; This Article
           </p>
 
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3 leading-[1.15]" data-testid="text-otd-refuse-headline">
-            Dealer Won't Give an OTD Price? Scripts and Exact Next Steps
+            Dealer Won't Give an OTD Price? Here's Exactly What to Do
           </h1>
 
-          <p className="text-sm text-muted-foreground mb-8" data-testid="text-last-updated">Last updated: Feb 2026</p>
+          <p className="text-sm text-muted-foreground mb-8" data-testid="text-last-updated">Last updated: March 2026</p>
+
+          <div className="rounded-lg border border-border bg-muted/30 p-5 mb-8" data-testid="block-snippet-otd">
+            <p className="text-sm font-semibold text-foreground mb-2">Quick answer</p>
+            <p className="text-sm text-muted-foreground">If a dealer won't give an out-the-door price in writing, ask directly for the full itemized total — vehicle price, all taxes, registration, doc fee, and any add-ons. If they still refuse, use the walk-away script below and move to a dealer who will give full pricing. In most states, dealers aren't legally required to email an OTD quote, but transparency is a choice they make. Use it as a filter.</p>
+          </div>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-4">
@@ -87,7 +121,7 @@ export default function DealerWontGiveOtdPrice() {
               <li>Add-ons</li>
             </ul>
             <p className="text-muted-foreground mb-4">
-              In other words: the real total.
+              In other words: the real total. You can <Link href="/calculate-out-the-door-price" className="underline text-foreground">calculate your expected OTD price</Link> before you even contact a dealer — which gives you a baseline to compare their quote against.
             </p>
             <p className="text-muted-foreground mb-4">
               When a dealer avoids giving it, they're keeping leverage. You can <Link href="/analyze" className="underline text-foreground" data-testid="link-inline-analyze">paste any dealer quote into Odigos</Link> to see exactly what's missing — before you respond.
@@ -287,6 +321,17 @@ export default function DealerWontGiveOtdPrice() {
               OTD pricing forces transparency. Monthly payments obscure it. Use resources like <a href="https://www.kbb.com/car-advice/" target="_blank" rel="noopener" className="underline text-foreground">Kelley Blue Book</a> to compare total costs across vehicles before committing.
             </p>
 
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What Most Guides Don't Tell You</h2>
+            <p className="text-muted-foreground mb-4">
+              Most car-buying advice focuses on what to do at the dealership. The real leverage happens before you walk in. Dealers know that once you're seated, commitment bias works against you — you've driven there, you've seen the car, you want it.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              The move most buyers skip: contact three dealers by email before visiting any of them. Tell each one you're comparing OTD quotes. The dealer who responds with a real itemized total is signaling they're willing to compete on price. The one who insists on an in-person visit is signaling they're not. That information — gathered before you leave the house — is more valuable than any negotiation script.
+            </p>
+            <p className="text-muted-foreground mb-8">
+              You don't need to be aggressive. You just need to ask the right question early: "Can you send me the full out-the-door price for this VIN?" That one sentence separates transparent dealers from evasive ones in about 24 hours.
+            </p>
+
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">When You Should Walk Away</h2>
             <p className="text-muted-foreground mb-3">
               Walk if:
@@ -317,6 +362,16 @@ export default function DealerWontGiveOtdPrice() {
               {faqs.map((faq, idx) => (
                 <div key={idx}>
                   <h3 className="text-base font-semibold text-foreground mb-1" data-testid={`text-faq-q-${idx}`}>{faq.q}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
+                </div>
+              ))}
+            </div>
+
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Common Questions</h2>
+            <div className="space-y-6 mb-8">
+              {commonQuestions.map((faq, idx) => (
+                <div key={idx}>
+                  <h3 className="text-base font-semibold text-foreground mb-1" data-testid={`text-common-q-${idx}`}>{faq.q}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
                 </div>
               ))}

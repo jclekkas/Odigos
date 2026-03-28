@@ -41,8 +41,8 @@ export default function CarDealerFeesByState() {
 
   useEffect(() => {
     return setSeoMeta({
-      title: "Car Dealer Fees by State: Doc Fees, Taxes, and What Dealers Can Charge | Odigos",
-      description: "Dealer documentation fees vary widely by state. See typical dealer fees, why they differ, and how to compare out-the-door prices before visiting a dealership.",
+      title: "Car Dealer Fees by State (2026): Caps, Limits, and What Dealers Can Charge You",
+      description: "Which states cap dealer doc fees — and which let dealers charge whatever they want? See 2026 limits for all 50 states and how to compare out-the-door prices.",
       path: "/car-dealer-fees-by-state",
     });
   }, []);
@@ -69,7 +69,7 @@ export default function CarDealerFeesByState() {
     <ArticleLayout title="Car Dealer Fees by State: What Buyers Should Expect">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(itemListSchema({
-          name: "Car Dealer Fees by State",
+          name: "Car Dealer Fees by State (2026)",
           description: "State-by-state guide to car dealer documentation fees, taxes, and what buyers should expect.",
           items: [
             { name: "Car dealer fees in California", url: "/car-dealer-fees-california" },
@@ -110,6 +110,10 @@ export default function CarDealerFeesByState() {
 
             <p className="text-sm text-muted-foreground mb-6">
               Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
+            </p>
+
+            <p className="text-muted-foreground mb-6">
+              Jump to a popular state: <Link href="/car-dealer-fees-texas" className="underline text-foreground">Texas</Link>, <Link href="/car-dealer-fees-california" className="underline text-foreground">California</Link>, <Link href="/car-dealer-fees-florida" className="underline text-foreground">Florida</Link>, <Link href="/car-dealer-fees-new-york" className="underline text-foreground">New York</Link>, <Link href="/car-dealer-fees-ohio" className="underline text-foreground">Ohio</Link>.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why dealer fees vary by state</h2>
