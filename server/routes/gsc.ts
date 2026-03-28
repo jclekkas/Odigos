@@ -331,7 +331,7 @@ export function registerGscRoutes(app: Express): void {
       const normalizeUrl = (u: string) => u.replace(/\/$/, "");
 
       const analyticsNormalizedMap = new Map<string, { clicks: number; impressions: number }>();
-      for (const [url, perf] of analyticsMap.entries()) {
+      for (const [url, perf] of Array.from(analyticsMap.entries())) {
         analyticsNormalizedMap.set(normalizeUrl(url), perf);
       }
 
@@ -379,7 +379,7 @@ export function registerGscRoutes(app: Express): void {
         : resolvedSiteUrl;
       const sitemapNormalizedSet = new Set(sitemapUrls.map(normalizeUrl));
       const notInSitemap: GscPageItem[] = [];
-      for (const [url, perf] of analyticsMap.entries()) {
+      for (const [url, perf] of Array.from(analyticsMap.entries())) {
         if (!sitemapNormalizedSet.has(normalizeUrl(url)) && (url.startsWith(SITE_PREFIX) || url.startsWith(SITE_ORIGIN))) {
           notInSitemap.push({
             url,

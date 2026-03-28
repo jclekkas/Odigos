@@ -26,7 +26,8 @@ export type EventType =
   | "experiment_assigned"
   | "experiment_converted"
   | "analyze_start"
-  | "rate_limit_breach";
+  | "rate_limit_breach"
+  | "feedback_signal";
 
 export interface EventMetadata {
   dealScore?: "GREEN" | "YELLOW" | "RED";

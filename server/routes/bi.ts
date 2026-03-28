@@ -82,14 +82,14 @@ export function registerBIRoutes(app: Express): void {
 
           const [expired, allPaid, monthlyPaid, prevPaid] = await Promise.all([
             stripe.checkout.sessions.list({ status: "expired", limit: 100 }),
-            stripe.checkout.sessions.list({ payment_status: "paid", limit: 100 }),
+            stripe.checkout.sessions.list({ status: "complete", limit: 100 }),
             stripe.checkout.sessions.list({
-              payment_status: "paid",
+              status: "complete",
               limit: 100,
               created: { gte: thirtyDaysAgoSec },
             }),
             stripe.checkout.sessions.list({
-              payment_status: "paid",
+              status: "complete",
               limit: 100,
               created: { gte: sixtyDaysAgoSec, lt: thirtyDaysAgoSec },
             }),

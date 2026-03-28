@@ -45,7 +45,7 @@ export function isRetriableError(errorOrStatus: Error | number | RetriableErrorO
     if (
       typeof (errorOrStatus as { status?: unknown }).status === "number"
     ) {
-      return isRetriableError((errorOrStatus as { status: number }).status);
+      return isRetriableError((errorOrStatus as unknown as { status: number }).status);
     }
     return false;
   }

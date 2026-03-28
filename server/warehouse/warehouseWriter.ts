@@ -388,7 +388,7 @@ export async function performWarehouseWriteById(
   const { normalizeSubmissionText, sha256Hex } = await import("./warehouseUtils");
 
   // Reconstruct a minimal WarehouseWritePayload from the stored submission row
-  const stateCode = submission.stateCode ?? zipToStateCode(submission.zipCode ?? "");
+  const stateCode = submission.stateCode ?? zipToStateCode("");
   const contentHash = submission.contentHash ?? (
     submission.rawTextRedacted ? sha256Hex(normalizeSubmissionText(submission.rawTextRedacted)) : null
   );
@@ -417,6 +417,7 @@ export async function performWarehouseWriteById(
     dealerText: submission.rawTextRedacted ?? "",
     condition: (submission.condition as AnalysisRequest["condition"]) ?? "unknown",
     purchaseType: (submission.purchaseType as AnalysisRequest["purchaseType"]) ?? "unknown",
+    language: "en",
   };
 
   const syntheticResult: AnalysisResponse = {
