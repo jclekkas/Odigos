@@ -1,0 +1,95 @@
+# Task #141 — Add Explicit Data License Grant Clause
+
+Make only the specified frontend content changes in the existing Odigos codebase.
+
+## Files
+
+* `client/src/pages/terms.tsx`
+* `client/src/pages/privacy.tsx`
+
+## Objective
+
+Add an explicit data license clause to the Terms of Service and update the Privacy Policy commercialization language to match, using the exact provided text where required.
+
+## 1) Terms of Service — insert "Data license grant" section
+
+**File:** `client/src/pages/terms.tsx`
+
+Insert a new section immediately before **"User responsibilities."**
+
+Use the exact text below with no paraphrasing, no capitalization changes, and no punctuation changes.
+
+**Section title:** `Data license grant`
+
+**Paragraph 1:**
+By submitting any vehicle pricing information, dealer communications, or related content ("Submission") to Odigos, you grant Odigos a perpetual, irrevocable, worldwide, non-exclusive, royalty-free license to use, store, process, analyze, aggregate, and commercialize derived structured data generated from your Submission for any lawful purpose, including but not limited to analytics, benchmarking, research, and commercial products and services.
+
+**Paragraph 2:**
+This license applies only to derived, anonymized, and aggregated data signals, such as fee types, pricing components, deal scores, negotiation tactics, and geographic indicators (e.g., state-level data).
+
+**Paragraph 3:**
+For clarity, this license does not apply to:
+
+**Bullet list:**
+
+* Raw submitted content, including uploaded images, screenshots, or pasted dealer communications
+* Personally identifiable information (PII)
+
+**Paragraph 4:**
+Odigos does not sell or share raw Submissions or personally identifiable information. All commercial use is limited to anonymized, aggregated insights that cannot reasonably be used to identify any individual user or specific transaction.
+
+**Formatting requirements:**
+
+* Match the existing page section styling exactly
+* Use the existing bullet list pattern already used on the page
+* Do not modify any other section
+
+## 2) Privacy Policy — update "Why we collect it" section
+
+**File:** `client/src/pages/privacy.tsx`
+
+Find the **"Why we collect it"** section.
+
+Remove the phrase:
+
+`never sold or shared with dealers or advertisers`
+
+Replace the section body with language that:
+
+* Clearly permits aggregate research, benchmarking, industry analytics, and B2B data products/services
+* Clearly states raw submissions are not sold or shared
+* Clearly states PII is not sold or shared
+* Clearly states only anonymized, aggregated, derived signals are used commercially
+
+Add this exact sentence at the end of that section:
+
+For more details on how derived data may be used, please refer to the Data license grant section in our Terms of Service.
+
+Do not modify any other sections, structure, or layout in `privacy.tsx`.
+
+## 3) Update "Last updated" date on both pages
+
+Set both pages to exactly:
+
+`Last updated: March 28, 2026`
+
+## Hard constraints
+
+* No backend changes
+* No new components
+* No refactoring
+* No wording changes outside the specified sections
+* No paraphrasing of the license text
+* Preserve existing JSX structure and styling conventions
+* App must compile with zero TypeScript errors
+* No visual regressions
+
+## Done looks like
+
+* Terms of Service includes the exact "Data license grant" section immediately before "User responsibilities."
+* The exclusion list renders correctly as bullets.
+* Privacy Policy no longer contains "never sold or shared with dealers or advertisers."
+* Privacy Policy accurately reflects permitted commercial use of anonymized derived signals.
+* Privacy Policy includes the exact required cross-reference sentence.
+* Both pages show `Last updated: March 28, 2026`.
+* No runtime or styling regressions.

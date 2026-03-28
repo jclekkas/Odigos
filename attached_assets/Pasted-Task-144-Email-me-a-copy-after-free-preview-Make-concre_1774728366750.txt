@@ -1,0 +1,80 @@
+Task #144 — "Email me a copy" after free preview
+
+Make concrete code changes in the existing Odigos codebase. This is an implementation task, not a planning task.
+
+Objective
+After the free preview results are shown on the home page, add a compact “Email me a copy” flow so the user can send themselves the free-preview analysis. This should capture their email address and email only the preview-tier content, not the paid report.
+
+Requirements
+
+Backend
+1. Add a new POST /api/email-preview endpoint.
+2. The endpoint must accept a JSON body shaped like:
+   {
+     email: string,
+     analysisResult: object
+   }
+3. Validate:
+   - email is present and is a valid email address
+   - analysisResult is present
+4. Reuse the existing Nodemailer transport/config already used by server/alerts.ts.
+   - Reuse ALERT_SMTP_URL and ALERT_EMAIL_FROM
+   - Do not introduce new SMTP env vars
+5. If SMTP is not configured, return a descriptive non-200 error response explaining that email sending is unavailable.
+6. Assemble and send an email containing only the free-preview content:
+   - GO / NO-GO verdict
+   - confidence level
+   - top issues found
+   - detected pricing fields
+   - summary
+7. Send both:
+   - plain-text version
+   - simple HTML version
+8. Return HTTP 200 on success with a simple success payload.
+9. Keep the endpoint limited to free-preview content only. Do not email paid-tier/full-report content.
+
+Frontend
+1. In client/src/pages/home.tsx, render a compact inline row immediately after the free-preview block and before the paywall / unlock section.
+2. The row must include:
+   - email input
+   - Send button
+3. The form should only appear when:
+   - free preview results exist
+   - the user has NOT unlocked the paid tier
+4. The form must be hidden entirely once the user is on the paid tier.
+5. On submit:
+   - call POST /api/email-preview using the existing apiRequest helper
+   - send the entered email plus the current analysis result
+6. Use a mutation for the request.
+7. While pending:
+   - disable inputs appropriately
+   - show a spinner / sending state on the button
+8. On success:
+   - replace the form with a confirmation message: “Check your inbox!”
+9. On failure:
+   - show a clear inline error message
+10. Keep the UI small and unobtrusive.
+
+Implementation notes
+- Reuse existing patterns in the codebase for API routes, validation, apiRequest, and React Query mutations.
+- Keep changes scoped to this task.
+- Do not add marketing opt-in, newsletter signup, or any email list behavior.
+- Do not add or require new SMTP credentials.
+- Preserve existing free preview and paid unlock behavior.
+
+Relevant files
+- server/alerts.ts
+- server/routes.ts
+- client/src/pages/home.tsx
+
+Done looks like
+- Below the free preview section, a small “Email me a copy” row appears with an email input and a Send button
+- Submitting sends an email containing the free-preview content: GO/NO-GO verdict, confidence level, top issues found, detected pricing fields, and the summary
+- A success confirmation message replaces the form on send (“Check your inbox!”)
+- If the send fails, a clear inline error is shown
+- The form does not appear once the user has already unlocked the full report
+
+Out of scope
+- Emailing the full paid report
+- Any email list / marketing opt-in
+- New SMTP credentials

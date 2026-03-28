@@ -1,0 +1,85 @@
+Implement Task #135 in the existing Odigos codebase.
+
+Goal
+Refactor the analyze route into a thin HTTP layer backed by a service module, and remove unused auth/session dependencies.
+
+Requirements
+1. Extract analyze business logic out of server/routes/analyze.ts into one or more dedicated service modules under server/services/.
+2. The route handler in server/routes/analyze.ts must end up at 150 lines or fewer.
+3. Keep the public API behavior of /api/analyze unchanged.
+4. Existing API tests for /api/analyze must continue to pass without modification.
+5. Remove passport, passport-local, and express-session from package.json and from the codebase entirely.
+6. TypeScript must compile cleanly with no new errors.
+
+Scope
+In scope:
+- Moving AI orchestration, circuit-breaker logic, state detection, and warehouse enqueueing into server/services/analyzeService.ts (and helper modules if useful)
+- Keeping route validation and HTTP request/response handling in the route layer
+- Removing dead auth/session dependencies and any related imports/config
+
+Out of scope:
+- Adding authentication
+- Adding sessions
+- Changing the request/response shape of /api/analyze
+- Adding new tests unless absolutely required to preserve existing behavior
+
+Files to inspect
+- server/routes/analyze.ts
+- server/routes/index.ts
+- server/index.ts
+- package.json
+
+Implementation guidance
+- Create server/services/analyzeService.ts as the main orchestration layer.
+- Keep the route thin: parse/validate input, call service, map service result to HTTP response.
+- Move non-HTTP concerns out of the route:
+  - AI orchestration
+  - state detection
+  - circuit-breaker behavior
+  - warehouse enqueueing/logging
+- Preserve all current side effects and error handling semantics.
+- Do not change response field names, status codes, or JSON structure unless required to preserve existing behavior.
+- If helpful, split service concerns into helpers under server/services/ or adjacent internal modules, but keep the route simple and readable.
+- Remove passport, passport-local, and express-session from dependencies and delete any imports/usages/config tied to them.
+- Search the full repo for:
+  - passport
+  - passport-local
+  - express-session
+  and remove dead references.
+- Preserve backward compatibility for tests.
+
+Suggested target structure
+- server/routes/analyze.ts
+  - input validation
+  - call AnalyzeService
+  - translate result/errors into HTTP response
+- server/services/analyzeService.ts
+  - main analyze orchestration entrypoint
+- optional helpers if needed, for example:
+  - state detection helper
+  - circuit breaker helper
+  - warehouse persistence/enqueue helper
+
+Acceptance criteria
+- server/routes/analyze.ts is 150 lines or fewer
+- Business logic lives under server/services/
+- /api/analyze tests pass unchanged
+- passport, passport-local, and express-session are gone from package.json and unused in repo
+- npm install / package resolution is clean
+- TypeScript compiles with no new errors
+
+Working style
+- Make concrete code changes directly in the existing codebase.
+- Reuse existing logic; do not rewrite behavior unnecessarily.
+- Prefer minimal, surgical refactoring over broad redesign.
+- After changes, run the relevant tests and typecheck/build.
+- Fix any breakages introduced by the refactor.
+
+Deliverables
+1. The code changes
+2. A concise summary of what was moved where
+3. Confirmation of:
+   - route line count
+   - test results
+   - typecheck/build status
+   - dependency removal status

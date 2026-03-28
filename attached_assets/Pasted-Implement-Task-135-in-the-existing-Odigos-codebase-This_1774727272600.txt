@@ -1,0 +1,127 @@
+Implement Task #135 in the existing Odigos codebase. This is an implementation task, not a planning task.
+
+Objective
+Refactor the analyze route into a thin HTTP layer backed by a service module, and remove unused auth/session dependencies.
+
+What & Why
+The analyze route at server/routes/analyze.ts is currently ~752 lines and mixes:
+- HTTP handling
+- AI orchestration
+- state detection
+- circuit-breaker logic
+- warehouse logging/enqueueing
+
+This should be refactored so the route becomes a thin validation → service call → response layer, with business logic moved under server/services/.
+
+Also remove these unused dependencies because they are installed but not used anywhere:
+- passport
+- passport-local
+- express-session
+
+Done looks like
+- The analyze route handler is 150 lines or fewer
+- All business logic lives in one or more dedicated service modules under server/services/
+- The existing API tests for /api/analyze continue to pass without modification
+- passport, passport-local, and express-session are removed from package.json and absent from the codebase
+- TypeScript compiles cleanly with no new errors
+
+Out of scope
+- Adding authentication
+- Adding sessions
+- Changing the public API shape of /api/analyze
+- Adding new tests unless strictly required to preserve existing behavior
+- Unrelated cleanup outside this task
+
+Relevant files
+- server/routes/analyze.ts
+- server/routes/index.ts
+- server/index.ts
+- package.json
+
+Required execution order
+
+1. Inspect the current analyze flow end-to-end before editing
+You must first fully inspect server/routes/analyze.ts and identify everything it currently does. Preserve existing behavior exactly unless a change is required for:
+- the service-layer extraction
+- dead-dependency removal
+
+Do not simplify behavior just because code is being moved.
+
+2. Extract an AnalyzeService
+Create:
+- server/services/analyzeService.ts
+
+This must become the main orchestration entrypoint for /api/analyze.
+
+Move out of server/routes/analyze.ts:
+- AI orchestration
+- state detection
+- circuit-breaker behavior
+- warehouse enqueueing/logging
+- any other non-HTTP business logic currently embedded in the route
+
+Keep in server/routes/analyze.ts only:
+- request parsing
+- input validation
+- calling the service
+- mapping the service result to the existing HTTP response
+- mapping thrown errors to the existing HTTP error behavior
+
+Hard rule:
+- Preserve the current status codes
+- Preserve the current JSON response shape
+- Preserve side effects
+- Preserve error semantics
+
+The final server/routes/analyze.ts file must be 150 lines or fewer.
+
+3. Service-layer design constraints
+- Prefer minimal, surgical extraction over redesign
+- Reuse existing logic rather than rewriting behavior
+- Avoid speculative abstractions
+- Keep naming simple and obvious
+- If helper functions are needed, place them under server/services/
+- Do not move HTTP-specific concerns into the service layer
+- Do not change test expectations
+
+4. Remove dead auth dependencies
+Remove from package.json:
+- passport
+- passport-local
+- express-session
+
+Then search the full repo and remove any related:
+- imports
+- configuration
+- middleware
+- dead references
+- unused code paths
+
+Do not add replacement auth/session code.
+
+Verification steps you must run
+1. Search the repo for any remaining references to:
+   - passport
+   - passport-local
+   - express-session
+2. Run the existing /api/analyze tests unchanged
+3. Run TypeScript typecheck/compile
+4. Run build if available
+5. Confirm the final line count of server/routes/analyze.ts
+
+Acceptance criteria
+- server/routes/analyze.ts is <=150 lines
+- Business logic has been moved into server/services/
+- Existing /api/analyze tests pass unchanged
+- passport, passport-local, and express-session are removed from package.json and no longer referenced anywhere
+- TypeScript compiles with no new errors
+- Build passes if a build command exists
+
+Deliverable format
+When finished, report only:
+1. Exact files created and modified
+2. What logic moved into the service layer
+3. Final line count of server/routes/analyze.ts
+4. Test results
+5. Typecheck/build results
+6. Confirmation that passport, passport-local, and express-session were fully removed
