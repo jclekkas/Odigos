@@ -1,0 +1,228 @@
+Implement Task #139 in the existing Odigos codebase. This is an implementation task, not a planning task.
+
+Create the missing file:
+
+`client/src/pages/out-the-door-price-calculator.tsx`
+
+Do not modify `App.tsx` because the route and import already exist.
+
+## Objective
+
+Build a fully functional page for `/out-the-door-price-calculator` that combines:
+
+* a live client-side OTD calculator above the fold
+* SEO article content below
+* internal linking to existing pages
+* CTAs into `/analyze`
+
+## Required existing patterns
+
+Follow the style and structure already used in:
+
+* `client/src/pages/calculate-out-the-door-price.tsx`
+* `client/src/pages/dealer-doc-fee.tsx`
+
+Use these existing utilities/components:
+
+* `ArticleLayout`
+* `ArticleCta` if helpful
+* `setSeoMeta`
+* `articleSchema`
+* `Helmet`
+* existing shadcn/ui components already in the project
+
+Do not introduce a new design system.
+Do not add any backend or API calls.
+Keep the page TypeScript-safe, responsive, and clean.
+
+## SEO requirements
+
+Use `setSeoMeta` with:
+
+* title: `Out-the-Door Price Calculator (2026) - Estimate Car Total Cost Instantly`
+* description: `Use this out-the-door price calculator to estimate your total car cost with taxes and dealer fees. Get a real OTD estimate in seconds.`
+* canonical: `https://odigosauto.com/out-the-door-price-calculator`
+
+Also inject `articleSchema` JSON-LD via `Helmet`.
+
+## Calculator requirements
+
+Implement a pure client-side calculator using `useState`.
+
+### Inputs
+
+1. Vehicle Price
+
+   * number input
+   * `data-testid="vehicle-price-input"`
+
+2. State
+
+   * dropdown/select
+   * options must be exactly:
+
+     * CA
+     * TX
+     * NY
+     * FL
+     * OH
+   * `data-testid="state-select"`
+
+3. Sales Tax %
+
+   * number input
+   * auto-filled based on state selection
+   * remains user-editable
+   * `data-testid="sales-tax-input"`
+
+4. Dealer Doc Fee
+
+   * optional number input
+   * blank should behave as 0
+   * `data-testid="doc-fee-input"`
+
+### Tax defaults
+
+When the selected state changes, auto-fill the sales tax field with:
+
+* CA = 7.75
+* TX = 6.25
+* NY = 8.0
+* FL = 6.0
+* OH = 5.75
+
+### Formula
+
+Use exactly:
+
+`OTD = vehicle price + (vehicle price × tax rate / 100) + doc fee`
+
+### Live outputs
+
+Update live as the user types:
+
+* Estimated Sales Tax
+
+  * `data-testid="estimated-sales-tax"`
+* Estimated Doc Fee
+
+  * `data-testid="estimated-doc-fee"`
+* Total Out-the-Door Price
+
+  * `data-testid="total-otd-price"`
+
+The Total Out-the-Door Price must be bold and visually prominent.
+
+Format currency cleanly in USD.
+Do not allow `NaN` or broken output states to appear in the UI.
+
+## Page content structure
+
+### Hero
+
+H1:
+`Out-the-Door Price Calculator`
+
+Intro paragraph:
+Explain that the tool estimates total car cost including taxes, fees, and dealer add-ons.
+
+### Calculator card
+
+Place the calculator above the fold.
+
+Immediately below it, add a CTA button:
+
+* text: `Analyze My Deal`
+* href/to: `/analyze`
+* `data-testid="analyze-my-deal-top"`
+
+## SEO article content below calculator
+
+### Section 1
+
+H2:
+`What is an out-the-door price?`
+
+Paragraph should explain:
+
+* OTD is the total amount paid for the car
+* it includes taxes, dealer fees, and add-ons
+* it matters more than monthly payment or sticker price
+
+### Section 2
+
+H2:
+`What’s included in an out-the-door price?`
+
+Use a bullet list with:
+
+* Vehicle sale price
+* Sales tax (varies by state)
+* Dealer documentation fee
+* Registration and title fees
+* Optional dealer add-ons (if not removed)
+
+### Section 3
+
+H2:
+`Common mistakes when calculating OTD price`
+
+Use a bullet list with:
+
+* Ignoring dealer doc fees
+* Forgetting add-ons like VIN etching or protection packages
+* Using the wrong tax rate
+* Focusing on monthly payment instead of total price
+
+### Section 4
+
+H2:
+`How dealers manipulate the out-the-door price`
+
+Paragraph should explain:
+
+* dealers often shift attention to monthly payment
+* fees are hidden until late in the process
+* this makes comparisons harder and increases overpayment risk
+
+## Internal links
+
+Include contextual internal links using these exact routes and anchor texts:
+
+* `/dealer-doc-fee` with anchor text `dealer documentation fees`
+* `/car-dealer-fees-by-state` with anchor text `fees by state`
+* `/calculate-out-the-door-price` with anchor text `how to calculate out-the-door price`
+
+## Bottom CTA
+
+Add a final CTA section near the bottom:
+
+H2:
+`Get a real breakdown of your deal`
+
+Paragraph:
+Explain that users can paste their quote to get their true OTD price, hidden fees flagged, and help on what to say to the dealer.
+
+CTA button:
+
+* text: `Analyze My Deal`
+* href/to: `/analyze`
+* `data-testid="analyze-my-deal-bottom"`
+
+## Constraints
+
+* Do not change `App.tsx`
+* Do not add registration/title fee inputs
+* Do not add backend calls
+* Do not create new design systems or UI patterns
+* No TypeScript errors
+* No console errors
+* Must be mobile responsive
+
+## Output
+
+Return only the full contents of:
+
+`client/src/pages/out-the-door-price-calculator.tsx`
+
+Do not include explanation.
