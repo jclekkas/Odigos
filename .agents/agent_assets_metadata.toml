@@ -18,3 +18,21 @@ id = "uU-V7otTtTo3xLItiSmU9"
 uri = "file://attached_assets/generated_images/dokimos_logo_option3_calibration.png"
 type = "image"
 title = "Option 3 — The Calibration Mark"
+
+[[outputs]]
+id = "2DmWX7TkkZW2mA-eOZ84Z"
+uri = "file://attached_assets/generated_images/dokimos_v2_option1_touchstone.png"
+type = "image"
+title = "Option 1 — Touchstone Mark (charcoal + gold streak)"
+
+[[outputs]]
+id = "TVtnCPzdLJqOyACjLjzbS"
+uri = "file://attached_assets/generated_images/dokimos_v2_option2_circle_diamond.png"
+type = "image"
+title = "Option 2 — Circle + Diamond (navy, precision seal)"
+
+[[outputs]]
+id = "BVySfdn7DVkkG5YixtgcC"
+uri = "file://attached_assets/generated_images/dokimos_v2_option3_triangle.png"
+type = "image"
+title = "Option 3 — Triangle Calibration Mark (charcoal)"
