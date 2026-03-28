@@ -21,7 +21,7 @@ export default function Terms() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 leading-tight">
             Terms of Service
           </h1>
-          <p className="text-sm text-muted-foreground mb-10">Last updated: March 2026</p>
+          <p className="text-sm text-muted-foreground mb-10">Last updated: March 28, 2026</p>
 
           <div className="space-y-10 text-base leading-relaxed">
 
@@ -75,6 +75,32 @@ export default function Terms() {
                   <span>Interruptions, downtime, or unavailability of the service</span>
                 </li>
               </ul>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mb-3 text-foreground">Data license grant</h2>
+              <p className="text-muted-foreground mb-3">
+                By submitting any vehicle pricing information, dealer communications, or related content ("Submission") to Odigos, you grant Odigos a perpetual, irrevocable, worldwide, non-exclusive, royalty-free license to use, store, process, analyze, aggregate, and commercialize derived structured data generated from your Submission for any lawful purpose, including but not limited to analytics, benchmarking, research, and commercial products and services.
+              </p>
+              <p className="text-muted-foreground mb-3">
+                This license applies only to derived, anonymized, and aggregated data signals, such as fee types, pricing components, deal scores, negotiation tactics, and geographic indicators (e.g., state-level data).
+              </p>
+              <p className="text-muted-foreground mb-3">
+                For clarity, this license does not apply to:
+              </p>
+              <ul className="space-y-2 text-muted-foreground ml-4 mb-3">
+                <li className="flex gap-2">
+                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground flex-shrink-0" />
+                  <span>Raw submitted content, including uploaded images, screenshots, or pasted dealer communications</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground flex-shrink-0" />
+                  <span>Personally identifiable information (PII)</span>
+                </li>
+              </ul>
+              <p className="text-muted-foreground">
+                Odigos does not sell or share raw Submissions or personally identifiable information. All commercial use is limited to anonymized, aggregated insights that cannot reasonably be used to identify any individual user or specific transaction.
+              </p>
             </section>
 
             <section>

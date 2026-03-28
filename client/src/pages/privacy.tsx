@@ -21,7 +21,7 @@ export default function Privacy() {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 leading-tight">
             Privacy Policy
           </h1>
-          <p className="text-sm text-muted-foreground mb-10">Last updated: March 2026</p>
+          <p className="text-sm text-muted-foreground mb-10">Last updated: March 28, 2026</p>
 
           <div className="space-y-10 text-base leading-relaxed">
 
@@ -61,7 +61,7 @@ export default function Privacy() {
             <section>
               <h2 className="text-xl font-semibold mb-3 text-foreground">Why we collect it</h2>
               <p className="text-muted-foreground">
-                Derived pricing signals are retained to build a dealer fee transparency dataset. The goal is to help future car buyers identify unfair pricing tactics, benchmark fees by region, and understand how common specific dealer practices are. This dataset is never sold or shared with dealers or advertisers.
+                Derived pricing signals are retained to build a dealer fee transparency dataset. The goal is to help future car buyers identify unfair pricing tactics, benchmark fees by region, and understand how common specific dealer practices are. Anonymized, aggregated, derived signals may be used commercially for purposes including aggregate research, benchmarking, industry analytics, and B2B data products and services. Raw submissions are not sold or shared. Personally identifiable information is not sold or shared. Only anonymized, aggregated, derived signals are used commercially. For more details on how derived data may be used, please refer to the Data license grant section in our Terms of Service.
               </p>
             </section>
 
