@@ -150,6 +150,16 @@ export default function Landing() {
                   </Button>
                 </div>
 
+                <p className="mt-3 text-sm text-center lg:text-left">
+                  <Link
+                    href="/out-the-door-price-calculator"
+                    className="text-muted-foreground underline underline-offset-4 hover:text-foreground transition-colors"
+                    data-testid="hero-otd-calculator-link"
+                  >
+                    Not ready to share a quote? Estimate your out-the-door price →
+                  </Link>
+                </p>
+
                 <p className="mt-4 text-sm text-muted-foreground" data-testid="text-reassurance">
                   Takes about a minute. No signup required.{" "}
                   <Link href="/example-analysis" className="underline underline-offset-4 hover:text-foreground/70 transition-colors" data-testid="link-example-analysis-hero">
