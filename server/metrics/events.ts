@@ -1,3 +1,6 @@
+import { db } from "../db";
+import { sql } from "drizzle-orm";
+
 export type EventType = 
   | "submission"
   | "submission_score"
@@ -67,66 +70,45 @@ export interface StoredEvent {
   metadata: EventMetadata;
 }
 
-const REPLIT_DB_URL = process.env.REPLIT_DB_URL;
-
-async function kvGet(key: string): Promise<string | null> {
-  if (!REPLIT_DB_URL) return null;
-  try {
-    const res = await fetch(`${REPLIT_DB_URL}/${encodeURIComponent(key)}`);
-    if (res.status === 404) return null;
-    return await res.text();
-  } catch {
-    return null;
-  }
-}
-
-async function kvSet(key: string, value: string): Promise<void> {
-  if (!REPLIT_DB_URL) return;
-  try {
-    await fetch(REPLIT_DB_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-    });
-  } catch (error) {
-    console.error("KV set failed:", error);
-  }
-}
-
-const METRICS_KEY = "odigos_metrics_v1";
+const MAX_EVENTS = 5000;
 
 export async function loadMetrics(): Promise<{ events: StoredEvent[]; nextId: number }> {
   try {
-    const data = await kvGet(METRICS_KEY);
-    if (data) {
-      return JSON.parse(data);
-    }
-  } catch (error) {
-    console.warn("Could not load metrics, starting fresh");
-  }
-  return { events: [], nextId: 1 };
-}
+    const rows = await db.execute<{ id: number; event_type: string; created_at: Date; metadata: unknown }>(sql`
+      SELECT id, event_type, created_at, metadata
+      FROM metrics_events
+      ORDER BY id ASC
+      LIMIT ${MAX_EVENTS}
+    `);
 
-async function saveMetrics(events: StoredEvent[], nextId: number): Promise<void> {
-  try {
-    const trimmed = events.length > 5000 ? events.slice(-5000) : events;
-    await kvSet(METRICS_KEY, JSON.stringify({ events: trimmed, nextId }));
+    const events: StoredEvent[] = rows.rows.map((r) => ({
+      id: r.id,
+      eventType: r.event_type as EventType,
+      createdAt: r.created_at instanceof Date ? r.created_at.toISOString() : String(r.created_at),
+      metadata: (r.metadata as EventMetadata) || {},
+    }));
+
+    const maxId = events.length > 0 ? Math.max(...events.map((e) => e.id)) : 0;
+    return { events, nextId: maxId + 1 };
   } catch (error) {
-    console.error("Failed to save metrics:", error);
+    console.warn("Could not load metrics, starting fresh:", error);
+    return { events: [], nextId: 1 };
   }
 }
 
 export async function trackEvent(eventType: EventType, metadata?: EventMetadata): Promise<void> {
   try {
-    const { events, nextId } = await loadMetrics();
-    const event: StoredEvent = {
-      id: nextId,
-      eventType,
-      createdAt: new Date().toISOString(),
-      metadata: metadata || {},
-    };
-    events.push(event);
-    await saveMetrics(events, nextId + 1);
+    await db.execute(sql`
+      INSERT INTO metrics_events (event_type, created_at, metadata)
+      VALUES (${eventType}, now(), ${JSON.stringify(metadata || {})}::jsonb)
+    `);
+
+    await db.execute(sql`
+      DELETE FROM metrics_events
+      WHERE id NOT IN (
+        SELECT id FROM metrics_events ORDER BY id DESC LIMIT ${MAX_EVENTS}
+      )
+    `);
   } catch (error) {
     console.error("Failed to track event:", error);
   }
@@ -134,16 +116,17 @@ export async function trackEvent(eventType: EventType, metadata?: EventMetadata)
 
 export async function getImportedSessionIds(): Promise<Set<string>> {
   try {
-    const { events } = await loadMetrics();
+    const rows = await db.execute<{ session_id: string }>(sql`
+      SELECT metadata->>'stripeSessionId' AS session_id
+      FROM metrics_events
+      WHERE event_type = 'payment_completed'
+        AND metadata->>'stripeSessionId' IS NOT NULL
+    `);
+
     const sessionIds = new Set<string>();
-    
-    for (const event of events) {
-      const sessionId = event.metadata?.stripeSessionId;
-      if (sessionId && typeof sessionId === 'string') {
-        sessionIds.add(sessionId);
-      }
+    for (const row of rows.rows) {
+      if (row.session_id) sessionIds.add(row.session_id);
     }
-    
     return sessionIds;
   } catch (error) {
     console.error("Failed to get imported session IDs:", error);
@@ -156,22 +139,23 @@ export async function importHistoricalEvents(newEvents: Array<{
   createdAt: string;
   metadata: EventMetadata;
 }>): Promise<void> {
+  if (newEvents.length === 0) return;
   try {
-    const { events, nextId } = await loadMetrics();
-    let currentId = nextId;
-    
     for (const evt of newEvents) {
-      events.push({
-        id: currentId++,
-        eventType: evt.eventType,
-        createdAt: evt.createdAt,
-        metadata: evt.metadata,
-      });
+      await db.execute(sql`
+        INSERT INTO metrics_events (event_type, created_at, metadata)
+        VALUES (${evt.eventType}, ${evt.createdAt}::timestamptz, ${JSON.stringify(evt.metadata)}::jsonb)
+        ON CONFLICT DO NOTHING
+      `);
     }
-    
-    events.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-    
-    await saveMetrics(events, currentId);
+
+    await db.execute(sql`
+      DELETE FROM metrics_events
+      WHERE id NOT IN (
+        SELECT id FROM metrics_events ORDER BY id DESC LIMIT ${MAX_EVENTS}
+      )
+    `);
+
     console.log(`Imported ${newEvents.length} historical events`);
   } catch (error) {
     console.error("Failed to import historical events:", error);

@@ -395,6 +395,26 @@ async function ensureAppSchema(): Promise<void> {
   } catch (err) {
     console.error("[app-schema] Failed to ensure audit_log schema (non-fatal):", err);
   }
+
+  try {
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS metrics_events (
+        id serial PRIMARY KEY,
+        event_type text NOT NULL,
+        created_at timestamptz DEFAULT now() NOT NULL,
+        metadata jsonb NOT NULL DEFAULT '{}'
+      )
+    `);
+    await db.execute(sql`
+      CREATE INDEX IF NOT EXISTS metrics_events_event_type_idx ON metrics_events (event_type)
+    `);
+    await db.execute(sql`
+      CREATE INDEX IF NOT EXISTS metrics_events_created_at_idx ON metrics_events (created_at)
+    `);
+    console.log("[app-schema] metrics_events table ensured.");
+  } catch (err) {
+    console.error("[app-schema] Failed to ensure metrics_events schema (non-fatal):", err);
+  }
 }
 
 (async () => {
