@@ -7,6 +7,7 @@ import { registerAdminRoutes } from "./admin";
 import { registerBIRoutes } from "./bi";
 import { registerReferenceRoutes } from "./reference";
 import { registerGscRoutes } from "./gsc";
+import { registerEmailPreviewRoutes } from "./emailPreview";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -19,5 +20,6 @@ export async function registerRoutes(
   registerBIRoutes(app);
   registerReferenceRoutes(app);
   registerGscRoutes(app);
+  registerEmailPreviewRoutes(app);
   return httpServer;
 }

@@ -248,6 +248,13 @@ async function sendAlert(rule: AlertRule, value: number): Promise<void> {
   await Promise.allSettled([sendWebhookAlert(rule, value), sendEmailAlert(rule, value)]);
 }
 
+export async function createSmtpTransport(): Promise<import("nodemailer").Transporter | null> {
+  const smtpUrl = process.env.ALERT_SMTP_URL;
+  if (!smtpUrl) return null;
+  const nodemailer = await import("nodemailer");
+  return nodemailer.default.createTransport(smtpUrl);
+}
+
 export async function checkAlerts(): Promise<void> {
   console.log("[alerts] Running scheduled alert check...");
   const state = await loadAlertsState();
