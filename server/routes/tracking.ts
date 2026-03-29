@@ -29,13 +29,14 @@ export function registerTrackingRoutes(app: Express): void {
       if (!event || typeof event !== "string" || event.trim() === "") {
         return res.status(400).json({ error: "event must be a non-empty string" });
       }
-      console.log(JSON.stringify({ type: "[track-event]", event, props: props ?? {}, timestamp: timestamp ?? new Date().toISOString() }));
-      if (isFunnelEventType(event.trim())) {
-        trackEvent(event.trim(), props ?? {}).catch(() => {});
+      const trimmedEvent = event.trim();
+      console.log(JSON.stringify({ type: "[track-event]", event: trimmedEvent, props: props ?? {}, timestamp: timestamp ?? new Date().toISOString() }));
+      if (isFunnelEventType(trimmedEvent)) {
+        trackEvent(trimmedEvent, props ?? {}).catch(() => {});
       }
-      res.json({ ok: true });
+      return res.json({ ok: true });
     } catch {
-      res.status(500).json({ error: "Failed to record event" });
+      return res.status(500).json({ error: "Failed to record event" });
     }
   });
 
@@ -80,18 +81,6 @@ export function registerTrackingRoutes(app: Express): void {
       console.error("Vitals error:", error);
       res.status(500).json({ error: "Failed to record vitals" });
     }
-  });
-
-  app.post("/api/track-event", (req, res) => {
-    const { event, props, timestamp } = req.body;
-    if (!event || typeof event !== "string" || event.trim() === "") {
-      return res.status(400).json({ error: "event must be a non-empty string" });
-    }
-    console.log(JSON.stringify({ "[track-event]": true, event, props: props ?? {}, timestamp }));
-    if (isFunnelEventType(event)) {
-      trackEvent(event, props || {});
-    }
-    return res.json({ ok: true });
   });
 
   app.get("/api/experiments", async (_req, res) => {
