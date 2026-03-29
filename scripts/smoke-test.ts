@@ -231,6 +231,49 @@ async function run(): Promise<void> {
     },
   });
 
+  await checkEndpoint("/analyze", {
+    bodyAssert: (body) => {
+      if (!body.toLowerCase().includes("analyze") && !body.toLowerCase().includes("quote")) {
+        return `"/analyze" page body missing expected keyword "analyze" or "quote"`;
+      }
+      return null;
+    },
+  });
+
+  await checkEndpoint("/about");
+
+  await checkEndpoint("/how-odigos-works");
+
+  await checkEndpoint("/car-dealer-fees-by-state");
+
+  await checkEndpoint("/example-analysis");
+
+  await checkEndpoint("/out-the-door-price-calculator");
+
+  // POST /api/analyze — minimal payload; any non-5xx response is acceptable.
+  {
+    const label = "POST /api/analyze → not 5xx";
+    const url = `${BASE_URL}/api/analyze`;
+    try {
+      const res = await fetchWithTimeout(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": "OdigosAutoSmokeTest/1.0",
+        },
+        redirect: "follow",
+        body: JSON.stringify({ dealerText: "Monthly payment $499. APR 5.9% for 60 months." }),
+      });
+      if (res.status >= 500) {
+        fail(label, `Expected non-5xx, got HTTP ${res.status}`);
+      } else {
+        pass(label);
+      }
+    } catch (err: unknown) {
+      fail(label, `Request failed: ${errorMessage(err)}`);
+    }
+  }
+
   console.log();
   const failed = results.filter((r) => !r.passed);
   const passed = results.filter((r) => r.passed);

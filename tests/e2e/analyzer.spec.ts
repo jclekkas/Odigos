@@ -81,6 +81,38 @@ test.describe("Landing page", () => {
     const href = await cta.getAttribute("href");
     expect(href).toBeTruthy();
   });
+
+  test("hero CTA click navigates to /analyze", async ({ page }) => {
+    await interceptStatsRoutes(page);
+    await page.goto("/");
+    const cta = page.getByTestId("button-cta-hero");
+    await expect(cta).toBeVisible();
+    await cta.click();
+    await expect(page).toHaveURL(/\/analyze/);
+  });
+
+  test("header CTA click navigates to /analyze", async ({ page }) => {
+    await interceptStatsRoutes(page);
+    await page.goto("/");
+    const headerCta = page.getByTestId("button-cta-header");
+    await expect(headerCta).toBeVisible();
+    await headerCta.click();
+    await expect(page).toHaveURL(/\/analyze/);
+  });
+});
+
+// ─── Article CTA ─────────────────────────────────────────────────────────────
+
+test.describe("Article CTA", () => {
+  test("article CTA link on /hidden-dealer-fees points to /analyze", async ({ page }) => {
+    await interceptStatsRoutes(page);
+    await page.goto("/hidden-dealer-fees");
+    const cta = page.getByTestId("button-cta-mid-article-hidden-fees");
+    await expect(cta).toBeVisible();
+    const parent = page.locator("a:has([data-testid='button-cta-mid-article-hidden-fees'])");
+    const href = await parent.getAttribute("href");
+    expect(href).toContain("/analyze");
+  });
 });
 
 // ─── Analyzer page — happy path ────────────────────────────────────────────────

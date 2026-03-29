@@ -284,6 +284,20 @@ async function ensureWarehouseSchema(): Promise<void> {
       } catch (hashColErr) {
         console.error("[warehouse] Failed to ensure content_hash column (non-fatal):", hashColErr);
       }
+      // Ensure duplicate_of_listing_id column exists on core.listings (idempotent).
+      try {
+        await db.execute(sql`
+          ALTER TABLE core.listings
+            ADD COLUMN IF NOT EXISTS duplicate_of_listing_id varchar(36)
+        `);
+        await db.execute(sql`
+          ALTER TABLE core.listings
+            ADD COLUMN IF NOT EXISTS sanity_flags jsonb NOT NULL DEFAULT '[]'::jsonb
+        `);
+        console.log("[warehouse] duplicate_of_listing_id and sanity_flags columns ensured on core.listings.");
+      } catch (dupColErr) {
+        console.error("[warehouse] Failed to ensure duplicate_of_listing_id column (non-fatal):", dupColErr);
+      }
       // Ensure the dealer_feedback_stats view exists (idempotent via CREATE OR REPLACE).
       try {
         await db.execute(sql`
