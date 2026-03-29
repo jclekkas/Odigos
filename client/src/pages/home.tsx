@@ -20,7 +20,7 @@ import {
   trackOptionalDetailsExpanded,
   getSessionId,
 } from "@/lib/tracking";
-import { capture } from "@/lib/analytics";
+import { capture, track } from "@/lib/analytics";
 import { trackConversion, useExperiment } from "@/lib/experiments";
 import { tagFlow } from "@/lib/sentry";
 import { setSeoMeta } from "@/lib/seo";
@@ -863,6 +863,7 @@ export default function Home() {
   const inputStartedRef = useRef(false);
   const resultFiredRef = useRef(false);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const paywallRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   const unlockCtaVariant = useExperiment("unlock_cta");
@@ -1000,6 +1001,7 @@ export default function Home() {
           localStorage.setItem("paid_deal_clarity", "true");
           capture("paid_conversion", { product: "full_review" });
           trackConversion("paid_conversion");
+          track("purchase_completed", { amount: 49 });
           setUnlockTier("49");
           toast({
             title: "Payment Successful",
@@ -1017,7 +1019,24 @@ export default function Home() {
     }
   }, [result]);
 
+  useEffect(() => {
+    const el = paywallRef.current;
+    if (!el || unlockTier !== "free") return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          track("paywall_viewed");
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [unlockTier, result]);
+
   const handleUnlockTier = async () => {
+    track("paywall_clicked");
     setCheckoutLoading(true);
     
     try {
@@ -1133,6 +1152,7 @@ export default function Home() {
       if (!resultFiredRef.current) {
         resultFiredRef.current = true;
         capture("analysis_completed", { result_available: true });
+        track("analysis_completed", { verdict: data.goNoGo, confidence: data.confidenceLevel });
       }
     },
     onError: (error) => {
@@ -1155,6 +1175,7 @@ export default function Home() {
       input_mode: data.source ?? "paste",
       input_length_bucket: getInputLengthBucket(data.dealerText.length),
     });
+    track("analysis_started");
     analyzeMutation.mutate(data);
   };
 
@@ -1734,12 +1755,14 @@ export default function Home() {
             )}
 
             {unlockTier === "free" ? (
-              <LockedTier2Section
-                onUnlock={() => handleUnlockTier()}
-                isLoading={checkoutLoading || isCheckingPayment}
-                stripeConfigured={stripeConfigured}
-                ctaLabel={unlockCtaLabel}
-              />
+              <div ref={paywallRef}>
+                <LockedTier2Section
+                  onUnlock={() => handleUnlockTier()}
+                  isLoading={checkoutLoading || isCheckingPayment}
+                  stripeConfigured={stripeConfigured}
+                  ctaLabel={unlockCtaLabel}
+                />
+              </div>
             ) : (
               <>
                 <MissingInfoCard 

@@ -10,6 +10,19 @@ function hashIp(req: { ip?: string; headers: Record<string, string | string[] | 
 }
 
 export function registerTrackingRoutes(app: Express): void {
+  app.post("/api/track-event", (req, res) => {
+    try {
+      const { event, props, timestamp } = req.body;
+      if (!event || typeof event !== "string" || event.trim() === "") {
+        return res.status(400).json({ error: "event must be a non-empty string" });
+      }
+      console.log(JSON.stringify({ type: "[track-event]", event, props: props ?? {}, timestamp: timestamp ?? new Date().toISOString() }));
+      res.json({ ok: true });
+    } catch {
+      res.status(500).json({ error: "Failed to record event" });
+    }
+  });
+
   app.post("/api/track", async (req, res) => {
     try {
       const { eventType, metadata } = req.body;
