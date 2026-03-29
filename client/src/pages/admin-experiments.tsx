@@ -1,10 +1,11 @@
+import { useState } from "react";
 import { AdminNav } from "@/components/admin-nav";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowLeft, FlaskConical, Trophy, Users, TrendingUp, RefreshCw, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
+import { ArrowLeft, FlaskConical, Trophy, Users, TrendingUp, RefreshCw, CheckCircle2, Clock, AlertTriangle, ChevronDown, ChevronUp } from "lucide-react";
 
 interface ExperimentVariantStats {
   variant: string;
@@ -50,7 +51,40 @@ function WinnerBadge({ isWinner }: { isWinner: boolean }) {
   return (
     <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30 gap-1">
       <Trophy className="w-3 h-3" />
-      Winner
+      Winner ✓
+    </Badge>
+  );
+}
+
+function VerdictBadge({ pValue, isSignificant, hasWinner, total }: { pValue: number | null; isSignificant: boolean; hasWinner: boolean; total: number }) {
+  if (total === 0) {
+    return (
+      <Badge variant="outline" className="text-muted-foreground gap-1 text-xs">
+        <Clock className="w-3 h-3" />
+        Not enough data
+      </Badge>
+    );
+  }
+  if (hasWinner && isSignificant) {
+    return (
+      <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30 gap-1 text-xs">
+        <CheckCircle2 className="w-3 h-3" />
+        Winner ✓
+      </Badge>
+    );
+  }
+  if (total < 100) {
+    return (
+      <Badge variant="outline" className="text-muted-foreground gap-1 text-xs">
+        <Clock className="w-3 h-3" />
+        Too early to tell
+      </Badge>
+    );
+  }
+  return (
+    <Badge variant="outline" className="text-amber-600 dark:text-amber-400 border-amber-300 gap-1 text-xs">
+      <Clock className="w-3 h-3" />
+      No winner yet
     </Badge>
   );
 }
@@ -74,7 +108,7 @@ function VariantRow({ variant, isWinner, total }: { variant: ExperimentVariantSt
         <div>
           <p className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5 flex items-center gap-1">
             <Users className="w-3 h-3" />
-            Assignments
+            People Shown
           </p>
           <p className="text-lg font-semibold tabular-nums" data-testid={`variant-assignments-${variant.variant}`}>
             {variant.assignments.toLocaleString()}
@@ -115,25 +149,18 @@ function VariantRow({ variant, isWinner, total }: { variant: ExperimentVariantSt
   );
 }
 
-function SignificanceBadge({ pValue, isSignificant, lift }: { pValue: number | null; isSignificant: boolean; lift: number }) {
+function StatDetails({ pValue, isSignificant, lift }: { pValue: number | null; isSignificant: boolean; lift: number }) {
   if (pValue === null) return null;
-  if (isSignificant) {
-    return (
-      <Badge className="bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-500/30 gap-1 text-xs">
-        <CheckCircle2 className="w-3 h-3" />
-        p={pValue.toFixed(3)} · {lift > 0 ? "+" : ""}{lift.toFixed(1)}% lift
-      </Badge>
-    );
-  }
   return (
-    <Badge variant="outline" className="text-muted-foreground gap-1 text-xs">
-      <Clock className="w-3 h-3" />
-      Not significant (p={pValue.toFixed(3)})
-    </Badge>
+    <p className="text-xs text-muted-foreground">
+      p-value: {pValue.toFixed(3)} · lift: {lift > 0 ? "+" : ""}{lift.toFixed(1)}% ·{" "}
+      {isSignificant ? "statistically significant (α=0.05)" : "not yet significant"}
+    </p>
   );
 }
 
 function ExperimentCard({ exp }: { exp: ExperimentStats }) {
+  const [showStats, setShowStats] = useState(false);
   const total = exp.variants.reduce((sum, v) => sum + v.assignments, 0);
 
   const control = exp.variants.find(v => v.variant === "control") ?? exp.variants[0];
@@ -141,6 +168,9 @@ function ExperimentCard({ exp }: { exp: ExperimentStats }) {
   const lift = control && treatment && control.assignments > 0
     ? ((treatment.conversionRate - control.conversionRate) / (control.conversionRate || 1)) * 100
     : 0;
+
+  const hasWinner = !!exp.winner;
+  const isSignificant = treatment?.isSignificant ?? false;
 
   return (
     <Card data-testid={`experiment-card-${exp.experimentId}`}>
@@ -155,26 +185,12 @@ function ExperimentCard({ exp }: { exp: ExperimentStats }) {
           </div>
 
           <div className="flex items-center gap-2 flex-wrap justify-end">
-            {treatment && treatment.pValue !== null && (
-              <SignificanceBadge
-                pValue={treatment.pValue}
-                isSignificant={treatment.isSignificant}
-                lift={lift}
-              />
-            )}
-            {exp.winner ? (
-              <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30">
-                Winner: {exp.winner}
-              </Badge>
-            ) : total > 0 ? (
-              <Badge variant="outline" className="text-muted-foreground">
-                No winner yet
-              </Badge>
-            ) : (
-              <Badge variant="outline" className="text-muted-foreground">
-                No data
-              </Badge>
-            )}
+            <VerdictBadge
+              pValue={treatment?.pValue ?? null}
+              isSignificant={isSignificant}
+              hasWinner={hasWinner}
+              total={total}
+            />
           </div>
         </div>
       </CardHeader>
@@ -193,9 +209,32 @@ function ExperimentCard({ exp }: { exp: ExperimentStats }) {
           ))
         )}
 
-        <p className="text-xs text-muted-foreground pt-1">
-          Total sample: {total.toLocaleString()} assignments
-        </p>
+        <div className="flex items-center justify-between pt-1">
+          <p className="text-xs text-muted-foreground">
+            Total people shown: {total.toLocaleString()}
+          </p>
+          {treatment?.pValue !== null && treatment !== undefined && (
+            <button
+              onClick={() => setShowStats(s => !s)}
+              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              data-testid={`button-show-stats-${exp.experimentId}`}
+            >
+              {showStats ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+              {showStats ? "Hide" : "Show"} statistical details
+            </button>
+          )}
+        </div>
+
+        {showStats && treatment !== undefined && (
+          <div className="border rounded-md p-3 bg-muted/20">
+            <p className="text-xs font-medium text-muted-foreground mb-1">Statistical Details</p>
+            <StatDetails
+              pValue={treatment.pValue}
+              isSignificant={treatment.isSignificant}
+              lift={lift}
+            />
+          </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -229,7 +268,7 @@ export default function AdminExperiments() {
                 <FlaskConical className="w-5 h-5 text-muted-foreground" />
                 A/B Experiments
               </h1>
-              <p className="text-sm text-muted-foreground">Variant performance and statistical significance</p>
+              <p className="text-sm text-muted-foreground">Which version is performing better?</p>
             </div>
           </div>
 
@@ -293,10 +332,11 @@ export default function AdminExperiments() {
         <div className="border border-border/40 rounded-lg p-4 bg-muted/10 space-y-2">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">How to read this</p>
           <ul className="text-xs text-muted-foreground space-y-1">
-            <li>• <strong>Assignments</strong>: users deterministically bucketed into this variant (stable across reloads)</li>
-            <li>• <strong>Conversions</strong>: paid conversions attributed to users in this variant</li>
-            <li>• <strong>Conv. Rate</strong>: conversions / assignments. Lower sample sizes are less reliable.</li>
-            <li>• <strong>Winner</strong>: variant with the higher conversion rate. Statistical significance shown as a badge (two-proportion z-test, α=0.05). "Not significant" means more data is needed.</li>
+            <li>• <strong>Winner ✓</strong>: one version is clearly converting better with enough data to be confident</li>
+            <li>• <strong>No winner yet</strong>: there's a difference, but we need more data to be sure</li>
+            <li>• <strong>Too early to tell</strong>: fewer than 100 people have been shown this test</li>
+            <li>• <strong>Not enough data</strong>: no one has been assigned to this experiment yet</li>
+            <li>• Conv. Rate = people who paid ÷ people shown the variant. Click "Show statistical details" for p-values.</li>
           </ul>
         </div>
       </div>

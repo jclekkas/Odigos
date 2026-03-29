@@ -6,7 +6,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "wouter";
 import { 
   ArrowLeft, 
@@ -29,7 +28,9 @@ import {
   Minus,
   MousePointer,
   FileText,
-  Percent
+  Percent,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import {
   AreaChart,
@@ -141,6 +142,7 @@ function MetricCard({
   title, 
   value, 
   subtitle,
+  context,
   trend,
   icon: Icon,
   color = "default"
@@ -148,6 +150,7 @@ function MetricCard({
   title: string; 
   value: string | number; 
   subtitle?: string;
+  context?: string;
   trend?: { current: number; previous: number; label: string };
   icon: typeof DollarSign;
   color?: "default" | "success" | "warning" | "danger";
@@ -175,6 +178,7 @@ function MetricCard({
           {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
           {trend && <TrendBadge current={trend.current} previous={trend.previous} suffix={` vs ${trend.label}`} />}
         </div>
+        {context && <p className="text-xs text-muted-foreground mt-1 italic">{context}</p>}
       </CardContent>
     </Card>
   );
@@ -528,6 +532,27 @@ function LiveActivityFeed({ events }: { events: Array<{ eventType: string; creat
   );
 }
 
+function Accordion({ title, children }: { title: string; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border rounded-lg overflow-hidden">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+        data-testid={`accordion-${title.toLowerCase().replace(/\s+/g, '-')}`}
+      >
+        <span>{title}</span>
+        {open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+      </button>
+      {open && (
+        <div className="p-4 border-t space-y-6">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function exportToCSV(metrics: MetricsSummary) {
   const rows = [
     ["Metric", "Value"],
@@ -554,7 +579,6 @@ function exportToCSV(metrics: MetricsSummary) {
 }
 
 export default function AdminMetrics() {
-  const [activeTab, setActiveTab] = useState("overview");
   const [isImporting, setIsImporting] = useState(false);
   const [importResult, setImportResult] = useState<{ success: boolean; message: string } | null>(null);
   const [adminKey, setAdminKey, clearKey] = useAdminKey();
@@ -596,6 +620,13 @@ export default function AdminMetrics() {
   });
 
   const lastUpdated = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString() : "Never";
+
+  const submissionsUpFromYesterday = metrics
+    ? metrics.trends.submissionsToday >= metrics.trends.submissionsYesterday
+    : null;
+  const revenueUpFromYesterday = metrics
+    ? metrics.trends.revenueToday >= metrics.trends.revenueYesterday
+    : null;
 
   return (
     <div className="min-h-screen bg-background">
@@ -742,305 +773,102 @@ export default function AdminMetrics() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto p-6 space-y-8">
         {importResult && (
-          <div className={`mb-4 p-4 rounded-md ${importResult.success ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200'}`}>
+          <div className={`p-4 rounded-md ${importResult.success ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200'}`}>
             <div className="flex items-center justify-between gap-4">
               <span>{importResult.message}</span>
               <Button variant="ghost" size="sm" onClick={() => setImportResult(null)}>Dismiss</Button>
             </div>
           </div>
         )}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
-            <TabsTrigger value="overview" data-testid="tab-overview">Metrics</TabsTrigger>
-            <TabsTrigger value="engagement" data-testid="tab-engagement">Engagement Funnel</TabsTrigger>
-            <TabsTrigger value="revenue" data-testid="tab-revenue">Revenue</TabsTrigger>
-            <TabsTrigger value="users" data-testid="tab-users">Submissions</TabsTrigger>
-            <TabsTrigger value="activity" data-testid="tab-activity">Recent Activity</TabsTrigger>
-          </TabsList>
 
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <MetricCard
-                title="Total Submissions"
-                value={metrics?.totalSubmissions ?? 0}
-                subtitle="All time"
-                trend={metrics ? { current: metrics.trends.submissionsToday, previous: metrics.trends.submissionsYesterday, label: "yesterday" } : undefined}
-                icon={Users}
-              />
-              <MetricCard
-                title="Total Revenue"
-                value={`$${metrics?.revenue ?? 0}`}
-                subtitle="Lifetime earnings"
-                trend={metrics ? { current: metrics.trends.revenueToday, previous: metrics.trends.revenueYesterday, label: "yesterday" } : undefined}
-                icon={DollarSign}
-                color="success"
-              />
-              <MetricCard
-                title="Conversion Rate"
-                value={`${(metrics?.conversionRate ?? 0).toFixed(1)}%`}
-                subtitle="Submissions to payment"
-                icon={Target}
-              />
-              <MetricCard
-                title="Paid Customers"
-                value={metrics?.totalPayments ?? 0}
-                subtitle="Full reviews"
-                icon={CheckCircle}
-                color="success"
-              />
-            </div>
+        {/* Plain-English Summary */}
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="pt-5 pb-4">
+            <p className="text-sm font-medium text-foreground" data-testid="summary-banner">
+              {metrics && (() => {
+                const parts: string[] = [];
+                if (metrics.trends.submissionsToday > 0) {
+                  parts.push(`${metrics.trends.submissionsToday} people submitted a deal today`);
+                }
+                if (metrics.trends.revenueToday > 0) {
+                  parts.push(`$${metrics.trends.revenueToday} earned today`);
+                }
+                if (metrics.totalPayments > 0) {
+                  parts.push(`${metrics.totalPayments} people have paid in total`);
+                }
+                if (parts.length === 0) return "No activity yet — data will appear as users start using the app.";
+                return parts.join(" · ") + ".";
+              })()}
+            </p>
+            {metrics && submissionsUpFromYesterday !== null && (
+              <p className="text-xs text-muted-foreground mt-1">
+                {submissionsUpFromYesterday
+                  ? "↑ Submissions are up from yesterday — on track."
+                  : "↓ Submissions are down from yesterday."}
+                {revenueUpFromYesterday !== null && (revenueUpFromYesterday
+                  ? " Revenue is trending up."
+                  : " Revenue is trending down.")}
+              </p>
+            )}
+          </CardContent>
+        </Card>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5" />
-                    Submissions Trend (30 Days)
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ActivityAreaChart data={metrics?.submissionsByDay ?? []} />
-                </CardContent>
-              </Card>
+        {/* Key Numbers */}
+        <section>
+          <h2 className="text-base font-semibold mb-3">Key Numbers</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <MetricCard
+              title="Total Deal Submissions"
+              value={metrics?.totalSubmissions ?? 0}
+              subtitle="All time"
+              context="How many deals people have submitted for review"
+              trend={metrics ? { current: metrics.trends.submissionsToday, previous: metrics.trends.submissionsYesterday, label: "yesterday" } : undefined}
+              icon={Users}
+            />
+            <MetricCard
+              title="Total Revenue"
+              value={`$${metrics?.revenue ?? 0}`}
+              subtitle="Lifetime earnings"
+              context="Total money collected from paid reviews"
+              trend={metrics ? { current: metrics.trends.revenueToday, previous: metrics.trends.revenueYesterday, label: "yesterday" } : undefined}
+              icon={DollarSign}
+              color="success"
+            />
+            <MetricCard
+              title="Submission-to-Payment Rate"
+              value={`${(metrics?.conversionRate ?? 0).toFixed(1)}%`}
+              subtitle="Of all who submitted, how many paid"
+              context="Higher is better — aim for &gt;10%"
+              icon={Target}
+            />
+            <MetricCard
+              title="People Who Paid"
+              value={metrics?.totalPayments ?? 0}
+              subtitle="Completed full reviews"
+              context="Unique paying customers all time"
+              icon={CheckCircle}
+              color="success"
+            />
+          </div>
+        </section>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Target className="h-5 w-5" />
-                    Conversion Funnel
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ConversionFunnel funnel={metrics?.funnel ?? { submissions: 0, checkouts: 0, payments: 0 }} />
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5" />
-                    Deal Score Distribution
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ScoreDistributionPie data={metrics?.scoreDistribution ?? { green: 0, yellow: 0, red: 0 }} />
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Clock className="h-5 w-5" />
-                    Hourly Activity
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <HourlyHeatmap data={metrics?.hourlyActivity ?? []} />
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Eye className="h-5 w-5" />
-                    Top Pages
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {metrics?.pageViews && metrics.pageViews.length > 0 ? (
-                    <div className="space-y-3">
-                      {metrics.pageViews.slice(0, 6).map((pv) => (
-                        <div key={pv.page} className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground truncate max-w-[160px]">{pv.page}</span>
-                          <Badge variant="secondary">{pv.count}</Badge>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
-                      <Eye className="h-6 w-6 mb-2 opacity-50" />
-                      <p className="text-sm">No page views yet</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="engagement" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <MetricCard
-                title="Total Page Views"
-                value={metrics?.engagement?.totalPageViews ?? 0}
-                subtitle="All pages"
-                icon={Eye}
-              />
-              <MetricCard
-                title="CTA Clicks"
-                value={metrics?.engagement?.ctaClicks ?? 0}
-                subtitle="Button clicks"
-                icon={MousePointer}
-              />
-              <MetricCard
-                title="Form Starts"
-                value={metrics?.engagement?.formStarts ?? 0}
-                subtitle="Users who began typing"
-                icon={FileText}
-              />
-              <MetricCard
-                title="Landing CTR"
-                value={`${(metrics?.engagement?.landingToAnalyzeCtr ?? 0).toFixed(1)}%`}
-                subtitle="Landing → CTA click"
-                icon={Percent}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Target className="h-5 w-5" />
-                    Full Engagement Funnel
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {[
-                      { label: "Landing Page Views", value: metrics?.engagement?.landingPageViews ?? 0, color: "bg-blue-500" },
-                      { label: "CTA Clicks", value: metrics?.engagement?.ctaClicks ?? 0, color: "bg-indigo-500" },
-                      { label: "Analyze Page Views", value: metrics?.engagement?.analyzePageViews ?? 0, color: "bg-purple-500" },
-                      { label: "Form Starts", value: metrics?.engagement?.formStarts ?? 0, color: "bg-violet-500" },
-                      { label: "Submissions", value: metrics?.funnel?.submissions ?? 0, color: "bg-amber-500" },
-                      { label: "Checkouts", value: metrics?.funnel?.checkouts ?? 0, color: "bg-orange-500" },
-                      { label: "Payments", value: metrics?.funnel?.payments ?? 0, color: "bg-green-500" },
-                    ].map((step, idx, arr) => {
-                      const maxVal = Math.max(...arr.map(s => s.value), 1);
-                      const pct = (step.value / maxVal) * 100;
-                      const dropoff = idx > 0 && arr[idx - 1].value > 0
-                        ? ((arr[idx - 1].value - step.value) / arr[idx - 1].value * 100).toFixed(0)
-                        : null;
-                      return (
-                        <div key={step.label}>
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-sm font-medium">{step.label}</span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-bold">{step.value}</span>
-                              {dropoff && <span className="text-xs text-muted-foreground">(-{dropoff}%)</span>}
-                            </div>
-                          </div>
-                          <div className="h-3 bg-muted rounded-full overflow-hidden">
-                            <div className={`h-full ${step.color} rounded-full transition-all`} style={{ width: `${pct}%` }} />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MousePointer className="h-5 w-5" />
-                    CTA Click Breakdown
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {metrics?.engagement?.ctaClicksByButton && metrics.engagement.ctaClicksByButton.length > 0 ? (
-                    <div className="space-y-3">
-                      {metrics.engagement.ctaClicksByButton.map((cta) => (
-                        <div key={cta.ctaId} className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground truncate max-w-[200px]">{cta.label}</span>
-                          <Badge variant="secondary">{cta.count}</Badge>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
-                      <MousePointer className="h-6 w-6 mb-2 opacity-50" />
-                      <p className="text-sm">No CTA clicks tracked yet</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Analyze Page Rate</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">{(metrics?.engagement?.analyzeToSubmissionRate ?? 0).toFixed(1)}%</div>
-                  <p className="text-sm text-muted-foreground">Visitors who submit after reaching analyze page</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Form Completion Rate</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">{(metrics?.engagement?.formStartToSubmissionRate ?? 0).toFixed(1)}%</div>
-                  <p className="text-sm text-muted-foreground">Users who submit after starting to type</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Page Distribution</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Landing (/)</span>
-                      <span className="font-medium">{metrics?.engagement?.landingPageViews ?? 0}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Analyze (/analyze)</span>
-                      <span className="font-medium">{metrics?.engagement?.analyzePageViews ?? 0}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Other pages</span>
-                      <span className="font-medium">{(metrics?.engagement?.totalPageViews ?? 0) - (metrics?.engagement?.landingPageViews ?? 0) - (metrics?.engagement?.analyzePageViews ?? 0)}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="revenue" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <MetricCard
-                title="Today's Revenue"
-                value={`$${metrics?.trends.revenueToday ?? 0}`}
-                trend={metrics ? { current: metrics.trends.revenueToday, previous: metrics.trends.revenueYesterday, label: "yesterday" } : undefined}
-                icon={DollarSign}
-                color="success"
-              />
-              <MetricCard
-                title="This Week"
-                value={`$${metrics?.trends.revenueThisWeek ?? 0}`}
-                trend={metrics ? { current: metrics.trends.revenueThisWeek, previous: metrics.trends.revenueLastWeek, label: "last week" } : undefined}
-                icon={TrendingUp}
-                color="success"
-              />
-              <MetricCard
-                title="Avg per Sale"
-                value={`$${metrics?.totalPayments ? Math.round((metrics.revenue || 0) / metrics.totalPayments) : 0}`}
-                subtitle="Average order value"
-                icon={Zap}
-              />
-              <MetricCard
-                title="Checkout Rate"
-                value={`${(metrics?.checkoutToPaymentRate ?? 0).toFixed(1)}%`}
-                subtitle="Checkout to payment"
-                icon={Target}
-              />
-            </div>
+        {/* Trends */}
+        <section>
+          <h2 className="text-base font-semibold mb-3">Trends</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  Submissions Over Time (30 Days)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ActivityAreaChart data={metrics?.submissionsByDay ?? []} />
+              </CardContent>
+            </Card>
 
             <Card>
               <CardHeader>
@@ -1053,123 +881,309 @@ export default function AdminMetrics() {
                 <RevenueLineChart data={metrics?.revenueByDay ?? []} />
               </CardContent>
             </Card>
+          </div>
+        </section>
 
+        {/* Funnel */}
+        <section>
+          <h2 className="text-base font-semibold mb-3">Conversion Funnel</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Conversion Funnel Details</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5" />
+                  Submit → Checkout → Pay
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">How many people make it each step of the way</p>
               </CardHeader>
               <CardContent>
                 <ConversionFunnel funnel={metrics?.funnel ?? { submissions: 0, checkouts: 0, payments: 0 }} />
               </CardContent>
             </Card>
-          </TabsContent>
-
-          <TabsContent value="users" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <MetricCard
-                title="Today's Users"
-                value={metrics?.trends.submissionsToday ?? 0}
-                trend={metrics ? { current: metrics.trends.submissionsToday, previous: metrics.trends.submissionsYesterday, label: "yesterday" } : undefined}
-                icon={Users}
-              />
-              <MetricCard
-                title="This Week"
-                value={metrics?.trends.submissionsThisWeek ?? 0}
-                trend={metrics ? { current: metrics.trends.submissionsThisWeek, previous: metrics.trends.submissionsLastWeek, label: "last week" } : undefined}
-                icon={TrendingUp}
-              />
-              <MetricCard
-                title="Total Page Views"
-                value={metrics?.pageViews.reduce((sum, pv) => sum + pv.count, 0) ?? 0}
-                icon={Eye}
-              />
-              <MetricCard
-                title="Green Deals"
-                value={metrics?.scoreDistribution.green ?? 0}
-                subtitle="High quality deals"
-                icon={CheckCircle}
-                color="success"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Score Distribution</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ScoreDistributionPie data={metrics?.scoreDistribution ?? { green: 0, yellow: 0, red: 0 }} />
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Traffic Sources</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ReferrerChart data={metrics?.referrers ?? []} />
-                </CardContent>
-              </Card>
-            </div>
 
             <Card>
               <CardHeader>
-                <CardTitle>User Activity Timeline</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5" />
+                  Deal Score Distribution
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">How deals are rated: Green = fair, Yellow = review, Red = problems found</p>
               </CardHeader>
               <CardContent>
-                <ActivityAreaChart data={metrics?.submissionsByDay ?? []} />
+                <ScoreDistributionPie data={metrics?.scoreDistribution ?? { green: 0, yellow: 0, red: 0 }} />
               </CardContent>
             </Card>
-          </TabsContent>
+          </div>
+        </section>
 
-          <TabsContent value="activity" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card className="lg:col-span-2">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Activity className="h-5 w-5" />
-                    Live Activity Feed
-                    <LivePulse />
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <LiveActivityFeed events={metrics?.recentEvents ?? []} />
-                </CardContent>
-              </Card>
+        {/* Engagement */}
+        <section>
+          <h2 className="text-base font-semibold mb-3">Engagement</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <MetricCard
+              title="Total Page Views"
+              value={metrics?.engagement?.totalPageViews ?? 0}
+              subtitle="All pages"
+              context="Total times any page was loaded"
+              icon={Eye}
+            />
+            <MetricCard
+              title="Button Clicks"
+              value={metrics?.engagement?.ctaClicks ?? 0}
+              subtitle="CTA button taps"
+              context="People who clicked a call-to-action"
+              icon={MousePointer}
+            />
+            <MetricCard
+              title="Form Starts"
+              value={metrics?.engagement?.formStarts ?? 0}
+              subtitle="Started typing in the form"
+              context="People who began entering deal info"
+              icon={FileText}
+            />
+            <MetricCard
+              title="Landing-to-Analyze Rate"
+              value={`${(metrics?.engagement?.landingToAnalyzeCtr ?? 0).toFixed(1)}%`}
+              subtitle="Homepage visitors who click through"
+              context="Higher = stronger homepage hook"
+              icon={Percent}
+            />
+          </div>
 
-              <div className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Peak Hours</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <HourlyHeatmap data={metrics?.hourlyActivity ?? []} />
-                  </CardContent>
-                </Card>
+          <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5" />
+                  Full Engagement Funnel
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {[
+                    { label: "Landing Page Views", value: metrics?.engagement?.landingPageViews ?? 0, color: "bg-blue-500" },
+                    { label: "Button Clicks", value: metrics?.engagement?.ctaClicks ?? 0, color: "bg-indigo-500" },
+                    { label: "Analyze Page Views", value: metrics?.engagement?.analyzePageViews ?? 0, color: "bg-purple-500" },
+                    { label: "Form Starts", value: metrics?.engagement?.formStarts ?? 0, color: "bg-violet-500" },
+                    { label: "Submissions", value: metrics?.funnel?.submissions ?? 0, color: "bg-amber-500" },
+                    { label: "Checkouts", value: metrics?.funnel?.checkouts ?? 0, color: "bg-orange-500" },
+                    { label: "People Who Paid", value: metrics?.funnel?.payments ?? 0, color: "bg-green-500" },
+                  ].map((step, idx, arr) => {
+                    const maxVal = Math.max(...arr.map(s => s.value), 1);
+                    const pct = (step.value / maxVal) * 100;
+                    const dropoff = idx > 0 && arr[idx - 1].value > 0
+                      ? ((arr[idx - 1].value - step.value) / arr[idx - 1].value * 100).toFixed(0)
+                      : null;
+                    return (
+                      <div key={step.label}>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm font-medium">{step.label}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold">{step.value}</span>
+                            {dropoff && <span className="text-xs text-muted-foreground">(-{dropoff}%)</span>}
+                          </div>
+                        </div>
+                        <div className="h-3 bg-muted rounded-full overflow-hidden">
+                          <div className={`h-full ${step.color} rounded-full transition-all`} style={{ width: `${pct}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Quick Stats</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Events Today</span>
-                      <Badge>{metrics?.trends.submissionsToday ?? 0}</Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Revenue Today</span>
-                      <Badge variant="secondary">${metrics?.trends.revenueToday ?? 0}</Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Checkouts</span>
-                      <Badge variant="outline">{metrics?.totalCheckouts ?? 0}</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MousePointer className="h-5 w-5" />
+                  Button Click Breakdown
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {metrics?.engagement?.ctaClicksByButton && metrics.engagement.ctaClicksByButton.length > 0 ? (
+                  <div className="space-y-3">
+                    {metrics.engagement.ctaClicksByButton.map((cta) => (
+                      <div key={cta.ctaId} className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground truncate max-w-[200px]">{cta.label}</span>
+                        <Badge variant="secondary">{cta.count}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
+                    <MousePointer className="h-6 w-6 mb-2 opacity-50" />
+                    <p className="text-sm">No button clicks tracked yet</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        {/* Revenue details */}
+        <section>
+          <h2 className="text-base font-semibold mb-3">Revenue Breakdown</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <MetricCard
+              title="Earned Today"
+              value={`$${metrics?.trends.revenueToday ?? 0}`}
+              context={revenueUpFromYesterday ? "↑ Up from yesterday" : "↓ Down from yesterday"}
+              trend={metrics ? { current: metrics.trends.revenueToday, previous: metrics.trends.revenueYesterday, label: "yesterday" } : undefined}
+              icon={DollarSign}
+              color="success"
+            />
+            <MetricCard
+              title="This Week's Revenue"
+              value={`$${metrics?.trends.revenueThisWeek ?? 0}`}
+              trend={metrics ? { current: metrics.trends.revenueThisWeek, previous: metrics.trends.revenueLastWeek, label: "last week" } : undefined}
+              icon={TrendingUp}
+              color="success"
+            />
+            <MetricCard
+              title="Average per Sale"
+              value={`$${metrics?.totalPayments ? Math.round((metrics.revenue || 0) / metrics.totalPayments) : 0}`}
+              subtitle="Average order value"
+              context="Typical amount per paying customer"
+              icon={Zap}
+            />
+            <MetricCard
+              title="Checkout Success Rate"
+              value={`${(metrics?.checkoutToPaymentRate ?? 0).toFixed(1)}%`}
+              subtitle="Of people who start checkout, how many finish"
+              icon={Target}
+            />
+          </div>
+        </section>
+
+        {/* Recent Activity */}
+        <section>
+          <h2 className="text-base font-semibold mb-3">Recent Activity</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Eye className="h-4 w-4" />
+                  Top Pages
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {metrics?.pageViews && metrics.pageViews.length > 0 ? (
+                  <div className="space-y-3">
+                    {metrics.pageViews.slice(0, 6).map((pv) => (
+                      <div key={pv.page} className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground truncate max-w-[200px]">{pv.page}</span>
+                        <Badge variant="secondary">{pv.count}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
+                    <Eye className="h-6 w-6 mb-2 opacity-50" />
+                    <p className="text-sm">No page views yet</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Quick Stats</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Submissions today</span>
+                  <Badge>{metrics?.trends.submissionsToday ?? 0}</Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Revenue today</span>
+                  <Badge variant="secondary">${metrics?.trends.revenueToday ?? 0}</Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Checkouts started</span>
+                  <Badge variant="outline">{metrics?.totalCheckouts ?? 0}</Badge>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        {/* Technical Details accordion */}
+        <Accordion title="Technical Details — Live Event Feed, Peak Hours, Traffic Sources">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Activity className="h-5 w-5" />
+                Live Event Feed
+                <LivePulse />
+              </CardTitle>
+              <p className="text-xs text-muted-foreground">Events from the last 24 hours</p>
+            </CardHeader>
+            <CardContent>
+              <LiveActivityFeed events={metrics?.recentEvents ?? []} />
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Clock className="h-5 w-5" />
+                  Peak Hours
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">When users are most active (by hour)</p>
+              </CardHeader>
+              <CardContent>
+                <HourlyHeatmap data={metrics?.hourlyActivity ?? []} />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Eye className="h-5 w-5" />
+                  Traffic Sources
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">Where visitors come from</p>
+              </CardHeader>
+              <CardContent>
+                <ReferrerChart data={metrics?.referrers ?? []} />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Page Distribution</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Landing (/)</span>
+                    <span className="font-medium">{metrics?.engagement?.landingPageViews ?? 0}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Analyze (/analyze)</span>
+                    <span className="font-medium">{metrics?.engagement?.analyzePageViews ?? 0}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Other pages</span>
+                    <span className="font-medium">{(metrics?.engagement?.totalPageViews ?? 0) - (metrics?.engagement?.landingPageViews ?? 0) - (metrics?.engagement?.analyzePageViews ?? 0)}</span>
+                  </div>
+                </div>
+                <div className="mt-4 space-y-2 border-t pt-4">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Analyze-page submission rate</span>
+                    <span className="font-medium">{(metrics?.engagement?.analyzeToSubmissionRate ?? 0).toFixed(1)}%</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Form completion rate</span>
+                    <span className="font-medium">{(metrics?.engagement?.formStartToSubmissionRate ?? 0).toFixed(1)}%</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </Accordion>
       </div>
       </>)}
     </div>

@@ -104,6 +104,8 @@ export default function AdminContent() {
     ? ((data?.totalConversions ?? 0) / (data?.totalSessions ?? 1)) * 100
     : 0;
 
+  const topConvertingPage = allPages.filter(p => p.conversions > 0).sort((a, b) => b.conversions - a.conversions)[0];
+
   return (
     <div className="min-h-screen bg-background">
       <AdminNav />
@@ -147,10 +149,10 @@ export default function AdminContent() {
               <div>
                 <h1 className="text-2xl font-bold flex items-center gap-2">
                   <FileText className="h-6 w-6 text-muted-foreground" />
-                  SEO / Content Performance
+                  Content Performance
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Per-page: sessions, analyze starts, conversions, conversion rate
+                  Which pages are bringing in visitors and driving sales
                 </p>
               </div>
             </div>
@@ -199,6 +201,24 @@ export default function AdminContent() {
           </div>
         )}
 
+        {/* Plain-English Summary */}
+        {!isLoading && data && (
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="pt-4 pb-3">
+              <p className="text-sm font-medium" data-testid="content-summary">
+                {topConvertingPage
+                  ? `"${topConvertingPage.page}" is driving the most sales ${range === "today" ? "today" : `in the ${RANGE_LABELS[range].toLowerCase()}`} with ${topConvertingPage.conversions} ${topConvertingPage.conversions === 1 ? "person" : "people"} who paid.`
+                  : "No conversions recorded yet — data will appear as visitors start paying."}
+              </p>
+              {data.totalConversions > 0 && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  Overall: {data.totalConversions} {data.totalConversions === 1 ? "sale" : "sales"} from {data.totalSessions.toLocaleString()} visitors ({overallConversionRate.toFixed(1)}% conversion rate).
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <Card data-testid="stat-total-views">
             <CardContent className="pt-6">
@@ -207,24 +227,27 @@ export default function AdminContent() {
                 <p className="text-xs text-muted-foreground uppercase tracking-wide">Page Views</p>
               </div>
               <p className="text-3xl font-bold">{(data?.totalViews ?? 0).toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground mt-1">Total times pages were loaded</p>
             </CardContent>
           </Card>
           <Card data-testid="stat-total-sessions">
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 mb-1">
                 <Users className="h-4 w-4 text-muted-foreground" />
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">Sessions</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Visitors</p>
               </div>
               <p className="text-3xl font-bold">{(data?.totalSessions ?? 0).toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground mt-1">Unique browsing sessions</p>
             </CardContent>
           </Card>
           <Card data-testid="stat-total-starts">
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 mb-1">
                 <MousePointerClick className="h-4 w-4 text-muted-foreground" />
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">Analyze Starts</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Clicked Analyze</p>
               </div>
               <p className="text-3xl font-bold">{(data?.totalAnalyzeStarts ?? 0).toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground mt-1">People who clicked to analyze a deal</p>
             </CardContent>
           </Card>
           <Card data-testid="stat-total-conversions">
@@ -232,12 +255,13 @@ export default function AdminContent() {
               <div className="flex items-center gap-2 mb-1">
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
                 <p className="text-xs text-muted-foreground uppercase tracking-wide">
-                  Conversions ({overallConversionRate.toFixed(1)}%)
+                  Paid ({overallConversionRate.toFixed(1)}%)
                 </p>
               </div>
               <p className="text-3xl font-bold text-green-600 dark:text-green-400">
                 {(data?.totalConversions ?? 0).toLocaleString()}
               </p>
+              <p className="text-xs text-muted-foreground mt-1">People who paid for a review</p>
             </CardContent>
           </Card>
         </div>
@@ -247,7 +271,7 @@ export default function AdminContent() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5" />
-                Top 10 Pages — Sessions, Analyze Starts, Conversions
+                Top 10 Pages — Visitors, Clicked Analyze, Paid
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -263,9 +287,9 @@ export default function AdminContent() {
                       tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
                     />
                     <Tooltip contentStyle={TOOLTIP_STYLE} />
-                    <Bar dataKey="sessions" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} name="Sessions" />
-                    <Bar dataKey="analyzeStarts" fill="#f59e0b" radius={[0, 4, 4, 0]} name="Analyze Starts" />
-                    <Bar dataKey="conversions" fill="#22c55e" radius={[0, 4, 4, 0]} name="Conversions" />
+                    <Bar dataKey="sessions" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} name="Visitors" />
+                    <Bar dataKey="analyzeStarts" fill="#f59e0b" radius={[0, 4, 4, 0]} name="Clicked Analyze" />
+                    <Bar dataKey="conversions" fill="#22c55e" radius={[0, 4, 4, 0]} name="Paid" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -288,9 +312,9 @@ export default function AdminContent() {
               <div className="flex items-center gap-1 flex-wrap">
                 <span className="text-xs text-muted-foreground mr-1">Sort:</span>
                 <SortBtn k="views" label="Views" />
-                <SortBtn k="sessions" label="Sessions" />
-                <SortBtn k="analyzeStarts" label="Starts" />
-                <SortBtn k="conversions" label="Conv." />
+                <SortBtn k="sessions" label="Visitors" />
+                <SortBtn k="analyzeStarts" label="Clicked Analyze" />
+                <SortBtn k="conversions" label="Paid" />
                 <SortBtn k="conversionRate" label="Rate" />
               </div>
             </div>
@@ -316,9 +340,9 @@ export default function AdminContent() {
                         <th className="text-left py-2 pr-4 font-medium">#</th>
                         <th className="text-left py-2 pr-4 font-medium">Page</th>
                         <th className="text-right py-2 px-2 font-medium">Views</th>
-                        <th className="text-right py-2 px-2 font-medium">Sessions</th>
-                        <th className="text-right py-2 px-2 font-medium">Starts</th>
-                        <th className="text-right py-2 px-2 font-medium">Conv.</th>
+                        <th className="text-right py-2 px-2 font-medium">Visitors</th>
+                        <th className="text-right py-2 px-2 font-medium">Clicked Analyze</th>
+                        <th className="text-right py-2 px-2 font-medium">Paid</th>
                         <th className="text-right py-2 pl-2 font-medium">Rate</th>
                       </tr>
                     </thead>

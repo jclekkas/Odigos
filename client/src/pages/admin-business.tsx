@@ -28,6 +28,8 @@ import {
   Zap,
   CheckCircle,
   CreditCard,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import {
   AreaChart,
@@ -181,6 +183,23 @@ function PanelErrorCard({ error, label }: { error: unknown; label?: string }) {
   );
 }
 
+function ShowDetails({ children, testId }: { children: React.ReactNode; testId?: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="mt-4">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+        data-testid={testId ?? "button-show-details"}
+      >
+        {open ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+        {open ? "Hide details" : "Show details"}
+      </button>
+      {open && <div className="mt-4 space-y-4 border-t pt-4">{children}</div>}
+    </div>
+  );
+}
+
 // ============================================================================
 // Funnel Panel
 // ============================================================================
@@ -215,70 +234,95 @@ function FunnelPanel({ adminKey, range }: { adminKey: string; range: DateRange }
 
   const stages = data?.stages ?? [];
   const maxAllTime = Math.max(...stages.map((s) => s.allTime), 1);
+  const firstStage = stages[0];
+  const lastStage = stages[stages.length - 1];
+  const overallRate = firstStage && firstStage.allTime > 0 && lastStage
+    ? ((lastStage.allTime / firstStage.allTime) * 100).toFixed(1)
+    : null;
+  const highDropoff = stages.find(s => s.alert);
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Target className="h-5 w-5" />
-          Acquisition-to-Revenue Funnel
+          Funnel — From Visitor to Payment
         </CardTitle>
-        <p className="text-xs text-muted-foreground">Full funnel with drop-off rates — red alerts at &gt;60% drop-off</p>
+        <p className="text-xs text-muted-foreground">How many people make it through each step</p>
       </CardHeader>
       <CardContent>
         {stages.length === 0 ? (
           <EmptyState icon={Target} label="No funnel data yet" />
         ) : (
-          <div className="space-y-3">
-            <div className="grid grid-cols-4 text-xs text-muted-foreground font-medium mb-1 px-1">
-              <span>Stage</span>
-              <span className="text-right">Today</span>
-              <span className="text-right">This Week</span>
-              <span className="text-right">All Time</span>
+          <>
+            <div className="flex items-center gap-6 pb-4">
+              {overallRate !== null && (
+                <div>
+                  <p className="text-xs text-muted-foreground">Overall rate</p>
+                  <p className="text-3xl font-bold text-green-600 dark:text-green-400">{overallRate}%</p>
+                  <p className="text-xs text-muted-foreground">make it from start to payment</p>
+                </div>
+              )}
+              {highDropoff && (
+                <div className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
+                  <AlertTriangle className="h-4 w-4" />
+                  High drop-off at "{highDropoff.name}"
+                </div>
+              )}
             </div>
-            {stages.map((stage) => {
-              const barWidth = (stage.allTime / maxAllTime) * 100;
-              return (
-                <div key={stage.name} className="space-y-1">
-                  <div className="grid grid-cols-4 items-center text-sm px-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{stage.name}</span>
-                      {stage.alert && (
-                        <span title="High drop-off!">
-                          <AlertTriangle className="h-3 w-3 text-red-500" />
-                        </span>
+            <ShowDetails testId="button-show-details-funnel">
+              <div className="space-y-3">
+                <div className="grid grid-cols-4 text-xs text-muted-foreground font-medium mb-1 px-1">
+                  <span>Stage</span>
+                  <span className="text-right">Today</span>
+                  <span className="text-right">This Week</span>
+                  <span className="text-right">All Time</span>
+                </div>
+                {stages.map((stage) => {
+                  const barWidth = (stage.allTime / maxAllTime) * 100;
+                  return (
+                    <div key={stage.name} className="space-y-1">
+                      <div className="grid grid-cols-4 items-center text-sm px-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{stage.name}</span>
+                          {stage.alert && (
+                            <span title="High drop-off!">
+                              <AlertTriangle className="h-3 w-3 text-red-500" />
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-right text-muted-foreground">{stage.today}</span>
+                        <span className="text-right text-muted-foreground">{stage.week}</span>
+                        <span className="text-right font-semibold">{stage.allTime}</span>
+                      </div>
+                      <div className="h-5 bg-muted rounded overflow-hidden mx-1">
+                        <div
+                          className={`h-full rounded transition-all duration-500 ${
+                            stage.alert ? "bg-red-500" : "bg-primary"
+                          }`}
+                          style={{ width: `${Math.max(barWidth, 1)}%` }}
+                        />
+                      </div>
+                      {stage.dropoffPct !== null && (
+                        <div className="text-right text-xs px-1">
+                          <span
+                            className={
+                              stage.alert
+                                ? "text-red-600 dark:text-red-400 font-semibold"
+                                : "text-muted-foreground"
+                            }
+                            data-testid={`dropoff-${stage.name.toLowerCase().replace(/\s+/g, "-")}`}
+                          >
+                            ↓ {stage.dropoffPct.toFixed(1)}% drop-off from previous
+                          </span>
+                        </div>
                       )}
                     </div>
-                    <span className="text-right text-muted-foreground">{stage.today}</span>
-                    <span className="text-right text-muted-foreground">{stage.week}</span>
-                    <span className="text-right font-semibold">{stage.allTime}</span>
-                  </div>
-                  <div className="h-5 bg-muted rounded overflow-hidden mx-1">
-                    <div
-                      className={`h-full rounded transition-all duration-500 ${
-                        stage.alert ? "bg-red-500" : "bg-primary"
-                      }`}
-                      style={{ width: `${Math.max(barWidth, 1)}%` }}
-                    />
-                  </div>
-                  {stage.dropoffPct !== null && (
-                    <div className="text-right text-xs px-1">
-                      <span
-                        className={
-                          stage.alert
-                            ? "text-red-600 dark:text-red-400 font-semibold"
-                            : "text-muted-foreground"
-                        }
-                        data-testid={`dropoff-${stage.name.toLowerCase().replace(/\s+/g, "-")}`}
-                      >
-                        ↓ {stage.dropoffPct.toFixed(1)}% drop-off from previous
-                      </span>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                  );
+                })}
+              </div>
+            </ShowDetails>
+          </>
         )}
       </CardContent>
     </Card>
@@ -325,6 +369,9 @@ function AttributionPanel({ adminKey, range }: { adminKey: string; range: DateRa
     .sort((a, b) => b[sortKey] - a[sortKey])
     .slice(0, 20);
 
+  const topPage = pages[0];
+  const totalSubmissions = pages.reduce((s, p) => s + p.attributedSubmissions, 0);
+
   const SortBtn = ({ k, label }: { k: AttributionSortKey; label: string }) => (
     <button
       onClick={() => setSortKey(k)}
@@ -340,61 +387,75 @@ function AttributionPanel({ adminKey, range }: { adminKey: string; range: DateRa
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Eye className="h-5 w-5" />
-              SEO Content Attribution
-            </CardTitle>
-            <p className="text-xs text-muted-foreground mt-1">
-              Last-touch attribution — which content converts to submissions
-            </p>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="text-xs text-muted-foreground mr-1">Sort:</span>
-            <SortBtn k="views" label="Views" />
-            <SortBtn k="ctaClickRate" label="CTA Rate" />
-            <SortBtn k="attributedSubmissions" label="Submissions" />
-          </div>
-        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Eye className="h-5 w-5" />
+          Which Content Drives Submissions
+        </CardTitle>
+        <p className="text-xs text-muted-foreground">
+          Which pages lead to the most deal submissions
+        </p>
       </CardHeader>
       <CardContent>
         {pages.length === 0 ? (
           <EmptyState icon={Eye} label="No page attribution data yet" />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b text-muted-foreground text-xs">
-                  <th className="text-left py-2 pr-4 font-medium">Page</th>
-                  <th className="text-right py-2 px-2 font-medium">Views</th>
-                  <th className="text-right py-2 px-2 font-medium">CTA Rate</th>
-                  <th className="text-right py-2 pl-2 font-medium">Submissions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pages.map((p) => (
-                  <tr
-                    key={p.page}
-                    className="border-b border-muted/50 hover:bg-muted/30 transition-colors"
-                    data-testid={`attr-row-${p.page}`}
-                  >
-                    <td className="py-2 pr-4 font-mono text-xs truncate max-w-[200px]">{p.page}</td>
-                    <td className="text-right py-2 px-2">{p.views.toLocaleString()}</td>
-                    <td className="text-right py-2 px-2">
-                      <Badge
-                        variant={p.ctaClickRate > 10 ? "default" : "secondary"}
-                        className="text-xs"
+          <>
+            <div className="pb-2">
+              <p className="text-xs text-muted-foreground">Total attributed submissions</p>
+              <p className="text-3xl font-bold">{totalSubmissions}</p>
+              <p className="text-xs text-muted-foreground">across all pages</p>
+            </div>
+            <ShowDetails testId="button-show-details-attribution">
+              {topPage && (
+                <div className="flex flex-wrap gap-6 pb-2 mb-4 border-b">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Top converting page</p>
+                    <p className="font-semibold text-sm truncate max-w-xs">{topPage.page}</p>
+                    <p className="text-xs text-muted-foreground">{topPage.attributedSubmissions} submission{topPage.attributedSubmissions !== 1 ? "s" : ""} attributed</p>
+                  </div>
+                </div>
+              )}
+              <div className="flex items-center gap-1 mb-3">
+                <span className="text-xs text-muted-foreground mr-1">Sort:</span>
+                <SortBtn k="views" label="Views" />
+                <SortBtn k="ctaClickRate" label="Click Rate" />
+                <SortBtn k="attributedSubmissions" label="Submissions" />
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-muted-foreground text-xs">
+                      <th className="text-left py-2 pr-4 font-medium">Page</th>
+                      <th className="text-right py-2 px-2 font-medium">Views</th>
+                      <th className="text-right py-2 px-2 font-medium">Click Rate</th>
+                      <th className="text-right py-2 pl-2 font-medium">Submissions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pages.map((p) => (
+                      <tr
+                        key={p.page}
+                        className="border-b border-muted/50 hover:bg-muted/30 transition-colors"
+                        data-testid={`attr-row-${p.page}`}
                       >
-                        {p.ctaClickRate.toFixed(1)}%
-                      </Badge>
-                    </td>
-                    <td className="text-right py-2 pl-2 font-semibold">{p.attributedSubmissions}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                        <td className="py-2 pr-4 font-mono text-xs truncate max-w-[200px]">{p.page}</td>
+                        <td className="text-right py-2 px-2">{p.views.toLocaleString()}</td>
+                        <td className="text-right py-2 px-2">
+                          <Badge
+                            variant={p.ctaClickRate > 10 ? "default" : "secondary"}
+                            className="text-xs"
+                          >
+                            {p.ctaClickRate.toFixed(1)}%
+                          </Badge>
+                        </td>
+                        <td className="text-right py-2 pl-2 font-semibold">{p.attributedSubmissions}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </ShowDetails>
+          </>
         )}
       </CardContent>
     </Card>
@@ -433,126 +494,117 @@ function BehaviorPanel({ adminKey, range }: { adminKey: string; range: DateRange
   if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
   if (isError) return <PanelErrorCard error={error} label="behavior data" />;
 
-  const maxFocus = Math.max(...(data?.fieldEngagement ?? []).map((f) => f.focusCount), 1);
+  const bounceRate = data?.bounceRate ?? 0;
+  const returnRate = data?.returnVisitRate ?? 0;
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard
-          title="Avg Pages / Session"
-          value={(data?.avgPagesPerSession ?? 0).toFixed(1)}
-          subtitle="Session depth indicator"
-          icon={Activity}
-        />
-        <StatCard
-          title="Bounce Rate"
-          value={`${(data?.bounceRate ?? 0).toFixed(1)}%`}
-          subtitle="Single-page sessions"
-          icon={TrendingDown}
-          color={(data?.bounceRate ?? 0) > 60 ? "danger" : "default"}
-        />
-        <StatCard
-          title="Return Visit Rate"
-          value={`${(data?.returnVisitRate ?? 0).toFixed(1)}%`}
-          subtitle="IP-hashed sessions seen on 2+ occasions"
-          icon={TrendingUp}
-          color={(data?.returnVisitRate ?? 0) > 20 ? "success" : "default"}
-        />
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Activity className="h-4 w-4" />
-            Form Field Engagement &amp; Abandonment
-          </CardTitle>
-          <p className="text-xs text-muted-foreground">Focus = sessions that focused on this field. Abandon = sessions that focused but never submitted.</p>
-        </CardHeader>
-        <CardContent>
-          {(data?.fieldEngagement ?? []).length === 0 ? (
-            <EmptyState icon={Activity} label="No form focus data yet" />
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b text-muted-foreground text-xs">
-                    <th className="text-left py-2 pr-4 font-medium">Field</th>
-                    <th className="text-right py-2 px-2 font-medium">Focuses</th>
-                    <th className="text-right py-2 px-2 font-medium">Abandonments</th>
-                    <th className="text-right py-2 pl-2 font-medium">Abandon Rate</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(data?.fieldEngagement ?? []).slice(0, 15).map((f) => {
-                    const abandonRate = f.focusCount > 0 ? (f.abandonCount / f.focusCount) * 100 : 0;
-                    return (
-                      <tr
-                        key={f.fieldName}
-                        className="border-b border-muted/50 hover:bg-muted/30"
-                        data-testid={`field-row-${f.fieldName}`}
-                      >
-                        <td className="py-2 pr-4 font-medium">{f.fieldName}</td>
-                        <td className="text-right py-2 px-2">{f.focusCount}</td>
-                        <td className="text-right py-2 px-2">{f.abandonCount}</td>
-                        <td className="text-right py-2 pl-2">
-                          <Badge
-                            variant={abandonRate > 50 ? "destructive" : "secondary"}
-                            className="text-xs"
-                          >
-                            {abandonRate.toFixed(0)}%
-                          </Badge>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Activity className="h-5 w-5" />
+          How Visitors Behave
+        </CardTitle>
+        <p className="text-xs text-muted-foreground">Bounce rate, repeat visits, and where people drop off in the form</p>
+      </CardHeader>
+      <CardContent>
+        <div className="pb-2">
+          <p className="text-xs text-muted-foreground">Bounce rate</p>
+          <p className={`text-3xl font-bold ${bounceRate > 60 ? "text-red-600 dark:text-red-400" : "text-foreground"}`}>{bounceRate.toFixed(1)}%</p>
+          <p className="text-xs text-muted-foreground">{bounceRate > 60 ? "high — many visitors leave without clicking anything" : "visitors who leave without clicking anything"}</p>
+        </div>
+        <ShowDetails testId="button-show-details-behavior">
+          <div className="flex flex-wrap gap-6 pb-2 mb-4 border-b">
+            <div>
+              <p className="text-xs text-muted-foreground">Return visit rate</p>
+              <p className={`text-2xl font-bold ${returnRate > 20 ? "text-green-600 dark:text-green-400" : "text-foreground"}`}>{returnRate.toFixed(1)}%</p>
+              <p className="text-xs text-muted-foreground">visitors who come back</p>
             </div>
-          )}
-        </CardContent>
-      </Card>
+            <div>
+              <p className="text-xs text-muted-foreground">Avg pages per visit</p>
+              <p className="text-2xl font-bold">{(data?.avgPagesPerSession ?? 0).toFixed(1)}</p>
+              <p className="text-xs text-muted-foreground">pages viewed per session</p>
+            </div>
+          </div>
+          <div>
+            <p className="text-sm font-medium mb-2">Form Field Drop-off</p>
+            <p className="text-xs text-muted-foreground mb-3">Which fields do people start filling in but then leave without submitting?</p>
+            {(data?.fieldEngagement ?? []).length === 0 ? (
+              <EmptyState icon={Activity} label="No form focus data yet" />
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-muted-foreground text-xs">
+                      <th className="text-left py-2 pr-4 font-medium">Field</th>
+                      <th className="text-right py-2 px-2 font-medium">Focused</th>
+                      <th className="text-right py-2 px-2 font-medium">Left Without Submitting</th>
+                      <th className="text-right py-2 pl-2 font-medium">Drop-off Rate</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(data?.fieldEngagement ?? []).slice(0, 15).map((f) => {
+                      const abandonRate = f.focusCount > 0 ? (f.abandonCount / f.focusCount) * 100 : 0;
+                      return (
+                        <tr
+                          key={f.fieldName}
+                          className="border-b border-muted/50 hover:bg-muted/30"
+                          data-testid={`field-row-${f.fieldName}`}
+                        >
+                          <td className="py-2 pr-4 font-medium">{f.fieldName}</td>
+                          <td className="text-right py-2 px-2">{f.focusCount}</td>
+                          <td className="text-right py-2 px-2">{f.abandonCount}</td>
+                          <td className="text-right py-2 pl-2">
+                            <Badge
+                              variant={abandonRate > 50 ? "destructive" : "secondary"}
+                              className="text-xs"
+                            >
+                              {abandonRate.toFixed(0)}%
+                            </Badge>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Top Entry Pages</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {(data?.topEntryPages ?? []).length === 0 ? (
-              <EmptyState icon={Eye} label="No data yet" />
-            ) : (
-              <div className="space-y-2">
-                {(data?.topEntryPages ?? []).map((p) => (
-                  <div key={p.page} className="flex items-center justify-between text-sm">
-                    <span className="font-mono text-xs truncate max-w-[160px]">{p.page}</span>
-                    <Badge variant="secondary">{p.count}</Badge>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Top Exit Pages</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {(data?.topExitPages ?? []).length === 0 ? (
-              <EmptyState icon={Eye} label="No data yet" />
-            ) : (
-              <div className="space-y-2">
-                {(data?.topExitPages ?? []).map((p) => (
-                  <div key={p.page} className="flex items-center justify-between text-sm">
-                    <span className="font-mono text-xs truncate max-w-[160px]">{p.page}</span>
-                    <Badge variant="secondary">{p.count}</Badge>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <p className="text-sm font-medium mb-2">Top Entry Pages</p>
+              {(data?.topEntryPages ?? []).length === 0 ? (
+                <EmptyState icon={Eye} label="No data yet" />
+              ) : (
+                <div className="space-y-2">
+                  {(data?.topEntryPages ?? []).map((p) => (
+                    <div key={p.page} className="flex items-center justify-between text-sm">
+                      <span className="font-mono text-xs truncate max-w-[160px]">{p.page}</span>
+                      <Badge variant="secondary">{p.count}</Badge>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div>
+              <p className="text-sm font-medium mb-2">Top Exit Pages</p>
+              {(data?.topExitPages ?? []).length === 0 ? (
+                <EmptyState icon={Eye} label="No data yet" />
+              ) : (
+                <div className="space-y-2">
+                  {(data?.topExitPages ?? []).map((p) => (
+                    <div key={p.page} className="flex items-center justify-between text-sm">
+                      <span className="font-mono text-xs truncate max-w-[160px]">{p.page}</span>
+                      <Badge variant="secondary">{p.count}</Badge>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </ShowDetails>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -600,166 +652,142 @@ function DealOutcomePanel({ adminKey, range }: { adminKey: string; range: DateRa
     score: parseFloat(d.avgScore.toFixed(2)),
   }));
 
+  const greenPct = total > 0 ? ((dist.green / total) * 100).toFixed(0) : "0";
+  const redPct = total > 0 ? ((dist.red / total) * 100).toFixed(0) : "0";
+
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5" />
-              Verdict Distribution
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {total === 0 ? (
-              <EmptyState icon={BarChart3} label="No scores yet" />
-            ) : (
-              <>
-                <div className="h-56">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={donutData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={60}
-                        outerRadius={85}
-                        paddingAngle={2}
-                        dataKey="value"
-                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                        labelLine={false}
-                      >
-                        {donutData.map((entry, i) => (
-                          <Cell key={i} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip contentStyle={TOOLTIP_STYLE} />
-                    </PieChart>
-                  </ResponsiveContainer>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <BarChart3 className="h-5 w-5" />
+          Deal Outcomes
+        </CardTitle>
+        <p className="text-xs text-muted-foreground">How deals are rating out — Green = fair deal, Yellow = review, Red = problems</p>
+      </CardHeader>
+      <CardContent>
+        {total === 0 ? (
+          <EmptyState icon={BarChart3} label="No scores yet" />
+        ) : (
+          <>
+            <div className="pb-2">
+              <p className="text-xs text-muted-foreground">Fair deals</p>
+              <p className="text-3xl font-bold text-green-600 dark:text-green-400">{dist.green}</p>
+              <p className="text-xs text-muted-foreground">{greenPct}% of all deals analyzed</p>
+            </div>
+            <ShowDetails testId="button-show-details-deal-outcomes">
+              <div className="flex flex-wrap gap-6 pb-2 mb-4 border-b">
+                <div>
+                  <p className="text-xs text-muted-foreground">Deals with problems</p>
+                  <p className="text-2xl font-bold text-red-600 dark:text-red-400">{dist.red}</p>
+                  <p className="text-xs text-muted-foreground">{redPct}% of total</p>
                 </div>
-                <div className="flex justify-center gap-4 mt-1">
-                  {donutData.map((d) => (
-                    <div key={d.name} className="flex items-center gap-1">
-                      <div className="h-3 w-3 rounded-full" style={{ backgroundColor: d.color }} />
-                      <span className="text-xs text-muted-foreground">{d.name}: {d.value}</span>
+                <div>
+                  <p className="text-xs text-muted-foreground">Needs more info</p>
+                  <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{dist.yellow}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                  <p className="text-sm font-medium mb-2">Score Distribution</p>
+                  <div className="h-56">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={donutData}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}
+                          outerRadius={85}
+                          paddingAngle={2}
+                          dataKey="value"
+                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                          labelLine={false}
+                        >
+                          {donutData.map((entry, i) => (
+                            <Cell key={i} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip contentStyle={TOOLTIP_STYLE} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="flex justify-center gap-4 mt-1">
+                    {donutData.map((d) => (
+                      <div key={d.name} className="flex items-center gap-1">
+                        <div className="h-3 w-3 rounded-full" style={{ backgroundColor: d.color }} />
+                        <span className="text-xs text-muted-foreground">{d.name}: {d.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium mb-2">Avg Deal Score Trend</p>
+                  <p className="text-xs text-muted-foreground mb-2">3=Green, 2=Yellow, 1=Red</p>
+                  {trendData.length === 0 ? (
+                    <EmptyState icon={TrendingUp} label="No trend data yet" />
+                  ) : (
+                    <div className="h-48">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={trendData}>
+                          <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                          <XAxis dataKey="date" className="text-xs" tick={{ fill: "hsl(var(--muted-foreground))" }} />
+                          <YAxis domain={[1, 3]} ticks={[1, 2, 3]} tick={{ fill: "hsl(var(--muted-foreground))" }} />
+                          <Tooltip contentStyle={TOOLTIP_STYLE} />
+                          <Line type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} />
+                        </LineChart>
+                      </ResponsiveContainer>
                     </div>
-                  ))}
+                  )}
                 </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              Avg Deal Score Trend
-            </CardTitle>
-            <p className="text-xs text-muted-foreground">3=Green, 2=Yellow, 1=Red</p>
-          </CardHeader>
-          <CardContent>
-            {trendData.length === 0 ? (
-              <EmptyState icon={TrendingUp} label="No trend data yet" />
-            ) : (
-              <div className="h-56">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={trendData}>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                    <XAxis dataKey="date" className="text-xs" tick={{ fill: "hsl(var(--muted-foreground))" }} />
-                    <YAxis domain={[1, 3]} ticks={[1, 2, 3]} tick={{ fill: "hsl(var(--muted-foreground))" }} />
-                    <Tooltip contentStyle={TOOLTIP_STYLE} />
-                    <Line type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} />
-                  </LineChart>
-                </ResponsiveContainer>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard
-          title="Green Deals"
-          value={dist.green}
-          subtitle="Good to go"
-          icon={CheckCircle}
-          color="success"
-        />
-        <StatCard
-          title="Yellow Deals"
-          value={dist.yellow}
-          subtitle="Need more info"
-          icon={AlertTriangle}
-          color="warning"
-        />
-        <StatCard
-          title="Red Deals"
-          value={dist.red}
-          subtitle="Red flags detected"
-          icon={AlertTriangle}
-          color="danger"
-        />
-      </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <p className="text-sm font-medium mb-2">Most Common Fees Found</p>
+                  {(data?.topFeeTypes ?? []).length === 0 ? (
+                    <EmptyState icon={BarChart3} label="No fee type data yet" />
+                  ) : (
+                    <div className="space-y-2">
+                      {(data?.topFeeTypes ?? []).map((f) => (
+                        <div
+                          key={f.feeName}
+                          className="flex items-center justify-between text-sm"
+                          data-testid={`fee-row-${f.feeName}`}
+                        >
+                          <span className="capitalize truncate max-w-[200px]">{f.feeName}</span>
+                          <Badge variant="secondary">{f.count}</Badge>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Most Common Fee Types
-            </CardTitle>
-            <p className="text-xs text-muted-foreground">Fee names extracted from flagged submissions</p>
-          </CardHeader>
-          <CardContent>
-            {(data?.topFeeTypes ?? []).length === 0 ? (
-              <EmptyState icon={BarChart3} label="No fee type data yet" />
-            ) : (
-              <div className="space-y-2">
-                {(data?.topFeeTypes ?? []).map((f) => (
-                  <div
-                    key={f.feeName}
-                    className="flex items-center justify-between text-sm"
-                    data-testid={`fee-row-${f.feeName}`}
-                  >
-                    <span className="capitalize truncate max-w-[200px]">{f.feeName}</span>
-                    <Badge variant="secondary">{f.count}</Badge>
-                  </div>
-                ))}
+                <div>
+                  <p className="text-sm font-medium mb-2">Most Common Dealer Tactics</p>
+                  {(data?.topTacticFlags ?? []).length === 0 ? (
+                    <EmptyState icon={AlertTriangle} label="No tactic flag data yet" />
+                  ) : (
+                    <div className="space-y-2">
+                      {(data?.topTacticFlags ?? []).map((t) => (
+                        <div
+                          key={t.tactic}
+                          className="flex items-center justify-between text-sm"
+                          data-testid={`tactic-row-${t.tactic}`}
+                        >
+                          <span>{t.tactic}</span>
+                          <Badge variant={t.count > 5 ? "destructive" : "secondary"}>{t.count}</Badge>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4" />
-              Dealer Tactic Flags
-            </CardTitle>
-            <p className="text-xs text-muted-foreground">Most commonly flagged dealer tactics in submissions</p>
-          </CardHeader>
-          <CardContent>
-            {(data?.topTacticFlags ?? []).length === 0 ? (
-              <EmptyState icon={AlertTriangle} label="No tactic flag data yet" />
-            ) : (
-              <div className="space-y-2">
-                {(data?.topTacticFlags ?? []).map((t) => (
-                  <div
-                    key={t.tactic}
-                    className="flex items-center justify-between text-sm"
-                    data-testid={`tactic-row-${t.tactic}`}
-                  >
-                    <span>{t.tactic}</span>
-                    <Badge variant={t.count > 5 ? "destructive" : "secondary"}>{t.count}</Badge>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+            </ShowDetails>
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -799,6 +827,8 @@ function GeographicPanel({ adminKey, range }: { adminKey: string; range: DateRan
   if (isError) return <PanelErrorCard error={error} label="geographic data" />;
 
   const states = (data?.states ?? []).slice().sort((a, b) => b[sortKey] - a[sortKey]);
+  const topState = states[0];
+  const totalStates = states.length;
 
   const SortBtn = ({ k, label }: { k: GeoSortKey; label: string }) => (
     <button
@@ -815,75 +845,87 @@ function GeographicPanel({ adminKey, range }: { adminKey: string; range: DateRan
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <MapPin className="h-5 w-5" />
-              Geographic Breakdown
-            </CardTitle>
-            <p className="text-xs text-muted-foreground mt-1">
-              State-level submission and conversion data
-            </p>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="text-xs text-muted-foreground mr-1">Sort:</span>
-            <SortBtn k="submissionCount" label="Volume" />
-            <SortBtn k="paymentRate" label="Pay Rate" />
-            <SortBtn k="avgScore" label="Avg Score" />
-          </div>
-        </div>
+        <CardTitle className="flex items-center gap-2">
+          <MapPin className="h-5 w-5" />
+          Where Customers Are
+        </CardTitle>
+        <p className="text-xs text-muted-foreground">State-level submission and payment breakdown</p>
       </CardHeader>
       <CardContent>
         {states.length === 0 ? (
           <EmptyState icon={MapPin} label="No geographic data yet" />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b text-muted-foreground text-xs">
-                  <th className="text-left py-2 pr-4 font-medium">State</th>
-                  <th className="text-right py-2 px-2 font-medium">Submissions</th>
-                  <th className="text-right py-2 px-2 font-medium">Payments</th>
-                  <th className="text-right py-2 px-2 font-medium">Pay Rate</th>
-                  <th className="text-right py-2 pl-2 font-medium">Avg Score</th>
-                </tr>
-              </thead>
-              <tbody>
-                {states.map((s) => (
-                  <tr
-                    key={s.state}
-                    className="border-b border-muted/50 hover:bg-muted/30 transition-colors"
-                    data-testid={`geo-row-${s.state}`}
-                  >
-                    <td className="py-2 pr-4 font-semibold">{s.state}</td>
-                    <td className="text-right py-2 px-2">{s.submissionCount}</td>
-                    <td className="text-right py-2 px-2">{s.paymentCount}</td>
-                    <td className="text-right py-2 px-2">
-                      <Badge
-                        variant={s.paymentRate > 20 ? "default" : "secondary"}
-                        className="text-xs"
+          <>
+            <div className="pb-2">
+              <p className="text-xs text-muted-foreground">States represented</p>
+              <p className="text-3xl font-bold">{totalStates}</p>
+              <p className="text-xs text-muted-foreground">unique states with submissions</p>
+            </div>
+            <ShowDetails testId="button-show-details-geography">
+              {topState && (
+                <div className="flex flex-wrap gap-6 pb-2 mb-4 border-b">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Top state by volume</p>
+                    <p className="text-2xl font-bold">{topState.state}</p>
+                    <p className="text-xs text-muted-foreground">{topState.submissionCount} submissions</p>
+                  </div>
+                </div>
+              )}
+              <div className="flex items-center gap-1 mb-3">
+                <span className="text-xs text-muted-foreground mr-1">Sort:</span>
+                <SortBtn k="submissionCount" label="Volume" />
+                <SortBtn k="paymentRate" label="Pay Rate" />
+                <SortBtn k="avgScore" label="Avg Score" />
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-muted-foreground text-xs">
+                      <th className="text-left py-2 pr-4 font-medium">State</th>
+                      <th className="text-right py-2 px-2 font-medium">Submissions</th>
+                      <th className="text-right py-2 px-2 font-medium">Payments</th>
+                      <th className="text-right py-2 px-2 font-medium">Pay Rate</th>
+                      <th className="text-right py-2 pl-2 font-medium">Avg Score</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {states.map((s) => (
+                      <tr
+                        key={s.state}
+                        className="border-b border-muted/50 hover:bg-muted/30 transition-colors"
+                        data-testid={`geo-row-${s.state}`}
                       >
-                        {s.paymentRate.toFixed(1)}%
-                      </Badge>
-                    </td>
-                    <td className="text-right py-2 pl-2">
-                      <span
-                        className={
-                          s.avgScore >= 2.5
-                            ? "text-green-600 dark:text-green-400"
-                            : s.avgScore >= 1.5
-                            ? "text-yellow-600 dark:text-yellow-400"
-                            : "text-red-600 dark:text-red-400"
-                        }
-                      >
-                        {s.avgScore > 0 ? s.avgScore.toFixed(1) : "—"}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                        <td className="py-2 pr-4 font-semibold">{s.state}</td>
+                        <td className="text-right py-2 px-2">{s.submissionCount}</td>
+                        <td className="text-right py-2 px-2">{s.paymentCount}</td>
+                        <td className="text-right py-2 px-2">
+                          <Badge
+                            variant={s.paymentRate > 20 ? "default" : "secondary"}
+                            className="text-xs"
+                          >
+                            {s.paymentRate.toFixed(1)}%
+                          </Badge>
+                        </td>
+                        <td className="text-right py-2 pl-2">
+                          <span
+                            className={
+                              s.avgScore >= 2.5
+                                ? "text-green-600 dark:text-green-400"
+                                : s.avgScore >= 1.5
+                                ? "text-yellow-600 dark:text-yellow-400"
+                                : "text-red-600 dark:text-red-400"
+                            }
+                          >
+                            {s.avgScore > 0 ? s.avgScore.toFixed(1) : "—"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </ShowDetails>
+          </>
         )}
       </CardContent>
     </Card>
@@ -930,96 +972,102 @@ function AcquisitionPanel({ adminKey, range }: { adminKey: string; range: DateRa
     submissions: s.submissions,
   }));
 
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Globe className="h-5 w-5" />
-            Traffic Sources
-          </CardTitle>
-          <p className="text-xs text-muted-foreground">Page views, sessions, submissions, and payments by referrer domain</p>
-        </CardHeader>
-        <CardContent>
-          {chartData.length === 0 ? (
-            <EmptyState icon={Globe} label="No referrer data yet" />
-          ) : (
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis type="number" tick={{ fill: "hsl(var(--muted-foreground))" }} />
-                  <YAxis
-                    type="category"
-                    dataKey="source"
-                    width={120}
-                    tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
-                  />
-                  <Tooltip contentStyle={TOOLTIP_STYLE} />
-                  <Legend />
-                  <Bar dataKey="views" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} name="Views" />
-                  <Bar dataKey="submissions" fill="#22c55e" radius={[0, 4, 4, 0]} name="Submissions" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+  const topSource = sources[0];
+  const totalViews = sources.reduce((s, r) => s + r.views, 0);
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Conversion by Source</CardTitle>
-          <p className="text-xs text-muted-foreground">Sub rate = submissions ÷ sessions. Pay rate = payments ÷ submissions.</p>
-        </CardHeader>
-        <CardContent>
-          {sources.length === 0 ? (
-            <EmptyState icon={Globe} label="No data yet" />
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b text-muted-foreground text-xs">
-                    <th className="text-left py-2 pr-4 font-medium">Source</th>
-                    <th className="text-right py-2 px-2 font-medium">Views</th>
-                    <th className="text-right py-2 px-2 font-medium">Sessions</th>
-                    <th className="text-right py-2 px-2 font-medium">Sub Rate</th>
-                    <th className="text-right py-2 px-2 font-medium">Payments</th>
-                    <th className="text-right py-2 pl-2 font-medium">Pay Rate</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sources.map((s) => (
-                    <tr
-                      key={s.source}
-                      className="border-b border-muted/50 hover:bg-muted/30"
-                      data-testid={`acq-row-${s.source}`}
-                    >
-                      <td className="py-2 pr-4 truncate max-w-[180px] font-mono text-xs">{s.source}</td>
-                      <td className="text-right py-2 px-2">{s.views}</td>
-                      <td className="text-right py-2 px-2">{s.sessions}</td>
-                      <td className="text-right py-2 px-2">
-                        <Badge variant="secondary" className="text-xs">
-                          {s.submissionRate.toFixed(1)}%
-                        </Badge>
-                      </td>
-                      <td className="text-right py-2 px-2">{s.payments}</td>
-                      <td className="text-right py-2 pl-2">
-                        <Badge
-                          variant={s.paymentRate > 10 ? "default" : "secondary"}
-                          className="text-xs"
-                        >
-                          {s.paymentRate.toFixed(1)}%
-                        </Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Globe className="h-5 w-5" />
+          Where Traffic Comes From
+        </CardTitle>
+        <p className="text-xs text-muted-foreground">Which referral sources drive the most visitors and submissions</p>
+      </CardHeader>
+      <CardContent>
+        {sources.length === 0 ? (
+          <EmptyState icon={Globe} label="No referrer data yet" />
+        ) : (
+          <>
+            <div className="pb-2">
+              <p className="text-xs text-muted-foreground">Total views tracked</p>
+              <p className="text-3xl font-bold">{totalViews.toLocaleString()}</p>
             </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+            <ShowDetails testId="button-show-details-acquisition">
+              {topSource && (
+                <div className="flex flex-wrap gap-6 pb-2 mb-4 border-b">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Top source</p>
+                    <p className="text-xl font-bold truncate max-w-xs">{topSource.source}</p>
+                    <p className="text-xs text-muted-foreground">{topSource.views} views · {topSource.submissions} submissions</p>
+                  </div>
+                </div>
+              )}
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis type="number" tick={{ fill: "hsl(var(--muted-foreground))" }} />
+                    <YAxis
+                      type="category"
+                      dataKey="source"
+                      width={120}
+                      tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
+                    />
+                    <Tooltip contentStyle={TOOLTIP_STYLE} />
+                    <Legend />
+                    <Bar dataKey="views" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} name="Views" />
+                    <Bar dataKey="submissions" fill="#22c55e" radius={[0, 4, 4, 0]} name="Submissions" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-muted-foreground text-xs">
+                      <th className="text-left py-2 pr-4 font-medium">Source</th>
+                      <th className="text-right py-2 px-2 font-medium">Views</th>
+                      <th className="text-right py-2 px-2 font-medium">Visitors</th>
+                      <th className="text-right py-2 px-2 font-medium">Submit Rate</th>
+                      <th className="text-right py-2 px-2 font-medium">Payments</th>
+                      <th className="text-right py-2 pl-2 font-medium">Pay Rate</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sources.map((s) => (
+                      <tr
+                        key={s.source}
+                        className="border-b border-muted/50 hover:bg-muted/30"
+                        data-testid={`acq-row-${s.source}`}
+                      >
+                        <td className="py-2 pr-4 truncate max-w-[180px] font-mono text-xs">{s.source}</td>
+                        <td className="text-right py-2 px-2">{s.views}</td>
+                        <td className="text-right py-2 px-2">{s.sessions}</td>
+                        <td className="text-right py-2 px-2">
+                          <Badge variant="secondary" className="text-xs">
+                            {s.submissionRate.toFixed(1)}%
+                          </Badge>
+                        </td>
+                        <td className="text-right py-2 px-2">{s.payments}</td>
+                        <td className="text-right py-2 pl-2">
+                          <Badge
+                            variant={s.paymentRate > 10 ? "default" : "secondary"}
+                            className="text-xs"
+                          >
+                            {s.paymentRate.toFixed(1)}%
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </ShowDetails>
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -1067,99 +1115,119 @@ function RevenuePanel({ adminKey, range }: { adminKey: string; range: DateRange 
     rate: parseFloat(d.rate.toFixed(1)),
   }));
 
+  const weekChange = data && data.revenueLastWeek > 0
+    ? (((data.revenueThisWeek - data.revenueLastWeek) / data.revenueLastWeek) * 100).toFixed(0)
+    : null;
+
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="Total Revenue"
-          value={`$${(data?.totalRevenue ?? 0).toLocaleString()}`}
-          subtitle="In range"
-          icon={DollarSign}
-          color="success"
-        />
-        <StatCard
-          title="This Week"
-          value={`$${(data?.revenueThisWeek ?? 0).toLocaleString()}`}
-          subtitle="vs last week"
-          icon={TrendingUp}
-          color="success"
-          trend={{ current: data?.revenueThisWeek ?? 0, previous: data?.revenueLastWeek ?? 0 }}
-        />
-        <StatCard
-          title="Avg Revenue / Payer"
-          value={`$${(data?.avgRevenuePerPayer ?? 0).toFixed(0)}`}
-          subtitle="Average order value"
-          icon={Zap}
-        />
-        <StatCard
-          title="Est. Monthly Run Rate"
-          value={`$${(data?.estimatedMonthlyRunRate ?? 0).toLocaleString()}`}
-          subtitle="Based on last 30 days"
-          icon={BarChart3}
-          color="success"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5" />
-              30-Day Rolling Revenue
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {revenueChartData.length === 0 ? (
-              <EmptyState icon={DollarSign} label="No revenue data yet" />
-            ) : (
-              <div className="h-56">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={revenueChartData}>
-                    <defs>
-                      <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                    <XAxis dataKey="date" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
-                    <YAxis tick={{ fill: "hsl(var(--muted-foreground))" }} tickFormatter={(v) => `$${v}`} />
-                    <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`$${v}`, "Revenue"]} />
-                    <Area type="monotone" dataKey="revenue" stroke="#22c55e" fill="url(#revGrad)" strokeWidth={2} />
-                  </AreaChart>
-                </ResponsiveContainer>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <DollarSign className="h-5 w-5" />
+          Revenue Health
+        </CardTitle>
+        <p className="text-xs text-muted-foreground">How much money is coming in and how we're trending</p>
+      </CardHeader>
+      <CardContent>
+        <div className="pb-2">
+          <p className="text-xs text-muted-foreground">Total revenue in range</p>
+          <p className="text-3xl font-bold text-green-600 dark:text-green-400">${(data?.totalRevenue ?? 0).toLocaleString()}</p>
+        </div>
+        <ShowDetails testId="button-show-details-revenue">
+          <div className="flex flex-wrap gap-6 pb-2 mb-4 border-b">
+            <div>
+              <p className="text-xs text-muted-foreground">Estimated monthly run rate</p>
+              <p className="text-2xl font-bold">${(data?.estimatedMonthlyRunRate ?? 0).toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground">based on last 30 days</p>
+            </div>
+            {weekChange !== null && (
+              <div>
+                <p className="text-xs text-muted-foreground">vs last week</p>
+                <p className={`text-2xl font-bold ${parseFloat(weekChange) >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
+                  {parseFloat(weekChange) >= 0 ? "+" : ""}{weekChange}%
+                </p>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard
+              title="Total Revenue"
+              value={`$${(data?.totalRevenue ?? 0).toLocaleString()}`}
+              subtitle="In range"
+              icon={DollarSign}
+              color="success"
+            />
+            <StatCard
+              title="This Week"
+              value={`$${(data?.revenueThisWeek ?? 0).toLocaleString()}`}
+              subtitle="vs last week"
+              icon={TrendingUp}
+              color="success"
+              trend={{ current: data?.revenueThisWeek ?? 0, previous: data?.revenueLastWeek ?? 0 }}
+            />
+            <StatCard
+              title="Avg per Customer"
+              value={`$${(data?.avgRevenuePerPayer ?? 0).toFixed(0)}`}
+              subtitle="Average order value"
+              icon={Zap}
+            />
+            <StatCard
+              title="Monthly Run Rate"
+              value={`$${(data?.estimatedMonthlyRunRate ?? 0).toLocaleString()}`}
+              subtitle="Based on last 30 days"
+              icon={BarChart3}
+              color="success"
+            />
+          </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5" />
-              Payment Conversion Rate Trend
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {conversionChartData.length === 0 ? (
-              <EmptyState icon={Target} label="No conversion data yet" />
-            ) : (
-              <div className="h-56">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={conversionChartData}>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                    <XAxis dataKey="date" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
-                    <YAxis tick={{ fill: "hsl(var(--muted-foreground))" }} tickFormatter={(v) => `${v}%`} />
-                    <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v}%`, "Conversion"]} />
-                    <Line type="monotone" dataKey="rate" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <p className="text-sm font-medium mb-2">30-Day Revenue</p>
+              {revenueChartData.length === 0 ? (
+                <EmptyState icon={DollarSign} label="No revenue data yet" />
+              ) : (
+                <div className="h-56">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={revenueChartData}>
+                      <defs>
+                        <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                      <XAxis dataKey="date" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
+                      <YAxis tick={{ fill: "hsl(var(--muted-foreground))" }} tickFormatter={(v) => `$${v}`} />
+                      <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`$${v}`, "Revenue"]} />
+                      <Area type="monotone" dataKey="revenue" stroke="#22c55e" fill="url(#revGrad)" strokeWidth={2} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <p className="text-sm font-medium mb-2">Payment Conversion Rate Trend</p>
+              {conversionChartData.length === 0 ? (
+                <EmptyState icon={Target} label="No conversion data yet" />
+              ) : (
+                <div className="h-56">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={conversionChartData}>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                      <XAxis dataKey="date" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
+                      <YAxis tick={{ fill: "hsl(var(--muted-foreground))" }} tickFormatter={(v) => `${v}%`} />
+                      <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v}%`, "Conversion"]} />
+                      <Line type="monotone" dataKey="rate" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </div>
+          </div>
+        </ShowDetails>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -1201,61 +1269,81 @@ function FalloutPanel({ adminKey, range }: { adminKey: string; range: DateRange 
       : `${(avgMins / 60).toFixed(1)} hr`;
 
   const hourlyData = (data?.dropoffByHour ?? []).filter((h) => h.checkouts > 0);
+  const abandoned = data?.checkoutsWithoutPayment ?? 0;
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <StatCard
-          title="Checkouts Without Payment"
-          value={data?.checkoutsWithoutPayment ?? 0}
-          subtitle="Reached checkout but didn't pay"
-          icon={AlertTriangle}
-          color={(data?.checkoutsWithoutPayment ?? 0) > 0 ? "warning" : "default"}
-        />
-        <StatCard
-          title="Avg Time: Submission → Checkout"
-          value={avgMinsDisplay}
-          subtitle="Time between submitting and checkout"
-          icon={Clock}
-        />
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5" />
-            Drop-off by Hour of Day
-          </CardTitle>
-          <p className="text-xs text-muted-foreground">Checkouts vs. payments by hour — shows when users abandon</p>
-        </CardHeader>
-        <CardContent>
-          {hourlyData.length === 0 ? (
-            <EmptyState icon={Clock} label="No checkout data yet" />
-          ) : (
-            <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data?.dropoffByHour ?? []}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis
-                    dataKey="hour"
-                    tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
-                    tickFormatter={(h) => `${h}h`}
-                  />
-                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))" }} />
-                  <Tooltip
-                    contentStyle={TOOLTIP_STYLE}
-                    labelFormatter={(l) => `Hour: ${l}:00`}
-                  />
-                  <Legend />
-                  <Bar dataKey="checkouts" fill="hsl(var(--primary))" name="Checkouts" />
-                  <Bar dataKey="payments" fill="#22c55e" name="Payments" />
-                </BarChart>
-              </ResponsiveContainer>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <AlertTriangle className="h-5 w-5" />
+          Abandoned Checkouts
+        </CardTitle>
+        <p className="text-xs text-muted-foreground">People who started checkout but didn't complete payment</p>
+      </CardHeader>
+      <CardContent>
+        <div className="pb-2">
+          <p className="text-xs text-muted-foreground">Abandoned checkouts</p>
+          <p className={`text-3xl font-bold ${abandoned > 0 ? "text-yellow-600 dark:text-yellow-400" : "text-green-600 dark:text-green-400"}`}>
+            {abandoned}
+          </p>
+          <p className="text-xs text-muted-foreground">{abandoned === 0 ? "none — great!" : "got to checkout but didn't pay"}</p>
+        </div>
+        <ShowDetails testId="button-show-details-checkout">
+          {avgMinsDisplay !== "—" && (
+            <div className="flex flex-wrap gap-6 pb-2 mb-4 border-b">
+              <div>
+                <p className="text-xs text-muted-foreground">Avg time to checkout</p>
+                <p className="text-2xl font-bold">{avgMinsDisplay}</p>
+                <p className="text-xs text-muted-foreground">after submitting a deal</p>
+              </div>
             </div>
           )}
-        </CardContent>
-      </Card>
-    </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <StatCard
+              title="Abandoned Checkouts"
+              value={abandoned}
+              subtitle="Started but didn't pay"
+              icon={AlertTriangle}
+              color={abandoned > 0 ? "warning" : "default"}
+            />
+            <StatCard
+              title="Avg Time to Checkout"
+              value={avgMinsDisplay}
+              subtitle="Time between submitting and clicking pay"
+              icon={Clock}
+            />
+          </div>
+          <div>
+            <p className="text-sm font-medium mb-2">Checkouts vs Payments by Hour</p>
+            <p className="text-xs text-muted-foreground mb-2">Shows when people are most likely to abandon</p>
+            {hourlyData.length === 0 ? (
+              <EmptyState icon={Clock} label="No checkout data yet" />
+            ) : (
+              <div className="h-56">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={data?.dropoffByHour ?? []}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis
+                      dataKey="hour"
+                      tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+                      tickFormatter={(h) => `${h}h`}
+                    />
+                    <YAxis tick={{ fill: "hsl(var(--muted-foreground))" }} />
+                    <Tooltip
+                      contentStyle={TOOLTIP_STYLE}
+                      labelFormatter={(l) => `Hour: ${l}:00`}
+                    />
+                    <Legend />
+                    <Bar dataKey="checkouts" fill="hsl(var(--primary))" name="Checkouts" />
+                    <Bar dataKey="payments" fill="#22c55e" name="Payments" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </div>
+        </ShowDetails>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -1305,93 +1393,103 @@ function FeedbackAccuracyPanel({ adminKey }: { adminKey: string }) {
   const formatPct = (v: number | null | undefined) =>
     v == null ? "—" : `${Math.round(v * 100)}%`;
 
+  const overall = data?.overallAgreementRate ?? null;
+  const hasTopDealers = (data?.topDealers ?? []).length > 0;
+
   const colorLabel = {
     GREEN: { label: "Green Deals", color: "success" as const },
     YELLOW: { label: "Yellow Deals", color: "warning" as const },
     RED: { label: "Red Deals", color: "danger" as const },
   };
 
-  const hasTopDealers = (data?.topDealers ?? []).length > 0;
-  const overall = data?.overallAgreementRate ?? null;
-
   return (
-    <div className="space-y-6" data-testid="feedback-accuracy-panel">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="Overall Agreement Rate"
-          value={formatPct(overall)}
-          subtitle="Users agreeing with AI verdicts"
-          icon={CheckCircle}
-          color={overall == null ? "default" : overall >= 0.7 ? "success" : overall >= 0.5 ? "warning" : "danger"}
-        />
-        {(["GREEN", "YELLOW", "RED"] as const).map((color) => {
-          const rate = data?.byScoreColor?.[color] ?? null;
-          return (
+    <Card data-testid="feedback-accuracy-panel">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <CheckCircle className="h-5 w-5" />
+          AI Accuracy — User Agreement
+        </CardTitle>
+        <p className="text-xs text-muted-foreground">How often users agree with the AI's verdict on their deal</p>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-wrap gap-6 pb-2">
+          <div>
+            <p className="text-xs text-muted-foreground">Overall agreement rate</p>
+            <p className={`text-3xl font-bold ${overall == null ? "text-foreground" : overall >= 0.7 ? "text-green-600 dark:text-green-400" : overall >= 0.5 ? "text-yellow-600 dark:text-yellow-400" : "text-red-600 dark:text-red-400"}`}>
+              {formatPct(overall)}
+            </p>
+            <p className="text-xs text-muted-foreground">users agree with the AI's rating</p>
+          </div>
+        </div>
+        <ShowDetails testId="button-show-details-user-agreement">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
-              key={color}
-              title={colorLabel[color].label}
-              value={formatPct(rate)}
-              subtitle={`Agreement rate for ${color} verdicts`}
+              title="Overall Agreement"
+              value={formatPct(overall)}
+              subtitle="Users agreeing with AI verdicts"
               icon={CheckCircle}
-              color={colorLabel[color].color}
+              color={overall == null ? "default" : overall >= 0.7 ? "success" : overall >= 0.5 ? "warning" : "danger"}
             />
-          );
-        })}
-      </div>
+            {(["GREEN", "YELLOW", "RED"] as const).map((color) => {
+              const rate = data?.byScoreColor?.[color] ?? null;
+              return (
+                <StatCard
+                  key={color}
+                  title={colorLabel[color].label}
+                  value={formatPct(rate)}
+                  subtitle={`Agreement rate for ${color} verdicts`}
+                  icon={CheckCircle}
+                  color={colorLabel[color].color}
+                />
+              );
+            })}
+          </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Top Dealers by Feedback Volume
-          </CardTitle>
-          <p className="text-xs text-muted-foreground">Dealers with at least 3 feedback ratings, sorted by total feedback</p>
-        </CardHeader>
-        <CardContent>
-          {!hasTopDealers ? (
-            <EmptyState icon={Users} label="No dealers with 3+ feedback ratings yet" />
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm" data-testid="feedback-top-dealers-table">
-                <thead>
-                  <tr className="border-b text-left text-xs text-muted-foreground font-medium">
-                    <th className="pb-2 pr-4">Dealer</th>
-                    <th className="pb-2 pr-4 text-right">Total Feedback</th>
-                    <th className="pb-2 pr-4 text-right">Positive</th>
-                    <th className="pb-2 text-right">Agreement %</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data!.topDealers.map((dealer, i) => (
-                    <tr key={i} className="border-b last:border-0 hover:bg-muted/40 transition-colors" data-testid={`feedback-dealer-row-${i}`}>
-                      <td className="py-2 pr-4 font-medium">{dealer.dealerName}</td>
-                      <td className="py-2 pr-4 text-right text-muted-foreground">{dealer.totalFeedbackCount}</td>
-                      <td className="py-2 pr-4 text-right text-muted-foreground">{dealer.positiveFeedbackCount}</td>
-                      <td className="py-2 text-right font-semibold">
-                        <span
-                          className={
-                            dealer.agreementRate == null
-                              ? "text-muted-foreground"
-                              : dealer.agreementRate >= 0.7
-                              ? "text-green-600 dark:text-green-400"
-                              : dealer.agreementRate >= 0.5
-                              ? "text-yellow-600 dark:text-yellow-400"
-                              : "text-red-600 dark:text-red-400"
-                          }
-                          data-testid={`feedback-agreement-${i}`}
-                        >
-                          {formatPct(dealer.agreementRate)}
-                        </span>
-                      </td>
+          {hasTopDealers && (
+            <div>
+              <p className="text-sm font-medium mb-2">Top Dealers by Feedback Volume</p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm" data-testid="feedback-top-dealers-table">
+                  <thead>
+                    <tr className="border-b text-left text-xs text-muted-foreground font-medium">
+                      <th className="pb-2 pr-4">Dealer</th>
+                      <th className="pb-2 pr-4 text-right">Total Feedback</th>
+                      <th className="pb-2 pr-4 text-right">Positive</th>
+                      <th className="pb-2 text-right">Agreement %</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {data!.topDealers.map((dealer, i) => (
+                      <tr key={i} className="border-b last:border-0 hover:bg-muted/40 transition-colors" data-testid={`feedback-dealer-row-${i}`}>
+                        <td className="py-2 pr-4 font-medium">{dealer.dealerName}</td>
+                        <td className="py-2 pr-4 text-right text-muted-foreground">{dealer.totalFeedbackCount}</td>
+                        <td className="py-2 pr-4 text-right text-muted-foreground">{dealer.positiveFeedbackCount}</td>
+                        <td className="py-2 text-right font-semibold">
+                          <span
+                            className={
+                              dealer.agreementRate == null
+                                ? "text-muted-foreground"
+                                : dealer.agreementRate >= 0.7
+                                ? "text-green-600 dark:text-green-400"
+                                : dealer.agreementRate >= 0.5
+                                ? "text-yellow-600 dark:text-yellow-400"
+                                : "text-red-600 dark:text-red-400"
+                            }
+                            data-testid={`feedback-agreement-${i}`}
+                          >
+                            {formatPct(dealer.agreementRate)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
-        </CardContent>
-      </Card>
-    </div>
+        </ShowDetails>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -1475,169 +1573,187 @@ function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateR
   const hasStripe = data?.stripeActiveCustomers !== null && data?.stripeActiveCustomers !== undefined;
 
   return (
-    <div className="space-y-6" data-testid="panel-subscription-health">
-      {hasStripe && (
-        <p className="text-xs text-muted-foreground italic">
-          * Odigos is a one-time payment product — upcomingRenewals is 0 and MRR reflects 30-day revenue. Showing Stripe-verified payment data.
-        </p>
-      )}
+    <Card data-testid="panel-subscription-health">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <CreditCard className="h-5 w-5" />
+          Customer & Revenue Health
+        </CardTitle>
+        <p className="text-xs text-muted-foreground">Total paying customers and revenue performance</p>
+      </CardHeader>
+      <CardContent>
+        {hasStripe && (
+          <p className="text-xs text-muted-foreground italic mb-3">
+            * Odigos is a one-time payment product. MRR reflects 30-day revenue from Stripe.
+          </p>
+        )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="Active Subscribers"
-          value={activeSubscribers}
-          subtitle={hasStripe ? "Unique Stripe customers (all-time, paid)" : "Unique paying sessions (event-derived)"}
-          icon={Users}
-          color="success"
-        />
-        <StatCard
-          title="MRR (30-Day Revenue)"
-          value={mrr !== null ? `$${mrr.toLocaleString()}` : "—"}
-          subtitle={mrr !== null ? "Stripe payments in last 30 days" : "Stripe not configured"}
-          icon={TrendingUp}
-          color="success"
-        />
-        <StatCard
-          title="All-Time Revenue"
-          value={stripeRevenueDollars !== null && stripeRevenueDollars !== undefined
-            ? `$${stripeRevenueDollars.toLocaleString()}`
-            : `$${((data?.estimatedRevenue ?? 0)).toLocaleString()}`}
-          subtitle={stripeRevenueDollars !== null ? "From Stripe checkout sessions (all-time)" : "Estimated from tier prices"}
-          icon={CreditCard}
-          color="success"
-        />
-        <StatCard
-          title="New This Week"
-          value={data?.newPayersThisWeek ?? 0}
-          subtitle={data?.weekOverWeekGrowthPct !== null && data?.weekOverWeekGrowthPct !== undefined
-            ? `${data.weekOverWeekGrowthPct >= 0 ? "+" : ""}${data.weekOverWeekGrowthPct.toFixed(1)}% vs last week`
-            : "vs last week"}
-          icon={TrendingUp}
-          color={(data?.weekOverWeekGrowthPct ?? 0) >= 0 ? "success" : "warning"}
-          trend={{ current: data?.newPayersThisWeek ?? 0, previous: data?.newPayersLastWeek ?? 0 }}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <StatCard
-          title="Failed Payments"
-          value={failedPayments}
-          subtitle={hasStripe
-            ? `Stripe expired sessions · ${(data?.checkoutConversionRate ?? 0).toFixed(1)}% checkout→payment`
-            : `Abandoned before payment · ${(data?.checkoutConversionRate ?? 0).toFixed(1)}% conversion rate`}
-          icon={Activity}
-          color={(data?.checkoutConversionRate ?? 0) > 40 ? "success" : "warning"}
-        />
-        <StatCard
-          title="Churn This Period"
-          value={churnThisPeriod !== null ? churnThisPeriod : "—"}
-          subtitle="Customers active prev 30d but not current 30d"
-          icon={Users}
-          color={(churnThisPeriod ?? 0) === 0 ? "success" : "warning"}
-        />
-        <StatCard
-          title="Repeat Customers"
-          value={stripeRepeatCustomers !== null && stripeRepeatCustomers !== undefined ? stripeRepeatCustomers : "—"}
-          subtitle="Customers with 2+ Stripe sessions"
-          icon={Users}
-          color={(stripeRepeatCustomers ?? 0) > 0 ? "success" : "default"}
-        />
-        <StatCard
-          title="Upcoming Renewals"
-          value={upcomingRenewals}
-          subtitle="One-time payment product — no subscriptions"
-          icon={Activity}
-          color="default"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              New Payers — Last 30 Days
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {chartData.length === 0 ? (
-              <EmptyState icon={TrendingUp} label="No payment data yet" />
-            ) : (
-              <div className="h-56">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData}>
-                    <defs>
-                      <linearGradient id="payerGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                    <XAxis dataKey="date" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
-                    <YAxis tick={{ fill: "hsl(var(--muted-foreground))" }} allowDecimals={false} />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }}
-                      formatter={(v: number) => [v, "New Payers"]}
-                    />
-                    <Area type="monotone" dataKey="payers" stroke="hsl(var(--primary))" fill="url(#payerGrad)" strokeWidth={2} />
-                  </AreaChart>
-                </ResponsiveContainer>
+        <div className="pb-2">
+          <p className="text-xs text-muted-foreground">Total paying customers</p>
+          <p className="text-3xl font-bold text-green-600 dark:text-green-400">{activeSubscribers}</p>
+          <p className="text-xs text-muted-foreground">{hasStripe ? "unique Stripe customers" : "unique paying sessions"}</p>
+        </div>
+        <ShowDetails testId="button-show-details-customers">
+          <div className="flex flex-wrap gap-6 pb-2 mb-4 border-b">
+            {mrr !== null && (
+              <div>
+                <p className="text-xs text-muted-foreground">Monthly revenue (30d)</p>
+                <p className="text-2xl font-bold">${mrr.toLocaleString()}</p>
               </div>
             )}
-          </CardContent>
-        </Card>
+            <div>
+              <p className="text-xs text-muted-foreground">New this week</p>
+              <p className="text-2xl font-bold">{data?.newPayersThisWeek ?? 0}</p>
+              {data?.weekOverWeekGrowthPct !== null && data?.weekOverWeekGrowthPct !== undefined && (
+                <p className={`text-xs ${data.weekOverWeekGrowthPct >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
+                  {data.weekOverWeekGrowthPct >= 0 ? "↑" : "↓"} {Math.abs(data.weekOverWeekGrowthPct).toFixed(1)}% vs last week
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard
+              title="Total Customers"
+              value={activeSubscribers}
+              subtitle={hasStripe ? "Unique Stripe customers (paid)" : "Unique paying sessions"}
+              icon={Users}
+              color="success"
+            />
+            <StatCard
+              title="Monthly Revenue (30d)"
+              value={mrr !== null ? `$${mrr.toLocaleString()}` : "—"}
+              subtitle={mrr !== null ? "Stripe payments in last 30 days" : "Stripe not configured"}
+              icon={TrendingUp}
+              color="success"
+            />
+            <StatCard
+              title="All-Time Revenue"
+              value={stripeRevenueDollars !== null && stripeRevenueDollars !== undefined
+                ? `$${stripeRevenueDollars.toLocaleString()}`
+                : `$${((data?.estimatedRevenue ?? 0)).toLocaleString()}`}
+              subtitle={stripeRevenueDollars !== null ? "All Stripe sessions" : "Estimated from tier prices"}
+              icon={CreditCard}
+              color="success"
+            />
+            <StatCard
+              title="New This Week"
+              value={data?.newPayersThisWeek ?? 0}
+              subtitle={data?.weekOverWeekGrowthPct !== null && data?.weekOverWeekGrowthPct !== undefined
+                ? `${data.weekOverWeekGrowthPct >= 0 ? "+" : ""}${data.weekOverWeekGrowthPct.toFixed(1)}% vs last week`
+                : "vs last week"}
+              icon={TrendingUp}
+              color={(data?.weekOverWeekGrowthPct ?? 0) >= 0 ? "success" : "warning"}
+              trend={{ current: data?.newPayersThisWeek ?? 0, previous: data?.newPayersLastWeek ?? 0 }}
+            />
+          </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5" />
-              Revenue Tier Breakdown
-            </CardTitle>
-            <p className="text-xs text-muted-foreground">Distribution of payment tiers</p>
-          </CardHeader>
-          <CardContent>
-            {tierTotal === 0 ? (
-              <EmptyState icon={CreditCard} label="No payment tier data yet" />
-            ) : (
-              <div className="space-y-4">
-                <div className="h-48">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <StatCard
+              title="Failed Payments"
+              value={failedPayments}
+              subtitle={hasStripe
+                ? `Stripe expired sessions · ${(data?.checkoutConversionRate ?? 0).toFixed(1)}% conversion`
+                : `Abandoned before payment · ${(data?.checkoutConversionRate ?? 0).toFixed(1)}% conversion`}
+              icon={Activity}
+              color={(data?.checkoutConversionRate ?? 0) > 40 ? "success" : "warning"}
+            />
+            <StatCard
+              title="Churned This Period"
+              value={churnThisPeriod !== null ? churnThisPeriod : "—"}
+              subtitle="Active prev 30d but not current 30d"
+              icon={Users}
+              color={(churnThisPeriod ?? 0) === 0 ? "success" : "warning"}
+            />
+            <StatCard
+              title="Repeat Customers"
+              value={stripeRepeatCustomers !== null && stripeRepeatCustomers !== undefined ? stripeRepeatCustomers : "—"}
+              subtitle="Customers with 2+ Stripe sessions"
+              icon={Users}
+              color={(stripeRepeatCustomers ?? 0) > 0 ? "success" : "default"}
+            />
+            <StatCard
+              title="Upcoming Renewals"
+              value={upcomingRenewals}
+              subtitle="One-time product — no subscriptions"
+              icon={Activity}
+              color="default"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <p className="text-sm font-medium mb-2">New Customers — Last 30 Days</p>
+              {chartData.length === 0 ? (
+                <EmptyState icon={TrendingUp} label="No payment data yet" />
+              ) : (
+                <div className="h-56">
                   <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={tierData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={50}
-                        outerRadius={75}
-                        paddingAngle={2}
-                        dataKey="value"
-                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                        labelLine={false}
-                      >
-                        {tierData.map((entry, i) => (
-                          <Cell key={i} fill={entry.color} />
-                        ))}
-                      </Pie>
+                    <AreaChart data={chartData}>
+                      <defs>
+                        <linearGradient id="payerGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                      <XAxis dataKey="date" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
+                      <YAxis tick={{ fill: "hsl(var(--muted-foreground))" }} allowDecimals={false} />
                       <Tooltip
                         contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }}
+                        formatter={(v: number) => [v, "New Customers"]}
                       />
-                    </PieChart>
+                      <Area type="monotone" dataKey="payers" stroke="hsl(var(--primary))" fill="url(#payerGrad)" strokeWidth={2} />
+                    </AreaChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="flex justify-center gap-4">
-                  {tierData.map(d => (
-                    <div key={d.name} className="flex items-center gap-1">
-                      <div className="h-3 w-3 rounded-full" style={{ backgroundColor: d.color }} />
-                      <span className="text-xs text-muted-foreground">{d.name}: {d.value}</span>
-                    </div>
-                  ))}
+              )}
+            </div>
+
+            <div>
+              <p className="text-sm font-medium mb-2">Revenue Tier Breakdown</p>
+              {tierTotal === 0 ? (
+                <EmptyState icon={CreditCard} label="No payment tier data yet" />
+              ) : (
+                <div className="space-y-4">
+                  <div className="h-48">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={tierData}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={50}
+                          outerRadius={75}
+                          paddingAngle={2}
+                          dataKey="value"
+                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                          labelLine={false}
+                        >
+                          {tierData.map((entry, i) => (
+                            <Cell key={i} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="flex justify-center gap-4">
+                    {tierData.map(d => (
+                      <div key={d.name} className="flex items-center gap-1">
+                        <div className="h-3 w-3 rounded-full" style={{ backgroundColor: d.color }} />
+                        <span className="text-xs text-muted-foreground">{d.name}: {d.value}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+              )}
+            </div>
+          </div>
+        </ShowDetails>
+      </CardContent>
+    </Card>
   );
 }
 
