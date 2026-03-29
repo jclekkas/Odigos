@@ -755,8 +755,16 @@ function EmailPreviewForm({ analysisResult }: { analysisResult: AnalysisResponse
   });
 
   const handleSend = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setErrorMessage("Please enter a valid email address");
+      setStatus("error");
+      return;
+    }
     setStatus("idle");
     setErrorMessage(null);
+    setEmail(email.trim());
+    track("email_capture_submitted");
     emailMutation.mutate();
   };
 
@@ -767,7 +775,7 @@ function EmailPreviewForm({ analysisResult }: { analysisResult: AnalysisResponse
         data-testid="email-preview-success"
       >
         <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-        <p className="text-sm text-muted-foreground">Check your inbox!</p>
+        <p className="text-sm text-muted-foreground">Check your inbox — we sent your analysis</p>
       </div>
     );
   }
@@ -777,7 +785,8 @@ function EmailPreviewForm({ analysisResult }: { analysisResult: AnalysisResponse
       className="border border-border/40 rounded-xl px-4 py-3 bg-muted/10 space-y-2"
       data-testid="email-preview-form"
     >
-      <p className="text-sm font-medium text-foreground">Email me a copy</p>
+      <p className="text-sm font-medium text-foreground">Want a copy of this analysis?</p>
+      <p className="text-xs text-muted-foreground">Send it to your email so you can review it later</p>
       <div className="flex gap-2 items-start">
         <div className="flex-1 min-w-0">
           <Input
@@ -811,7 +820,7 @@ function EmailPreviewForm({ analysisResult }: { analysisResult: AnalysisResponse
               Sending…
             </>
           ) : (
-            "Send"
+            "Email me this analysis"
           )}
         </Button>
       </div>
