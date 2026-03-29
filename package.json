@@ -8,7 +8,8 @@
     "build": "tsx script/build.ts",
     "start": "NODE_ENV=production node dist/index.cjs",
     "check": "tsc",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -52,6 +53,8 @@
     "@types/nodemailer": "^7.0.11",
     "@types/pdf-parse": "^1.1.5",
     "@types/supertest": "^7.2.0",
+    "@typescript-eslint/eslint-plugin": "^8.57.2",
+    "@typescript-eslint/parser": "^8.57.2",
     "@vitest/coverage-v8": "^4.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -61,6 +64,7 @@
     "drizzle-orm": "^0.39.3",
     "drizzle-zod": "^0.7.1",
     "embla-carousel-react": "^8.6.0",
+    "eslint": "^10.1.0",
     "express": "^4.21.2",
     "express-rate-limit": "^8.3.1",
     "fast-xml-parser": "^5.5.9",

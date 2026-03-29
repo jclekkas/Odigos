@@ -6,6 +6,16 @@
  *
  * To swap setImmediate for a real job queue (Bull, BullMQ, Temporal, etc.)
  * in the future, replace only the body of this function — no route changes needed.
+ *
+ * ⚠️  SINGLE-INSTANCE LIMITATION
+ * The internal queue implemented here uses setImmediate — it is in-process /
+ * memory-backed. All pending submissions live in the Node.js event loop of a
+ * single process. There is no cross-instance coordination.
+ * If the process crashes, any queued-but-not-yet-written submissions are lost.
+ * Running multiple server replicas does not distribute or share the queue —
+ * each replica independently writes its own submissions.
+ * Redis, BullMQ, or a similar durable queue is required for reliability and
+ * cross-instance coordination when scaling beyond one process.
  */
 import { storage } from "./storage";
 import { redactPII } from "./piiRedact";

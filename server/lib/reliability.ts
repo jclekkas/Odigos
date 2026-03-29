@@ -1,5 +1,14 @@
 /**
  * Shared reliability helpers for server-side retry and error classification.
+ *
+ * ⚠️  SINGLE-INSTANCE LIMITATION
+ * The retry state managed by withJitteredBackoff is in-process / memory-backed.
+ * Each retry counter and budget timer lives only within a single function call
+ * stack in one Node.js process. There is no cross-instance coordination.
+ * If multiple server replicas run simultaneously, each handles retries
+ * independently with no shared visibility into aggregate failure rates.
+ * Redis or a shared job queue is required for coordinated retry budgets
+ * when scaling beyond one process.
  */
 
 export interface RetriableErrorOptions {

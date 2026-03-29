@@ -43,7 +43,7 @@ export async function runAnalysis(data: AnalyzeInput): Promise<AnalyzeServiceRes
   console.log("Vehicle:", data.vehicle || "Not specified");
   console.log("Condition:", data.condition);
   console.log("Purchase Type:", data.purchaseType);
-  console.log("Dealer Text:", data.dealerText);
+  console.log("Dealer Text present:", Boolean(data.dealerText), "length:", data.dealerText?.length ?? 0);
   console.log("===========================");
 
   const stateDetection = detectStateFromText(data.dealerText, data.zipCode);

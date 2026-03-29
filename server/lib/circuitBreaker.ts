@@ -5,6 +5,16 @@
  *   CLOSED  – requests pass through normally
  *   OPEN    – fast-fail all requests (raise CircuitOpenError)
  *   HALF_OPEN – allow a small probe quota; close on success, re-open on failure
+ *
+ * ⚠️  SINGLE-INSTANCE LIMITATION
+ * This circuit breaker is in-process / memory-backed. All state (failure counts,
+ * open/half-open transitions) lives in the JavaScript heap of a single Node.js
+ * process. There is no cross-instance coordination. Running multiple server
+ * replicas means each replica has its own independent breaker state — a replica
+ * that has not personally seen failures will keep its breaker CLOSED even when
+ * the upstream service is down for other replicas.
+ * Redis (or a shared store) is required for a distributed, cross-instance
+ * circuit breaker when scaling beyond one process.
  */
 
 import * as Sentry from "@sentry/node";

@@ -26,11 +26,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # ── 2. Typecheck ─────────────────────────────────────────────────────────
+      # ── 2. Lint ───────────────────────────────────────────────────────────────
+      # Runs ESLint and fails CI on any error-level lint violations.
+      # Warnings (no-console, no-explicit-any) are reported but do not block CI
+      # to avoid surfacing pre-existing issues unrelated to this hardening task.
+      - name: Lint
+        run: npm run lint
+
+      # ── 3. Typecheck ─────────────────────────────────────────────────────────
       - name: Typecheck
         run: npm run check
 
-      # ── 3. Tests (unit + api + components) ──────────────────────────────────
+      # ── 4. Tests (unit + api + components) ──────────────────────────────────
       # Runs all three Vitest projects in one command.
       #
       # No PostgreSQL service container is needed: all database and external API

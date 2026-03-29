@@ -132,6 +132,15 @@ app.use((req, res, next) => {
 app.set("trust proxy", 1);
 
 // ── Rate limiting ─────────────────────────────────────────────────────────────
+//
+// ⚠️  SINGLE-INSTANCE LIMITATION
+// express-rate-limit uses an in-memory store by default. All request counters
+// live in the JavaScript heap of a single Node.js process. There is no
+// cross-instance coordination. Running multiple server replicas means each
+// replica tracks its own independent rate-limit windows — a client could
+// send max*replicas requests per window by spreading traffic across replicas.
+// Redis (via rate-limit-redis) or a shared store is required for accurate,
+// cross-instance rate limiting when scaling beyond one process.
 const generalLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 100,

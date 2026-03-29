@@ -61,6 +61,10 @@ args = "smoke"
 task = "workflow.run"
 args = "test:integration"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "lint"
+
 [[workflows.workflow]]
 name = "Start application"
 author = "agent"
@@ -157,6 +161,17 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npx vitest run tests/api/analyze.integration.test.ts"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "lint"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx eslint ."
 
 [workflows.workflow.metadata]
 outputType = "console"
