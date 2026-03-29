@@ -330,6 +330,14 @@ async function ensureWarehouseSchema(): Promise<void> {
       } catch (viewErr) {
         console.error("[warehouse] Failed to ensure dealer_feedback_stats view (non-fatal):", viewErr);
       }
+      // Seed baseline benchmarks idempotently on every startup so existing
+      // installations get state-level doc fee data even without a full bootstrap.
+      try {
+        const { seedBaselineBenchmarksIdempotent } = await import("./warehouse/seedReference");
+        await seedBaselineBenchmarksIdempotent();
+      } catch (seedErr) {
+        console.error("[warehouse] seedBaselineBenchmarks failed (non-fatal):", seedErr);
+      }
       return;
     }
 
@@ -338,8 +346,9 @@ async function ensureWarehouseSchema(): Promise<void> {
     const { setupWarehouseViews } = await import("./warehouse/setupViews");
     await setupWarehouseViews();
 
-    const { seedReferenceData } = await import("./warehouse/seedReference");
+    const { seedReferenceData, seedBaselineBenchmarksIdempotent } = await import("./warehouse/seedReference");
     await seedReferenceData();
+    await seedBaselineBenchmarksIdempotent();
 
     console.log("[warehouse] Bootstrap complete.");
   } catch (err) {

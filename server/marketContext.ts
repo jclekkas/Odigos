@@ -25,6 +25,32 @@ export function getStrength(sampleSize: number): MarketContextStrength {
   return "strong";
 }
 
+async function getNationalFallback(): Promise<{
+  nationalTotalAnalyses: number | null;
+  nationalAvgDocFee: number | null;
+} | null> {
+  try {
+    const result = await db.execute<{
+      total_listings: string | null;
+      avg_doc_fee: string | null;
+    }>(sql`
+      SELECT total_listings, avg_doc_fee
+      FROM core.national_stats
+      LIMIT 1
+    `);
+    const row = result.rows?.[0];
+    if (!row) return null;
+    const total = row.total_listings != null ? Number(row.total_listings) : null;
+    if (!total || total < 1) return null;
+    return {
+      nationalTotalAnalyses: total,
+      nationalAvgDocFee: row.avg_doc_fee != null ? Number(row.avg_doc_fee) : null,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function getDealerStats({
   state,
   dealerName,
@@ -101,7 +127,28 @@ export async function getMarketContext({
     const stateSampleSize = stateRow ? Number(stateRow.listing_count) : 0;
 
     if (stateSampleSize < 1) {
-      return null;
+      // No state data — try national fallback
+      const national = await getNationalFallback();
+      if (!national) return null;
+      return {
+        stateCode: state,
+        stateTotalAnalyses: null,
+        stateAvgDealScore: null,
+        stateAvgDocFee: null,
+        docFeeVsStateAvg: null,
+        dealerAnalysisCount: null,
+        dealerAvgDealScore: null,
+        stateSampleSize: 0,
+        stateStrength: "none",
+        dealerSampleSize: 0,
+        dealerStrength: "none",
+        feedbackSampleSize: 0,
+        feedbackStrength: "none",
+        overallStrength: "thin",
+        isNationalFallback: true,
+        nationalTotalAnalyses: national.nationalTotalAnalyses,
+        nationalAvgDocFee: national.nationalAvgDocFee,
+      };
     }
 
     const stateStrength = getStrength(stateSampleSize);

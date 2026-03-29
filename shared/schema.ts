@@ -36,6 +36,9 @@ export const marketContextSchema = z.object({
   feedbackSampleSize: z.number().optional(),
   feedbackStrength: marketContextStrengthSchema.optional(),
   overallStrength: marketContextStrengthSchema.optional(),
+  isNationalFallback: z.boolean().optional(),
+  nationalTotalAnalyses: z.number().nullable().optional(),
+  nationalAvgDocFee: z.number().nullable().optional(),
 });
 
 export type MarketContext = z.infer<typeof marketContextSchema>;

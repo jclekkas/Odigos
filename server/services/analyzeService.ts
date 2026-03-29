@@ -24,8 +24,15 @@ export function buildMarketContextSummary(
   mc: MarketContext | null,
   stateCode: string | null,
 ): string | undefined {
-  if (!mc || strength === "none") return undefined;
+  if (!mc) return undefined;
   const state = stateCode ?? mc?.stateCode ?? "this area";
+
+  // National fallback: no state data yet
+  if (mc.isNationalFallback) {
+    return `Based on national pricing data (state average builds with more ${state} quotes)`;
+  }
+
+  if (strength === "none") return undefined;
 
   // Determine which section is driving overallStrength so the summary is accurate.
   const strengthRank: Record<MarketContextStrength, number> = { none: 0, thin: 1, moderate: 2, strong: 3 };
@@ -46,13 +53,10 @@ export function buildMarketContextSummary(
     sourceLabel = "deals";
   }
 
-  if (strength === "strong") {
-    return `Based on strong local data (${sampleSize}+ ${sourceLabel} analyzed in ${state})`;
+  if (strength === "strong" || strength === "moderate") {
+    return `Based on ${sampleSize} ${state} quotes analyzed`;
   }
-  if (strength === "moderate") {
-    return `Based on local data (${sampleSize} similar ${sourceLabel} in ${state})`;
-  }
-  return `Based on early deal data in ${state}`;
+  return `Based on ${sampleSize} ${state} quotes + national data`;
 }
 
 export interface AnalyzeServiceResult {
@@ -187,39 +191,56 @@ When state is unknown: omit all state-specific fee characterizations.`;
   function buildMarketIntroPhrase(strength: MarketContextStrength): string {
     if (strength === "strong") return "Observed local market data shows";
     if (strength === "moderate") return "Recent local data suggests";
-    if (strength === "thin") return "Available local data suggests";
+    if (strength === "thin") return "Early local data suggests";
     return "";
   }
 
   let marketIntelligenceSection = "";
-  if (marketContext && overallStrength !== "none") {
+  if (marketContext) {
     const mc = marketContext;
-    const hasUsable = mc.stateTotalAnalyses != null || mc.stateAvgDocFee != null || mc.dealerAvgDealScore != null;
-    if (hasUsable) {
-      const stCode = stateDetection.state!;
-      const introPhrase = buildMarketIntroPhrase(overallStrength);
+    const stCode = stateDetection.state!;
+
+    if (mc.isNationalFallback) {
+      // National fallback: no state data yet — use national averages
       const miLines: string[] = [];
-      if (mc.stateTotalAnalyses != null && Number.isFinite(mc.stateTotalAnalyses)) {
-        const dealWord = mc.stateTotalAnalyses === 1 ? "deal" : "deals";
-        miLines.push(`${introPhrase}: In ${stCode}, we have analyzed ${mc.stateTotalAnalyses} ${dealWord}`);
+      if (mc.nationalTotalAnalyses != null && Number.isFinite(mc.nationalTotalAnalyses)) {
+        miLines.push(`National baseline: we have analyzed ${mc.nationalTotalAnalyses} deals nationwide`);
       }
-      if (mc.stateAvgDocFee != null && Number.isFinite(mc.stateAvgDocFee)) {
-        miLines.push(`Average doc fee in ${stCode} is $${Math.round(mc.stateAvgDocFee)}`);
-      }
-      if (mc.dealerAvgDealScore != null && mc.dealerAnalysisCount != null && Number.isFinite(mc.dealerAvgDealScore)) {
-        const quoteWord = mc.dealerAnalysisCount === 1 ? "quote" : "quotes";
-        miLines.push(`This dealer's average deal score is ${mc.dealerAvgDealScore} across ${mc.dealerAnalysisCount} analyzed ${quoteWord}`);
-      }
-      if (mc.feedbackCount != null && mc.feedbackCount >= 1 && mc.feedbackAgreementPct != null && Number.isFinite(mc.feedbackAgreementPct)) {
-        const pct = Math.round(mc.feedbackAgreementPct * 100);
-        miLines.push(`Users agreed with ${pct}% of past ${mc.feedbackCount} analyses for this dealer. Use this as a confidence-calibration signal: for borderline cases, avoid overstating certainty.`);
+      if (mc.nationalAvgDocFee != null && Number.isFinite(mc.nationalAvgDocFee)) {
+        miLines.push(`National average doc fee is $${Math.round(mc.nationalAvgDocFee)} (${stCode} state average builds as more ${stCode} quotes are analyzed)`);
       }
       if (miLines.length > 0) {
-        const limitedNote = overallStrength === "thin" ? " There are fewer than 3 comparable deals available — be appropriately conservative in your confidence language, but do not mention data limitations directly to the user." : "";
         marketIntelligenceSection = `
 MARKET_INTELLIGENCE
 ${miLines.join("\n")}
-Reference these figures in your summary and reasoning when they are materially relevant to evaluating the deal. Do not force their use when they do not meaningfully help. Use the provided figures exactly as written. Do not estimate, round, or invent additional statistics.${limitedNote}`;
+Reference these figures in your summary and reasoning when they are materially relevant to evaluating the deal. Do not force their use when they do not meaningfully help. Use the provided figures exactly as written. Do not estimate, round, or invent additional statistics. Note: these are national averages — state-specific data for ${stCode} is not yet available.`;
+      }
+    } else if (overallStrength !== "none") {
+      const hasUsable = mc.stateTotalAnalyses != null || mc.stateAvgDocFee != null || mc.dealerAvgDealScore != null;
+      if (hasUsable) {
+        const introPhrase = buildMarketIntroPhrase(overallStrength);
+        const miLines: string[] = [];
+        if (mc.stateTotalAnalyses != null && Number.isFinite(mc.stateTotalAnalyses)) {
+          const dealWord = mc.stateTotalAnalyses === 1 ? "deal" : "deals";
+          miLines.push(`${introPhrase}: Average doc fee in ${stCode} is based on ${mc.stateTotalAnalyses} ${dealWord} analyzed`);
+        }
+        if (mc.stateAvgDocFee != null && Number.isFinite(mc.stateAvgDocFee)) {
+          miLines.push(`Average doc fee in ${stCode} is $${Math.round(mc.stateAvgDocFee)} across ${mc.stateTotalAnalyses ?? 0} analyzed ${(mc.stateTotalAnalyses ?? 0) === 1 ? "analysis" : "analyses"}`);
+        }
+        if (mc.dealerAvgDealScore != null && mc.dealerAnalysisCount != null && Number.isFinite(mc.dealerAvgDealScore)) {
+          const quoteWord = mc.dealerAnalysisCount === 1 ? "quote" : "quotes";
+          miLines.push(`This dealer's average deal score is ${mc.dealerAvgDealScore} across ${mc.dealerAnalysisCount} analyzed ${quoteWord}`);
+        }
+        if (mc.feedbackCount != null && mc.feedbackCount >= 1 && mc.feedbackAgreementPct != null && Number.isFinite(mc.feedbackAgreementPct)) {
+          const pct = Math.round(mc.feedbackAgreementPct * 100);
+          miLines.push(`Users agreed with ${pct}% of past ${mc.feedbackCount} analyses for this dealer. Use this as a confidence-calibration signal: for borderline cases, avoid overstating certainty.`);
+        }
+        if (miLines.length > 0) {
+          marketIntelligenceSection = `
+MARKET_INTELLIGENCE
+${miLines.join("\n")}
+Reference these figures in your summary and reasoning when they are materially relevant to evaluating the deal. Do not force their use when they do not meaningfully help. Use the provided figures exactly as written. Do not estimate, round, or invent additional statistics.`;
+        }
       }
     }
   }

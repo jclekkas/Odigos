@@ -1,13 +1,15 @@
 import { db } from "../db";
 import { sql } from "drizzle-orm";
-import { coreStates, coreMetroAreas } from "../../shared/warehouse";
+import { coreStates, coreMetroAreas, coreDealers, coreListings } from "../../shared/warehouse";
 import stateRef from "../state_fee_reference.json";
+import { normalizeDealerName } from "./warehouseUtils";
 
 type StateData = {
   name: string;
   abbreviation: string;
   docFeeCap: boolean;
   docFeeCapAmount: number | null;
+  docFeeAverage: number | null;
   stateSalesTaxRate: number;
   tradeInTaxCredit: boolean;
 };
@@ -90,11 +92,118 @@ async function seedMetroAreas(): Promise<void> {
   console.log(`[seedReference] Inserted ${METRO_AREAS.length} metro areas into core.metro_areas.`);
 }
 
+/**
+ * Seeds baseline doc fee benchmarks for all states into core.listings.
+ * Uses ingestion_source = 'seed' to distinguish baseline rows from real user submissions.
+ * Idempotent: checks existing seed rows per state before inserting.
+ * Does NOT overwrite real user-submitted data.
+ * After inserting, refreshes the materialized views so state_stats reflects the seeded data.
+ */
+async function seedBaselineBenchmarks(): Promise<void> {
+  const refData = stateRef as StateRefJson;
+  const now = new Date();
+  let inserted = 0;
+
+  for (const [stateCode, data] of Object.entries(refData.states)) {
+    if (data.docFeeAverage == null) continue;
+
+    // Check if a seed row already exists for this state
+    const existing = await db.execute<{ cnt: string }>(sql`
+      SELECT COUNT(*) AS cnt
+      FROM core.listings
+      WHERE state_code = ${stateCode}
+        AND ingestion_source = 'seed'
+    `);
+    const existingCount = Number(existing.rows?.[0]?.cnt ?? 0);
+    if (existingCount > 0) continue;
+
+    // Ensure a sentinel seed dealer exists for this state
+    const sentinelDealerName = `State Baseline - ${stateCode}`;
+    const sentinelNormalized = normalizeDealerName(sentinelDealerName);
+    const sentinelCity = data.name;
+
+    let dealerId: string;
+    const existingDealer = await db
+      .select({ id: coreDealers.id })
+      .from(coreDealers)
+      .where(sql`dealer_name_normalized = ${sentinelNormalized} AND state_code = ${stateCode}`)
+      .limit(1);
+
+    if (existingDealer.length > 0) {
+      dealerId = existingDealer[0].id;
+    } else {
+      const inserted_ = await db
+        .insert(coreDealers)
+        .values({
+          dealerName: sentinelDealerName,
+          dealerNameNormalized: sentinelNormalized,
+          city: sentinelCity,
+          stateCode,
+          listingCount: 0,
+        })
+        .onConflictDoNothing()
+        .returning({ id: coreDealers.id });
+
+      if (inserted_.length > 0) {
+        dealerId = inserted_[0].id;
+      } else {
+        const refetch = await db
+          .select({ id: coreDealers.id })
+          .from(coreDealers)
+          .where(sql`dealer_name_normalized = ${sentinelNormalized} AND state_code = ${stateCode}`)
+          .limit(1);
+        dealerId = refetch[0].id;
+      }
+    }
+
+    // Insert a single baseline listing row tagged as seed
+    await db.insert(coreListings).values({
+      dealerId,
+      ingestionSource: "seed",
+      isFullyProcessed: true,
+      countsTowardRealDeals: false,
+      analysisVersion: 1,
+      isDuplicate: false,
+      isTestData: false,
+      hasPipelineError: false,
+      sanityFlags: [],
+      docFee: String(data.docFeeAverage),
+      flagCount: 0,
+      stateCode,
+      listingDate: now.toISOString().slice(0, 10),
+      analyzedAt: now,
+    }).onConflictDoNothing();
+
+    inserted++;
+  }
+
+  if (inserted > 0) {
+    // Refresh materialized views so state_stats and national_stats reflect the new baseline data
+    try {
+      await db.execute(sql`REFRESH MATERIALIZED VIEW core.state_stats`);
+      await db.execute(sql`REFRESH MATERIALIZED VIEW core.national_stats`);
+      console.log("[seedReference] Materialized views refreshed after seeding.");
+    } catch (refreshErr) {
+      console.warn("[seedReference] Could not refresh materialized views (non-fatal):", refreshErr);
+    }
+  }
+
+  console.log(`[seedReference] Baseline benchmarks: ${inserted} new state(s) seeded (skipped already-seeded states).`);
+}
+
 export async function seedReferenceData(): Promise<void> {
   console.log("[seedReference] Starting reference data seeding...");
   await seedStates();
   await seedMetroAreas();
   console.log("[seedReference] Reference data seeding complete.");
+}
+
+export async function seedBaselineBenchmarksIdempotent(): Promise<void> {
+  try {
+    await seedBaselineBenchmarks();
+  } catch (err) {
+    console.error("[seedReference] seedBaselineBenchmarks failed (non-fatal):", err);
+  }
 }
 
 // Only auto-execute when this file is run directly as an ESM script

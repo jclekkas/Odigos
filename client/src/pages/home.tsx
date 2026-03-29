@@ -533,56 +533,77 @@ function SuggestedReplyCard({ reply }: { reply: string }) {
   );
 }
 
-function MarketContextCard({ marketContext }: { marketContext: MarketContext }) {
+function MarketContextCard({ marketContext, stateCode }: { marketContext: MarketContext; stateCode?: string | null }) {
   const fmt = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
-  const state = marketContext.stateCode ?? "your state";
+  const state = stateCode ?? marketContext.stateCode ?? "your state";
 
   const narratives: { testId: string; text: string }[] = [];
 
-  if (
-    marketContext.docFeeVsStateAvg != null &&
-    Number.isFinite(marketContext.docFeeVsStateAvg) &&
-    marketContext.stateTotalAnalyses != null
-  ) {
-    const delta = marketContext.docFeeVsStateAvg;
-    const absDelta = fmt.format(Math.abs(delta));
-    const direction = delta >= 0 ? "above" : "below";
-    const dealWord = marketContext.stateTotalAnalyses === 1 ? "deal" : "deals";
-    narratives.push({
-      testId: "market-context-doc-fee-delta",
-      text: `Doc fee is ${absDelta} ${direction} the ${state} average across ${marketContext.stateTotalAnalyses.toLocaleString()} analyzed ${dealWord}.`,
-    });
-  } else if (
-    marketContext.stateAvgDocFee != null &&
-    Number.isFinite(marketContext.stateAvgDocFee) &&
-    marketContext.stateTotalAnalyses != null
-  ) {
-    const dealWord = marketContext.stateTotalAnalyses === 1 ? "deal" : "deals";
-    narratives.push({
-      testId: "market-context-state-avg-doc-fee",
-      text: `Average doc fee in ${state} is ${fmt.format(marketContext.stateAvgDocFee)} across ${marketContext.stateTotalAnalyses.toLocaleString()} analyzed ${dealWord}.`,
-    });
-  } else if (marketContext.stateTotalAnalyses != null) {
-    const dealWord = marketContext.stateTotalAnalyses === 1 ? "deal" : "deals";
-    narratives.push({
-      testId: "market-context-state-analyses",
-      text: `We have analyzed ${marketContext.stateTotalAnalyses.toLocaleString()} ${dealWord} in ${state}.`,
-    });
-  }
+  if (marketContext.isNationalFallback) {
+    // National fallback: no state data yet
+    if (marketContext.nationalAvgDocFee != null && Number.isFinite(marketContext.nationalAvgDocFee)) {
+      narratives.push({
+        testId: "market-context-national-avg-doc-fee",
+        text: `National average doc fee is ${fmt.format(marketContext.nationalAvgDocFee)}.`,
+      });
+    }
+    if (marketContext.nationalTotalAnalyses != null) {
+      const dealWord = marketContext.nationalTotalAnalyses === 1 ? "quote" : "quotes";
+      narratives.push({
+        testId: "market-context-national-analyses",
+        text: `Based on ${marketContext.nationalTotalAnalyses.toLocaleString()} analyzed ${dealWord} nationwide.`,
+      });
+    }
+  } else {
+    if (
+      marketContext.docFeeVsStateAvg != null &&
+      Number.isFinite(marketContext.docFeeVsStateAvg) &&
+      marketContext.stateTotalAnalyses != null
+    ) {
+      const delta = marketContext.docFeeVsStateAvg;
+      const absDelta = fmt.format(Math.abs(delta));
+      const direction = delta >= 0 ? "above" : "below";
+      const dealWord = marketContext.stateTotalAnalyses === 1 ? "deal" : "deals";
+      narratives.push({
+        testId: "market-context-doc-fee-delta",
+        text: `Doc fee is ${absDelta} ${direction} the ${state} average across ${marketContext.stateTotalAnalyses.toLocaleString()} analyzed ${dealWord}.`,
+      });
+    } else if (
+      marketContext.stateAvgDocFee != null &&
+      Number.isFinite(marketContext.stateAvgDocFee) &&
+      marketContext.stateTotalAnalyses != null
+    ) {
+      const dealWord = marketContext.stateTotalAnalyses === 1 ? "deal" : "deals";
+      narratives.push({
+        testId: "market-context-state-avg-doc-fee",
+        text: `Average doc fee in ${state} is ${fmt.format(marketContext.stateAvgDocFee)} across ${marketContext.stateTotalAnalyses.toLocaleString()} analyzed ${dealWord}.`,
+      });
+    } else if (marketContext.stateTotalAnalyses != null) {
+      const dealWord = marketContext.stateTotalAnalyses === 1 ? "deal" : "deals";
+      narratives.push({
+        testId: "market-context-state-analyses",
+        text: `We have analyzed ${marketContext.stateTotalAnalyses.toLocaleString()} ${dealWord} in ${state}.`,
+      });
+    }
 
-  if (
-    marketContext.dealerAvgDealScore != null &&
-    Number.isFinite(marketContext.dealerAvgDealScore) &&
-    marketContext.dealerAnalysisCount != null
-  ) {
-    const quoteWord = marketContext.dealerAnalysisCount === 1 ? "quote" : "quotes";
-    narratives.push({
-      testId: "market-context-dealer-score",
-      text: `This dealer's average deal score is ${marketContext.dealerAvgDealScore.toFixed(1)} across ${marketContext.dealerAnalysisCount} analyzed ${quoteWord}.`,
-    });
+    if (
+      marketContext.dealerAvgDealScore != null &&
+      Number.isFinite(marketContext.dealerAvgDealScore) &&
+      marketContext.dealerAnalysisCount != null
+    ) {
+      const quoteWord = marketContext.dealerAnalysisCount === 1 ? "quote" : "quotes";
+      narratives.push({
+        testId: "market-context-dealer-score",
+        text: `This dealer's average deal score is ${marketContext.dealerAvgDealScore.toFixed(1)} across ${marketContext.dealerAnalysisCount} analyzed ${quoteWord}.`,
+      });
+    }
   }
 
   if (narratives.length === 0) return null;
+
+  const growthNote = marketContext.isNationalFallback
+    ? `State benchmarks sharpen as more ${state} quotes are analyzed.`
+    : null;
 
   return (
     <Card className="bg-muted/20 border-border/40" data-testid="market-context-card">
@@ -597,6 +618,11 @@ function MarketContextCard({ marketContext }: { marketContext: MarketContext }) 
             {line.text}
           </p>
         ))}
+        {growthNote && (
+          <p className="text-xs text-muted-foreground leading-relaxed italic" data-testid="market-context-growth-note">
+            {growthNote}
+          </p>
+        )}
         <p className="text-xs text-muted-foreground leading-relaxed">
           Doc fee limits and other dealer fees vary by state. See our{" "}
           <Link href="/car-dealer-fees-by-state" className="underline underline-offset-2 hover:text-foreground transition-colors" data-testid="link-fees-by-state-context">
@@ -1780,14 +1806,16 @@ export default function Home() {
             <DetectedFieldsCard fields={result.detectedFields} />
 
             {result.marketContext && (
-              <MarketContextCard marketContext={result.marketContext} />
+              <MarketContextCard marketContext={result.marketContext} stateCode={result.marketContext.stateCode} />
             )}
             <p className="text-xs text-muted-foreground" data-testid="text-market-context-disclosure">
-              {result.marketContextStrength === "strong" || result.marketContextStrength === "moderate"
-                ? "This analysis includes local market data."
+              {result.marketContext?.isNationalFallback
+                ? `Based on national pricing data (state average builds with more ${result.marketContext.stateCode ?? "state"} quotes)`
+                : result.marketContextStrength === "strong" || result.marketContextStrength === "moderate"
+                ? `Based on ${result.marketContext?.stateTotalAnalyses ?? 0} ${result.marketContext?.stateCode ?? "state"} quotes analyzed`
                 : result.marketContextStrength === "thin"
-                ? "This analysis uses limited local market data."
-                : "This analysis is based on general pricing knowledge (limited local data available)."}
+                ? `Based on ${result.marketContext?.stateTotalAnalyses ?? 0} ${result.marketContext?.stateCode ?? "state"} quotes + national data`
+                : "Based on national pricing data"}
             </p>
 
             {unlockTier === "free" && (
