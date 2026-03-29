@@ -1021,7 +1021,7 @@ export default function Home() {
 
   useEffect(() => {
     const el = paywallRef.current;
-    if (!el || unlockTier !== "free") return;
+    if (!el || unlockTier !== "free" || typeof IntersectionObserver === "undefined") return;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting) {
