@@ -12,7 +12,7 @@ import { getMarketContext, getDealerStats, getStrength } from "../../server/mark
 const mockExecute = vi.mocked(db.execute);
 
 function stateRow(listing_count: number, avg_deal_score = "75.0", avg_doc_fee = "300.0") {
-  return { rows: [{ listing_count: String(listing_count), avg_deal_score, avg_doc_fee }] };
+  return { rows: [{ listing_count: String(listing_count), observed_count: String(listing_count), avg_deal_score, avg_doc_fee }] };
 }
 
 function dealerRow(listing_count: number, id = "dealer-1", avg_deal_score: string | null = "80.0") {

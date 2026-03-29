@@ -153,11 +153,12 @@ export async function getMarketContext({
   const workPromise = (async (): Promise<MarketContext | null> => {
     const stateResult = await db.execute<{
       listing_count: string;
+      observed_count: string;
       avg_deal_score: string | null;
       avg_doc_fee: string | null;
     }>(
       sql`
-        SELECT listing_count, avg_deal_score, avg_doc_fee
+        SELECT listing_count, observed_count, avg_deal_score, avg_doc_fee
         FROM core.state_stats
         WHERE state_code = ${state}
         LIMIT 1
@@ -165,7 +166,7 @@ export async function getMarketContext({
     );
 
     const stateRow = stateResult.rows?.[0];
-    const stateSampleSize = stateRow ? Number(stateRow.listing_count) : 0;
+    const stateSampleSize = stateRow ? Number(stateRow.observed_count) : 0;
 
     if (stateSampleSize < 1) {
       // No state data — try national fallback

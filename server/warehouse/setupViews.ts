@@ -240,11 +240,36 @@ export async function setupWarehouseViews(): Promise<void> {
       (SELECT COUNT(*) FROM core.dealers) AS total_dealers
   `);
 
+  // Drop state_stats if it pre-dates the observed_count column so we can
+  // recreate it with the corrected definition (seed rows excluded from count).
+  await db.execute(sql`
+    DO $$
+    BEGIN
+      IF EXISTS (
+        SELECT 1 FROM pg_matviews
+        WHERE schemaname = 'core' AND matviewname = 'state_stats'
+      ) AND NOT EXISTS (
+        SELECT 1 FROM pg_attribute a
+        JOIN pg_class c ON c.oid = a.attrelid
+        JOIN pg_namespace n ON n.oid = c.relnamespace
+        WHERE n.nspname = 'core'
+          AND c.relname = 'state_stats'
+          AND a.attname = 'observed_count'
+          AND a.attnum > 0
+          AND NOT a.attisdropped
+      ) THEN
+        DROP MATERIALIZED VIEW core.state_stats;
+      END IF;
+    END;
+    $$
+  `);
+
   await db.execute(sql`
     CREATE MATERIALIZED VIEW IF NOT EXISTS core.state_stats AS
     SELECT
       l.state_code,
       COUNT(*) AS listing_count,
+      COUNT(*) FILTER (WHERE l.ingestion_source <> 'seed') AS observed_count,
       AVG(l.deal_score) AS avg_deal_score,
       AVG(l.doc_fee) AS avg_doc_fee,
       COUNT(*) FILTER (WHERE l.doc_fee_over_state_cap = TRUE) AS doc_fee_over_cap_count
