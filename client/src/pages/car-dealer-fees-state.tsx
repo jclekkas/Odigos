@@ -216,6 +216,17 @@ export default function CarDealerFeesState() {
           </>
         )}
 
+        {data.buyerTip && (
+          <>
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">
+              Buyer tip for {data.name}
+            </h2>
+            <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-5 mb-8" data-testid={`block-buyer-tip-${data.slug}`}>
+              <p className="text-base text-muted-foreground">{data.buyerTip}</p>
+            </div>
+          </>
+        )}
+
         <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">
           What to say to the dealer
         </h2>
