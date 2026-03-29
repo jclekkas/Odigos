@@ -1023,3 +1023,31 @@ export async function getBIContentMetrics(range: DateRange): Promise<BIContentMe
     totalConversions: payments.length,
   };
 }
+
+export async function getFunnelEventMetrics() {
+  const { events } = await loadMetrics();
+
+  const count = (eventType: string) =>
+    events.filter((e) => e.eventType === eventType).length;
+
+  const started = count("analysis_started");
+  const completed = count("analysis_completed");
+  const paywallViewed = count("paywall_viewed");
+  const paywallClicked = count("paywall_clicked");
+  const purchased = count("purchase_completed");
+
+  return {
+    started,
+    completed,
+    paywallViewed,
+    paywallClicked,
+    purchased,
+    conversionRates: {
+      start_to_complete: started ? completed / started : 0,
+      complete_to_paywall: completed ? paywallViewed / completed : 0,
+      paywall_to_click: paywallViewed ? paywallClicked / paywallViewed : 0,
+      click_to_purchase: paywallClicked ? purchased / paywallClicked : 0,
+      overall: started ? purchased / started : 0,
+    },
+  };
+}

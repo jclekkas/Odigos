@@ -27,7 +27,12 @@ export type EventType =
   | "experiment_converted"
   | "analyze_start"
   | "rate_limit_breach"
-  | "feedback_signal";
+  | "feedback_signal"
+  | "analysis_started"
+  | "analysis_completed"
+  | "paywall_viewed"
+  | "paywall_clicked"
+  | "purchase_completed";
 
 export interface EventMetadata {
   dealScore?: "GREEN" | "YELLOW" | "RED";

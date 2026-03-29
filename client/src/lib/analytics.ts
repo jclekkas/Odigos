@@ -8,6 +8,7 @@ const ONCE_EVENTS = new Set(["paywall_viewed", "purchase_completed"]);
 export function track(eventName: string, props?: Record<string, unknown>): void {
   if (ONCE_EVENTS.has(eventName) && firedOnce.has(eventName)) return;
   if (ONCE_EVENTS.has(eventName)) firedOnce.add(eventName);
+  console.log(`[track] ${eventName}`, props ?? {});
   const payload = { event: eventName, props, timestamp: new Date().toISOString() };
   fetch("/api/track-event", {
     method: "POST",

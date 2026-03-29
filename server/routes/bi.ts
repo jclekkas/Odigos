@@ -2,6 +2,7 @@ import type { Express, Request } from "express";
 import type { DateRange } from "../bi";
 import { requireAdminKey } from "./admin";
 import { getStripeClient, isStripeConfigured } from "../stripeClient";
+import { getFunnelEventMetrics } from "../metrics/bi";
 
 const VALID_RANGES: DateRange[] = ["today", "week", "month", "all"];
 
@@ -164,6 +165,17 @@ export function registerBIRoutes(app: Express): void {
 
   app.get("/api/admin/users/lookup", async (req, res) => {
     res.redirect(301, `/api/admin/users/search?${new URLSearchParams(req.query as Record<string, string>).toString()}`);
+  });
+
+  app.get("/api/admin/bi/funnel-events", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
+    try {
+      const data = await getFunnelEventMetrics();
+      return res.json(data);
+    } catch (err) {
+      console.error("[bi:funnel-events]", err);
+      return res.status(500).json({ error: "Failed to load funnel metrics" });
+    }
   });
 
   app.get("/api/admin/content", async (req, res) => {

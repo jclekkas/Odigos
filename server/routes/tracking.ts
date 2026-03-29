@@ -1,7 +1,20 @@
 import { createHash } from "crypto";
 import type { Express } from "express";
 import { trackEvent } from "../events";
+import type { EventType } from "../events";
 import { getExperimentStats } from "../analytics";
+
+const FUNNEL_EVENT_TYPES: EventType[] = [
+  "analysis_started",
+  "analysis_completed",
+  "paywall_viewed",
+  "paywall_clicked",
+  "purchase_completed",
+];
+
+function isFunnelEventType(event: string): event is EventType {
+  return (FUNNEL_EVENT_TYPES as string[]).includes(event);
+}
 
 function hashIp(req: { ip?: string; headers: Record<string, string | string[] | undefined> }): string {
   const forwarded = req.headers["x-forwarded-for"];
@@ -64,6 +77,18 @@ export function registerTrackingRoutes(app: Express): void {
       console.error("Vitals error:", error);
       res.status(500).json({ error: "Failed to record vitals" });
     }
+  });
+
+  app.post("/api/track-event", (req, res) => {
+    const { event, props, timestamp } = req.body;
+    if (!event || typeof event !== "string" || event.trim() === "") {
+      return res.status(400).json({ error: "event must be a non-empty string" });
+    }
+    console.log(JSON.stringify({ "[track-event]": true, event, props: props ?? {}, timestamp }));
+    if (isFunnelEventType(event)) {
+      trackEvent(event, props || {});
+    }
+    return res.json({ ok: true });
   });
 
   app.get("/api/experiments", async (_req, res) => {

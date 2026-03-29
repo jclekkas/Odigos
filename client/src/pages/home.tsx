@@ -1171,6 +1171,7 @@ export default function Home() {
     setResult(null);
     setShowDoneState(false);
     resultFiredRef.current = false;
+    track("analysis_started");
     capture("analysis_submitted", {
       input_mode: data.source ?? "paste",
       input_length_bucket: getInputLengthBucket(data.dealerText.length),
