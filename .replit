@@ -183,3 +183,7 @@ timeoutMs = 90000
 
 [userenv.shared]
 GSC_SITE_URL = "sc-domain:odigosauto.com"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
