@@ -701,7 +701,7 @@ function LockedTier2Section({ onUnlock, isLoading, stripeConfigured, ctaLabel }:
         <Button
           variant="cta"
           onClick={onUnlock}
-          className="w-full"
+          className="w-full whitespace-normal h-auto py-3"
           disabled={isLoading || !stripeConfigured}
           data-testid="button-unlock-49"
         >
@@ -1153,7 +1153,7 @@ const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
 const UNLOCK_CTA_LABELS: Record<string, string> = {
   control: "Unlock Full Deal Review — $49 (one-time)",
-  value: "Unlock Full Deal Review — $49 (Less Than Most Doc Fees)",
+  value: "Unlock Full Deal Review — $49 · Less Than a Doc Fee",
 };
 
 export default function Home() {
