@@ -4,6 +4,8 @@ import express, { type Request, Response, NextFunction } from "express";
 import helmet from "helmet";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
+import { RedisStore, type RedisReply } from "rate-limit-redis";
+import Redis from "ioredis";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
@@ -143,48 +145,81 @@ app.set("trust proxy", 1);
 
 // ── Rate limiting ─────────────────────────────────────────────────────────────
 //
-// ⚠️  SINGLE-INSTANCE LIMITATION
-// express-rate-limit uses an in-memory store by default. All request counters
-// live in the JavaScript heap of a single Node.js process. There is no
-// cross-instance coordination. Running multiple server replicas means each
-// replica tracks its own independent rate-limit windows — a client could
-// send max*replicas requests per window by spreading traffic across replicas.
-// Redis (via rate-limit-redis) or a shared store is required for accurate,
-// cross-instance rate limiting when scaling beyond one process.
-const generalLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false,
-  handler: async (req, res) => {
-    await writeAuditEvent(req, "rate_limit_breach", "failure", {
-      route: req.originalUrl,
-      method: req.method,
-      rateLimitBucket: "general",
-      statusCode: 429,
-    });
-    res.status(429).json({ error: "Too many requests", message: "Rate limit exceeded. Please try again in a minute." });
-  },
-});
+// Builds and registers rate limiters. Uses Redis when REDIS_URL is set,
+// verified with a ping before committing, so bad/unreachable URLs fall back
+// cleanly to in-memory without repeated errors or warning spam.
+// Called once from the startup IIFE below (avoids top-level await).
+async function initRateLimiters(): Promise<void> {
+  let rateLimitStore: RedisStore | undefined;
 
-const analyzeLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 10,
-  standardHeaders: true,
-  legacyHeaders: false,
-  handler: async (req, res) => {
-    await writeAuditEvent(req, "rate_limit_breach", "failure", {
-      route: req.originalUrl,
-      method: req.method,
-      rateLimitBucket: "analyze",
-      statusCode: 429,
-    });
-    res.status(429).json({ error: "Too many requests", message: "Analysis rate limit exceeded. Please wait a minute before trying again." });
-  },
-});
+  if (process.env.REDIS_URL) {
+    let redisClient: Redis | undefined;
+    try {
+      redisClient = new Redis(process.env.REDIS_URL, {
+        enableOfflineQueue: false,
+        lazyConnect: true,
+        maxRetriesPerRequest: 0,
+      });
+      const suppressError = () => { /* suppress default ioredis error output during probe */ };
+      redisClient.on("error", suppressError);
+      await redisClient.connect();
+      await redisClient.ping();
+      redisClient.off("error", suppressError);
+      redisClient.on("error", (err) => console.error("[rate-limiter] Redis error:", err));
+      rateLimitStore = new RedisStore({
+        sendCommand: (command: string, ...args: string[]) =>
+          redisClient!.call(command, ...args) as Promise<RedisReply>,
+      });
+      console.log("Rate limiter: redis");
+    } catch (err) {
+      console.error("Rate limiter: failed to connect to Redis, falling back to in-memory:", err);
+      try { redisClient?.disconnect(); } catch (_) { /* ignore */ }
+      rateLimitStore = undefined;
+      console.log("Rate limiter: in-memory");
+    }
+  } else {
+    console.log("Rate limiter: in-memory");
+  }
 
-app.use("/api/", generalLimiter);
-app.use("/api/analyze", analyzeLimiter);
+  const storeOption = rateLimitStore ? { store: rateLimitStore } : {};
+
+  const generalLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    ...storeOption,
+    handler: async (req, res) => {
+      await writeAuditEvent(req, "rate_limit_breach", "failure", {
+        route: req.originalUrl,
+        method: req.method,
+        rateLimitBucket: "general",
+        statusCode: 429,
+      });
+      res.status(429).json({ error: "Too many requests", message: "Rate limit exceeded. Please try again in a minute." });
+    },
+  });
+
+  const analyzeLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    ...storeOption,
+    handler: async (req, res) => {
+      await writeAuditEvent(req, "rate_limit_breach", "failure", {
+        route: req.originalUrl,
+        method: req.method,
+        rateLimitBucket: "analyze",
+        statusCode: 429,
+      });
+      res.status(429).json({ error: "Too many requests", message: "Analysis rate limit exceeded. Please wait a minute before trying again." });
+    },
+  });
+
+  app.use("/api/", generalLimiter);
+  app.use("/api/analyze", analyzeLimiter);
+}
 
 app.use(
   express.json({
@@ -459,6 +494,8 @@ async function ensureAppSchema(): Promise<void> {
 }
 
 (async () => {
+  await initRateLimiters();
+
   await ensureWarehouseSchema();
   await ensureAppSchema();
 
