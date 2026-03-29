@@ -72,7 +72,7 @@ export default function BestWayToCheckIfACarDealIsGood() {
           <p className="text-sm text-muted-foreground mb-4">
             Paste your quote. Odigos checks the OTD price, flags hidden fees, identifies forced add-ons, and gives you a GO / NO-GO verdict — no signup required.
           </p>
-          <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white font-semibold" data-testid="button-cta-best-way">
+          <Button asChild variant="cta" data-testid="button-cta-best-way">
             <Link href="/analyze">Check my deal now</Link>
           </Button>
         </div>

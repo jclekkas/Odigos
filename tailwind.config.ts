@@ -76,8 +76,8 @@ export default {
           border: "var(--sidebar-accent-border)"
         },
         cta: {
-          DEFAULT: "#78868F",
-          hover: "#6B7882",
+          DEFAULT: "#8B5E24",
+          hover: "#6E4A1D",
           foreground: "#FFFFFF",
         },
         status: {

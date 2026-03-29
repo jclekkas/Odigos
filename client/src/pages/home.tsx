@@ -397,9 +397,9 @@ function LockedTier2Section({ onUnlock, isLoading, stripeConfigured, ctaLabel }:
           </div>
         </div>
         <Button
-          variant="default"
+          variant="cta"
           onClick={onUnlock}
-          className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+          className="w-full"
           disabled={isLoading || !stripeConfigured}
           data-testid="button-unlock-49"
         >

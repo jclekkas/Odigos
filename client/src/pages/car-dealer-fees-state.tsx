@@ -99,7 +99,7 @@ export default function CarDealerFeesState() {
           <p className="text-sm text-muted-foreground mb-3">
             Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.
           </p>
-          <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white font-semibold" data-testid={`button-cta-top-${data.slug}`}>
+          <Button asChild variant="cta" data-testid={`button-cta-top-${data.slug}`}>
             <Link href="/analyze">Check my {data.name} quote</Link>
           </Button>
         </div>
