@@ -13,7 +13,7 @@
  */
 import { db } from "./db";
 import { sql } from "drizzle-orm";
-import type { MarketContext, MarketContextStrength } from "@shared/schema";
+import type { AnalysisResponse, MarketContext, MarketContextStrength } from "@shared/schema";
 import { normalizeDealerName } from "./warehouse/warehouseUtils";
 
 const DOC_FEE_DELTA_MAX = 2000;
@@ -309,5 +309,53 @@ export async function getMarketContext({
   } catch (err) {
     console.error("[marketContext] Error fetching market context (non-fatal):", err);
     return null;
+  }
+}
+
+/**
+ * Post-LLM enrichment: updates an existing MarketContext in-place with the
+ * detected doc fee delta and, if a dealer name was extracted by the LLM,
+ * refreshes dealer stats with the authoritative post-LLM name.
+ *
+ * Must be called after the LLM response has been validated and finalResult built.
+ * All failures are non-fatal and silently swallowed.
+ */
+export async function enrichMarketContextPostLlm(
+  marketContext: MarketContext,
+  finalResult: AnalysisResponse,
+  state: string,
+): Promise<void> {
+  const detectedFees = finalResult.detectedFields.fees ?? [];
+  const docFeeEntry = detectedFees.find((f) => /doc.?fee|document/i.test(f.name));
+  const docFeeValue = docFeeEntry?.amount ?? null;
+  if (docFeeValue != null && marketContext.stateAvgDocFee != null && Number.isFinite(docFeeValue)) {
+    const delta = docFeeValue - marketContext.stateAvgDocFee;
+    marketContext.docFeeVsStateAvg = Math.abs(delta) > DOC_FEE_DELTA_MAX ? null : delta;
+  }
+
+  const df = finalResult.detectedFields as Record<string, unknown>;
+  const dealerNameForCtx = (df?.dealerName as string | undefined) ?? (df?.dealership as string | undefined) ?? null;
+  if (!dealerNameForCtx) return;
+
+  try {
+    const dealerStats = await getDealerStats({ state, dealerName: dealerNameForCtx });
+    if (!dealerStats) return;
+    marketContext.dealerAnalysisCount = dealerStats.dealerAnalysisCount;
+    marketContext.dealerAvgDealScore = dealerStats.dealerAvgDealScore;
+    const enrichedCount = dealerStats.dealerAnalysisCount ?? 0;
+    marketContext.dealerSampleSize = enrichedCount;
+    marketContext.dealerStrength = getStrength(enrichedCount);
+    const rank: Record<MarketContextStrength, number> = { none: 0, thin: 1, moderate: 2, strong: 3 };
+    const candidates: MarketContextStrength[] = [
+      marketContext.stateStrength ?? "none",
+      marketContext.dealerStrength,
+      marketContext.feedbackStrength ?? "none",
+    ];
+    marketContext.overallStrength = candidates.reduce(
+      (best, s) => (rank[s] > rank[best] ? s : best),
+      "none" as MarketContextStrength,
+    );
+  } catch {
+    // dealer enrichment is non-fatal
   }
 }

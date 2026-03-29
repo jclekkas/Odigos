@@ -225,3 +225,33 @@ export function buildUserMessage(data: AnalysisRequest): string {
   if (data.downPayment) msg += `\nDown payment: $${data.downPayment}`;
   return msg;
 }
+
+export interface PromptContext {
+  stateData: StateFeeData | null;
+  marketContext: MarketContext | null;
+  stateCode: string;
+  overallStrength: MarketContextStrength;
+}
+
+/**
+ * Primary entry point: builds the full {systemPrompt, userMessage} pair for
+ * a given analysis input and resolved market/fee context.
+ */
+export function buildPrompt(
+  input: AnalysisRequest,
+  context: PromptContext,
+): { systemPrompt: string; userMessage: string } {
+  return {
+    systemPrompt: buildSystemPrompt({
+      stateFeeSection: buildStateFeeSection(context.stateData),
+      stateFeeRulesSection: buildStateFeeRulesSection(context.stateData),
+      marketIntelligenceSection: buildMarketIntelligenceSection(
+        context.marketContext,
+        context.stateCode,
+        context.overallStrength,
+      ),
+      language: input.language,
+    }),
+    userMessage: buildUserMessage(input),
+  };
+}
