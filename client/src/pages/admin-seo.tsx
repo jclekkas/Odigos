@@ -33,6 +33,13 @@ interface GscPageItem {
   inSitemap: boolean;
 }
 
+type AnalyticsErrorCode = "PERMISSION_DENIED" | "PROPERTY_NOT_FOUND" | "UNKNOWN";
+
+interface AnalyticsError {
+  code: AnalyticsErrorCode;
+  detail: string;
+}
+
 interface GscSummary {
   indexed: GscPageItem[];
   discoveredNotIndexed: GscPageItem[];
@@ -43,6 +50,7 @@ interface GscSummary {
   totalNeedingAttention: number;
   setup_required?: boolean;
   apiWarnings?: string[];
+  analyticsError?: AnalyticsError;
 }
 
 const GLOSSARY_TERMS = [
@@ -428,15 +436,52 @@ export default function AdminSeo() {
           </Card>
         )}
 
-        {!setupRequired && !isLoading && data?.apiWarnings && data.apiWarnings.length > 0 && (
+        {!setupRequired && !isLoading && data?.analyticsError && (
           <Card className="border-amber-400 bg-amber-50 dark:bg-amber-950/20" data-testid="banner-api-warnings">
             <CardContent className="pt-4 pb-4">
               <div className="flex items-start gap-3">
-                <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
-                <div className="space-y-1">
-                  {data.apiWarnings.map((w, i) => (
-                    <p key={i} className="text-amber-700 dark:text-amber-400 text-sm">{w}</p>
-                  ))}
+                <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-1" />
+                <div className="space-y-2 w-full">
+                  <p className="font-semibold text-amber-800 dark:text-amber-300 text-sm">
+                    {data.analyticsError.code === "PERMISSION_DENIED" && "Analytics unavailable: service account lacks access"}
+                    {data.analyticsError.code === "PROPERTY_NOT_FOUND" && "Analytics unavailable: property URL not found"}
+                    {data.analyticsError.code === "UNKNOWN" && "Analytics unavailable"}
+                  </p>
+                  {data.analyticsError.code === "PERMISSION_DENIED" && (
+                    <>
+                      <p className="text-amber-700 dark:text-amber-400 text-sm">
+                        The service account does not have access to the Search Console property <span className="font-mono font-medium">{data.analyticsError.detail}</span>.
+                      </p>
+                      <ol className="list-decimal list-inside space-y-1 text-amber-700 dark:text-amber-400 text-sm">
+                        <li>Open <a href="https://search.google.com/search-console/users" target="_blank" rel="noopener noreferrer" className="underline inline-flex items-center gap-1">Search Console → Settings → Users and permissions <ExternalLink className="h-3 w-3" /></a></li>
+                        <li>Add the service account email as an <strong>Owner</strong> or <strong>Full user</strong>.</li>
+                        <li>Reload this page to confirm analytics are working.</li>
+                      </ol>
+                    </>
+                  )}
+                  {data.analyticsError.code === "PROPERTY_NOT_FOUND" && (
+                    <>
+                      <p className="text-amber-700 dark:text-amber-400 text-sm">
+                        No property matching <span className="font-mono font-medium">{data.analyticsError.detail}</span> was found. The property URL format must exactly match how your site is registered in Search Console.
+                      </p>
+                      <ol className="list-decimal list-inside space-y-1 text-amber-700 dark:text-amber-400 text-sm">
+                        <li>Open <a href="https://search.google.com/search-console" target="_blank" rel="noopener noreferrer" className="underline inline-flex items-center gap-1">Search Console <ExternalLink className="h-3 w-3" /></a> and note the exact property URL shown.</li>
+                        <li>Set <span className="font-mono">GSC_SITE_URL</span> to one of:
+                          <ul className="list-disc list-inside ml-4 mt-1 space-y-0.5">
+                            <li><span className="font-mono">sc-domain:example.com</span> — for a Domain property</li>
+                            <li><span className="font-mono">https://example.com/</span> — for a URL-prefix property (include the trailing slash)</li>
+                          </ul>
+                        </li>
+                        <li>Reload this page after updating the environment variable.</li>
+                      </ol>
+                    </>
+                  )}
+                  {data.analyticsError.code === "UNKNOWN" && (
+                    <ol className="list-decimal list-inside space-y-1 text-amber-700 dark:text-amber-400 text-sm">
+                      <li>Check that <span className="font-mono">GSC_SITE_URL</span> matches the property URL in <a href="https://search.google.com/search-console" target="_blank" rel="noopener noreferrer" className="underline inline-flex items-center gap-1">Search Console <ExternalLink className="h-3 w-3" /></a> exactly (e.g. <span className="font-mono">sc-domain:example.com</span> or <span className="font-mono">https://example.com/</span>).</li>
+                      <li>Confirm the service account has been added as an Owner or Full user under <a href="https://search.google.com/search-console/users" target="_blank" rel="noopener noreferrer" className="underline inline-flex items-center gap-1">Settings → Users and permissions <ExternalLink className="h-3 w-3" /></a>.</li>
+                    </ol>
+                  )}
                 </div>
               </div>
             </CardContent>

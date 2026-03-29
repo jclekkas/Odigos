@@ -87,6 +87,13 @@ interface GscPageItem {
   inSitemap: boolean;
 }
 
+type AnalyticsErrorCode = "PERMISSION_DENIED" | "PROPERTY_NOT_FOUND" | "UNKNOWN";
+
+interface AnalyticsError {
+  code: AnalyticsErrorCode;
+  detail: string;
+}
+
 interface GscSummary {
   indexed: GscPageItem[];
   discoveredNotIndexed: GscPageItem[];
@@ -96,6 +103,7 @@ interface GscSummary {
   totalIndexed: number;
   totalNeedingAttention: number;
   apiWarnings?: string[];
+  analyticsError?: AnalyticsError;
 }
 
 function mapStatusToPlainEnglish(verdict: string, coverageState: string): { reason: string; nextStep: string } {
@@ -279,6 +287,13 @@ async function fetchSearchAnalyticsRaw(
   );
 }
 
+class GscAnalyticsError extends Error {
+  constructor(public readonly statusCode: number, detail: string) {
+    super(`GSC search analytics request failed: ${statusCode} ${detail}`);
+    this.name = "GscAnalyticsError";
+  }
+}
+
 async function fetchSearchAnalytics(
   accessToken: string,
   siteUrl: string
@@ -287,7 +302,7 @@ async function fetchSearchAnalytics(
 
   if (!response.ok) {
     const text = await response.text().catch(() => "");
-    throw new Error(`GSC search analytics request failed: ${response.status} ${text}`);
+    throw new GscAnalyticsError(response.status, text);
   }
 
   const map = new Map<string, { clicks: number; impressions: number }>();
@@ -318,14 +333,25 @@ export function registerGscRoutes(app: Express): void {
       const resolvedSiteUrl = await getResolvedSiteUrl(accessToken);
 
       let analyticsMap = new Map<string, { clicks: number; impressions: number }>();
+      let analyticsError: AnalyticsError | undefined;
       try {
         analyticsMap = await fetchSearchAnalytics(accessToken, resolvedSiteUrl);
       } catch (e: any) {
         console.warn("GSC analytics unavailable:", e?.message);
-        const hint = CONFIGURED_SITE_URL
-          ? `GSC_SITE_URL is set to "${CONFIGURED_SITE_URL}" — verify this matches the property URL in Search Console exactly.`
-          : `Set the GSC_SITE_URL environment variable to either "sc-domain:odigosauto.com" (Domain property) or "https://odigosauto.com/" (URL-prefix property) to match how the site is registered in Search Console.`;
-        apiWarnings.push(`Analytics data unavailable. ${hint}`);
+        let code: AnalyticsErrorCode;
+        let detail: string;
+        if (e instanceof GscAnalyticsError && e.statusCode === 403) {
+          code = "PERMISSION_DENIED";
+          detail = resolvedSiteUrl;
+        } else if (e instanceof GscAnalyticsError && e.statusCode === 404) {
+          code = "PROPERTY_NOT_FOUND";
+          detail = resolvedSiteUrl;
+        } else {
+          code = "UNKNOWN";
+          detail = e?.message ?? "";
+        }
+        analyticsError = { code, detail };
+        apiWarnings.push("Analytics data unavailable.");
       }
 
       const normalizeUrl = (u: string) => u.replace(/\/$/, "");
@@ -405,6 +431,7 @@ export function registerGscRoutes(app: Express): void {
         totalIndexed: indexed.length,
         totalNeedingAttention,
         ...(apiWarnings.length > 0 ? { apiWarnings } : {}),
+        ...(analyticsError ? { analyticsError } : {}),
       };
 
       res.json(summary);
