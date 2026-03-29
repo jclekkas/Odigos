@@ -30,6 +30,9 @@ export function registerTrackingRoutes(app: Express): void {
         return res.status(400).json({ error: "event must be a non-empty string" });
       }
       console.log(JSON.stringify({ type: "[track-event]", event, props: props ?? {}, timestamp: timestamp ?? new Date().toISOString() }));
+      if (isFunnelEventType(event.trim())) {
+        trackEvent(event.trim(), props ?? {}).catch(() => {});
+      }
       res.json({ ok: true });
     } catch {
       res.status(500).json({ error: "Failed to record event" });

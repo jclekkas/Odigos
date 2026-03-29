@@ -12,6 +12,12 @@ function parseRange(req: Request): DateRange {
 }
 
 export function registerBIRoutes(app: Express): void {
+  app.get("/api/admin/bi/funnel-events", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
+    try { const { getFunnelEventMetrics } = await import("../bi"); res.json(await getFunnelEventMetrics()); }
+    catch (e: any) { res.status(500).json({ error: e?.message }); }
+  });
+
   app.get("/api/admin/bi/funnel", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
     try { const { getBIFunnel } = await import("../bi"); res.json(await getBIFunnel(parseRange(req))); }

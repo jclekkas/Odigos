@@ -1024,30 +1024,49 @@ export async function getBIContentMetrics(range: DateRange): Promise<BIContentMe
   };
 }
 
-export async function getFunnelEventMetrics() {
+export interface FunnelEventMetrics {
+  counts: {
+    analysis_started: number;
+    analysis_completed: number;
+    paywall_viewed: number;
+    paywall_clicked: number;
+    purchase_completed: number;
+  };
+  conversionRates: {
+    started_to_completed: number | null;
+    completed_to_paywall_viewed: number | null;
+    paywall_viewed_to_clicked: number | null;
+    paywall_clicked_to_purchased: number | null;
+    overall: number | null;
+  };
+}
+
+export async function getFunnelEventMetrics(): Promise<FunnelEventMetrics> {
   const { events } = await loadMetrics();
 
-  const count = (eventType: string) =>
-    events.filter((e) => e.eventType === eventType).length;
+  const analysisStarted = events.filter(e => e.eventType === "analysis_started").length;
+  const analysisCompleted = events.filter(e => e.eventType === "analysis_completed").length;
+  const paywallViewed = events.filter(e => e.eventType === "paywall_viewed").length;
+  const paywallClicked = events.filter(e => e.eventType === "paywall_clicked").length;
+  const purchaseCompleted = events.filter(e => e.eventType === "purchase_completed").length;
 
-  const started = count("analysis_started");
-  const completed = count("analysis_completed");
-  const paywallViewed = count("paywall_viewed");
-  const paywallClicked = count("paywall_clicked");
-  const purchased = count("purchase_completed");
+  const rate = (numerator: number, denominator: number): number | null =>
+    denominator > 0 ? (numerator / denominator) * 100 : null;
 
   return {
-    started,
-    completed,
-    paywallViewed,
-    paywallClicked,
-    purchased,
+    counts: {
+      analysis_started: analysisStarted,
+      analysis_completed: analysisCompleted,
+      paywall_viewed: paywallViewed,
+      paywall_clicked: paywallClicked,
+      purchase_completed: purchaseCompleted,
+    },
     conversionRates: {
-      start_to_complete: started ? completed / started : 0,
-      complete_to_paywall: completed ? paywallViewed / completed : 0,
-      paywall_to_click: paywallViewed ? paywallClicked / paywallViewed : 0,
-      click_to_purchase: paywallClicked ? purchased / paywallClicked : 0,
-      overall: started ? purchased / started : 0,
+      started_to_completed: rate(analysisCompleted, analysisStarted),
+      completed_to_paywall_viewed: rate(paywallViewed, analysisCompleted),
+      paywall_viewed_to_clicked: rate(paywallClicked, paywallViewed),
+      paywall_clicked_to_purchased: rate(purchaseCompleted, paywallClicked),
+      overall: rate(purchaseCompleted, analysisStarted),
     },
   };
 }
