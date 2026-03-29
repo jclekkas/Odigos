@@ -1578,6 +1578,7 @@ export default function Home() {
                 "Analyze Deal"
               )}
             </Button>
+            <AnalysisProgressBar isPending={analyzeMutation.isPending} />
             {analyzeMutation.isPending ? (
               <p className="text-xs text-muted-foreground text-center mt-2" data-testid="text-what-happens-next">
                 Still working — this is normal and usually takes 40–60 seconds. Stay on this page.
@@ -1587,7 +1588,6 @@ export default function Home() {
                 Results usually take about 40–60 seconds and will appear below.
               </p>
             )}
-            {analyzeMutation.isPending && <AnalysisProgressBar isPending={analyzeMutation.isPending} />}
             <p className="text-xs text-muted-foreground text-center mt-3" data-testid="text-data-disclosure">
               Pricing signals (not your personal details) are stored anonymously to improve our dealer fee database. Your submission is not shared with any dealership.{" "}
               <a href="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</a>
