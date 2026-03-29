@@ -67,23 +67,31 @@ export default function AnalysisProgressBar({ isPending }: AnalysisProgressBarPr
     };
   }, [isPending]);
 
-  if (!isPending) return null;
-
   return (
-    <div className="mt-3 space-y-1.5" data-testid="analysis-progress-bar">
-      <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-        <div
-          className="h-2 rounded-full bg-primary transition-all duration-200 ease-linear"
-          style={{ width: `${progress}%` }}
-          data-testid="progress-bar-fill"
-        />
-      </div>
-      <p
-        className="text-xs text-muted-foreground text-center"
-        data-testid="text-progress-status"
-      >
-        {STATUS_MESSAGES[messageIndex]}
-      </p>
+    <div
+      className="mt-3 space-y-1.5"
+      style={{ minHeight: "2.5rem" }}
+      data-testid="analysis-progress-bar"
+      aria-live="polite"
+      aria-busy={isPending}
+    >
+      {isPending && (
+        <>
+          <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
+            <div
+              className="h-2.5 rounded-full bg-primary transition-all duration-200 ease-linear"
+              style={{ width: `${progress}%` }}
+              data-testid="progress-bar-fill"
+            />
+          </div>
+          <p
+            className="text-xs text-muted-foreground text-center font-medium"
+            data-testid="text-progress-status"
+          >
+            {STATUS_MESSAGES[messageIndex]}
+          </p>
+        </>
+      )}
     </div>
   );
 }
