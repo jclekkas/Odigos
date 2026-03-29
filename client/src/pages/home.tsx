@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import AnalysisProgressBar from "@/components/AnalysisProgressBar";
 import { Link, useSearch } from "wouter";
 import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
@@ -1423,6 +1424,7 @@ export default function Home() {
                 Results usually take about 40–60 seconds and will appear below.
               </p>
             )}
+            {analyzeMutation.isPending && <AnalysisProgressBar isPending={analyzeMutation.isPending} />}
             <p className="text-xs text-muted-foreground text-center mt-3" data-testid="text-data-disclosure">
               Pricing signals (not your personal details) are stored anonymously to improve our dealer fee database. Your submission is not shared with any dealership.{" "}
               <a href="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</a>

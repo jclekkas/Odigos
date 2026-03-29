@@ -1,0 +1,89 @@
+import { useEffect, useRef, useState } from "react";
+
+const STATUS_MESSAGES = [
+  "Reading fee structure…",
+  "Checking state caps…",
+  "Scoring the deal…",
+  "Comparing to similar deals…",
+  "Almost there…",
+];
+
+const TOTAL_DURATION = 50000;
+const TICK_INTERVAL = 200;
+const MESSAGE_INTERVAL = 3000;
+const MAX_PROGRESS = 90;
+
+interface AnalysisProgressBarProps {
+  isPending: boolean;
+}
+
+export default function AnalysisProgressBar({ isPending }: AnalysisProgressBarProps) {
+  const [progress, setProgress] = useState(0);
+  const [messageIndex, setMessageIndex] = useState(0);
+  const startTimeRef = useRef<number>(0);
+  const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const messageRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (tickRef.current !== null) {
+      clearInterval(tickRef.current);
+      tickRef.current = null;
+    }
+    if (messageRef.current !== null) {
+      clearInterval(messageRef.current);
+      messageRef.current = null;
+    }
+
+    if (!isPending) {
+      setProgress(0);
+      setMessageIndex(0);
+      return;
+    }
+
+    startTimeRef.current = Date.now();
+    setProgress(0);
+    setMessageIndex(0);
+
+    tickRef.current = setInterval(() => {
+      const elapsed = Date.now() - startTimeRef.current;
+      setProgress(Math.min(MAX_PROGRESS, (elapsed / TOTAL_DURATION) * MAX_PROGRESS));
+    }, TICK_INTERVAL);
+
+    let msgCount = 0;
+    messageRef.current = setInterval(() => {
+      msgCount += 1;
+      setMessageIndex(msgCount % STATUS_MESSAGES.length);
+    }, MESSAGE_INTERVAL);
+
+    return () => {
+      if (tickRef.current !== null) {
+        clearInterval(tickRef.current);
+        tickRef.current = null;
+      }
+      if (messageRef.current !== null) {
+        clearInterval(messageRef.current);
+        messageRef.current = null;
+      }
+    };
+  }, [isPending]);
+
+  if (!isPending) return null;
+
+  return (
+    <div className="mt-3 space-y-1.5" data-testid="analysis-progress-bar">
+      <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+        <div
+          className="h-2 rounded-full bg-primary transition-all duration-200 ease-linear"
+          style={{ width: `${progress}%` }}
+          data-testid="progress-bar-fill"
+        />
+      </div>
+      <p
+        className="text-xs text-muted-foreground text-center"
+        data-testid="text-progress-status"
+      >
+        {STATUS_MESSAGES[messageIndex]}
+      </p>
+    </div>
+  );
+}
