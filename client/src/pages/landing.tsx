@@ -49,7 +49,7 @@ const HERO_HEADLINES: Record<string, string> = {
 
 const PRICING_CTA_LABELS: Record<string, string> = {
   control: "Get Full Review — $49",
-  value: "Get Full Review — $49 (Less Than Most Doc Fees)",
+  value: "Get Full Review — $49 · Less Than a Doc Fee",
 };
 
 export default function Landing() {
