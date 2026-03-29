@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
 const STATUS_MESSAGES = [
-  "Reading fee structure…",
-  "Checking state caps…",
-  "Scoring the deal…",
-  "Comparing to similar deals…",
-  "Almost there…",
+  "Reading your dealer quote...",
+  "Checking for hidden fees...",
+  "Comparing pricing against real deals...",
+  "Analyzing dealer tactics...",
+  "Preparing your results...",
 ];
 
 const TOTAL_DURATION = 50000;
