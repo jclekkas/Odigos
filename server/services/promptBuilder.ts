@@ -1,7 +1,7 @@
 import type { AnalysisRequest, MarketContext, MarketContextStrength } from "@shared/schema";
 import type { StateFeeData } from "../stateFeeLookup";
 
-export function buildStateFeeSection(stateData: StateFeeData | null): string {
+function buildStateFeeSection(stateData: StateFeeData | null): string {
   if (!stateData) return "";
   const capLine = stateData.docFeeCap
     ? `  Cap: YES — $${stateData.docFeeCapAmount} (dealers may NOT charge more)`
@@ -18,7 +18,7 @@ ${taxLine}
 ${tradeInLine}${notesLine ? `\n${notesLine}` : ""}`;
 }
 
-export function buildStateFeeRulesSection(stateData: StateFeeData | null): string {
+function buildStateFeeRulesSection(stateData: StateFeeData | null): string {
   return `
 STATE-SPECIFIC FEE RULES (STRICT — MUST FOLLOW):
 ${stateData ? `
@@ -45,7 +45,7 @@ function buildMarketIntroPhrase(strength: MarketContextStrength): string {
   return "";
 }
 
-export function buildMarketIntelligenceSection(
+function buildMarketIntelligenceSection(
   marketContext: MarketContext | null,
   stateCode: string,
   overallStrength: MarketContextStrength,
@@ -108,7 +108,7 @@ ${miLines.join("\n")}
 Reference these figures in your summary and reasoning when they are materially relevant to evaluating the deal. Do not force their use when they do not meaningfully help. Use the provided figures exactly as written. Do not estimate, round, or invent additional statistics.`;
 }
 
-export function buildSystemPrompt({
+function buildSystemPrompt({
   stateFeeSection,
   stateFeeRulesSection,
   marketIntelligenceSection,
@@ -214,7 +214,7 @@ LANGUAGE INSTRUCTION (MANDATORY):
 Respond entirely in Spanish. All text fields in your JSON response — including "summary", "reasoning", "verdictLabel", "issues" (label and explanation fields), "missingInfo", "suggestedReply", and any other human-readable text — must be written in Spanish. Keep all enum values (dealScore, goNoGo, confidenceLevel) in English as specified in the schema.` : ""}`;
 }
 
-export function buildUserMessage(data: AnalysisRequest): string {
+function buildUserMessage(data: AnalysisRequest): string {
   let msg = `Analyze this dealer communication:\n\n${data.dealerText}`;
   if (data.condition !== "unknown") msg += `\n\nVehicle condition: ${data.condition}`;
   if (data.vehicle) msg += `\nVehicle: ${data.vehicle}`;
