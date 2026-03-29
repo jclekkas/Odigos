@@ -1,7 +1,7 @@
 import { zipToStateCode } from "./zipToState";
 import stateFeeReferenceJson from "./state_fee_reference.json";
 
-interface StateFeeData {
+export interface StateFeeData {
   name: string;
   abbreviation: string;
   docFeeCap: boolean;

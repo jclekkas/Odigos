@@ -18,6 +18,47 @@ import { normalizeDealerName } from "./warehouse/warehouseUtils";
 
 const DOC_FEE_DELTA_MAX = 2000;
 
+export function buildMarketContextSummary(
+  strength: MarketContextStrength,
+  mc: MarketContext | null,
+  stateCode: string | null,
+): string | undefined {
+  if (!mc) return undefined;
+  const state = stateCode ?? mc.stateCode ?? "this area";
+
+  if (mc.isNationalFallback) {
+    return `Based on national pricing data (state average builds with more ${state} quotes)`;
+  }
+
+  if (strength === "none") return undefined;
+
+  const strengthRank: Record<MarketContextStrength, number> = { none: 0, thin: 1, moderate: 2, strong: 3 };
+  const stateRank = strengthRank[mc.stateStrength ?? "none"];
+  const dealerRank = strengthRank[mc.dealerStrength ?? "none"];
+  const feedbackRank = strengthRank[mc.feedbackStrength ?? "none"];
+
+  let sampleSize: number;
+  let sourceLabel: string;
+  if (dealerRank >= stateRank && dealerRank >= feedbackRank && (mc.dealerSampleSize ?? 0) >= 1) {
+    sampleSize = mc.dealerSampleSize ?? mc.dealerAnalysisCount ?? 0;
+    sourceLabel = "dealer quotes";
+  } else if (feedbackRank >= stateRank && feedbackRank >= dealerRank && (mc.feedbackSampleSize ?? 0) >= 1) {
+    sampleSize = mc.feedbackSampleSize ?? mc.feedbackCount ?? 0;
+    sourceLabel = "user feedback ratings";
+  } else {
+    sampleSize = mc.stateTotalAnalyses ?? 0;
+    sourceLabel = "similar deals";
+  }
+
+  const sampleDisplay = strength === "strong" || sampleSize >= 10 ? `${sampleSize}+` : String(sampleSize);
+  const introPhrase =
+    strength === "strong" ? "Based on strong local data" :
+    strength === "moderate" ? "Based on local data" :
+    "Based on early deal data";
+  const dealWord = sampleSize === 1 && sourceLabel === "similar deals" ? "similar deal" : sourceLabel;
+  return `${introPhrase} — ${sampleDisplay} ${dealWord} in ${state}`;
+}
+
 export function getStrength(sampleSize: number): MarketContextStrength {
   if (sampleSize <= 0) return "none";
   if (sampleSize <= 2) return "thin";
