@@ -197,6 +197,23 @@ export function log(message: string, source = "express") {
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 
+export function buildApiLogLine(
+  method: string,
+  path: string,
+  statusCode: number,
+  duration: number,
+  capturedJsonResponse: Record<string, any> | undefined
+): string {
+  let logLine = `${method} ${path} ${statusCode} in ${duration}ms`;
+  if (statusCode >= 400 && capturedJsonResponse) {
+    const safeValue = capturedJsonResponse.message ?? capturedJsonResponse.error;
+    if (typeof safeValue === "string") {
+      logLine += ` :: ${safeValue}`;
+    }
+  }
+  return logLine;
+}
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -211,10 +228,7 @@ app.use((req, res, next) => {
   res.on("finish", () => {
     const duration = Date.now() - start;
     if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
+      const logLine = buildApiLogLine(req.method, path, res.statusCode, duration, capturedJsonResponse);
 
       log(logLine);
 
