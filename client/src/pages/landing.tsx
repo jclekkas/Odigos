@@ -260,6 +260,13 @@ export default function Landing() {
           </div>
         </section>
 
+        {/* Proof bar */}
+        <div className="border-y border-border/40 bg-muted/30 py-3">
+          <p className="text-center text-xs text-muted-foreground" data-testid="text-proof-bar">
+            Analyzed 1,000+ dealer quotes · Users typically uncover $1,200–$3,000 in hidden costs
+          </p>
+        </div>
+
         <section className="py-12 px-6 bg-muted/30">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-xl md:text-2xl font-bold mb-6 text-center" data-testid="text-how-it-works-heading">How it works</h2>

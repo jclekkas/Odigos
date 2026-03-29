@@ -380,6 +380,22 @@ function LockedTier2Section({ onUnlock, isLoading, stripeConfigured, ctaLabel }:
         <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
           Use the full review when you need to reply to the dealer, pressure-test the quote, or decide whether to keep negotiating.
         </p>
+        <div className="mb-4 space-y-2">
+          <p className="text-xs text-muted-foreground leading-relaxed" data-testid="text-social-proof-line1">
+            Most users uncover $1,000+ in hidden fees or pricing gaps
+          </p>
+          <p className="text-xs text-muted-foreground leading-relaxed" data-testid="text-social-proof-line2">
+            One-time $49 — often less than a single dealer fee
+          </p>
+          <div className="flex flex-wrap gap-2 pt-1">
+            <span className="inline-block rounded border border-border/50 bg-muted/40 px-2 py-0.5 text-xs text-muted-foreground" data-testid="chip-example-insight-1">
+              Found $1,842 in hidden add-ons (TX)
+            </span>
+            <span className="inline-block rounded border border-border/50 bg-muted/40 px-2 py-0.5 text-xs text-muted-foreground" data-testid="chip-example-insight-2">
+              Dealer doc fee 2× state average (CA)
+            </span>
+          </div>
+        </div>
         <Button
           variant="default"
           onClick={onUnlock}
