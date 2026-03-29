@@ -201,6 +201,23 @@ export function log(message: string, source = "express") {
   logger.info(message, { source });
 }
 
+export function buildApiLogLine(
+  method: string,
+  path: string,
+  statusCode: number,
+  duration: number,
+  capturedJsonResponse: Record<string, any> | undefined
+): string {
+  let logLine = `${method} ${path} ${statusCode} in ${duration}ms`;
+  if (statusCode >= 400 && capturedJsonResponse) {
+    const safeValue = capturedJsonResponse.message ?? capturedJsonResponse.error;
+    if (typeof safeValue === "string") {
+      logLine += ` :: ${safeValue}`;
+    }
+  }
+  return logLine;
+}
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -215,13 +232,9 @@ app.use((req, res, next) => {
   res.on("finish", () => {
     const duration = Date.now() - start;
     if (path.startsWith("/api")) {
-      logger.info("api request", {
-        method: req.method,
-        path,
-        statusCode: res.statusCode,
-        durationMs: duration,
-        ...(capturedJsonResponse ? { response: capturedJsonResponse } : {}),
-      });
+      const logLine = buildApiLogLine(req.method, path, res.statusCode, duration, capturedJsonResponse);
+
+      log(logLine);
 
       const trackedEndpoints = ["/api/analyze", "/api/extract-text", "/api/track", "/api/metrics", "/api/checkout"];
       const matchedEndpoint = trackedEndpoints.find(e => path === e || path.startsWith(e + "/"));
