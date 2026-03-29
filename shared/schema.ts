@@ -15,6 +15,9 @@ export const analysisRequestSchema = z.object({
   language: z.enum(["en", "es"]).optional().default("en"),
 });
 
+export const marketContextStrengthSchema = z.enum(["none", "thin", "moderate", "strong"]);
+export type MarketContextStrength = z.infer<typeof marketContextStrengthSchema>;
+
 // Market context returned with analysis results (all keys always present, null for missing values)
 export const marketContextSchema = z.object({
   stateCode: z.string().nullable(),
@@ -26,6 +29,13 @@ export const marketContextSchema = z.object({
   dealerAvgDealScore: z.number().nullable(),
   feedbackAgreementPct: z.number().optional(),
   feedbackCount: z.number().optional(),
+  stateSampleSize: z.number().optional(),
+  stateStrength: marketContextStrengthSchema.optional(),
+  dealerSampleSize: z.number().optional(),
+  dealerStrength: marketContextStrengthSchema.optional(),
+  feedbackSampleSize: z.number().optional(),
+  feedbackStrength: marketContextStrengthSchema.optional(),
+  overallStrength: marketContextStrengthSchema.optional(),
 });
 
 export type MarketContext = z.infer<typeof marketContextSchema>;
@@ -83,6 +93,9 @@ export const analysisResponseSchema = z.object({
   suggestedReply: z.string(),
   reasoning: z.string(),
   marketContext: marketContextSchema.optional(),
+  marketContextUsed: z.boolean().optional(),
+  marketContextStrength: marketContextStrengthSchema.optional(),
+  marketContextSummary: z.string().optional(),
 });
 
 export type AnalysisResponse = z.infer<typeof analysisResponseSchema>;

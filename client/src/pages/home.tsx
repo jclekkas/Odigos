@@ -1705,6 +1705,13 @@ export default function Home() {
             {result.marketContext && (
               <MarketContextCard marketContext={result.marketContext} />
             )}
+            <p className="text-xs text-muted-foreground" data-testid="text-market-context-disclosure">
+              {result.marketContextStrength === "strong" || result.marketContextStrength === "moderate"
+                ? "This analysis includes local market data."
+                : result.marketContextStrength === "thin"
+                ? "This analysis uses limited local market data."
+                : "This analysis is based on general pricing knowledge (limited local data available)."}
+            </p>
 
             {unlockTier === "free" && (
               <EmailPreviewForm analysisResult={result} />

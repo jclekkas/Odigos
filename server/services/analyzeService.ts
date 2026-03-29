@@ -5,6 +5,7 @@ import {
   analysisResponseSchema,
   type AnalysisResponse,
   type MarketContext,
+  type MarketContextStrength,
 } from "@shared/schema";
 import { applyRuleEngine, checkDocFeeCap } from "../ruleEngine";
 import { detectStateFromText, getStateFeeData, getAmbiguousCityOptions } from "../stateFeeLookup";
@@ -17,6 +18,42 @@ import { withJitteredBackoff, isRetriableError } from "../lib/reliability";
 import { aiCircuitBreaker, CircuitOpenError } from "../lib/circuitBreaker";
 
 export type AnalyzeInput = z.infer<typeof analysisRequestSchema>;
+
+export function buildMarketContextSummary(
+  strength: MarketContextStrength,
+  mc: MarketContext | null,
+  stateCode: string | null,
+): string | undefined {
+  if (!mc || strength === "none") return undefined;
+  const state = stateCode ?? mc?.stateCode ?? "this area";
+
+  // Determine which section is driving overallStrength so the summary is accurate.
+  const strengthRank: Record<MarketContextStrength, number> = { none: 0, thin: 1, moderate: 2, strong: 3 };
+  const stateRank = strengthRank[mc.stateStrength ?? "none"];
+  const dealerRank = strengthRank[mc.dealerStrength ?? "none"];
+  const feedbackRank = strengthRank[mc.feedbackStrength ?? "none"];
+
+  let sampleSize: number;
+  let sourceLabel: string;
+  if (dealerRank >= stateRank && dealerRank >= feedbackRank && (mc.dealerSampleSize ?? 0) >= 1) {
+    sampleSize = mc.dealerSampleSize ?? mc.dealerAnalysisCount ?? 0;
+    sourceLabel = "dealer quotes";
+  } else if (feedbackRank >= stateRank && feedbackRank >= dealerRank && (mc.feedbackSampleSize ?? 0) >= 1) {
+    sampleSize = mc.feedbackSampleSize ?? mc.feedbackCount ?? 0;
+    sourceLabel = "user feedback ratings";
+  } else {
+    sampleSize = mc.stateTotalAnalyses ?? 0;
+    sourceLabel = "deals";
+  }
+
+  if (strength === "strong") {
+    return `Based on strong local data (${sampleSize}+ ${sourceLabel} analyzed in ${state})`;
+  }
+  if (strength === "moderate") {
+    return `Based on local data (${sampleSize} similar ${sourceLabel} in ${state})`;
+  }
+  return `Based on limited local data (${sampleSize} similar ${sampleSize === 1 ? sourceLabel.replace(/s$/, "") : sourceLabel} in ${state})`;
+}
 
 export interface AnalyzeServiceResult {
   payload: Record<string, unknown>;
@@ -132,7 +169,7 @@ When state is unknown: omit all state-specific fee characterizations.`;
   const feedbackInjected =
     marketContext != null &&
     marketContext.feedbackCount != null &&
-    marketContext.feedbackCount >= 3 &&
+    marketContext.feedbackCount >= 1 &&
     marketContext.feedbackAgreementPct != null &&
     Number.isFinite(marketContext.feedbackAgreementPct);
 
@@ -145,16 +182,26 @@ When state is unknown: omit all state-specific fee characterizations.`;
     feedbackInjected,
   });
 
+  const overallStrength = marketContext?.overallStrength ?? "none";
+
+  function buildMarketIntroPhrase(strength: MarketContextStrength): string {
+    if (strength === "strong") return "Observed local market data shows";
+    if (strength === "moderate") return "Recent local data suggests";
+    if (strength === "thin") return "Early local signal suggests (limited data)";
+    return "";
+  }
+
   let marketIntelligenceSection = "";
-  if (marketContext) {
+  if (marketContext && overallStrength !== "none") {
     const mc = marketContext;
     const hasUsable = mc.stateTotalAnalyses != null || mc.stateAvgDocFee != null || mc.dealerAvgDealScore != null;
     if (hasUsable) {
       const stCode = stateDetection.state!;
+      const introPhrase = buildMarketIntroPhrase(overallStrength);
       const miLines: string[] = [];
       if (mc.stateTotalAnalyses != null && Number.isFinite(mc.stateTotalAnalyses)) {
         const dealWord = mc.stateTotalAnalyses === 1 ? "deal" : "deals";
-        miLines.push(`In ${stCode}, we have analyzed ${mc.stateTotalAnalyses} ${dealWord}`);
+        miLines.push(`${introPhrase}: In ${stCode}, we have analyzed ${mc.stateTotalAnalyses} ${dealWord}`);
       }
       if (mc.stateAvgDocFee != null && Number.isFinite(mc.stateAvgDocFee)) {
         miLines.push(`Average doc fee in ${stCode} is $${Math.round(mc.stateAvgDocFee)}`);
@@ -163,15 +210,16 @@ When state is unknown: omit all state-specific fee characterizations.`;
         const quoteWord = mc.dealerAnalysisCount === 1 ? "quote" : "quotes";
         miLines.push(`This dealer's average deal score is ${mc.dealerAvgDealScore} across ${mc.dealerAnalysisCount} analyzed ${quoteWord}`);
       }
-      if (mc.feedbackCount != null && mc.feedbackCount >= 3 && mc.feedbackAgreementPct != null && Number.isFinite(mc.feedbackAgreementPct)) {
+      if (mc.feedbackCount != null && mc.feedbackCount >= 1 && mc.feedbackAgreementPct != null && Number.isFinite(mc.feedbackAgreementPct)) {
         const pct = Math.round(mc.feedbackAgreementPct * 100);
         miLines.push(`Users agreed with ${pct}% of past ${mc.feedbackCount} analyses for this dealer. Use this as a confidence-calibration signal: for borderline cases, avoid overstating certainty.`);
       }
       if (miLines.length > 0) {
+        const limitedNote = overallStrength === "thin" ? " Note: data is limited — treat as early signal only, do not overstate confidence." : "";
         marketIntelligenceSection = `
 MARKET_INTELLIGENCE
 ${miLines.join("\n")}
-Reference these figures in your summary and reasoning when they are materially relevant to evaluating the deal. Do not force their use when they do not meaningfully help. Use the provided figures exactly as written. Do not estimate, round, or invent additional statistics.`;
+Reference these figures in your summary and reasoning when they are materially relevant to evaluating the deal. Do not force their use when they do not meaningfully help. Use the provided figures exactly as written. Do not estimate, round, or invent additional statistics.${limitedNote}`;
       }
     }
   }
@@ -476,11 +524,6 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     zipCode: data.zipCode,
     sessionId: data.sessionId,
   });
-  void trackEvent("submission_score", {
-    dealScore: finalResult.dealScore,
-    vehicle: data.vehicle,
-    sessionId: data.sessionId,
-  });
 
   let listingId: string | null = null;
   try {
@@ -556,6 +599,21 @@ Respond entirely in Spanish. All text fields in your JSON response — including
         if (dealerStats) {
           marketContext.dealerAnalysisCount = dealerStats.dealerAnalysisCount;
           marketContext.dealerAvgDealScore = dealerStats.dealerAvgDealScore;
+          // Keep strength fields consistent after post-LLM enrichment.
+          const enrichedDealerCount = dealerStats.dealerAnalysisCount ?? 0;
+          const { getStrength: computeStrength } = await import("../marketContext");
+          marketContext.dealerSampleSize = enrichedDealerCount;
+          marketContext.dealerStrength = computeStrength(enrichedDealerCount);
+          const strengthRankEnriched: Record<MarketContextStrength, number> = { none: 0, thin: 1, moderate: 2, strong: 3 };
+          const candidates: MarketContextStrength[] = [
+            marketContext.stateStrength ?? "none",
+            marketContext.dealerStrength,
+            marketContext.feedbackStrength ?? "none",
+          ];
+          marketContext.overallStrength = candidates.reduce(
+            (best, s) => strengthRankEnriched[s] > strengthRankEnriched[best] ? s : best,
+            "none" as MarketContextStrength,
+          );
         }
       } catch {
         // dealer enrichment is non-fatal
@@ -563,9 +621,26 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     }
   }
 
+  // Use final (post-enrichment) overallStrength for payload/telemetry.
+  const finalOverallStrength: MarketContextStrength = marketContext?.overallStrength ?? overallStrength;
+  const marketContextUsed = finalOverallStrength !== "none";
+
+  const marketContextSummary = buildMarketContextSummary(finalOverallStrength, marketContext, stateDetection.state ?? null);
+
   const payload: Record<string, unknown> = { ...finalResult };
   if (listingId) payload.listingId = listingId;
   if (marketContext !== null) payload.marketContext = marketContext;
+  payload.marketContextUsed = marketContextUsed;
+  payload.marketContextStrength = finalOverallStrength;
+  if (marketContextSummary) payload.marketContextSummary = marketContextSummary;
+
+  void trackEvent("submission_score", {
+    dealScore: finalResult.dealScore,
+    vehicle: data.vehicle,
+    sessionId: data.sessionId,
+    marketContextUsed,
+    marketContextStrength: finalOverallStrength,
+  });
 
   enqueueSubmission({ request: data, result: finalResult, preSavedListingId: listingId });
 

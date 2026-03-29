@@ -8,15 +8,22 @@
  * - Slow warehouse queries and errors both degrade gracefully without blocking /api/analyze.
  * - When returning a non-null result, all keys are always present (null for missing values).
  * - docFeeVsStateAvg is clamped: if abs > 2000, set to null (prevents absurd comparisons).
- * - stateTotalAnalyses threshold: >= 10 to return state context.
- * - dealerAnalysisCount threshold: >= 3 to include dealer fields.
+ * - sampleSize thresholds replaced by graded confidence tiers (none/thin/moderate/strong).
+ * - Data is returned whenever sampleSize >= 1; strength communicates data quality.
  */
 import { db } from "./db";
 import { sql } from "drizzle-orm";
-import type { MarketContext } from "@shared/schema";
+import type { MarketContext, MarketContextStrength } from "@shared/schema";
 import { normalizeDealerName } from "./warehouse/warehouseUtils";
 
 const DOC_FEE_DELTA_MAX = 2000;
+
+export function getStrength(sampleSize: number): MarketContextStrength {
+  if (sampleSize <= 0) return "none";
+  if (sampleSize <= 2) return "thin";
+  if (sampleSize <= 9) return "moderate";
+  return "strong";
+}
 
 export async function getDealerStats({
   state,
@@ -46,7 +53,7 @@ export async function getDealerStats({
     const dealerRow = dealerResult.rows?.[0];
     if (!dealerRow) return null;
     const count = Number(dealerRow.listing_count);
-    if (count < 3) return null;
+    if (count < 1) return null;
     return {
       dealerAnalysisCount: count,
       dealerAvgDealScore: dealerRow.avg_deal_score != null ? Number(dealerRow.avg_deal_score) : null,
@@ -91,11 +98,13 @@ export async function getMarketContext({
     );
 
     const stateRow = stateResult.rows?.[0];
-    const stateTotalAnalyses = stateRow ? Number(stateRow.listing_count) : null;
+    const stateSampleSize = stateRow ? Number(stateRow.listing_count) : 0;
 
-    if (!stateTotalAnalyses || stateTotalAnalyses < 10) {
+    if (stateSampleSize < 1) {
       return null;
     }
+
+    const stateStrength = getStrength(stateSampleSize);
 
     const stateAvgDealScore = stateRow?.avg_deal_score != null
       ? Number(stateRow.avg_deal_score)
@@ -112,9 +121,13 @@ export async function getMarketContext({
 
     let dealerAnalysisCount: number | null = null;
     let dealerAvgDealScore: number | null = null;
+    let dealerSampleSize = 0;
+    let dealerStrength: MarketContextStrength = "none";
 
     let feedbackAgreementPct: number | undefined;
     let feedbackCount: number | undefined;
+    let feedbackSampleSize = 0;
+    let feedbackStrength: MarketContextStrength = "none";
 
     if (dealerName) {
       const normalized = normalizeDealerName(dealerName);
@@ -137,9 +150,10 @@ export async function getMarketContext({
       }
       if (dealerRow) {
         const count = Number(dealerRow.listing_count);
-        // Dealer fields are included only when dealerAnalysisCount >= 3.
-        // Below threshold: both fields are null (no partial dealer data).
-        if (count >= 3) {
+        dealerSampleSize = count;
+        dealerStrength = getStrength(count);
+
+        if (count >= 1) {
           dealerAnalysisCount = count;
           dealerAvgDealScore = dealerRow.avg_deal_score != null ? Number(dealerRow.avg_deal_score) : null;
 
@@ -160,7 +174,9 @@ export async function getMarketContext({
             const fbRow = fbResult.rows?.[0];
             if (fbRow) {
               const total = Number(fbRow.total_feedback_count);
-              if (total >= 3) {
+              feedbackSampleSize = total;
+              feedbackStrength = getStrength(total);
+              if (total >= 1) {
                 feedbackCount = total;
                 feedbackAgreementPct = fbRow.feedback_agreement_pct != null
                   ? Number(fbRow.feedback_agreement_pct)
@@ -174,15 +190,28 @@ export async function getMarketContext({
       }
     }
 
+    const strengthRank: Record<MarketContextStrength, number> = { none: 0, thin: 1, moderate: 2, strong: 3 };
+    const overallStrength: MarketContextStrength = [stateStrength, dealerStrength, feedbackStrength].reduce(
+      (best, s) => strengthRank[s] > strengthRank[best] ? s : best,
+      "none" as MarketContextStrength,
+    );
+
     return {
       stateCode: state,
-      stateTotalAnalyses,
+      stateTotalAnalyses: stateSampleSize,
       stateAvgDealScore,
       stateAvgDocFee,
       docFeeVsStateAvg,
       dealerAnalysisCount,
       dealerAvgDealScore,
       ...(feedbackCount !== undefined ? { feedbackCount, feedbackAgreementPct } : {}),
+      stateSampleSize,
+      stateStrength,
+      dealerSampleSize,
+      dealerStrength,
+      feedbackSampleSize,
+      feedbackStrength,
+      overallStrength,
     };
   })();
 
