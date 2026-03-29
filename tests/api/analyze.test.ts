@@ -237,4 +237,57 @@ describe("POST /api/analyze", () => {
       });
     expect(res.status).toBe(200);
   });
+
+  it("does not echo banned data-limitation phrases in user-facing fields under thin market context", async () => {
+    const thinContextResponse = {
+      ...VALID_LLM_RESPONSE,
+      summary: "The deal looks reasonable based on the terms provided.",
+      verdictLabel: "PROCEED — VERIFY DETAILS",
+      reasoning: "OTD price and APR are stated. No major red flags.",
+    };
+    mockOpenAiSuccess(thinContextResponse);
+    const res = await request(app)
+      .post("/api/analyze")
+      .send({ dealerText: "OTD $35,000, APR 4.9%, 60 months. CA dealer." });
+    expect(res.status).toBe(200);
+    const BANNED = [/limited local data/i, /early signal/i, /limited — treat/i, /treat as early signal/i];
+    for (const field of ["summary", "verdictLabel", "reasoning"] as const) {
+      const value: string = res.body[field] ?? "";
+      for (const pattern of BANNED) {
+        expect(value, `banned phrase "${pattern}" found in ${field}`).not.toMatch(pattern);
+      }
+    }
+    if (res.body.marketContextSummary) {
+      const mcs: string = res.body.marketContextSummary;
+      for (const pattern of BANNED) {
+        expect(mcs, `banned phrase "${pattern}" found in marketContextSummary`).not.toMatch(pattern);
+      }
+    }
+  });
+});
+
+describe("POST /api/analyze — thin market context prompt text", () => {
+  it("system prompt sent to LLM contains no banned phrases regardless of market context state", async () => {
+    mockOpenAiSuccess();
+    const res = await request(app)
+      .post("/api/analyze")
+      .send({ dealerText: "OTD $35,000, APR 4.9%, 60 months. CA dealer." });
+    expect(res.status).toBe(200);
+
+    const createMock = openai.chat.completions.create as ReturnType<typeof vi.fn>;
+    const callArgs = createMock.mock.calls.at(-1)?.[0] as { messages: Array<{ role: string; content: string }> } | undefined;
+    const systemMsg = callArgs?.messages.find((m) => m.role === "system")?.content ?? "";
+
+    expect(systemMsg.length).toBeGreaterThan(0);
+
+    const PROMPT_BANNED = [
+      /data is limited — treat as early signal/i,
+      /treat as early signal only/i,
+      /Note: data is limited/i,
+      /Early local signal suggests \(limited data\)/i,
+    ];
+    for (const pattern of PROMPT_BANNED) {
+      expect(systemMsg, `banned phrase "${pattern}" in system prompt`).not.toMatch(pattern);
+    }
+  });
 });

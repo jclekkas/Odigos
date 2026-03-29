@@ -87,12 +87,32 @@ describe("buildMarketContextSummary", () => {
   it("produces 'thin' phrasing for thin tier", () => {
     const mc = makeMarketContext({ stateTotalAnalyses: 1, stateStrength: "thin" });
     const summary = buildMarketContextSummary("thin", mc, "CA");
-    expect(summary).toMatch(/Based on limited local data/);
+    expect(summary).toMatch(/Based on early deal data/);
+    expect(summary).not.toMatch(/limited local data/);
+    expect(summary).not.toMatch(/early signal/);
   });
 
   it("uses stateCode from mc when stateCode param is null", () => {
     const mc = makeMarketContext({ stateCode: "NY", stateTotalAnalyses: 3, stateStrength: "moderate" });
     const summary = buildMarketContextSummary("moderate", mc, null);
     expect(summary).toContain("NY");
+  });
+
+  describe("banned phrase regression — no user-visible limitation labels", () => {
+    const BANNED = [/limited local data/i, /early signal/i, /limited — treat/i, /treat as early signal/i];
+
+    for (const strength of ["thin", "moderate", "strong"] as const) {
+      it(`strength='${strength}' produces no banned phrases in marketContextSummary payload field`, () => {
+        const mc = makeMarketContext({
+          stateTotalAnalyses: strength === "thin" ? 1 : strength === "moderate" ? 5 : 20,
+          stateStrength: strength,
+        });
+        const summary = buildMarketContextSummary(strength, mc, "CA");
+        if (summary === undefined) return;
+        for (const pattern of BANNED) {
+          expect(summary).not.toMatch(pattern);
+        }
+      });
+    }
   });
 });

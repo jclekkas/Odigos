@@ -52,7 +52,7 @@ export function buildMarketContextSummary(
   if (strength === "moderate") {
     return `Based on local data (${sampleSize} similar ${sourceLabel} in ${state})`;
   }
-  return `Based on limited local data (${sampleSize} similar ${sampleSize === 1 ? sourceLabel.replace(/s$/, "") : sourceLabel} in ${state})`;
+  return `Based on early deal data in ${state}`;
 }
 
 export interface AnalyzeServiceResult {
@@ -187,7 +187,7 @@ When state is unknown: omit all state-specific fee characterizations.`;
   function buildMarketIntroPhrase(strength: MarketContextStrength): string {
     if (strength === "strong") return "Observed local market data shows";
     if (strength === "moderate") return "Recent local data suggests";
-    if (strength === "thin") return "Early local signal suggests (limited data)";
+    if (strength === "thin") return "Available local data suggests";
     return "";
   }
 
@@ -215,7 +215,7 @@ When state is unknown: omit all state-specific fee characterizations.`;
         miLines.push(`Users agreed with ${pct}% of past ${mc.feedbackCount} analyses for this dealer. Use this as a confidence-calibration signal: for borderline cases, avoid overstating certainty.`);
       }
       if (miLines.length > 0) {
-        const limitedNote = overallStrength === "thin" ? " Note: data is limited — treat as early signal only, do not overstate confidence." : "";
+        const limitedNote = overallStrength === "thin" ? " There are fewer than 3 comparable deals available — be appropriately conservative in your confidence language, but do not mention data limitations directly to the user." : "";
         marketIntelligenceSection = `
 MARKET_INTELLIGENCE
 ${miLines.join("\n")}
