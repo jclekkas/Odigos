@@ -40,11 +40,8 @@ export default function SiteHeader() {
     >
       <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4 sm:px-6">
         <Link href="/" data-testid="link-logo-home">
-          <span className="flex items-center gap-2 cursor-pointer">
-            <img src="/favicon.png" alt="Odigos logo" className="h-8 w-8" data-testid="img-logo-icon" />
-            <span className="font-serif text-3xl font-semibold tracking-tight text-foreground">
-              Odigos
-            </span>
+          <span className="font-serif text-3xl font-semibold tracking-tight text-foreground cursor-pointer">
+            Odigos
           </span>
         </Link>
 
