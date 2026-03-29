@@ -40,7 +40,9 @@ import AdminUsers from "@/pages/admin-users";
 import AdminSeo from "@/pages/admin-seo";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
+import Legal from "@/pages/legal";
 import About from "@/pages/about";
+import CookieConsentBanner from "@/components/CookieConsentBanner";
 import DealerPricingProblems from "@/pages/dealer-pricing-problems";
 import HowOdigosWorks from "@/pages/how-odigos-works";
 import ExampleAnalysis from "@/pages/example-analysis";
@@ -121,6 +123,7 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/terms" component={Terms} />
+      <Route path="/legal" component={Legal} />
       <Route path="/dealer-pricing-problems" component={DealerPricingProblems} />
       <Route path="/how-odigos-works" component={HowOdigosWorks} />
       <Route path="/example-analysis" component={ExampleAnalysis} />
@@ -220,6 +223,7 @@ function App() {
           <Toaster />
           <VitalsTracker />
           <Router />
+          <CookieConsentBanner />
         </TooltipProvider>
       </QueryClientProvider>
     </Sentry.ErrorBoundary>

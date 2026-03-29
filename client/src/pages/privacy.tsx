@@ -129,6 +129,36 @@ export default function Privacy() {
             </section>
 
             <section>
+              <h2 className="text-xl font-semibold mb-3 text-foreground">Your data rights (CCPA &amp; GDPR)</h2>
+              <p className="text-muted-foreground mb-3">
+                Whether you are in California (covered by the California Consumer Privacy Act) or the European Union (covered by GDPR), you have rights over data that can be linked to you. Because Odigos does not collect personal identifiers or require accounts, most rights apply in a limited way — but we are committed to honoring them fully.
+              </p>
+              <ul className="space-y-2 text-muted-foreground ml-4 mb-3">
+                <li className="flex gap-2">
+                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground flex-shrink-0" />
+                  <span><strong className="text-foreground">Right to know / access</strong> — You may request information about what data we hold that is associated with a submission you made.</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground flex-shrink-0" />
+                  <span><strong className="text-foreground">Right to deletion</strong> — You may request that we delete your submitted data. Because submissions are not tied to accounts, please provide enough context (approximate submission time, deal details) for us to locate the record.</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground flex-shrink-0" />
+                  <span><strong className="text-foreground">Right to portability</strong> — You may request a copy of any data we hold associated with your submission in a machine-readable format.</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground flex-shrink-0" />
+                  <span><strong className="text-foreground">Right to opt out of sale</strong> — We do not sell personal data. Anonymized, aggregated derived signals may be used commercially, but these cannot identify any individual.</span>
+                </li>
+              </ul>
+              <p className="text-muted-foreground">
+                To exercise any of these rights, email{" "}
+                <a href="mailto:privacy@odigosauto.com" className="underline text-foreground">privacy@odigosauto.com</a>
+                {". We will respond within 30 days."}
+              </p>
+            </section>
+
+            <section>
               <h2 className="text-xl font-semibold mb-3 text-foreground">Changes to this policy</h2>
               <p className="text-muted-foreground">
                 If we make material changes to what we collect or how we use it, we will update the date at the top of this page. Continued use of Odigos after a change constitutes acceptance of the updated policy.

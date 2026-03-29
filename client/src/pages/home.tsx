@@ -1174,6 +1174,13 @@ export default function Home() {
   const [summaryCopied, setSummaryCopied] = useState<"idle" | "success" | "failed">("idle");
   const [scorecardDownloading, setScorecardDownloading] = useState(false);
   const [showDoneState, setShowDoneState] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(() => {
+    try {
+      return localStorage.getItem("odigos_upload_consent") === "accepted";
+    } catch {
+      return false;
+    }
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const inputStartedRef = useRef(false);
   const resultFiredRef = useRef(false);
@@ -1930,12 +1937,35 @@ export default function Home() {
             </Collapsible>
 
             <div className="border-t border-border/40 pt-5">
+            {!consentChecked && (
+              <div className="mb-4 p-3 rounded-lg border border-border/60 bg-muted/30" data-testid="section-upload-consent">
+                <label className="flex gap-3 cursor-pointer items-start" htmlFor="upload-consent-checkbox">
+                  <input
+                    id="upload-consent-checkbox"
+                    type="checkbox"
+                    className="mt-0.5 h-4 w-4 rounded border-border accent-primary flex-shrink-0"
+                    defaultChecked={false}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        try { localStorage.setItem("odigos_upload_consent", "accepted"); } catch {}
+                        setConsentChecked(true);
+                      }
+                    }}
+                    data-testid="checkbox-upload-consent"
+                  />
+                  <span className="text-xs text-muted-foreground leading-relaxed">
+                    By analyzing, I agree that anonymized pricing signals from my submission may be used to improve Odigos. No personal info is retained beyond 90 days.{" "}
+                    <a href="/terms#data-license" className="underline hover:text-foreground transition-colors">Learn more</a>
+                  </span>
+                </label>
+              </div>
+            )}
             <Button
               variant="cta"
               type="submit"
               size="lg"
               className="w-full"
-              disabled={analyzeMutation.isPending || showDoneState}
+              disabled={analyzeMutation.isPending || showDoneState || !consentChecked}
               data-testid="button-analyze"
             >
               {analyzeMutation.isPending ? (
