@@ -263,7 +263,7 @@ export default function Landing() {
         {/* Proof bar */}
         <div className="border-y border-border/40 bg-muted/30 py-3">
           <p className="text-center text-xs text-muted-foreground" data-testid="text-proof-bar">
-            Analyzed 1,000+ dealer quotes · Users typically uncover $1,200–$3,000 in hidden costs
+            Dealer doc fees range from $85 to $1,000+ depending on state · Taxes and fees typically add 8–15% above the sticker price
           </p>
         </div>
 
