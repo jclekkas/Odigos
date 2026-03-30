@@ -35,6 +35,7 @@ const ROUTES = [
   "/car-dealer-fees-california",
   "/car-dealer-fees-texas",
   "/car-dealer-fees-florida",
+  "/car-dealer-fees-illinois",
   "/car-dealer-fees-new-york",
   "/car-dealer-fees-georgia",
   "/dealer-doc-fee",
