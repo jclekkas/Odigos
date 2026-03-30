@@ -90,11 +90,15 @@ export default function CarDealerFeesExplained() {
           <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to protect yourself</h2>
 
           <p className="text-muted-foreground mb-6">
-            The simplest defense is requesting the full <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> in writing before you visit the dealership. An itemized OTD quote shows every dollar — taxes, fees, and add-ons — and makes it straightforward to spot optional charges and negotiate them out before you're sitting in the finance office.
+            The simplest defense is requesting the full <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> in writing before you visit the dealership. An itemized OTD quote shows every dollar — taxes, fees, and add-ons — and makes it straightforward to spot optional charges and negotiate them out before you're sitting in the finance office. For a closer look at which specific charges commonly catch buyers off guard, see our guide on <Link href="/hidden-dealer-fees" className="underline text-foreground">hidden dealer fees</Link>.
+          </p>
+
+          <p className="text-muted-foreground mb-6">
+            If a dealer won't provide an itemized breakdown, that's worth treating as a signal. Transparent pricing shouldn't be hard to get.
           </p>
 
           <p className="text-muted-foreground mb-8">
-            If a dealer won't provide an itemized breakdown, that's worth treating as a signal. Transparent pricing shouldn't be hard to get.
+            You can also <Link href="/analyze" className="underline text-foreground">paste your dealer quote into Odigos</Link> to have every fee flagged and categorized automatically — no manual line-by-line review required.
           </p>
           
 

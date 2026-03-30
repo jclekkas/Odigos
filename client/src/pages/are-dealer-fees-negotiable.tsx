@@ -110,7 +110,7 @@ export default function AreDealerFeesNegotiable() {
 
         <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">When Dealers Say Fees Are "Mandatory"</h2>
         <p className="text-muted-foreground mb-4">
-          A common tactic is describing dealer-set fees as required, standard, or legally mandated. This is usually misleading. The doc fee may be standard at that dealership, but "standard" is not the same as "required by law."
+          A common tactic is describing dealer-set fees as required, standard, or legally mandated. This is usually misleading. The doc fee may be standard at that dealership, but "standard" is not the same as "required by law." For a breakdown of which specific charges are legitimate and which are not, see our guide on <Link href="/hidden-dealer-fees" className="underline text-foreground">hidden dealer fees to watch for</Link>.
         </p>
         <p className="text-muted-foreground mb-4">
           If a dealer says a fee is mandatory, ask them to identify the specific statute that requires it. If they can't — and in most cases they can't — that's useful information. It tells you the fee is a business policy, not a legal requirement.

@@ -167,7 +167,7 @@ export default function DealerDocFee() {
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What Most Buyers Miss About Doc Fees</h2>
             <p className="text-muted-foreground mb-4">
-              The doc fee is often the last thing buyers look at — but it's also one of the most reliable signals about a dealer's overall pricing approach. A dealer charging $899 in a state where competitors charge $399 is almost certainly making up the difference somewhere else too.
+              The doc fee is often the last thing buyers look at — but it's also one of the most reliable signals about a dealer's overall pricing approach. A dealer charging $899 in a state where competitors charge $399 is almost certainly making up the difference somewhere else too. Doc fees are just one of many charges that can inflate a quote — for the full picture, see our guide on <Link href="/are-dealer-fees-negotiable" className="underline text-foreground">which dealer fees are actually negotiable</Link>.
             </p>
             <p className="text-muted-foreground mb-4">
               Before visiting any dealer, ask for the full itemized OTD price by email. The doc fee will appear in that breakdown. If it's above average for your state, use it as a negotiating lever on the vehicle price. If they won't itemize at all, that itself tells you something.

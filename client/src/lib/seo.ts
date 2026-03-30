@@ -36,6 +36,13 @@ function upsertCanonical(href: string): HTMLLinkElement {
   return el;
 }
 
+export function setRobotsMeta(content: string): () => void {
+  const el = upsertMeta("robots", content, false);
+  return () => {
+    el.setAttribute("content", "index, follow");
+  };
+}
+
 export function setSeoMeta({ title, description, path }: SeoMeta) {
   document.title = title;
 

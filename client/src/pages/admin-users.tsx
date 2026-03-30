@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { setRobotsMeta } from "@/lib/seo";
 import { AdminNav } from "@/components/admin-nav";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -192,6 +193,10 @@ export default function AdminUsers() {
   const [adminKey, setAdminKey, clearKey] = useAdminKey();
   const [keyInput, setKeyInput] = useState("");
   const [searchInput, setSearchInput] = useState("");
+
+  useEffect(() => {
+    return setRobotsMeta("noindex, nofollow");
+  }, []);
   const [query, setQuery] = useState("");
 
   const { data, isLoading, isError, error } = useQuery<{ sessions: UserSession[] }>({

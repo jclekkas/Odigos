@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { setRobotsMeta } from "@/lib/seo";
 
 import { AdminNav } from "@/components/admin-nav";
 import { useAdminKey } from "@/hooks/use-admin-key";
@@ -1778,6 +1779,10 @@ export default function AdminBusiness() {
   const [activePanel, setActivePanel] = useState("funnel");
   const [adminKey, setAdminKey, clearKey] = useAdminKey();
   const [keyInput, setKeyInput] = useState("");
+
+  useEffect(() => {
+    return setRobotsMeta("noindex, nofollow");
+  }, []);
 
   const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString());
   useEffect(() => {

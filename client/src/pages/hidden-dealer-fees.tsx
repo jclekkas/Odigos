@@ -103,7 +103,7 @@ export default function HiddenDealerFees() {
         <ul className="space-y-2 mb-4 text-muted-foreground">
           <li className="flex items-start gap-2">
             <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-            <span>Ask the dealer to explain exactly what the fee covers and whether it is required by state law or by their internal policy</span>
+            <span>Ask the dealer to explain exactly what the fee covers and whether it is required by state law or by their internal policy — a full breakdown of <Link href="/car-dealer-fees-explained" className="underline text-foreground">which car dealer fees are required vs. optional</Link> can help you ask the right questions</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-muted-foreground mt-1.5 shrink-0">•</span>

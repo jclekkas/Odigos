@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { setRobotsMeta } from "@/lib/seo";
 
 import { AdminNav } from "@/components/admin-nav";
 import { useAdminKey } from "@/hooks/use-admin-key";
@@ -302,6 +303,10 @@ export default function AdminTechnical() {
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [adminKey, setAdminKey, clearKey] = useAdminKey();
   const [keyInput, setKeyInput] = useState("");
+
+  useEffect(() => {
+    return setRobotsMeta("noindex, nofollow");
+  }, []);
 
   const healthQuery = useQuery<HealthData>({
     queryKey: ["/api/health"],

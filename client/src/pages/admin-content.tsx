@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { setRobotsMeta } from "@/lib/seo";
 import { AdminNav } from "@/components/admin-nav";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -56,6 +57,10 @@ export default function AdminContent() {
   const [adminKey, setAdminKey, clearKey] = useAdminKey();
   const [keyInput, setKeyInput] = useState("");
   const [range, setRange] = useState<DateRange>("all");
+
+  useEffect(() => {
+    return setRobotsMeta("noindex, nofollow");
+  }, []);
   const [sortKey, setSortKey] = useState<SortKey>("views");
   const [showAll, setShowAll] = useState(false);
 

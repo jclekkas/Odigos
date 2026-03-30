@@ -7,7 +7,13 @@ export default function SiteFooter() {
         <p className="text-xs text-muted-foreground">
           Odigos — Independent. Not affiliated with any dealership.
         </p>
-        <nav className="flex gap-4 text-xs text-muted-foreground">
+        <nav className="flex gap-4 text-xs text-muted-foreground flex-wrap justify-center">
+          <Link href="/analyze" className="transition-colors hover:text-foreground" data-testid="link-footer-analyze">
+            Check a Deal
+          </Link>
+          <Link href="/how-odigos-works" className="transition-colors hover:text-foreground" data-testid="link-footer-how-it-works">
+            How It Works
+          </Link>
           <Link href="/about" className="transition-colors hover:text-foreground" data-testid="link-footer-about">
             About
           </Link>

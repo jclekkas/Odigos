@@ -33,6 +33,6 @@ export function registerReferenceRoutes(app: Express): void {
   app.get("/robots.txt", (_req, res) => {
     const CANONICAL_ORIGIN = "https://odigosauto.com";
     res.type("text/plain");
-    res.send(`User-agent: *\nAllow: /\nSitemap: ${CANONICAL_ORIGIN}/sitemap.xml`);
+    res.send(`User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /admin/\nSitemap: ${CANONICAL_ORIGIN}/sitemap.xml`);
   });
 }

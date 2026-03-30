@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { setRobotsMeta } from "@/lib/seo";
 
 import { AdminNav } from "@/components/admin-nav";
 import { useAdminKey } from "@/hooks/use-admin-key";
@@ -583,6 +584,10 @@ export default function AdminMetrics() {
   const [importResult, setImportResult] = useState<{ success: boolean; message: string } | null>(null);
   const [adminKey, setAdminKey, clearKey] = useAdminKey();
   const [keyInput, setKeyInput] = useState("");
+
+  useEffect(() => {
+    return setRobotsMeta("noindex, nofollow");
+  }, []);
   
   const handleImportStripeHistory = async () => {
     setIsImporting(true);

@@ -153,7 +153,7 @@ export default function MarketAdjustmentFee() {
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to watch for in the quote</h2>
 
             <p className="text-lg text-muted-foreground mb-6">
-              If a dealer sends you a quote or a breakdown, look carefully at how the market adjustment is presented. Sometimes it's listed as a separate line item, which is transparent. Other times it's folded into the vehicle price without explanation, or buried under a vague label like "additional equipment" or "dealer accessories." If the total price doesn't match MSRP plus tax, title, and registration, ask what accounts for the difference.
+              If a dealer sends you a quote or a breakdown, look carefully at how the market adjustment is presented. Sometimes it's listed as a separate line item, which is transparent. Other times it's folded into the vehicle price without explanation, or buried under a vague label like "additional equipment" or "dealer accessories." If the total price doesn't match MSRP plus tax, title, and registration, ask what accounts for the difference. Market adjustments often appear alongside other <Link href="/hidden-dealer-fees" className="underline text-foreground">hidden dealer fees</Link> — if you spot one, check the full quote carefully.
             </p>
 
             <p className="text-lg text-muted-foreground mb-6">

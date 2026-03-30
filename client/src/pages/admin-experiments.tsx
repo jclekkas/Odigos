@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { setRobotsMeta } from "@/lib/seo";
 import { AdminNav } from "@/components/admin-nav";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -241,6 +242,10 @@ function ExperimentCard({ exp }: { exp: ExperimentStats }) {
 }
 
 export default function AdminExperiments() {
+  useEffect(() => {
+    return setRobotsMeta("noindex, nofollow");
+  }, []);
+
   const { data, isLoading, isError, error, refetch, isFetching } = useQuery<ExperimentStats[]>({
     queryKey: ["/api/experiments"],
     queryFn: async () => {

@@ -109,10 +109,12 @@ export const INDEXABLE_ROUTES: string[] = [
 
 export const EXCLUDED_ROUTES: string[] = [
   "/guides",
+  "/admin",
   "/admin/metrics",
   "/admin/technical",
   "/admin/business",
   "/admin/experiments",
   "/admin/content",
   "/admin/users",
+  "/admin/seo",
 ];

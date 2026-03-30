@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { setRobotsMeta } from "@/lib/seo";
 import { Link } from "wouter";
 import { useAdminKey } from "@/hooks/use-admin-key";
 import { AdminNav } from "@/components/admin-nav";
@@ -77,6 +78,10 @@ const DASHBOARDS = [
 export default function AdminHub() {
   const [adminKey, setAdminKey] = useAdminKey();
   const [keyInput, setKeyInput] = useState("");
+
+  useEffect(() => {
+    return setRobotsMeta("noindex, nofollow");
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">

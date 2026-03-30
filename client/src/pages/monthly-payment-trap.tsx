@@ -102,7 +102,7 @@ export default function MonthlyPaymentTrap() {
             </ul>
 
             <p className="text-lg text-muted-foreground mb-8">
-              If you already have a payment-focused quote from a dealer, Odigos can analyze what's missing and flag anything that looks unclear or incomplete.
+              If you already have a payment-focused quote from a dealer, you can <Link href="/analyze" className="underline text-foreground">run it through our deal analyzer</Link> to flag hidden costs and anything that looks unclear or incomplete. It's also worth reviewing our guide on <Link href="/car-dealer-fees-explained" className="underline text-foreground">common dealer fees</Link> so you know what a complete quote should include.
             </p>
           </div>
           

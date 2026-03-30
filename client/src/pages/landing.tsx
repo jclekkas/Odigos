@@ -641,6 +641,10 @@ export default function Landing() {
               <li><Link href="/market-adjustment-fee" className="text-sm underline text-foreground" data-testid="link-tactic-market">Dealer Market Adjustment Fees</Link></li>
               <li><Link href="/dealer-added-fees-after-agreement" className="text-sm underline text-foreground" data-testid="link-tactic-added-fees">Dealer Added Fees After Agreement</Link></li>
               <li><Link href="/car-dealer-fees-by-state" className="text-sm underline text-foreground" data-testid="link-tactic-fees-by-state">Car Dealer Fees by State</Link></li>
+              <li><Link href="/hidden-dealer-fees" className="text-sm underline text-foreground" data-testid="link-tactic-hidden-fees">Hidden Dealer Fees: What to Watch for on Any Quote</Link></li>
+              <li><Link href="/are-dealer-fees-negotiable" className="text-sm underline text-foreground" data-testid="link-tactic-negotiable">Are Dealer Fees Negotiable?</Link></li>
+              <li><Link href="/monthly-payment-trap" className="text-sm underline text-foreground" data-testid="link-tactic-monthly-trap">The Monthly Payment Trap</Link></li>
+              <li><Link href="/how-odigos-works" className="text-sm underline text-foreground" data-testid="link-tactic-how-it-works">How Odigos Works</Link></li>
             </ul>
           </div>
         </section>
