@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { TimeRangeSelector, useTimeRange } from "@/components/time-range-selector";
 import { 
   ArrowLeft, 
   DollarSign, 
@@ -584,6 +585,7 @@ export default function AdminMetrics() {
   const [importResult, setImportResult] = useState<{ success: boolean; message: string } | null>(null);
   const [adminKey, setAdminKey, clearKey] = useAdminKey();
   const [keyInput, setKeyInput] = useState("");
+  const [range, setRange] = useTimeRange();
 
   useEffect(() => {
     return setRobotsMeta("noindex, nofollow");
@@ -612,9 +614,9 @@ export default function AdminMetrics() {
   };
   
   const { data: metrics, isLoading, error, refetch, isFetching, dataUpdatedAt } = useQuery<MetricsSummary>({
-    queryKey: ["/api/metrics", adminKey],
+    queryKey: ["/api/metrics", adminKey, range],
     queryFn: async () => {
-      const res = await fetch(`/api/metrics`, {
+      const res = await fetch(`/api/metrics?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
       if (!res.ok) throw new Error(`${res.status}`);
@@ -626,10 +628,13 @@ export default function AdminMetrics() {
 
   const lastUpdated = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString() : "Never";
 
-  const submissionsUpFromYesterday = metrics
+  const currentLabel = range === "today" ? "today" : range === "week" ? "this week" : range === "month" ? "this month" : "all time";
+  const priorLabel = range === "today" ? "yesterday" : range === "week" ? "last week" : range === "month" ? "last month" : null;
+
+  const submissionsUpFromPrior = metrics
     ? metrics.trends.submissionsToday >= metrics.trends.submissionsYesterday
     : null;
-  const revenueUpFromYesterday = metrics
+  const revenueUpFromPrior = metrics
     ? metrics.trends.revenueToday >= metrics.trends.revenueYesterday
     : null;
 
@@ -720,6 +725,7 @@ export default function AdminMetrics() {
               </div>
             </div>
             <div className="flex items-center gap-3 flex-wrap">
+              <TimeRangeSelector value={range} onChange={setRange} />
               <Link href="/admin/business">
                 <Button variant="outline" size="sm" data-testid="link-business-dashboard">
                   <BarChart3 className="h-4 w-4 mr-2" />
@@ -795,24 +801,24 @@ export default function AdminMetrics() {
               {metrics && (() => {
                 const parts: string[] = [];
                 if (metrics.trends.submissionsToday > 0) {
-                  parts.push(`${metrics.trends.submissionsToday} people submitted a deal today`);
+                  parts.push(`${metrics.trends.submissionsToday} submissions ${currentLabel}`);
                 }
                 if (metrics.trends.revenueToday > 0) {
-                  parts.push(`$${metrics.trends.revenueToday} earned today`);
+                  parts.push(`$${metrics.trends.revenueToday} earned ${currentLabel}`);
                 }
                 if (metrics.totalPayments > 0) {
-                  parts.push(`${metrics.totalPayments} people have paid in total`);
+                  parts.push(`${metrics.totalPayments} total paid`);
                 }
                 if (parts.length === 0) return "No activity yet — data will appear as users start using the app.";
                 return parts.join(" · ") + ".";
               })()}
             </p>
-            {metrics && submissionsUpFromYesterday !== null && (
+            {metrics && submissionsUpFromPrior !== null && priorLabel && (
               <p className="text-xs text-muted-foreground mt-1">
-                {submissionsUpFromYesterday
-                  ? "↑ Submissions are up from yesterday — on track."
-                  : "↓ Submissions are down from yesterday."}
-                {revenueUpFromYesterday !== null && (revenueUpFromYesterday
+                {submissionsUpFromPrior
+                  ? `↑ Submissions are up from ${priorLabel} — on track.`
+                  : `↓ Submissions are down from ${priorLabel}.`}
+                {revenueUpFromPrior !== null && (revenueUpFromPrior
                   ? " Revenue is trending up."
                   : " Revenue is trending down.")}
               </p>
@@ -827,17 +833,17 @@ export default function AdminMetrics() {
             <MetricCard
               title="Total Deal Submissions"
               value={metrics?.totalSubmissions ?? 0}
-              subtitle="All time"
+              subtitle="Lifetime total"
               context="How many deals people have submitted for review"
-              trend={metrics ? { current: metrics.trends.submissionsToday, previous: metrics.trends.submissionsYesterday, label: "yesterday" } : undefined}
+              trend={metrics && priorLabel ? { current: metrics.trends.submissionsToday, previous: metrics.trends.submissionsYesterday, label: priorLabel } : undefined}
               icon={Users}
             />
             <MetricCard
               title="Total Revenue"
               value={`$${metrics?.revenue ?? 0}`}
-              subtitle="Lifetime earnings"
+              subtitle="Lifetime total"
               context="Total money collected from paid reviews"
-              trend={metrics ? { current: metrics.trends.revenueToday, previous: metrics.trends.revenueYesterday, label: "yesterday" } : undefined}
+              trend={metrics && priorLabel ? { current: metrics.trends.revenueToday, previous: metrics.trends.revenueYesterday, label: priorLabel } : undefined}
               icon={DollarSign}
               color="success"
             />
@@ -851,8 +857,8 @@ export default function AdminMetrics() {
             <MetricCard
               title="People Who Paid"
               value={metrics?.totalPayments ?? 0}
-              subtitle="Completed full reviews"
-              context="Unique paying customers all time"
+              subtitle="Lifetime total"
+              context="Unique paying customers — all time"
               icon={CheckCircle}
               color="success"
             />
@@ -1031,17 +1037,17 @@ export default function AdminMetrics() {
           <h2 className="text-base font-semibold mb-3">Revenue Breakdown</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <MetricCard
-              title="Earned Today"
+              title={`Earned ${currentLabel.charAt(0).toUpperCase() + currentLabel.slice(1)}`}
               value={`$${metrics?.trends.revenueToday ?? 0}`}
-              context={revenueUpFromYesterday ? "↑ Up from yesterday" : "↓ Down from yesterday"}
-              trend={metrics ? { current: metrics.trends.revenueToday, previous: metrics.trends.revenueYesterday, label: "yesterday" } : undefined}
+              context={revenueUpFromPrior && priorLabel ? `↑ Up from ${priorLabel}` : priorLabel ? `↓ Down from ${priorLabel}` : undefined}
+              trend={metrics && priorLabel ? { current: metrics.trends.revenueToday, previous: metrics.trends.revenueYesterday, label: priorLabel } : undefined}
               icon={DollarSign}
               color="success"
             />
             <MetricCard
-              title="This Week's Revenue"
+              title={`${currentLabel.charAt(0).toUpperCase() + currentLabel.slice(1)} Revenue`}
               value={`$${metrics?.trends.revenueThisWeek ?? 0}`}
-              trend={metrics ? { current: metrics.trends.revenueThisWeek, previous: metrics.trends.revenueLastWeek, label: "last week" } : undefined}
+              trend={metrics && priorLabel ? { current: metrics.trends.revenueThisWeek, previous: metrics.trends.revenueLastWeek, label: priorLabel } : undefined}
               icon={TrendingUp}
               color="success"
             />
@@ -1097,11 +1103,11 @@ export default function AdminMetrics() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Submissions today</span>
+                  <span className="text-sm text-muted-foreground">Submissions {currentLabel}</span>
                   <Badge>{metrics?.trends.submissionsToday ?? 0}</Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Revenue today</span>
+                  <span className="text-sm text-muted-foreground">Revenue {currentLabel}</span>
                   <Badge variant="secondary">${metrics?.trends.revenueToday ?? 0}</Badge>
                 </div>
                 <div className="flex items-center justify-between">

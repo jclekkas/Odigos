@@ -32,7 +32,11 @@ export function registerAdminRoutes(app: Express): void {
     if (!requireAdminKey(req, res)) return;
     try {
       const { getMetricsSummary } = await import("../analytics");
-      const summary = await getMetricsSummary();
+      const VALID_RANGES = ["today", "week", "month", "all"] as const;
+      type MetricsRange = typeof VALID_RANGES[number];
+      const rawRange = typeof req.query.range === "string" ? req.query.range : "all";
+      const range: MetricsRange = (VALID_RANGES as readonly string[]).includes(rawRange) ? rawRange as MetricsRange : "all";
+      const summary = await getMetricsSummary(range);
       res.json(summary);
     } catch (error: any) {
       console.error("Metrics error:", error?.message || error);
@@ -56,7 +60,11 @@ export function registerAdminRoutes(app: Express): void {
     if (!requireAdminKey(req, res)) return;
     try {
       const { getTechnicalSummary, getPiiExpiryStatus } = await import("../analytics");
-      const [summary, piiRetention] = await Promise.all([getTechnicalSummary(), getPiiExpiryStatus()]);
+      const VALID_RANGES = ["today", "week", "month", "all"] as const;
+      type TechRange = typeof VALID_RANGES[number];
+      const rawRange = typeof req.query.range === "string" ? req.query.range : "all";
+      const range: TechRange = (VALID_RANGES as readonly string[]).includes(rawRange) ? rawRange as TechRange : "all";
+      const [summary, piiRetention] = await Promise.all([getTechnicalSummary(range), getPiiExpiryStatus()]);
       res.json({ ...summary, piiRetention });
     } catch (error: any) {
       console.error("Technical metrics error:", error?.message || error);

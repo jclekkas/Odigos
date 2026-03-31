@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { TimeRangeSelector, useTimeRange, type DateRange } from "@/components/time-range-selector";
 import {
   ArrowLeft,
   DollarSign,
@@ -50,15 +51,6 @@ import {
   Legend,
 } from "recharts";
 
-type DateRange = "today" | "week" | "month" | "all";
-
-const RANGE_LABELS: Record<DateRange, string> = {
-  today: "Today",
-  week: "Last 7 Days",
-  month: "Last 30 Days",
-  all: "All Time",
-};
-
 function LivePulse() {
   return (
     <div className="flex items-center gap-2">
@@ -67,27 +59,6 @@ function LivePulse() {
         <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
       </span>
       <span className="text-xs text-muted-foreground">Live</span>
-    </div>
-  );
-}
-
-function DateRangeSelector({ value, onChange }: { value: DateRange; onChange: (r: DateRange) => void }) {
-  return (
-    <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-      {(Object.keys(RANGE_LABELS) as DateRange[]).map((r) => (
-        <button
-          key={r}
-          onClick={() => onChange(r)}
-          data-testid={`range-${r}`}
-          className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-            value === r
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          {RANGE_LABELS[r]}
-        </button>
-      ))}
     </div>
   );
 }
@@ -1775,7 +1746,7 @@ const PANELS = [
 ];
 
 export default function AdminBusiness() {
-  const [range, setRange] = useState<DateRange>("all");
+  const [range, setRange] = useTimeRange();
   const [activePanel, setActivePanel] = useState("funnel");
   const [adminKey, setAdminKey, clearKey] = useAdminKey();
   const [keyInput, setKeyInput] = useState("");
@@ -1867,7 +1838,7 @@ export default function AdminBusiness() {
                 </p>
               </div>
             </div>
-            <DateRangeSelector value={range} onChange={setRange} />
+            <TimeRangeSelector value={range} onChange={setRange} />
           </div>
         </div>
 

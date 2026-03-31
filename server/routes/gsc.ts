@@ -261,18 +261,32 @@ async function fetchUrlInspection(
   };
 }
 
-function buildAnalyticsRequestBody() {
+type GscDateRange = "today" | "week" | "month" | "all";
+
+function buildAnalyticsRequestBody(range: GscDateRange = "all") {
+  const fmt = (d: Date) => d.toISOString().slice(0, 10);
   const endDate = new Date();
   endDate.setDate(endDate.getDate() - 1);
-  const startDate = new Date(endDate);
-  startDate.setDate(startDate.getDate() - 27);
-  const fmt = (d: Date) => d.toISOString().slice(0, 10);
+  let startDate: Date;
+  if (range === "today") {
+    startDate = new Date(endDate);
+  } else if (range === "week") {
+    startDate = new Date(endDate);
+    startDate.setDate(startDate.getDate() - 6);
+  } else if (range === "month") {
+    startDate = new Date(endDate);
+    startDate.setDate(startDate.getDate() - 29);
+  } else {
+    startDate = new Date(endDate);
+    startDate.setDate(startDate.getDate() - 27);
+  }
   return { startDate: fmt(startDate), endDate: fmt(endDate), dimensions: ["page"], rowLimit: 5000 };
 }
 
 async function fetchSearchAnalyticsRaw(
   accessToken: string,
-  siteUrl: string
+  siteUrl: string,
+  range: GscDateRange = "all"
 ): Promise<Response> {
   return fetch(
     `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`,
@@ -282,7 +296,7 @@ async function fetchSearchAnalyticsRaw(
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(buildAnalyticsRequestBody()),
+      body: JSON.stringify(buildAnalyticsRequestBody(range)),
     }
   );
 }
@@ -296,9 +310,10 @@ class GscAnalyticsError extends Error {
 
 async function fetchSearchAnalytics(
   accessToken: string,
-  siteUrl: string
+  siteUrl: string,
+  range: GscDateRange = "all"
 ): Promise<Map<string, { clicks: number; impressions: number }>> {
-  const response = await fetchSearchAnalyticsRaw(accessToken, siteUrl);
+  const response = await fetchSearchAnalyticsRaw(accessToken, siteUrl, range);
 
   if (!response.ok) {
     const text = await response.text().catch(() => "");
@@ -326,6 +341,10 @@ export function registerGscRoutes(app: Express): void {
     }
 
     try {
+      const rawRange = typeof req.query.range === "string" ? req.query.range : "all";
+      const VALID_GSC_RANGES: GscDateRange[] = ["today", "week", "month", "all"];
+      const gscRange: GscDateRange = (VALID_GSC_RANGES as string[]).includes(rawRange) ? rawRange as GscDateRange : "all";
+
       const accessToken = await getGoogleAccessToken(serviceAccountJson);
       const sitemapUrls = parseSitemapUrls();
       const apiWarnings: string[] = [];
@@ -335,7 +354,7 @@ export function registerGscRoutes(app: Express): void {
       let analyticsMap = new Map<string, { clicks: number; impressions: number }>();
       let analyticsError: AnalyticsError | undefined;
       try {
-        analyticsMap = await fetchSearchAnalytics(accessToken, resolvedSiteUrl);
+        analyticsMap = await fetchSearchAnalytics(accessToken, resolvedSiteUrl, gscRange);
       } catch (e: any) {
         console.warn("GSC analytics unavailable:", e?.message);
         let code: AnalyticsErrorCode;

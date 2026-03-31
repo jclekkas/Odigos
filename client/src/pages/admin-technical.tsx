@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { TimeRangeSelector, useTimeRange } from "@/components/time-range-selector";
 import {
   ArrowLeft,
   RefreshCw,
@@ -303,6 +304,8 @@ export default function AdminTechnical() {
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [adminKey, setAdminKey, clearKey] = useAdminKey();
   const [keyInput, setKeyInput] = useState("");
+  const [range, setRange] = useTimeRange();
+  const currentLabel = range === "today" ? "today" : range === "week" ? "last 7 days" : range === "month" ? "last 30 days" : "all time";
 
   useEffect(() => {
     return setRobotsMeta("noindex, nofollow");
@@ -314,9 +317,9 @@ export default function AdminTechnical() {
   });
 
   const techQuery = useQuery<TechnicalSummary>({
-    queryKey: ["/api/technical", adminKey],
+    queryKey: ["/api/technical", adminKey, range],
     queryFn: async () => {
-      const res = await fetch(`/api/technical`, {
+      const res = await fetch(`/api/technical?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
       if (!res.ok) throw new Error(`${res.status}`);
@@ -418,7 +421,8 @@ export default function AdminTechnical() {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            <TimeRangeSelector value={range} onChange={setRange} />
             <AutoRefreshCountdown seconds={60} />
             <span className="text-xs text-muted-foreground">
               Last updated: {lastUpdated.toLocaleTimeString()}
@@ -632,7 +636,7 @@ export default function AdminTechnical() {
         <Card data-testid="panel-error-rate">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <AlertTriangle className="h-4 w-4" /> Errors (last 24h)
+              <AlertTriangle className="h-4 w-4" /> Errors ({currentLabel})
             </CardTitle>
             <p className="text-xs text-muted-foreground">How often something goes wrong with API requests</p>
           </CardHeader>
@@ -645,7 +649,7 @@ export default function AdminTechnical() {
                   <div>
                     <p className="text-xs text-muted-foreground">Total Requests</p>
                     <p className="text-2xl font-bold" data-testid="stat-total-requests">{tech.totalRequests}</p>
-                    <p className="text-xs text-muted-foreground">in last 24h</p>
+                    <p className="text-xs text-muted-foreground">in selected range</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Errors</p>
@@ -704,7 +708,7 @@ export default function AdminTechnical() {
                 {tech.errorLog.length === 0 && (
                   <div className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm py-4">
                     <CheckCircle className="h-4 w-4" />
-                    No errors in the last 24 hours
+                    No errors in the selected range
                   </div>
                 )}
               </div>
@@ -770,7 +774,7 @@ export default function AdminTechnical() {
           <Card data-testid="panel-ai-usage">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
-                <Brain className="h-4 w-4" /> AI Analysis Cost (last 7 days)
+                <Brain className="h-4 w-4" /> AI Analysis Cost ({currentLabel})
               </CardTitle>
               <p className="text-xs text-muted-foreground">How much we're spending on AI to analyze deals</p>
             </CardHeader>
@@ -783,7 +787,7 @@ export default function AdminTechnical() {
                     <div>
                       <p className="text-xs text-muted-foreground">Deals Analyzed</p>
                       <p className="text-2xl font-bold" data-testid="stat-ai-calls">{tech.aiUsage.callCount}</p>
-                      <p className="text-xs text-muted-foreground">last 7 days</p>
+                      <p className="text-xs text-muted-foreground">selected range</p>
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">Cost per Analysis</p>
@@ -793,7 +797,7 @@ export default function AdminTechnical() {
                       <p className="text-xs text-muted-foreground">avg per deal</p>
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground">7-Day Total Cost</p>
+                      <p className="text-xs text-muted-foreground">Period Total Cost</p>
                       <p className="text-2xl font-bold text-green-700 dark:text-green-400" data-testid="stat-ai-cost">
                         ${tech.aiUsage.estimatedCostUsd.toFixed(4)}
                       </p>
@@ -842,7 +846,7 @@ export default function AdminTechnical() {
           <Card data-testid="panel-api-performance">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
-                <Zap className="h-4 w-4" /> API Performance (last 24h)
+                <Zap className="h-4 w-4" /> API Performance ({currentLabel})
               </CardTitle>
               <p className="text-xs text-muted-foreground">p50 = typical response time (half of requests), p95 = slow requests (top 5%)</p>
             </CardHeader>

@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { TimeRangeSelector, useTimeRange } from "@/components/time-range-selector";
 import {
   ArrowLeft,
   RefreshCw,
@@ -323,15 +324,16 @@ function SetupCard() {
 export default function AdminSeo() {
   const [adminKey, setAdminKey, clearKey] = useAdminKey();
   const [keyInput, setKeyInput] = useState("");
+  const [range, setRange] = useTimeRange();
 
   useEffect(() => {
     return setRobotsMeta("noindex, nofollow");
   }, []);
 
   const gscQuery = useQuery<GscSummary>({
-    queryKey: ["/api/admin/gsc/summary", adminKey],
+    queryKey: ["/api/admin/gsc/summary", adminKey, range],
     queryFn: async () => {
-      const res = await fetch("/api/admin/gsc/summary", {
+      const res = await fetch(`/api/admin/gsc/summary?range=${range}`, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
       if (!res.ok) {
@@ -398,7 +400,8 @@ export default function AdminSeo() {
               <p className="text-sm text-muted-foreground">Google search health in plain English</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            <TimeRangeSelector value={range} onChange={setRange} />
             <Button
               variant="outline"
               size="sm"
@@ -519,7 +522,9 @@ export default function AdminSeo() {
                         : " Everything looks great!"}
                     </p>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Data from the last 28 days via Google Search Console.
+                      Clicks and impressions reflect the selected time range
+                      {range === "all" ? " (All Time uses a 28-day GSC analytics window — the maximum available via the Search Console API)" : ""}.
+                      Indexing status is a live snapshot from Google Search Console and is not time-filtered.
                     </p>
                   </div>
                 </div>

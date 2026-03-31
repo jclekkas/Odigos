@@ -1,4 +1,6 @@
 import { loadMetrics } from "./events";
+import { filterByRange, getDateBounds } from "./bi";
+import type { DateRange } from "./bi";
 
 export interface MetricsSummary {
   totalSubmissions: number;
@@ -65,21 +67,23 @@ export interface MetricsSummary {
   };
 }
 
-export async function getMetricsSummary(): Promise<MetricsSummary> {
+export async function getMetricsSummary(range: DateRange = "all"): Promise<MetricsSummary> {
   const { events } = await loadMetrics();
   
   const allEvents = events.map(e => ({
     ...e,
     createdAt: new Date(e.createdAt),
   })).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+  const rangedEvents = filterByRange(allEvents, range);
   
-  const submissions = allEvents.filter(e => e.eventType === "submission");
-  const payments = allEvents.filter(e => e.eventType === "payment_completed");
-  const checkouts = allEvents.filter(e => e.eventType === "checkout_started");
-  const scores = allEvents.filter(e => e.eventType === "submission_score");
-  const pageViewEvents = allEvents.filter(e => e.eventType === "page_view");
-  const ctaClickEvents = allEvents.filter(e => e.eventType === "cta_click");
-  const formStartEvents = allEvents.filter(e => e.eventType === "form_start");
+  const submissions = rangedEvents.filter(e => e.eventType === "submission");
+  const payments = rangedEvents.filter(e => e.eventType === "payment_completed");
+  const checkouts = rangedEvents.filter(e => e.eventType === "checkout_started");
+  const scores = rangedEvents.filter(e => e.eventType === "submission_score");
+  const pageViewEvents = rangedEvents.filter(e => e.eventType === "page_view");
+  const ctaClickEvents = rangedEvents.filter(e => e.eventType === "cta_click");
+  const formStartEvents = rangedEvents.filter(e => e.eventType === "form_start");
   
   const scoreDistribution = {
     green: scores.filter(e => e.metadata?.dealScore === "GREEN").length,
@@ -110,7 +114,7 @@ export async function getMetricsSummary(): Promise<MetricsSummary> {
   
   const hourlyActivityMap: Record<number, number> = {};
   for (let i = 0; i < 24; i++) hourlyActivityMap[i] = 0;
-  allEvents.forEach(e => {
+  rangedEvents.forEach(e => {
     const hour = e.createdAt.getHours();
     hourlyActivityMap[hour] = (hourlyActivityMap[hour] || 0) + 1;
   });
@@ -129,19 +133,44 @@ export async function getMetricsSummary(): Promise<MetricsSummary> {
   
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const yesterdayStart = new Date(todayStart.getTime() - 24 * 60 * 60 * 1000);
-  const thisWeekStart = new Date(todayStart.getTime() - 7 * 24 * 60 * 60 * 1000);
-  const lastWeekStart = new Date(todayStart.getTime() - 14 * 24 * 60 * 60 * 1000);
-  
-  const submissionsToday = submissions.filter(s => s.createdAt >= todayStart).length;
-  const submissionsYesterday = submissions.filter(s => s.createdAt >= yesterdayStart && s.createdAt < todayStart).length;
-  const submissionsThisWeek = submissions.filter(s => s.createdAt >= thisWeekStart).length;
-  const submissionsLastWeek = submissions.filter(s => s.createdAt >= lastWeekStart && s.createdAt < thisWeekStart).length;
-  
-  const paymentsToday = payments.filter(p => p.createdAt >= todayStart);
-  const paymentsYesterday = payments.filter(p => p.createdAt >= yesterdayStart && p.createdAt < todayStart);
-  const paymentsThisWeek = payments.filter(p => p.createdAt >= thisWeekStart);
-  const paymentsLastWeek = payments.filter(p => p.createdAt >= lastWeekStart && p.createdAt < thisWeekStart);
+
+  const allSubmissions = allEvents.filter(e => e.eventType === "submission");
+  const allPayments = allEvents.filter(e => e.eventType === "payment_completed");
+
+  const { start: currentStart } = getDateBounds(range);
+  const currentEnd = now;
+
+  let priorStart: Date | null = null;
+  let priorEnd: Date | null = null;
+  if (range === "today") {
+    priorStart = new Date(todayStart.getTime() - 24 * 60 * 60 * 1000);
+    priorEnd = todayStart;
+  } else if (range === "week") {
+    priorStart = new Date(todayStart.getTime() - 14 * 24 * 60 * 60 * 1000);
+    priorEnd = new Date(todayStart.getTime() - 7 * 24 * 60 * 60 * 1000);
+  } else if (range === "month") {
+    priorStart = new Date(todayStart.getTime() - 60 * 24 * 60 * 60 * 1000);
+    priorEnd = new Date(todayStart.getTime() - 30 * 24 * 60 * 60 * 1000);
+  }
+
+  const currentSubmissions = currentStart
+    ? allSubmissions.filter(s => s.createdAt >= currentStart && s.createdAt <= currentEnd)
+    : allSubmissions;
+  const priorSubmissions = priorStart && priorEnd
+    ? allSubmissions.filter(s => s.createdAt >= priorStart! && s.createdAt < priorEnd!)
+    : [];
+
+  const currentPayments = currentStart
+    ? allPayments.filter(p => p.createdAt >= currentStart && p.createdAt <= currentEnd)
+    : allPayments;
+  const priorPayments = priorStart && priorEnd
+    ? allPayments.filter(p => p.createdAt >= priorStart! && p.createdAt < priorEnd!)
+    : [];
+
+  const submissionsToday = currentSubmissions.length;
+  const submissionsYesterday = priorSubmissions.length;
+  const submissionsThisWeek = currentSubmissions.length;
+  const submissionsLastWeek = priorSubmissions.length;
   
   return {
     totalSubmissions: submissions.length,
@@ -151,7 +180,7 @@ export async function getMetricsSummary(): Promise<MetricsSummary> {
     conversionRate: submissions.length > 0 ? (payments.length / submissions.length) * 100 : 0,
     checkoutToPaymentRate: checkouts.length > 0 ? (payments.length / checkouts.length) * 100 : 0,
     scoreDistribution,
-    recentEvents: allEvents.slice(0, 30).map(e => ({
+    recentEvents: rangedEvents.slice(0, 30).map(e => ({
       eventType: e.eventType,
       createdAt: e.createdAt,
       metadata: e.metadata,
@@ -176,12 +205,12 @@ export async function getMetricsSummary(): Promise<MetricsSummary> {
     trends: {
       submissionsToday,
       submissionsYesterday,
-      revenueToday: getRevenue(paymentsToday),
-      revenueYesterday: getRevenue(paymentsYesterday),
+      revenueToday: getRevenue(currentPayments),
+      revenueYesterday: getRevenue(priorPayments),
       submissionsThisWeek,
       submissionsLastWeek,
-      revenueThisWeek: getRevenue(paymentsThisWeek),
-      revenueLastWeek: getRevenue(paymentsLastWeek),
+      revenueThisWeek: getRevenue(currentPayments),
+      revenueLastWeek: getRevenue(priorPayments),
     },
     funnel: {
       submissions: submissions.length,
@@ -309,7 +338,7 @@ export interface TechnicalSummary {
 const GPT4O_PROMPT_COST_PER_1K = 0.005;
 const GPT4O_COMPLETION_COST_PER_1K = 0.015;
 
-export async function getTechnicalSummary(): Promise<TechnicalSummary> {
+export async function getTechnicalSummary(range: DateRange = "all"): Promise<TechnicalSummary> {
   const { events } = await loadMetrics();
   
   const allEvents = events.map(e => ({
@@ -321,10 +350,40 @@ export async function getTechnicalSummary(): Promise<TechnicalSummary> {
   const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
   const last7d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
+  const { start: rangeStart } = getDateBounds(range);
+
+  const useHourly = range === "today";
+
+  const last30d = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  const epoch = new Date(0);
+  const apiWindowStart = rangeStart ?? (range === "all" ? epoch : last24h);
+  const aiWindowStart = rangeStart ?? (range === "all" ? epoch : last7d);
+
+  let bucketWindowStart: Date;
+  let bucketCount: number;
+
+  if (range === "today") {
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    bucketWindowStart = todayStart;
+    bucketCount = 24;
+  } else if (range === "week") {
+    bucketWindowStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    bucketCount = 7;
+  } else if (range === "month") {
+    bucketWindowStart = last30d;
+    bucketCount = 30;
+  } else {
+    const earliest = allEvents.reduce((min, e) => e.createdAt < min ? e.createdAt : min, now);
+    const daySpan = Math.ceil((now.getTime() - earliest.getTime()) / (24 * 60 * 60 * 1000));
+    bucketCount = Math.min(Math.max(daySpan, 1), 90);
+    bucketWindowStart = new Date(now.getTime() - bucketCount * 24 * 60 * 60 * 1000);
+  }
+
   const trackedEndpoints = ["/api/analyze", "/api/extract-text", "/api/track", "/api/metrics", "/api/checkout"];
 
-  const apiRequests = allEvents.filter(e => e.eventType === "api_request" && e.createdAt >= last24h);
-  const apiErrors = allEvents.filter(e => e.eventType === "api_error" && e.createdAt >= last24h);
+  const apiRequests = allEvents.filter(e => e.eventType === "api_request" && e.createdAt >= apiWindowStart);
+  const apiErrors = allEvents.filter(e => e.eventType === "api_error" && e.createdAt >= apiWindowStart);
 
   const apiPerformance = trackedEndpoints.map(endpoint => {
     const reqs = apiRequests.filter(e => e.metadata?.endpoint === endpoint);
@@ -340,23 +399,38 @@ export async function getTechnicalSummary(): Promise<TechnicalSummary> {
     const p95 = latencies.length > 0 ? latencies[Math.floor(latencies.length * 0.95)] : 0;
 
     const hourlyMap: Record<string, { count: number; totalMs: number }> = {};
-    for (let i = 0; i < 24; i++) {
-      const h = new Date(last24h.getTime() + i * 60 * 60 * 1000);
-      const key = h.toISOString().slice(0, 13);
-      hourlyMap[key] = { count: 0, totalMs: 0 };
-    }
-    allForEndpoint.forEach(e => {
-      const key = e.createdAt.toISOString().slice(0, 13);
-      if (hourlyMap[key]) {
-        hourlyMap[key].count++;
-        hourlyMap[key].totalMs += (e.metadata?.responseTimeMs as number) || 0;
+    if (useHourly) {
+      for (let i = 0; i < bucketCount; i++) {
+        const h = new Date(bucketWindowStart.getTime() + i * 60 * 60 * 1000);
+        const key = h.toISOString().slice(0, 13);
+        hourlyMap[key] = { count: 0, totalMs: 0 };
       }
-    });
+      allForEndpoint.forEach(e => {
+        const key = e.createdAt.toISOString().slice(0, 13);
+        if (hourlyMap[key]) {
+          hourlyMap[key].count++;
+          hourlyMap[key].totalMs += (e.metadata?.responseTimeMs as number) || 0;
+        }
+      });
+    } else {
+      for (let i = 0; i < bucketCount; i++) {
+        const d = new Date(bucketWindowStart.getTime() + i * 24 * 60 * 60 * 1000);
+        const key = d.toISOString().slice(0, 10);
+        hourlyMap[key] = { count: 0, totalMs: 0 };
+      }
+      allForEndpoint.forEach(e => {
+        const key = e.createdAt.toISOString().slice(0, 10);
+        if (hourlyMap[key]) {
+          hourlyMap[key].count++;
+          hourlyMap[key].totalMs += (e.metadata?.responseTimeMs as number) || 0;
+        }
+      });
+    }
 
     const hourlyBuckets = Object.entries(hourlyMap)
       .sort((a, b) => a[0].localeCompare(b[0]))
-      .map(([hour, data]) => ({
-        hour: hour.slice(11) + ":00",
+      .map(([key, data]) => ({
+        hour: useHourly ? key.slice(11) + ":00" : key.slice(5),
         count: data.count,
         avgMs: data.count > 0 ? Math.round(data.totalMs / data.count) : 0,
       }));
@@ -413,30 +487,46 @@ export async function getTechnicalSummary(): Promise<TechnicalSummary> {
     .sort((a, b) => b.count - a.count);
 
   const hourlyErrMap: Record<string, { errors: number; requests: number }> = {};
-  for (let i = 0; i < 24; i++) {
-    const h = new Date(last24h.getTime() + i * 60 * 60 * 1000);
-    const key = h.toISOString().slice(0, 13);
-    hourlyErrMap[key] = { errors: 0, requests: 0 };
+  if (useHourly) {
+    for (let i = 0; i < bucketCount; i++) {
+      const h = new Date(bucketWindowStart.getTime() + i * 60 * 60 * 1000);
+      const key = h.toISOString().slice(0, 13);
+      hourlyErrMap[key] = { errors: 0, requests: 0 };
+    }
+    apiRequests.forEach(e => {
+      const key = e.createdAt.toISOString().slice(0, 13);
+      if (hourlyErrMap[key]) hourlyErrMap[key].requests++;
+    });
+    apiErrors.forEach(e => {
+      const key = e.createdAt.toISOString().slice(0, 13);
+      if (hourlyErrMap[key]) { hourlyErrMap[key].errors++; hourlyErrMap[key].requests++; }
+    });
+  } else {
+    for (let i = 0; i < bucketCount; i++) {
+      const d = new Date(bucketWindowStart.getTime() + i * 24 * 60 * 60 * 1000);
+      const key = d.toISOString().slice(0, 10);
+      hourlyErrMap[key] = { errors: 0, requests: 0 };
+    }
+    apiRequests.forEach(e => {
+      const key = e.createdAt.toISOString().slice(0, 10);
+      if (hourlyErrMap[key]) hourlyErrMap[key].requests++;
+    });
+    apiErrors.forEach(e => {
+      const key = e.createdAt.toISOString().slice(0, 10);
+      if (hourlyErrMap[key]) { hourlyErrMap[key].errors++; hourlyErrMap[key].requests++; }
+    });
   }
-  apiRequests.forEach(e => {
-    const key = e.createdAt.toISOString().slice(0, 13);
-    if (hourlyErrMap[key]) hourlyErrMap[key].requests++;
-  });
-  apiErrors.forEach(e => {
-    const key = e.createdAt.toISOString().slice(0, 13);
-    if (hourlyErrMap[key]) { hourlyErrMap[key].errors++; hourlyErrMap[key].requests++; }
-  });
   const hourlyErrorRate = Object.entries(hourlyErrMap)
     .sort((a, b) => a[0].localeCompare(b[0]))
     .map(([key, data]) => ({
-      hour: key.slice(11) + ":00",
+      hour: useHourly ? key.slice(11) + ":00" : key.slice(5),
       errors: data.errors,
       requests: data.requests,
       errorRate: data.requests > 0 ? Math.round((data.errors / data.requests) * 1000) / 10 : 0,
     }));
 
   const aiEvents = allEvents.filter(e => 
-    e.eventType === "api_request" && e.metadata?.endpoint === "openai_chat" && e.createdAt >= last7d
+    e.eventType === "api_request" && e.metadata?.endpoint === "openai_chat" && e.createdAt >= aiWindowStart
   );
   
   const totalTokens = aiEvents.reduce((sum, e) => sum + ((e.metadata?.totalTokens as number) || 0), 0);
@@ -446,17 +536,19 @@ export async function getTechnicalSummary(): Promise<TechnicalSummary> {
   const aiLatencies = aiEvents.map(e => (e.metadata?.responseTimeMs as number) || 0).filter(v => v > 0);
   const avgLatencyMs = aiLatencies.length > 0 ? Math.round(aiLatencies.reduce((a, b) => a + b, 0) / aiLatencies.length) : 0;
 
-  const last30d = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const monthlyWindowStart = rangeStart ?? (range === "all" ? epoch : last30d);
   const aiEventsMonthly = allEvents.filter(e =>
-    e.eventType === "api_request" && e.metadata?.endpoint === "openai_chat" && e.createdAt >= last30d
+    e.eventType === "api_request" && e.metadata?.endpoint === "openai_chat" && e.createdAt >= monthlyWindowStart
   );
   const monthlyPromptTokens = aiEventsMonthly.reduce((sum, e) => sum + ((e.metadata?.promptTokens as number) || 0), 0);
   const monthlyCompletionTokens = aiEventsMonthly.reduce((sum, e) => sum + ((e.metadata?.completionTokens as number) || 0), 0);
   const monthlyEstimatedCostUsd = (monthlyPromptTokens / 1000) * GPT4O_PROMPT_COST_PER_1K + (monthlyCompletionTokens / 1000) * GPT4O_COMPLETION_COST_PER_1K;
 
   const aiDailyMap: Record<string, { calls: number; tokens: number; promptTok: number; completionTok: number }> = {};
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(last7d.getTime() + i * 24 * 60 * 60 * 1000);
+  const aiDailyCount = range === "today" ? 1 : bucketCount;
+  const aiDailyWindowStart = bucketWindowStart;
+  for (let i = 0; i < aiDailyCount; i++) {
+    const d = new Date(aiDailyWindowStart.getTime() + i * 24 * 60 * 60 * 1000);
     const key = d.toISOString().split("T")[0];
     aiDailyMap[key] = { calls: 0, tokens: 0, promptTok: 0, completionTok: 0 };
   }
