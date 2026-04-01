@@ -385,35 +385,39 @@ export default function AdminSeo() {
           </div>
         </div>
       )}
-      {adminKey && (
-      <div className="p-6">
-      <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div className="flex items-center gap-3">
-            <Link href="/admin/metrics">
-              <Button variant="ghost" size="sm" data-testid="link-back-metrics">
-                <ArrowLeft className="h-4 w-4 mr-1" /> Metrics
+      {adminKey && (<>
+      <div className="border-b bg-card/50 backdrop-blur-sm sticky top-12 z-40">
+        <div className="max-w-5xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div className="flex items-center gap-3">
+              <Link href="/admin/metrics">
+                <Button variant="ghost" size="sm" data-testid="link-back-metrics">
+                  <ArrowLeft className="h-4 w-4 mr-1" /> Metrics
+                </Button>
+              </Link>
+              <div>
+                <h1 className="text-2xl font-bold">SEO Dashboard</h1>
+                <p className="text-sm text-muted-foreground">Google search health in plain English</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 flex-wrap">
+              <TimeRangeSelector value={range} onChange={setRange} />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => gscQuery.refetch()}
+                disabled={isLoading}
+                data-testid="button-refresh"
+              >
+                <RefreshCw className={`h-4 w-4 mr-1 ${isLoading ? "animate-spin" : ""}`} />
+                Refresh
               </Button>
-            </Link>
-            <div>
-              <h1 className="text-2xl font-bold">SEO Dashboard</h1>
-              <p className="text-sm text-muted-foreground">Google search health in plain English</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 flex-wrap">
-            <TimeRangeSelector value={range} onChange={setRange} />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => gscQuery.refetch()}
-              disabled={isLoading}
-              data-testid="button-refresh"
-            >
-              <RefreshCw className={`h-4 w-4 mr-1 ${isLoading ? "animate-spin" : ""}`} />
-              Refresh
-            </Button>
-          </div>
         </div>
+      </div>
+      <div className="p-6">
+      <div className="max-w-5xl mx-auto space-y-6">
 
         {isError && !setupRequired && (
           <Card className="border-red-400 bg-red-50 dark:bg-red-950/20" data-testid="banner-error">
@@ -576,7 +580,7 @@ export default function AdminSeo() {
         <GlossaryAccordion />
       </div>
       </div>
-      )}
+      </>)}
     </div>
   );
 }

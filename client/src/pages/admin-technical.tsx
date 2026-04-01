@@ -404,41 +404,45 @@ export default function AdminTechnical() {
           </div>
         </div>
       )}
-      {adminKey && (
-      <div className="p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div className="flex items-center gap-3">
-            <Link href="/admin/metrics">
-              <Button variant="ghost" size="sm" data-testid="link-back-metrics">
-                <ArrowLeft className="h-4 w-4 mr-1" /> Metrics
+      {adminKey && (<>
+      <div className="border-b bg-card/50 backdrop-blur-sm sticky top-12 z-40">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div className="flex items-center gap-3">
+              <Link href="/admin/metrics">
+                <Button variant="ghost" size="sm" data-testid="link-back-metrics">
+                  <ArrowLeft className="h-4 w-4 mr-1" /> Metrics
+                </Button>
+              </Link>
+              <div>
+                <h1 className="text-2xl font-bold">Technical &amp; Ops Dashboard</h1>
+                <p className="text-sm text-muted-foreground">
+                  Server health, errors, and system reliability
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 flex-wrap">
+              <TimeRangeSelector value={range} onChange={setRange} />
+              <AutoRefreshCountdown seconds={60} />
+              <span className="text-xs text-muted-foreground">
+                Last updated: {lastUpdated.toLocaleTimeString()}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRefresh}
+                disabled={isLoading}
+                data-testid="button-refresh"
+              >
+                <RefreshCw className={`h-4 w-4 mr-1 ${isLoading ? "animate-spin" : ""}`} />
+                Refresh
               </Button>
-            </Link>
-            <div>
-              <h1 className="text-2xl font-bold">Technical &amp; Ops Dashboard</h1>
-              <p className="text-sm text-muted-foreground">
-                Server health, errors, and system reliability
-              </p>
             </div>
           </div>
-          <div className="flex items-center gap-3 flex-wrap">
-            <TimeRangeSelector value={range} onChange={setRange} />
-            <AutoRefreshCountdown seconds={60} />
-            <span className="text-xs text-muted-foreground">
-              Last updated: {lastUpdated.toLocaleTimeString()}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRefresh}
-              disabled={isLoading}
-              data-testid="button-refresh"
-            >
-              <RefreshCw className={`h-4 w-4 mr-1 ${isLoading ? "animate-spin" : ""}`} />
-              Refresh
-            </Button>
-          </div>
         </div>
+      </div>
+      <div className="p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
 
         {techQuery.isError && (() => {
           const msg = (techQuery.error as Error)?.message ?? "";
@@ -1102,7 +1106,7 @@ export default function AdminTechnical() {
         </Accordion>
       </div>
       </div>
-      )}
+      </>)}
     </div>
   );
 }
