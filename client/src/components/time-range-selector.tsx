@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useLocation } from "wouter";
 
 export type DateRange = "today" | "week" | "month" | "all";
@@ -9,21 +10,22 @@ export const RANGE_LABELS: Record<DateRange, string> = {
   all: "All Time",
 };
 
-export function useTimeRange(): [DateRange, (r: DateRange) => void] {
-  const [location, setLocation] = useLocation();
+function parseRange(): DateRange {
+  if (typeof window === "undefined") return "all";
+  const raw = new URLSearchParams(window.location.search).get("range");
+  return raw === "today" || raw === "week" || raw === "month" || raw === "all"
+    ? raw
+    : "all";
+}
 
-  const params = new URLSearchParams(
-    typeof window !== "undefined" ? window.location.search : ""
-  );
-  const raw = params.get("range");
-  const range: DateRange =
-    raw === "today" || raw === "week" || raw === "month" || raw === "all"
-      ? raw
-      : "all";
+export function useTimeRange(): [DateRange, (r: DateRange) => void] {
+  const [, setLocation] = useLocation();
+  const [range, setRangeState] = useState<DateRange>(parseRange);
 
   const setRange = (r: DateRange) => {
     const url = new URL(window.location.href);
     url.searchParams.set("range", r);
+    setRangeState(r);
     setLocation(url.pathname + url.search, { replace: true });
   };
 
