@@ -78,41 +78,16 @@ export function registerPaymentRoutes(app: Express): void {
         ? `https://${process.env.REPLIT_DOMAINS.split(",")[0]}`
         : "http://localhost:5000";
 
-      let priceId: string | undefined;
+      // Price IDs must be pre-configured in Stripe Dashboard — never create at request time
+      // (dynamic creation causes race conditions and duplicate products)
+      const priceId = selectedTier === "49"
+        ? process.env.STRIPE_PRICE_ID_49
+        : (process.env.STRIPE_PRICE_ID_79 || process.env.STRIPE_PRICE_ID);
 
-      if (selectedTier === "49") {
-        if (process.env.STRIPE_PRICE_ID_49) {
-          priceId = process.env.STRIPE_PRICE_ID_49;
-        } else {
-          const products = await stripe.products.list({ active: true, limit: 20 });
-          let product = products.data.find(p => p.name === "Odigos Deal Clarity Pack");
-          if (!product) {
-            product = await stripe.products.create({ name: "Odigos Deal Clarity Pack", description: "Unlock red flags, missing info, and deal explanation" });
-            const price = await stripe.prices.create({ product: product.id, unit_amount: 4900, currency: "usd" });
-            priceId = price.id;
-          } else {
-            const prices = await stripe.prices.list({ product: product.id, active: true, limit: 1 });
-            priceId = prices.data[0]?.id;
-          }
-        }
-      } else {
-        if (process.env.STRIPE_PRICE_ID) {
-          priceId = process.env.STRIPE_PRICE_ID;
-        } else {
-          const products = await stripe.products.list({ active: true, limit: 20 });
-          let product = products.data.find(p => p.name === "Odigos Negotiation Pack");
-          if (!product) {
-            product = await stripe.products.create({ name: "Odigos Negotiation Pack", description: "Unlock suggested dealer reply and detailed analysis reasoning" });
-            const price = await stripe.prices.create({ product: product.id, unit_amount: 7900, currency: "usd" });
-            priceId = price.id;
-          } else {
-            const prices = await stripe.prices.list({ product: product.id, active: true, limit: 1 });
-            priceId = prices.data[0]?.id;
-          }
-        }
+      if (!priceId) {
+        console.error(`[checkout] Missing STRIPE_PRICE_ID_${selectedTier} environment variable`);
+        return res.status(503).json({ error: "Payments not configured" });
       }
-
-      if (!priceId) return res.status(500).json({ error: "No price configured" });
 
       const session = await stripe.checkout.sessions.create({
         mode: "payment",
@@ -148,7 +123,7 @@ export function registerPaymentRoutes(app: Express): void {
         tier = session.metadata.tier === "49" ? "49" : "79";
       } else {
         const lineItems = session.line_items?.data || [];
-        const priceAmount = (lineItems[0]?.price as any)?.unit_amount;
+        const priceAmount = (lineItems[0]?.price as unknown as Record<string, unknown>)?.unit_amount;
         if (priceAmount === 4900) tier = "49";
       }
 
@@ -191,7 +166,37 @@ export function registerPaymentRoutes(app: Express): void {
     }
     trackEvent("stripe_webhook", { webhookEvent: event.type, webhookStatus: "success" });
 
-    const paymentIntentId = (event.data.object as any)?.payment_intent ?? null;
+    // ── Process relevant payment events ──────────────────────────────────
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object as import("stripe").Stripe.Checkout.Session;
+        if (session.payment_status === "paid") {
+          const tier = session.metadata?.tier === "79" ? "79" : "49";
+          const paymentSessionId = session.metadata?.sessionId || undefined;
+          trackEvent("payment_completed", {
+            tier,
+            sessionId: paymentSessionId,
+            stripeSessionId: session.id,
+          });
+          console.log(`[stripe-webhook] Payment recorded: session=${session.id} tier=${tier}`);
+        }
+        break;
+      }
+      case "checkout.session.expired": {
+        const session = event.data.object as import("stripe").Stripe.Checkout.Session;
+        trackEvent("checkout_failed", {
+          stripeSessionId: session.id,
+          sessionId: session.metadata?.sessionId || undefined,
+        });
+        console.log(`[stripe-webhook] Checkout expired: session=${session.id}`);
+        break;
+      }
+      default:
+        // Log unhandled event types for future triage
+        console.log(`[stripe-webhook] Unhandled event type: ${event.type}`);
+    }
+
+    const paymentIntentId = (event.data.object as unknown as Record<string, unknown>)?.payment_intent ?? null;
     await writeAuditEvent(req, "payment", "success", {
       route: req.originalUrl,
       method: req.method,
