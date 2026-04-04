@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from "react";
 import AnalysisProgressBar from "@/components/AnalysisProgressBar";
 import { Link, useSearch } from "wouter";
 import { Helmet } from "react-helmet-async";
@@ -76,6 +76,77 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel, MarketContext } from "@shared/schema";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
+
+// NOTE: @stripe/stripe-js and @stripe/react-stripe-js need to be installed:
+//   npm install @stripe/stripe-js @stripe/react-stripe-js
+// Using conditional dynamic imports so the code compiles without them.
+// The dynamic import paths are constructed at runtime to avoid TypeScript
+// module resolution errors when the packages are not installed.
+
+const STRIPE_JS_MODULE = "@stripe/stripe-js";
+const STRIPE_REACT_MODULE = "@stripe/react-stripe-js";
+
+let stripePromise: Promise<unknown> | null = null;
+
+function getStripePromise() {
+  if (!stripePromise) {
+    const key = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+    if (!key) return null;
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-implied-eval
+      stripePromise = (new Function("mod", "return import(mod)"))(STRIPE_JS_MODULE)
+        .then((mod: { loadStripe: (key: string) => Promise<unknown> }) =>
+          mod.loadStripe(key)
+        )
+        .catch(() => null);
+    } catch {
+      return null;
+    }
+  }
+  return stripePromise;
+}
+
+/**
+ * Lazy-loaded wrapper for Stripe Embedded Checkout.
+ * Falls back gracefully if @stripe/react-stripe-js is not installed.
+ */
+const StripeEmbeddedCheckoutWrapper = lazy(() =>
+  ((new Function("mod", "return import(mod)"))(STRIPE_REACT_MODULE) as Promise<{
+    EmbeddedCheckoutProvider: React.ComponentType<{ stripe: unknown; options: { clientSecret: string }; children: React.ReactNode }>;
+    EmbeddedCheckout: React.ComponentType;
+  }>).then((mod) => ({
+    default: ({
+      clientSecret,
+      onClose,
+    }: {
+      clientSecret: string;
+      onClose: () => void;
+    }) => {
+      const sp = getStripePromise();
+      if (!sp) return null;
+      return (
+        <div className="relative border rounded-lg p-4 bg-background shadow-lg">
+          <button
+            onClick={onClose}
+            className="absolute top-2 right-2 text-muted-foreground hover:text-foreground text-sm z-10"
+            aria-label="Close checkout"
+          >
+            &times;
+          </button>
+          <mod.EmbeddedCheckoutProvider
+            stripe={sp as never}
+            options={{ clientSecret }}
+          >
+            <mod.EmbeddedCheckout />
+          </mod.EmbeddedCheckoutProvider>
+        </div>
+      );
+    },
+  })).catch(() => ({
+    // If @stripe/react-stripe-js is not installed, render nothing
+    default: () => null as never,
+  }))
+);
 
 type AnalysisResponseWithExtras = AnalysisResponse & {
   listingId?: string;
@@ -844,6 +915,7 @@ export default function Home() {
   const [unlockTier, setUnlockTier] = useState<UnlockTier>(getStoredTier);
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutClientSecret, setCheckoutClientSecret] = useState<string | null>(null);
   const [formStartTracked, setFormStartTracked] = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -1017,7 +1089,7 @@ export default function Home() {
       tagFlow("checkout", "/api/checkout");
       const response = await apiRequest("POST", "/api/checkout", { product: "deal_clarity", sessionId: getSessionId() });
       const data = await response.json();
-      
+
       if (data.error === "PAYMENTS_NOT_CONFIGURED") {
         capture("checkout_failed", { reason: "payments_not_configured" });
         trackCheckoutFailed("payments_not_configured");
@@ -1029,11 +1101,23 @@ export default function Home() {
         setCheckoutLoading(false);
         return;
       }
-      
+
+      // Try embedded checkout if Stripe JS is available and we got a clientSecret
+      if (data.clientSecret && getStripePromise()) {
+        setCheckoutClientSecret(data.clientSecret);
+        setCheckoutLoading(false);
+        return;
+      }
+
+      // Fallback: redirect to Stripe-hosted checkout if url is returned (legacy)
       if (data.url) {
         window.location.href = data.url;
+      } else if (data.clientSecret) {
+        // Stripe JS not available but server returned embedded mode response;
+        // inform user to retry or fall back
+        throw new Error("Stripe JS is not loaded. Please refresh and try again.");
       } else {
-        throw new Error("No checkout URL returned");
+        throw new Error("No checkout session returned");
       }
     } catch (error) {
       const reason = error instanceof Error && error.message ? error.message : "unknown_error";
@@ -1732,12 +1816,23 @@ export default function Home() {
             )}
 
             {unlockTier === "free" ? (
-              <LockedTier2Section
-                onUnlock={() => handleUnlockTier()}
-                isLoading={checkoutLoading || isCheckingPayment}
-                stripeConfigured={stripeConfigured}
-                ctaLabel={unlockCtaLabel}
-              />
+              <>
+                {checkoutClientSecret ? (
+                  <Suspense fallback={<div className="text-center py-4 text-sm text-muted-foreground">Loading checkout...</div>}>
+                    <StripeEmbeddedCheckoutWrapper
+                      clientSecret={checkoutClientSecret}
+                      onClose={() => setCheckoutClientSecret(null)}
+                    />
+                  </Suspense>
+                ) : (
+                  <LockedTier2Section
+                    onUnlock={() => handleUnlockTier()}
+                    isLoading={checkoutLoading || isCheckingPayment}
+                    stripeConfigured={stripeConfigured}
+                    ctaLabel={unlockCtaLabel}
+                  />
+                )}
+              </>
             ) : (
               <>
                 <MissingInfoCard 
