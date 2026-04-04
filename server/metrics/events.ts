@@ -26,6 +26,9 @@ export type EventType =
   | "experiment_assigned"
   | "experiment_converted"
   | "analyze_start"
+  | "analysis_complete"
+  | "paywall_view"
+  | "checkout_initiated"
   | "rate_limit_breach"
   | "feedback_signal";
 
