@@ -716,7 +716,7 @@ function EmailPreviewForm({ analysisResult }: { analysisResult: AnalysisResponse
         return response.json();
       } catch (err) {
         if (err instanceof Error) {
-          const match = err.message.match(/^\d+: (.+)$/s);
+          const match = err.message.match(/^\d+: ([\s\S]+)$/);
           if (match) {
             try {
               const parsed = JSON.parse(match[1]) as { message?: string };
