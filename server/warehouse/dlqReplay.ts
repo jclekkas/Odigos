@@ -6,13 +6,13 @@
  * each row, attempts the warehouse write, and either marks it resolved or
  * advances the backoff / marks it dead.
  *
- * Guards with a simple in-process lock so runs don't overlap.
+ * Guards with a PostgreSQL advisory lock so runs don't overlap across processes.
  * Non-fatal to server startup.
  */
 
 import * as Sentry from "@sentry/node";
 import { db } from "../db";
-import { lte, eq, and, or } from "drizzle-orm";
+import { lte, eq, and, or, sql } from "drizzle-orm";
 import { failedWarehouseWrites } from "@shared/schema";
 import { performWarehouseWriteById } from "./warehouseWriter";
 import { jitteredBackoffMs } from "../lib/reliability";
@@ -23,7 +23,8 @@ const DLQ_REPLAY_INTERVAL_MINUTES = parseInt(process.env.DLQ_REPLAY_INTERVAL_MIN
 const DLQ_BASE_BACKOFF_MS = 60_000;
 const DLQ_MAX_BACKOFF_MS = 60 * 60 * 1000;
 
-let replayRunning = false;
+/** Fixed advisory lock ID used to prevent concurrent DLQ replay runs. */
+const DLQ_ADVISORY_LOCK_ID = 8675309;
 
 async function replayOnePage(): Promise<{ replayed: number; resolved: number; dead: number }> {
   const now = new Date();
@@ -136,11 +137,20 @@ async function replayOnePage(): Promise<{ replayed: number; resolved: number; de
 }
 
 export async function runDlqReplay(): Promise<void> {
-  if (replayRunning) {
+  let lockAcquired = false;
+  try {
+    const result = await db.execute(sql`SELECT pg_try_advisory_lock(${DLQ_ADVISORY_LOCK_ID})`);
+    lockAcquired = (result.rows?.[0] as Record<string, unknown>)?.pg_try_advisory_lock === true;
+  } catch (err) {
+    console.error("[dlq-replay] Failed to acquire advisory lock (DB unavailable):", err);
+    return;
+  }
+
+  if (!lockAcquired) {
     console.log("[dlq-replay] Skipping run — another replay is in progress");
     return;
   }
-  replayRunning = true;
+
   try {
     console.log("[dlq-replay] Starting replay run");
     const stats = await replayOnePage();
@@ -157,7 +167,11 @@ export async function runDlqReplay(): Promise<void> {
     console.error("[dlq-replay] Replay run failed:", err);
     Sentry.captureException(err, { level: "warning", extra: { context: "dlq-replay-run" } });
   } finally {
-    replayRunning = false;
+    try {
+      await db.execute(sql`SELECT pg_advisory_unlock(${DLQ_ADVISORY_LOCK_ID})`);
+    } catch (err) {
+      console.error("[dlq-replay] Failed to release advisory lock:", err);
+    }
   }
 }
 
