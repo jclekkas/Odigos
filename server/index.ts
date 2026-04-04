@@ -504,4 +504,40 @@ async function ensureAppSchema(): Promise<void> {
       }
     },
   );
+
+  // ── Graceful shutdown ────────────────────────────────────────────────────────
+  let shuttingDown = false;
+  async function shutdown(signal: string) {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    log(`${signal} received — starting graceful shutdown`);
+
+    // 1. Stop accepting new connections
+    httpServer.close(() => {
+      log("HTTP server closed");
+    });
+
+    // 2. Stop scheduled tasks
+    try {
+      const { stopDailyScheduler } = await import("./warehouse/scheduler");
+      stopDailyScheduler();
+    } catch { /* scheduler may not have been imported */ }
+
+    // 3. Drain database pool
+    try {
+      const { pool } = await import("./db");
+      await pool.end();
+      log("Database pool drained");
+    } catch { /* pool may not exist */ }
+
+    // 4. Flush Sentry
+    if (sentryEnabled) {
+      await Sentry.close(2000);
+    }
+
+    process.exit(0);
+  }
+
+  process.on("SIGTERM", () => shutdown("SIGTERM"));
+  process.on("SIGINT", () => shutdown("SIGINT"));
 })();

@@ -32,9 +32,9 @@ export function registerAdminRoutes(app: Express): void {
       const { getMetricsSummary } = await import("../analytics");
       const summary = await getMetricsSummary();
       res.json(summary);
-    } catch (error: any) {
-      console.error("Metrics error:", error?.message || error);
-      res.status(500).json({ error: "Failed to fetch metrics", message: error?.message, hasDbUrl: !!process.env.DATABASE_URL });
+    } catch (error: unknown) {
+      console.error("Metrics error:", error instanceof Error ? error.message : error);
+      res.status(500).json({ error: "Failed to fetch metrics" });
     }
   });
 
@@ -44,9 +44,9 @@ export function registerAdminRoutes(app: Express): void {
       const { getAlertsStatus } = await import("../alerts");
       const status = await getAlertsStatus();
       res.json(status);
-    } catch (error: any) {
-      console.error("[alerts] /api/alerts error:", error?.message || error);
-      res.status(500).json({ error: "Failed to fetch alert status", message: error?.message });
+    } catch (error: unknown) {
+      console.error("[alerts] /api/alerts error:", error instanceof Error ? error.message : error);
+      res.status(500).json({ error: "Failed to fetch alert status" });
     }
   });
 
@@ -56,9 +56,9 @@ export function registerAdminRoutes(app: Express): void {
       const { getTechnicalSummary, getPiiExpiryStatus } = await import("../analytics");
       const [summary, piiRetention] = await Promise.all([getTechnicalSummary(), getPiiExpiryStatus()]);
       res.json({ ...summary, piiRetention });
-    } catch (error: any) {
-      console.error("Technical metrics error:", error?.message || error);
-      res.status(500).json({ error: "Failed to fetch technical metrics", message: error?.message });
+    } catch (error: unknown) {
+      console.error("Technical metrics error:", error instanceof Error ? error.message : error);
+      res.status(500).json({ error: "Failed to fetch technical metrics" });
     }
   });
 
@@ -122,9 +122,9 @@ export function registerAdminRoutes(app: Express): void {
         success: true, imported: payments.length, skipped, totalEvents: events.length,
         message: `Imported ${payments.length} new payments (${events.length} events)${skipped > 0 ? `, skipped ${skipped} duplicates` : ""}`,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Stripe import error:", error);
-      res.status(500).json({ error: "Failed to import Stripe history", message: error?.message });
+      res.status(500).json({ error: "Failed to import Stripe history" });
     }
   });
 

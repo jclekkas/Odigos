@@ -68,8 +68,8 @@ async function getResolvedSiteUrl(accessToken: string): Promise<string> {
         return candidate;
       }
       console.warn(`GSC: site URL candidate ${candidate} returned ${result.status}`);
-    } catch (e: any) {
-      console.warn(`GSC: site URL candidate ${candidate} error:`, e?.message);
+    } catch (e: unknown) {
+      console.warn(`GSC: site URL candidate ${candidate} error:`, e instanceof Error ? e.message : e);
     }
   }
 
@@ -245,11 +245,12 @@ async function fetchUrlInspection(
     const text = await response.text();
     throw new Error(`GSC URL inspection failed for ${inspectionUrl}: ${response.status} ${text}`);
   }
-  const data = await response.json() as any;
-  const indexStatus = data?.inspectionResult?.indexStatusResult ?? {};
+  const data = await response.json() as Record<string, unknown>;
+  const inspectionResult = data?.inspectionResult as Record<string, unknown> | undefined;
+  const indexStatus = (inspectionResult?.indexStatusResult ?? {}) as Record<string, unknown>;
   return {
-    verdict: indexStatus.verdict ?? "UNKNOWN",
-    coverageState: indexStatus.coverageState ?? indexStatus.verdict ?? "UNKNOWN",
+    verdict: (indexStatus.verdict as string) ?? "UNKNOWN",
+    coverageState: (indexStatus.coverageState as string) ?? (indexStatus.verdict as string) ?? "UNKNOWN",
   };
 }
 
@@ -291,11 +292,12 @@ async function fetchSearchAnalytics(
   }
 
   const map = new Map<string, { clicks: number; impressions: number }>();
-  const data = await response.json() as any;
-  for (const row of data?.rows ?? []) {
-    const url: string = row.keys?.[0] ?? "";
+  const data = await response.json() as Record<string, unknown>;
+  for (const row of (data?.rows as Array<Record<string, unknown>>) ?? []) {
+    const keys = row.keys as string[] | undefined;
+    const url: string = keys?.[0] ?? "";
     if (url) {
-      map.set(url, { clicks: row.clicks ?? 0, impressions: row.impressions ?? 0 });
+      map.set(url, { clicks: (row.clicks as number) ?? 0, impressions: (row.impressions as number) ?? 0 });
     }
   }
   return map;
@@ -320,8 +322,8 @@ export function registerGscRoutes(app: Express): void {
       let analyticsMap = new Map<string, { clicks: number; impressions: number }>();
       try {
         analyticsMap = await fetchSearchAnalytics(accessToken, resolvedSiteUrl);
-      } catch (e: any) {
-        console.warn("GSC analytics unavailable:", e?.message);
+      } catch (e: unknown) {
+        console.warn("GSC analytics unavailable:", e instanceof Error ? e.message : e);
         const hint = CONFIGURED_SITE_URL
           ? `GSC_SITE_URL is set to "${CONFIGURED_SITE_URL}" — verify this matches the property URL in Search Console exactly.`
           : `Set the GSC_SITE_URL environment variable to either "sc-domain:odigosauto.com" (Domain property) or "https://odigosauto.com/" (URL-prefix property) to match how the site is registered in Search Console.`;
@@ -361,8 +363,8 @@ export function registerGscRoutes(app: Express): void {
               if (cat === "indexed") indexed.push(item);
               else if (cat === "discoveredNotIndexed") discoveredNotIndexed.push(item);
               else errors.push(item);
-            } catch (e: any) {
-              console.warn(`Failed to inspect ${url}:`, e?.message);
+            } catch (e: unknown) {
+              console.warn(`Failed to inspect ${url}:`, e instanceof Error ? e.message : e);
             }
           })
         );
@@ -408,9 +410,9 @@ export function registerGscRoutes(app: Express): void {
       };
 
       res.json(summary);
-    } catch (e: any) {
-      console.error("GSC summary error:", e?.message || e);
-      res.status(500).json({ error: "Failed to fetch GSC data", message: e?.message });
+    } catch (e: unknown) {
+      console.error("GSC summary error:", e instanceof Error ? e.message : e);
+      res.status(500).json({ error: "Failed to fetch GSC data" });
     }
   });
 }

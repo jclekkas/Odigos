@@ -9,7 +9,7 @@ import { storage } from "../storage";
 import { writeAuditEvent } from "../audit";
 import { runAnalysis, AnalyzeServiceError } from "../services/analyzeService";
 
-console.log("OpenAI configured with base URL:", process.env.AI_INTEGRATIONS_OPENAI_BASE_URL ? "set" : "not set");
+// OpenAI base URL configured via AI_INTEGRATIONS_OPENAI_BASE_URL env var
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 const ALLOWED_MIME_TYPES = ["image/png", "image/jpeg", "image/webp", "application/pdf"];
@@ -30,16 +30,16 @@ export function registerAnalyzeRoutes(app: Express): void {
     try {
       const result = await runAnalysis(parseResult.data);
       res.json(result.payload);
-      void writeAuditEvent(req, "analyze", "success", {
+      writeAuditEvent(req, "analyze", "success", {
         route: req.originalUrl, method: req.method, statusCode: 200,
         submissionId: result.listingId ?? null, stateCode: result.stateCode ?? null,
         hasPdf: Boolean(req.file),
-      });
+      }).catch(err => console.error("[audit] analyze success write failed:", err));
     } catch (error) {
       if (error instanceof AnalyzeServiceError) {
-        void writeAuditEvent(req, "analyze", "failure", {
+        writeAuditEvent(req, "analyze", "failure", {
           route: req.originalUrl, method: req.method, statusCode: error.statusCode,
-        });
+        }).catch(err => console.error("[audit] analyze failure write failed:", err));
         return res.status(error.statusCode).json(error.body);
       }
       console.error("Analysis error:", error);
@@ -53,13 +53,12 @@ export function registerAnalyzeRoutes(app: Express): void {
         scope.setTag("error_type", error instanceof Error ? error.constructor.name : "unknown");
         Sentry.captureException(error);
       });
-      let errorMessage = "Unknown error occurred";
+      let userMessage = "An unexpected error occurred. Please try again.";
       if (error instanceof Error) {
-        errorMessage = error.message;
-        if (error.message.includes("timeout") || error.message.includes("ETIMEDOUT")) errorMessage = "Request timed out. Please try again.";
-        else if (error.message.includes("rate limit")) errorMessage = "Too many requests. Please wait a moment and try again.";
+        if (error.message.includes("timeout") || error.message.includes("ETIMEDOUT")) userMessage = "Request timed out. Please try again.";
+        else if (error.message.includes("rate limit")) userMessage = "Too many requests. Please wait a moment and try again.";
       }
-      res.status(500).json({ error: "Failed to analyze deal", message: errorMessage });
+      res.status(500).json({ error: "Failed to analyze deal", message: userMessage });
     }
   });
 
@@ -86,11 +85,12 @@ export function registerAnalyzeRoutes(app: Express): void {
   app.post("/api/extract-text", async (req, res) => {
     try {
       await runUploadMiddleware(req, res);
-    } catch (err: any) {
-      const reason = err?.code === "LIMIT_FILE_SIZE" ? "file_too_large" : "upload_error";
+    } catch (err: unknown) {
+      const multerErr = err as { code?: string };
+      const reason = multerErr?.code === "LIMIT_FILE_SIZE" ? "file_too_large" : "upload_error";
       trackEvent("file_processing", { fileSuccess: false, fileFailReason: reason });
       return res.status(400).json({
-        message: err?.code === "LIMIT_FILE_SIZE"
+        message: multerErr?.code === "LIMIT_FILE_SIZE"
           ? "That file is too large to process. Please use a file under 10 MB."
           : "Something went wrong processing the file.",
       });
