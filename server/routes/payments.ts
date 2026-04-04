@@ -44,14 +44,14 @@ export function registerPaymentRoutes(app: Express): void {
 
       const session = await stripe.checkout.sessions.create({
         mode: "payment",
+        ui_mode: "embedded",
         line_items: [{ price: priceId, quantity: 1 }],
-        success_url: `${baseUrl}/analyze?paid=1&product=${product}`,
-        cancel_url: `${baseUrl}/analyze?paid=0`,
+        return_url: `${baseUrl}/analyze?session_id={CHECKOUT_SESSION_ID}&product=${product}`,
         metadata: { product, sessionId: sessionId ?? "" },
       });
 
       trackEvent("checkout_started", { stripeSessionId: session.id, sessionId });
-      res.json({ url: session.url });
+      res.json({ clientSecret: session.client_secret });
     } catch (error) {
       console.error("Checkout error:", error);
       Sentry.withScope((scope) => {
@@ -91,14 +91,14 @@ export function registerPaymentRoutes(app: Express): void {
 
       const session = await stripe.checkout.sessions.create({
         mode: "payment",
+        ui_mode: "embedded",
         line_items: [{ price: priceId, quantity: 1 }],
-        success_url: `${baseUrl}/analyze?session_id={CHECKOUT_SESSION_ID}&analysisId=${analysisId}`,
-        cancel_url: `${baseUrl}/analyze?canceled=1&analysisId=${analysisId}`,
+        return_url: `${baseUrl}/analyze?session_id={CHECKOUT_SESSION_ID}&analysisId=${analysisId}`,
         metadata: { tier: selectedTier, sessionId: sessionId ?? "" },
       });
 
       trackEvent("checkout_started", { tier: selectedTier, stripeSessionId: session.id, sessionId });
-      res.json({ url: session.url });
+      res.json({ clientSecret: session.client_secret });
     } catch (error) {
       console.error("Checkout session error:", error);
       res.status(500).json({ error: "Failed to create checkout session" });
