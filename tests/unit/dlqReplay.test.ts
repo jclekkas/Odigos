@@ -12,6 +12,7 @@ vi.mock("../../server/db", () => ({
     select: vi.fn(),
     update: vi.fn(),
     insert: vi.fn(),
+    execute: vi.fn().mockResolvedValue({ rows: [{ pg_try_advisory_lock: true }] }),
   },
 }));
 
