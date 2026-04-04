@@ -18,6 +18,7 @@ export function registerTrackingRoutes(app: Express): void {
         "file_upload_failed", "analysis_failed", "checkout_failed",
         "scorecard_downloaded", "copy_summary", "optional_details_expanded",
         "experiment_assigned", "experiment_converted",
+        "analyze_start", "analysis_complete", "paywall_view", "checkout_initiated",
       ];
       if (!eventType || !validTypes.includes(eventType)) {
         return res.status(400).json({ error: "Invalid event type" });
