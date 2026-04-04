@@ -10,6 +10,7 @@ import { trackEvent } from "./metrics";
 import { db } from "./db";
 import { sql } from "drizzle-orm";
 import { writeAuditEvent } from "./audit";
+import { logger } from "./logger";
 
 const SENSITIVE_KEYS = ["dealerText", "body", "text", "content", "rawBody", "file", "buffer", "password", "token"];
 
@@ -186,15 +187,9 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 
+/** @deprecated Use `logger` from "./logger" instead. */
 export function log(message: string, source = "express") {
-  const formattedTime = new Date().toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-  });
-
-  console.log(`${formattedTime} [${source}] ${message}`);
+  logger.info(message, { source });
 }
 
 app.use((req, res, next) => {
@@ -211,12 +206,13 @@ app.use((req, res, next) => {
   res.on("finish", () => {
     const duration = Date.now() - start;
     if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      log(logLine);
+      logger.info("api request", {
+        method: req.method,
+        path,
+        statusCode: res.statusCode,
+        durationMs: duration,
+        ...(capturedJsonResponse ? { response: capturedJsonResponse } : {}),
+      });
 
       const trackedEndpoints = ["/api/analyze", "/api/extract-text", "/api/track", "/api/metrics", "/api/checkout"];
       const matchedEndpoint = trackedEndpoints.find(e => path === e || path.startsWith(e + "/"));
@@ -454,6 +450,7 @@ async function ensureAppSchema(): Promise<void> {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
+    logger.error("unhandled error", { statusCode: status, error: message });
     res.status(status).json({ message });
     throw err;
   });
@@ -480,27 +477,27 @@ async function ensureAppSchema(): Promise<void> {
       reusePort: true,
     },
     async () => {
-      log(`serving on port ${port}`);
+      logger.info("server started", { port });
 
       try {
         const { startDailyScheduler } = await import("./warehouse/scheduler");
         startDailyScheduler();
       } catch (err) {
-        console.error("[scheduler] Failed to start daily scheduler:", err);
+        logger.error("Failed to start daily scheduler", { source: "scheduler", error: String(err) });
       }
 
       try {
         const { startAlertScheduler } = await import("./alerts");
         startAlertScheduler();
       } catch (err) {
-        console.error("[alerts] Failed to start alert scheduler:", err);
+        logger.error("Failed to start alert scheduler", { source: "alerts", error: String(err) });
       }
 
       try {
         const { startDlqReplayWorker } = await import("./warehouse/dlqReplay");
         startDlqReplayWorker();
       } catch (err) {
-        console.error("[dlq-replay] Failed to start DLQ replay worker (non-fatal):", err);
+        logger.error("Failed to start DLQ replay worker", { source: "dlq-replay", error: String(err) });
       }
     },
   );
@@ -510,11 +507,11 @@ async function ensureAppSchema(): Promise<void> {
   async function shutdown(signal: string) {
     if (shuttingDown) return;
     shuttingDown = true;
-    log(`${signal} received — starting graceful shutdown`);
+    logger.info("starting graceful shutdown", { signal });
 
     // 1. Stop accepting new connections
     httpServer.close(() => {
-      log("HTTP server closed");
+      logger.info("HTTP server closed");
     });
 
     // 2. Stop scheduled tasks
@@ -527,7 +524,7 @@ async function ensureAppSchema(): Promise<void> {
     try {
       const { pool } = await import("./db");
       await pool.end();
-      log("Database pool drained");
+      logger.info("Database pool drained");
     } catch { /* pool may not exist */ }
 
     // 4. Flush Sentry
