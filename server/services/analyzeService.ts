@@ -75,13 +75,7 @@ const AI_ATTEMPT_TIMEOUT_MS = 30_000;
 const AI_TOTAL_BUDGET_MS = 75_000;
 
 export async function runAnalysis(data: AnalyzeInput): Promise<AnalyzeServiceResult> {
-  console.log("=== NEW DEAL SUBMISSION ===");
-  console.log("Timestamp:", new Date().toISOString());
-  console.log("Vehicle:", data.vehicle || "Not specified");
-  console.log("Condition:", data.condition);
-  console.log("Purchase Type:", data.purchaseType);
-  console.log("Dealer Text present:", Boolean(data.dealerText), "length:", data.dealerText?.length ?? 0);
-  console.log("===========================");
+  console.log("[analyze] New submission at", new Date().toISOString(), "textLength:", data.dealerText?.length ?? 0);
 
   const stateDetection = detectStateFromText(data.dealerText, data.zipCode);
   const stateData = stateDetection.state ? getStateFeeData(stateDetection.state) : null;
@@ -90,10 +84,10 @@ export async function runAnalysis(data: AnalyzeInput): Promise<AnalyzeServiceRes
     console.warn(`[stateDetection] State ${stateDetection.state} not found in reference JSON — skipping injection`);
   }
 
-  void trackEvent("state_detection", {
+  trackEvent("state_detection", {
     method: stateDetection.method ?? undefined,
     state: stateDetection.state ?? undefined,
-  });
+  }).catch(err => console.error("[tracking] state_detection event failed:", err));
 
   let stateFeeSection = "";
   if (stateData) {
@@ -457,11 +451,11 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   console.log(
     `[stateDetection] method=${stateDetection.method ?? "null"} state=${stateDetection.state ?? "null"} capCheck=${capCheck} overage=${docFeeCapResult?.overage ?? 0}`
   );
-  void trackEvent("state_detection", {
+  trackEvent("state_detection", {
     method: stateDetection.method ?? undefined,
     state: stateDetection.state ?? undefined,
     capViolation,
-  });
+  }).catch(err => console.error("[tracking] state_detection event failed:", err));
 
   if (!stateDetection.state) {
     const missingInfoArr = Array.isArray(llmResult.missingInfo) ? [...llmResult.missingInfo] : [];
@@ -519,11 +513,11 @@ Respond entirely in Spanish. All text fields in your JSON response — including
 
   console.log("Analysis successful - Deal Score:", finalResult.dealScore, "Confidence:", finalResult.confidenceLevel);
 
-  void trackEvent("submission", {
+  trackEvent("submission", {
     vehicle: data.vehicle,
     zipCode: data.zipCode,
     sessionId: data.sessionId,
-  });
+  }).catch(err => console.error("[tracking] submission event failed:", err));
 
   let listingId: string | null = null;
   try {
@@ -634,13 +628,13 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   payload.marketContextStrength = finalOverallStrength;
   if (marketContextSummary) payload.marketContextSummary = marketContextSummary;
 
-  void trackEvent("submission_score", {
+  trackEvent("submission_score", {
     dealScore: finalResult.dealScore,
     vehicle: data.vehicle,
     sessionId: data.sessionId,
     marketContextUsed,
     marketContextStrength: finalOverallStrength,
-  });
+  }).catch(err => console.error("[tracking] submission_score event failed:", err));
 
   enqueueSubmission({ request: data, result: finalResult, preSavedListingId: listingId });
 

@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import type { Request } from "express";
 import { insertAuditLog } from "./storage";
 import type { AuditEventType, AuditOutcome } from "./storage";
 
@@ -6,13 +7,13 @@ export function sha256Hex(value: string): string {
   return crypto.createHash("sha256").update(value).digest("hex");
 }
 
-export function getRequestIp(req: any): string {
+export function getRequestIp(req: Pick<Request, "headers" | "ip" | "socket">): string {
   const xff = req.headers["x-forwarded-for"];
   if (typeof xff === "string" && xff.trim()) return xff.split(",")[0].trim();
   return req.ip || req.socket?.remoteAddress || "unknown";
 }
 
-export function hashRequestContext(req: any) {
+export function hashRequestContext(req: Pick<Request, "headers" | "ip" | "socket">) {
   const ip = getRequestIp(req);
   const ua = typeof req.headers["user-agent"] === "string"
     ? req.headers["user-agent"] : "unknown";
@@ -28,7 +29,7 @@ export function redactAuditMeta(meta: Record<string, unknown>): Record<string, u
 }
 
 export async function writeAuditEvent(
-  req: any,
+  req: Pick<Request, "headers" | "ip" | "socket">,
   eventType: AuditEventType,
   outcome: AuditOutcome,
   meta: Record<string, unknown>,

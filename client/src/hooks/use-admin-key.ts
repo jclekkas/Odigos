@@ -35,11 +35,9 @@ export function useAdminKey(): [string, (key: string) => void, () => void] {
   const adminKey = useSyncExternalStore(subscribe, readFromStorage, () => "");
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const urlKey = params.get("key");
-    if (urlKey && urlKey !== readFromStorage()) {
-      writeToStorage(urlKey);
-    }
+    // Admin key via URL parameter removed for security — keys in URLs are
+    // exposed in browser history, referrer headers, and server access logs.
+    // Use the login form or localStorage directly instead.
   }, []);
 
   const setAdminKey = useCallback((key: string) => {

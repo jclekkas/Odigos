@@ -61,3 +61,9 @@ export function startDailyScheduler(): void {
     piiTimer.unref();
   }
 }
+
+export function stopDailyScheduler(): void {
+  if (viewTimer) { clearInterval(viewTimer); viewTimer = null; }
+  if (piiTimer) { clearInterval(piiTimer); piiTimer = null; }
+  console.log("[scheduler] Daily schedulers stopped.");
+}
