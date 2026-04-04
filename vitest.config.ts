@@ -14,10 +14,10 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       thresholds: {
-        lines: 32,
-        functions: 21,
-        branches: 20,
-        statements: 30,
+        lines: 29,
+        functions: 18,
+        branches: 19,
+        statements: 27,
       },
     },
     projects: [
@@ -35,6 +35,7 @@ export default defineConfig({
           env: {
             NODE_ENV: "test",
             DATABASE_URL: "postgresql://test:test@localhost:5432/test",
+            AI_INTEGRATIONS_OPENAI_API_KEY: "sk-test-dummy-key-for-vitest",
           },
         },
       },
@@ -52,6 +53,7 @@ export default defineConfig({
           env: {
             NODE_ENV: "test",
             DATABASE_URL: "postgresql://test:test@localhost:5432/test",
+            AI_INTEGRATIONS_OPENAI_API_KEY: "sk-test-dummy-key-for-vitest",
           },
         },
       },

@@ -24,7 +24,7 @@ export type AnalyzeInput = z.infer<typeof analysisRequestSchema>;
  * Strips common prompt injection patterns while preserving legitimate
  * dealer quote content (prices, terms, formatting).
  */
-function sanitizeDealerText(text: string): string {
+export function sanitizeDealerText(text: string): string {
   let sanitized = text;
   // Strip attempts to override system instructions
   sanitized = sanitized.replace(
