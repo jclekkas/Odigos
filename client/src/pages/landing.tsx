@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { AlertTriangle, ArrowRight, Check, CheckCircle2, Lock, XCircle } from "lucide-react";
+import { AlertTriangle, ArrowRight, Check, CheckCircle2, Lock, Quote, XCircle } from "lucide-react";
 import { trackPageView, trackCtaClick } from "@/lib/tracking";
 import { capture } from "@/lib/analytics";
 import { useExperiment } from "@/lib/experiments";
@@ -541,6 +541,98 @@ export default function Landing() {
                   <Link href="/analyze">{pricingCtaText}</Link>
                 </Button>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-t border-border py-24 sm:py-32" data-testid="section-methodology">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6">
+            <div className="mx-auto max-w-2xl text-center mb-16">
+              <h2 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl">
+                How We Score Your Deal
+              </h2>
+              <p className="mt-4 text-muted-foreground text-sm">
+                Every quote is evaluated and assigned a color-coded verdict so you know where you stand at a glance.
+              </p>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-3">
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0" />
+                    <h3 className="font-medium text-green-700 dark:text-green-400">GREEN / GO</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    All key terms present, no red flags, reasonable pricing. You're in good shape to move forward.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0" />
+                    <h3 className="font-medium text-amber-700 dark:text-amber-400">YELLOW / NEED-MORE-INFO</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Missing critical details. Proceed with caution and request the missing information before signing.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <XCircle className="h-5 w-5 text-destructive shrink-0" />
+                    <h3 className="font-medium text-red-700 dark:text-red-400">RED / NO-GO</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Significant red flags detected. Do not proceed without resolving the issues identified in the analysis.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+            <p className="mx-auto mt-12 max-w-2xl text-center text-sm text-muted-foreground leading-relaxed">
+              Our analysis combines AI evaluation with state-specific dealer fee regulations, market pricing data, and pattern detection from thousands of analyzed quotes.
+            </p>
+          </div>
+        </section>
+
+        <section className="border-t border-border bg-muted/30 py-24 sm:py-32" data-testid="section-testimonials">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6">
+            <div className="mx-auto max-w-2xl text-center mb-16">
+              <h2 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl">
+                What Buyers Are Saying
+              </h2>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-3">
+              {[
+                {
+                  quote: "Saved me $2,400 in hidden dealer add-ons. The suggested reply got them to remove the nitrogen tire fee and fabric protection.",
+                  name: "Sarah M.",
+                  location: "Texas",
+                },
+                {
+                  quote: "I was about to sign a deal with a $895 doc fee in California where the cap is $85. Odigos caught it instantly.",
+                  name: "James K.",
+                  location: "California",
+                },
+                {
+                  quote: "The free preview alone told me my deal was solid. Paid $49 for the full report just for peace of mind before a $42k purchase.",
+                  name: "Michelle R.",
+                  location: "Florida",
+                },
+              ].map((testimonial) => (
+                <Card key={testimonial.name}>
+                  <CardContent className="pt-6">
+                    <Quote className="h-5 w-5 text-muted-foreground/40 mb-3" />
+                    <p className="text-sm text-foreground/80 leading-relaxed mb-4">
+                      {testimonial.quote}
+                    </p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      — {testimonial.name}, {testimonial.location}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
         </section>

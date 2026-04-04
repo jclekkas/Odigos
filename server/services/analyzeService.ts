@@ -16,6 +16,7 @@ import { storage } from "../storage";
 import { getMarketContext, getDealerStats } from "../marketContext";
 import { withJitteredBackoff, isRetriableError } from "../lib/reliability";
 import { aiCircuitBreaker, CircuitOpenError } from "../lib/circuitBreaker";
+import { logger } from "../logger";
 
 export type AnalyzeInput = z.infer<typeof analysisRequestSchema>;
 
@@ -104,19 +105,19 @@ const AI_ATTEMPT_TIMEOUT_MS = 30_000;
 const AI_TOTAL_BUDGET_MS = 75_000;
 
 export async function runAnalysis(data: AnalyzeInput): Promise<AnalyzeServiceResult> {
-  console.log("[analyze] New submission at", new Date().toISOString(), "textLength:", data.dealerText?.length ?? 0);
+  logger.info("New submission", { source: "analyze", textLength: data.dealerText?.length ?? 0 });
 
   const stateDetection = detectStateFromText(data.dealerText, data.zipCode);
   const stateData = stateDetection.state ? getStateFeeData(stateDetection.state) : null;
 
   if (!stateData && stateDetection.state) {
-    console.warn(`[stateDetection] State ${stateDetection.state} not found in reference JSON — skipping injection`);
+    logger.warn("State not found in reference JSON, skipping injection", { source: "stateDetection", state: stateDetection.state });
   }
 
   trackEvent("state_detection", {
     method: stateDetection.method ?? undefined,
     state: stateDetection.state ?? undefined,
-  }).catch(err => console.error("[tracking] state_detection event failed:", err));
+  }).catch(err => logger.error("state_detection event failed", { source: "tracking", error: String(err) }));
 
   let stateFeeSection = "";
   if (stateData) {
@@ -184,7 +185,7 @@ When state is unknown: omit all state-specific fee characterizations.`;
         docFee: null,
       });
     } catch (ctxErr) {
-      console.error("[analyze] getMarketContext pre-fetch failed (non-fatal):", ctxErr);
+      logger.error("getMarketContext pre-fetch failed (non-fatal)", { source: "analyze", error: String(ctxErr) });
       marketContext = null;
     }
   }
@@ -196,10 +197,13 @@ When state is unknown: omit all state-specific fee characterizations.`;
     marketContext.feedbackAgreementPct != null &&
     Number.isFinite(marketContext.feedbackAgreementPct);
 
-  console.log(
-    `[analyze:feedback] dealerExtracted=${preLlmDealerName != null} dealer=${preLlmDealerName ?? "none"} feedbackInjected=${feedbackInjected}` +
-    (feedbackInjected ? ` count=${marketContext!.feedbackCount} agreement=${Math.round(marketContext!.feedbackAgreementPct! * 100)}%` : ""),
-  );
+  logger.info("feedback signal check", {
+    source: "analyze",
+    dealerExtracted: preLlmDealerName != null,
+    dealer: preLlmDealerName ?? "none",
+    feedbackInjected,
+    ...(feedbackInjected ? { count: marketContext!.feedbackCount, agreementPct: Math.round(marketContext!.feedbackAgreementPct! * 100) } : {}),
+  });
   trackEvent("feedback_signal", {
     dealerExtracted: preLlmDealerName != null,
     feedbackInjected,
@@ -354,14 +358,14 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   if (data.termMonths) userMessage += `\nLoan term: ${data.termMonths} months`;
   if (data.downPayment) userMessage += `\nDown payment: $${data.downPayment}`;
 
-  console.log("[analyze] AI call starting, promptLength:", userMessage.length);
+  logger.info("AI call starting", { source: "analyze", promptLength: userMessage.length });
 
   let aiResponse: Awaited<ReturnType<typeof openai.chat.completions.create>>;
   try {
     aiResponse = await withJitteredBackoff(
       async (attempt) => {
         if (attempt > 1) {
-          console.log(`[analyze] AI retry attempt ${attempt}/${AI_MAX_RETRIES + 1}`);
+          logger.info("AI retry attempt", { source: "analyze", attempt, maxAttempts: AI_MAX_RETRIES + 1 });
         }
         return aiCircuitBreaker.execute(() =>
           Promise.race([
@@ -390,9 +394,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
         totalBudgetMs: AI_TOTAL_BUDGET_MS,
         onRetry: (attempt, err, delayMs) => {
           const msg = err instanceof Error ? err.message : String(err);
-          console.warn(
-            `[analyze] AI call failed on attempt ${attempt}, retrying in ${Math.round(delayMs)}ms. reason=${msg}`,
-          );
+          logger.warn("AI call failed, retrying", { source: "analyze", attempt, delayMs: Math.round(delayMs), reason: msg });
           Sentry.addBreadcrumb({
             category: "ai-retry",
             message: `AI retry attempt ${attempt + 1}`,
@@ -404,7 +406,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     );
   } catch (aiErr) {
     if (aiErr instanceof CircuitOpenError) {
-      console.error("[analyze] AI circuit breaker is OPEN — fast-failing");
+      logger.error("AI circuit breaker is OPEN, fast-failing", { source: "analyze" });
       Sentry.captureException(aiErr, { level: "error" });
       throw new AnalyzeServiceError(503, {
         error: "Service temporarily unavailable",
@@ -412,7 +414,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
       });
     }
     const isRetriable = isRetriableError(aiErr as Error);
-    console.error(`[analyze] AI call exhausted retries. retriable=${isRetriable}`, aiErr);
+    logger.error("AI call exhausted retries", { source: "analyze", retriable: isRetriable, error: String(aiErr) });
     Sentry.captureException(aiErr, {
       level: "error",
       extra: { maxRetries: AI_MAX_RETRIES, budgetMs: AI_TOTAL_BUDGET_MS },
@@ -423,11 +425,11 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     });
   }
 
-  console.log("[analyze] AI response received, finishReason:", aiResponse.choices[0]?.finish_reason);
+  logger.info("AI response received", { source: "analyze", finishReason: aiResponse.choices[0]?.finish_reason });
 
   const content = aiResponse.choices[0]?.message?.content;
   if (!content) {
-    console.error("[analyze] Empty AI response content, finishReason:", aiResponse.choices[0]?.finish_reason);
+    logger.error("Empty AI response content", { source: "analyze", finishReason: aiResponse.choices[0]?.finish_reason });
     throw new Error("No response from AI - empty content received");
   }
 
@@ -435,16 +437,16 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   try {
     rawResult = JSON.parse(content);
   } catch {
-    console.error("[analyze] Failed to parse AI JSON response, length:", content.length);
+    logger.error("Failed to parse AI JSON response", { source: "analyze", contentLength: content.length });
     throw new Error("AI returned invalid JSON format");
   }
 
   if (!rawResult.reasoning) {
-    console.warn("AI response missing 'reasoning' field - using summary as fallback");
+    logger.warn("AI response missing 'reasoning' field, using summary as fallback", { source: "analyze" });
     if (rawResult.summary) {
       rawResult.reasoning = rawResult.summary;
     } else {
-      console.error("AI response missing both 'reasoning' and 'summary' fields");
+      logger.error("AI response missing both 'reasoning' and 'summary' fields", { source: "analyze" });
       throw new AnalyzeServiceError(502, {
         error: "Incomplete AI response",
         message: "The AI did not provide sufficient analysis. Please try again.",
@@ -460,8 +462,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
 
   const validationResult = analysisResponseSchema.safeParse(rawResult);
   if (!validationResult.success) {
-    console.error("AI response validation failed:", validationResult.error.flatten());
-    console.error("Raw result keys:", Object.keys(rawResult));
+    logger.error("AI response validation failed", { source: "analyze", errors: validationResult.error.flatten(), rawResultKeys: Object.keys(rawResult) });
     throw new AnalyzeServiceError(502, {
       error: "Invalid AI response",
       message: "The AI returned an unexpected response format. Please try again.",
@@ -476,14 +477,18 @@ Respond entirely in Spanish. All text fields in your JSON response — including
 
   const capCheck = !!stateData;
   const capViolation = docFeeCapResult?.violated ?? false;
-  console.log(
-    `[stateDetection] method=${stateDetection.method ?? "null"} state=${stateDetection.state ?? "null"} capCheck=${capCheck} overage=${docFeeCapResult?.overage ?? 0}`
-  );
+  logger.info("state detection result", {
+    source: "stateDetection",
+    method: stateDetection.method ?? null,
+    state: stateDetection.state ?? null,
+    capCheck,
+    overage: docFeeCapResult?.overage ?? 0,
+  });
   trackEvent("state_detection", {
     method: stateDetection.method ?? undefined,
     state: stateDetection.state ?? undefined,
     capViolation,
-  }).catch(err => console.error("[tracking] state_detection event failed:", err));
+  }).catch(err => logger.error("state_detection event failed", { source: "tracking", error: String(err) }));
 
   if (!stateDetection.state) {
     const missingInfoArr = Array.isArray(llmResult.missingInfo) ? [...llmResult.missingInfo] : [];
@@ -539,13 +544,13 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     goNoGo: ruleEngineAdjustments.goNoGo,
   };
 
-  console.log("Analysis successful - Deal Score:", finalResult.dealScore, "Confidence:", finalResult.confidenceLevel);
+  logger.info("Analysis successful", { source: "analyze", dealScore: finalResult.dealScore, confidence: finalResult.confidenceLevel });
 
   trackEvent("submission", {
     vehicle: data.vehicle,
     zipCode: data.zipCode,
     sessionId: data.sessionId,
-  }).catch(err => console.error("[tracking] submission event failed:", err));
+  }).catch(err => logger.error("submission event failed", { source: "tracking", error: String(err) }));
 
   let listingId: string | null = null;
   try {
@@ -595,7 +600,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     });
     listingId = submissionRow?.id ?? null;
   } catch (saveErr) {
-    console.error("[analyze] pre-save submission failed (non-fatal):", saveErr);
+    logger.error("pre-save submission failed (non-fatal)", { source: "analyze", error: String(saveErr) });
   }
 
   if (marketContext) {
@@ -662,7 +667,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     sessionId: data.sessionId,
     marketContextUsed,
     marketContextStrength: finalOverallStrength,
-  }).catch(err => console.error("[tracking] submission_score event failed:", err));
+  }).catch(err => logger.error("submission_score event failed", { source: "tracking", error: String(err) }));
 
   enqueueSubmission({ request: data, result: finalResult, preSavedListingId: listingId });
 

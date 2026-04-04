@@ -8,7 +8,11 @@ type EventType =
   | "checkout_failed"
   | "scorecard_downloaded"
   | "copy_summary"
-  | "optional_details_expanded";
+  | "optional_details_expanded"
+  | "analyze_start"
+  | "analysis_complete"
+  | "paywall_view"
+  | "checkout_initiated";
 
 interface TrackingMetadata {
   page?: string;
@@ -88,4 +92,20 @@ export function trackCopySummary(): void {
 
 export function trackOptionalDetailsExpanded(): void {
   track("optional_details_expanded", { page: window.location.pathname });
+}
+
+export function trackAnalyzeStart(): void {
+  track("analyze_start", { page: window.location.pathname });
+}
+
+export function trackAnalysisComplete(properties?: TrackingMetadata): void {
+  track("analysis_complete", { ...properties, page: window.location.pathname });
+}
+
+export function trackPaywallView(): void {
+  track("paywall_view", { page: window.location.pathname });
+}
+
+export function trackCheckoutInitiated(): void {
+  track("checkout_initiated", { page: window.location.pathname });
 }

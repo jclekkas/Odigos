@@ -18,6 +18,10 @@ import {
   trackScorecardDownloaded,
   trackCopySummary,
   trackOptionalDetailsExpanded,
+  trackAnalyzeStart,
+  trackAnalysisComplete,
+  trackPaywallView,
+  trackCheckoutInitiated,
   getSessionId,
 } from "@/lib/tracking";
 import { capture } from "@/lib/analytics";
@@ -426,6 +430,10 @@ interface LockedTier2Props {
 }
 
 function LockedTier2Section({ onUnlock, isLoading, stripeConfigured, ctaLabel }: LockedTier2Props) {
+  useEffect(() => {
+    trackPaywallView();
+  }, []);
+
   return (
     <Card className="border-border bg-muted/20">
       <CardHeader className="pb-3">
@@ -1075,6 +1083,7 @@ export default function Home() {
 
   const handleUnlockTier = async () => {
     setCheckoutLoading(true);
+    trackCheckoutInitiated();
 
     try {
       tagFlow("checkout", "/api/checkout");
@@ -1201,6 +1210,10 @@ export default function Home() {
       if (!resultFiredRef.current) {
         resultFiredRef.current = true;
         capture("analysis_completed", { result_available: true });
+        trackAnalysisComplete({
+          dealScore: data.verdictLabel,
+          confidence: String(data.confidenceLevel ?? ""),
+        });
       }
     },
     onError: (error) => {
@@ -1219,6 +1232,7 @@ export default function Home() {
     setResult(null);
     setShowDoneState(false);
     resultFiredRef.current = false;
+    trackAnalyzeStart();
     capture("analysis_submitted", {
       input_mode: data.source ?? "paste",
       input_length_bucket: getInputLengthBucket(data.dealerText.length),
