@@ -49,7 +49,12 @@ export async function setupVite(server: Server, app: Express) {
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`,
       );
-      const page = await vite.transformIndexHtml(url, template);
+      let page = await vite.transformIndexHtml(url, template);
+      // Inject the per-request CSP nonce into every <script tag.
+      const nonce = res.locals.cspNonce as string | undefined;
+      if (nonce) {
+        page = page.replace(/<script/g, `<script nonce="${nonce}"`);
+      }
       const pathname = req.originalUrl.split("?")[0];
       const status = isKnownRoute(pathname) ? 200 : 404;
       res.status(status).set({ "Content-Type": "text/html" }).end(page);

@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/node";
+import crypto from "node:crypto";
 import express, { type Request, Response, NextFunction } from "express";
 import helmet from "helmet";
 import cors from "cors";
@@ -62,30 +63,38 @@ declare module "http" {
 }
 
 // ── Security headers ─────────────────────────────────────────────────────────
+// Generate a per-request cryptographic nonce for CSP script-src.
+app.use((_req, res, next) => {
+  res.locals.cspNonce = crypto.randomBytes(16).toString("base64");
+  next();
+});
+
+// Use Helmet for non-CSP security headers; CSP is set manually below so we
+// can include the per-request nonce.
 app.use(
   helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "https://js.stripe.com", "'unsafe-inline'"],
-        connectSrc: [
-          "'self'",
-          "https://api.stripe.com",
-          "https://*.sentry.io",
-          "https://app.posthog.com",
-          "https://us.posthog.com",
-        ],
-        frameSrc: ["https://js.stripe.com"],
-        imgSrc: ["'self'", "data:", "https:"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        fontSrc: ["'self'", "data:"],
-      },
-    },
+    contentSecurityPolicy: false,
     frameguard: { action: "deny" },
     referrerPolicy: { policy: "strict-origin-when-cross-origin" },
     hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
   })
 );
+
+// Manual CSP header with per-request nonce (replaces 'unsafe-inline' for scripts).
+app.use((_req, res, next) => {
+  const nonce = res.locals.cspNonce as string;
+  const directives = [
+    "default-src 'self'",
+    `script-src 'self' https://js.stripe.com 'nonce-${nonce}'`,
+    "connect-src 'self' https://api.stripe.com https://*.sentry.io https://app.posthog.com https://us.posthog.com",
+    "frame-src https://js.stripe.com",
+    "img-src 'self' data: https:",
+    "style-src 'self' 'unsafe-inline'",
+    "font-src 'self' data:",
+  ];
+  res.setHeader("Content-Security-Policy", directives.join("; "));
+  next();
+});
 
 // ── CORS ─────────────────────────────────────────────────────────────────────
 // Exclude /api/stripe-webhook and /api/health from CORS enforcement
