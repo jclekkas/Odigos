@@ -51,7 +51,7 @@ export const STATIC_ROUTES: string[] = [
   "/best-way-to-check-if-a-car-deal-is-good",
 ];
 
-const VALID_STATE_SLUGS = new Set([
+export const VALID_STATE_SLUGS = new Set([
   "alabama",
   "alaska",
   "arizona",
