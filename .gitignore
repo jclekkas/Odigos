@@ -6,3 +6,4 @@ vite.config.ts.*
 *.tar.gz
 coverage
 attached_assets/Pasted-*.txt
+.claude/
