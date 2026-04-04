@@ -105,7 +105,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "https://law.alaska.gov/press/releases/2025/122925-LithiaMotors.html",
     ],
     specialNotes:
-      "Dec 2025: Lithia Motors ordered to pay $300K civil penalty for hidden doc fees. Dealers must include doc fees in advertised price.",
+      "Dec 2025: Lithia Motors ordered to pay $300K civil penalty for hidden doc fees. Dealers must include doc fees in advertised price. Fee data for Alaska may vary — verify current rates with your local DMV or municipal office, as Alaska's unusual market and limited regulatory data make fee averages less reliable than in other states.",
     dealerMessage:
       "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee, all additional dealer fees, any applicable local/municipal taxes, title fee, and registration costs? (Alaska has no state sales tax, but I want to know if any local tax applies.) I'd like to see the complete total. Thank you.",
     lastVerified: "2026-03",
@@ -216,7 +216,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Dealer-installed accessories marked up heavily: some California dealerships pre-install accessories (floor mats, roof rails, protection film) and build them into the vehicle price at retail-plus margins. Ask for the base MSRP before accessories.",
     ],
     negotiationNote:
-      "In California, the doc fee is fixed — you won't get it reduced. Your leverage is on the vehicle price, any add-ons, and financing terms. The state's large, competitive dealer market (particularly in the LA and Bay Area metros) means dealers are often willing to negotiate vehicle price to close a deal. Getting quotes from multiple dealers in the same region and using them against each other is particularly effective in California's high-volume markets.",
+      "California's $85 doc fee cap is a hard legal limit — if a dealer tries to charge more, cite the California DMV fee schedule ($85 for private industry partners, $70 for other dealers). SB 791 attempted to raise this to $260 but was vetoed by Governor Newsom in October 2025, so the cap remains. Your negotiation leverage is on the vehicle price, add-ons, and financing terms. California does NOT allow trade-in tax deductions — you pay tax on the full purchase price — which makes negotiating the sale price even more critical. The state's massive dealer market (especially LA and Bay Area) means getting 3+ competing OTD quotes is realistic and effective.",
     ctaHeading: "Have a California dealer quote with fees you don't recognize?",
     ctaBody:
       "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
@@ -442,7 +442,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Temporary tags and additional dealer fees: some Florida dealers add fees for temporary tags, dealer prep, or electronic filing that aren't always visible in an early quote. Ask for the full itemized OTD breakdown before agreeing to any price.",
     ],
     negotiationNote:
-      "Florida's high doc fees are the biggest pressure point for buyers. While many dealers genuinely charge the same doc fee to every customer, the vehicle price is almost always negotiable. If a dealer won't reduce the doc fee, focus the negotiation on the vehicle price — ask for the price to be reduced by the amount of the doc fee above what you'd consider reasonable. Having a competing OTD quote from another Florida dealer is the most effective negotiating tool, since it puts the full all-in comparison on the table.",
+      "Florida's doc fees average $670 statewide but regularly reach $899–$999 at high-volume stores. While most dealers charge the same fee to every customer, the vehicle price is almost always negotiable. If a dealer charges $899, ask for a matching reduction in the sale price — frame it as a total OTD negotiation, not a doc fee argument. Florida's $76 title fee and $225 initial registration are also higher than most states, so factor those into your OTD estimate. Having a competing OTD quote from another Florida dealer is the most effective leverage. With Florida's dense dealer market — especially in South Florida, Tampa Bay, and Orlando — getting three quotes in an afternoon is realistic.",
     ctaHeading: "Seeing a high doc fee on a Florida quote?",
     ctaBody:
       "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
@@ -454,8 +454,32 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     specialNotes:
       "Florida has some of the highest doc fees in the nation. No cap exists despite multiple legislative attempts.",
     dealerMessage:
-      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee, all additional dealer fees, Florida sales tax (state + county surtax for your location), title fee, and registration costs? I'd like to see the complete total, including any temporary tag or other fees. Thank you.",
+      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (I understand Florida has no state cap), all additional dealer fees, Florida sales tax (6% state + your county's discretionary surtax), title fee ($76), initial registration ($225), and any temporary tag fees? I'd like to see the complete itemized total before scheduling a visit. Thank you.",
     lastVerified: "2026-03",
+    commonQuestions: [
+      {
+        q: "Why are Florida dealer doc fees so high?",
+        a: "Florida has no state cap on documentation fees, and the state has never enacted one despite multiple legislative attempts. With no legal ceiling, competitive dynamics set the price — and the state's high transaction volume and tourist-heavy buying patterns have pushed fees higher than most other states. Fees of $699–$999 are routine at many Florida dealerships.",
+      },
+      {
+        q: "Can I negotiate a Florida dealer's doc fee?",
+        a: "Most Florida dealers apply the same doc fee to all customers and won't reduce it directly. However, the vehicle price is almost always negotiable. Ask the dealer to reduce the sale price by the difference between their doc fee and what you consider reasonable. A competing OTD quote from another dealer is your best leverage.",
+      },
+      {
+        q: "How does Florida's county surtax work on vehicle purchases?",
+        a: "Florida's 6% state sales tax is uniform, but counties add a discretionary surtax of 0.5% to 2.5%. The surtax applies only to the first $5,000 of the purchase price — so the maximum additional county tax is $125 (2.5% of $5,000). Miami-Dade and Broward add 1%, making the effective rate 7% on that first $5,000.",
+      },
+      {
+        q: "What is the title fee in Florida?",
+        a: "Florida's title fee is $76 — higher than most states. Initial registration for a standard passenger vehicle runs $225, with annual renewals ranging from $46 to $120 depending on vehicle weight. Include these in your OTD estimate.",
+      },
+      {
+        q: "Does Florida allow a trade-in tax credit?",
+        a: "Yes. Florida allows the trade-in value to reduce the taxable purchase price. If you're buying a $40,000 vehicle and trading in a car worth $15,000, you pay sales tax on $25,000. Make sure the dealer applies this deduction before calculating your tax.",
+      },
+    ],
+    competitorGapSection:
+      "Most Florida car-buying guides correctly note the lack of a doc fee cap but overlook the county surtax structure. The key detail: the county surtax only applies to the first $5,000 of the purchase price, not the full amount. On a $40,000 vehicle in Miami-Dade (1% surtax), you pay 6% on $40,000 ($2,400) plus 1% on $5,000 ($50) — not 7% on the full price. This means the difference between buying in a 0% surtax county versus a 2.5% surtax county is at most $125. The doc fee variation between dealers ($500 vs. $999) has a far bigger impact on your total than county shopping. Focus your comparison energy on the doc fee and vehicle price, not on driving to a different county.",
   },
 
   georgia: {
@@ -483,7 +507,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Confusion between TAVT and additional fees: buyers sometimes mistake the TAVT line for a bundled dealer fee and try to negotiate it. The TAVT is a government charge — it can't be reduced. Focus negotiation energy on the vehicle price, doc fee, and any add-ons.",
     ],
     negotiationNote:
-      "Georgia's main pressure points are the doc fee and any bundled add-ons. Since the TAVT is fixed at 7% of assessed value and can't be negotiated, your leverage is entirely on the pre-tax portion of the deal: vehicle price, dealer markup, and add-ons. The Atlanta metro has a competitive dealer market, which gives buyers more options than smaller Georgia markets. Getting a competing OTD quote from another Atlanta-area dealer on the same vehicle is the most effective negotiating tool.",
+      "Georgia's TAVT at 7% of assessed fair market value is a government charge — you cannot negotiate it. Your leverage is entirely on the pre-tax portion: the vehicle price (averaging $502 doc fee statewide), any dealer markup, and bundled add-ons. The $18 title fee is low, but the TAVT itself is substantial — 7% of a $35,000 vehicle is $2,450. If you have a trade-in at a dealer, the TAVT is calculated on the net price after the trade-in deduction, which can save hundreds. The Atlanta metro has a competitive dealer market with many options — getting 2–3 competing OTD quotes on the same vehicle is the most effective approach.",
     ctaHeading: "Not sure how Georgia's title tax affects your out-the-door price?",
     ctaBody:
       "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
@@ -495,8 +519,28 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     specialNotes:
       "TAVT at 7.0% of fair market value is a one-time tax paid at titling. Must be included in advertised price per AG guidance.",
     dealerMessage:
-      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee, all additional dealer fees, Georgia Title Ad Valorem Tax (TAVT at 7% of state-assessed value), title fee, and registration costs? I'd like to see the complete total. Thank you.",
+      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee, all additional dealer fees, Georgia TAVT (7% of state-assessed fair market value — please confirm the assessed value used), title fee ($18), and registration costs? If I have a trade-in, please show the TAVT calculated on the net price after deduction. I'd like to see the complete itemized total. Thank you.",
     lastVerified: "2026-03",
+    commonQuestions: [
+      {
+        q: "What is Georgia's Title Ad Valorem Tax (TAVT)?",
+        a: "Georgia replaced traditional vehicle sales tax with the TAVT in 2013. It's a one-time 7% tax paid when you title the vehicle, calculated on the state's assessed fair market value — not necessarily your negotiated price. The TAVT replaces both the sales tax and the annual ad valorem tax that other states charge.",
+      },
+      {
+        q: "Is the TAVT calculated on the price I paid or the car's market value?",
+        a: "The TAVT is calculated on the state's assessed fair market value of the vehicle, which is based on published retail value data. If you bought the car below market value, you may still owe TAVT on the higher assessed amount. If you paid above fair market value, you can appeal with documentation.",
+      },
+      {
+        q: "Does Georgia allow a trade-in deduction on the TAVT?",
+        a: "Yes, but only for dealer transactions. The TAVT is calculated on the net price after your trade-in deduction. If you're buying a $35,000 vehicle and trading in one worth $12,000, the TAVT is calculated on $23,000 — saving you $840 in tax.",
+      },
+      {
+        q: "Why does my Georgia OTD look different from other states?",
+        a: "Georgia's TAVT structure means your OTD breakdown has a 'title tax' or 'ad valorem' line instead of a 'sales tax' line. The $18 title fee is separate from the 7% TAVT. Registration is relatively modest because the TAVT replaces the annual ad valorem tax used in other states.",
+      },
+    ],
+    competitorGapSection:
+      "Most Georgia car-buying guides explain the 7% TAVT but miss a critical detail: the TAVT is calculated on the state's assessed fair market value, not the price you negotiated. This means negotiating a lower purchase price doesn't always reduce your TAVT dollar-for-dollar — the state may assess the vehicle at a higher value. Buyers should check the Georgia DOR TAVT calculator before negotiating to understand what the state considers fair market value for their specific vehicle. The doc fee ($300–$599, uncapped) and any dealer add-ons are where your negotiation has the most direct impact on the final OTD total.",
   },
 
   hawaii: {
@@ -602,7 +646,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Trade-in credit: Illinois allows the full trade-in value to reduce the taxable purchase price with no dollar cap. Make sure this deduction is applied before your tax is calculated.",
     ],
     negotiationNote:
-      "Illinois's competitive Chicagoland market gives buyers real leverage when comparing dealers. With the doc fee capped, your main negotiation points are the vehicle price and any dealer add-ons. For buyers trading in a vehicle, ensuring the unlimited trade-in deduction is properly applied can save hundreds in sales tax.",
+      "With the doc fee capped at $378, Illinois buyers should focus negotiation on the vehicle price and any dealer add-ons. The Chicagoland market has intense dealer competition — use it. For buyers trading in a vehicle, the unlimited trade-in credit (uncapped since Public Act 102-0353 in 2022) is a powerful tool: a $25,000 trade-in at a 10.25% Chicago rate saves $2,563 in tax. Make sure the dealer applies the full deduction before calculating tax. The $165 title fee and $151/year registration are fixed government charges — not negotiable, but important to include in your OTD estimate.",
     ctaHeading: "Have an Illinois dealer quote you want to verify?",
     ctaBody:
       "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
@@ -614,8 +658,28 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     specialNotes:
       "Cap adjusts annually by CPI. Modern cap started at $300 effective Jan 1, 2020. For 2025: $367.70. For 2026: $377.63. Increases ~2–3%/year.",
     dealerMessage:
-      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (capped by Illinois law — $378 for 2026), all additional dealer fees, Illinois sales tax (6.25% + local rate), title fee, and registration costs? If I'm trading in a vehicle, please show the trade-in deduction before calculating tax. I'd like to see the complete total. Thank you.",
+      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (Illinois law caps this at $377.63 for 2026), all additional dealer fees, Illinois sales tax (6.25% state + your local/RTA rate — please specify the combined rate), title fee ($165), and registration costs ($151/year). If I'm trading in a vehicle, please show the full trade-in deduction applied before calculating tax (Illinois has no cap on the trade-in credit). I'd like to see the complete itemized total. Thank you.",
     lastVerified: "2026-03",
+    commonQuestions: [
+      {
+        q: "What is the Illinois doc fee cap for 2026?",
+        a: "The Illinois doc fee cap for 2026 is $377.63 (commonly cited as $378). The cap started at $300 when enacted January 1, 2020, and adjusts annually by CPI — increasing roughly 2–3% per year. Any dealer charging above this amount is out of compliance with Illinois law.",
+      },
+      {
+        q: "Why is the Chicago sales tax so much higher than the rest of Illinois?",
+        a: "Chicago's combined vehicle sales tax reaches 10.25% because of stacked local and regional taxes (6.25% state + RTA + city + county additions). On a $40,000 vehicle, that's $4,100 in tax — roughly $1,600 more than a buyer in a county with only the 6.25% base rate. Suburban Cook County areas and collar counties have rates in between.",
+      },
+      {
+        q: "Is there a cap on the Illinois trade-in credit?",
+        a: "No — as of January 1, 2022, the trade-in credit in Illinois is unlimited. Public Act 102-0353 removed the previous $10,000 cap. If your trade-in is worth $25,000, the full amount reduces your taxable purchase price. This is one of the strongest trade-in protections in the country.",
+      },
+      {
+        q: "How much are Illinois title and registration fees?",
+        a: "Illinois charges $165 for the title fee and $151 per year for standard vehicle registration. Electric vehicles pay an additional $100 annual fee. These are fixed government charges — they don't vary by dealer.",
+      },
+    ],
+    competitorGapSection:
+      "Most Illinois car-buying guides mention the doc fee cap but overlook two significant buyer advantages: the unlimited trade-in credit and the cap's annual CPI adjustment. Since the $10,000 trade-in cap was removed in 2022, a buyer trading in a $30,000 vehicle saves $1,875 in sales tax at the 6.25% base rate — or $3,075 in a 10.25% Chicago jurisdiction. Before you negotiate the vehicle price, confirm the trade-in deduction is applied pre-tax and check whether your purchase falls in a high-tax jurisdiction. The gap between 6.25% and 10.25% on a $35,000 vehicle (after trade-in) is $1,400 — a larger swing than any doc fee negotiation could produce.",
   },
 
   indiana: {
@@ -958,7 +1022,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Doc fee above the cap: any fee above the applicable limit (lesser of $280 or 5%) is not permitted. Ask for the fee to be itemized if it seems high.",
     ],
     negotiationNote:
-      "Michigan's competitive Detroit area and statewide dealer network give buyers options. With the doc fee capped, negotiation focuses on the vehicle price and add-ons. The trade-in credit ceiling is important to know — if your trade-in exceeds $11,000, the excess doesn't reduce your tax.",
+      "Michigan's flat 6% tax (no local additions) and $280 doc fee cap per DIFS Bulletin 2025-03-CF make OTD math predictable. The Detroit metro's competitive dealer network gives buyers real leverage on vehicle price. The trade-in credit ceiling of $11,000 is critical to know — if your trade-in is worth $18,000, only $11,000 reduces the taxable amount, costing you $420 in additional tax on the uncredited $7,000. For used car buyers, check whether the 5% formula applies: on a $4,000 vehicle, the max doc fee is $200, not $280.",
     ctaHeading: "Have a Michigan dealer quote you want to review?",
     ctaBody:
       "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
@@ -969,8 +1033,28 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     specialNotes:
       "Cap is $280 OR 5% of vehicle price, whichever is LESS. Adjusted biennially by CPI. Per DIFS Bulletin 2025-03-CF.",
     dealerMessage:
-      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (Michigan's cap is $280 or 5% of sale price, whichever is less), all additional dealer fees, Michigan sales tax (6% flat), title fee ($15), and registration costs? If I have a trade-in, please show the credit (up to the $11,000 cap). I'd like to see the complete total. Thank you.",
+      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (Michigan caps this at $280 or 5% of the cash price, whichever is less, per DIFS Bulletin 2025-03-CF), all additional dealer fees, Michigan sales tax (6% flat statewide), title fee ($15), and registration costs (base + MSRP-based component)? If I have a trade-in, please show the credit applied (up to the $11,000 cap). I'd like to see the complete itemized total. Thank you.",
     lastVerified: "2026-03",
+    commonQuestions: [
+      {
+        q: "How does Michigan's doc fee cap work?",
+        a: "Michigan caps dealer documentation fees at $280 OR 5% of the vehicle's cash price, whichever is less (per DIFS Bulletin 2025-03-CF). For vehicles above $5,600, the $280 flat cap applies. For a $4,000 used car, the max fee is $200 (5%). The cap is adjusted biennially by CPI.",
+      },
+      {
+        q: "What is Michigan's trade-in credit cap?",
+        a: "Michigan allows a trade-in credit of up to $11,000 (2025 cap) or the actual agreed trade-in value, whichever is less. If your trade-in is worth $15,000, only $11,000 reduces the taxable amount — you still pay 6% tax on the remaining $4,000 of value that exceeds the cap.",
+      },
+      {
+        q: "Is Michigan sales tax the same everywhere?",
+        a: "Yes. Michigan charges a flat 6% sales tax on vehicles statewide with no local additions. This makes the tax portion of your OTD predictable regardless of which dealer you visit in the state.",
+      },
+      {
+        q: "How is Michigan registration calculated?",
+        a: "Michigan registration includes a $15 base fee (one-year) or $29 (two-year) plus a percentage of the vehicle's original MSRP. This MSRP-based component can be substantial on newer or luxury vehicles — budget accordingly.",
+      },
+    ],
+    competitorGapSection:
+      "Most Michigan guides cite the $280 cap but miss the 5% alternative formula and the trade-in credit ceiling. The 5% rule protects used car buyers: on a $3,000 vehicle, the max doc fee is $150, not $280. The $11,000 trade-in cap is also widely overlooked. If you're trading in a vehicle worth more than $11,000, the excess doesn't reduce your taxable amount — which means you pay 6% on that gap. On a $20,000 trade-in, the uncredited $9,000 costs you $540 in additional tax. Knowing these limits before you walk into the dealership prevents surprise at the finance desk.",
   },
 
   minnesota: {
@@ -1352,7 +1436,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Dealer prep and reconditioning fees: some New York dealers add preparation or reconditioning fees outside the standard doc fee. These aren't government charges — ask for each fee to be named and explained individually.",
     ],
     negotiationNote:
-      "New York's doc fees are capped, so the main negotiation pressure is on vehicle price and add-ons. The competitive metro New York market means there are usually multiple dealers within driving distance selling the same vehicle — which gives buyers more leverage than in rural markets. For buyers in NYC and suburbs, the tax rate is fixed by location, so all OTD negotiation should focus on the pre-tax total.",
+      "New York's $175 doc fee cap per 15 NYCRR section 78.19 is a hard legal limit — any dealer charging more is out of compliance. The main negotiation pressure is on vehicle price and add-ons. NYC buyers pay 8.875% combined tax (4% state + 4.5% NYC + 0.375% MTA), making the pre-tax negotiation especially important: every $1,000 off the sale price saves $88.75 in NYC tax. New York does allow trade-in credits, which reduce the taxable amount. The dense metro dealer market means multiple dealers within driving distance sell the same vehicle — use competing OTD quotes as leverage.",
     ctaHeading: "Have a New York dealer quote with fees you want to check?",
     ctaBody:
       "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
@@ -1415,7 +1499,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Title fee: at $56, North Carolina's title fee is higher than many states. Make sure it's included in your OTD estimate.",
     ],
     negotiationNote:
-      "North Carolina's Charlotte and Raleigh-Durham markets have competitive dealer networks. The doc fee is uncapped — ask if it's flexible. Focus negotiation on the total OTD including the fee, HUT, title, and registration.",
+      "North Carolina's 3% Highway Use Tax is one of the lowest vehicle transfer rates nationally — saving buyers roughly $1,000+ compared to states with 6–7% rates on a $35,000 vehicle. But doc fees averaging $550 (and reaching $800) partially offset that advantage. Charlotte and Raleigh-Durham have competitive dealer networks — ask three dealers for OTD quotes and you'll likely see $200+ variation in doc fees alone. The fee is uncapped and potentially negotiable. The $56 title fee is on the higher side.",
     ctaHeading: "Have a North Carolina dealer quote you want to verify?",
     ctaBody:
       "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
@@ -1426,8 +1510,28 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     specialNotes:
       "NC uses Highway Use Tax instead of sales tax for vehicles. Relatively low at 3%.",
     dealerMessage:
-      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee, all additional dealer fees, North Carolina Highway Use Tax (3%, including any trade-in deduction), title fee ($56), and registration costs ($46.25/year)? I'd like to see the complete total. Thank you.",
+      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (I understand NC has no state cap), all additional dealer fees, North Carolina Highway Use Tax (3% — please show any trade-in deduction applied before calculating), title fee ($56), and registration ($46.25/year)? I'd like to see the complete itemized total. Thank you.",
     lastVerified: "2026-03",
+    commonQuestions: [
+      {
+        q: "What is the North Carolina Highway Use Tax?",
+        a: "North Carolina uses a 3% Highway Use Tax (HUT) instead of traditional sales tax for vehicle purchases. The HUT is a flat rate with no local additions — one of the lowest vehicle transfer tax rates in the country. It's typically collected at the DMV when you title the vehicle.",
+      },
+      {
+        q: "Does North Carolina allow a trade-in credit?",
+        a: "Yes, but only for dealer transactions. If you trade in a vehicle at a dealership, the trade-in value reduces the price subject to the 3% Highway Use Tax. Private-party sales do not qualify for the trade-in deduction.",
+      },
+      {
+        q: "Why are North Carolina doc fees so high?",
+        a: "North Carolina has no state cap on dealer documentation fees. Fees of $500–$800 are typical — on the higher end for uncapped states. Without a legal ceiling, competitive pressure and market norms set the price. The low 3% HUT sometimes leads dealers to position higher doc fees as offsetting the tax savings.",
+      },
+      {
+        q: "How much is North Carolina registration and title?",
+        a: "North Carolina registration is $46.25 per year (effective July 1, 2024). The title fee is $56 — higher than most states. Together these add about $102 to your first-year ownership costs beyond the vehicle price and tax.",
+      },
+    ],
+    competitorGapSection:
+      "Most North Carolina guides highlight the favorable 3% Highway Use Tax but don't connect it to the doc fee picture. The low tax rate ($1,200 on a $40,000 vehicle vs. $2,500+ in many other states) saves buyers money — but the high uncapped doc fees ($500–$800) absorb some of that savings. On a $40,000 vehicle, a buyer paying a $799 doc fee in NC versus a $175 capped fee in New York gives back $624. Compare total OTD costs, not just the tax rate. Charlotte and Raleigh-Durham have enough competing dealers that shopping across 3–4 stores usually produces meaningful doc fee variation.",
   },
 
   "north-dakota": {
@@ -1494,7 +1598,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Recent title fee increase: the title fee increased $3 effective January 1, 2026. Update any older OTD estimates.",
     ],
     negotiationNote:
-      "Ohio's major metros — Columbus, Cleveland, Cincinnati — have competitive dealer markets. With the doc fee capped, your negotiation focuses on vehicle price and add-ons. The trade-in credit for new vehicles can also meaningfully reduce your tax.",
+      "Ohio's three major metros — Columbus (7.5% combined tax), Cleveland/Cuyahoga County (8%), and Cincinnati/Hamilton County (7.8%) — have competitive dealer markets. With the doc fee capped at $387 (or 10% of cash price on cheaper vehicles per ORC section 4517.261), your negotiation focuses on the vehicle price and add-ons. The trade-in credit for new vehicle purchases can meaningfully reduce your tax — on a $15,000 trade-in at 8% in Cuyahoga County, that saves $1,200.",
     ctaHeading: "Have an Ohio dealer quote you want to review?",
     ctaBody:
       "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
@@ -1505,8 +1609,28 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     specialNotes:
       "Cap is $387 OR 10% of cash price, whichever is LOWER. Title fee increase of $3 effective Jan 1, 2026.",
     dealerMessage:
-      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (Ohio's cap is $387 or 10% of sale price, whichever is lower), all additional dealer fees, Ohio sales tax (5.75% + your county rate), title fee, and registration costs? I'd like to see the complete total. Thank you.",
+      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (Ohio caps this at $387 or 10% of the cash price, whichever is lower), all additional dealer fees, Ohio sales tax (5.75% state + your county rate — please confirm the combined rate), title fee ($18 + the $3 increase effective Jan 2026), and registration costs (including the new $8 service fee)? If I'm buying new with a trade-in, please show the deduction applied. I'd like to see the complete itemized total. Thank you.",
     lastVerified: "2026-03",
+    commonQuestions: [
+      {
+        q: "What is the Ohio doc fee cap?",
+        a: "Ohio caps dealer documentation fees at $387 OR 10% of the vehicle's cash price, whichever is lower (Ohio Revised Code section 4517.261). For most vehicles above $3,870, the $387 flat cap applies. For cheaper used vehicles, the 10% formula is more restrictive.",
+      },
+      {
+        q: "How much does Ohio sales tax vary by county?",
+        a: "Ohio's state base rate is 5.75%, but county additions of up to 2.5% bring combined rates from 5.8% to 8.25%. Cuyahoga County (Cleveland) is at 8%, Franklin County (Columbus) is at 7.5%, and Hamilton County (Cincinnati) is at 7.8%. The county rate is based on the dealer's location, not your home address.",
+      },
+      {
+        q: "Does Ohio allow a trade-in credit?",
+        a: "Yes, but only for new vehicle purchases. If you're buying a new vehicle and trading in your old one, the trade-in value reduces the taxable purchase price. Used vehicle purchases do not qualify for the trade-in credit in Ohio.",
+      },
+      {
+        q: "What changed with Ohio fees in 2026?",
+        a: "Effective January 1, 2026, Ohio increased the BMV service fee by $5 (now $8) and the title fee by $3. These are small but real additions to your OTD total that older references may not reflect.",
+      },
+    ],
+    competitorGapSection:
+      "Most Ohio guides cite the $387 doc fee cap without explaining the 10% alternative formula. For used vehicle buyers, this matters: on a $3,000 used car, the max doc fee is $300 (10% of $3,000), not $387. On a $2,000 vehicle, it's $200. Used car shoppers in Ohio should calculate 10% of their purchase price to know their actual cap. Also commonly overlooked: the trade-in credit applies only to new vehicles in Ohio. If you're buying used with a trade-in, the full purchase price is taxed — a meaningful difference that changes the OTD math.",
   },
 
   oklahoma: {
@@ -1611,7 +1735,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Electronic vs. non-electronic cap: confirm whether your dealer's documentation is handled electronically ($490 cap) or non-electronically ($409 cap).",
     ],
     negotiationNote:
-      "Pennsylvania's Philadelphia and Pittsburgh markets have strong dealer competition. With the cap set, negotiation focuses on vehicle price and add-ons. The rising sales tax rates create timing considerations for buyers.",
+      "Pennsylvania's Philadelphia and Pittsburgh markets have strong dealer competition. With the doc fee capped at $490 (electronic) or $409 (non-electronic), negotiation focuses on the vehicle price and add-ons. The rising sales tax — 6% now, 6.5% in October 2025, 7% in October 2026 — creates a timing consideration: buying before the next increase saves real money. On a $35,000 vehicle, 0.5% is $175. Philadelphia buyers at the 8% combined rate pay $2,800 in tax on that vehicle — ask if the dealer can offset with a lower sale price.",
     ctaHeading: "Have a Pennsylvania dealer quote you want to review?",
     ctaBody:
       "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
@@ -1622,8 +1746,28 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     specialNotes:
       "Cap: $490 electronic / $409 non-electronic (effective Jan 13, 2026). Adjusted annually by CPI. Up from $477/$398 in 2025.",
     dealerMessage:
-      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (Pennsylvania's cap is $490 electronic or $409 non-electronic as of Jan 2026), all additional dealer fees, Pennsylvania sales tax (please confirm current rate for your location — 6% statewide, 8% in Philadelphia), title fee ($72), and registration costs? I'd like to see the complete total. Thank you.",
+      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (Pennsylvania caps this at $490 electronic / $409 non-electronic per the Jan 2026 CPI update), all additional dealer fees, Pennsylvania sales tax (please confirm the current rate — I understand it may be 6%, 6.5%, or 8% in Philadelphia depending on timing and location), title fee ($72), and registration costs ($200–$300 by weight)? I'd like to see the complete itemized total. Thank you.",
     lastVerified: "2026-03",
+    commonQuestions: [
+      {
+        q: "What is the Pennsylvania doc fee cap in 2026?",
+        a: "As of January 13, 2026, Pennsylvania caps dealer documentation fees at $490 for electronic processing or $409 for non-electronic processing. These amounts increased from $477/$398 in 2025 and are adjusted annually by CPI per Pennsylvania Bulletin Vol. 55 Issue 1.",
+      },
+      {
+        q: "Why is the Philadelphia sales tax rate higher?",
+        a: "Philadelphia adds a 2% local tax on top of the state rate, currently bringing the combined rate to 8%. With the state rate increasing to 6.5% in October 2025 and 7% in October 2026, the Philadelphia combined rate will eventually reach 9%. This is the highest vehicle sales tax rate in Pennsylvania.",
+      },
+      {
+        q: "Is Pennsylvania's sales tax increasing?",
+        a: "Yes. Pennsylvania's state vehicle sales tax is increasing in two steps: from 6% to 6.5% effective October 1, 2025, and from 6.5% to 7% effective October 1, 2026. On a $35,000 vehicle, the difference between 6% and 7% is $350. If you're buying near those dates, confirm which rate applies.",
+      },
+      {
+        q: "What is the difference between electronic and non-electronic doc fees?",
+        a: "Pennsylvania sets two cap amounts depending on how the dealer processes paperwork. Dealers using electronic title and registration systems can charge up to $490. Dealers using paper-based (non-electronic) processing are limited to $409. Most modern dealerships use electronic processing.",
+      },
+    ],
+    competitorGapSection:
+      "Most Pennsylvania guides mention the doc fee cap but miss the timing dimension. With the state sales tax increasing to 6.5% in October 2025 and 7% in October 2026, the effective date of your purchase matters. On a $40,000 vehicle, buying before vs. after the October 2026 increase saves $400. Philadelphia buyers face an even steeper jump as the local 2% stacks on top. Before negotiating, check the current applicable rate and factor timing into your decision. The $72 title fee is also notably higher than most states — make sure it's included in any OTD comparison.",
   },
 
   "rhode-island": {
@@ -1810,7 +1954,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "EV registration fees: if you're buying an electric vehicle in Texas, budget for the $400 first-time fee plus $200 annually.",
     ],
     negotiationNote:
-      "Texas's large metro dealer markets create real competitive pressure. Getting quotes from multiple dealers in Dallas, Houston, or San Antonio on the same vehicle gives you comparison leverage. Because the doc fee cap applies to most dealers, OTD negotiation is primarily focused on vehicle price and add-ons.",
+      "Texas's $225 'presumed reasonable' cap under Texas Administrative Code section 84.205 means most dealers stay at or below this amount — but dealers who file a cost analysis with the OCCC can legally exceed it. Ask what the specific doc fee is before visiting. Texas's flat 6.25% sales tax (minimal local variation) and trade-in credit make OTD math straightforward. The large metro markets — Dallas, Houston, San Antonio, Austin — create real competitive pressure. Getting OTD quotes from 3+ dealers in your metro on the same vehicle is the best negotiation strategy. EV buyers should budget for the $400 first-time fee plus $200/year.",
     ctaHeading: "Have a Texas dealer quote with extra fees?",
     ctaBody:
       "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
