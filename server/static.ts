@@ -1,7 +1,14 @@
-import express, { type Express } from "express";
+import express, { type Express, type Response } from "express";
 import fs from "fs";
 import path from "path";
 import { isKnownRoute } from "../shared/routes";
+
+/** Inject the per-request CSP nonce into every <script tag in the HTML. */
+function injectNonce(html: string, res: Response): string {
+  const nonce = res.locals.cspNonce as string | undefined;
+  if (!nonce) return html;
+  return html.replace(/<script/g, `<script nonce="${nonce}"`);
+}
 
 const PRERENDERED_ROUTES = [
   "/dealer-pricing-tactics",
@@ -39,7 +46,8 @@ export function serveStatic(app: Express) {
       if (rawPath === route) {
         const prerenderedFile = path.join(distPath, route, "index.html");
         if (fs.existsSync(prerenderedFile)) {
-          return res.sendFile(prerenderedFile);
+          const html = fs.readFileSync(prerenderedFile, "utf-8");
+          return res.type("html").send(injectNonce(html, res));
         }
       }
     }
@@ -52,6 +60,7 @@ export function serveStatic(app: Express) {
   app.use("*", (req, res) => {
     const pathname = req.originalUrl.split("?")[0];
     const status = isKnownRoute(pathname) ? 200 : 404;
-    res.status(status).sendFile(path.resolve(distPath, "index.html"));
+    const html = fs.readFileSync(path.resolve(distPath, "index.html"), "utf-8");
+    res.status(status).type("html").send(injectNonce(html, res));
   });
 }
