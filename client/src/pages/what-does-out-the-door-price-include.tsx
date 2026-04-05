@@ -9,7 +9,7 @@ import ArticleCta from "@/components/ArticleCta";
 export default function WhatDoesOutTheDoorPriceInclude() {
   useEffect(() => {
     return setSeoMeta({
-      title: "What Does Out-the-Door Price Include? | Odigos",
+      title: "What Does OTD Price Include? (6 Line Items) | Odigos",
       description: "OTD price has six categories: vehicle price, sales tax, title, registration, doc fee, and add-ons. Here's what each line item means — and what to check.",
       path: "/what-does-out-the-door-price-include",
     });
@@ -18,7 +18,7 @@ export default function WhatDoesOutTheDoorPriceInclude() {
   return (
     <ArticleLayout title="What Does Out-the-Door Price Include?" breadcrumbPath="/what-does-out-the-door-price-include">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "What Does Out-the-Door Price Include? | Odigos", description: "OTD price has six categories: vehicle price, sales tax, title, registration, doc fee, and add-ons. Here's what each line item means — and what to check.", path: "/what-does-out-the-door-price-include" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "What Does OTD Price Include? (6 Line Items) | Odigos", description: "OTD price has six categories: vehicle price, sales tax, title, registration, doc fee, and add-ons. Here's what each line item means — and what to check.", path: "/what-does-out-the-door-price-include" }))}</script>
       </Helmet>
       <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-otd-include-headline">
         What Does Out-the-Door Price Include?

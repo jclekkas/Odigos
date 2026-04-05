@@ -9,7 +9,7 @@ import ArticleCta from "@/components/ArticleCta";
 export default function OutTheDoorPriceExample() {
   useEffect(() => {
     return setSeoMeta({
-      title: "Out-the-Door Price Example: Real Numbers | Odigos",
+      title: "OTD Price Example: 3 Real Scenarios Compared | Odigos",
       description: "A $33,500 car becomes $37,947 after taxes, fees, and add-ons. Three real OTD scenarios with exact dollar amounts on every line so you know what to expect.",
       path: "/out-the-door-price-example",
     });
@@ -51,7 +51,7 @@ export default function OutTheDoorPriceExample() {
   return (
     <ArticleLayout title="Out-the-Door Price Example: Real Numbers, Line by Line" breadcrumbPath="/out-the-door-price-example">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Out-the-Door Price Example: Real Numbers | Odigos", description: "A $33,500 car becomes $37,947 after taxes, fees, and add-ons. Three real OTD scenarios with exact dollar amounts on every line so you know what to expect.", path: "/out-the-door-price-example" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "OTD Price Example: 3 Real Scenarios Compared | Odigos", description: "A $33,500 car becomes $37,947 after taxes, fees, and add-ons. Three real OTD scenarios with exact dollar amounts on every line so you know what to expect.", path: "/out-the-door-price-example" }))}</script>
       </Helmet>
       <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-otd-example-headline">
         Out-the-Door Price Example: Real Numbers, Line by Line

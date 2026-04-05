@@ -5,8 +5,15 @@ import { Card } from "@/components/ui/card";
 import { Check, Copy, AlertTriangle, CircleDollarSign } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
-import { articleSchema } from "@/lib/jsonld";
+import { articleSchema, faqPageSchema } from "@/lib/jsonld";
 import { getClusterOgImage } from "@/lib/og-images";
+
+const OTD_FAQS = [
+  { question: "What is an out-the-door price?", answer: "The out-the-door price (OTD) is the total amount you pay to leave the dealership with the keys — including the vehicle price, sales tax, title, registration, doc fee, and any dealer add-ons. It is the only number that lets you compare deals accurately." },
+  { question: "What does the out-the-door price include?", answer: "An OTD price includes the negotiated vehicle price, state and local sales tax, title and registration fees, the dealer documentation fee, required state fees, and any dealer-added products or packages." },
+  { question: "Why won't dealers give the OTD price upfront?", answer: "A written OTD price makes comparison shopping easy, locks the dealer into a real number, removes leverage from payment-based negotiations, and prevents surprise fees in the finance office." },
+  { question: "How do I get the out-the-door price in writing?", answer: "Send the dealer a message requesting the full OTD price with every line item broken out — vehicle price, taxes, title, registration, doc fee, and any add-ons listed separately with individual pricing." },
+];
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 import SourceCitation from "@/components/SourceCitation";
@@ -59,6 +66,7 @@ export default function OutTheDoorPrice() {
     <ArticleLayout title="What Is an Out-the-Door Price (OTD)? The Only Number That Matters When Buying a Car" breadcrumbPath="/out-the-door-price">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "What Is an Out-the-Door Price? The Full OTD Guide | Odigos", description: "The OTD price is every dollar you pay to drive off the lot. Learn what it includes, what dealers hide, red flags, and how to get it in writing.", path: "/out-the-door-price" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: OTD_FAQS }))}</script>
       </Helmet>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-otd-headline">
             What Is an Out-the-Door Price (OTD)? The Only Number That Matters When Buying a Car

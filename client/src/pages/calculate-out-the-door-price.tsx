@@ -4,8 +4,23 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { Helmet } from "react-helmet-async";
-import { setSeoMeta } from "@/lib/seo";
+import { setSeoMeta, buildCanonical } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
+
+const CALC_HOWTO_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Calculate Out-the-Door Price on a Car",
+  "description": "Estimate your total car cost before contacting a dealer using this 5-step OTD formula.",
+  "totalTime": "PT5M",
+  "step": [
+    { "@type": "HowToStep", "position": 1, "name": "Start with the negotiated vehicle price", "text": "Use the sale price you and the dealer agree on — not the MSRP or sticker price. If you haven't negotiated yet, use the listing price as a starting point." },
+    { "@type": "HowToStep", "position": 2, "name": "Add your local sales tax", "text": "Multiply the vehicle price by your state and local tax rate. For example, 7% tax on a $28,500 car is $1,995." },
+    { "@type": "HowToStep", "position": 3, "name": "Add title and registration fees", "text": "These are set by your state's DMV, not the dealer. They typically range from $100 to $500 depending on the state and vehicle value." },
+    { "@type": "HowToStep", "position": 4, "name": "Add the dealer documentation fee", "text": "The doc fee ranges from under $100 in capped states like California to $700+ in uncapped states like Florida." },
+    { "@type": "HowToStep", "position": 5, "name": "Add any dealer-installed add-ons", "text": "Paint protection, VIN etching, nitrogen tires, and protection packages are frequently bundled without clear disclosure. Ask the dealer to list each one separately." },
+  ],
+};
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 import SourceCitation from "@/components/SourceCitation";
@@ -55,6 +70,7 @@ export default function CalculateOutTheDoorPrice() {
     <ArticleLayout title="How to Calculate Out-the-Door Price on a Car" breadcrumbPath="/calculate-out-the-door-price">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "How to Calculate Out-the-Door Price on a Car | Odigos", description: "OTD formula step-by-step: vehicle price + tax + title + doc fee + add-ons. Worked example, what dealers omit, and a message to get the full itemized price.", path: "/calculate-out-the-door-price" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(CALC_HOWTO_SCHEMA)}</script>
       </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-calc-otd-headline">
             How to Calculate Out-the-Door Price on a Car

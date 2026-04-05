@@ -61,7 +61,7 @@ export default function DealerWontGiveOtdPrice() {
 
   useEffect(() => {
     return setSeoMeta({
-      title: "Dealer Won't Give OTD Price? What to Do | Odigos",
+      title: "Dealer Won't Give OTD Price? (Scripts + FAQ) | Odigos",
       description: "When a dealer refuses the out-the-door price, here's why, what it signals, and the exact copy-paste scripts to get full pricing or walk away.",
       path: "/dealer-wont-give-otd-price",
     });

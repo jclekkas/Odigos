@@ -5,7 +5,14 @@ import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
-import { articleSchema } from "@/lib/jsonld";
+import { articleSchema, faqPageSchema } from "@/lib/jsonld";
+
+const ADDON_FAQS = [
+  { question: "Are dealer add-ons mandatory?", answer: "Almost never. The only legally required charges on a car purchase are sales tax, title and registration fees, and state-mandated inspections. Everything else — paint protection, VIN etching, nitrogen tires, protection packages — is optional regardless of how the dealer presents it." },
+  { question: "Can I refuse dealer-installed add-ons?", answer: "Yes. Even if products are 'already installed,' you can ask the dealer to reduce the vehicle price by that amount. The decision to pre-install was the dealer's, not yours. You are negotiating the total out-the-door price, not approving a parts list." },
+  { question: "How much markup do dealers charge on add-ons?", answer: "Dealer add-on markups are substantial: paint protection costs dealers $50–$100 but is charged at $500–$1,500. VIN etching costs $20–$30 but is charged at $200–$400. 'Protection packages' bundle $50–$100 in products into $1,000–$2,500 line items." },
+  { question: "What should I say to decline dealer add-ons?", answer: "Ask for the out-the-door price with only the base vehicle price, taxes, title, registration, and documentation fee. If add-ons can't be removed, request each one listed separately with individual pricing so you can evaluate them independently." },
+];
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 import SourceCitation from "@/components/SourceCitation";
@@ -44,7 +51,8 @@ export default function AreDealerAddOnsMandatory() {
   return (
     <ArticleLayout title="Are Dealer Add-Ons Mandatory? What You Can Actually Refuse" breadcrumbPath="/are-dealer-add-ons-mandatory">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Are Dealer Add-Ons Mandatory? What You Can Refuse | Odigos", description: "Are dealer add-ons mandatory? Learn which fees and add-ons you can refuse and how to push back without losing the deal.", path: "/are-dealer-add-ons-mandatory" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Add-Ons: What's Mandatory vs. Optional | Odigos", description: "Paint protection, VIN etching, nitrogen tires — nearly all dealer add-ons are optional. See which you can refuse, the markup on each, and scripts to push back.", path: "/are-dealer-add-ons-mandatory" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: ADDON_FAQS }))}</script>
       </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-addons-headline">
             Are Dealer Add-Ons Mandatory? What You Can Refuse and What You Can't

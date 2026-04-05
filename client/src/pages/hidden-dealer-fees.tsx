@@ -10,7 +10,7 @@ import ArticleCta from "@/components/ArticleCta";
 export default function HiddenDealerFees() {
   useEffect(() => {
     return setSeoMeta({
-      title: "Hidden Dealer Fees: What to Watch for on Any Quote | Odigos",
+      title: "Hidden Dealer Fees: 7 Charges to Watch For | Odigos",
       description: "Market adjustment, prep fees, VIN etching, and more — hidden dealer fees add hundreds to a car purchase. Learn what each one is and what you can do.",
       path: "/hidden-dealer-fees",
     });
@@ -19,7 +19,7 @@ export default function HiddenDealerFees() {
   return (
     <ArticleLayout title="Hidden Dealer Fees" breadcrumbPath="/hidden-dealer-fees">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Hidden Dealer Fees: What to Watch for on Any Quote | Odigos", description: "Market adjustment, prep fees, VIN etching, and more — hidden dealer fees add hundreds to a car purchase. Learn what each one is and what you can do.", path: "/hidden-dealer-fees" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Hidden Dealer Fees: 7 Charges to Watch For | Odigos", description: "Market adjustment, prep fees, VIN etching, and more — hidden dealer fees add hundreds to a car purchase. Learn what each one is and what you can do.", path: "/hidden-dealer-fees" }))}</script>
       </Helmet>
       <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-hidden-fees-headline">
         Hidden Dealer Fees: What to Watch for on Any Quote

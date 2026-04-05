@@ -12,7 +12,7 @@ import { ARTICLE_SOURCES } from "@/data/articleSources";
 export default function MonthlyPaymentTrap() {
   useEffect(() => {
     return setSeoMeta({
-      title: "The Monthly Payment Trap in Car Buying | Odigos",
+      title: "Monthly Payment Trap: How Dealers Hide the Real Cost | Odigos",
       description: "$489/month could mean $29,340 or $35,208 depending on APR and term. How payment-focused quotes hide the real cost — and how to negotiate OTD first.",
       path: "/monthly-payment-trap",
     });
@@ -21,7 +21,7 @@ export default function MonthlyPaymentTrap() {
   return (
     <ArticleLayout title="The Monthly Payment Trap: How Dealers Use Payment-Focused Quotes to Hide the Real Cost" breadcrumbPath="/monthly-payment-trap">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "The Monthly Payment Trap in Car Buying | Odigos", description: "$489/month could mean $29,340 or $35,208 depending on APR and term. How payment-focused quotes hide the real cost — and how to negotiate OTD first.", path: "/monthly-payment-trap" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Monthly Payment Trap: How Dealers Hide the Real Cost | Odigos", description: "$489/month could mean $29,340 or $35,208 depending on APR and term. How payment-focused quotes hide the real cost — and how to negotiate OTD first.", path: "/monthly-payment-trap" }))}</script>
       </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-monthly-headline">
             The Monthly Payment Trap: How Dealers Use Payment-Focused Quotes to Hide the Real Cost
