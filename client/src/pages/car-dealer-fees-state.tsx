@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Copy, Check } from "lucide-react";
-import { setSeoMeta } from "@/lib/seo";
+import { setSeoMeta, buildCanonical } from "@/lib/seo";
 import { faqPageSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
@@ -70,7 +70,7 @@ export default function CarDealerFeesState() {
   return (
     <ArticleLayout title={pageHeading}>
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: allFaqsForSchema }))}</script>
+        <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: allFaqsForSchema, url: buildCanonical(`/car-dealer-fees-${data.slug}`) }))}</script>
       </Helmet>
       <h1
         className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight"
@@ -149,7 +149,11 @@ export default function CarDealerFeesState() {
           <Link href="/car-dealer-fees-explained" className="underline text-foreground">
             car dealer fees explained
           </Link>
-          .
+          . For a complete picture of{" "}
+          <Link href="/what-does-out-the-door-price-include" className="underline text-foreground">
+            what the out-the-door price includes
+          </Link>
+          , see our guide.
         </p>
 
         {data.specialNotes && (
@@ -200,7 +204,11 @@ export default function CarDealerFeesState() {
           <Link href="/out-the-door-price" className="underline text-foreground">
             out-the-door price
           </Link>{" "}
-          — the total you pay to drive the car home, including every fee, tax, and add-on. This is the only number that lets you compare two {data.name} dealers fairly. A dealer with a lower vehicle price but higher doc fee or more add-ons may cost more overall than one with a slightly higher vehicle price and clean fee structure.
+          — the total you pay to drive the car home, including every fee, tax, and add-on. This is the only number that lets you compare two {data.name} dealers fairly. A dealer with a lower vehicle price but higher doc fee or more add-ons may cost more overall than one with a slightly higher vehicle price and clean fee structure. You can{" "}
+          <Link href="/calculate-out-the-door-price" className="underline text-foreground">
+            calculate your expected OTD price
+          </Link>{" "}
+          before contacting a dealer to have a baseline for comparison.
         </p>
 
         <p className="text-lg text-muted-foreground mb-8">

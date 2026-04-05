@@ -82,7 +82,7 @@ export default function CalculateOutTheDoorPrice() {
             </Card>
 
             <p className="text-muted-foreground mb-8">
-              If any of these pieces are missing from a dealer's quote, the number they gave you is incomplete. For a full explanation of what the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> includes and why it matters, see our detailed guide.
+              If any of these pieces are missing from a dealer's quote, the number they gave you is incomplete. For a full explanation of what the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> includes and why it matters, see our detailed guide. For state-specific fee details, see <Link href="/car-dealer-fees-florida" className="underline text-foreground">Florida dealer fees</Link> or <Link href="/car-dealer-fees-illinois" className="underline text-foreground">Illinois dealer fees</Link>.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Step-by-Step Calculation</h2>

@@ -206,7 +206,7 @@ export default function OutTheDoorPriceExample() {
           </table>
         </div>
         <p className="text-muted-foreground mb-8">
-          The same vehicle, from different dealers, can have a real-world OTD price spread of over $6,600. This is why asking for a complete, itemized OTD quote from multiple dealers is the single most effective thing a buyer can do. For a full explanation of every category, see our page on <Link href="/what-does-out-the-door-price-include" className="underline text-foreground">what the OTD price includes</Link>.
+          The same vehicle, from different dealers, can have a real-world OTD price spread of over $6,600. This is why asking for a complete, itemized OTD quote from multiple dealers is the single most effective thing a buyer can do. For a full explanation of every category, see our page on <Link href="/what-does-out-the-door-price-include" className="underline text-foreground">what the OTD price includes</Link>. For real-world examples, see <Link href="/car-dealer-fees-florida" className="underline text-foreground">Florida — where doc fees alone can hit $999</Link> — or compare with <Link href="/car-dealer-fees-illinois" className="underline text-foreground">Illinois, where doc fees are capped at $378</Link>.
         </p>
 
         <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to Say to Get These Numbers</h2>
