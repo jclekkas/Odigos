@@ -23,6 +23,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
+  Legend,
   ResponsiveContainer,
 } from "recharts";
 
@@ -87,7 +88,7 @@ function AdminContentInner({ adminKey, clearKey }: { adminKey: string; clearKey:
     <button
       onClick={() => setSortKey(k)}
       data-testid={`sort-${k}`}
-      className={`text-xs px-2 py-1 rounded transition-colors ${
+      className={`text-xs px-2 py-1.5 rounded cursor-pointer transition-colors ${
         sortKey === k
           ? "bg-primary text-primary-foreground"
           : "text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -147,7 +148,7 @@ function AdminContentInner({ adminKey, clearKey }: { adminKey: string; clearKey:
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 mb-1">
                 <Eye className="h-4 w-4 text-muted-foreground" />
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">Page Views</p>
+                <p className="text-sm font-medium text-muted-foreground">Page Views</p>
               </div>
               <p className="text-3xl font-bold">{(data?.totalViews ?? 0).toLocaleString()}</p>
             </CardContent>
@@ -156,7 +157,7 @@ function AdminContentInner({ adminKey, clearKey }: { adminKey: string; clearKey:
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 mb-1">
                 <Users className="h-4 w-4 text-muted-foreground" />
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">Sessions</p>
+                <p className="text-sm font-medium text-muted-foreground">Sessions</p>
               </div>
               <p className="text-3xl font-bold">{(data?.totalSessions ?? 0).toLocaleString()}</p>
             </CardContent>
@@ -165,7 +166,7 @@ function AdminContentInner({ adminKey, clearKey }: { adminKey: string; clearKey:
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 mb-1">
                 <MousePointerClick className="h-4 w-4 text-muted-foreground" />
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">Analyze Starts</p>
+                <p className="text-sm font-medium text-muted-foreground">Analyze Starts</p>
               </div>
               <p className="text-3xl font-bold">{(data?.totalAnalyzeStarts ?? 0).toLocaleString()}</p>
             </CardContent>
@@ -174,7 +175,7 @@ function AdminContentInner({ adminKey, clearKey }: { adminKey: string; clearKey:
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 mb-1">
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                <p className="text-sm font-medium text-muted-foreground">
                   Conversions ({overallConversionRate.toFixed(1)}%)
                 </p>
               </div>
@@ -207,6 +208,7 @@ function AdminContentInner({ adminKey, clearKey }: { adminKey: string; clearKey:
                       tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
                     />
                     <Tooltip contentStyle={TOOLTIP_STYLE} />
+                    <Legend wrapperStyle={{ fontSize: 12 }} />
                     <Bar dataKey="sessions" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} name="Sessions" />
                     <Bar dataKey="analyzeStarts" fill="#f59e0b" radius={[0, 4, 4, 0]} name="Analyze Starts" />
                     <Bar dataKey="conversions" fill="#22c55e" radius={[0, 4, 4, 0]} name="Conversions" />
@@ -235,7 +237,7 @@ function AdminContentInner({ adminKey, clearKey }: { adminKey: string; clearKey:
                 <SortBtn k="views" label="Views" />
                 <SortBtn k="sessions" label="Sessions" />
                 <SortBtn k="analyzeStarts" label="Starts" />
-                <SortBtn k="conversions" label="Conv." />
+                <SortBtn k="conversions" label="Conversions" />
                 <SortBtn k="conversionRate" label="Rate" />
               </div>
             </div>
@@ -263,7 +265,7 @@ function AdminContentInner({ adminKey, clearKey }: { adminKey: string; clearKey:
                         <th className="text-right py-2 px-2 font-medium">Views</th>
                         <th className="text-right py-2 px-2 font-medium">Sessions</th>
                         <th className="text-right py-2 px-2 font-medium">Starts</th>
-                        <th className="text-right py-2 px-2 font-medium">Conv.</th>
+                        <th className="text-right py-2 px-2 font-medium">Conversions</th>
                         <th className="text-right py-2 pl-2 font-medium">Rate</th>
                       </tr>
                     </thead>

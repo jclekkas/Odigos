@@ -206,7 +206,7 @@ function SectionCard({
     <Card data-testid={`section-${title.toLowerCase().replace(/\s+/g, '-')}`}>
       <CardHeader className="pb-3">
         <button
-          className="flex items-center justify-between w-full text-left"
+          className="flex items-center justify-between w-full text-left cursor-pointer rounded-md p-1 -m-1 hover:bg-muted/50 transition-colors"
           onClick={() => setOpen((o) => !o)}
           data-testid={`toggle-section-${title.toLowerCase().replace(/\s+/g, '-')}`}
         >
@@ -242,7 +242,7 @@ function GlossaryAccordion() {
     <Card data-testid="section-glossary">
       <CardHeader className="pb-3">
         <button
-          className="flex items-center justify-between w-full text-left"
+          className="flex items-center justify-between w-full text-left cursor-pointer rounded-md p-1 -m-1 hover:bg-muted/50 transition-colors"
           onClick={() => setOpen((o) => !o)}
           data-testid="toggle-glossary"
         >

@@ -95,9 +95,9 @@ function SessionCard({ session }: { session: UserSession }) {
           )}
           <button
             onClick={() => setExpanded(e => !e)}
-            className="text-xs text-muted-foreground hover:text-foreground underline"
+            className="text-xs px-2 py-1 rounded cursor-pointer text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
-            {expanded ? "less" : "details"}
+            {expanded ? "Show less" : "Show details"}
           </button>
         </div>
       </div>

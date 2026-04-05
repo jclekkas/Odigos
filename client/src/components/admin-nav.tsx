@@ -75,7 +75,7 @@ export function AdminNav() {
                 </span>
                 <button
                   onClick={clearKey}
-                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  className="flex items-center gap-1 text-xs px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer transition-colors"
                   data-testid="nav-button-sign-out"
                 >
                   <LogOut className="h-3 w-3" />

@@ -522,8 +522,8 @@ function AdminTechnicalInner({ adminKey, clearKey }: { adminKey: string; clearKe
                       <tr className="text-muted-foreground text-xs border-b">
                         <th className="text-left py-2 pr-4 font-medium">Endpoint</th>
                         <th className="text-right py-2 px-4 font-medium">Requests</th>
-                        <th className="text-right py-2 px-4 font-medium">p50</th>
-                        <th className="text-right py-2 px-4 font-medium">p95</th>
+                        <th className="text-right py-2 px-4 font-medium" title="Median response time (50th percentile)">Median</th>
+                        <th className="text-right py-2 px-4 font-medium" title="95th percentile response time — slowest 5% of requests">p95 Latency</th>
                         <th className="text-right py-2 px-4 font-medium">Errors</th>
                         <th className="text-right py-2 pl-4 font-medium">Error Rate</th>
                       </tr>

@@ -769,9 +769,9 @@ function AdminMetricsInner({ adminKey, clearKey }: { adminKey: string; clearKey:
                 icon={Eye}
               />
               <MetricCard
-                title="CTA Clicks"
+                title="Button Clicks"
                 value={metrics?.engagement?.ctaClicks ?? 0}
-                subtitle="Button clicks"
+                subtitle="Call-to-action button clicks"
                 icon={MousePointer}
               />
               <MetricCard
@@ -781,9 +781,9 @@ function AdminMetricsInner({ adminKey, clearKey }: { adminKey: string; clearKey:
                 icon={FileText}
               />
               <MetricCard
-                title="Landing CTR"
+                title="Landing Click-Through %"
                 value={`${(metrics?.engagement?.landingToAnalyzeCtr ?? 0).toFixed(1)}%`}
-                subtitle="Landing → CTA click"
+                subtitle="Landing page → button click rate"
                 icon={Percent}
               />
             </div>
@@ -800,7 +800,7 @@ function AdminMetricsInner({ adminKey, clearKey }: { adminKey: string; clearKey:
                   <div className="space-y-4">
                     {[
                       { label: "Landing Page Views", value: metrics?.engagement?.landingPageViews ?? 0, color: "bg-blue-500" },
-                      { label: "CTA Clicks", value: metrics?.engagement?.ctaClicks ?? 0, color: "bg-indigo-500" },
+                      { label: "Button Clicks", value: metrics?.engagement?.ctaClicks ?? 0, color: "bg-indigo-500" },
                       { label: "Analyze Page Views", value: metrics?.engagement?.analyzePageViews ?? 0, color: "bg-purple-500" },
                       { label: "Form Starts", value: metrics?.engagement?.formStarts ?? 0, color: "bg-violet-500" },
                       { label: "Submissions", value: metrics?.funnel?.submissions ?? 0, color: "bg-amber-500" },
@@ -835,7 +835,7 @@ function AdminMetricsInner({ adminKey, clearKey }: { adminKey: string; clearKey:
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <MousePointer className="h-5 w-5" />
-                    CTA Click Breakdown
+                    Button Click Breakdown
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -851,7 +851,7 @@ function AdminMetricsInner({ adminKey, clearKey }: { adminKey: string; clearKey:
                   ) : (
                     <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
                       <MousePointer className="h-6 w-6 mb-2 opacity-50" />
-                      <p className="text-sm">No CTA clicks tracked yet</p>
+                      <p className="text-sm">No button clicks tracked yet</p>
                     </div>
                   )}
                 </CardContent>

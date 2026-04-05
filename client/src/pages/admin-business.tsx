@@ -204,8 +204,8 @@ function AttributionPanel({ adminKey, range }: { adminKey: string; range: DateRa
     <button
       onClick={() => setSortKey(k)}
       data-testid={`sort-attr-${k}`}
-      className={`text-xs px-2 py-1 rounded ${
-        sortKey === k ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+      className={`text-xs px-2 py-1.5 rounded cursor-pointer transition-colors ${
+        sortKey === k ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted"
       }`}
     >
       {label}
@@ -228,7 +228,7 @@ function AttributionPanel({ adminKey, range }: { adminKey: string; range: DateRa
           <div className="flex items-center gap-1">
             <span className="text-xs text-muted-foreground mr-1">Sort:</span>
             <SortBtn k="views" label="Views" />
-            <SortBtn k="ctaClickRate" label="CTA Rate" />
+            <SortBtn k="ctaClickRate" label="Click-Through %" />
             <SortBtn k="attributedSubmissions" label="Submissions" />
           </div>
         </div>
@@ -243,7 +243,7 @@ function AttributionPanel({ adminKey, range }: { adminKey: string; range: DateRa
                 <tr className="border-b text-muted-foreground text-xs">
                   <th className="text-left py-2 pr-4 font-medium">Page</th>
                   <th className="text-right py-2 px-2 font-medium">Views</th>
-                  <th className="text-right py-2 px-2 font-medium">CTA Rate</th>
+                  <th className="text-right py-2 px-2 font-medium" title="Click-through rate on call-to-action buttons">Click-Through %</th>
                   <th className="text-right py-2 pl-2 font-medium">Submissions</th>
                 </tr>
               </thead>
@@ -670,8 +670,8 @@ function GeographicPanel({ adminKey, range }: { adminKey: string; range: DateRan
     <button
       onClick={() => setSortKey(k)}
       data-testid={`sort-geo-${k}`}
-      className={`text-xs px-2 py-1 rounded ${
-        sortKey === k ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+      className={`text-xs px-2 py-1.5 rounded cursor-pointer transition-colors ${
+        sortKey === k ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted"
       }`}
     >
       {label}
@@ -1580,7 +1580,7 @@ function AdminBusinessInner({ adminKey, clearKey }: { adminKey: string; clearKey
                 key={p.id}
                 onClick={() => setActivePanel(p.id)}
                 data-testid={`panel-nav-${p.id}`}
-                className={`whitespace-nowrap px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`whitespace-nowrap px-4 py-2 rounded-md text-sm font-medium cursor-pointer transition-colors ${
                   activePanel === p.id
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted"

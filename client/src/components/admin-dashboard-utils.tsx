@@ -254,7 +254,7 @@ export function DateRangeSelector({
           key={r}
           onClick={() => onChange(r)}
           data-testid={`range-${r}`}
-          className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+          className={`px-3 py-1.5 rounded-md text-sm font-medium cursor-pointer transition-colors ${
             value === r
               ? "bg-background text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground"
