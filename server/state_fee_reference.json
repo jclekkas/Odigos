@@ -1,7 +1,7 @@
 {
   "_metadata": {
-    "version": "1.2.0",
-    "lastUpdated": "2026-03-22",
+    "version": "1.3.0",
+    "lastUpdated": "2026-04-05",
     "description": "Verified U.S. state-by-state vehicle purchase fee reference data for Odigos analyzer and content pages. All data sourced from state DMVs, departments of revenue, legislative records, and authoritative automotive sites.",
     "notes": [
       "docFeeCap: null means no state-imposed cap",
@@ -12,6 +12,7 @@
       "tradeInTaxCredit: whether state allows trade-in value to reduce taxable amount",
       "All dollar amounts in USD. All rates as decimals.",
       "IMPORTANT: This data should be reviewed quarterly. State legislatures frequently adjust caps and rates.",
+      "cpiIndexing: structured CPI adjustment tracking for states with inflation-indexed doc fee caps",
       "confidence: 'high' = verified against primary statute/bulletin, 'medium' = verified against secondary sources, 'low' = needs human spot-check",
       "verificationMethod: describes how the data was verified"
     ]
@@ -339,6 +340,16 @@
       "titleFee": 165,
       "registrationFee": "$151/year; +$100 annual EV fee",
       "specialNotes": "Cap adjusts annually by CPI. Modern cap started at $300 effective Jan 1, 2020. For 2025: $367.70. For 2026: $377.63. Increases ~2-3%/year.",
+      "cpiIndexing": {
+        "isIndexed": true,
+        "baseAmount": 300,
+        "baseYear": 2020,
+        "currentAmount": 378,
+        "effectiveDate": "2026-01-01",
+        "frequency": "annual",
+        "indexType": "CPI-U",
+        "nextExpectedDate": "2027-01-01"
+      },
       "sources": [
         "https://www.ilsos.gov/departments/vehicles/basicfees.html",
         "https://www.cata.info/news-and-announcements/13290052"
@@ -364,6 +375,16 @@
       "titleFee": 15,
       "registrationFee": "$21.35 + $15 infrastructure fee",
       "specialNotes": "Cap adjusted annually by CPI. Must be included in advertised price and disclosed separately on bill of sale. Effective July 1, 2025: $251.05.",
+      "cpiIndexing": {
+        "isIndexed": true,
+        "baseAmount": null,
+        "baseYear": null,
+        "currentAmount": 251,
+        "effectiveDate": "2025-07-01",
+        "frequency": "annual",
+        "indexType": "CPI",
+        "nextExpectedDate": "2026-07-01"
+      },
       "sources": [
         "https://www.in.gov/sos/dealer/files/Doc-Fees-in-2025.pdf",
         "https://www.in.gov/bmv/fees-taxes/vehicle-registration-fees-and-taxes/"
@@ -467,6 +488,16 @@
       "titleFee": 69,
       "registrationFee": "0.1% of vehicle value (min $20, 2-year)",
       "specialNotes": "Doc fee cap $425, CPI-adjusted annually starting Jan 1, 2026. State rate increased Jan 2025.",
+      "cpiIndexing": {
+        "isIndexed": true,
+        "baseAmount": 425,
+        "baseYear": 2026,
+        "currentAmount": 425,
+        "effectiveDate": "2026-01-01",
+        "frequency": "annual",
+        "indexType": "CPI",
+        "nextExpectedDate": "2027-01-01"
+      },
       "sources": [
         "https://law.justia.com/codes/louisiana/revised-statutes/title-6/rs-6-969-18/"
       ],
@@ -567,6 +598,16 @@
       "titleFee": 15,
       "registrationFee": "$15 (1-year) or $29 (2-year) base + percentage of MSRP",
       "specialNotes": "Cap is $280 OR 5% of vehicle price, whichever is LESS. Adjusted biennially by CPI. Per DIFS Bulletin 2025-03-CF.",
+      "cpiIndexing": {
+        "isIndexed": true,
+        "baseAmount": null,
+        "baseYear": null,
+        "currentAmount": 280,
+        "effectiveDate": "2025-01-01",
+        "frequency": "biennial",
+        "indexType": "CPI",
+        "nextExpectedDate": "2027-01-01"
+      },
       "sources": [
         "https://www.michigan.gov/difs/-/media/Project/Websites/difs/Bulletins/2025/Bulletin_2025-03-CF.pdf"
       ],
@@ -639,6 +680,16 @@
       "titleFee": 15,
       "registrationFee": "$18.25-$51.25/year by horsepower + $9 processing",
       "specialNotes": "Doc fee cap $500 base, increased annually by CPI. Effective Aug 17, 2025.",
+      "cpiIndexing": {
+        "isIndexed": true,
+        "baseAmount": 500,
+        "baseYear": 2025,
+        "currentAmount": 500,
+        "effectiveDate": "2025-08-17",
+        "frequency": "annual",
+        "indexType": "CPI",
+        "nextExpectedDate": "2026-08-17"
+      },
       "sources": [
         "https://revisor.mo.gov/main/OneSection.aspx?section=301.558"
       ],
@@ -963,6 +1014,16 @@
       "titleFee": 72,
       "registrationFee": "$200-$300 varies by weight",
       "specialNotes": "Cap: $490 electronic / $409 non-electronic (effective Jan 13, 2026). Adjusted annually by CPI. Up from $477/$398 in 2025.",
+      "cpiIndexing": {
+        "isIndexed": true,
+        "baseAmount": null,
+        "baseYear": null,
+        "currentAmount": 490,
+        "effectiveDate": "2026-01-13",
+        "frequency": "annual",
+        "indexType": "CPI",
+        "nextExpectedDate": "2027-01-01"
+      },
       "sources": [
         "https://www.pacodeandbulletin.gov/Display/pabull?file=/secure/pabulletin/data/vol55/55-1/26.html"
       ],
@@ -1211,6 +1272,16 @@
       "titleFee": null,
       "registrationFee": "Varies; includes annual wheel tax",
       "specialNotes": "$575 cap set by DMV Dealer Advisory Board effective July 1, 2024 (increased from $499). CPI-adjusted annually starting July 1, 2025. Per WV Code 17A-6A-8A.",
+      "cpiIndexing": {
+        "isIndexed": true,
+        "baseAmount": 575,
+        "baseYear": 2024,
+        "currentAmount": 575,
+        "effectiveDate": "2024-07-01",
+        "frequency": "annual",
+        "indexType": "CPI",
+        "nextExpectedDate": "2025-07-01"
+      },
       "sources": [
         "https://code.wvlegislature.gov/17A-6A-8A/",
         "https://tax.wv.gov/Business/SalesAndUseTax/MunicipalSalesAndUseTax/Pages/MunicipalSalesAndUseTax.aspx"
@@ -1447,6 +1518,15 @@
       "OR",
       "RI",
       "WV"
+    ],
+    "cpiIndexedStates": [
+      { "state": "IL", "currentAmount": 378, "frequency": "annual", "nextExpectedDate": "2027-01-01" },
+      { "state": "IN", "currentAmount": 251, "frequency": "annual", "nextExpectedDate": "2026-07-01" },
+      { "state": "LA", "currentAmount": 425, "frequency": "annual", "nextExpectedDate": "2027-01-01" },
+      { "state": "MI", "currentAmount": 280, "frequency": "biennial", "nextExpectedDate": "2027-01-01" },
+      { "state": "MO", "currentAmount": 500, "frequency": "annual", "nextExpectedDate": "2026-08-17" },
+      { "state": "PA", "currentAmount": 490, "frequency": "annual", "nextExpectedDate": "2027-01-01" },
+      { "state": "WV", "currentAmount": 575, "frequency": "annual", "nextExpectedDate": "2025-07-01" }
     ]
   }
 }

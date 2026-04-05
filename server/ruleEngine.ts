@@ -17,6 +17,10 @@ export interface DocFeeCapResult {
 interface StateData {
   docFeeCap: boolean;
   docFeeCapAmount: number | null;
+  cpiIndexing?: {
+    isIndexed: boolean;
+    currentAmount: number;
+  };
 }
 
 // High-confidence doc-fee terms (explicit, low false-positive risk)
@@ -55,26 +59,39 @@ function detectDocFee(fees: Fee[]): number | null {
   return candidates.length > 0 ? Math.max(...candidates) : null;
 }
 
+function getEffectiveCapAmount(stateData: StateData): number | null {
+  if (stateData.cpiIndexing?.isIndexed) {
+    return stateData.cpiIndexing.currentAmount;
+  }
+  return stateData.docFeeCapAmount;
+}
+
 export function checkDocFeeCap(fees: Fee[], stateData: StateData): DocFeeCapResult | null {
-  if (!stateData.docFeeCap || stateData.docFeeCapAmount === null) {
+  if (!stateData.docFeeCap) {
+    return null;
+  }
+  const capAmount = getEffectiveCapAmount(stateData);
+  if (capAmount === null) {
     return null;
   }
   const chargedAmount = detectDocFee(fees);
   if (chargedAmount === null) {
     return null;
   }
-  if (chargedAmount > stateData.docFeeCapAmount) {
+  if (chargedAmount > capAmount) {
     return {
       violated: true,
-      capAmount: stateData.docFeeCapAmount,
+      capAmount,
       chargedAmount,
-      overage: chargedAmount - stateData.docFeeCapAmount,
+      overage: chargedAmount - capAmount,
     };
   }
-  return { violated: false, capAmount: stateData.docFeeCapAmount, chargedAmount, overage: 0 };
+  return { violated: false, capAmount, chargedAmount, overage: 0 };
 }
 
-const VAGUE_FEE_KEYWORDS = [
+// "Junk fees" — charges that provide little/no value or duplicate other charges.
+// Aligned with FTC junk fee terminology for regulatory and SEO relevance.
+const JUNK_FEE_KEYWORDS = [
   "dealer fee",
   "doc fee",
   "documentation fee",
@@ -94,7 +111,17 @@ const VAGUE_FEE_KEYWORDS = [
   "clear coat",
   "gap insurance",
   "extended warranty",
+  "dealer prep",
+  "lot fee",
+  "pre-delivery inspection",
+  "delivery fee",
+  "reconditioning fee",
+  "anti-theft",
+  "vin etch",
 ];
+
+// Backward-compatible alias
+const VAGUE_FEE_KEYWORDS = JUNK_FEE_KEYWORDS;
 
 const MARKET_ADJUSTMENT_KEYWORDS = [
   "market adjustment",
@@ -147,6 +174,36 @@ function hasSingleSignificantAddOn(fees: Fee[]): boolean {
   });
 }
 
+// --- Lease-specific detection ---
+
+function isLeaseQuote(fields: DetectedFields, purchaseType?: string): boolean {
+  if (purchaseType === "lease") return true;
+  return (
+    fields.moneyFactor !== null && fields.moneyFactor !== undefined ||
+    fields.residualValue !== null && fields.residualValue !== undefined ||
+    fields.residualPercent !== null && fields.residualPercent !== undefined ||
+    fields.acquisitionFee !== null && fields.acquisitionFee !== undefined ||
+    fields.dispositionFee !== null && fields.dispositionFee !== undefined
+  );
+}
+
+function isMissingLeaseTerms(fields: DetectedFields): boolean {
+  const hasMoneyFactor = fields.moneyFactor !== null && fields.moneyFactor !== undefined;
+  const hasResidual = (fields.residualValue !== null && fields.residualValue !== undefined) ||
+    (fields.residualPercent !== null && fields.residualPercent !== undefined);
+  const hasMileage = fields.mileageAllowance !== null && fields.mileageAllowance !== undefined;
+  // Missing if any of the core lease terms are absent
+  return !hasMoneyFactor || !hasResidual || !hasMileage;
+}
+
+function hasExcessiveMileageRate(fields: DetectedFields): boolean {
+  return fields.excessMileageRate !== null && fields.excessMileageRate !== undefined && fields.excessMileageRate > 0.30;
+}
+
+function hasHighAcquisitionFee(fields: DetectedFields): boolean {
+  return fields.acquisitionFee !== null && fields.acquisitionFee !== undefined && fields.acquisitionFee > 1000;
+}
+
 function isPaymentOnlyQuote(fields: DetectedFields): boolean {
   return (
     fields.monthlyPayment !== null &&
@@ -170,7 +227,8 @@ function hasMSRPOrSalePrice(fields: DetectedFields): boolean {
 export function applyRuleEngine(
   llmResult: AnalysisResponse,
   fields: DetectedFields,
-  docFeeCapResult?: DocFeeCapResult | null
+  docFeeCapResult?: DocFeeCapResult | null,
+  purchaseType?: string
 ): RuleEngineResult {
   if (docFeeCapResult?.violated) {
     return {
@@ -181,8 +239,36 @@ export function applyRuleEngine(
     };
   }
 
+  // Lease-specific rules (applied before general rules)
+  if (isLeaseQuote(fields, purchaseType)) {
+    if (hasHighAcquisitionFee(fields)) {
+      return {
+        dealScore: "YELLOW",
+        confidenceLevel: "MEDIUM",
+        verdictLabel: "PAUSE — HIGH ACQUISITION FEE",
+        goNoGo: "NEED-MORE-INFO",
+      };
+    }
+    if (hasExcessiveMileageRate(fields)) {
+      return {
+        dealScore: "YELLOW",
+        confidenceLevel: "MEDIUM",
+        verdictLabel: "PAUSE — HIGH MILEAGE PENALTY",
+        goNoGo: "NEED-MORE-INFO",
+      };
+    }
+    if (isMissingLeaseTerms(fields)) {
+      return {
+        dealScore: "YELLOW",
+        confidenceLevel: "MEDIUM",
+        verdictLabel: "PAUSE — GET LEASE TERMS",
+        goNoGo: "NEED-MORE-INFO",
+      };
+    }
+  }
+
   const fees = fields.fees || [];
-  
+
   const hasMarketAdj = hasMarketAdjustment(fees);
   const highCostAddOnCount = countHighCostAddOns(fees);
   const paymentOnly = isPaymentOnlyQuote(fields);

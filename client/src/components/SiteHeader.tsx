@@ -37,6 +37,9 @@ export default function SiteHeader() {
           <span className="font-serif text-2xl font-semibold tracking-tight text-foreground cursor-pointer">
             Odigos
           </span>
+          <span className="hidden sm:inline text-xs text-muted-foreground ml-2 font-normal tracking-normal">
+            Dealer Quote Analyzer
+          </span>
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex" data-testid="nav-links">

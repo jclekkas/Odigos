@@ -48,6 +48,9 @@ import AreDealerAddOnsNegotiable from "@/pages/are-dealer-add-ons-negotiable";
 import HowToRemoveDealerAddOns from "@/pages/how-to-remove-dealer-add-ons";
 import AreDealerAddOnsRequiredByLaw from "@/pages/are-dealer-add-ons-required-by-law";
 import DealerAddOnsExplained from "@/pages/dealer-add-ons-explained";
+import JunkFeesExplained from "@/pages/junk-fees-explained";
+import Glossary from "@/pages/glossary";
+import GlossaryTerm from "@/pages/glossary-term";
 import WhatDoesOutTheDoorPriceInclude from "@/pages/what-does-out-the-door-price-include";
 import OutTheDoorPriceVsMsrp from "@/pages/out-the-door-price-vs-msrp";
 import OutTheDoorPriceVsMonthlyPayment from "@/pages/out-the-door-price-vs-monthly-payment";
@@ -122,6 +125,9 @@ function Router() {
       <Route path="/how-to-remove-dealer-add-ons" component={HowToRemoveDealerAddOns} />
       <Route path="/are-dealer-add-ons-required-by-law" component={AreDealerAddOnsRequiredByLaw} />
       <Route path="/dealer-add-ons-explained" component={DealerAddOnsExplained} />
+      <Route path="/junk-fees-explained" component={JunkFeesExplained} />
+      <Route path="/glossary" component={Glossary} />
+      <Route path="/glossary/:slug" component={GlossaryTerm} />
       <Route path="/what-does-out-the-door-price-include" component={WhatDoesOutTheDoorPriceInclude} />
       <Route path="/out-the-door-price-vs-msrp" component={OutTheDoorPriceVsMsrp} />
       <Route path="/out-the-door-price-vs-monthly-payment" component={OutTheDoorPriceVsMonthlyPayment} />

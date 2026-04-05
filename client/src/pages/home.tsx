@@ -43,7 +43,8 @@ import {
   Lock,
   Upload,
   Download,
-  Share2
+  Share2,
+  Link2 as LinkIcon
 } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
@@ -161,7 +162,7 @@ const formSchema = z.object({
   apr: z.string().optional(),
   termMonths: z.string().optional(),
   downPayment: z.string().optional(),
-  source: z.enum(["paste", "upload"]).default("paste").optional(),
+  source: z.enum(["paste", "upload", "url"]).default("paste").optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -919,7 +920,10 @@ export default function Home() {
   const [formStartTracked, setFormStartTracked] = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [inputTab, setInputTab] = useState<"paste" | "upload">("paste");
+  const [inputTab, setInputTab] = useState<"paste" | "upload" | "url">("paste");
+  const [urlInput, setUrlInput] = useState("");
+  const [urlLoading, setUrlLoading] = useState(false);
+  const [urlError, setUrlError] = useState<string | null>(null);
   const [summaryCopied, setSummaryCopied] = useState<"idle" | "success" | "failed">("idle");
   const [scorecardDownloading, setScorecardDownloading] = useState(false);
   const [showDoneState, setShowDoneState] = useState(false);
@@ -1013,6 +1017,34 @@ export default function Home() {
       setUploadLoading(false);
     }
   }, [form]);
+
+  const handleUrlExtract = useCallback(async () => {
+    if (!urlInput.trim()) return;
+    setUrlError(null);
+    setUrlLoading(true);
+    try {
+      const response = await fetch("/api/extract-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: urlInput.trim() }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setUrlError(data.message ?? "We couldn't process that URL. Please try pasting the text directly.");
+        capture("url_extract_failed", { reason: data.message ?? "server_error", status: response.status });
+        return;
+      }
+      form.setValue("dealerText", data.text);
+      form.setValue("source", "url");
+      setInputTab("paste");
+      setUrlInput("");
+    } catch {
+      setUrlError("Something went wrong. Please try again or paste the text manually.");
+      capture("url_extract_failed", { reason: "network_error" });
+    } finally {
+      setUrlLoading(false);
+    }
+  }, [urlInput, form]);
 
   const { data: stripeStatus } = useQuery<{ configured: boolean }>({
     queryKey: ["/api/stripe-status"],
@@ -1298,7 +1330,7 @@ export default function Home() {
                 <CardTitle className="text-base font-semibold">Your Dealer Quote</CardTitle>
               </CardHeader>
               <CardContent>
-                <Tabs value={inputTab} onValueChange={(v) => setInputTab(v as "paste" | "upload")} className="w-full" data-testid="tabs-input-mode">
+                <Tabs value={inputTab} onValueChange={(v) => setInputTab(v as "paste" | "upload" | "url")} className="w-full" data-testid="tabs-input-mode">
                   <TabsList className="w-full flex h-11 mb-4" data-testid="tabs-input-mode-list">
                     <TabsTrigger value="paste" className="flex-1 text-sm font-medium" data-testid="tab-paste-text">
                       <FileText className="h-4 w-4 mr-2" />
@@ -1306,7 +1338,11 @@ export default function Home() {
                     </TabsTrigger>
                     <TabsTrigger value="upload" className="flex-1 text-sm font-medium" data-testid="tab-upload">
                       <Upload className="h-4 w-4 mr-2" />
-                      Upload Image / PDF
+                      Upload
+                    </TabsTrigger>
+                    <TabsTrigger value="url" className="flex-1 text-sm font-medium" data-testid="tab-url">
+                      <LinkIcon className="h-4 w-4 mr-2" />
+                      Listing URL
                     </TabsTrigger>
                   </TabsList>
 
@@ -1425,6 +1461,43 @@ export default function Home() {
                         {uploadError}
                       </p>
                     )}
+                  </TabsContent>
+                  <TabsContent value="url" className="mt-0">
+                    <div className="space-y-3">
+                      <div className="flex gap-2">
+                        <input
+                          type="url"
+                          value={urlInput}
+                          onChange={(e) => setUrlInput(e.target.value)}
+                          placeholder="https://www.dealer-website.com/listing/..."
+                          className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          disabled={urlLoading}
+                          data-testid="input-url"
+                        />
+                        <Button
+                          type="button"
+                          onClick={handleUrlExtract}
+                          disabled={urlLoading || !urlInput.trim()}
+                          variant="outline"
+                          size="default"
+                          data-testid="button-fetch-url"
+                        >
+                          {urlLoading ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            "Fetch"
+                          )}
+                        </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Paste a dealer listing URL and we'll extract the pricing details automatically.
+                      </p>
+                      {urlError && (
+                        <p className="text-xs text-destructive" data-testid="text-url-error">
+                          {urlError}
+                        </p>
+                      )}
+                    </div>
                   </TabsContent>
                 </Tabs>
               </CardContent>
