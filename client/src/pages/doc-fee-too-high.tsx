@@ -64,7 +64,7 @@ export default function DocFeeTooHigh() {
             </p>
 
             <p className="text-lg text-muted-foreground mb-6">
-              A reasonable rule of thumb: if the doc fee is significantly higher than what other dealers in your area charge for the same service, it's worth pushing back. You can check what's typical in your state through the <a href="https://www.ftc.gov/business-guidance/resources/dealers-guide-federal-requirement-used-car-rule" target="_blank" rel="noopener" className="underline text-foreground">FTC's dealer guidance</a> and your state's attorney general website.
+              A reasonable rule of thumb: if the doc fee is significantly higher than what other dealers in your area charge for the same service, it's worth pushing back. You can check what's typical in your state through the <a href="https://www.ftc.gov/business-guidance/resources/dealers-guide-federal-requirement-used-car-rule" target="_blank" rel="noopener" className="underline text-foreground">FTC's dealer guidance</a> and your state's attorney general website. You can also see <Link href="/dealer-doc-fee-by-state" className="underline text-foreground">doc fee caps by state</Link> for a quick comparison across all 50 states.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Can you negotiate a doc fee?</h2>

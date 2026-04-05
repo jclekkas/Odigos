@@ -1466,9 +1466,9 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     slug: "new-york",
     docFeeRange: "Capped at $175",
     hasCap: true,
-    pageTitle: "New York Dealer Doc Fee Cap (2026): What Dealers Are Allowed to Charge",
+    pageTitle: "New York Dealer Doc Fee: $175 Cap (2026) — NYC & Upstate Breakdown",
     metaDescription:
-      "New York caps dealer doc fees at $175 (set Aug 2021, still current). NYC buyers pay 8.875% sales tax. Upstate rates range from 6–8%. See the NY OTD breakdown.",
+      "NY caps the dealer documentation fee at $175. NYC sales tax is 8.875%; upstate ranges 6–8%. Full breakdown of every fee New York dealers can charge, plus red flags to watch for.",
     capNote:
       "New York caps dealer documentation fees at $175 per 15 NYCRR §78.19, set August 18, 2021 and still current as of March 2026. Dealers cannot legally charge more than $175 for documentation.",
     salesTaxNote:
@@ -1490,7 +1490,10 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     ctaHeading: "Have a New York dealer quote with fees you want to check?",
     ctaBody:
       "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
-    internalLinks: STANDARD_LINKS,
+    internalLinks: [
+      ...STANDARD_LINKS,
+      { href: "/out-the-door-price-vs-monthly-payment", label: "OTD price vs. monthly payment" },
+    ],
     sources: [
       "https://dmv.ny.gov/registration/sales-tax-information",
     ],
@@ -1629,9 +1632,9 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     slug: "ohio",
     docFeeRange: "Capped at $387 or 10% of cash price (whichever is lower)",
     hasCap: true,
-    pageTitle: "Ohio Dealer Fees (2026): What Dealers Can Legally Charge You",
+    pageTitle: "Ohio Dealer Doc Fee: $387 Cap or 10% (2026) — Full Fee Breakdown",
     metaDescription:
-      "Ohio caps doc fees at $387 or 10% of the vehicle price, whichever is lower. State tax 5.75% plus county adds. Title fee rose in January 2026. Full OH breakdown.",
+      "Ohio caps the dealer doc fee at $387 or 10% of the vehicle price (whichever is lower) — raised from $250 in Oct 2024. State tax 5.75% + county. See the full breakdown and what changed.",
     capNote:
       "Ohio caps dealer documentation fees at $387 OR 10% of the vehicle's cash price, whichever is lower (per Ohio Revised Code §4517.261). For most vehicles above about $3,870, the $387 flat limit applies. For cheaper vehicles, the 10% cap limits the fee further. A title fee increase of $3 took effect January 1, 2026.",
     salesTaxNote:
@@ -1984,9 +1987,9 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     slug: "texas",
     docFeeRange: "Typically $150–$225 (capped at $225)",
     hasCap: true,
-    pageTitle: "Texas Dealer Doc Fees (2026): What Dealers Can Legally Charge You",
+    pageTitle: "Texas Dealer Doc Fee: $225 Cap (OCCC 2026) — Full Fee Breakdown",
     metaDescription:
-      "Texas caps dealer doc fees at $225 as of July 2024. State tax is 6.25% flat. See what Houston, Dallas, and San Antonio buyers actually pay OTD.",
+      "Texas caps the dealer documentary fee at $225 per the OCCC (eff. July 2024). Sales tax is 6.25% flat. See the full OTD breakdown for Houston, Dallas, and San Antonio — plus what to do if a dealer charges more.",
     capNote:
       "Texas caps dealer documentation fees at $225 — a 'presumed reasonable' limit effective July 11, 2024 (raised from approximately $150 previously). Dealers can charge above $225 only by filing a cost analysis with the OCCC (Texas Administrative Code §84.205). Most Texas dealers charge $150–$225.",
     salesTaxNote:
@@ -2008,7 +2011,10 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     ctaHeading: "Have a Texas dealer quote with extra fees?",
     ctaBody:
       "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
-    internalLinks: STANDARD_LINKS,
+    internalLinks: [
+      ...STANDARD_LINKS,
+      { href: "/calculate-out-the-door-price", label: "calculate your OTD price" },
+    ],
     sources: [
       "https://occc.texas.gov/wp-content/uploads/2025/11/rc-docfee-adoption-fc-090524.pdf",
     ],

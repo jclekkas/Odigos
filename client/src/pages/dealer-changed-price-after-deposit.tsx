@@ -160,7 +160,7 @@ export default function DealerChangedPriceAfterDeposit() {
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Before you go back in</h2>
 
             <p className="text-lg text-muted-foreground mb-6">
-              If you're considering going back to the dealership to renegotiate, make sure you know your <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> — the total amount including tax, title, registration, and all dealer fees. This is the only number that tells you what you're actually paying. Comparing monthly payments or sticker prices won't give you the full picture.
+              If you're considering going back to the dealership to renegotiate, make sure you know your <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> — the total amount including tax, title, registration, and all dealer fees. This is the only number that tells you what you're actually paying. Comparing monthly payments or sticker prices won't give you the full picture. If the dealer refuses to provide a clear total, that's a separate red flag — see <Link href="/dealer-wont-give-otd-price" className="underline text-foreground">dealers who won't give an OTD price</Link>.
             </p>
 
             <p className="text-lg text-muted-foreground mb-8">
