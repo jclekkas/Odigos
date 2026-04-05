@@ -278,19 +278,19 @@ function AdminTechnicalInner({ adminKey, clearKey }: { adminKey: string; clearKe
 
   return (
     <>
-      <div className="p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="px-6 py-8">
+      <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-3">
-            <Link href="/admin/metrics">
-              <Button variant="ghost" size="sm" data-testid="link-back-metrics">
-                <ArrowLeft className="h-4 w-4 mr-1" /> Metrics
+            <Link href="/admin">
+              <Button variant="ghost" size="icon" data-testid="link-back-metrics">
+                <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl font-bold">Technical &amp; Ops Dashboard</h1>
+              <h1 className="text-2xl font-bold tracking-tight">Technical &amp; Ops</h1>
               <p className="text-sm text-muted-foreground">
-                Engineering health, reliability, and operational efficiency
+                System health, API performance, and operational metrics
               </p>
             </div>
           </div>
@@ -520,22 +520,22 @@ function AdminTechnicalInner({ adminKey, clearKey }: { adminKey: string; clearKe
                   <table className="w-full text-sm" data-testid="table-api-performance">
                     <thead>
                       <tr className="text-muted-foreground text-xs border-b">
-                        <th className="text-left py-2 pr-4 font-medium">Endpoint</th>
-                        <th className="text-right py-2 px-4 font-medium">Requests</th>
-                        <th className="text-right py-2 px-4 font-medium" title="Median response time (50th percentile)">Median</th>
-                        <th className="text-right py-2 px-4 font-medium" title="95th percentile response time — slowest 5% of requests">p95 Latency</th>
-                        <th className="text-right py-2 px-4 font-medium">Errors</th>
-                        <th className="text-right py-2 pl-4 font-medium">Error Rate</th>
+                        <th className="text-left py-3 pr-4 font-semibold">Endpoint</th>
+                        <th className="text-right py-3 px-4 font-semibold">Requests</th>
+                        <th className="text-right py-3 px-4 font-semibold" title="Median response time (50th percentile)">Median</th>
+                        <th className="text-right py-3 px-4 font-semibold" title="95th percentile response time — slowest 5% of requests">p95 Latency</th>
+                        <th className="text-right py-3 px-4 font-semibold">Errors</th>
+                        <th className="text-right py-3 pl-4 font-semibold">Error Rate</th>
                       </tr>
                     </thead>
                     <tbody>
                       {tech.apiPerformance.map(ep => (
-                        <tr key={ep.endpoint} className="border-b last:border-0 hover:bg-muted/30">
-                          <td className="py-2 pr-4 font-mono text-xs">{ep.endpoint}</td>
-                          <td className="text-right py-2 px-4" data-testid={`stat-requests-${EndpointShort(ep.endpoint)}`}>{ep.requestCount}</td>
-                          <td className="text-right py-2 px-4 text-blue-600 dark:text-blue-400">{ep.p50Ms}ms</td>
-                          <td className="text-right py-2 px-4 text-purple-600 dark:text-purple-400">{ep.p95Ms}ms</td>
-                          <td className="text-right py-2 px-4 text-red-600 dark:text-red-400">{ep.errorCount}</td>
+                        <tr key={ep.endpoint} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
+                          <td className="py-3 pr-4 font-mono text-xs" title={ep.endpoint}>{ep.endpoint}</td>
+                          <td className="text-right py-3 px-4 tabular-nums" data-testid={`stat-requests-${EndpointShort(ep.endpoint)}`}>{formatNumber(ep.requestCount)}</td>
+                          <td className="text-right py-3 px-4 text-blue-600 dark:text-blue-400 tabular-nums">{ep.p50Ms}ms</td>
+                          <td className="text-right py-3 px-4 text-purple-600 dark:text-purple-400 tabular-nums">{ep.p95Ms}ms</td>
+                          <td className="text-right py-3 px-4 text-red-600 dark:text-red-400 tabular-nums">{ep.errorCount}</td>
                           <td className="text-right py-2 pl-4">
                             <span className={ep.errorRate > 5 ? "text-red-600 dark:text-red-400" : "text-muted-foreground"}>
                               {ep.errorRate.toFixed(1)}%

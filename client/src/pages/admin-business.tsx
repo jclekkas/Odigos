@@ -1560,11 +1560,10 @@ function AdminBusinessInner({ adminKey, clearKey }: { adminKey: string; clearKey
               </Link>
               <div>
                 <div className="flex items-center gap-3">
-                  <h1 className="text-2xl font-bold">Business Intelligence</h1>
+                  <h1 className="text-2xl font-bold tracking-tight">Business Intelligence</h1>
                   <LivePulse lastUpdated={lastUpdated} refetchIntervalMs={REFETCH_SLOW} />
                 </div>
-                <p className="text-sm text-muted-foreground flex items-center gap-2">
-                  <Clock className="h-3 w-3" />
+                <p className="text-sm text-muted-foreground">
                   Auto-refreshes every 5 min
                 </p>
               </div>
@@ -1573,17 +1572,17 @@ function AdminBusinessInner({ adminKey, clearKey }: { adminKey: string; clearKey
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 pb-3">
-          <div className="flex gap-1 overflow-x-auto">
+        <div className="max-w-7xl mx-auto px-6 pb-0">
+          <div className="flex gap-0 overflow-x-auto border-b">
             {PANELS.map((p) => (
               <button
                 key={p.id}
                 onClick={() => setActivePanel(p.id)}
                 data-testid={`panel-nav-${p.id}`}
-                className={`whitespace-nowrap px-4 py-2 rounded-md text-sm font-medium cursor-pointer transition-colors ${
+                className={`whitespace-nowrap px-4 py-2.5 text-sm font-medium cursor-pointer transition-colors border-b-2 -mb-px ${
                   activePanel === p.id
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    ? "border-primary text-foreground"
+                    : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30"
                 }`}
               >
                 {p.label}
@@ -1599,7 +1598,7 @@ function AdminBusinessInner({ adminKey, clearKey }: { adminKey: string; clearKey
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto px-6 py-8">
         {activePanel === "funnel" && <FunnelPanel adminKey={adminKey} range={range} />}
         {activePanel === "attribution" && <AttributionPanel adminKey={adminKey} range={range} />}
         {activePanel === "behavior" && <BehaviorPanel adminKey={adminKey} range={range} />}

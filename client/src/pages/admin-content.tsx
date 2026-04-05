@@ -114,12 +114,9 @@ function AdminContentInner({ adminKey, clearKey }: { adminKey: string; clearKey:
                 </Button>
               </Link>
               <div>
-                <h1 className="text-2xl font-bold flex items-center gap-2">
-                  <FileText className="h-6 w-6 text-muted-foreground" />
-                  SEO / Content Performance
-                </h1>
+                <h1 className="text-2xl font-bold tracking-tight">Content Performance</h1>
                 <p className="text-sm text-muted-foreground">
-                  Per-page: sessions, analyze starts, conversions, conversion rate
+                  Page-by-page sessions, analyze starts, and conversions
                 </p>
               </div>
             </div>
@@ -260,12 +257,12 @@ function AdminContentInner({ adminKey, clearKey }: { adminKey: string; clearKey:
                   <table className="w-full text-sm" data-testid="table-content-attribution">
                     <thead>
                       <tr className="border-b text-muted-foreground text-xs">
-                        <th className="text-left py-2 pr-4 font-medium">#</th>
-                        <th className="text-left py-2 pr-4 font-medium">Page</th>
-                        <th className="text-right py-2 px-2 font-medium">Views</th>
-                        <th className="text-right py-2 px-2 font-medium">Sessions</th>
-                        <th className="text-right py-2 px-2 font-medium">Starts</th>
-                        <th className="text-right py-2 px-2 font-medium">Conversions</th>
+                        <th className="text-left py-3 pr-4 font-semibold">#</th>
+                        <th className="text-left py-3 pr-4 font-semibold">Page</th>
+                        <th className="text-right py-3 px-3 font-semibold">Views</th>
+                        <th className="text-right py-3 px-3 font-semibold">Sessions</th>
+                        <th className="text-right py-3 px-3 font-semibold">Starts</th>
+                        <th className="text-right py-3 px-3 font-semibold">Conversions</th>
                         <th className="text-right py-2 pl-2 font-medium">Rate</th>
                       </tr>
                     </thead>
