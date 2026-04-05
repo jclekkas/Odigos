@@ -54,6 +54,9 @@ import GlossaryTerm from "@/pages/glossary-term";
 import CarLeaseFeesExplained from "@/pages/car-lease-fees-explained";
 import MoneyFactorExplained from "@/pages/money-factor-explained";
 import ResidualValueExplained from "@/pages/residual-value-explained";
+import LeaseVsFinance from "@/pages/lease-vs-finance";
+import HowToNegotiateALease from "@/pages/how-to-negotiate-a-lease";
+import LeaseEndOptions from "@/pages/lease-end-options";
 import WhatDoesOutTheDoorPriceInclude from "@/pages/what-does-out-the-door-price-include";
 import OutTheDoorPriceVsMsrp from "@/pages/out-the-door-price-vs-msrp";
 import OutTheDoorPriceVsMonthlyPayment from "@/pages/out-the-door-price-vs-monthly-payment";
@@ -134,6 +137,9 @@ function Router() {
       <Route path="/car-lease-fees-explained" component={CarLeaseFeesExplained} />
       <Route path="/money-factor-explained" component={MoneyFactorExplained} />
       <Route path="/residual-value-explained" component={ResidualValueExplained} />
+      <Route path="/lease-vs-finance" component={LeaseVsFinance} />
+      <Route path="/how-to-negotiate-a-lease" component={HowToNegotiateALease} />
+      <Route path="/lease-end-options" component={LeaseEndOptions} />
       <Route path="/what-does-out-the-door-price-include" component={WhatDoesOutTheDoorPriceInclude} />
       <Route path="/out-the-door-price-vs-msrp" component={OutTheDoorPriceVsMsrp} />
       <Route path="/out-the-door-price-vs-monthly-payment" component={OutTheDoorPriceVsMonthlyPayment} />
