@@ -4,6 +4,7 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
+  TooltipProvider,
 } from "@/components/ui/tooltip";
 
 interface SourceCitationProps {
@@ -27,31 +28,33 @@ export default function SourceCitation({
   if (!sources || sources.length === 0) return null;
 
   return (
-    <span className={`inline-flex items-center gap-1 flex-wrap ${className}`}>
-      {sources.map((url) => (
-        <Tooltip key={url}>
-          <TooltipTrigger asChild>
-            <a
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-0.5 rounded-sm bg-muted/60 hover:bg-muted px-1.5 py-0.5 text-[11px] leading-none text-muted-foreground no-underline transition-colors align-middle"
-              aria-label={`Source: ${extractDomain(url)} (opens in new tab)`}
-            >
-              <ExternalLink className="h-2.5 w-2.5 shrink-0" />
-              {extractDomain(url)}
-            </a>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" className="max-w-xs">
-            <p className="text-xs break-all">{url}</p>
-            {lastVerified && (
-              <p className="text-xs text-muted-foreground mt-1">
-                Last verified: {formatVerifiedDate(lastVerified)}
-              </p>
-            )}
-          </TooltipContent>
-        </Tooltip>
-      ))}
-    </span>
+    <TooltipProvider>
+      <span className={`inline-flex items-center gap-1 flex-wrap ${className}`}>
+        {sources.map((url) => (
+          <Tooltip key={url}>
+            <TooltipTrigger asChild>
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-0.5 rounded-sm bg-muted/60 hover:bg-muted px-1.5 py-0.5 text-[11px] leading-none text-muted-foreground no-underline transition-colors align-middle"
+                aria-label={`Source: ${extractDomain(url)} (opens in new tab)`}
+              >
+                <ExternalLink className="h-2.5 w-2.5 shrink-0" />
+                {extractDomain(url)}
+              </a>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="max-w-xs">
+              <p className="text-xs break-all">{url}</p>
+              {lastVerified && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  Last verified: {formatVerifiedDate(lastVerified)}
+                </p>
+              )}
+            </TooltipContent>
+          </Tooltip>
+        ))}
+      </span>
+    </TooltipProvider>
   );
 }
