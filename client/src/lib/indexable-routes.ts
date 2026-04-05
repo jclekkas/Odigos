@@ -85,7 +85,6 @@ export const INDEXABLE_ROUTES: string[] = [
   "/dealer-prep-fee",
   "/dealer-reconditioning-fee",
 
-  "/mandatory-dealer-add-ons",
   "/are-dealer-add-ons-mandatory",
   "/are-dealer-add-ons-negotiable",
   "/are-dealer-add-ons-required-by-law",
@@ -98,8 +97,6 @@ export const INDEXABLE_ROUTES: string[] = [
   "/dealer-added-fees-after-agreement",
   "/dealer-changed-price-after-deposit",
   "/finance-office-changed-the-numbers",
-  "/dealer-wont-give-otd",
-
   "/how-odigos-works",
   "/example-analysis",
   "/about",

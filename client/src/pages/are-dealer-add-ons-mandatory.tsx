@@ -18,8 +18,8 @@ export default function AreDealerAddOnsMandatory() {
 
   useEffect(() => {
     return setSeoMeta({
-      title: "Are Dealer Add-Ons Mandatory? What You Can Refuse | Odigos",
-      description: "Are dealer add-ons mandatory? Learn which fees and add-ons you can refuse and how to push back without losing the deal.",
+      title: "Dealer Add-Ons: What's Mandatory vs. Optional | Odigos",
+      description: "Paint protection, VIN etching, nitrogen tires — nearly all dealer add-ons are optional. See which you can refuse, the markup on each, and scripts to push back.",
       path: "/are-dealer-add-ons-mandatory",
     });
   }, []);

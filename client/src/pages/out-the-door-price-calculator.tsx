@@ -40,8 +40,8 @@ export default function OutTheDoorPriceCalculator() {
 
   useEffect(() => {
     return setSeoMeta({
-      title: "Out-the-Door Price Calculator (2026) - Estimate Car Total Cost Instantly",
-      description: "Use this out-the-door price calculator to estimate your total car cost with taxes and dealer fees. Get a real OTD estimate in seconds.",
+      title: "OTD Price Calculator: Estimate Your Total Car Cost | Odigos",
+      description: "Estimate your out-the-door price with taxes, doc fees, and add-ons. Get a real OTD number in seconds before contacting any dealer.",
       path: "/out-the-door-price-calculator",
     });
   }, []);

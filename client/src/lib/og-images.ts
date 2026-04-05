@@ -45,7 +45,6 @@ const PATH_TO_CLUSTER: Record<string, string> = {
   "/out-the-door-price-example": "otd",
   "/monthly-payment-trap": "otd",
   "/dealer-wont-give-otd-price": "otd",
-  "/dealer-wont-give-otd": "otd",
   "/why-dealers-wont-give-out-the-door-price": "otd",
 
   "/car-dealer-fees-explained": "state-fees",
@@ -67,7 +66,6 @@ const PATH_TO_CLUSTER: Record<string, string> = {
   "/dealer-changed-price-after-deposit": "dealer-tactics",
   "/finance-office-changed-the-numbers": "dealer-tactics",
 
-  "/mandatory-dealer-add-ons": "add-ons",
   "/are-dealer-add-ons-mandatory": "add-ons",
   "/are-dealer-add-ons-negotiable": "add-ons",
   "/are-dealer-add-ons-required-by-law": "add-ons",

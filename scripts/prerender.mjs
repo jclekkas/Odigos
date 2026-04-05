@@ -16,7 +16,6 @@ const ROUTES = [
   "/out-the-door-price-vs-monthly-payment",
   "/out-the-door-price-example",
   "/monthly-payment-trap",
-  "/dealer-wont-give-otd",
   "/dealer-wont-give-otd-price",
   "/why-dealers-wont-give-out-the-door-price",
 
@@ -57,7 +56,6 @@ const ROUTES = [
   "/dealer-reconditioning-fee",
 
   // Add-ons cluster
-  "/mandatory-dealer-add-ons",
   "/are-dealer-add-ons-mandatory",
   "/are-dealer-add-ons-negotiable",
   "/are-dealer-add-ons-required-by-law",

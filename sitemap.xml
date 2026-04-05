@@ -62,11 +62,6 @@
     <lastmod>2026-04-05</lastmod>
     <changefreq>monthly</changefreq>
   </url>
-  <url>
-    <loc>https://odigosauto.com/dealer-wont-give-otd</loc>
-    <lastmod>2026-04-05</lastmod>
-    <changefreq>monthly</changefreq>
-  </url>
 
   <!-- Good deal decision cluster -->
   <url>
@@ -418,11 +413,6 @@
   </url>
 
   <!-- Add-ons cluster -->
-  <url>
-    <loc>https://odigosauto.com/mandatory-dealer-add-ons</loc>
-    <lastmod>2026-04-05</lastmod>
-    <changefreq>monthly</changefreq>
-  </url>
   <url>
     <loc>https://odigosauto.com/are-dealer-add-ons-mandatory</loc>
     <lastmod>2026-04-05</lastmod>

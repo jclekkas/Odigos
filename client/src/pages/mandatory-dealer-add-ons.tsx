@@ -139,7 +139,7 @@ export default function MandatoryDealerAddOns() {
               That's why the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> is the only number that matters. It shows every dollar you'll pay, including add-ons, fees, and taxes. When you see each line item broken out, it's much easier to spot what's legitimate and what's padding. Use <a href="https://www.kbb.com/car-advice/" target="_blank" rel="noopener" className="underline text-foreground">Kelley Blue Book</a> to research fair vehicle values so you have a baseline before negotiating.
             </p>
             <p className="text-muted-foreground mb-8">
-              Always request a written, itemized OTD quote before visiting the dealership. If a dealer won't provide one, see our guide on <Link href="/dealer-wont-give-otd" className="underline text-foreground">what to do when a dealer won't give you the out-the-door price</Link>.
+              Always request a written, itemized OTD quote before visiting the dealership. If a dealer won't provide one, see our guide on <Link href="/dealer-wont-give-otd-price" className="underline text-foreground">what to do when a dealer won't give you the out-the-door price</Link>.
             </p>
           </div>
 

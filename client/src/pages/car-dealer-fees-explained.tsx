@@ -12,8 +12,8 @@ import { ARTICLE_SOURCES } from "@/data/articleSources";
 export default function CarDealerFeesExplained() {
   useEffect(() => {
     return setSeoMeta({
-      title: "Common Car Dealer Fees Explained | Odigos",
-      description: "When you buy a car, the sale price is only part of what you pay. Learn which dealer fees are required, which are optional, and how to protect yourself before signing.",
+      title: "Car Dealer Fees Explained: Required vs. Optional | Odigos",
+      description: "Which dealer fees are mandatory and which are pure profit? Sales tax, title, and doc fees vs. paint protection, VIN etching, and add-on packages.",
       path: "/car-dealer-fees-explained",
     });
   }, []);
@@ -21,7 +21,7 @@ export default function CarDealerFeesExplained() {
   return (
     <ArticleLayout title="Common Car Dealer Fees Explained: What You Should (and Shouldn't) Pay" breadcrumbPath="/car-dealer-fees-explained">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Common Car Dealer Fees Explained | Odigos", description: "When you buy a car, the sale price is only part of what you pay. Learn which dealer fees are required, which are optional, and how to protect yourself before signing.", path: "/car-dealer-fees-explained" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Car Dealer Fees Explained: Required vs. Optional | Odigos", description: "Which dealer fees are mandatory and which are pure profit? Sales tax, title, and doc fees vs. paint protection, VIN etching, and add-on packages.", path: "/car-dealer-fees-explained" }))}</script>
       </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-fees-headline">
             Common Car Dealer Fees Explained: What You Should (and Shouldn't) Pay
@@ -98,7 +98,10 @@ export default function CarDealerFeesExplained() {
           <p className="text-muted-foreground mb-8">
             If a dealer won't provide an itemized breakdown, that's worth treating as a signal. Transparent pricing shouldn't be hard to get.
           </p>
-          
+
+          <p className="text-muted-foreground mb-8">
+            For a detailed reference table of every fee with typical dollar ranges, see our <Link href="/car-dealer-fees-list" className="underline text-foreground">complete car dealer fees list</Link>.
+          </p>
 
           <ArticleCta />
 

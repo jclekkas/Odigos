@@ -18,8 +18,8 @@ export default function CarDealerFeesList() {
 
   useEffect(() => {
     return setSeoMeta({
-      title: "Car Dealer Fees List: Common Dealer Charges and What They Mean | Odigos",
-      description: "A complete list of common car dealer fees — from doc fees to market adjustments. Learn which charges are normal, which are negotiable, and how to compare dealers correctly.",
+      title: "Car Dealer Fees List: 14 Common Charges | Odigos",
+      description: "14 common dealer fees with typical dollar ranges — doc fees, market adjustments, prep charges, and more. See which are negotiable and which are fixed.",
       path: "/car-dealer-fees-list",
     });
   }, []);
@@ -172,7 +172,7 @@ export default function CarDealerFeesList() {
             </p>
 
             <p className="text-lg text-muted-foreground mb-6">
-              When you have the full list side by side, it's easy to spot which dealer is padding the deal with unnecessary charges and which one is giving you a clean number.
+              When you have the full list side by side, it's easy to spot which dealer is padding the deal with unnecessary charges and which one is giving you a clean number. For a conceptual overview of which fees are required vs. negotiable, see our guide to <Link href="/car-dealer-fees-explained" className="underline text-foreground">car dealer fees explained</Link>.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to send the dealer</h2>

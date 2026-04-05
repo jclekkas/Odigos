@@ -56,6 +56,14 @@ export function serveStatic(app: Express) {
       return res.redirect(301, "/dealer-pricing-tactics");
     }
 
+    if (rawPath === "/dealer-wont-give-otd") {
+      return res.redirect(301, "/dealer-wont-give-otd-price");
+    }
+
+    if (rawPath === "/mandatory-dealer-add-ons") {
+      return res.redirect(301, "/are-dealer-add-ons-mandatory");
+    }
+
     // Normalize trailing slash
     const normalized =
       rawPath.length > 1 && rawPath.endsWith("/")

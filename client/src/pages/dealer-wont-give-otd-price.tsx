@@ -61,8 +61,8 @@ export default function DealerWontGiveOtdPrice() {
 
   useEffect(() => {
     return setSeoMeta({
-      title: "Dealer Won't Give an OTD Price? Here's Exactly What to Do (2026 Guide)",
-      description: "When a dealer refuses to give an out-the-door price, here's what it means, why they do it, and the exact scripts to use to get full pricing — or walk away.",
+      title: "Dealer Won't Give OTD Price? What to Do | Odigos",
+      description: "When a dealer refuses the out-the-door price, here's why, what it signals, and the exact copy-paste scripts to get full pricing or walk away.",
       path: "/dealer-wont-give-otd-price",
     });
   }, []);
