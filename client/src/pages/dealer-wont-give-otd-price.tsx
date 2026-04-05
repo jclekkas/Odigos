@@ -136,7 +136,19 @@ export default function DealerWontGiveOtdPrice() {
               Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why Dealers Avoid Giving OTD Prices</h2>
+            <nav className="rounded-lg border border-border/60 bg-muted/20 p-4 mb-8" aria-label="Table of contents">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">In this guide</p>
+              <ul className="space-y-1 text-sm">
+                <li><a href="#why-dealers-avoid" className="text-muted-foreground hover:text-foreground transition-colors">Why dealers avoid giving OTD</a></li>
+                <li><a href="#is-it-legal" className="text-muted-foreground hover:text-foreground transition-colors">Is it legal to refuse?</a></li>
+                <li><a href="#what-to-say" className="text-muted-foreground hover:text-foreground transition-colors">What to say (copy-paste scripts)</a></li>
+                <li><a href="#protect-yourself" className="text-muted-foreground hover:text-foreground transition-colors">How to protect yourself</a></li>
+                <li><a href="#when-to-walk" className="text-muted-foreground hover:text-foreground transition-colors">When to walk away</a></li>
+                <li><a href="#dealer-otd-faqs" className="text-muted-foreground hover:text-foreground transition-colors">FAQs</a></li>
+              </ul>
+            </nav>
+
+            <h2 id="why-dealers-avoid" className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why Dealers Avoid Giving OTD Prices</h2>
             <p className="text-muted-foreground mb-6">
               There are four common reasons.
             </p>
@@ -200,7 +212,7 @@ export default function DealerWontGiveOtdPrice() {
               OTD pricing limits that flexibility.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Is It Legal for a Dealer to Refuse?</h2>
+            <h2 id="is-it-legal" className="text-2xl font-semibold mt-10 mb-4 text-foreground">Is It Legal for a Dealer to Refuse?</h2>
             <p className="text-muted-foreground mb-4">
               In most states, yes. Dealers are not legally required to provide a written OTD quote by email.
             </p>
@@ -248,7 +260,7 @@ export default function DealerWontGiveOtdPrice() {
               </Link>
             </div>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What You Should Say Back (Copy This)</h2>
+            <h2 id="what-to-say" className="text-2xl font-semibold mt-10 mb-4 text-foreground">What You Should Say Back (Copy This)</h2>
             <p className="text-muted-foreground mb-3">
               Keep it simple and neutral. You can reply with:
             </p>
@@ -293,7 +305,7 @@ export default function DealerWontGiveOtdPrice() {
               No hostility. Just clarity.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to Protect Yourself If They Won't Send It</h2>
+            <h2 id="protect-yourself" className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to Protect Yourself If They Won't Send It</h2>
             <p className="text-muted-foreground mb-3">
               If you decide to visit anyway:
             </p>
@@ -334,7 +346,7 @@ export default function DealerWontGiveOtdPrice() {
               You don't need to be aggressive. You just need to ask the right question early: "Can you send me the full out-the-door price for this VIN?" That one sentence separates transparent dealers from evasive ones in about 24 hours.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">When You Should Walk Away</h2>
+            <h2 id="when-to-walk" className="text-2xl font-semibold mt-10 mb-4 text-foreground">When You Should Walk Away</h2>
             <p className="text-muted-foreground mb-3">
               Walk if:
             </p>
@@ -359,7 +371,7 @@ export default function DealerWontGiveOtdPrice() {
               But it does mean: you're negotiating in the dark. Before responding — or before visiting — run the numbers through a structured review.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Frequently Asked Questions</h2>
+            <h2 id="dealer-otd-faqs" className="text-2xl font-semibold mt-10 mb-4 text-foreground">Frequently Asked Questions</h2>
             <div className="space-y-6 mb-8">
               {faqs.map((faq, idx) => (
                 <div key={idx}>

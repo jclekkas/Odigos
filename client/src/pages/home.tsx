@@ -1865,6 +1865,42 @@ export default function Home() {
         )}
       </main>
 
+      <section className="max-w-4xl mx-auto px-6 py-12">
+        <h2 className="text-lg font-semibold text-foreground mb-6 text-center">Car Buying Guides</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Link href="/out-the-door-price" className="block p-4 rounded-lg border border-border/60 hover:border-foreground/20 transition-colors" data-testid="link-guide-otd">
+            <p className="text-sm font-medium text-foreground mb-1">Out-the-Door Price Guide</p>
+            <p className="text-xs text-muted-foreground">The only number that matters when buying a car — what it includes and how to get it.</p>
+          </Link>
+          <Link href="/calculate-out-the-door-price" className="block p-4 rounded-lg border border-border/60 hover:border-foreground/20 transition-colors" data-testid="link-guide-calc-otd">
+            <p className="text-sm font-medium text-foreground mb-1">Calculate Your OTD Price</p>
+            <p className="text-xs text-muted-foreground">Step-by-step formula to estimate your total cost before contacting a dealer.</p>
+          </Link>
+          <Link href="/car-dealer-fees-by-state" className="block p-4 rounded-lg border border-border/60 hover:border-foreground/20 transition-colors" data-testid="link-guide-fees-state">
+            <p className="text-sm font-medium text-foreground mb-1">Dealer Fees by State</p>
+            <p className="text-xs text-muted-foreground">Which states cap doc fees and which let dealers charge whatever they want.</p>
+          </Link>
+          <Link href="/dealer-doc-fee" className="block p-4 rounded-lg border border-border/60 hover:border-foreground/20 transition-colors" data-testid="link-guide-doc-fee">
+            <p className="text-sm font-medium text-foreground mb-1">Dealer Doc Fee: $85–$999+</p>
+            <p className="text-xs text-muted-foreground">What the documentation fee is, which states cap it, and how to push back.</p>
+          </Link>
+          <Link href="/are-dealer-add-ons-mandatory" className="block p-4 rounded-lg border border-border/60 hover:border-foreground/20 transition-colors" data-testid="link-guide-addons">
+            <p className="text-sm font-medium text-foreground mb-1">Are Dealer Add-Ons Mandatory?</p>
+            <p className="text-xs text-muted-foreground">Which charges you can refuse and scripts to decline unwanted extras.</p>
+          </Link>
+          <Link href="/car-dealer-fees-explained" className="block p-4 rounded-lg border border-border/60 hover:border-foreground/20 transition-colors" data-testid="link-guide-fees-explained">
+            <p className="text-sm font-medium text-foreground mb-1">Dealer Fees Explained</p>
+            <p className="text-xs text-muted-foreground">Required vs. optional fees — know which are government-mandated and which are profit.</p>
+          </Link>
+        </div>
+        <div className="flex justify-center gap-4 mt-4 text-xs text-muted-foreground">
+          <Link href="/car-dealer-fees-florida" className="underline hover:text-foreground transition-colors">Florida dealer fees</Link>
+          <Link href="/car-dealer-fees-illinois" className="underline hover:text-foreground transition-colors">Illinois dealer fees</Link>
+          <Link href="/car-dealer-fees-texas" className="underline hover:text-foreground transition-colors">Texas dealer fees</Link>
+          <Link href="/car-dealer-fees-california" className="underline hover:text-foreground transition-colors">California dealer fees</Link>
+        </div>
+      </section>
+
       <footer className="border-t border-border/50 mt-12">
         <div className="max-w-4xl mx-auto px-6 py-6 text-center space-y-2">
           <p className="text-sm text-muted-foreground">
@@ -1872,10 +1908,11 @@ export default function Home() {
             Always verify details directly with the dealership.
           </p>
           <nav className="flex justify-center gap-4 text-xs text-muted-foreground">
+            <Link href="/out-the-door-price" className="hover:text-foreground transition-colors" data-testid="link-footer-otd">OTD Price Guide</Link>
             <Link href="/car-dealer-fees-by-state" className="hover:text-foreground transition-colors" data-testid="link-footer-fees-by-state">Fees by State</Link>
+            <Link href="/about" className="hover:text-foreground transition-colors" data-testid="link-footer-about">About</Link>
             <Link href="/privacy" className="hover:text-foreground transition-colors" data-testid="link-footer-privacy">Privacy</Link>
             <Link href="/terms" className="hover:text-foreground transition-colors" data-testid="link-footer-terms">Terms</Link>
-            <Link href="/car-dealer-fees-by-state" className="hover:text-foreground transition-colors" data-testid="link-footer-fees-by-state">Dealer Fees by State</Link>
           </nav>
         </div>
       </footer>

@@ -77,7 +77,19 @@ export default function OutTheDoorPrice() {
               Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">The Out-the-Door Price (OTD) Is the Real Cost of a Car</h2>
+            <nav className="rounded-lg border border-border/60 bg-muted/20 p-4 mb-8" aria-label="Table of contents">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">In this guide</p>
+              <ul className="space-y-1 text-sm">
+                <li><a href="#what-is-otd" className="text-muted-foreground hover:text-foreground transition-colors">What is an OTD price?</a></li>
+                <li><a href="#what-otd-includes" className="text-muted-foreground hover:text-foreground transition-colors">What it includes</a></li>
+                <li><a href="#what-dealers-leave-out" className="text-muted-foreground hover:text-foreground transition-colors">What dealers leave out</a></li>
+                <li><a href="#why-dealers-avoid-otd" className="text-muted-foreground hover:text-foreground transition-colors">Why dealers avoid giving it</a></li>
+                <li><a href="#red-flags" className="text-muted-foreground hover:text-foreground transition-colors">Red flags in a quote</a></li>
+                <li><a href="#copy-paste-message" className="text-muted-foreground hover:text-foreground transition-colors">Copy-paste message to get OTD</a></li>
+              </ul>
+            </nav>
+
+            <h2 id="what-is-otd" className="text-2xl font-semibold mt-10 mb-4 text-foreground">The Out-the-Door Price (OTD) Is the Real Cost of a Car</h2>
             <p className="text-lg text-muted-foreground mb-4">
               The out-the-door price (OTD) is the total amount you pay to leave the dealership with the keys in your hand.{" "}<SourceCitation sources={ARTICLE_SOURCES["out-the-door-price"].sources} lastVerified={ARTICLE_SOURCES["out-the-door-price"].lastVerified} />
             </p>
@@ -104,7 +116,7 @@ export default function OutTheDoorPrice() {
               Dealers often focus on the monthly payment. That hides fees. The OTD price is what protects you.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What an Out-the-Door Price Includes</h2>
+            <h2 id="what-otd-includes" className="text-2xl font-semibold mt-10 mb-4 text-foreground">What an Out-the-Door Price Includes</h2>
             <p className="text-muted-foreground mb-3">An itemized OTD breakdown should look like this:</p>
             <ul className="space-y-2 mb-4 text-muted-foreground">
               {[
@@ -130,7 +142,7 @@ export default function OutTheDoorPrice() {
               If even one of these is missing from a quote, the price is incomplete.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What Dealers Often Leave Out of the First Quote</h2>
+            <h2 id="what-dealers-leave-out" className="text-2xl font-semibold mt-10 mb-4 text-foreground">What Dealers Often Leave Out of the First Quote</h2>
             <p className="text-muted-foreground mb-3">
               These frequently appear later — usually in the finance office:
             </p>
@@ -155,7 +167,7 @@ export default function OutTheDoorPrice() {
               Many of these are optional — even when labeled "mandatory." Learn more about <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">which dealer add-ons are actually mandatory</Link> and which ones you can decline. Resources like <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds' breakdown of dealer fees</a> can help you identify common charges.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why Dealers Avoid Giving the OTD Price in Writing</h2>
+            <h2 id="why-dealers-avoid-otd" className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why Dealers Avoid Giving the OTD Price in Writing</h2>
             <p className="text-muted-foreground mb-3">There's a reason some dealerships hesitate.</p>
             <ul className="space-y-2 mb-4 text-muted-foreground">
               {[
@@ -174,7 +186,7 @@ export default function OutTheDoorPrice() {
               Without a written OTD, numbers can shift in the finance office. Use tools like <a href="https://www.kbb.com/car-advice/" target="_blank" rel="noopener" className="underline text-foreground">Kelley Blue Book</a> to compare fair pricing before you negotiate.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground flex items-center gap-2">
+            <h2 id="red-flags" className="text-2xl font-semibold mt-10 mb-4 text-foreground flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0" />
               Red Flags That the Quote Isn't Complete
             </h2>
@@ -241,7 +253,7 @@ export default function OutTheDoorPrice() {
             <p className="text-muted-foreground mb-2">Every dollar is visible.</p>
             <p className="text-muted-foreground mb-8">If you can't see every dollar, you don't have the real number.</p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Copy-Paste Message to Get the OTD Price in Writing</h2>
+            <h2 id="copy-paste-message" className="text-2xl font-semibold mt-10 mb-4 text-foreground">Copy-Paste Message to Get the OTD Price in Writing</h2>
             <Card className="relative p-5 bg-muted/50 mb-4">
               <blockquote className="text-sm md:text-base text-foreground leading-relaxed italic pr-10">
                 {OTD_MESSAGE}

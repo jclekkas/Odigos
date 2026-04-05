@@ -3,9 +3,16 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
-import { articleSchema } from "@/lib/jsonld";
+import { articleSchema, faqPageSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+
+const FEES_NEGOTIABLE_FAQS = [
+  { question: "Which dealer fees are negotiable?", answer: "Dealer-controlled fees — documentation fee, prep fee, market adjustment, and all add-ons — are negotiable. Sales tax, title, and registration fees are set by the government and cannot be changed." },
+  { question: "Can you negotiate a dealer doc fee?", answer: "In most states, dealers charge the same doc fee to every customer and won't reduce it directly. However, you can ask them to lower the vehicle price by the same amount. The total out-the-door price is what matters." },
+  { question: "Should I negotiate individual fees or the total price?", answer: "Negotiate the total out-the-door price, not individual line items. This prevents dealers from lowering one fee while raising another. When you focus on the total, every dollar is visible." },
+  { question: "What should I say when dealers claim fees are mandatory?", answer: "Ask which fees are government-mandated and which are dealer-imposed. Sales tax, title, and registration are required. Everything else — doc fees, prep fees, add-ons — is the dealer's decision and can be questioned or offset through vehicle price negotiation." },
+];
 
 export default function AreDealerFeesNegotiable() {
   useEffect(() => {
@@ -20,6 +27,7 @@ export default function AreDealerFeesNegotiable() {
     <ArticleLayout title="Are Dealer Fees Negotiable?" breadcrumbPath="/are-dealer-fees-negotiable">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Are Dealer Fees Negotiable? What to Push Back On | Odigos", description: "Some dealer fees are fixed by law; others are dealer profit items. Learn which are negotiable, how to push back, and the OTD strategy that works.", path: "/are-dealer-fees-negotiable" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: FEES_NEGOTIABLE_FAQS }))}</script>
       </Helmet>
       <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-fees-negotiable-headline">
         Are Dealer Fees Negotiable? What You Can Push Back On

@@ -5,11 +5,18 @@ import { Card } from "@/components/ui/card";
 import { Check, Copy } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
-import { articleSchema } from "@/lib/jsonld";
+import { articleSchema, faqPageSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 import SourceCitation from "@/components/SourceCitation";
 import { ARTICLE_SOURCES } from "@/data/articleSources";
+
+const DOC_FEE_FAQS = [
+  { question: "What is a normal dealer doc fee?", answer: "Doc fees range from $85 in California (state-capped) to $999+ in uncapped states like Florida and Colorado. The national average is roughly $400–$700. Check your state's cap — if there is one — before evaluating a dealer's quote." },
+  { question: "Can you negotiate a dealer doc fee?", answer: "In most cases, dealers charge the same doc fee to every customer. But you can negotiate the vehicle price down by the same amount to offset a high doc fee. Focus on the total out-the-door price, not the individual line item." },
+  { question: "What are red flags with a dealer doc fee?", answer: "Watch for: a doc fee significantly above your state average, refusal to disclose the fee before your visit, fees that changed between the initial quote and the final contract, or multiple administrative fees with vague names that may be duplicating the doc fee." },
+  { question: "Is the doc fee the same as a government fee?", answer: "No. The documentation fee is a dealer-imposed charge, not a government fee. It covers the dealer's cost of processing paperwork — title transfer, registration filing, and contract preparation. It is not set or mandated by any state or federal agency." },
+];
 
 const DOC_FEE_MESSAGE = `Hi — I'd like to move forward, but first I need a few things in writing. Can you send me the full out-the-door price with every fee itemized? Specifically, please break out the documentation fee separately and show me what it covers. I'd also like to see taxes, title, and registration listed on their own lines so I can compare easily. Thanks.`;
 
@@ -45,6 +52,7 @@ export default function DocFeeTooHigh() {
     <ArticleLayout title="Dealer Doc Fee Too High? What You Can Actually Do" breadcrumbPath="/doc-fee-too-high">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Doc Fee Too High? What You Can Actually Do | Odigos", description: "Doc fees vary widely by state and dealer. Learn what's normal, whether you can negotiate, and what red flags to watch for when a dealer's documentation fee seems too high.", path: "/doc-fee-too-high" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: DOC_FEE_FAQS }))}</script>
       </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-doc-fee-headline">
             Dealer Doc Fee Too High? What You Can Actually Do
