@@ -60,7 +60,7 @@ export default function WhatIsADealerDocFee() {
           </li>
         </ul>
         <p className="text-muted-foreground mb-8">
-          Every car sale involves this work. The doc fee is the dealer's way of charging for it as a separate line item rather than folding the cost into the vehicle price. For a full overview of what's typically included in a car purchase, see our guide to the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link>.
+          Every car sale involves this work. The doc fee is the dealer's way of charging for it as a separate line item rather than folding the cost into the vehicle price. For a full overview of what's typically included in a car purchase, see our guide to the <Link href="/out-the-door-price" className="underline text-foreground">OTD price — the real cost of the car</Link>.
         </p>
 
         <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Is the Doc Fee a Government Charge?</h2>

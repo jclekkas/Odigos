@@ -76,7 +76,7 @@ export default function DocFeeTooHigh() {
             </p>
 
             <p className="text-lg text-muted-foreground mb-6">
-              Even in states that cap doc fees, the cap is a maximum — not a minimum. You can always ask the dealer to reduce it. If the dealer won't budge on the doc fee specifically, you can negotiate the vehicle price down by the same amount. The total <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> is what matters, not any individual line item.
+              Even in states that cap doc fees, the cap is a maximum — not a minimum. You can always ask the dealer to reduce it. If the dealer won't budge on the doc fee specifically, you can negotiate the vehicle price down by the same amount. The total <Link href="/out-the-door-price" className="underline text-foreground">price you pay to drive the car home</Link> is what matters, not any individual line item.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to say to the dealer</h2>

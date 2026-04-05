@@ -119,7 +119,7 @@ export default function HiddenDealerFees() {
           </li>
         </ul>
         <p className="text-muted-foreground mb-8">
-          For a complete breakdown of which fees are negotiable and how to approach the conversation, see our guide on <Link href="/are-dealer-fees-negotiable" className="underline text-foreground">whether dealer fees are negotiable</Link>. For more on what belongs in a complete car purchase quote, see our guide to the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link>.
+          For a complete breakdown of which fees are negotiable and how to approach the conversation, see our guide on <Link href="/are-dealer-fees-negotiable" className="underline text-foreground">whether dealer fees are negotiable</Link>. For more on what belongs in a complete car purchase quote, see our guide to <Link href="/out-the-door-price" className="underline text-foreground">what a complete OTD quote should look like</Link>.
         </p>
 
         <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to Say to the Dealer</h2>

@@ -12,6 +12,94 @@ import { STATE_FEES } from "@/data/stateFees";
 import SourceCitation from "@/components/SourceCitation";
 import { getClusterOgImage } from "@/lib/og-images";
 
+const NEIGHBOR_STATES: Record<string, { slug: string; name: string }[]> = {
+  florida: [
+    { slug: "georgia", name: "Georgia" },
+    { slug: "alabama", name: "Alabama" },
+    { slug: "texas", name: "Texas" },
+  ],
+  illinois: [
+    { slug: "indiana", name: "Indiana" },
+    { slug: "wisconsin", name: "Wisconsin" },
+    { slug: "ohio", name: "Ohio" },
+  ],
+  texas: [
+    { slug: "louisiana", name: "Louisiana" },
+    { slug: "oklahoma", name: "Oklahoma" },
+    { slug: "new-mexico", name: "New Mexico" },
+  ],
+  california: [
+    { slug: "arizona", name: "Arizona" },
+    { slug: "nevada", name: "Nevada" },
+    { slug: "oregon", name: "Oregon" },
+  ],
+  "new-york": [
+    { slug: "new-jersey", name: "New Jersey" },
+    { slug: "connecticut", name: "Connecticut" },
+    { slug: "pennsylvania", name: "Pennsylvania" },
+  ],
+  georgia: [
+    { slug: "florida", name: "Florida" },
+    { slug: "alabama", name: "Alabama" },
+    { slug: "south-carolina", name: "South Carolina" },
+  ],
+  ohio: [
+    { slug: "indiana", name: "Indiana" },
+    { slug: "michigan", name: "Michigan" },
+    { slug: "pennsylvania", name: "Pennsylvania" },
+  ],
+  indiana: [
+    { slug: "illinois", name: "Illinois" },
+    { slug: "ohio", name: "Ohio" },
+    { slug: "michigan", name: "Michigan" },
+  ],
+  michigan: [
+    { slug: "ohio", name: "Ohio" },
+    { slug: "indiana", name: "Indiana" },
+    { slug: "wisconsin", name: "Wisconsin" },
+  ],
+  pennsylvania: [
+    { slug: "new-york", name: "New York" },
+    { slug: "new-jersey", name: "New Jersey" },
+    { slug: "ohio", name: "Ohio" },
+  ],
+  "new-jersey": [
+    { slug: "new-york", name: "New York" },
+    { slug: "pennsylvania", name: "Pennsylvania" },
+    { slug: "connecticut", name: "Connecticut" },
+  ],
+  virginia: [
+    { slug: "maryland", name: "Maryland" },
+    { slug: "north-carolina", name: "North Carolina" },
+    { slug: "west-virginia", name: "West Virginia" },
+  ],
+  "north-carolina": [
+    { slug: "south-carolina", name: "South Carolina" },
+    { slug: "virginia", name: "Virginia" },
+    { slug: "georgia", name: "Georgia" },
+  ],
+  washington: [
+    { slug: "oregon", name: "Oregon" },
+    { slug: "california", name: "California" },
+    { slug: "nevada", name: "Nevada" },
+  ],
+  colorado: [
+    { slug: "utah", name: "Utah" },
+    { slug: "arizona", name: "Arizona" },
+    { slug: "new-mexico", name: "New Mexico" },
+  ],
+  alabama: [
+    { slug: "florida", name: "Florida" },
+    { slug: "georgia", name: "Georgia" },
+    { slug: "mississippi", name: "Mississippi" },
+  ],
+  wisconsin: [
+    { slug: "illinois", name: "Illinois" },
+    { slug: "michigan", name: "Michigan" },
+    { slug: "minnesota", name: "Minnesota" },
+  ],
+};
+
 export default function CarDealerFeesState() {
   const [location] = useLocation();
   const stateSlug = location
@@ -77,7 +165,7 @@ export default function CarDealerFeesState() {
     <ArticleLayout title={pageHeading} breadcrumbPath={`/car-dealer-fees-${data.slug}`}>
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: allFaqsForSchema, url: buildCanonical(`/car-dealer-fees-${data.slug}`) }))}</script>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: pageHeading, description: data.metaDescription, path: `/car-dealer-fees-${data.slug}`, dateModified: data.lastVerified ? `${data.lastVerified}-01` : undefined }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: pageHeading, description: data.metaDescription, path: `/car-dealer-fees-${data.slug}` }))}</script>
       </Helmet>
       <h1
         className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight"
@@ -287,6 +375,24 @@ export default function CarDealerFeesState() {
             </li>
           ))}
         </ul>
+
+        {NEIGHBOR_STATES[data.slug] && (
+          <>
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">
+              Dealer fees in nearby states
+            </h2>
+            <ul className="space-y-2 mb-8 text-muted-foreground">
+              {NEIGHBOR_STATES[data.slug].map((neighbor) => (
+                <li key={neighbor.slug} className="flex items-start gap-2">
+                  <span className="text-muted-foreground">→</span>
+                  <Link href={`/car-dealer-fees-${neighbor.slug}`} className="underline text-foreground">
+                    Car dealer fees in {neighbor.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
 
         {data.sources && data.sources.length > 0 && (
           <>

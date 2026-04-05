@@ -64,7 +64,7 @@ export default function HowToRemoveDealerAddOns() {
         <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Step 1: Before you visit — request the out-the-door price in writing</h2>
 
         <p className="text-lg text-muted-foreground mb-6">
-          The most effective time to deal with add-ons is before you set foot in the dealership. Request a full <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> by email or text, with every line item listed: vehicle price, taxes, title, registration, documentation fee, and any dealer-installed products separately itemized.
+          The most effective time to deal with add-ons is before you set foot in the dealership. Request the <Link href="/out-the-door-price" className="underline text-foreground">complete OTD breakdown</Link> by email or text, with every line item listed: vehicle price, taxes, title, registration, documentation fee, and any dealer-installed products separately itemized.
         </p>
 
         <p className="text-lg text-muted-foreground mb-6">

@@ -168,7 +168,7 @@ export default function CarDealerFeesList() {
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to compare dealers correctly</h2>
 
             <p className="text-lg text-muted-foreground mb-6">
-              The only number that matters for comparison is the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> — the total you'll pay to drive the car home. Two dealers can quote the same vehicle price but end up thousands apart once fees are added. Always request an itemized OTD breakdown from each dealer so you can see exactly where the money goes.
+              The only number that matters for comparison is the <Link href="/out-the-door-price" className="underline text-foreground">total out-the-door cost</Link> — what you'll actually pay to drive the car home. Two dealers can quote the same vehicle price but end up thousands apart once fees are added. Always request an itemized OTD breakdown from each dealer so you can see exactly where the money goes.
             </p>
 
             <p className="text-lg text-muted-foreground mb-6">

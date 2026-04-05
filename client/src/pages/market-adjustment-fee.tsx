@@ -163,7 +163,7 @@ export default function MarketAdjustmentFee() {
             </p>
 
             <p className="text-lg text-muted-foreground mb-6">
-              The best defense is knowing your <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> and comparing it across multiple dealers before committing.
+              The best defense is knowing the <Link href="/out-the-door-price" className="underline text-foreground">full price you'll pay to leave the lot</Link> and comparing it across multiple dealers before committing.
             </p>
 
             <p className="text-lg text-muted-foreground mb-8">

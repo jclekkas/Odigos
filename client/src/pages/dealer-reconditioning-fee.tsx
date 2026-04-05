@@ -75,7 +75,7 @@ export default function DealerReconditioningFee() {
           When dealers add a reconditioning fee as a separate buyer line item, they are often doing two things at once: advertising a lower vehicle price that attracts buyers online, and then adding the reconditioning cost back in at the point of sale. The total cost to the buyer ends up the same — or higher — while the advertised price looked more competitive.
         </p>
         <p className="text-muted-foreground mb-8">
-          This is why the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> is the only valid number to compare across dealers. A used car advertised at $18,500 with a $799 reconditioning fee is not cheaper than one advertised at $19,200 with no fee — the opposite may be true.
+          This is why the <Link href="/out-the-door-price" className="underline text-foreground">full OTD price including every fee</Link> is the only valid number to compare across dealers. A used car advertised at $18,500 with a $799 reconditioning fee is not cheaper than one advertised at $19,200 with no fee — the opposite may be true.
         </p>
 
         <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">When Is the Fee Legitimate?</h2>

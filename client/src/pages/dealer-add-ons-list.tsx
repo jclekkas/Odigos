@@ -211,7 +211,7 @@ export default function DealerAddOnsList() {
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How Odigos helps</h2>
 
             <p className="text-lg text-muted-foreground mb-6">
-              If you already have a dealer quote and aren't sure which charges are add-ons, paste it into Odigos. We'll identify every dealer-installed extra, flag the ones with high markup, and show you what the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> would look like without them. No guesswork, no math — just a clear picture of what's optional and what's not.
+              If you already have a dealer quote and aren't sure which charges are add-ons, paste it into Odigos. We'll identify every dealer-installed extra, flag the ones with high markup, and show you what the <Link href="/out-the-door-price" className="underline text-foreground">true out-the-door total</Link> would look like without them. No guesswork, no math — just a clear picture of what's optional and what's not.
             </p>
 
             <p className="text-lg text-muted-foreground mb-6">
