@@ -148,6 +148,31 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     dealerMessage:
       "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee, all dealer fees, Arizona Transaction Privilege Tax (state + local rate for your city), Vehicle License Tax, title fee, and registration costs? I'd like to understand the complete total before scheduling a visit. Thank you.",
     lastVerified: "2026-03",
+    commonQuestions: [
+      {
+        q: "What is the Arizona Vehicle License Tax (VLT)?",
+        a: "The VLT is an annual tax based on your vehicle's assessed value — not a flat fee. Arizona assesses new vehicles at 60% of the manufacturer's base retail price, then applies $2.80 per $100 of assessed value (for new) or $2.89 per $100 (for used). On a new $40,000 vehicle, the first-year VLT is roughly $672. It decreases about 16.25% each year as the assessed value drops. This fee surprises buyers from flat-rate registration states.",
+      },
+      {
+        q: "Is there a cap on dealer doc fees in Arizona?",
+        a: "No. Arizona has no state-imposed cap on dealer documentation fees. Most dealers charge $400–$600, but there is no legal ceiling. Because the fee is uncapped, it's negotiable — especially in the competitive Phoenix metro market. Get the doc fee disclosed before visiting and compare across dealers.",
+      },
+      {
+        q: "What is Arizona's Transaction Privilege Tax on vehicles?",
+        a: "Arizona's TPT is essentially a sales tax on the dealer's transaction, passed to the buyer. The state base rate is 5.6%, and cities add their own rates on top. Phoenix's combined rate is about 8.6%, Scottsdale is 8.05%, and Tucson is around 8.7%. Some smaller cities exceed 10%. The tax is calculated on the full purchase price — Arizona does allow trade-in deductions.",
+      },
+      {
+        q: "Does Arizona allow a trade-in tax credit?",
+        a: "Yes. Arizona allows the trade-in value to reduce the taxable purchase price. If you're buying a $35,000 vehicle and trading in one worth $10,000, the TPT applies to $25,000. At a combined 8.6% rate (Phoenix), that saves you $860 in tax. Confirm the dealer applies this correctly before signing.",
+      },
+      {
+        q: "Why is my Arizona registration so much higher than other states?",
+        a: "Arizona's VLT is value-based, not flat. A new $50,000 vehicle can carry a first-year VLT of $840+, on top of the $8 base registration fee. Most other states charge flat registration fees of $50–$200. The VLT decreases each year as the vehicle ages, but it's a significant first-year cost that many buyers underestimate.",
+      },
+    ],
+    competitorGapSection:
+      "Most Arizona car-buying guides explain the TPT and doc fee but barely mention the Vehicle License Tax — the fee that actually surprises buyers the most. The VLT is a value-based annual charge that can easily exceed $600 in the first year on a new vehicle, and it's separate from the TPT, doc fee, and registration. Budget for it explicitly. The other gap: Arizona's city-level TPT rates vary enough that buying from a dealer in a lower-rate city (e.g., Gilbert at 7.8%) versus a higher-rate city (e.g., Tucson at 8.7%) can save several hundred dollars on the same vehicle.",
+    pageTitle: "Arizona Dealer Fees (2026): No Doc Fee Cap + VLT Explained — AZ OTD Guide",
   },
 
   arkansas: {
@@ -1369,6 +1394,31 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     dealerMessage:
       "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee, all additional dealer fees, New Jersey sales tax (6.625%), title fee ($60 cash or $85 financed), and registration costs? I'd like to see the complete total. Thank you.",
     lastVerified: "2026-03",
+    commonQuestions: [
+      {
+        q: "Is there a cap on dealer doc fees in New Jersey?",
+        a: "No. New Jersey has no state-imposed cap on dealer documentation fees. Fees range from $200 to $900 depending on the dealership. Because there's no legal limit, the doc fee is one of the most variable line items in an NJ dealer quote — always ask for it upfront and compare across dealers.",
+      },
+      {
+        q: "What is the sales tax on a car in New Jersey?",
+        a: "New Jersey charges a flat 6.625% sales tax on vehicle purchases statewide. Unlike most states, there are virtually no local additions — except in the Salem County Urban Enterprise Zone city of Millville, where the rate is 3.3125% (half the standard rate). Trade-in deductions are allowed, so you pay tax on the net price after trade-in.",
+      },
+      {
+        q: "Does New Jersey allow a trade-in tax credit?",
+        a: "Yes. New Jersey allows the trade-in value to reduce the taxable purchase price. If you're buying a $35,000 vehicle and trading in one worth $12,000, you pay the 6.625% sales tax on $23,000 — saving you roughly $795 in tax. Make sure the dealer applies this deduction before calculating your tax line.",
+      },
+      {
+        q: "What is the title fee in New Jersey for financed vehicles?",
+        a: "New Jersey charges $60 for a standard title or $85 for a title with a lien (i.e., you're financing the vehicle). If you're paying cash, the title fee is $60. This is a fixed government fee — not negotiable, but make sure the correct amount appears on your quote based on how you're paying.",
+      },
+      {
+        q: "Do New Jersey EV buyers pay extra fees?",
+        a: "Yes. As of 2026, New Jersey electric vehicle buyers pay a $260 annual Zero Emission Vehicle (ZEV) fee in addition to standard registration costs. This replaces the gas tax revenue the state loses from EV drivers. Factor this into your annual ownership cost when comparing EVs to gas vehicles in NJ.",
+      },
+    ],
+    competitorGapSection:
+      "Most NJ car-buying guides list the 6.625% tax rate and move on — but they miss the doc fee story. New Jersey's $200–$900 range is one of the widest in the country for an uncapped state. The real savings opportunity isn't the tax (which is flat statewide) — it's shopping the doc fee across North Jersey's dense dealer corridor. Two dealers 10 minutes apart can differ by $500+ on the doc fee alone. Get 3 itemized OTD quotes before committing, and use the doc fee gap as your primary negotiation lever.",
+    pageTitle: "New Jersey Dealer Fees (2026): No Cap, $200–$900 Range — What NJ Buyers Pay",
   },
 
   "new-mexico": {
@@ -2112,6 +2162,31 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     dealerMessage:
       "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee, all additional dealer fees, Virginia sales tax (4.15% state + your locality's additional rate — please note Virginia does not allow trade-in deductions), title fee ($15), and registration costs? I'd like to see the complete total. Thank you.",
     lastVerified: "2026-03",
+    commonQuestions: [
+      {
+        q: "Does Virginia allow a trade-in tax credit?",
+        a: "No. Virginia is one of the few states that does NOT allow the trade-in value to reduce the taxable purchase price. If you're buying a $40,000 vehicle and trading in one worth $15,000, you still pay sales tax on the full $40,000. At a 5.3% combined rate, that costs you $795 more than it would in a trade-in-credit state. This is one of the most important things Virginia buyers need to know.",
+      },
+      {
+        q: "Is there a cap on dealer doc fees in Virginia?",
+        a: "No. Virginia has no state cap on dealer documentation fees. Fees of $500–$800 are commonly reported, placing Virginia among the higher-fee uncapped states. The doc fee is technically negotiable, but many dealers treat it as fixed. Your best lever is comparing total OTD quotes across dealers.",
+      },
+      {
+        q: "What is the sales tax rate on cars in Virginia?",
+        a: "Virginia charges a 4.15% state sales tax on vehicles (motor vehicle sales and use tax), with a minimum tax of $75. Local additions bring the total to 5.3%–7% depending on your locality. Northern Virginia and Hampton Roads localities tend toward the higher end. The tax applies to the full purchase price with no trade-in deduction.",
+      },
+      {
+        q: "What extra fees do Virginia EV buyers pay?",
+        a: "Virginia charges electric vehicle owners an additional $131.88 annual registration fee on top of standard registration costs. This fee replaces lost gas tax revenue. Plug-in hybrids may also face additional fees. Factor this into your annual ownership cost when comparing EVs to gas vehicles in Virginia.",
+      },
+      {
+        q: "How do Virginia fees affect military buyers stationed in-state?",
+        a: "Military members stationed in Virginia but domiciled in another state may be exempt from Virginia's motor vehicle sales tax under the Servicemembers Civil Relief Act (SCRA). You'd instead owe tax in your state of legal residence. This can be a significant savings if your home state has a lower rate or allows trade-in deductions. Bring your LES and home-state ID to the dealership and confirm the tax treatment before signing.",
+      },
+    ],
+    competitorGapSection:
+      "The biggest gap in Virginia car-buying guides is the no-trade-in-credit rule. Most buyers assume their trade-in reduces the taxable amount — it does in 42+ other states — but not in Virginia. On a $40,000 purchase with a $15,000 trade-in, you pay $795–$1,050 more in tax than you would in a trade-in-credit state (depending on your local rate). If you're stationed at a Virginia military base but domiciled elsewhere, check whether your home state's tax rules apply — the SCRA may save you hundreds. Northern Virginia's proximity to Maryland (which does allow trade-in credits) makes cross-border comparison shopping worth the drive for high-value purchases.",
+    pageTitle: "Virginia Dealer Fees (2026): No Doc Fee Cap, No Trade-In Credit — VA OTD Guide",
   },
 
   washington: {
@@ -2152,6 +2227,31 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     dealerMessage:
       "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (Washington caps this at $200), all additional dealer fees, Washington sales tax (6.5% + your local rate), title fee, and registration costs? I'd like to see the complete total. Thank you.",
     lastVerified: "2026-03",
+    commonQuestions: [
+      {
+        q: "What is the doc fee cap in Washington State?",
+        a: "Washington caps dealer documentation fees at $200, effective July 1, 2022. Dealers cannot legally charge more than this amount, and they're prohibited from representing the fee as 'required by law.' If your quote shows a doc fee above $200, the dealer is out of compliance.",
+      },
+      {
+        q: "Why is Washington sales tax so different by city?",
+        a: "Washington's base state sales tax is 6.5%, but cities and counties add their own rates on top — pushing the combined rate anywhere from 7% to 10.4%. Seattle buyers pay 10.25%, while some rural areas are closer to 7.7%. The tax is based on the dealer's location, not where you live, so the same car costs more in tax at a Seattle dealer than a dealer in a lower-rate city.",
+      },
+      {
+        q: "Does Washington have a use tax on out-of-state vehicle purchases?",
+        a: "Yes. If you buy a vehicle in Oregon (which has no sales tax) and bring it to Washington, you owe Washington use tax at your local rate — typically 7–10.4%. This is the 'use tax trap' that catches buyers who think buying across the border saves them money. The state enforces this at the time of registration.",
+      },
+      {
+        q: "Does Washington allow a trade-in tax credit?",
+        a: "Yes, but only for like-kind vehicles. If you're trading in a car toward another car purchase, the trade-in value reduces your taxable amount. If the trade-in is not like-kind (e.g., trading a boat toward a car), the deduction does not apply. Confirm with the dealer that the credit is applied correctly.",
+      },
+      {
+        q: "What are Washington's EV registration fees?",
+        a: "Washington charges an additional $225 annual fee for battery-electric vehicles and $75 for plug-in hybrids, on top of standard registration. These fees offset lost gas tax revenue. Factor them into your annual ownership cost when comparing EVs to gas vehicles in WA.",
+      },
+    ],
+    competitorGapSection:
+      "Most Washington car-buying guides mention the $200 doc fee cap and the 6.5% base tax — but they skip the use tax trap entirely. Buyers who purchase in Oregon to avoid sales tax still owe Washington use tax at their full local rate when they register the vehicle. On a $40,000 vehicle in Seattle, that's over $4,000 in use tax — exactly what you'd pay buying locally. The real savings opportunity in Washington is location arbitrage: buying from a dealer in a lower-tax city (7.7%) instead of Seattle (10.25%) can save $1,000+ on the same vehicle, legally.",
+    pageTitle: "Washington Dealer Fees (2026): $200 Cap + Sales Tax Up to 10.4% — WA OTD Guide",
   },
 
   "west-virginia": {
