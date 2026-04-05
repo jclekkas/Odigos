@@ -8,6 +8,8 @@ import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 const OTD_MESSAGE = `Before I come in, can you confirm the full out-the-door price in writing, including sale price, taxes, title/registration, doc fee, and any dealer add-ons? If add-ons are included, please itemize each one with pricing. I'm ready to move forward once I can review the complete OTD breakdown.`;
 
@@ -64,7 +66,7 @@ export default function OutTheDoorPrice() {
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">The Out-the-Door Price (OTD) Is the Real Cost of a Car</h2>
             <p className="text-lg text-muted-foreground mb-4">
-              The out-the-door price (OTD) is the total amount you pay to leave the dealership with the keys in your hand.
+              The out-the-door price (OTD) is the total amount you pay to leave the dealership with the keys in your hand.{" "}<SourceCitation sources={ARTICLE_SOURCES["out-the-door-price"].sources} lastVerified={ARTICLE_SOURCES["out-the-door-price"].lastVerified} />
             </p>
             <p className="text-muted-foreground mb-3">It includes:</p>
             <ul className="space-y-2 mb-4 text-muted-foreground">

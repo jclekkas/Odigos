@@ -5,6 +5,8 @@ import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 export default function WhatIsAFairPriceForACar() {
   useEffect(() => {
@@ -26,7 +28,7 @@ export default function WhatIsAFairPriceForACar() {
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
         <p className="text-lg text-muted-foreground mb-6">
-          A fair price for a car is not the MSRP, not the invoice price, and not the monthly payment. It's the out-the-door total — every dollar you pay to leave the lot with the vehicle. Until you know that number, you don't know what the deal actually costs.
+          A fair price for a car is not the MSRP, not the invoice price, and not the monthly payment. It's the out-the-door total — every dollar you pay to leave the lot with the vehicle. Until you know that number, you don't know what the deal actually costs.{" "}<SourceCitation sources={ARTICLE_SOURCES["what-is-a-fair-price-for-a-car"].sources} lastVerified={ARTICLE_SOURCES["what-is-a-fair-price-for-a-car"].lastVerified} />
         </p>
 
         <p className="text-lg text-muted-foreground mb-6">

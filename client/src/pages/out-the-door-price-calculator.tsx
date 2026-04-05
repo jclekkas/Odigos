@@ -8,6 +8,8 @@ import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 const STATE_TAX_DEFAULTS: Record<string, number> = {
   CA: 7.75,
@@ -90,7 +92,7 @@ export default function OutTheDoorPriceCalculator() {
       </h1>
 
       <p className="text-lg text-muted-foreground mb-8">
-        Estimate your total car price including taxes, fees, and dealer add-ons in seconds. Enter your numbers below to see a realistic out-the-door figure before you walk into the dealership.
+        Estimate your total car price including taxes, fees, and dealer add-ons in seconds. Enter your numbers below to see a realistic out-the-door figure before you walk into the dealership.{" "}<SourceCitation sources={ARTICLE_SOURCES["out-the-door-price-calculator"].sources} lastVerified={ARTICLE_SOURCES["out-the-door-price-calculator"].lastVerified} />
       </p>
 
       {/* Interactive Calculator */}

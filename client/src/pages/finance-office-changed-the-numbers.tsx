@@ -8,6 +8,8 @@ import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 const FINANCE_OFFICE_MESSAGE = `Hi — before I sign, I need a line-by-line breakdown of the final numbers compared to the price we agreed on. Please list the vehicle price, every fee, every add-on product, the interest rate, and the loan term separately. If anything changed from what we discussed, I'd like a written explanation of what's different and why.`;
 
@@ -50,7 +52,7 @@ export default function FinanceOfficeChangedTheNumbers() {
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">
-              You spent time negotiating a price with the salesperson. You shook hands, maybe even celebrated a little. Then you sit down in the finance office and the paperwork shows different numbers. The monthly payment is higher. The total doesn't match. New line items appeared. This happens more often than most buyers realize, and it's not always accidental.
+              You spent time negotiating a price with the salesperson. You shook hands, maybe even celebrated a little. Then you sit down in the finance office and the paperwork shows different numbers. The monthly payment is higher. The total doesn't match. New line items appeared. This happens more often than most buyers realize, and it's not always accidental.{" "}<SourceCitation sources={ARTICLE_SOURCES["finance-office-changed-the-numbers"].sources} lastVerified={ARTICLE_SOURCES["finance-office-changed-the-numbers"].lastVerified} />
             </p>
 
             <p className="text-sm text-muted-foreground mb-6">

@@ -8,6 +8,7 @@ import { setSeoMeta } from "@/lib/seo";
 import { itemListSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
 import stateFeeData from "@/data/state_fee_reference.json";
 import { STATE_FEES } from "@/data/stateFees";
 
@@ -160,7 +161,14 @@ export default function CarDealerFeesByState() {
             </div>
 
             <p className="text-sm text-muted-foreground mb-6 italic">
-              These ranges are approximate and based on commonly reported dealer practices. Fee limits and regulations can change — always verify with your state's attorney general or consumer protection office before relying on specific numbers.
+              These ranges are approximate and based on commonly reported dealer practices. Fee limits and regulations can change — always verify with your state's attorney general or consumer protection office before relying on specific numbers.{" "}
+              <SourceCitation
+                sources={[
+                  "https://consumer.ftc.gov/articles/buying-new-car",
+                  "https://caredge.com/guides/car-dealer-doc-fee-by-state",
+                ]}
+                lastVerified="2026-03"
+              />
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Which fees are actually required</h2>

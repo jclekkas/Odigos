@@ -8,6 +8,8 @@ import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 const OTD_REQUEST_MESSAGE = `Before I come in, I'd like to see the full out-the-door price in writing, including the sale price, sales tax, title and registration, doc fee, and any dealer-installed add-ons. If add-ons are included, please itemize each one with pricing. I'm ready to move forward once I can review the complete breakdown.`;
 
@@ -50,7 +52,7 @@ export default function DealerWontGiveOtd() {
           
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">
-              You've found a car, you text or email the dealer asking for the out-the-door price, and instead of a straight answer you get: "Come on in and we'll work the numbers" or just a monthly payment with no breakdown. This is common, and it's not accidental.
+              You've found a car, you text or email the dealer asking for the out-the-door price, and instead of a straight answer you get: "Come on in and we'll work the numbers" or just a monthly payment with no breakdown. This is common, and it's not accidental.{" "}<SourceCitation sources={ARTICLE_SOURCES["dealer-wont-give-otd"].sources} lastVerified={ARTICLE_SOURCES["dealer-wont-give-otd"].lastVerified} />
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why dealers avoid giving the OTD</h2>

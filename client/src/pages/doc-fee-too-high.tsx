@@ -8,6 +8,8 @@ import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 const DOC_FEE_MESSAGE = `Hi — I'd like to move forward, but first I need a few things in writing. Can you send me the full out-the-door price with every fee itemized? Specifically, please break out the documentation fee separately and show me what it covers. I'd also like to see taxes, title, and registration listed on their own lines so I can compare easily. Thanks.`;
 
@@ -50,7 +52,7 @@ export default function DocFeeTooHigh() {
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">
-              The documentation fee — sometimes called a "doc fee" or "dealer prep fee" — is one of the most common charges added to a car deal. It's supposed to cover the cost of processing your paperwork: title, registration, loan documents, and filing. But the amount dealers charge for this work varies wildly, from under $100 in some states to over $1,000 in others. If your doc fee looks too high, you're right to question it.
+              The documentation fee — sometimes called a "doc fee" or "dealer prep fee" — is one of the most common charges added to a car deal. It's supposed to cover the cost of processing your paperwork: title, registration, loan documents, and filing. But the amount dealers charge for this work varies wildly, from under $100 in some states to over $1,000 in others. If your doc fee looks too high, you're right to question it.{" "}<SourceCitation sources={ARTICLE_SOURCES["doc-fee-too-high"].sources} lastVerified={ARTICLE_SOURCES["doc-fee-too-high"].lastVerified} />
             </p>
 
             <p className="text-sm text-muted-foreground mb-6">

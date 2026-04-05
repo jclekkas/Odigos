@@ -8,6 +8,8 @@ import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 const MARKET_ADJUSTMENT_MESSAGE = `Hi, I'm interested in this vehicle and want to understand the full pricing. Can you send me a breakdown showing the MSRP, any market adjustment or additional dealer markup, and the final out-the-door price with taxes and fees separated? I'd like to see how the adjusted price compares to the manufacturer's suggested retail price before moving forward.`;
 
@@ -50,7 +52,7 @@ export default function MarketAdjustmentFee() {
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">
-              You found the car you want, but the window sticker has a second price label — sometimes called an "Additional Dealer Markup" (ADM) or "Market Adjustment." It can add $2,000, $5,000, or even $10,000 or more on top of the manufacturer's suggested retail price. If you've never seen one before, it can be confusing — and if you have, it's probably frustrating. Here's what's actually going on and what you can do about it.
+              You found the car you want, but the window sticker has a second price label — sometimes called an "Additional Dealer Markup" (ADM) or "Market Adjustment." It can add $2,000, $5,000, or even $10,000 or more on top of the manufacturer's suggested retail price. If you've never seen one before, it can be confusing — and if you have, it's probably frustrating. Here's what's actually going on and what you can do about it.{" "}<SourceCitation sources={ARTICLE_SOURCES["market-adjustment-fee"].sources} lastVerified={ARTICLE_SOURCES["market-adjustment-fee"].lastVerified} />
             </p>
 
             <p className="text-sm text-muted-foreground mb-6">

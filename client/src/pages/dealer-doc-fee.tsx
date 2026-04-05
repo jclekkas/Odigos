@@ -6,6 +6,8 @@ import { setSeoMeta } from "@/lib/seo";
 import { articleSchema, faqPageSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 const faqItems = [
   {
@@ -60,7 +62,7 @@ export default function DealerDocFee() {
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-4">
-              If you've ever reviewed a car deal closely, you've probably noticed a line item called a "documentation fee," "doc fee," or "dealer processing fee." It typically ranges from $100 to $1,000 or more depending on where you live. Some buyers assume it's a government charge. It's not. It's a dealer-imposed fee, and in many cases, it's negotiable.
+              If you've ever reviewed a car deal closely, you've probably noticed a line item called a "documentation fee," "doc fee," or "dealer processing fee." It typically ranges from $100 to $1,000 or more depending on where you live. Some buyers assume it's a government charge. It's not. It's a dealer-imposed fee, and in many cases, it's negotiable.{" "}<SourceCitation sources={ARTICLE_SOURCES["dealer-doc-fee"].sources} lastVerified={ARTICLE_SOURCES["dealer-doc-fee"].lastVerified} />
             </p>
             <p className="text-lg text-muted-foreground mb-10">
               Understanding what a doc fee is, what's normal in your state, and how to push back can save you hundreds of dollars on your next car purchase.

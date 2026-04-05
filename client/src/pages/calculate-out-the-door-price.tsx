@@ -8,6 +8,8 @@ import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 const OTD_CALC_MESSAGE = `Hi — before I come in, can you send me the full out-the-door price with every line item broken out? I'd like to see the vehicle price, sales tax, title and registration, doc fee, and any dealer-added packages or fees listed separately. I want to compare the total against my own estimate before we finalize anything. Thanks.`;
 
@@ -60,7 +62,7 @@ export default function CalculateOutTheDoorPrice() {
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">
-              The out-the-door price (OTD) is the total amount you'll actually pay to drive a car off the lot — not just the sticker price or the number the salesperson quotes first. Calculating it yourself before you walk into a dealership gives you the clearest possible picture of the real cost and makes it much harder for hidden fees to slip through.
+              The out-the-door price (OTD) is the total amount you'll actually pay to drive a car off the lot — not just the sticker price or the number the salesperson quotes first. Calculating it yourself before you walk into a dealership gives you the clearest possible picture of the real cost and makes it much harder for hidden fees to slip through.{" "}<SourceCitation sources={ARTICLE_SOURCES["calculate-out-the-door-price"].sources} lastVerified={ARTICLE_SOURCES["calculate-out-the-door-price"].lastVerified} />
             </p>
 
             <p className="text-sm text-muted-foreground mb-6">

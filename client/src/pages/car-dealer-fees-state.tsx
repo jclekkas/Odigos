@@ -9,6 +9,7 @@ import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 import NotFound from "@/pages/not-found";
 import { STATE_FEES } from "@/data/stateFees";
+import SourceCitation from "@/components/SourceCitation";
 
 export default function CarDealerFeesState() {
   const [location] = useLocation();
@@ -80,7 +81,7 @@ export default function CarDealerFeesState() {
 
       <div className="rounded-lg border border-border bg-muted/30 p-5 mb-8" data-testid={`block-snippet-${data.slug}`}>
         <p className="text-sm font-semibold text-foreground mb-2">Quick answer</p>
-        <p className="text-sm text-muted-foreground">{data.snippetAnswer}</p>
+        <p className="text-sm text-muted-foreground">{data.snippetAnswer} <SourceCitation sources={data.sources} lastVerified={data.lastVerified} /></p>
       </div>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
@@ -109,7 +110,8 @@ export default function CarDealerFeesState() {
         </h2>
 
         <p className="text-lg text-muted-foreground mb-4">
-          <strong className="text-foreground">Typical range: {data.docFeeRange}</strong>
+          <strong className="text-foreground">Typical range: {data.docFeeRange}</strong>{" "}
+          <SourceCitation sources={data.sources} lastVerified={data.lastVerified} />
         </p>
 
         <p className="text-lg text-muted-foreground mb-6">{data.capNote}</p>
@@ -132,12 +134,14 @@ export default function CarDealerFeesState() {
 
         <p className="text-lg text-muted-foreground mb-4">
           <strong className="text-foreground">Sales tax / title tax:</strong>{" "}
-          {data.salesTaxNote}
+          {data.salesTaxNote}{" "}
+          <SourceCitation sources={data.sources} lastVerified={data.lastVerified} />
         </p>
 
         <p className="text-lg text-muted-foreground mb-6">
           <strong className="text-foreground">Registration fees:</strong>{" "}
-          {data.registrationNote}
+          {data.registrationNote}{" "}
+          <SourceCitation sources={data.sources} lastVerified={data.lastVerified} />
         </p>
 
         <p className="text-lg text-muted-foreground mb-6">
