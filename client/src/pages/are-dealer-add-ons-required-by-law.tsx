@@ -8,6 +8,8 @@ import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 const LEGAL_CLARITY_MESSAGE = `I'd like to clarify something before we proceed. In reviewing the quote, I see several charges listed alongside taxes and registration. Can you confirm in writing which of these are legally required government fees versus which are dealer-elected products or services? I want to make sure I understand what I'm legally obligated to pay versus what's a dealership business decision.`;
 
@@ -50,7 +52,7 @@ export default function AreDealerAddOnsRequiredByLaw() {
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
         <p className="text-lg text-muted-foreground mb-6">
-          No. Dealer add-ons are not required by law. The only charges legally mandated in a car purchase are government fees set by your state — not products the dealership chose to add to the vehicle.
+          No. Dealer add-ons are not required by law. The only charges legally mandated in a car purchase are government fees set by your state — not products the dealership chose to add to the vehicle.{" "}<SourceCitation sources={ARTICLE_SOURCES["are-dealer-add-ons-required-by-law"].sources} lastVerified={ARTICLE_SOURCES["are-dealer-add-ons-required-by-law"].lastVerified} />
         </p>
 
         <p className="text-lg text-muted-foreground mb-6">

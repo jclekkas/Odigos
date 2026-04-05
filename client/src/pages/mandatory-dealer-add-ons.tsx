@@ -6,6 +6,8 @@ import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 export default function MandatoryDealerAddOns() {
   useEffect(() => {
@@ -27,7 +29,7 @@ export default function MandatoryDealerAddOns() {
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-4">
-              Walk into almost any dealership and you'll eventually hear some version of: "These add-ons are already installed — they're part of the vehicle." Paint protection, nitrogen-filled tires, VIN etching, fabric coating, wheel locks, window tinting. The list varies by dealer, but the approach is the same: present optional products as if they're non-negotiable.
+              Walk into almost any dealership and you'll eventually hear some version of: "These add-ons are already installed — they're part of the vehicle." Paint protection, nitrogen-filled tires, VIN etching, fabric coating, wheel locks, window tinting. The list varies by dealer, but the approach is the same: present optional products as if they're non-negotiable.{" "}<SourceCitation sources={ARTICLE_SOURCES["mandatory-dealer-add-ons"].sources} lastVerified={ARTICLE_SOURCES["mandatory-dealer-add-ons"].lastVerified} />
             </p>
             <p className="text-lg text-muted-foreground mb-10">
               The truth? Almost none of these add-ons are legally required. Understanding what's truly mandatory versus what's dealer profit padding can save you hundreds — sometimes thousands — on your next car purchase.

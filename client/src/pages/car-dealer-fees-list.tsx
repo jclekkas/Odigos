@@ -8,6 +8,8 @@ import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 const FEES_MESSAGE = `Hi — before I come in, can you send me the full out-the-door price with every fee listed on its own line? I'd like to see the vehicle price, doc fee, any dealer-installed accessories, taxes, title, registration, and any other charges — all itemized. That way I can compare apples to apples. Thanks.`;
 
@@ -50,7 +52,7 @@ export default function CarDealerFeesList() {
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">
-              Walk into any dealership and the sticker price is just the starting point. By the time you reach the finance office, a stack of fees — some required, some invented — can add hundreds or thousands to the total. This page lists the most common dealer fees you'll encounter, explains what each one actually covers, and tells you which ones deserve a closer look.
+              Walk into any dealership and the sticker price is just the starting point. By the time you reach the finance office, a stack of fees — some required, some invented — can add hundreds or thousands to the total. This page lists the most common dealer fees you'll encounter, explains what each one actually covers, and tells you which ones deserve a closer look.{" "}<SourceCitation sources={ARTICLE_SOURCES["car-dealer-fees-list"].sources} lastVerified={ARTICLE_SOURCES["car-dealer-fees-list"].lastVerified} />
             </p>
 
             <p className="text-sm text-muted-foreground mb-6">

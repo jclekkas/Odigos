@@ -6,6 +6,8 @@ import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 export default function MonthlyPaymentTrap() {
   useEffect(() => {
@@ -27,7 +29,8 @@ export default function MonthlyPaymentTrap() {
           
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">
-              When a dealer asks "What monthly payment are you looking for?" instead of discussing the total price, that's a negotiation tactic, not a helpful question. Payment-focused selling shifts your attention away from the numbers that actually matter: the vehicle price, the interest rate, the loan term, and the total amount you'll pay over the life of the loan.
+              When a dealer asks "What monthly payment are you looking for?" instead of discussing the total price, that's a negotiation tactic, not a helpful question. Payment-focused selling shifts your attention away from the numbers that actually matter: the vehicle price, the interest rate, the loan term, and the total amount you'll pay over the life of the loan.{" "}
+              <SourceCitation sources={ARTICLE_SOURCES["monthly-payment-trap"].sources} lastVerified={ARTICLE_SOURCES["monthly-payment-trap"].lastVerified} />
             </p>
 
             <p className="text-sm text-muted-foreground mb-6">

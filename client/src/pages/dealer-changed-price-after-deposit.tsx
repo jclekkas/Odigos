@@ -8,6 +8,8 @@ import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 const DEPOSIT_PRICE_CHANGE_MESSAGE = `Hi, I'd like to follow up on our agreement. The price I was quoted when I put down my deposit was different from what I'm now being asked to pay. Can you provide a written explanation of exactly what changed and why? I'd also like to understand my options for a full refund of my deposit if we can't agree on the original terms.`;
 
@@ -50,7 +52,7 @@ export default function DealerChangedPriceAfterDeposit() {
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">
-              You agreed on a price, put down a deposit, and now the dealer is telling you the numbers have changed. Maybe they say the manager didn't approve the deal, or that the rebate expired, or that financing fell through. Whatever the reason, it feels like a bait-and-switch — because in many cases, that's exactly what it is.
+              You agreed on a price, put down a deposit, and now the dealer is telling you the numbers have changed. Maybe they say the manager didn't approve the deal, or that the rebate expired, or that financing fell through. Whatever the reason, it feels like a bait-and-switch — because in many cases, that's exactly what it is.{" "}<SourceCitation sources={ARTICLE_SOURCES["dealer-changed-price-after-deposit"].sources} lastVerified={ARTICLE_SOURCES["dealer-changed-price-after-deposit"].lastVerified} />
             </p>
 
             <p className="text-sm text-muted-foreground mb-6">

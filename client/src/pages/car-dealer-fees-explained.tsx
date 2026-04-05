@@ -6,6 +6,8 @@ import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 export default function CarDealerFeesExplained() {
   useEffect(() => {
@@ -26,7 +28,7 @@ export default function CarDealerFeesExplained() {
           </h1>
           
           <p className="text-lg text-muted-foreground mb-6">
-            When you buy a car, the sale price is only part of what you'll pay. Dealers add a range of fees — some required by law, others entirely optional, even when they're not presented that way. Knowing the difference can save you hundreds or thousands.
+            When you buy a car, the sale price is only part of what you'll pay. Dealers add a range of fees — some required by law, others entirely optional, even when they're not presented that way. Knowing the difference can save you hundreds or thousands.{" "}<SourceCitation sources={ARTICLE_SOURCES["car-dealer-fees-explained"].sources} lastVerified={ARTICLE_SOURCES["car-dealer-fees-explained"].lastVerified} />
           </p>
 
           <p className="text-sm text-muted-foreground mb-6">

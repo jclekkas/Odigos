@@ -8,6 +8,8 @@ import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 const ADDONS_MESSAGE = `Hi — I'm interested in the vehicle but I'd like to see a breakdown of every dealer-installed add-on included in the price. For each one, please list the product name, what it does, and the individual cost. I'd also like to know which add-ons can be removed and what the out-the-door price would be without them. Thanks.`;
 
@@ -50,7 +52,7 @@ export default function DealerAddOnsList() {
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">
-              When you buy a car from a dealership, the price you were quoted often includes extras you never asked for. These dealer add-ons — sometimes called "dealer-installed options" or "accessories" — are products or services the dealership adds to the vehicle before you arrive. They're a significant profit center for the dealer, and most of them are completely optional.
+              When you buy a car from a dealership, the price you were quoted often includes extras you never asked for. These dealer add-ons — sometimes called "dealer-installed options" or "accessories" — are products or services the dealership adds to the vehicle before you arrive. They're a significant profit center for the dealer, and most of them are completely optional.{" "}<SourceCitation sources={ARTICLE_SOURCES["dealer-add-ons-list"].sources} lastVerified={ARTICLE_SOURCES["dealer-add-ons-list"].lastVerified} />
             </p>
 
             <p className="text-lg text-muted-foreground mb-6">

@@ -7,6 +7,8 @@ import { setSeoMeta } from "@/lib/seo";
 import { articleSchema, faqPageSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 const OTD_REQUEST = `I'm ready to move forward if the numbers make sense. Can you please send the full out-the-door price including all fees, taxes, and add-ons so I can review before coming in?`;
 
@@ -108,7 +110,7 @@ export default function DealerWontGiveOtdPrice() {
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-4">
-              If a dealer won't give you an out-the-door (OTD) price, that's not random. It's usually one of several <Link href="/dealer-pricing-tactics" className="underline text-foreground" data-testid="link-inline-hub">common dealer pricing tactics</Link>.
+              If a dealer won't give you an out-the-door (OTD) price, that's not random. It's usually one of several <Link href="/dealer-pricing-tactics" className="underline text-foreground" data-testid="link-inline-hub">common dealer pricing tactics</Link>.{" "}<SourceCitation sources={ARTICLE_SOURCES["dealer-wont-give-otd-price"].sources} lastVerified={ARTICLE_SOURCES["dealer-wont-give-otd-price"].lastVerified} />
             </p>
             <p className="text-muted-foreground mb-3">
               An out-the-door price includes:

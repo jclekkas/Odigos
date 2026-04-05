@@ -8,6 +8,8 @@ import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 const DECLINE_ADDONS_MESSAGE = `I'd like to move forward with the vehicle, but without the dealer-installed add-ons. Please send me an updated out-the-door price with only the base vehicle price, taxes, title, registration, and your documentation fee. If any add-ons can't be removed, please list each one separately with pricing so I can evaluate them individually.`;
 
@@ -50,7 +52,7 @@ export default function AreDealerAddOnsMandatory() {
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">
-              You found the car you want, asked for the price, and the quote came back with a list of extras you didn't ask for — paint protection, fabric coating, VIN etching, nitrogen tires, a "protection package." The dealer says they're included, already installed, or required. In almost every case, they're not.
+              You found the car you want, asked for the price, and the quote came back with a list of extras you didn't ask for — paint protection, fabric coating, VIN etching, nitrogen tires, a "protection package." The dealer says they're included, already installed, or required. In almost every case, they're not.{" "}<SourceCitation sources={ARTICLE_SOURCES["are-dealer-add-ons-mandatory"].sources} lastVerified={ARTICLE_SOURCES["are-dealer-add-ons-mandatory"].lastVerified} />
             </p>
 
             <p className="text-lg text-muted-foreground mb-6">

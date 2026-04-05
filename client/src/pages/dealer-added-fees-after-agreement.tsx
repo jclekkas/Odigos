@@ -8,6 +8,8 @@ import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 const FEES_CHANGED_MESSAGE = `Thanks. Before I move forward, I need the updated out-the-door price in writing with every added fee itemized. Please separate taxes and government fees from dealer-installed products or optional add-ons. If anything was added after our earlier quote, please show exactly what changed and why.`;
 
@@ -50,7 +52,7 @@ export default function DealerAddedFeesAfterAgreement() {
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground mb-6">
-              You thought the price was settled. Maybe you got a number over text, agreed on a worksheet, or shook hands on the sales floor. Then the paperwork came out — and the total was higher. New line items appeared that weren't part of the original conversation.
+              You thought the price was settled. Maybe you got a number over text, agreed on a worksheet, or shook hands on the sales floor. Then the paperwork came out — and the total was higher. New line items appeared that weren't part of the original conversation.{" "}<SourceCitation sources={ARTICLE_SOURCES["dealer-added-fees-after-agreement"].sources} lastVerified={ARTICLE_SOURCES["dealer-added-fees-after-agreement"].lastVerified} />
             </p>
 
             <p className="text-lg text-muted-foreground mb-6">
