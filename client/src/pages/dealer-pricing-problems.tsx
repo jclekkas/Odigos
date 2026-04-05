@@ -183,7 +183,7 @@ export default function DealerPricingProblems() {
             className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
             data-testid="button-hub-cta"
           >
-            Check My Deal with Odigos
+            Check My Quote
           </button>
         </Link>
       </div>

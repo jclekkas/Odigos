@@ -21,7 +21,7 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row items-center gap-3">
           <Button variant="cta" asChild size="lg" className="gap-2" data-testid="button-404-analyze">
             <Link href="/analyze">
-              Check a Dealer Quote
+              Check My Quote
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>

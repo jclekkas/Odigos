@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { AlertTriangle, ArrowRight, Check, CheckCircle2, Lock, Quote } from "lucide-react";
+import { AlertTriangle, ArrowRight, Check, CheckCircle2, Quote } from "lucide-react";
 import { trackPageView, trackCtaClick } from "@/lib/tracking";
 import { capture } from "@/lib/analytics";
 import SiteHeader from "@/components/SiteHeader";
@@ -28,7 +28,7 @@ const faqsSchema = [
   },
   {
     q: "How long does it take?",
-    a: "About 60 seconds. No account or signup required.",
+    a: "Under a minute. No account or signup required.",
   },
 ];
 
@@ -46,7 +46,7 @@ export default function Landing() {
   useEffect(() => {
     return setSeoMeta({
       title: "Odigos — Dealer Quote Analyzer | Detect Junk Fees & Hidden Charges",
-      description: "Paste your dealer quote. Odigos detects junk fees, hidden charges, and missing details in 60 seconds. Get a GO/NO-GO verdict and a ready-to-send dealer reply. Free preview, full analysis $49.",
+      description: "Paste your dealer quote. Odigos detects junk fees, hidden charges, and missing details in under a minute. Get a GO/NO-GO verdict and a ready-to-send dealer reply. Free preview, full analysis $49.",
       path: "/",
     });
   }, []);
@@ -95,14 +95,14 @@ export default function Landing() {
                   className="font-serif text-balance text-4xl font-bold tracking-tight sm:text-5xl lg:text-[3.25rem] text-foreground leading-[1.15]"
                   data-testid="text-hero-headline"
                 >
-                  Is your dealer quote fair?
+                  Spot hidden fees before you sign
                 </h1>
 
                 <p
                   className="mt-5 text-lg text-foreground/75 leading-relaxed max-w-lg mx-auto lg:mx-0"
                   data-testid="text-hero-subheadline"
                 >
-                  Paste it below. In 60 seconds we'll flag junk fees, missing details, and pricing tricks — then give you the exact words to say back.
+                  Paste your dealer quote. In under a minute, you'll see every hidden fee, what's missing, and the exact reply to send back.
                 </p>
 
                 <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
@@ -116,16 +116,16 @@ export default function Landing() {
                     <Link
                       href="/analyze"
                       onClick={() => {
-                        trackCtaClick("hero-analyze", "Check Your Deal");
+                        trackCtaClick("hero-analyze", "Check My Quote");
                         capture("landing_cta_clicked", { location: "hero" });
                       }}
                     >
-                      Check Your Deal
+                      Check My Quote
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
                   <span className="text-sm text-muted-foreground">
-                    Free instant preview &middot; No signup
+                    Free instant preview &middot; No signup &middot; No credit card
                   </span>
                 </div>
 
@@ -186,9 +186,8 @@ export default function Landing() {
                   <div className="border-t border-amber-500/15 pt-3">
                     <div className="rounded-lg border border-border/50 bg-background/60 p-3 space-y-1.5 relative overflow-hidden">
                       <div className="flex items-center gap-1.5 mb-1">
-                        <Lock className="w-3 h-3 text-muted-foreground/60" />
                         <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-                          Full review &mdash; $49
+                          Full analysis &mdash; $49
                         </p>
                       </div>
                       {["Missing info checklist", "Copy-paste dealer reply", "Negotiation guidance"].map((line) => (
@@ -304,7 +303,7 @@ export default function Landing() {
                   ))}
                 </ul>
                 <Button asChild variant="outline" className="w-full" data-testid="button-cta-free-preview">
-                  <Link href="/analyze">Try Free</Link>
+                  <Link href="/analyze">Check My Quote &mdash; Free</Link>
                 </Button>
               </div>
               <div className="rounded-lg border-2 border-primary bg-primary/5 p-6 relative" data-testid="card-pricing-tier2">
@@ -335,11 +334,11 @@ export default function Landing() {
                   <Link
                     href="/analyze"
                     onClick={() => {
-                      trackCtaClick("pricing-full-review", "Get Full Review");
+                      trackCtaClick("pricing-full-review", "Get Full Analysis");
                       capture("landing_cta_clicked", { location: "pricing" });
                     }}
                   >
-                    Get Full Review &mdash; $49
+                    Get Full Analysis &mdash; $49
                   </Link>
                 </Button>
               </div>
@@ -385,7 +384,7 @@ export default function Landing() {
             <h2 className="text-2xl sm:text-3xl font-bold mb-3">
               Don't sign until you check.
             </h2>
-            <p className="text-muted-foreground mb-8">Free. 60 seconds. No signup.</p>
+            <p className="text-muted-foreground mb-8">Free. Under a minute. No signup. No credit card.</p>
             <Button
               variant="cta"
               asChild
@@ -396,11 +395,11 @@ export default function Landing() {
               <Link
                 href="/analyze"
                 onClick={() => {
-                  trackCtaClick("final-cta", "Check Your Deal");
+                  trackCtaClick("final-cta", "Check My Quote");
                   capture("landing_cta_clicked", { location: "final" });
                 }}
               >
-                Check Your Deal
+                Check My Quote
               </Link>
             </Button>
           </div>

@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { capture } from "@/lib/analytics";
+import { Menu, X } from "lucide-react";
 
 function useScrollToHash() {
   const [location, navigate] = useLocation();
@@ -19,12 +21,14 @@ function useScrollToHash() {
 export default function SiteHeader() {
   const [location] = useLocation();
   const scrollToHash = useScrollToHash();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   function handleHashLink(e: React.MouseEvent<HTMLAnchorElement>, hash: string) {
     if (location === "/") {
       e.preventDefault();
       scrollToHash(hash);
     }
+    setMobileMenuOpen(false);
   }
 
   return (
@@ -70,12 +74,47 @@ export default function SiteHeader() {
 
         <div className="flex items-center gap-3">
           <Button variant="cta" size="sm" asChild data-testid="button-cta-header">
-            <Link href="/analyze" onClick={() => capture("landing_cta_clicked", { location: "header", cta_text: "Check a Dealer Quote" })}>
-              Check a Dealer Quote
+            <Link href="/analyze" onClick={() => capture("landing_cta_clicked", { location: "header", cta_text: "Check My Quote" })}>
+              Check My Quote
             </Link>
           </Button>
+          <button
+            type="button"
+            className="md:hidden p-2 text-muted-foreground hover:text-foreground transition-colors"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+            data-testid="button-mobile-menu"
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
       </div>
+
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-border/60 bg-background px-4 py-3 space-y-2" data-testid="mobile-nav">
+          <Link
+            href="/dealer-pricing-problems"
+            className="block text-sm text-muted-foreground py-2 hover:text-foreground transition-colors"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Dealer Tactics
+          </Link>
+          <a
+            href="/#pricing"
+            onClick={(e) => handleHashLink(e, "pricing")}
+            className="block text-sm text-muted-foreground py-2 hover:text-foreground transition-colors"
+          >
+            Pricing
+          </a>
+          <a
+            href="/#faq"
+            onClick={(e) => handleHashLink(e, "faq")}
+            className="block text-sm text-muted-foreground py-2 hover:text-foreground transition-colors"
+          >
+            Questions
+          </a>
+        </div>
+      )}
     </header>
   );
 }

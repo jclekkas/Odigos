@@ -66,7 +66,7 @@ export function productSchema() {
         "@type": "Review",
         "author": { "@type": "Person", "name": "Marcus T." },
         "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
-        "reviewBody": "Caught two fees I had no idea were optional — a $399 protection package and an inflated doc fee. The copy-paste reply I sent the dealer got both removed. Paid for itself in about 60 seconds.",
+        "reviewBody": "Caught two fees I had no idea were optional — a $399 protection package and an inflated doc fee. The copy-paste reply I sent the dealer got both removed. Paid for itself in under a minute.",
         "datePublished": "2026-02-14"
       },
       {

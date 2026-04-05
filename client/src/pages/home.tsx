@@ -44,7 +44,8 @@ import {
   Upload,
   Download,
   Share2,
-  Link2 as LinkIcon
+  Link2 as LinkIcon,
+  Sparkles
 } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
@@ -414,12 +415,12 @@ function MissingInfoCard({ items, confidenceLevel, verdictLabel, onCopy }: Missi
 const SAMPLE_GOOD_DEAL = `Hey! Confirming we can do $32,245.18 out-the-door on a 2026 Kia Sportage LX AWD with 1.99% APR for 60 months (tier 1 credit). Taxes and fees included. Let me know what time you can come in and we'll have the buyer's order ready.`;
 
 const SAMPLE_BAD_DEAL = `Hey my friend!! Great news!!!
-We can get you driving TODAY for only $589/month
-No worries about price details, we'll explain everything when you get here.
+We can get you driving TODAY for only $589/month on the 2026 Hyundai Tucson SEL!
+36 months, first month's payment due at signing.
+No worries about the full price breakdown, we'll explain everything when you get here.
 APR depends on credit but it will be competitive!
-Low down payment options available.
-We added some protection packages that everyone gets, but we can talk about that later.
-Let me know what time you're coming in today!!!`;
+Doc fee: $799. Protection packages included (everyone gets those).
+Just need your license and a recent pay stub — let me know what time you're coming in today!!!`;
 
 type UnlockTier = "free" | "49";
 
@@ -439,8 +440,8 @@ function LockedTier2Section({ onUnlock, isLoading, stripeConfigured, ctaLabel }:
     <Card className="border-border bg-muted/20">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base font-semibold">
-          <Lock className="w-4 h-4 text-muted-foreground" />
-          Unlock the full review
+          <Sparkles className="w-4 h-4 text-amber-500" />
+          Get the complete analysis
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -458,7 +459,7 @@ function LockedTier2Section({ onUnlock, isLoading, stripeConfigured, ctaLabel }:
           ))}
         </ul>
         <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-          Use the full review when you need to reply to the dealer, pressure-test the quote, or decide whether to keep negotiating.
+          Includes everything you need to respond to the dealer with confidence.
         </p>
         <Button
           variant="default"
@@ -475,15 +476,15 @@ function LockedTier2Section({ onUnlock, isLoading, stripeConfigured, ctaLabel }:
           ) : !stripeConfigured ? (
             "Checkout unavailable"
           ) : (
-            ctaLabel ?? "Unlock Full Deal Review — $49 (one-time)"
+            ctaLabel ?? "Get Full Analysis — $49 (one-time)"
           )}
         </Button>
         <p className="text-xs text-muted-foreground text-center mt-2">
-          Unlocks immediately after payment · One-time · Not affiliated with any dealership
+          Instant access after payment · One-time · Not affiliated with any dealership
         </p>
         <p className="text-xs text-muted-foreground text-center mt-4">
           <Link href="/example-analysis" className="underline underline-offset-2 hover:text-foreground transition-colors" data-testid="link-example-analysis-paywall">
-            Still unsure? See a full example analysis
+            See what's included — view example
           </Link>
         </p>
       </CardContent>
@@ -905,8 +906,8 @@ const ALLOWED_UPLOAD_TYPES = ["image/png", "image/jpeg", "image/webp", "applicat
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
 const UNLOCK_CTA_LABELS: Record<string, string> = {
-  control: "Unlock Full Deal Review — $49 (one-time)",
-  value: "Unlock Full Deal Review — $49 (Less Than Most Doc Fees)",
+  control: "Get Full Analysis — $49 (one-time)",
+  value: "Get Full Analysis — $49 (Less Than Most Doc Fees)",
 };
 
 export default function Home() {
@@ -921,9 +922,11 @@ export default function Home() {
   const [uploadLoading, setUploadLoading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [inputTab, setInputTab] = useState<"paste" | "upload" | "url">("paste");
+  const [uploadSuccess, setUploadSuccess] = useState(false);
   const [urlInput, setUrlInput] = useState("");
   const [urlLoading, setUrlLoading] = useState(false);
   const [urlError, setUrlError] = useState<string | null>(null);
+  const [urlSuccess, setUrlSuccess] = useState(false);
   const [summaryCopied, setSummaryCopied] = useState<"idle" | "success" | "failed">("idle");
   const [scorecardDownloading, setScorecardDownloading] = useState(false);
   const [showDoneState, setShowDoneState] = useState(false);
@@ -1007,7 +1010,7 @@ export default function Home() {
       }
       form.setValue("dealerText", data.text);
       form.setValue("source", "upload");
-      setInputTab("paste");
+      setUploadSuccess(true);
     } catch (err) {
       const reason = "network_error";
       setUploadError("Something went wrong. Please try again or paste the text manually.");
@@ -1036,8 +1039,7 @@ export default function Home() {
       }
       form.setValue("dealerText", data.text);
       form.setValue("source", "url");
-      setInputTab("paste");
-      setUrlInput("");
+      setUrlSuccess(true);
     } catch {
       setUrlError("Something went wrong. Please try again or paste the text manually.");
       capture("url_extract_failed", { reason: "network_error" });
@@ -1316,7 +1318,7 @@ export default function Home() {
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Free preview includes:</p>
           <ul className="space-y-1 text-sm text-muted-foreground" data-testid="list-what-you-get">
             <li>GO / NO-GO verdict with confidence level</li>
-            <li>Deal score out of 100</li>
+            <li>Color-coded deal score (GREEN / YELLOW / RED)</li>
             <li>Pricing terms found in the quote</li>
             <li>Top issues detected (full list in paid review)</li>
           </ul>
@@ -1427,77 +1429,99 @@ export default function Home() {
                   </TabsContent>
 
                   <TabsContent value="upload" className="mt-0">
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept=".png,.jpg,.jpeg,.webp,.pdf"
-                      className="hidden"
-                      onChange={handleFileUpload}
-                      data-testid="input-file-upload"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={uploadLoading}
-                      className="w-full min-h-48 flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-border/80 bg-muted/30 hover:bg-muted/50 hover:border-foreground/20 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                      data-testid="button-upload-file"
-                    >
-                      {uploadLoading ? (
-                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                      ) : (
-                        <Upload className="h-8 w-8 text-muted-foreground" />
-                      )}
-                      <div className="text-center">
-                        <p className="text-sm font-medium text-foreground">
-                          {uploadLoading ? "Processing file…" : "Upload a screenshot or PDF of the dealer quote"}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          PNG, JPG, JPEG, WEBP, or PDF — up to 10 MB
-                        </p>
+                    {uploadSuccess ? (
+                      <div className="w-full min-h-48 flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-emerald-500/40 bg-emerald-500/5">
+                        <Check className="h-8 w-8 text-emerald-600" />
+                        <div className="text-center">
+                          <p className="text-sm font-medium text-foreground">Text extracted from your file</p>
+                          <p className="text-xs text-muted-foreground mt-1">Click "Analyze Deal" below to see your results.</p>
+                        </div>
                       </div>
-                    </button>
-                    {uploadError && (
-                      <p className="text-xs text-destructive mt-2" data-testid="text-upload-error">
-                        {uploadError}
-                      </p>
+                    ) : (
+                      <>
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept=".png,.jpg,.jpeg,.webp,.pdf"
+                          className="hidden"
+                          onChange={handleFileUpload}
+                          data-testid="input-file-upload"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          disabled={uploadLoading}
+                          className="w-full min-h-48 flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-border/80 bg-muted/30 hover:bg-muted/50 hover:border-foreground/20 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                          data-testid="button-upload-file"
+                        >
+                          {uploadLoading ? (
+                            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                          ) : (
+                            <Upload className="h-8 w-8 text-muted-foreground" />
+                          )}
+                          <div className="text-center">
+                            <p className="text-sm font-medium text-foreground">
+                              {uploadLoading ? "Processing file…" : "Upload a screenshot or PDF of the dealer quote"}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              PNG, JPG, JPEG, WEBP, or PDF — up to 10 MB
+                            </p>
+                          </div>
+                        </button>
+                        {uploadError && (
+                          <p className="text-xs text-destructive mt-2" data-testid="text-upload-error">
+                            {uploadError}
+                          </p>
+                        )}
+                      </>
                     )}
                   </TabsContent>
                   <TabsContent value="url" className="mt-0">
-                    <div className="space-y-3">
-                      <div className="flex gap-2">
-                        <input
-                          type="url"
-                          value={urlInput}
-                          onChange={(e) => setUrlInput(e.target.value)}
-                          placeholder="https://www.dealer-website.com/listing/..."
-                          className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                          disabled={urlLoading}
-                          data-testid="input-url"
-                        />
-                        <Button
-                          type="button"
-                          onClick={handleUrlExtract}
-                          disabled={urlLoading || !urlInput.trim()}
-                          variant="outline"
-                          size="default"
-                          data-testid="button-fetch-url"
-                        >
-                          {urlLoading ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            "Fetch"
-                          )}
-                        </Button>
+                    {urlSuccess ? (
+                      <div className="w-full min-h-32 flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-emerald-500/40 bg-emerald-500/5 p-4">
+                        <Check className="h-8 w-8 text-emerald-600" />
+                        <div className="text-center">
+                          <p className="text-sm font-medium text-foreground">Quote extracted from URL</p>
+                          <p className="text-xs text-muted-foreground mt-1">Click "Analyze Deal" below to see your results.</p>
+                        </div>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        Paste a dealer listing URL and we'll extract the pricing details automatically.
-                      </p>
-                      {urlError && (
-                        <p className="text-xs text-destructive" data-testid="text-url-error">
-                          {urlError}
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="flex gap-2">
+                          <input
+                            type="url"
+                            value={urlInput}
+                            onChange={(e) => setUrlInput(e.target.value)}
+                            placeholder="https://www.dealer-website.com/listing/..."
+                            className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            disabled={urlLoading}
+                            data-testid="input-url"
+                          />
+                          <Button
+                            type="button"
+                            onClick={handleUrlExtract}
+                            disabled={urlLoading || !urlInput.trim()}
+                            variant="outline"
+                            size="default"
+                            data-testid="button-fetch-url"
+                          >
+                            {urlLoading ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              "Fetch"
+                            )}
+                          </Button>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Paste a link from Autotrader, Cars.com, CarGurus, or any dealer website. We'll extract the pricing details automatically.
                         </p>
-                      )}
-                    </div>
+                        {urlError && (
+                          <p className="text-xs text-destructive" data-testid="text-url-error">
+                            {urlError}
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </TabsContent>
                 </Tabs>
               </CardContent>
@@ -1520,7 +1544,7 @@ export default function Home() {
                       <CardTitle className="text-lg flex items-center gap-2">
                         <Info className="w-5 h-5 text-muted-foreground" />
                         Optional Details
-                        <span className="text-sm font-normal text-muted-foreground">(improves accuracy)</span>
+                        <span className="text-sm font-normal text-muted-foreground">(helps catch state-specific fee violations)</span>
                       </CardTitle>
                       {isOptionalOpen ? (
                         <ChevronUp className="w-5 h-5 text-muted-foreground" />
@@ -1683,6 +1707,10 @@ export default function Home() {
             </Collapsible>
 
             <div className="border-t border-border/40 pt-5">
+            <p className="text-xs text-muted-foreground text-center mb-3" data-testid="text-data-disclosure">
+              Pricing signals (not your personal details) are stored anonymously to improve our dealer fee database. Your submission is not shared with any dealership.{" "}
+              <a href="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</a>
+            </p>
             <Button
               variant="cta"
               type="submit"
@@ -1704,17 +1732,16 @@ export default function Home() {
             </Button>
             {analyzeMutation.isPending ? (
               <p className="text-xs text-muted-foreground text-center mt-2" data-testid="text-what-happens-next">
-                Still working — this is normal and usually takes 40–60 seconds. Stay on this page.
+                Still working — this is normal and usually takes under a minute. Stay on this page.
               </p>
             ) : (
               <p className="text-xs text-muted-foreground text-center mt-2" data-testid="text-what-happens-next">
-                Results usually take about 40–60 seconds and will appear below.
+                Results appear below — usually under a minute.
               </p>
             )}
             {analyzeMutation.isPending && <AnalysisProgressBar isPending={analyzeMutation.isPending} />}
-            <p className="text-xs text-muted-foreground text-center mt-3" data-testid="text-data-disclosure">
-              Pricing signals (not your personal details) are stored anonymously to improve our dealer fee database. Your submission is not shared with any dealership.{" "}
-              <a href="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</a>
+            <p className="text-xs text-muted-foreground text-center mt-2">
+              Free &middot; No credit card &middot; Results in under a minute
             </p>
             </div>
           </form>

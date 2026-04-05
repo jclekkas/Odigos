@@ -8,14 +8,14 @@ export default function ArticleCta() {
       data-testid="section-article-cta"
     >
       <h3 className="text-base font-semibold text-foreground mb-2">
-        Not sure if your dealer quote is complete?
+        Check your dealer quote for hidden fees
       </h3>
       <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-        Paste the message or quote you received. Odigos checks for missing out-the-door pricing, hidden fees, and common dealer tactics — results usually take about a minute.
+        Paste your quote — we'll flag junk fees, missing details, and pricing tricks in under a minute. Free, no signup required.
       </p>
       <Link href="/analyze">
         <Button variant="cta" size="lg" data-testid="button-cta-article">
-          Check My Deal with Odigos
+          Check My Quote
         </Button>
       </Link>
       <p className="mt-3 text-xs text-muted-foreground">

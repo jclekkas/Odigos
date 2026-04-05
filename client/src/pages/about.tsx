@@ -143,7 +143,7 @@ export default function About() {
         <div className="pt-4">
           <Button variant="cta" asChild size="lg" className="gap-2" data-testid="button-cta-about">
             <Link href="/analyze">
-              Check a Dealer Quote
+              Check My Quote
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
