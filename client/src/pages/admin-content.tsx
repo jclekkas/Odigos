@@ -1,12 +1,21 @@
 import { useState } from "react";
-import { AdminNav } from "@/components/admin-nav";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowLeft, Eye, TrendingUp, FileText, MousePointerClick, AlertTriangle, BarChart3, Users } from "lucide-react";
-import { useAdminKey } from "@/hooks/use-admin-key";
+import { ArrowLeft, Eye, TrendingUp, FileText, MousePointerClick, BarChart3, Users } from "lucide-react";
+import { AdminShell } from "@/components/admin-shell";
+import {
+  type DateRange,
+  DateRangeSelector,
+  PanelErrorCard,
+  ChartErrorBoundary,
+  TOOLTIP_STYLE,
+  REFETCH_SLOW,
+  refetchUnlessPermanent,
+} from "@/components/admin-dashboard-utils";
+import { formatNumber } from "@/lib/format";
 import {
   BarChart,
   Bar,
@@ -16,15 +25,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-
-type DateRange = "today" | "week" | "month" | "all";
-
-const RANGE_LABELS: Record<DateRange, string> = {
-  today: "Today",
-  week: "Last 7 Days",
-  month: "Last 30 Days",
-  all: "All Time",
-};
 
 interface ContentPage {
   page: string;
@@ -46,15 +46,15 @@ interface ContentMetrics {
 
 type SortKey = "views" | "sessions" | "analyzeStarts" | "conversions" | "conversionRate" | "ctaClicks";
 
-const TOOLTIP_STYLE = {
-  backgroundColor: "hsl(var(--card))",
-  border: "1px solid hsl(var(--border))",
-  borderRadius: "8px",
-};
-
 export default function AdminContent() {
-  const [adminKey, setAdminKey, clearKey] = useAdminKey();
-  const [keyInput, setKeyInput] = useState("");
+  return (
+    <AdminShell>
+      {(adminKey, clearKey) => <AdminContentInner adminKey={adminKey} clearKey={clearKey} />}
+    </AdminShell>
+  );
+}
+
+function AdminContentInner({ adminKey, clearKey }: { adminKey: string; clearKey: () => void }) {
   const [range, setRange] = useState<DateRange>("all");
   const [sortKey, setSortKey] = useState<SortKey>("views");
   const [showAll, setShowAll] = useState(false);
@@ -68,10 +68,7 @@ export default function AdminContent() {
       if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
-    refetchInterval: q => {
-      const errMsg = (q.state.error as Error)?.message ?? "";
-      return errMsg.startsWith("401") ? false : 300000;
-    },
+    refetchInterval: refetchUnlessPermanent(REFETCH_SLOW),
     enabled: !!adminKey,
   });
 
@@ -105,36 +102,7 @@ export default function AdminContent() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-background">
-      <AdminNav />
-      {!adminKey && (
-        <div className="flex items-center justify-center py-24">
-          <div className="w-full max-w-sm space-y-4 p-6">
-            <h1 className="text-xl font-bold text-center">Admin Access</h1>
-            <p className="text-sm text-muted-foreground text-center">Enter your admin key to continue</p>
-            <div className="flex gap-2">
-              <input
-                type="password"
-                className="flex-1 border rounded-md px-3 py-2 text-sm bg-background"
-                placeholder="Admin key"
-                value={keyInput}
-                onChange={(e) => setKeyInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter" && keyInput) setAdminKey(keyInput); }}
-                data-testid="input-admin-key"
-                autoFocus
-              />
-              <Button
-                onClick={() => { if (keyInput) setAdminKey(keyInput); }}
-                disabled={!keyInput}
-                data-testid="button-submit-admin-key"
-              >
-                Go
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-      {adminKey && (<>
+    <>
       <div className="border-b bg-card/50 backdrop-blur-sm sticky top-12 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -156,22 +124,7 @@ export default function AdminContent() {
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="flex rounded-md border overflow-hidden">
-                {(Object.keys(RANGE_LABELS) as DateRange[]).map((r) => (
-                  <button
-                    key={r}
-                    onClick={() => setRange(r)}
-                    data-testid={`range-${r}`}
-                    className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-                      range === r
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                    }`}
-                  >
-                    {RANGE_LABELS[r]}
-                  </button>
-                ))}
-              </div>
+              <DateRangeSelector value={range} onChange={setRange} />
               <Button
                 variant="ghost"
                 size="sm"
@@ -187,17 +140,7 @@ export default function AdminContent() {
       </div>
 
       <div className="max-w-7xl mx-auto p-6 space-y-6">
-        {isError && (
-          <div className="flex items-start gap-3 p-4 rounded-lg border border-red-400 bg-red-50 dark:bg-red-950/20" data-testid="error-content">
-            <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-red-700 dark:text-red-400 text-sm font-medium">
-                Failed to load content data {(error as Error)?.message ? `(HTTP ${(error as Error).message})` : ""}
-              </p>
-              <p className="text-red-600 dark:text-red-500 text-xs mt-0.5">Check your admin key or try again.</p>
-            </div>
-          </div>
-        )}
+        {isError && <PanelErrorCard error={error} label="content data" />}
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <Card data-testid="stat-total-views">
@@ -252,6 +195,7 @@ export default function AdminContent() {
             </CardHeader>
             <CardContent>
               <div className="h-72">
+                <ChartErrorBoundary fallbackHeight="h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
@@ -268,6 +212,7 @@ export default function AdminContent() {
                     <Bar dataKey="conversions" fill="#22c55e" radius={[0, 4, 4, 0]} name="Conversions" />
                   </BarChart>
                 </ResponsiveContainer>
+                </ChartErrorBoundary>
               </div>
             </CardContent>
           </Card>
@@ -382,7 +327,6 @@ export default function AdminContent() {
           </CardContent>
         </Card>
       </div>
-      </>)}
-    </div>
+    </>
   );
 }

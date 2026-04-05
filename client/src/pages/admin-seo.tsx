@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { AdminNav } from "@/components/admin-nav";
-import { useAdminKey } from "@/hooks/use-admin-key";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { AdminShell } from "@/components/admin-shell";
+import { PanelErrorCard, PanelSkeleton } from "@/components/admin-dashboard-utils";
 import {
   ArrowLeft,
   RefreshCw,
@@ -312,8 +312,14 @@ function SetupCard() {
 }
 
 export default function AdminSeo() {
-  const [adminKey, setAdminKey, clearKey] = useAdminKey();
-  const [keyInput, setKeyInput] = useState("");
+  return (
+    <AdminShell>
+      {(adminKey, clearKey) => <AdminSeoInner adminKey={adminKey} clearKey={clearKey} />}
+    </AdminShell>
+  );
+}
+
+function AdminSeoInner({ adminKey, clearKey }: { adminKey: string; clearKey: () => void }) {
 
   const gscQuery = useQuery<GscSummary>({
     queryKey: ["/api/admin/gsc/summary", adminKey],
@@ -341,36 +347,7 @@ export default function AdminSeo() {
   const setupRequired = data?.setup_required === true;
 
   return (
-    <div className="min-h-screen bg-background">
-      <AdminNav />
-      {!adminKey && (
-        <div className="flex items-center justify-center py-24">
-          <div className="w-full max-w-sm space-y-4 p-6">
-            <h1 className="text-xl font-bold text-center">Admin Access</h1>
-            <p className="text-sm text-muted-foreground text-center">Enter your admin key to continue.</p>
-            <div className="flex gap-2">
-              <input
-                type="password"
-                className="flex-1 border rounded-md px-3 py-2 text-sm bg-background"
-                placeholder="Admin key"
-                value={keyInput}
-                onChange={(e) => setKeyInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter" && keyInput) setAdminKey(keyInput); }}
-                data-testid="input-admin-key"
-                autoFocus
-              />
-              <Button
-                onClick={() => { if (keyInput) setAdminKey(keyInput); }}
-                disabled={!keyInput}
-                data-testid="button-submit-admin-key"
-              >
-                Go
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-      {adminKey && (
+    <>
       <div className="p-6">
       <div className="max-w-5xl mx-auto space-y-6">
         <div className="flex items-center justify-between flex-wrap gap-3">
@@ -399,34 +376,7 @@ export default function AdminSeo() {
           </div>
         </div>
 
-        {isError && !setupRequired && (
-          <Card className="border-red-400 bg-red-50 dark:bg-red-950/20" data-testid="banner-error">
-            <CardContent className="pt-4 pb-4">
-              <div className="flex items-start gap-3">
-                <XCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-red-700 dark:text-red-400 font-semibold text-sm">
-                    {errMsg.startsWith("401") ? "Invalid admin key" : "Failed to load SEO data"}
-                  </p>
-                  <p className="text-red-600/80 dark:text-red-400/80 text-xs mt-0.5">
-                    {errMsg.startsWith("401")
-                      ? "The key does not match."
-                      : "Check the server logs for details."}
-                  </p>
-                  {errMsg.startsWith("401") && (
-                    <button
-                      onClick={clearKey}
-                      className="mt-2 text-xs text-red-600 dark:text-red-400 underline hover:no-underline"
-                      data-testid="button-clear-admin-key"
-                    >
-                      Clear key and re-enter
-                    </button>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {isError && !setupRequired && <PanelErrorCard error={gscQuery.error} label="SEO data" />}
 
         {!setupRequired && !isLoading && data?.apiWarnings && data.apiWarnings.length > 0 && (
           <Card className="border-amber-400 bg-amber-50 dark:bg-amber-950/20" data-testid="banner-api-warnings">
@@ -447,9 +397,9 @@ export default function AdminSeo() {
 
         {!setupRequired && isLoading && (
           <div className="space-y-4">
-            <div className="h-28 bg-muted animate-pulse rounded-xl" />
-            <div className="h-40 bg-muted animate-pulse rounded-xl" />
-            <div className="h-40 bg-muted animate-pulse rounded-xl" />
+            <PanelSkeleton height="h-28" />
+            <PanelSkeleton height="h-40" />
+            <PanelSkeleton height="h-40" />
           </div>
         )}
 
@@ -521,7 +471,6 @@ export default function AdminSeo() {
         <GlossaryAccordion />
       </div>
       </div>
-      )}
-    </div>
+    </>
   );
 }
