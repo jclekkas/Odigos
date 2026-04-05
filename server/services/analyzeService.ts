@@ -120,8 +120,8 @@ export async function runAnalysis(data: AnalyzeInput): Promise<AnalyzeServiceRes
   }).catch(err => logger.error("state_detection event failed", { source: "tracking", error: String(err) }));
 
   let stateFeeSection = "";
+  const effectiveCap = stateData?.cpiIndexing?.isIndexed ? stateData.cpiIndexing.currentAmount : stateData?.docFeeCapAmount ?? null;
   if (stateData) {
-    const effectiveCap = stateData.cpiIndexing?.isIndexed ? stateData.cpiIndexing.currentAmount : stateData.docFeeCapAmount;
     const capLine = stateData.docFeeCap
       ? `  Cap: YES — $${effectiveCap} (dealers may NOT charge more)`
       : `  Cap: NO — no state-imposed limit`;
