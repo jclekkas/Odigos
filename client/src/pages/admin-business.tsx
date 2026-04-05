@@ -1,12 +1,27 @@
 import { useState, useEffect } from "react";
 
-import { AdminNav } from "@/components/admin-nav";
-import { useAdminKey } from "@/hooks/use-admin-key";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { AdminShell } from "@/components/admin-shell";
+import {
+  type DateRange,
+  MetricCard,
+  LivePulse,
+  DateRangeSelector,
+  EmptyState,
+  PanelErrorCard,
+  PanelSkeleton,
+  ChartErrorBoundary,
+  ScoreIcon,
+  TOOLTIP_STYLE,
+  REFETCH_SLOW,
+  refetchUnlessPermanent,
+  isPermanentError,
+} from "@/components/admin-dashboard-utils";
+import { formatCurrency, formatCurrencyCompact, formatNumber, formatPercent, formatShortDate } from "@/lib/format";
 import {
   ArrowLeft,
   DollarSign,
@@ -17,9 +32,6 @@ import {
   Eye,
   Clock,
   Target,
-  ArrowUpRight,
-  ArrowDownRight,
-  Minus,
   AlertTriangle,
   MapPin,
   Globe,
@@ -47,139 +59,8 @@ import {
   Legend,
 } from "recharts";
 
-type DateRange = "today" | "week" | "month" | "all";
-
-const RANGE_LABELS: Record<DateRange, string> = {
-  today: "Today",
-  week: "Last 7 Days",
-  month: "Last 30 Days",
-  all: "All Time",
-};
-
-function LivePulse() {
-  return (
-    <div className="flex items-center gap-2">
-      <span className="relative flex h-3 w-3">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-        <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-      </span>
-      <span className="text-xs text-muted-foreground">Live</span>
-    </div>
-  );
-}
-
-function DateRangeSelector({ value, onChange }: { value: DateRange; onChange: (r: DateRange) => void }) {
-  return (
-    <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-      {(Object.keys(RANGE_LABELS) as DateRange[]).map((r) => (
-        <button
-          key={r}
-          onClick={() => onChange(r)}
-          data-testid={`range-${r}`}
-          className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-            value === r
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          {RANGE_LABELS[r]}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function TrendBadge({ current, previous }: { current: number; previous: number }) {
-  if (previous === 0 && current === 0) {
-    return <span className="text-xs text-muted-foreground flex items-center gap-1"><Minus className="h-3 w-3" /> —</span>;
-  }
-  if (previous === 0) {
-    return <span className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1"><ArrowUpRight className="h-3 w-3" /> New</span>;
-  }
-  const change = ((current - previous) / previous) * 100;
-  if (change > 0) {
-    return <span className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1"><ArrowUpRight className="h-3 w-3" /> +{change.toFixed(0)}%</span>;
-  } else if (change < 0) {
-    return <span className="text-xs text-red-600 dark:text-red-400 flex items-center gap-1"><ArrowDownRight className="h-3 w-3" /> {change.toFixed(0)}%</span>;
-  }
-  return <span className="text-xs text-muted-foreground flex items-center gap-1"><Minus className="h-3 w-3" /> —</span>;
-}
-
-function StatCard({
-  title,
-  value,
-  subtitle,
-  icon: Icon,
-  color = "default",
-  trend,
-}: {
-  title: string;
-  value: string | number;
-  subtitle?: string;
-  icon: typeof DollarSign;
-  color?: "default" | "success" | "warning" | "danger";
-  trend?: { current: number; previous: number };
-}) {
-  const colorClasses = {
-    default: "text-foreground",
-    success: "text-green-600 dark:text-green-400",
-    warning: "text-yellow-600 dark:text-yellow-400",
-    danger: "text-red-600 dark:text-red-400",
-  };
-
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
-        <div className="p-2 rounded-md bg-muted">
-          <Icon className="h-4 w-4 text-muted-foreground" />
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div
-          className={`text-3xl font-bold ${colorClasses[color]}`}
-          data-testid={`stat-${title.toLowerCase().replace(/\s+/g, "-")}`}
-        >
-          {value}
-        </div>
-        <div className="flex items-center justify-between mt-1 gap-2">
-          {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
-          {trend && <TrendBadge current={trend.current} previous={trend.previous} />}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function EmptyState({ icon: Icon, label }: { icon: typeof Activity; label: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center h-40 text-muted-foreground gap-2">
-      <Icon className="h-8 w-8 opacity-40" />
-      <p className="text-sm">{label}</p>
-    </div>
-  );
-}
-
-const TOOLTIP_STYLE = {
-  backgroundColor: "hsl(var(--card))",
-  border: "1px solid hsl(var(--border))",
-  borderRadius: "8px",
-};
-
-function PanelErrorCard({ error, label }: { error: unknown; label?: string }) {
-  const msg = (error as Error)?.message ?? "";
-  return (
-    <div className="flex items-start gap-3 p-4 rounded-lg border border-red-400 bg-red-50 dark:bg-red-950/20" data-testid="panel-error-card">
-      <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-      <div>
-        <p className="text-red-700 dark:text-red-400 text-sm font-medium">
-          Failed to load {label ?? "panel data"} {msg ? `(HTTP ${msg})` : ""}
-        </p>
-        <p className="text-red-600 dark:text-red-500 text-xs mt-0.5">Check your admin key or reload the page.</p>
-      </div>
-    </div>
-  );
-}
+// Shared components (TrendBadge, MetricCard, LivePulse, DateRangeSelector,
+// EmptyState, PanelErrorCard, TOOLTIP_STYLE) imported from admin-dashboard-utils
 
 // ============================================================================
 // Funnel Panel
@@ -203,14 +84,11 @@ function FunnelPanel({ adminKey, range }: { adminKey: string; range: DateRange }
       if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
-    refetchInterval: q => {
-      const errMsg = (q.state.error as Error)?.message ?? "";
-      return errMsg.startsWith("401") ? false : 300000;
-    },
+    refetchInterval: refetchUnlessPermanent(REFETCH_SLOW),
     enabled: !!adminKey,
   });
 
-  if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
+  if (isLoading) return <PanelSkeleton />;
   if (isError) return <PanelErrorCard error={error} label="funnel data" />;
 
   const stages = data?.stages ?? [];
@@ -227,7 +105,7 @@ function FunnelPanel({ adminKey, range }: { adminKey: string; range: DateRange }
       </CardHeader>
       <CardContent>
         {stages.length === 0 ? (
-          <EmptyState icon={Target} label="No funnel data yet" />
+          <EmptyState icon={Target} label="No funnel data yet" hint="Data appears after the first user submission." />
         ) : (
           <div className="space-y-3">
             <div className="grid grid-cols-4 text-xs text-muted-foreground font-medium mb-1 px-1">
@@ -310,14 +188,11 @@ function AttributionPanel({ adminKey, range }: { adminKey: string; range: DateRa
       if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
-    refetchInterval: q => {
-      const errMsg = (q.state.error as Error)?.message ?? "";
-      return errMsg.startsWith("401") ? false : 300000;
-    },
+    refetchInterval: refetchUnlessPermanent(REFETCH_SLOW),
     enabled: !!adminKey,
   });
 
-  if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
+  if (isLoading) return <PanelSkeleton />;
   if (isError) return <PanelErrorCard error={error} label="attribution data" />;
 
   const pages = (data?.pages ?? [])
@@ -360,7 +235,7 @@ function AttributionPanel({ adminKey, range }: { adminKey: string; range: DateRa
       </CardHeader>
       <CardContent>
         {pages.length === 0 ? (
-          <EmptyState icon={Eye} label="No page attribution data yet" />
+          <EmptyState icon={Eye} label="No page attribution data yet" hint="Ensure page_view and cta_click events are being tracked." />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -379,7 +254,7 @@ function AttributionPanel({ adminKey, range }: { adminKey: string; range: DateRa
                     className="border-b border-muted/50 hover:bg-muted/30 transition-colors"
                     data-testid={`attr-row-${p.page}`}
                   >
-                    <td className="py-2 pr-4 font-mono text-xs truncate max-w-[200px]">{p.page}</td>
+                    <td className="py-2 pr-4 font-mono text-xs truncate max-w-[200px]" title={p.page}>{p.page}</td>
                     <td className="text-right py-2 px-2">{p.views.toLocaleString()}</td>
                     <td className="text-right py-2 px-2">
                       <Badge
@@ -423,14 +298,11 @@ function BehaviorPanel({ adminKey, range }: { adminKey: string; range: DateRange
       if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
-    refetchInterval: q => {
-      const errMsg = (q.state.error as Error)?.message ?? "";
-      return errMsg.startsWith("401") ? false : 300000;
-    },
+    refetchInterval: refetchUnlessPermanent(REFETCH_SLOW),
     enabled: !!adminKey,
   });
 
-  if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
+  if (isLoading) return <PanelSkeleton />;
   if (isError) return <PanelErrorCard error={error} label="behavior data" />;
 
   const maxFocus = Math.max(...(data?.fieldEngagement ?? []).map((f) => f.focusCount), 1);
@@ -438,20 +310,20 @@ function BehaviorPanel({ adminKey, range }: { adminKey: string; range: DateRange
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard
+        <MetricCard
           title="Avg Pages / Session"
           value={(data?.avgPagesPerSession ?? 0).toFixed(1)}
           subtitle="Session depth indicator"
           icon={Activity}
         />
-        <StatCard
+        <MetricCard
           title="Bounce Rate"
           value={`${(data?.bounceRate ?? 0).toFixed(1)}%`}
           subtitle="Single-page sessions"
           icon={TrendingDown}
           color={(data?.bounceRate ?? 0) > 60 ? "danger" : "default"}
         />
-        <StatCard
+        <MetricCard
           title="Return Visit Rate"
           value={`${(data?.returnVisitRate ?? 0).toFixed(1)}%`}
           subtitle="IP-hashed sessions seen on 2+ occasions"
@@ -524,7 +396,7 @@ function BehaviorPanel({ adminKey, range }: { adminKey: string; range: DateRange
               <div className="space-y-2">
                 {(data?.topEntryPages ?? []).map((p) => (
                   <div key={p.page} className="flex items-center justify-between text-sm">
-                    <span className="font-mono text-xs truncate max-w-[160px]">{p.page}</span>
+                    <span className="font-mono text-xs truncate max-w-[160px]" title={p.page}>{p.page}</span>
                     <Badge variant="secondary">{p.count}</Badge>
                   </div>
                 ))}
@@ -543,7 +415,7 @@ function BehaviorPanel({ adminKey, range }: { adminKey: string; range: DateRange
               <div className="space-y-2">
                 {(data?.topExitPages ?? []).map((p) => (
                   <div key={p.page} className="flex items-center justify-between text-sm">
-                    <span className="font-mono text-xs truncate max-w-[160px]">{p.page}</span>
+                    <span className="font-mono text-xs truncate max-w-[160px]" title={p.page}>{p.page}</span>
                     <Badge variant="secondary">{p.count}</Badge>
                   </div>
                 ))}
@@ -576,14 +448,11 @@ function DealOutcomePanel({ adminKey, range }: { adminKey: string; range: DateRa
       if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
-    refetchInterval: q => {
-      const errMsg = (q.state.error as Error)?.message ?? "";
-      return errMsg.startsWith("401") ? false : 300000;
-    },
+    refetchInterval: refetchUnlessPermanent(REFETCH_SLOW),
     enabled: !!adminKey,
   });
 
-  if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
+  if (isLoading) return <PanelSkeleton />;
   if (isError) return <PanelErrorCard error={error} label="deal outcome data" />;
 
   const dist = data?.scoreDistribution ?? { green: 0, yellow: 0, red: 0 };
@@ -596,7 +465,7 @@ function DealOutcomePanel({ adminKey, range }: { adminKey: string; range: DateRa
   ].filter((d) => d.value > 0);
 
   const trendData = (data?.avgScoreByDay ?? []).map((d) => ({
-    date: d.date.slice(5),
+    date: formatShortDate(d.date),
     score: parseFloat(d.avgScore.toFixed(2)),
   }));
 
@@ -640,7 +509,7 @@ function DealOutcomePanel({ adminKey, range }: { adminKey: string; range: DateRa
                 <div className="flex justify-center gap-4 mt-1">
                   {donutData.map((d) => (
                     <div key={d.name} className="flex items-center gap-1">
-                      <div className="h-3 w-3 rounded-full" style={{ backgroundColor: d.color }} />
+                      <ScoreIcon score={d.name as "GREEN" | "YELLOW" | "RED"} />
                       <span className="text-xs text-muted-foreground">{d.name}: {d.value}</span>
                     </div>
                   ))}
@@ -679,21 +548,21 @@ function DealOutcomePanel({ adminKey, range }: { adminKey: string; range: DateRa
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard
+        <MetricCard
           title="Green Deals"
           value={dist.green}
           subtitle="Good to go"
           icon={CheckCircle}
           color="success"
         />
-        <StatCard
+        <MetricCard
           title="Yellow Deals"
           value={dist.yellow}
           subtitle="Need more info"
           icon={AlertTriangle}
           color="warning"
         />
-        <StatCard
+        <MetricCard
           title="Red Deals"
           value={dist.red}
           subtitle="Red flags detected"
@@ -722,7 +591,7 @@ function DealOutcomePanel({ adminKey, range }: { adminKey: string; range: DateRa
                     className="flex items-center justify-between text-sm"
                     data-testid={`fee-row-${f.feeName}`}
                   >
-                    <span className="capitalize truncate max-w-[200px]">{f.feeName}</span>
+                    <span className="capitalize truncate max-w-[200px]" title={f.feeName}>{f.feeName}</span>
                     <Badge variant="secondary">{f.count}</Badge>
                   </div>
                 ))}
@@ -788,14 +657,11 @@ function GeographicPanel({ adminKey, range }: { adminKey: string; range: DateRan
       if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
-    refetchInterval: q => {
-      const errMsg = (q.state.error as Error)?.message ?? "";
-      return errMsg.startsWith("401") ? false : 300000;
-    },
+    refetchInterval: refetchUnlessPermanent(REFETCH_SLOW),
     enabled: !!adminKey,
   });
 
-  if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
+  if (isLoading) return <PanelSkeleton />;
   if (isError) return <PanelErrorCard error={error} label="geographic data" />;
 
   const states = (data?.states ?? []).slice().sort((a, b) => b[sortKey] - a[sortKey]);
@@ -913,14 +779,11 @@ function AcquisitionPanel({ adminKey, range }: { adminKey: string; range: DateRa
       if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
-    refetchInterval: q => {
-      const errMsg = (q.state.error as Error)?.message ?? "";
-      return errMsg.startsWith("401") ? false : 300000;
-    },
+    refetchInterval: refetchUnlessPermanent(REFETCH_SLOW),
     enabled: !!adminKey,
   });
 
-  if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
+  if (isLoading) return <PanelSkeleton />;
   if (isError) return <PanelErrorCard error={error} label="acquisition data" />;
 
   const sources = (data?.sources ?? []).slice(0, 15);
@@ -994,7 +857,7 @@ function AcquisitionPanel({ adminKey, range }: { adminKey: string; range: DateRa
                       className="border-b border-muted/50 hover:bg-muted/30"
                       data-testid={`acq-row-${s.source}`}
                     >
-                      <td className="py-2 pr-4 truncate max-w-[180px] font-mono text-xs">{s.source}</td>
+                      <td className="py-2 pr-4 truncate max-w-[180px] font-mono text-xs" title={s.source}>{s.source}</td>
                       <td className="text-right py-2 px-2">{s.views}</td>
                       <td className="text-right py-2 px-2">{s.sessions}</td>
                       <td className="text-right py-2 px-2">
@@ -1047,37 +910,34 @@ function RevenuePanel({ adminKey, range }: { adminKey: string; range: DateRange 
       if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
-    refetchInterval: q => {
-      const errMsg = (q.state.error as Error)?.message ?? "";
-      return errMsg.startsWith("401") ? false : 300000;
-    },
+    refetchInterval: refetchUnlessPermanent(REFETCH_SLOW),
     enabled: !!adminKey,
   });
 
-  if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
+  if (isLoading) return <PanelSkeleton />;
   if (isError) return <PanelErrorCard error={error} label="revenue data" />;
 
   const revenueChartData = (data?.revenueByDay ?? []).map((d) => ({
-    date: d.date.slice(5),
+    date: formatShortDate(d.date),
     revenue: d.revenue,
   }));
 
   const conversionChartData = (data?.paymentConversionByDay ?? []).map((d) => ({
-    date: d.date.slice(5),
+    date: formatShortDate(d.date),
     rate: parseFloat(d.rate.toFixed(1)),
   }));
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
+        <MetricCard
           title="Total Revenue"
           value={`$${(data?.totalRevenue ?? 0).toLocaleString()}`}
           subtitle="In range"
           icon={DollarSign}
           color="success"
         />
-        <StatCard
+        <MetricCard
           title="This Week"
           value={`$${(data?.revenueThisWeek ?? 0).toLocaleString()}`}
           subtitle="vs last week"
@@ -1085,13 +945,13 @@ function RevenuePanel({ adminKey, range }: { adminKey: string; range: DateRange 
           color="success"
           trend={{ current: data?.revenueThisWeek ?? 0, previous: data?.revenueLastWeek ?? 0 }}
         />
-        <StatCard
+        <MetricCard
           title="Avg Revenue / Payer"
           value={`$${(data?.avgRevenuePerPayer ?? 0).toFixed(0)}`}
           subtitle="Average order value"
           icon={Zap}
         />
-        <StatCard
+        <MetricCard
           title="Est. Monthly Run Rate"
           value={`$${(data?.estimatedMonthlyRunRate ?? 0).toLocaleString()}`}
           subtitle="Based on last 30 days"
@@ -1182,14 +1042,11 @@ function FalloutPanel({ adminKey, range }: { adminKey: string; range: DateRange 
       if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
-    refetchInterval: q => {
-      const errMsg = (q.state.error as Error)?.message ?? "";
-      return errMsg.startsWith("401") ? false : 300000;
-    },
+    refetchInterval: refetchUnlessPermanent(REFETCH_SLOW),
     enabled: !!adminKey,
   });
 
-  if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
+  if (isLoading) return <PanelSkeleton />;
   if (isError) return <PanelErrorCard error={error} label="fallout data" />;
 
   const avgMins = data?.avgMinutesSubmissionToCheckout;
@@ -1205,14 +1062,14 @@ function FalloutPanel({ adminKey, range }: { adminKey: string; range: DateRange 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <StatCard
+        <MetricCard
           title="Checkouts Without Payment"
           value={data?.checkoutsWithoutPayment ?? 0}
           subtitle="Reached checkout but didn't pay"
           icon={AlertTriangle}
           color={(data?.checkoutsWithoutPayment ?? 0) > 0 ? "warning" : "default"}
         />
-        <StatCard
+        <MetricCard
           title="Avg Time: Submission → Checkout"
           value={avgMinsDisplay}
           subtitle="Time between submitting and checkout"
@@ -1283,10 +1140,7 @@ function FeedbackAccuracyPanel({ adminKey }: { adminKey: string }) {
       if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
-    refetchInterval: q => {
-      const errMsg = (q.state.error as Error)?.message ?? "";
-      return errMsg.startsWith("401") ? false : 300000;
-    },
+    refetchInterval: refetchUnlessPermanent(REFETCH_SLOW),
     enabled: !!adminKey,
   });
 
@@ -1317,7 +1171,7 @@ function FeedbackAccuracyPanel({ adminKey }: { adminKey: string }) {
   return (
     <div className="space-y-6" data-testid="feedback-accuracy-panel">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
+        <MetricCard
           title="Overall Agreement Rate"
           value={formatPct(overall)}
           subtitle="Users agreeing with AI verdicts"
@@ -1327,7 +1181,7 @@ function FeedbackAccuracyPanel({ adminKey }: { adminKey: string }) {
         {(["GREEN", "YELLOW", "RED"] as const).map((color) => {
           const rate = data?.byScoreColor?.[color] ?? null;
           return (
-            <StatCard
+            <MetricCard
               key={color}
               title={colorLabel[color].label}
               value={formatPct(rate)}
@@ -1431,14 +1285,11 @@ function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateR
       if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
-    refetchInterval: q => {
-      const errMsg = (q.state.error as Error)?.message ?? "";
-      return errMsg.startsWith("401") ? false : 300000;
-    },
+    refetchInterval: refetchUnlessPermanent(REFETCH_SLOW),
     enabled: !!adminKey,
   });
 
-  if (isLoading) return <div className="h-64 animate-pulse bg-muted rounded-lg" />;
+  if (isLoading) return <PanelSkeleton />;
 
   if (isError) {
     const errMsg = (error as Error)?.message ?? "";
@@ -1461,7 +1312,7 @@ function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateR
   ].filter(d => d.value > 0);
 
   const chartData = (data?.dailyNewPayers ?? []).map(d => ({
-    date: d.date.slice(5),
+    date: formatShortDate(d.date),
     payers: d.count,
   }));
 
@@ -1483,21 +1334,21 @@ function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateR
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
+        <MetricCard
           title="Active Subscribers"
           value={activeSubscribers}
           subtitle={hasStripe ? "Unique Stripe customers (all-time, paid)" : "Unique paying sessions (event-derived)"}
           icon={Users}
           color="success"
         />
-        <StatCard
+        <MetricCard
           title="MRR (30-Day Revenue)"
           value={mrr !== null ? `$${mrr.toLocaleString()}` : "—"}
           subtitle={mrr !== null ? "Stripe payments in last 30 days" : "Stripe not configured"}
           icon={TrendingUp}
           color="success"
         />
-        <StatCard
+        <MetricCard
           title="All-Time Revenue"
           value={stripeRevenueDollars !== null && stripeRevenueDollars !== undefined
             ? `$${stripeRevenueDollars.toLocaleString()}`
@@ -1506,7 +1357,7 @@ function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateR
           icon={CreditCard}
           color="success"
         />
-        <StatCard
+        <MetricCard
           title="New This Week"
           value={data?.newPayersThisWeek ?? 0}
           subtitle={data?.weekOverWeekGrowthPct !== null && data?.weekOverWeekGrowthPct !== undefined
@@ -1519,7 +1370,7 @@ function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateR
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <StatCard
+        <MetricCard
           title="Failed Payments"
           value={failedPayments}
           subtitle={hasStripe
@@ -1528,21 +1379,21 @@ function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateR
           icon={Activity}
           color={(data?.checkoutConversionRate ?? 0) > 40 ? "success" : "warning"}
         />
-        <StatCard
+        <MetricCard
           title="Churn This Period"
           value={churnThisPeriod !== null ? churnThisPeriod : "—"}
           subtitle="Customers active prev 30d but not current 30d"
           icon={Users}
           color={(churnThisPeriod ?? 0) === 0 ? "success" : "warning"}
         />
-        <StatCard
+        <MetricCard
           title="Repeat Customers"
           value={stripeRepeatCustomers !== null && stripeRepeatCustomers !== undefined ? stripeRepeatCustomers : "—"}
           subtitle="Customers with 2+ Stripe sessions"
           icon={Users}
           color={(stripeRepeatCustomers ?? 0) > 0 ? "success" : "default"}
         />
-        <StatCard
+        <MetricCard
           title="Upcoming Renewals"
           value={upcomingRenewals}
           subtitle="One-time payment product — no subscriptions"
@@ -1658,14 +1509,20 @@ const PANELS = [
 ];
 
 export default function AdminBusiness() {
+  return (
+    <AdminShell>
+      {(adminKey, clearKey) => <AdminBusinessInner adminKey={adminKey} clearKey={clearKey} />}
+    </AdminShell>
+  );
+}
+
+function AdminBusinessInner({ adminKey, clearKey }: { adminKey: string; clearKey: () => void }) {
   const [range, setRange] = useState<DateRange>("all");
   const [activePanel, setActivePanel] = useState("funnel");
-  const [adminKey, setAdminKey, clearKey] = useAdminKey();
-  const [keyInput, setKeyInput] = useState("");
 
-  const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString());
+  const [lastUpdated, setLastUpdated] = useState(new Date());
   useEffect(() => {
-    const interval = setInterval(() => setLastUpdated(new Date().toLocaleTimeString()), 300000);
+    const interval = setInterval(() => setLastUpdated(new Date()), REFETCH_SLOW);
     return () => clearInterval(interval);
   }, []);
 
@@ -1679,53 +1536,19 @@ export default function AdminBusiness() {
       return res.json();
     },
     retry: 0,
-    staleTime: 300000,
+    staleTime: REFETCH_SLOW,
     refetchInterval: false,
     enabled: !!adminKey,
   });
 
   useEffect(() => {
-    const errMsg = (authQuery.error as Error)?.message ?? "";
-    if (errMsg.startsWith("401")) {
+    if (isPermanentError(authQuery.error)) {
       clearKey();
     }
   }, [authQuery.error]);
 
-  const authErrorMsg = authQuery.isError ? ((authQuery.error as Error)?.message ?? "") : "";
-  const authIs503 = authErrorMsg.startsWith("503");
-  const authIs401 = authErrorMsg.startsWith("401");
-
   return (
-    <div className="min-h-screen bg-background">
-      <AdminNav />
-      {!adminKey && (
-        <div className="flex items-center justify-center py-24">
-          <div className="w-full max-w-sm space-y-4 p-6">
-            <h1 className="text-xl font-bold text-center">Admin Access</h1>
-            <p className="text-sm text-muted-foreground text-center">Enter your admin key to continue</p>
-            <div className="flex gap-2">
-              <input
-                type="password"
-                className="flex-1 border rounded-md px-3 py-2 text-sm bg-background"
-                placeholder="Admin key"
-                value={keyInput}
-                onChange={(e) => setKeyInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter" && keyInput) setAdminKey(keyInput); }}
-                data-testid="input-admin-key"
-                autoFocus
-              />
-              <Button
-                onClick={() => { if (keyInput) setAdminKey(keyInput); }}
-                disabled={!keyInput}
-                data-testid="button-submit-admin-key"
-              >
-                Go
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-      {adminKey && (<>
+    <>
       <div className="border-b bg-card/50 backdrop-blur-sm sticky top-12 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -1738,11 +1561,11 @@ export default function AdminBusiness() {
               <div>
                 <div className="flex items-center gap-3">
                   <h1 className="text-2xl font-bold">Business Intelligence</h1>
-                  <LivePulse />
+                  <LivePulse lastUpdated={lastUpdated} refetchIntervalMs={REFETCH_SLOW} />
                 </div>
                 <p className="text-sm text-muted-foreground flex items-center gap-2">
                   <Clock className="h-3 w-3" />
-                  Last updated: {lastUpdated} · Auto-refreshes every 5 min
+                  Auto-refreshes every 5 min
                 </p>
               </div>
             </div>
@@ -1772,30 +1595,7 @@ export default function AdminBusiness() {
 
       {authQuery.isError && (
         <div className="max-w-7xl mx-auto px-6 pt-4">
-          <div className="flex items-start gap-3 p-4 rounded-lg border border-red-400 bg-red-50 dark:bg-red-950/20" data-testid="banner-admin-error">
-            <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-red-700 dark:text-red-400 font-semibold text-sm">
-                {authIs503 ? "Admin key not configured on server" : authIs401 ? "Invalid admin key" : "Failed to load dashboard data"}
-              </p>
-              <p className="text-red-600/80 dark:text-red-400/80 text-xs mt-0.5">
-                {authIs503
-                  ? "The ADMIN_KEY environment variable is not set. Set it in the Replit secrets panel and restart the server."
-                  : authIs401
-                  ? "The key does not match the configured ADMIN_KEY."
-                  : "An unexpected error occurred. Check the server logs for details."}
-              </p>
-              {authIs401 && (
-                <button
-                  onClick={clearKey}
-                  className="mt-2 text-xs text-red-600 dark:text-red-400 underline hover:no-underline"
-                  data-testid="button-clear-admin-key"
-                >
-                  Clear key and re-enter
-                </button>
-              )}
-            </div>
-          </div>
+          <PanelErrorCard error={authQuery.error} label="dashboard data" />
         </div>
       )}
 
@@ -1811,7 +1611,6 @@ export default function AdminBusiness() {
         {activePanel === "feedback-accuracy" && <FeedbackAccuracyPanel adminKey={adminKey} />}
         {activePanel === "subscription" && <SubscriptionPanel adminKey={adminKey} range={range} />}
       </div>
-      </>)}
-    </div>
+    </>
   );
 }

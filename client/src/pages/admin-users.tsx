@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { AdminNav } from "@/components/admin-nav";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowLeft, Users, Search, User, CheckCircle, AlertTriangle, Clock } from "lucide-react";
-import { useAdminKey } from "@/hooks/use-admin-key";
+import { ArrowLeft, Users, Search, User, CheckCircle, Clock } from "lucide-react";
+import { AdminShell } from "@/components/admin-shell";
+import { PanelErrorCard, PanelSkeleton, refetchUnlessPermanent } from "@/components/admin-dashboard-utils";
 
 interface BIAnalysis {
   timestamp: string;
@@ -189,8 +189,14 @@ function SessionCard({ session }: { session: UserSession }) {
 }
 
 export default function AdminUsers() {
-  const [adminKey, setAdminKey, clearKey] = useAdminKey();
-  const [keyInput, setKeyInput] = useState("");
+  return (
+    <AdminShell>
+      {(adminKey, clearKey) => <AdminUsersInner adminKey={adminKey} clearKey={clearKey} />}
+    </AdminShell>
+  );
+}
+
+function AdminUsersInner({ adminKey, clearKey }: { adminKey: string; clearKey: () => void }) {
   const [searchInput, setSearchInput] = useState("");
   const [query, setQuery] = useState("");
 
@@ -205,10 +211,7 @@ export default function AdminUsers() {
       if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
-    refetchInterval: q => {
-      const errMsg = (q.state.error as Error)?.message ?? "";
-      return errMsg.startsWith("401") ? false : 120000;
-    },
+    refetchInterval: refetchUnlessPermanent(120_000),
     enabled: !!adminKey,
   });
 
@@ -221,36 +224,7 @@ export default function AdminUsers() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <AdminNav />
-      {!adminKey && (
-        <div className="flex items-center justify-center py-24">
-          <div className="w-full max-w-sm space-y-4 p-6">
-            <h1 className="text-xl font-bold text-center">Admin Access</h1>
-            <p className="text-sm text-muted-foreground text-center">Enter your admin key to continue</p>
-            <div className="flex gap-2">
-              <input
-                type="password"
-                className="flex-1 border rounded-md px-3 py-2 text-sm bg-background"
-                placeholder="Admin key"
-                value={keyInput}
-                onChange={(e) => setKeyInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter" && keyInput) setAdminKey(keyInput); }}
-                data-testid="input-admin-key"
-                autoFocus
-              />
-              <Button
-                onClick={() => { if (keyInput) setAdminKey(keyInput); }}
-                disabled={!keyInput}
-                data-testid="button-submit-admin-key"
-              >
-                Go
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-      {adminKey && (<>
+    <>
       <div className="border-b bg-card/50 backdrop-blur-sm sticky top-12 z-40">
         <div className="max-w-5xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -282,17 +256,7 @@ export default function AdminUsers() {
       </div>
 
       <div className="max-w-5xl mx-auto p-6 space-y-6">
-        {isError && (
-          <div className="flex items-start gap-3 p-4 rounded-lg border border-red-400 bg-red-50 dark:bg-red-950/20" data-testid="error-user-lookup">
-            <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-red-700 dark:text-red-400 text-sm font-medium">
-                Failed to load session data {(error as Error)?.message ? `(${(error as Error).message})` : ""}
-              </p>
-              <p className="text-red-600 dark:text-red-500 text-xs mt-0.5">Check your admin key or try again.</p>
-            </div>
-          </div>
-        )}
+        {isError && <PanelErrorCard error={error} label="session data" />}
 
         <form onSubmit={handleSearch} className="flex gap-2">
           <div className="flex-1 relative">
@@ -363,7 +327,7 @@ export default function AdminUsers() {
             {isLoading ? (
               <div className="space-y-3">
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="h-20 bg-muted animate-pulse rounded-lg" />
+                  <PanelSkeleton key={i} height="h-20" />
                 ))}
               </div>
             ) : sessions.length === 0 ? (
@@ -381,7 +345,6 @@ export default function AdminUsers() {
           </CardContent>
         </Card>
       </div>
-      </>)}
-    </div>
+    </>
   );
 }

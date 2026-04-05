@@ -1,20 +1,29 @@
 import { useState } from "react";
 
-import { AdminNav } from "@/components/admin-nav";
-import { useAdminKey } from "@/hooks/use-admin-key";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "wouter";
-import { 
-  ArrowLeft, 
-  DollarSign, 
-  Users, 
-  TrendingUp, 
-  TrendingDown,
-  BarChart3, 
+import { AdminShell, AdminAccessDenied } from "@/components/admin-shell";
+import {
+  MetricCard,
+  LivePulse,
+  EmptyState,
+  PanelSkeleton,
+  ChartErrorBoundary,
+  ScoreIcon,
+  TOOLTIP_STYLE,
+  REFETCH_REALTIME,
+} from "@/components/admin-dashboard-utils";
+import { formatCurrency, formatCurrencyCompact, formatNumber, formatShortDate } from "@/lib/format";
+import {
+  ArrowLeft,
+  DollarSign,
+  Users,
+  TrendingUp,
+  BarChart3,
   Activity,
   RefreshCw,
   CheckCircle,
@@ -24,9 +33,6 @@ import {
   Clock,
   Zap,
   Target,
-  ArrowUpRight,
-  ArrowDownRight,
-  Minus,
   MousePointer,
   FileText,
   Percent
@@ -46,7 +52,6 @@ import {
   Bar,
   LineChart,
   Line,
-  Legend,
 } from "recharts";
 
 interface EventMetadata {
@@ -121,76 +126,7 @@ interface MetricsSummary {
   };
 }
 
-function TrendBadge({ current, previous, suffix = "" }: { current: number; previous: number; suffix?: string }) {
-  if (previous === 0 && current === 0) {
-    return <span className="text-xs text-muted-foreground flex items-center gap-1"><Minus className="h-3 w-3" /> No change</span>;
-  }
-  if (previous === 0) {
-    return <span className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1"><ArrowUpRight className="h-3 w-3" /> New{suffix}</span>;
-  }
-  const change = ((current - previous) / previous) * 100;
-  if (change > 0) {
-    return <span className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1"><ArrowUpRight className="h-3 w-3" /> +{change.toFixed(0)}%{suffix}</span>;
-  } else if (change < 0) {
-    return <span className="text-xs text-red-600 dark:text-red-400 flex items-center gap-1"><ArrowDownRight className="h-3 w-3" /> {change.toFixed(0)}%{suffix}</span>;
-  }
-  return <span className="text-xs text-muted-foreground flex items-center gap-1"><Minus className="h-3 w-3" /> No change</span>;
-}
-
-function MetricCard({ 
-  title, 
-  value, 
-  subtitle,
-  trend,
-  icon: Icon,
-  color = "default"
-}: { 
-  title: string; 
-  value: string | number; 
-  subtitle?: string;
-  trend?: { current: number; previous: number; label: string };
-  icon: typeof DollarSign;
-  color?: "default" | "success" | "warning" | "danger";
-}) {
-  const colorClasses = {
-    default: "text-foreground",
-    success: "text-green-600 dark:text-green-400",
-    warning: "text-yellow-600 dark:text-yellow-400",
-    danger: "text-red-600 dark:text-red-400",
-  };
-
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
-        <div className="p-2 rounded-md bg-muted">
-          <Icon className="h-4 w-4 text-muted-foreground" />
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className={`text-3xl font-bold ${colorClasses[color]}`} data-testid={`stat-${title.toLowerCase().replace(/\s/g, '-')}`}>
-          {value}
-        </div>
-        <div className="flex items-center justify-between mt-1">
-          {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
-          {trend && <TrendBadge current={trend.current} previous={trend.previous} suffix={` vs ${trend.label}`} />}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function LivePulse() {
-  return (
-    <div className="flex items-center gap-2">
-      <span className="relative flex h-3 w-3">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-        <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-      </span>
-      <span className="text-xs text-muted-foreground">Live</span>
-    </div>
-  );
-}
+// TrendBadge, MetricCard, LivePulse imported from admin-dashboard-utils
 
 function ConversionFunnel({ funnel }: { funnel: { submissions: number; checkouts: number; payments: number } }) {
   const stages = [
@@ -291,7 +227,7 @@ function ScoreDistributionPie({ data }: { data: { green: number; yellow: number;
       <div className="flex justify-center gap-4 -mt-4">
         {chartData.map(d => (
           <div key={d.name} className="flex items-center gap-1">
-            <div className="h-3 w-3 rounded-full" style={{ backgroundColor: d.color }} />
+            <ScoreIcon score={d.name as "GREEN" | "YELLOW" | "RED"} />
             <span className="text-xs text-muted-foreground">{d.name}: {d.value}</span>
           </div>
         ))}
@@ -306,12 +242,13 @@ function ActivityAreaChart({ data }: { data: Array<{ date: string; count: number
   }
 
   const chartData = data.map(d => ({
-    date: d.date.slice(5),
+    date: formatShortDate(d.date),
     submissions: d.count,
   }));
 
   return (
     <div className="h-64">
+      <ChartErrorBoundary>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={chartData}>
           <defs>
@@ -322,23 +259,18 @@ function ActivityAreaChart({ data }: { data: Array<{ date: string; count: number
           </defs>
           <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
           <XAxis dataKey="date" className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
-          <YAxis className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
-          <Tooltip 
-            contentStyle={{ 
-              backgroundColor: 'hsl(var(--card))', 
-              border: '1px solid hsl(var(--border))',
-              borderRadius: '8px'
-            }} 
-          />
-          <Area 
-            type="monotone" 
-            dataKey="submissions" 
-            stroke="hsl(var(--primary))" 
-            fillOpacity={1} 
-            fill="url(#colorSubmissions)" 
+          <YAxis className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} label={{ value: "Submissions", angle: -90, position: "insideLeft", style: { fill: 'hsl(var(--muted-foreground))', fontSize: 12 } }} />
+          <Tooltip contentStyle={TOOLTIP_STYLE} />
+          <Area
+            type="monotone"
+            dataKey="submissions"
+            stroke="hsl(var(--primary))"
+            fillOpacity={1}
+            fill="url(#colorSubmissions)"
           />
         </AreaChart>
       </ResponsiveContainer>
+      </ChartErrorBoundary>
     </div>
   );
 }
@@ -349,34 +281,32 @@ function RevenueLineChart({ data }: { data: Array<{ date: string; revenue: numbe
   }
 
   const chartData = data.map(d => ({
-    date: d.date.slice(5),
+    date: formatShortDate(d.date),
     revenue: d.revenue,
   }));
 
   return (
     <div className="h-64">
+      <ChartErrorBoundary>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
           <XAxis dataKey="date" className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
-          <YAxis className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `$${v}`} />
-          <Tooltip 
-            contentStyle={{ 
-              backgroundColor: 'hsl(var(--card))', 
-              border: '1px solid hsl(var(--border))',
-              borderRadius: '8px'
-            }}
-            formatter={(value: number) => [`$${value}`, 'Revenue']}
+          <YAxis className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} tickFormatter={formatCurrencyCompact} label={{ value: "Revenue", angle: -90, position: "insideLeft", style: { fill: 'hsl(var(--muted-foreground))', fontSize: 12 } }} />
+          <Tooltip
+            contentStyle={TOOLTIP_STYLE}
+            formatter={(value: number) => [formatCurrency(value), 'Revenue']}
           />
-          <Line 
-            type="monotone" 
-            dataKey="revenue" 
-            stroke="#22c55e" 
+          <Line
+            type="monotone"
+            dataKey="revenue"
+            stroke="#22c55e"
             strokeWidth={2}
             dot={{ fill: '#22c55e', strokeWidth: 2 }}
           />
         </LineChart>
       </ResponsiveContainer>
+      </ChartErrorBoundary>
     </div>
   );
 }
@@ -426,26 +356,23 @@ function ReferrerChart({ data }: { data: Array<{ source: string; count: number }
 
   const chartData = data.slice(0, 6).map(d => ({
     source: d.source.length > 20 ? d.source.slice(0, 20) + '...' : d.source,
+    fullSource: d.source,
     visits: d.count,
   }));
 
   return (
     <div className="h-48">
+      <ChartErrorBoundary fallbackHeight="h-48">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData} layout="vertical">
           <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
           <XAxis type="number" className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
           <YAxis type="category" dataKey="source" className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} width={100} />
-          <Tooltip 
-            contentStyle={{ 
-              backgroundColor: 'hsl(var(--card))', 
-              border: '1px solid hsl(var(--border))',
-              borderRadius: '8px'
-            }} 
-          />
+          <Tooltip contentStyle={TOOLTIP_STYLE} />
           <Bar dataKey="visits" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
         </BarChart>
       </ResponsiveContainer>
+      </ChartErrorBoundary>
     </div>
   );
 }
@@ -485,7 +412,7 @@ function LiveActivityFeed({ events }: { events: Array<{ eventType: string; creat
   };
 
   return (
-    <div className="space-y-1 max-h-[400px] overflow-y-auto">
+    <div className="space-y-1 max-h-[50vh] overflow-y-auto">
       {events.map((event, idx) => (
         <div 
           key={idx} 
@@ -500,14 +427,15 @@ function LiveActivityFeed({ events }: { events: Array<{ eventType: string; creat
                 {event.eventType.replace(/_/g, " ")}
               </span>
               {event.metadata?.dealScore && (
-                <Badge 
+                <Badge
                   variant="outline"
                   className={
-                    event.metadata.dealScore === "GREEN" ? "text-green-600 border-green-600 text-xs" :
-                    event.metadata.dealScore === "YELLOW" ? "text-yellow-600 border-yellow-600 text-xs" :
-                    "text-red-600 border-red-600 text-xs"
+                    event.metadata.dealScore === "GREEN" ? "text-green-600 border-green-600 text-xs gap-1" :
+                    event.metadata.dealScore === "YELLOW" ? "text-yellow-600 border-yellow-600 text-xs gap-1" :
+                    "text-red-600 border-red-600 text-xs gap-1"
                   }
                 >
+                  <ScoreIcon score={event.metadata.dealScore} />
                   {event.metadata.dealScore}
                 </Badge>
               )}
@@ -533,7 +461,7 @@ function exportToCSV(metrics: MetricsSummary) {
     ["Metric", "Value"],
     ["Total Submissions", metrics.totalSubmissions],
     ["Total Payments", metrics.totalPayments],
-    ["Total Revenue", `$${metrics.revenue}`],
+    ["Total Revenue", formatCurrency(metrics.revenue)],
     ["Conversion Rate", `${metrics.conversionRate.toFixed(1)}%`],
     ["Green Scores", metrics.scoreDistribution.green],
     ["Yellow Scores", metrics.scoreDistribution.yellow],
@@ -554,13 +482,36 @@ function exportToCSV(metrics: MetricsSummary) {
 }
 
 export default function AdminMetrics() {
+  return (
+    <AdminShell>
+      {(adminKey, clearKey) => <AdminMetricsInner adminKey={adminKey} clearKey={clearKey} />}
+    </AdminShell>
+  );
+}
+
+function AdminMetricsInner({ adminKey, clearKey }: { adminKey: string; clearKey: () => void }) {
   const [activeTab, setActiveTab] = useState("overview");
   const [isImporting, setIsImporting] = useState(false);
   const [importResult, setImportResult] = useState<{ success: boolean; message: string } | null>(null);
-  const [adminKey, setAdminKey, clearKey] = useAdminKey();
-  const [keyInput, setKeyInput] = useState("");
-  
+
+  const { data: metrics, isLoading, error, refetch, isFetching, dataUpdatedAt } = useQuery<MetricsSummary>({
+    queryKey: ["/api/metrics", adminKey],
+    queryFn: async () => {
+      const res = await fetch(`/api/metrics`, {
+        headers: { Authorization: `Bearer ${adminKey}` },
+      });
+      if (!res.ok) throw new Error(`${res.status}`);
+      return res.json();
+    },
+    refetchInterval: REFETCH_REALTIME,
+    enabled: !!adminKey,
+  });
+
+  const lastUpdatedDate = dataUpdatedAt ? new Date(dataUpdatedAt) : undefined;
+  const lastUpdated = lastUpdatedDate ? lastUpdatedDate.toLocaleTimeString() : "Never";
+
   const handleImportStripeHistory = async () => {
+    if (!window.confirm("Import Stripe payment history? This makes multiple API calls to Stripe and may take a moment.")) return;
     setIsImporting(true);
     setImportResult(null);
     try {
@@ -575,94 +526,32 @@ export default function AdminMetrics() {
       } else {
         setImportResult({ success: false, message: data.error || "Import failed" });
       }
-    } catch (err: any) {
-      setImportResult({ success: false, message: err.message || "Import failed" });
+    } catch (err: unknown) {
+      setImportResult({ success: false, message: (err as Error).message || "Import failed" });
     } finally {
       setIsImporting(false);
     }
   };
-  
-  const { data: metrics, isLoading, error, refetch, isFetching, dataUpdatedAt } = useQuery<MetricsSummary>({
-    queryKey: ["/api/metrics", adminKey],
-    queryFn: async () => {
-      const res = await fetch(`/api/metrics`, {
-        headers: { Authorization: `Bearer ${adminKey}` },
-      });
-      if (!res.ok) throw new Error(`${res.status}`);
-      return res.json();
-    },
-    refetchInterval: 30000,
-    enabled: !!adminKey,
-  });
 
-  const lastUpdated = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString() : "Never";
+  if (isLoading) {
+    return (
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="animate-pulse space-y-6">
+          <PanelSkeleton height="h-10" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map(i => <PanelSkeleton key={i} height="h-32" />)}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <AdminAccessDenied clearKey={clearKey} />;
+  }
 
   return (
-    <div className="min-h-screen bg-background">
-      <AdminNav />
-      {!adminKey && (
-        <div className="flex items-center justify-center py-24">
-          <div className="w-full max-w-sm space-y-4 p-6">
-            <h1 className="text-xl font-bold text-center">Admin Access</h1>
-            <p className="text-sm text-muted-foreground text-center">Enter your admin key to continue</p>
-            <div className="flex gap-2">
-              <input
-                type="password"
-                className="flex-1 border rounded-md px-3 py-2 text-sm bg-background"
-                placeholder="Admin key"
-                value={keyInput}
-                onChange={(e) => setKeyInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter" && keyInput) setAdminKey(keyInput); }}
-                data-testid="input-admin-key"
-                autoFocus
-              />
-              <Button
-                onClick={() => { if (keyInput) setAdminKey(keyInput); }}
-                disabled={!keyInput}
-                data-testid="button-submit-admin-key"
-              >
-                Go
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-      {adminKey && isLoading && (
-        <div className="max-w-7xl mx-auto p-6">
-          <div className="animate-pulse space-y-6">
-            <div className="h-10 bg-muted rounded w-64" />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map(i => <div key={i} className="h-32 bg-muted rounded-lg" />)}
-            </div>
-          </div>
-        </div>
-      )}
-      {adminKey && error && (
-        <div className="flex items-center justify-center p-6 py-24">
-          <Card className="max-w-md w-full">
-            <CardContent className="pt-6 text-center">
-              <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
-              <p className="text-muted-foreground mb-4">Unable to load metrics. Please check your access key.</p>
-              <div className="flex gap-2 justify-center">
-                <Button
-                  variant="outline"
-                  onClick={clearKey}
-                  data-testid="button-clear-admin-key"
-                >
-                  Clear key and re-enter
-                </Button>
-                <Link href="/">
-                  <Button variant="ghost" data-testid="button-back-home">
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Back to Home
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-      {adminKey && !isLoading && !error && (<>
+    <>
       <div className="border-b bg-card/50 backdrop-blur-sm sticky top-12 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -675,7 +564,7 @@ export default function AdminMetrics() {
               <div>
                 <div className="flex items-center gap-3">
                   <h1 className="text-2xl font-bold">Analytics Dashboard</h1>
-                  <LivePulse />
+                  <LivePulse lastUpdated={lastUpdatedDate} refetchIntervalMs={REFETCH_REALTIME} />
                 </div>
                 <p className="text-sm text-muted-foreground flex items-center gap-2">
                   <Clock className="h-3 w-3" />
@@ -752,7 +641,7 @@ export default function AdminMetrics() {
           </div>
         )}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 lg:w-auto lg:inline-grid">
             <TabsTrigger value="overview" data-testid="tab-overview">Metrics</TabsTrigger>
             <TabsTrigger value="engagement" data-testid="tab-engagement">Engagement Funnel</TabsTrigger>
             <TabsTrigger value="revenue" data-testid="tab-revenue">Revenue</TabsTrigger>
@@ -771,7 +660,7 @@ export default function AdminMetrics() {
               />
               <MetricCard
                 title="Total Revenue"
-                value={`$${metrics?.revenue ?? 0}`}
+                value={formatCurrency(metrics?.revenue ?? 0)}
                 subtitle="Lifetime earnings"
                 trend={metrics ? { current: metrics.trends.revenueToday, previous: metrics.trends.revenueYesterday, label: "yesterday" } : undefined}
                 icon={DollarSign}
@@ -855,7 +744,7 @@ export default function AdminMetrics() {
                     <div className="space-y-3">
                       {metrics.pageViews.slice(0, 6).map((pv) => (
                         <div key={pv.page} className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground truncate max-w-[160px]">{pv.page}</span>
+                          <span className="text-sm text-muted-foreground truncate max-w-[160px]" title={pv.page}>{pv.page}</span>
                           <Badge variant="secondary">{pv.count}</Badge>
                         </div>
                       ))}
@@ -954,7 +843,7 @@ export default function AdminMetrics() {
                     <div className="space-y-3">
                       {metrics.engagement.ctaClicksByButton.map((cta) => (
                         <div key={cta.ctaId} className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground truncate max-w-[200px]">{cta.label}</span>
+                          <span className="text-sm text-muted-foreground truncate max-w-[200px]" title={cta.label}>{cta.label}</span>
                           <Badge variant="secondary">{cta.count}</Badge>
                         </div>
                       ))}
@@ -1016,21 +905,21 @@ export default function AdminMetrics() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <MetricCard
                 title="Today's Revenue"
-                value={`$${metrics?.trends.revenueToday ?? 0}`}
+                value={formatCurrency(metrics?.trends.revenueToday ?? 0)}
                 trend={metrics ? { current: metrics.trends.revenueToday, previous: metrics.trends.revenueYesterday, label: "yesterday" } : undefined}
                 icon={DollarSign}
                 color="success"
               />
               <MetricCard
                 title="This Week"
-                value={`$${metrics?.trends.revenueThisWeek ?? 0}`}
+                value={formatCurrency(metrics?.trends.revenueThisWeek ?? 0)}
                 trend={metrics ? { current: metrics.trends.revenueThisWeek, previous: metrics.trends.revenueLastWeek, label: "last week" } : undefined}
                 icon={TrendingUp}
                 color="success"
               />
               <MetricCard
                 title="Avg per Sale"
-                value={`$${metrics?.totalPayments ? Math.round((metrics.revenue || 0) / metrics.totalPayments) : 0}`}
+                value={formatCurrency(metrics?.totalPayments ? Math.round((metrics.revenue || 0) / metrics.totalPayments) : 0)}
                 subtitle="Average order value"
                 icon={Zap}
               />
@@ -1129,7 +1018,7 @@ export default function AdminMetrics() {
                   <CardTitle className="flex items-center gap-2">
                     <Activity className="h-5 w-5" />
                     Live Activity Feed
-                    <LivePulse />
+                    <LivePulse lastUpdated={lastUpdatedDate} refetchIntervalMs={REFETCH_REALTIME} />
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -1158,7 +1047,7 @@ export default function AdminMetrics() {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Revenue Today</span>
-                      <Badge variant="secondary">${metrics?.trends.revenueToday ?? 0}</Badge>
+                      <Badge variant="secondary">{formatCurrency(metrics?.trends.revenueToday ?? 0)}</Badge>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Checkouts</span>
@@ -1171,7 +1060,6 @@ export default function AdminMetrics() {
           </TabsContent>
         </Tabs>
       </div>
-      </>)}
-    </div>
+      </>
   );
 }

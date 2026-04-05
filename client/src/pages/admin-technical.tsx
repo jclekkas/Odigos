@@ -1,12 +1,21 @@
 import { useState, useEffect } from "react";
 
-import { AdminNav } from "@/components/admin-nav";
-import { useAdminKey } from "@/hooks/use-admin-key";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { AdminShell } from "@/components/admin-shell";
+import {
+  PanelErrorCard,
+  PanelSkeleton,
+  ChartErrorBoundary,
+  TOOLTIP_STYLE,
+  REFETCH_STANDARD,
+  isPermanentError,
+  refetchUnlessPermanent,
+} from "@/components/admin-dashboard-utils";
+import { formatCurrency, formatNumber } from "@/lib/format";
 import {
   ArrowLeft,
   RefreshCw,
@@ -202,13 +211,19 @@ function AutoRefreshCountdown({ seconds }: { seconds: number }) {
 }
 
 export default function AdminTechnical() {
+  return (
+    <AdminShell>
+      {(adminKey, clearKey) => <AdminTechnicalInner adminKey={adminKey} clearKey={clearKey} />}
+    </AdminShell>
+  );
+}
+
+function AdminTechnicalInner({ adminKey, clearKey }: { adminKey: string; clearKey: () => void }) {
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
-  const [adminKey, setAdminKey, clearKey] = useAdminKey();
-  const [keyInput, setKeyInput] = useState("");
 
   const healthQuery = useQuery<HealthData>({
     queryKey: ["/api/health"],
-    refetchInterval: 60000,
+    refetchInterval: REFETCH_STANDARD,
   });
 
   const techQuery = useQuery<TechnicalSummary>({
@@ -220,10 +235,7 @@ export default function AdminTechnical() {
       if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
-    refetchInterval: techQuery => {
-      const errMsg = (techQuery.state.error as Error)?.message ?? "";
-      return errMsg.startsWith("401") ? false : 60000;
-    },
+    refetchInterval: refetchUnlessPermanent(REFETCH_STANDARD),
     enabled: !!adminKey,
   });
 
@@ -236,17 +248,12 @@ export default function AdminTechnical() {
       if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
-    refetchInterval: alertsQuery => {
-      const errMsg = (alertsQuery.state.error as Error)?.message ?? "";
-      return errMsg.startsWith("401") ? false : 60000;
-    },
+    refetchInterval: refetchUnlessPermanent(REFETCH_STANDARD),
     enabled: !!adminKey,
   });
 
   useEffect(() => {
-    const techErr = (techQuery.error as Error)?.message ?? "";
-    const alertsErr = (alertsQuery.error as Error)?.message ?? "";
-    if (techErr.startsWith("401") || alertsErr.startsWith("401")) {
+    if (isPermanentError(techQuery.error) || isPermanentError(alertsQuery.error)) {
       clearKey();
     }
   }, [techQuery.error, alertsQuery.error]);
@@ -270,36 +277,7 @@ export default function AdminTechnical() {
   const isLoading = healthQuery.isLoading || techQuery.isLoading;
 
   return (
-    <div className="min-h-screen bg-background">
-      <AdminNav />
-      {!adminKey && (
-        <div className="flex items-center justify-center py-24">
-          <div className="w-full max-w-sm space-y-4 p-6">
-            <h1 className="text-xl font-bold text-center">Admin Access</h1>
-            <p className="text-sm text-muted-foreground text-center">Enter your admin key to continue</p>
-            <div className="flex gap-2">
-              <input
-                type="password"
-                className="flex-1 border rounded-md px-3 py-2 text-sm bg-background"
-                placeholder="Admin key"
-                value={keyInput}
-                onChange={(e) => setKeyInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter" && keyInput) setAdminKey(keyInput); }}
-                data-testid="input-admin-key"
-                autoFocus
-              />
-              <Button
-                onClick={() => { if (keyInput) setAdminKey(keyInput); }}
-                disabled={!keyInput}
-                data-testid="button-submit-admin-key"
-              >
-                Go
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-      {adminKey && (
+    <>
       <div className="p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between flex-wrap gap-3">
@@ -334,41 +312,7 @@ export default function AdminTechnical() {
           </div>
         </div>
 
-        {techQuery.isError && (() => {
-          const msg = (techQuery.error as Error)?.message ?? "";
-          const is503 = msg.startsWith("503");
-          const is401 = msg.startsWith("401");
-          return (
-            <Card className="border-red-400 bg-red-50 dark:bg-red-950/20" data-testid="banner-admin-error">
-              <CardContent className="pt-4 pb-4">
-                <div className="flex items-start gap-3">
-                  <XCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-red-700 dark:text-red-400 font-semibold text-sm">
-                      {is503 ? "Admin key not configured on server" : is401 ? "Invalid admin key" : "Failed to load technical metrics"}
-                    </p>
-                    <p className="text-red-600/80 dark:text-red-400/80 text-xs mt-0.5">
-                      {is503
-                        ? "The ADMIN_KEY environment variable is not set. Set it in the Replit secrets panel and restart the server."
-                        : is401
-                        ? "The key does not match the configured ADMIN_KEY."
-                        : "An unexpected error occurred. Check the server logs for details."}
-                    </p>
-                    {is401 && (
-                      <button
-                        onClick={clearKey}
-                        className="mt-2 text-xs text-red-600 dark:text-red-400 underline hover:no-underline"
-                        data-testid="button-clear-admin-key"
-                      >
-                        Clear key and re-enter
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })()}
+        {techQuery.isError && <PanelErrorCard error={techQuery.error} label="technical metrics" />}
 
         <Card data-testid="panel-system-health">
           <CardHeader className="pb-3">
@@ -378,7 +322,7 @@ export default function AdminTechnical() {
           </CardHeader>
           <CardContent>
             {healthQuery.isLoading ? (
-              <div className="h-20 bg-muted animate-pulse rounded" />
+              <PanelSkeleton height="h-20" />
             ) : health ? (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div>
@@ -413,7 +357,7 @@ export default function AdminTechnical() {
           </CardHeader>
           <CardContent>
             {!tech ? (
-              <div className="h-12 bg-muted animate-pulse rounded" />
+              <PanelSkeleton height="h-12" />
             ) : tech.piiRetention.warehouseUnavailable ? (
               <div className="flex items-center gap-2" data-testid="status-pii-retention">
                 <AlertTriangle className="h-4 w-4 text-yellow-500" />
@@ -456,7 +400,7 @@ export default function AdminTechnical() {
           </CardHeader>
           <CardContent>
             {alertsQuery.isLoading ? (
-              <div className="h-32 bg-muted animate-pulse rounded" />
+              <PanelSkeleton height="h-32" />
             ) : alertsQuery.isError ? (
               <p className="text-muted-foreground text-sm">Unable to load alert status</p>
             ) : alerts ? (
@@ -532,7 +476,7 @@ export default function AdminTechnical() {
                 {alerts.recentFired.length > 0 && (
                   <div>
                     <p className="text-xs font-medium text-muted-foreground mb-2">Recent Fired Alerts (last 20)</p>
-                    <div className="max-h-48 overflow-y-auto space-y-1" data-testid="list-recent-alerts">
+                    <div className="max-h-[40vh] overflow-y-auto space-y-1" data-testid="list-recent-alerts">
                       {alerts.recentFired.map((record, idx) => {
                         const ruleName = alerts.rules.find((r) => r.ruleId === record.ruleId)?.name ?? record.ruleId;
                         return (
@@ -569,7 +513,7 @@ export default function AdminTechnical() {
           </CardHeader>
           <CardContent>
             {!tech ? (
-              <div className="h-40 bg-muted animate-pulse rounded" />
+              <PanelSkeleton height="h-40" />
             ) : (
               <div className="space-y-6">
                 <div className="overflow-x-auto">
@@ -659,7 +603,7 @@ export default function AdminTechnical() {
           </CardHeader>
           <CardContent>
             {!tech ? (
-              <div className="h-40 bg-muted animate-pulse rounded" />
+              <PanelSkeleton height="h-40" />
             ) : (
               <div className="space-y-4">
                 <div className="grid grid-cols-3 gap-4">
@@ -743,7 +687,7 @@ export default function AdminTechnical() {
                       No errors in the last 24 hours
                     </div>
                   ) : (
-                    <div className="max-h-64 overflow-y-auto space-y-1" data-testid="list-error-log">
+                    <div className="max-h-[50vh] overflow-y-auto space-y-1" data-testid="list-error-log">
                       {tech.errorLog.map((err, idx) => (
                         <div key={idx} className="flex items-start gap-3 p-2 rounded bg-muted/40 text-sm">
                           <XCircle className="h-3.5 w-3.5 text-red-500 mt-0.5 flex-shrink-0" />
@@ -773,7 +717,7 @@ export default function AdminTechnical() {
           </CardHeader>
           <CardContent>
             {!tech ? (
-              <div className="h-40 bg-muted animate-pulse rounded" />
+              <PanelSkeleton height="h-40" />
             ) : (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -850,7 +794,7 @@ export default function AdminTechnical() {
           </CardHeader>
           <CardContent>
             {!tech ? (
-              <div className="h-24 bg-muted animate-pulse rounded" />
+              <PanelSkeleton height="h-24" />
             ) : (
               <div className="space-y-4">
                 <div className="grid grid-cols-3 gap-4">
@@ -900,7 +844,7 @@ export default function AdminTechnical() {
           </CardHeader>
           <CardContent>
             {!tech ? (
-              <div className="h-20 bg-muted animate-pulse rounded" />
+              <PanelSkeleton height="h-20" />
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div>
@@ -936,7 +880,7 @@ export default function AdminTechnical() {
           </CardHeader>
           <CardContent>
             {!tech ? (
-              <div className="h-24 bg-muted animate-pulse rounded" />
+              <PanelSkeleton height="h-24" />
             ) : (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
@@ -974,7 +918,6 @@ export default function AdminTechnical() {
         </Card>
       </div>
       </div>
-      )}
-    </div>
+    </>
   );
 }

@@ -1,10 +1,11 @@
-import { AdminNav } from "@/components/admin-nav";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowLeft, FlaskConical, Trophy, Users, TrendingUp, RefreshCw, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
+import { AdminShell } from "@/components/admin-shell";
+import { PanelErrorCard } from "@/components/admin-dashboard-utils";
+import { ArrowLeft, FlaskConical, Trophy, Users, TrendingUp, RefreshCw, CheckCircle2, Clock } from "lucide-react";
 
 interface ExperimentVariantStats {
   variant: string;
@@ -202,6 +203,14 @@ function ExperimentCard({ exp }: { exp: ExperimentStats }) {
 }
 
 export default function AdminExperiments() {
+  return (
+    <AdminShell>
+      {() => <AdminExperimentsInner />}
+    </AdminShell>
+  );
+}
+
+function AdminExperimentsInner() {
   const { data, isLoading, isError, error, refetch, isFetching } = useQuery<ExperimentStats[]>({
     queryKey: ["/api/experiments"],
     queryFn: async () => {
@@ -213,8 +222,7 @@ export default function AdminExperiments() {
   });
 
   return (
-    <div className="min-h-screen bg-background">
-      <AdminNav />
+    <>
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3">
@@ -260,18 +268,7 @@ export default function AdminExperiments() {
             ))}
           </div>
         ) : isError ? (
-          <Card className="border-red-400 bg-red-50 dark:bg-red-950/20">
-            <CardContent className="pt-4 pb-4">
-              <div className="flex items-start gap-3" data-testid="error-experiments">
-                <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm text-red-700 dark:text-red-400 font-medium">
-                    Failed to load experiments. Check your connection or admin key.{(error as Error)?.message ? ` (HTTP ${(error as Error).message})` : ""}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <PanelErrorCard error={error} label="experiment data" />
         ) : !data || data.length === 0 ? (
           <Card>
             <CardContent className="pt-6 text-center space-y-3">
@@ -300,6 +297,6 @@ export default function AdminExperiments() {
           </ul>
         </div>
       </div>
-    </div>
+    </>
   );
 }
