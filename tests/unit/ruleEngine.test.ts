@@ -13,6 +13,13 @@ const makeFields = (overrides: Partial<DetectedFields> = {}): DetectedFields => 
   apr: null,
   termMonths: null,
   downPayment: null,
+  moneyFactor: null,
+  residualValue: null,
+  residualPercent: null,
+  acquisitionFee: null,
+  dispositionFee: null,
+  mileageAllowance: null,
+  excessMileageRate: null,
   ...overrides,
 });
 
@@ -205,5 +212,179 @@ describe("applyRuleEngine", () => {
     const result = applyRuleEngine(llm, fields);
     expect(result.dealScore).toBe("YELLOW");
     expect(result.goNoGo).toBe("NEED-MORE-INFO");
+  });
+});
+
+// ─── CPI-indexed cap tracking ─────────────────────────────────────────────────
+
+describe("checkDocFeeCap with CPI indexing", () => {
+  it("uses CPI currentAmount when cpiIndexing is present", () => {
+    const IL_STATE_CPI = {
+      docFeeCap: true,
+      docFeeCapAmount: 300, // base amount
+      cpiIndexing: { isIndexed: true, currentAmount: 378 },
+    };
+    const fees: Fee[] = [{ name: "doc fee", amount: 350 }];
+    const result = checkDocFeeCap(fees, IL_STATE_CPI);
+    expect(result).not.toBeNull();
+    // 350 < 378 (CPI-adjusted), so no violation
+    expect(result!.violated).toBe(false);
+    expect(result!.capAmount).toBe(378);
+  });
+
+  it("detects violation against CPI-adjusted cap, not base cap", () => {
+    const IL_STATE_CPI = {
+      docFeeCap: true,
+      docFeeCapAmount: 300,
+      cpiIndexing: { isIndexed: true, currentAmount: 378 },
+    };
+    const fees: Fee[] = [{ name: "documentation fee", amount: 400 }];
+    const result = checkDocFeeCap(fees, IL_STATE_CPI);
+    expect(result!.violated).toBe(true);
+    expect(result!.capAmount).toBe(378);
+    expect(result!.overage).toBe(22);
+  });
+
+  it("falls back to docFeeCapAmount when cpiIndexing is absent", () => {
+    const CA_STATE = { docFeeCap: true, docFeeCapAmount: 85 };
+    const fees: Fee[] = [{ name: "doc fee", amount: 100 }];
+    const result = checkDocFeeCap(fees, CA_STATE);
+    expect(result!.violated).toBe(true);
+    expect(result!.capAmount).toBe(85);
+  });
+
+  it("falls back to docFeeCapAmount when cpiIndexing.isIndexed is false", () => {
+    const STATE = {
+      docFeeCap: true,
+      docFeeCapAmount: 200,
+      cpiIndexing: { isIndexed: false, currentAmount: 999 },
+    };
+    const fees: Fee[] = [{ name: "doc fee", amount: 250 }];
+    const result = checkDocFeeCap(fees, STATE);
+    expect(result!.violated).toBe(true);
+    expect(result!.capAmount).toBe(200);
+  });
+});
+
+// ─── Lease-specific rules ─────────────────────────────────────────────────────
+
+describe("applyRuleEngine — lease-specific rules", () => {
+  it("returns YELLOW/PAUSE when lease has high acquisition fee (> $1000)", () => {
+    const fields = makeFields({
+      outTheDoorPrice: 30000,
+      acquisitionFee: 1200,
+      moneyFactor: 0.00125,
+      residualValue: 18000,
+      mileageAllowance: 12000,
+    });
+    const result = applyRuleEngine(makeLlm(), fields, null, "lease");
+    expect(result.dealScore).toBe("YELLOW");
+    expect(result.goNoGo).toBe("NEED-MORE-INFO");
+    expect(result.verdictLabel).toMatch(/ACQUISITION/i);
+  });
+
+  it("returns YELLOW/PAUSE when lease has excessive mileage rate (> $0.30/mile)", () => {
+    const fields = makeFields({
+      outTheDoorPrice: 30000,
+      moneyFactor: 0.00125,
+      residualValue: 18000,
+      mileageAllowance: 10000,
+      excessMileageRate: 0.35,
+    });
+    const result = applyRuleEngine(makeLlm(), fields, null, "lease");
+    expect(result.dealScore).toBe("YELLOW");
+    expect(result.goNoGo).toBe("NEED-MORE-INFO");
+    expect(result.verdictLabel).toMatch(/MILEAGE/i);
+  });
+
+  it("returns YELLOW/PAUSE when lease is missing key terms (money factor, residual, mileage)", () => {
+    const fields = makeFields({ monthlyPayment: 350 });
+    const result = applyRuleEngine(makeLlm(), fields, null, "lease");
+    expect(result.dealScore).toBe("YELLOW");
+    expect(result.goNoGo).toBe("NEED-MORE-INFO");
+    expect(result.verdictLabel).toMatch(/LEASE TERMS/i);
+  });
+
+  it("does not apply lease rules when purchaseType is not lease", () => {
+    const fields = makeFields({ monthlyPayment: 350 });
+    const result = applyRuleEngine(makeLlm(), fields, null, "finance");
+    // Should hit payment-only rule, not lease rule
+    expect(result.verdictLabel).toMatch(/OTD/i);
+  });
+
+  it("detects lease from fields even when purchaseType is unknown", () => {
+    const fields = makeFields({
+      moneyFactor: 0.00125,
+      // missing residual and mileage
+    });
+    const result = applyRuleEngine(makeLlm(), fields, null, "unknown");
+    expect(result.dealScore).toBe("YELLOW");
+    expect(result.verdictLabel).toMatch(/LEASE TERMS/i);
+  });
+
+  it("does not flag acquisition fee at $995 (below threshold)", () => {
+    const fields = makeFields({
+      outTheDoorPrice: 30000,
+      acquisitionFee: 995,
+      moneyFactor: 0.00125,
+      residualValue: 18000,
+      mileageAllowance: 12000,
+    });
+    const result = applyRuleEngine(makeLlm(), fields, null, "lease");
+    // Should pass through to general rules (OTD present path)
+    expect(result.dealScore).toBe("GREEN");
+  });
+
+  it("does not flag mileage rate at $0.25 (below threshold)", () => {
+    const fields = makeFields({
+      outTheDoorPrice: 30000,
+      moneyFactor: 0.00125,
+      residualValue: 18000,
+      mileageAllowance: 12000,
+      excessMileageRate: 0.25,
+    });
+    const result = applyRuleEngine(makeLlm(), fields, null, "lease");
+    expect(result.dealScore).toBe("GREEN");
+  });
+
+  it("doc fee cap violation still takes priority over lease rules", () => {
+    const capResult = { violated: true, capAmount: 85, chargedAmount: 300, overage: 215 };
+    const fields = makeFields({ acquisitionFee: 1500 });
+    const result = applyRuleEngine(makeLlm(), fields, capResult, "lease");
+    expect(result.dealScore).toBe("RED");
+    expect(result.verdictLabel).toMatch(/DOC FEE/i);
+  });
+
+  it("high acquisition fee takes priority over missing lease terms", () => {
+    const fields = makeFields({ acquisitionFee: 1200 });
+    // Missing money factor, residual, mileage — but acquisition fee is checked first
+    const result = applyRuleEngine(makeLlm(), fields, null, "lease");
+    expect(result.verdictLabel).toMatch(/ACQUISITION/i);
+  });
+});
+
+// ─── New junk fee keywords ────────────────────────────────────────────────────
+
+describe("applyRuleEngine — expanded junk fee keywords", () => {
+  it("detects dealer prep as a high-cost add-on", () => {
+    const fees: Fee[] = [
+      { name: "Dealer Prep Fee", amount: 600 },
+      { name: "Reconditioning Fee", amount: 700 },
+    ];
+    const result = applyRuleEngine(makeLlm(), makeFields({ fees }));
+    expect(result.dealScore).toBe("RED");
+    expect(result.goNoGo).toBe("NO-GO");
+  });
+
+  it("detects anti-theft package as a vague fee", () => {
+    const fees: Fee[] = [{ name: "Anti-Theft Package", amount: 400 }];
+    const result = applyRuleEngine(makeLlm(), makeFields({ outTheDoorPrice: 30000, fees }));
+    expect(result.dealScore).toBe("YELLOW");
+  });
+
+  it("detects VIN etch as a vague fee", () => {
+    const fees: Fee[] = [{ name: "VIN Etch", amount: 350 }];
+    const result = applyRuleEngine(makeLlm(), makeFields({ outTheDoorPrice: 30000, fees }));
+    expect(result.dealScore).toBe("YELLOW");
   });
 });
