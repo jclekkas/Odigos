@@ -16,7 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const faqsSchema = [
   {
     q: "How does the analysis work?",
-    a: "Paste your dealer quote, email, or text message. Our AI evaluates it against state-specific fee regulations, market pricing data, and patterns from thousands of analyzed quotes. You get a GREEN/YELLOW/RED verdict with specific issues identified.",
+    a: "Paste your dealer quote, email, or text message. Our AI evaluates it against state-specific fee regulations, junk fee detection rules, market pricing data, and patterns from thousands of analyzed quotes. You get a GREEN/YELLOW/RED verdict with specific issues identified.",
   },
   {
     q: "What's free vs. paid?",
@@ -45,8 +45,8 @@ export default function Landing() {
 
   useEffect(() => {
     return setSeoMeta({
-      title: "Odigos — Is Your Dealer Quote Fair? Find Out in 60 Seconds",
-      description: "Paste your dealer quote. Get an instant GO/NO-GO verdict with hidden fees flagged, missing info identified, and a ready-to-send reply. Free preview, full analysis $49.",
+      title: "Odigos — Dealer Quote Analyzer | Detect Junk Fees & Hidden Charges",
+      description: "Paste your dealer quote. Odigos detects junk fees, hidden charges, and missing details in 60 seconds. Get a GO/NO-GO verdict and a ready-to-send dealer reply. Free preview, full analysis $49.",
       path: "/",
     });
   }, []);
@@ -102,7 +102,7 @@ export default function Landing() {
                   className="mt-5 text-lg text-foreground/75 leading-relaxed max-w-lg mx-auto lg:mx-0"
                   data-testid="text-hero-subheadline"
                 >
-                  Paste it below. In 60 seconds you'll know what's missing, what's overpriced, and exactly what to say back.
+                  Paste it below. In 60 seconds we'll flag junk fees, missing details, and pricing tricks — then give you the exact words to say back.
                 </p>
 
                 <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">

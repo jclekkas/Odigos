@@ -10,7 +10,7 @@ export const analysisRequestSchema = z.object({
   apr: z.number().optional(),
   termMonths: z.number().optional(),
   downPayment: z.number().optional(),
-  source: z.enum(["paste", "upload"]).default("paste").optional(),
+  source: z.enum(["paste", "upload", "url"]).default("paste").optional(),
   sessionId: z.string().optional(),
   language: z.enum(["en", "es"]).optional().default("en"),
 });
@@ -65,6 +65,14 @@ export const detectedFieldsSchema = z.object({
   vehicle_make: z.string().nullable().optional(),
   vehicle_model: z.string().nullable().optional(),
   vehicle_year: z.number().int().nullable().optional(),
+  // Lease-specific fields (only populated when purchaseType is "lease" or lease terms detected)
+  moneyFactor: z.number().nullable().optional(),
+  residualValue: z.number().nullable().optional(),
+  residualPercent: z.number().nullable().optional(),
+  acquisitionFee: z.number().nullable().optional(),
+  dispositionFee: z.number().nullable().optional(),
+  mileageAllowance: z.number().int().nullable().optional(),
+  excessMileageRate: z.number().nullable().optional(),
 });
 
 export type DetectedFields = z.infer<typeof detectedFieldsSchema>;

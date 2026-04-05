@@ -4,7 +4,7 @@ import multer from "multer";
 import { z } from "zod";
 import { analysisRequestSchema } from "@shared/schema";
 import { trackEvent } from "../events";
-import { extractTextFromFile } from "../extractText";
+import { extractTextFromFile, extractTextFromUrl } from "../extractText";
 import { storage } from "../storage";
 import { writeAuditEvent } from "../audit";
 import { runAnalysis, AnalyzeServiceError } from "../services/analyzeService";
@@ -124,6 +124,49 @@ export function registerAnalyzeRoutes(app: Express): void {
       Sentry.withScope((scope) => {
         scope.setTag("feature", "extract-text");
         scope.setTag("route", "/api/extract-text");
+        scope.setTag("error_type", err instanceof Error ? err.constructor.name : "unknown");
+        Sentry.captureException(err);
+      });
+      res.status(500).json({ message: "Something went wrong. Please try again." });
+    }
+  });
+
+  app.post("/api/extract-url", async (req, res) => {
+    try {
+      const urlSchema = z.object({ url: z.string().url("Please enter a valid URL") });
+      const parseResult = urlSchema.safeParse(req.body);
+      if (!parseResult.success) {
+        trackEvent("url_processing", { urlSuccess: false, urlFailReason: "invalid_url" });
+        return res.status(400).json({ message: "Please enter a valid URL." });
+      }
+      const { url } = parseResult.data;
+
+      let text: string;
+      try {
+        text = await extractTextFromUrl(url);
+      } catch (err) {
+        console.error("URL extraction error:", err);
+        const reason = err instanceof Error ? err.message.slice(0, 100) : "extraction_error";
+        trackEvent("url_processing", { urlSuccess: false, urlFailReason: reason });
+        return res.status(422).json({
+          message: err instanceof Error && err.message.includes("Internal")
+            ? "That URL cannot be accessed."
+            : "We couldn't extract enough content from that page. Try pasting the text directly instead.",
+        });
+      }
+
+      if (text.length < 20) {
+        trackEvent("url_processing", { urlSuccess: false, urlFailReason: "too_short" });
+        return res.status(422).json({ message: "We couldn't find enough content on that page. Try pasting the dealer quote text directly." });
+      }
+
+      trackEvent("url_processing", { urlSuccess: true });
+      return res.json({ text });
+    } catch (err) {
+      console.error("extract-url error:", err);
+      Sentry.withScope((scope) => {
+        scope.setTag("feature", "extract-url");
+        scope.setTag("route", "/api/extract-url");
         scope.setTag("error_type", err instanceof Error ? err.constructor.name : "unknown");
         Sentry.captureException(err);
       });

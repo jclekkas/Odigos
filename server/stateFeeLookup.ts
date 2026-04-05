@@ -1,6 +1,17 @@
 import { zipToStateCode } from "./zipToState";
 import stateFeeReferenceJson from "./state_fee_reference.json";
 
+interface CpiIndexing {
+  isIndexed: boolean;
+  baseAmount: number | null;
+  baseYear: number | null;
+  currentAmount: number;
+  effectiveDate: string;
+  frequency: "annual" | "biennial";
+  indexType: string;
+  nextExpectedDate: string | null;
+}
+
 interface StateFeeData {
   name: string;
   abbreviation: string;
@@ -16,6 +27,7 @@ interface StateFeeData {
   titleFee: number | null;
   registrationFee: string;
   specialNotes: string | null;
+  cpiIndexing?: CpiIndexing;
   sources: string[];
   lastVerified: string;
   confidence: string;

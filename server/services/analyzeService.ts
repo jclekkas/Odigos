@@ -121,12 +121,16 @@ export async function runAnalysis(data: AnalyzeInput): Promise<AnalyzeServiceRes
 
   let stateFeeSection = "";
   if (stateData) {
+    const effectiveCap = stateData.cpiIndexing?.isIndexed ? stateData.cpiIndexing.currentAmount : stateData.docFeeCapAmount;
     const capLine = stateData.docFeeCap
-      ? `  Cap: YES — $${stateData.docFeeCapAmount} (dealers may NOT charge more)`
+      ? `  Cap: YES — $${effectiveCap} (dealers may NOT charge more)`
       : `  Cap: NO — no state-imposed limit`;
     const rangeLine = `  Typical range: $${stateData.docFeeTypicalRange[0]}–$${stateData.docFeeTypicalRange[1]}`;
     const taxLine = `  State sales tax: ${(stateData.stateSalesTaxRate * 100).toFixed(2)}%`;
     const tradeInLine = `  Trade-in tax credit: ${stateData.tradeInTaxCredit ? "YES" : "NO"}`;
+    const cpiLine = stateData.cpiIndexing?.isIndexed
+      ? `  CPI-adjusted: YES — cap adjusts ${stateData.cpiIndexing.frequency === "biennial" ? "every two years" : "annually"} by ${stateData.cpiIndexing.indexType || "CPI"}. Current: $${stateData.cpiIndexing.currentAmount} (effective ${stateData.cpiIndexing.effectiveDate}).`
+      : "";
     const notesLine = stateData.specialNotes ? `  Special notes: ${stateData.specialNotes}` : "";
 
     stateFeeSection = `
@@ -134,7 +138,7 @@ STATE_FEE_REFERENCE (${stateData.name}):
 ${capLine}
 ${rangeLine}
 ${taxLine}
-${tradeInLine}${notesLine ? `\n${notesLine}` : ""}`;
+${tradeInLine}${cpiLine ? `\n${cpiLine}` : ""}${notesLine ? `\n${notesLine}` : ""}`;
   }
 
   const stateFeeRulesSection = `
@@ -144,7 +148,7 @@ A STATE_FEE_REFERENCE block has been injected above for ${stateData.name}. Apply
 1. Use ONLY the injected STATE_FEE_REFERENCE data for any state-specific claims — NOT general training knowledge.
 2. Doc fee cap analysis:
    ${stateData.docFeeCap
-     ? `- ${stateData.name} has a $${stateData.docFeeCapAmount} doc fee cap. If a doc fee in the quote exceeds this:
+     ? `- ${stateData.name} has a $${effectiveCap} doc fee cap${stateData.cpiIndexing?.isIndexed ? ` (CPI-adjusted ${stateData.cpiIndexing.frequency === "biennial" ? "biennially" : "annually"})` : ""}. If a doc fee in the quote exceeds this:
      - Flag it clearly in summary and reasoning as a HARD violation
      - State the cap amount, the charged amount, the overage ($charged - $cap), and any statute reference
      - Statute citation rule: if specialNotes contains a statute number or code citation, include it. If not, reference only the state name and cap amount — NEVER fabricate a statute citation.
@@ -297,10 +301,21 @@ SUGGESTED REPLY RULES:
 CRITICAL REQUIREMENTS:
 1. If key information is missing or ambiguous, you MUST explicitly state what's missing and provide the exact questions the buyer should ask the dealer.
 2. Extract all pricing information you can find (sale price, MSRP, fees, monthly payments, etc.)
-3. Flag any suspicious fees or unclear terms like market adjustments, dealer add-ons, protection packages.
+3. Flag any junk fees — charges that provide little or no value to the buyer, duplicate other charges, or were not clearly disclosed. Common junk fees include: dealer prep, nitrogen fills, paint protection, fabric guard, VIN etching, anti-theft packages, reconditioning fees, delivery fees (separate from manufacturer destination charge), and excessive dealer add-ons. Also flag market adjustments and unclear protection packages.
 4. Never invent numbers or make claims about "market averages" without data.
 5. For vehicle_make, vehicle_model, and vehicle_year: extract from the dealer text or the user-provided Vehicle field. Return null for any field that is not clearly determinable — do not guess.
-${stateFeeRulesSection}${marketIntelligenceSection}
+${stateFeeRulesSection}${marketIntelligenceSection}${data.purchaseType === "lease" ? `
+LEASE ANALYSIS RULES:
+This is a LEASE quote. Apply these additional rules:
+1. Extract lease-specific fields: moneyFactor, residualValue, residualPercent, acquisitionFee, dispositionFee, mileageAllowance (annual miles), excessMileageRate (per-mile cost).
+2. If money factor is present, note the equivalent APR (moneyFactor × 2400).
+3. Flag if acquisition fee exceeds $1,000 — this is above market average.
+4. Flag if excess mileage rate exceeds $0.30/mile — typical is $0.15–$0.25/mile.
+5. Flag if mileage allowance is below 10,000 miles/year without explanation.
+6. If residual value is missing, add to missingInfo: "What is the residual value at lease end?"
+7. If money factor is missing, add to missingInfo: "What is the money factor (or lease APR equivalent)?"
+8. For lease quotes, disposition fees are common ($300-$500) but should be disclosed upfront.
+` : ""}
 You must respond with a valid JSON object with this exact structure:
 {
   "dealScore": "GREEN" | "YELLOW" | "RED",
@@ -321,7 +336,14 @@ You must respond with a valid JSON object with this exact structure:
     "downPayment": number or null,
     "vehicle_make": string or null,
     "vehicle_model": string or null,
-    "vehicle_year": number (4-digit integer) or null
+    "vehicle_year": number (4-digit integer) or null,
+    "moneyFactor": number or null (lease only),
+    "residualValue": number or null (lease only),
+    "residualPercent": number or null (lease only, e.g. 55 for 55%),
+    "acquisitionFee": number or null (lease only),
+    "dispositionFee": number or null (lease only),
+    "mileageAllowance": integer or null (lease only, annual miles),
+    "excessMileageRate": number or null (lease only, per-mile cost e.g. 0.25)
   },
   "missingInfo": [
     {"field": "What's missing", "question": "Exact question to ask the dealer"}
@@ -534,7 +556,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     }
   }
 
-  const ruleEngineAdjustments = applyRuleEngine(llmResult, llmResult.detectedFields, docFeeCapResult);
+  const ruleEngineAdjustments = applyRuleEngine(llmResult, llmResult.detectedFields, docFeeCapResult, data.purchaseType);
 
   const finalResult: AnalysisResponse = {
     ...llmResult,
