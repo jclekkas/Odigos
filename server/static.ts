@@ -10,11 +10,29 @@ function injectNonce(html: string, res: Response): string {
   return html.replace(/<script/g, `<script nonce="${nonce}"`);
 }
 
-const PRERENDERED_ROUTES = [
-  "/dealer-pricing-tactics",
-  "/dealer-wont-give-otd-price",
-  "/are-dealer-add-ons-mandatory",
-];
+/**
+ * Scan dist/public at startup to discover all prerendered routes.
+ * A prerendered route is any subdirectory containing an index.html file.
+ */
+function discoverPrerenderedRoutes(distPath: string): Set<string> {
+  const routes = new Set<string>();
+  if (!fs.existsSync(distPath)) return routes;
+
+  function scan(dir: string, prefix: string) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+      const childPath = path.join(dir, entry.name);
+      const routePath = `${prefix}/${entry.name}`;
+      if (fs.existsSync(path.join(childPath, "index.html"))) {
+        routes.add(routePath);
+      }
+      scan(childPath, routePath);
+    }
+  }
+
+  scan(distPath, "");
+  return routes;
+}
 
 export function serveStatic(app: Express) {
   const distPath = path.resolve(__dirname, "public");
@@ -23,6 +41,9 @@ export function serveStatic(app: Express) {
       `Could not find the build directory: ${distPath}, make sure to build the client first`,
     );
   }
+
+  const prerenderedRoutes = discoverPrerenderedRoutes(distPath);
+  console.log(`Discovered ${prerenderedRoutes.size} prerendered routes`);
 
   app.use((req, res, next) => {
     const rawPath = req.path;
@@ -35,21 +56,25 @@ export function serveStatic(app: Express) {
       return res.redirect(301, "/dealer-pricing-tactics");
     }
 
-    for (const route of PRERENDERED_ROUTES) {
-      if (rawPath === `${route}/`) {
-        const qs = req.originalUrl.includes("?")
-          ? req.originalUrl.slice(req.originalUrl.indexOf("?"))
-          : "";
-        return res.redirect(301, `${route}${qs}`);
-      }
+    // Normalize trailing slash
+    const normalized =
+      rawPath.length > 1 && rawPath.endsWith("/")
+        ? rawPath.slice(0, -1)
+        : rawPath;
 
-      if (rawPath === route) {
-        const prerenderedFile = path.join(distPath, route, "index.html");
-        if (fs.existsSync(prerenderedFile)) {
-          const html = fs.readFileSync(prerenderedFile, "utf-8");
-          return res.type("html").send(injectNonce(html, res));
-        }
-      }
+    // Redirect trailing-slash variants of prerendered routes
+    if (rawPath !== normalized && prerenderedRoutes.has(normalized)) {
+      const qs = req.originalUrl.includes("?")
+        ? req.originalUrl.slice(req.originalUrl.indexOf("?"))
+        : "";
+      return res.redirect(301, `${normalized}${qs}`);
+    }
+
+    // Serve prerendered HTML if available
+    if (prerenderedRoutes.has(normalized)) {
+      const prerenderedFile = path.join(distPath, normalized, "index.html");
+      const html = fs.readFileSync(prerenderedFile, "utf-8");
+      return res.type("html").send(injectNonce(html, res));
     }
 
     next();
