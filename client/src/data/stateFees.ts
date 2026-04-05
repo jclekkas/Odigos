@@ -26,6 +26,8 @@ export interface StateFeeData {
 
 const STANDARD_LINKS = [
   { href: "/out-the-door-price", label: "out-the-door price" },
+  { href: "/calculate-out-the-door-price", label: "how to calculate out-the-door price" },
+  { href: "/what-does-out-the-door-price-include", label: "what the out-the-door price includes" },
   { href: "/dealer-doc-fee", label: "documentation fee" },
   { href: "/car-dealer-fees-list", label: "car dealer fees list" },
   { href: "/car-dealer-fees-by-state", label: "car dealer fees by state" },

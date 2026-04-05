@@ -212,7 +212,7 @@ export default function WhatDoesOutTheDoorPriceInclude() {
         </div>
 
         <p className="text-muted-foreground mb-4">
-          If any of these categories is missing, the quote is incomplete. For a broader overview of OTD pricing and why it matters, see our guide on <Link href="/out-the-door-price" className="underline text-foreground">what an out-the-door price is</Link>.
+          If any of these categories is missing, the quote is incomplete. For a broader overview of OTD pricing and why it matters, see our guide on <Link href="/out-the-door-price" className="underline text-foreground">what an out-the-door price is</Link>. See how these components play out in practice with <Link href="/car-dealer-fees-florida" className="underline text-foreground">Florida's fee structure</Link> or <Link href="/car-dealer-fees-illinois" className="underline text-foreground">Illinois's fee breakdown</Link>.
         </p>
       </div>
 

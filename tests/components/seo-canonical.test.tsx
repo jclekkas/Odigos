@@ -339,6 +339,30 @@ describe("State page full render — /car-dealer-fees-new-york", () => {
   });
 });
 
+// ─── State page faqPageSchema includes canonical URL ─────────────────────────
+
+describe("State page faqPageSchema URL matches canonical", () => {
+  it("faqPageSchema URL matches buildCanonical for /car-dealer-fees-florida", async () => {
+    const { buildCanonical } = await import("../../client/src/lib/seo");
+    const { faqPageSchema } = await import("../../client/src/lib/jsonld");
+    const path = "/car-dealer-fees-florida";
+    const url = buildCanonical(path);
+    const schema = faqPageSchema({ questions: [{ question: "Q?", answer: "A." }], url });
+    expect(schema.url).toBe("https://odigosauto.com/car-dealer-fees-florida");
+    expect(schema.mainEntityOfPage?.["@id"]).toBe(url);
+  });
+
+  it("faqPageSchema URL matches buildCanonical for /car-dealer-fees-illinois", async () => {
+    const { buildCanonical } = await import("../../client/src/lib/seo");
+    const { faqPageSchema } = await import("../../client/src/lib/jsonld");
+    const path = "/car-dealer-fees-illinois";
+    const url = buildCanonical(path);
+    const schema = faqPageSchema({ questions: [{ question: "Q?", answer: "A." }], url });
+    expect(schema.url).toBe("https://odigosauto.com/car-dealer-fees-illinois");
+    expect(schema.mainEntityOfPage?.["@id"]).toBe(url);
+  });
+});
+
 // ─── SPA navigation — canonical not stale after route change ─────────────────
 
 describe("SPA navigation canonical stability", () => {

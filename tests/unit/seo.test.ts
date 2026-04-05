@@ -169,6 +169,43 @@ describe("jsonld.ts domain usage", () => {
   });
 });
 
+// ─── faqPageSchema URL field ─────────────────────────────────────────────────
+
+describe("faqPageSchema URL field", () => {
+  it("includes url and mainEntityOfPage when url is provided", async () => {
+    const { faqPageSchema } = await import("../../client/src/lib/jsonld");
+    const schema = faqPageSchema({
+      questions: [{ question: "Q?", answer: "A." }],
+      url: "https://odigosauto.com/car-dealer-fees-florida",
+    });
+    expect(schema.url).toBe("https://odigosauto.com/car-dealer-fees-florida");
+    expect(schema.mainEntityOfPage).toEqual({
+      "@type": "WebPage",
+      "@id": "https://odigosauto.com/car-dealer-fees-florida",
+    });
+  });
+
+  it("omits url and mainEntityOfPage when url is not provided", async () => {
+    const { faqPageSchema } = await import("../../client/src/lib/jsonld");
+    const schema = faqPageSchema({
+      questions: [{ question: "Q?", answer: "A." }],
+    });
+    expect(schema.url).toBeUndefined();
+    expect(schema.mainEntityOfPage).toBeUndefined();
+  });
+
+  it("url does not contain odigos.replit.app", async () => {
+    const { faqPageSchema } = await import("../../client/src/lib/jsonld");
+    const { buildCanonical } = await import("../../client/src/lib/seo");
+    const schema = faqPageSchema({
+      questions: [{ question: "Q?", answer: "A." }],
+      url: buildCanonical("/car-dealer-fees-illinois"),
+    });
+    expect(schema.url).not.toContain("odigos.replit.app");
+    expect(schema.url).toBe("https://odigosauto.com/car-dealer-fees-illinois");
+  });
+});
+
 // ─── seo.ts canonical domain ──────────────────────────────────────────────────
 
 describe("seo.ts canonical domain", () => {

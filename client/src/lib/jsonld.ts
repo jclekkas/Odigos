@@ -181,12 +181,14 @@ export function itemListSchema({ name, description, items }: ItemListSchemaOptio
 
 interface FaqPageSchemaOptions {
   questions: { question: string; answer: string }[];
+  url?: string;
 }
 
-export function faqPageSchema({ questions }: FaqPageSchemaOptions) {
+export function faqPageSchema({ questions, url }: FaqPageSchemaOptions) {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
+    ...(url ? { "url": url, "mainEntityOfPage": { "@type": "WebPage", "@id": url } } : {}),
     "mainEntity": questions.map((q) => ({
       "@type": "Question",
       "name": q.question,
