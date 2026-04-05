@@ -9,6 +9,7 @@
 import { Component, type ReactNode, useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   ArrowUpRight,
   ArrowDownRight,
@@ -150,6 +151,7 @@ export function MetricCard({
   trend,
   icon: Icon,
   color = "default",
+  size = "default",
 }: {
   title: string;
   value: string | number;
@@ -157,7 +159,9 @@ export function MetricCard({
   trend?: { current: number; previous: number; label?: string };
   icon: LucideIcon;
   color?: keyof typeof COLOR_CLASSES;
+  size?: "default" | "lg";
 }) {
+  const isLg = size === "lg";
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
@@ -166,15 +170,15 @@ export function MetricCard({
           <Icon className="h-4 w-4 text-muted-foreground" />
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className={isLg ? "p-6" : undefined}>
         <div
-          className={`text-3xl font-bold ${COLOR_CLASSES[color]}`}
+          className={`${isLg ? "text-4xl" : "text-3xl"} font-bold ${COLOR_CLASSES[color]}`}
           data-testid={`stat-${title.toLowerCase().replace(/\s+/g, "-")}`}
         >
           {value}
         </div>
         <div className="flex items-center justify-between mt-1 gap-2">
-          {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
+          {subtitle && <p className={`${isLg ? "text-sm" : "text-xs"} text-muted-foreground`}>{subtitle}</p>}
           {trend && (
             <TrendBadge
               current={trend.current}
@@ -268,24 +272,58 @@ export function DateRangeSelector({
 }
 
 // ---------------------------------------------------------------------------
+// SectionHeader
+// ---------------------------------------------------------------------------
+
+export function SectionHeader({ title, description }: { title: string; description?: string }) {
+  return (
+    <div className="space-y-1">
+      <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
+      {description && <p className="text-sm text-muted-foreground">{description}</p>}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// StatRow — simple label/value pair for lists
+// ---------------------------------------------------------------------------
+
+export function StatRow({ label, value, highlight }: { label: string; value: string | number; highlight?: boolean }) {
+  return (
+    <div className="flex items-center justify-between py-2.5 border-b border-muted/50 last:border-0">
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className={`text-sm font-semibold ${highlight ? "text-green-600 dark:text-green-400" : ""}`}>{value}</span>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // PanelErrorCard — human-readable error display
 // ---------------------------------------------------------------------------
 
-export function PanelErrorCard({ error, label }: { error: unknown; label?: string }) {
+export function PanelErrorCard({ error, label, onRetry }: { error: unknown; label?: string; onRetry?: () => void }) {
   return (
     <div
-      className="flex items-start gap-3 p-4 rounded-lg border border-red-400 bg-red-50 dark:bg-red-950/20"
+      className="flex flex-col gap-3 p-4 rounded-lg border border-red-400 bg-red-50 dark:bg-red-950/20"
       data-testid="panel-error-card"
     >
-      <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-      <div>
-        <p className="text-red-700 dark:text-red-400 text-sm font-medium">
-          Failed to load {label ?? "panel data"}
-        </p>
-        <p className="text-red-600 dark:text-red-500 text-xs mt-0.5">
-          {friendlyErrorMessage(error)}
-        </p>
+      <div className="flex items-start gap-3">
+        <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+        <div>
+          <p className="text-red-700 dark:text-red-400 text-sm font-medium">
+            Failed to load {label ?? "panel data"}
+          </p>
+          <p className="text-red-600 dark:text-red-500 text-xs mt-0.5">
+            {friendlyErrorMessage(error)}
+          </p>
+        </div>
       </div>
+      {onRetry && (
+        <Button variant="outline" size="sm" onClick={onRetry} className="self-start ml-8">
+          <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+          Retry
+        </Button>
+      )}
     </div>
   );
 }
@@ -304,8 +342,8 @@ export function EmptyState({
   hint?: string;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center h-40 text-muted-foreground gap-2">
-      <Icon className="h-8 w-8 opacity-40" />
+    <div className="flex flex-col items-center justify-center h-52 text-muted-foreground gap-2">
+      <Icon className="h-10 w-10 opacity-40" />
       <p className="text-sm">{label}</p>
       {hint && <p className="text-xs opacity-60 max-w-xs text-center">{hint}</p>}
     </div>

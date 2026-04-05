@@ -5,4 +5,4 @@ server/public
 vite.config.ts.*
 *.tar.gz
 coverage
-attached_assets/Pasted-*.txt
+attached_assets/Pasted-*.txt.claude/worktrees/
