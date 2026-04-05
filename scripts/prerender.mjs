@@ -75,6 +75,11 @@ const ROUTES = [
   // About / product
   "/how-odigos-works",
   "/example-analysis",
+
+  // Footer / legal
+  "/about",
+  "/privacy",
+  "/terms",
 ];
 
 const PORT = 4173;
@@ -205,6 +210,12 @@ async function prerender() {
         dedup("name", "twitter:title");
         dedup("name", "twitter:description");
         dedup("name", "twitter:url");
+
+        // Dedup canonical link tags (keep the last one, set by setSeoMeta)
+        const canonicals = document.querySelectorAll('link[rel="canonical"]');
+        if (canonicals.length > 1) {
+          for (let i = 0; i < canonicals.length - 1; i++) canonicals[i].remove();
+        }
       });
 
       const html = await page.content();

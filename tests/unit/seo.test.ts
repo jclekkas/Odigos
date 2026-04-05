@@ -134,6 +134,27 @@ describe("indexable-routes registry", () => {
   });
 });
 
+// ─── index.html canonical policy ─────────────────────────────────────────────
+// The SPA shell must NOT contain URL-specific tags (canonical, og:url, twitter:url)
+// because it serves as the fallback for all routes. If present, Google would see
+// every page's canonical pointing to the homepage, blocking indexing.
+
+describe("index.html canonical policy", () => {
+  const html = readFileSync(resolve(ROOT, "client/index.html"), "utf-8");
+
+  it("does not contain a hardcoded canonical link tag", () => {
+    expect(html).not.toMatch(/<link[^>]*rel="canonical"/);
+  });
+
+  it("does not contain a hardcoded og:url meta tag", () => {
+    expect(html).not.toMatch(/<meta[^>]*property="og:url"/);
+  });
+
+  it("does not contain a hardcoded twitter:url meta tag", () => {
+    expect(html).not.toMatch(/<meta[^>]*name="twitter:url"/);
+  });
+});
+
 // ─── JSON-LD uses buildCanonical ──────────────────────────────────────────────
 
 describe("jsonld.ts domain usage", () => {
