@@ -48,8 +48,8 @@ export default function DealerDocFeeByState() {
 
   useEffect(() => {
     return setSeoMeta({
-      title: "Dealer Doc Fee by State: Typical Ranges and Fee Caps | Odigos",
-      description: "Dealer documentation fees range from under $100 to over $1,000 depending on the state. See typical doc fee ranges, which states cap fees, and how to compare dealers fairly.",
+      title: "Dealer Doc Fee by State (2026): Caps, Ranges & What You Should Pay",
+      description: "Compare dealer doc fees across all 50 states — updated for 2026. See which 17 states cap the fee, typical ranges from $85 to $999+, and how to spot if you're being overcharged.",
       path: "/dealer-doc-fee-by-state",
     });
   }, []);
@@ -73,7 +73,7 @@ export default function DealerDocFeeByState() {
   };
 
   return (
-    <ArticleLayout title="Dealer Doc Fee by State: What Buyers Should Expect">
+    <ArticleLayout title="Dealer Doc Fee by State (2026): Caps, Ranges & What You Should Pay">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(itemListSchema({
           name: "Dealer Doc Fee by State",
@@ -113,7 +113,7 @@ export default function DealerDocFeeByState() {
         }))}</script>
       </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-doc-fee-by-state-headline">
-            Dealer Doc Fee by State: What Buyers Should Expect
+            Dealer Doc Fee by State (2026): Caps, Ranges & What You Should Pay
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
@@ -136,7 +136,7 @@ export default function DealerDocFeeByState() {
             </p>
 
             <p className="text-lg text-muted-foreground mb-6">
-              For a deeper look at what the doc fee actually covers and whether you can negotiate it, see our guide on the <Link href="/dealer-doc-fee" className="underline text-foreground">dealer documentation fee</Link>.
+              For a deeper look at what the doc fee actually covers and whether you can negotiate it, see our guide on the <Link href="/dealer-doc-fee" className="underline text-foreground">dealer documentation fee</Link>. The doc fee is just one component of many — for the full picture of what goes into a dealer quote, see <Link href="/what-does-out-the-door-price-include" className="underline text-foreground">what OTD includes</Link>.
             </p>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Doc fee ranges by state</h2>
