@@ -46,7 +46,7 @@ export default function DealerDocFee() {
   }, []);
 
   return (
-    <ArticleLayout title="Dealer Doc Fee (2026): What It Is and What Dealers Can Legally Charge">
+    <ArticleLayout title="Dealer Doc Fee (2026): What It Is and What Dealers Can Legally Charge" breadcrumbPath="/dealer-doc-fee">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Doc Fee (2026): What It Is and What Dealers Can Legally Charge", description: "Doc fees range from $85 (CA cap) to $999+ in uncapped states like Florida. See which states cap them, whether it's negotiable, and how to push back on it.", path: "/dealer-doc-fee" }))}</script>
         <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: faqItems.map((f) => ({ question: f.question, answer: f.answer })) }))}</script>

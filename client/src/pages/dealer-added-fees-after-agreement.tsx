@@ -42,7 +42,7 @@ export default function DealerAddedFeesAfterAgreement() {
   };
 
   return (
-    <ArticleLayout title="Dealer Added Fees After Agreement? What to Do Next">
+    <ArticleLayout title="Dealer Added Fees After Agreement? What to Do Next" breadcrumbPath="/dealer-added-fees-after-agreement">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Added Fees After Agreement? What to Do Next | Odigos", description: "You agreed on a price and now new charges appeared. Learn which dealer fees are legitimate, which are optional, and exactly what to say to get clarity before you sign.", path: "/dealer-added-fees-after-agreement" }))}</script>
       </Helmet>

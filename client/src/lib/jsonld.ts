@@ -135,7 +135,7 @@ export function articleSchema({
   description,
   path,
   datePublished = "2025-12-01",
-  dateModified = "2026-03-22",
+  dateModified = "2026-04-05",
 }: ArticleSchemaOptions) {
   return {
     "@context": "https://schema.org",
@@ -175,6 +175,24 @@ export function itemListSchema({ name, description, items }: ItemListSchemaOptio
       "position": index + 1,
       "name": item.name,
       "url": buildCanonical(item.url)
+    }))
+  };
+}
+
+interface BreadcrumbItem {
+  name: string;
+  url: string;
+}
+
+export function breadcrumbListSchema(items: BreadcrumbItem[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": items.map((item, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "name": item.name,
+      "item": buildCanonical(item.url)
     }))
   };
 }

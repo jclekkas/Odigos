@@ -128,7 +128,7 @@ export default function DealerPricingProblems() {
   }, []);
 
   return (
-    <ArticleLayout title="Dealer Tactics" showBreadcrumbs={false}>
+    <ArticleLayout title="Dealer Tactics" showBreadcrumbs={false} breadcrumbPath="/dealer-pricing-problems">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Tactics: Pricing Tricks and Negotiation Guides | Odigos", description: "Guides on hidden dealer fees, forced add-ons, the monthly payment trap, out-the-door pricing, and common dealership tactics — written for U.S. car buyers.", path: "/dealer-pricing-problems" }))}</script>
       </Helmet>

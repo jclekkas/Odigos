@@ -16,7 +16,7 @@ export default function OutTheDoorPriceVsMonthlyPayment() {
   }, []);
 
   return (
-    <ArticleLayout title="Out-the-Door Price vs. Monthly Payment: What Dealers Hide">
+    <ArticleLayout title="Out-the-Door Price vs. Monthly Payment: What Dealers Hide" breadcrumbPath="/out-the-door-price-vs-monthly-payment">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "OTD Price vs. Monthly Payment: What Dealers Hide | Odigos", description: "Dealers leading with a monthly payment hide the sale price, APR, loan term, and rolled-in add-ons. Here's how that mechanic works and how to stop it.", path: "/out-the-door-price-vs-monthly-payment" }))}</script>
       </Helmet>
@@ -170,6 +170,13 @@ export default function OutTheDoorPriceVsMonthlyPayment() {
               <span>{item}</span>
             </li>
           ))}
+        </ul>
+
+        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Related Guides</h2>
+        <ul className="space-y-2 mb-8 text-muted-foreground">
+          <li><Link href="/out-the-door-price-vs-msrp" className="underline text-foreground">OTD Price vs. MSRP: Why the Sticker Price Is Misleading</Link></li>
+          <li><Link href="/what-does-out-the-door-price-include" className="underline text-foreground">What Does the Out-the-Door Price Include?</Link></li>
+          <li><Link href="/why-dealers-wont-give-out-the-door-price" className="underline text-foreground">Why Dealers Won't Give Out-the-Door Price</Link></li>
         </ul>
       </div>
 

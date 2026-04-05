@@ -42,7 +42,7 @@ export default function DealerChangedPriceAfterDeposit() {
   };
 
   return (
-    <ArticleLayout title="Dealer Changed the Price After Your Deposit? What It Means">
+    <ArticleLayout title="Dealer Changed the Price After Your Deposit? What It Means" breadcrumbPath="/dealer-changed-price-after-deposit">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Changed the Price After Your Deposit? What It Means | Odigos", description: "If a dealer changed the price after you put down a deposit, here's why it happens, what protects you, and what to do next to get your money back or hold them to the original deal.", path: "/dealer-changed-price-after-deposit" }))}</script>
       </Helmet>

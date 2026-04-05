@@ -16,7 +16,7 @@ export default function HowToCompareCarDeals() {
   }, []);
 
   return (
-    <ArticleLayout title="How to Compare Car Deals">
+    <ArticleLayout title="How to Compare Car Deals" breadcrumbPath="/how-to-compare-car-deals">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "How to Compare Car Deals Side by Side (OTD to OTD) | Odigos", description: "Compare car deals the right way by focusing on OTD price, not monthly payments, so you can avoid misleading financing tactics.", path: "/how-to-compare-car-deals" }))}</script>
       </Helmet>

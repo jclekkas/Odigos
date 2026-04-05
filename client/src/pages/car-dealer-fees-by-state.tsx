@@ -67,7 +67,7 @@ export default function CarDealerFeesByState() {
   };
 
   return (
-    <ArticleLayout title="Car Dealer Fees by State: What Buyers Should Expect">
+    <ArticleLayout title="Car Dealer Fees by State: What Buyers Should Expect" breadcrumbPath="/car-dealer-fees-by-state">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(itemListSchema({
           name: "Car Dealer Fees by State (2026)",

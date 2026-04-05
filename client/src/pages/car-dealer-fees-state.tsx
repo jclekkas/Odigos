@@ -4,12 +4,13 @@ import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Copy, Check } from "lucide-react";
 import { setSeoMeta, buildCanonical } from "@/lib/seo";
-import { faqPageSchema } from "@/lib/jsonld";
+import { faqPageSchema, articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 import NotFound from "@/pages/not-found";
 import { STATE_FEES } from "@/data/stateFees";
 import SourceCitation from "@/components/SourceCitation";
+import { getClusterOgImage } from "@/lib/og-images";
 
 export default function CarDealerFeesState() {
   const [location] = useLocation();
@@ -19,12 +20,17 @@ export default function CarDealerFeesState() {
   const data = STATE_FEES[stateSlug];
   const [copied, setCopied] = useState(false);
 
+  const pagePath = data ? `/car-dealer-fees-${data.slug}` : "";
+  const clusterOg = data ? getClusterOgImage(pagePath) : undefined;
+
   useEffect(() => {
     if (!data) return;
     return setSeoMeta({
       title: data.pageTitle ?? `Car Dealer Fees in ${data.name}: What You'll Actually Pay | Odigos`,
       description: data.metaDescription,
-      path: `/car-dealer-fees-${data.slug}`,
+      path: pagePath,
+      ogImage: clusterOg?.url,
+      ogImageAlt: clusterOg?.alt,
     });
   }, [data]);
 
@@ -68,9 +74,10 @@ export default function CarDealerFeesState() {
     : `Car Dealer Fees in ${data.name}: What You'll Actually Pay`;
 
   return (
-    <ArticleLayout title={pageHeading}>
+    <ArticleLayout title={pageHeading} breadcrumbPath={`/car-dealer-fees-${data.slug}`}>
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: allFaqsForSchema, url: buildCanonical(`/car-dealer-fees-${data.slug}`) }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: pageHeading, description: data.metaDescription, path: `/car-dealer-fees-${data.slug}`, dateModified: data.lastVerified ? `${data.lastVerified}-01` : undefined }))}</script>
       </Helmet>
       <h1
         className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight"

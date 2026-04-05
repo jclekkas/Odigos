@@ -42,7 +42,7 @@ export default function DocFeeTooHigh() {
   };
 
   return (
-    <ArticleLayout title="Dealer Doc Fee Too High? What You Can Actually Do">
+    <ArticleLayout title="Dealer Doc Fee Too High? What You Can Actually Do" breadcrumbPath="/doc-fee-too-high">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Doc Fee Too High? What You Can Actually Do | Odigos", description: "Doc fees vary widely by state and dealer. Learn what's normal, whether you can negotiate, and what red flags to watch for when a dealer's documentation fee seems too high.", path: "/doc-fee-too-high" }))}</script>
       </Helmet>

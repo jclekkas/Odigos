@@ -18,7 +18,7 @@ export default function WhatIsAFairPriceForACar() {
   }, []);
 
   return (
-    <ArticleLayout title="What Is a Fair Price for a Car?">
+    <ArticleLayout title="What Is a Fair Price for a Car?" breadcrumbPath="/what-is-a-fair-price-for-a-car">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "What Is a Fair Price for a Car? (OTD, Not Sticker) | Odigos", description: "A fair car price isn't the sticker—it's the OTD total. Learn how to evaluate true cost and avoid overpaying on your next deal.", path: "/what-is-a-fair-price-for-a-car" }))}</script>
       </Helmet>

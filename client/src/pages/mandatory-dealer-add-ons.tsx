@@ -19,7 +19,7 @@ export default function MandatoryDealerAddOns() {
   }, []);
 
   return (
-    <ArticleLayout title="Are Dealer Add-Ons Really Mandatory?">
+    <ArticleLayout title="Are Dealer Add-Ons Really Mandatory?" breadcrumbPath="/mandatory-dealer-add-ons">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Mandatory Dealer Add-Ons: Which Are Actually Required by the Dealer | Odigos", description: "Understand which dealer add-ons are truly required, which are optional, and why dealers pre-install extras to increase profit.", path: "/mandatory-dealer-add-ons" }))}</script>
       </Helmet>

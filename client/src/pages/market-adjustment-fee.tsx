@@ -42,7 +42,7 @@ export default function MarketAdjustmentFee() {
   };
 
   return (
-    <ArticleLayout title="Market Adjustment Fees Explained: Can Dealers Charge Them?">
+    <ArticleLayout title="Market Adjustment Fees Explained: Can Dealers Charge Them?" breadcrumbPath="/market-adjustment-fee">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Market Adjustment Fee: What It Is and What to Do | Odigos", description: "Market adjustment fees add thousands above MSRP. Learn what they are, whether they're legal, how to negotiate them down, and what to watch for in quotes.", path: "/market-adjustment-fee" }))}</script>
       </Helmet>

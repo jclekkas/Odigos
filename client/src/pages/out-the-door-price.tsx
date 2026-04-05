@@ -6,6 +6,7 @@ import { Check, Copy, AlertTriangle, CircleDollarSign } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
+import { getClusterOgImage } from "@/lib/og-images";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 import SourceCitation from "@/components/SourceCitation";
@@ -25,11 +26,15 @@ const sampleBreakdown = [
 export default function OutTheDoorPrice() {
   const [copied, setCopied] = useState(false);
 
+  const clusterOg = getClusterOgImage("/out-the-door-price");
+
   useEffect(() => {
     return setSeoMeta({
       title: "What Is an Out-the-Door Price? The Full OTD Guide | Odigos",
       description: "The OTD price is every dollar you pay to drive off the lot. Learn what it includes, what dealers hide, red flags, and how to get it in writing.",
       path: "/out-the-door-price",
+      ogImage: clusterOg?.url,
+      ogImageAlt: clusterOg?.alt,
     });
   }, []);
 
@@ -51,7 +56,7 @@ export default function OutTheDoorPrice() {
   };
 
   return (
-    <ArticleLayout title="What Is an Out-the-Door Price (OTD)? The Only Number That Matters When Buying a Car">
+    <ArticleLayout title="What Is an Out-the-Door Price (OTD)? The Only Number That Matters When Buying a Car" breadcrumbPath="/out-the-door-price">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "What Is an Out-the-Door Price? The Full OTD Guide | Odigos", description: "The OTD price is every dollar you pay to drive off the lot. Learn what it includes, what dealers hide, red flags, and how to get it in writing.", path: "/out-the-door-price" }))}</script>
       </Helmet>
@@ -273,6 +278,8 @@ export default function OutTheDoorPrice() {
               <li><Link href="/dealer-doc-fee-by-state" className="underline text-foreground">Dealer Doc Fee by State: What Buyers Should Expect</Link></li>
               <li><Link href="/car-dealer-fees-list" className="underline text-foreground">Car Dealer Fees List: Common Charges Explained</Link></li>
               <li><Link href="/calculate-out-the-door-price" className="underline text-foreground">How to Calculate Out-the-Door Price on a Car</Link></li>
+              <li><Link href="/car-dealer-fees-florida" className="underline text-foreground">Florida Dealer Fees: No State Cap — What to Watch Out For</Link></li>
+              <li><Link href="/car-dealer-fees-illinois" className="underline text-foreground">Illinois Dealer Fees: Capped at $378 — What Buyers Actually Pay</Link></li>
             </ul>
           </div>
 

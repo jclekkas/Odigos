@@ -88,7 +88,7 @@ export default function DealerWontGiveOtdPrice() {
   ];
 
   return (
-    <ArticleLayout title="Dealer Won't Give OTD Price? Here's What That Means">
+    <ArticleLayout title="Dealer Won't Give OTD Price? Here's What That Means" breadcrumbPath="/dealer-wont-give-otd-price">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Won't Give an OTD Price? Here's Exactly What to Do (2026 Guide)", description: "When a dealer refuses to give an out-the-door price, here's what it means, why they do it, and the exact scripts to use to get full pricing — or walk away.", path: "/dealer-wont-give-otd-price" }))}</script>
         <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: allFaqsForSchema }))}</script>

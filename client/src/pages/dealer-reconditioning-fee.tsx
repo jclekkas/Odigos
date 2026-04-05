@@ -17,7 +17,7 @@ export default function DealerReconditioningFee() {
   }, []);
 
   return (
-    <ArticleLayout title="Dealer Reconditioning Fee">
+    <ArticleLayout title="Dealer Reconditioning Fee" breadcrumbPath="/dealer-reconditioning-fee">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Reconditioning Fee: What It Covers | Odigos", description: "A dealer reconditioning fee covers used car refurbishment. Learn what is legitimate, when fees are inflated, red flags to watch for, and how to negotiate.", path: "/dealer-reconditioning-fee" }))}</script>
       </Helmet>

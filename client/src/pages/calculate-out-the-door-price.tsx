@@ -52,7 +52,7 @@ export default function CalculateOutTheDoorPrice() {
   };
 
   return (
-    <ArticleLayout title="How to Calculate Out-the-Door Price on a Car">
+    <ArticleLayout title="How to Calculate Out-the-Door Price on a Car" breadcrumbPath="/calculate-out-the-door-price">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "How to Calculate Out-the-Door Price on a Car | Odigos", description: "OTD formula step-by-step: vehicle price + tax + title + doc fee + add-ons. Worked example, what dealers omit, and a message to get the full itemized price.", path: "/calculate-out-the-door-price" }))}</script>
       </Helmet>

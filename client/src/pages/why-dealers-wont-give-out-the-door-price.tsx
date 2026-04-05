@@ -16,7 +16,7 @@ export default function WhyDealersWontGiveOutTheDoorPrice() {
   }, []);
 
   return (
-    <ArticleLayout title="Why Dealers Won't Give Out-the-Door Price">
+    <ArticleLayout title="Why Dealers Won't Give Out-the-Door Price" breadcrumbPath="/why-dealers-wont-give-out-the-door-price">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Why Dealers Won't Give Out-the-Door Price | Odigos", description: "Dealers resist OTD pricing because it removes structural advantages. Here's the incentive structure behind the refusal and what you can do about it.", path: "/why-dealers-wont-give-out-the-door-price" }))}</script>
       </Helmet>

@@ -16,7 +16,7 @@ export default function HowMuchShouldYouPayForACar() {
   }, []);
 
   return (
-    <ArticleLayout title="How Much Should You Pay for a Car?">
+    <ArticleLayout title="How Much Should You Pay for a Car?" breadcrumbPath="/how-much-should-you-pay-for-a-car">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "How Much Should You Pay for a Car? OTD Price vs. Monthly Payment | Odigos", description: "Find out how much you should really pay for a car by comparing OTD price instead of monthly payments and avoiding common traps.", path: "/how-much-should-you-pay-for-a-car" }))}</script>
       </Helmet>

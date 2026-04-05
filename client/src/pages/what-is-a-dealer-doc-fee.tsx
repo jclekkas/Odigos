@@ -17,7 +17,7 @@ export default function WhatIsADealerDocFee() {
   }, []);
 
   return (
-    <ArticleLayout title="What Is a Dealer Doc Fee?">
+    <ArticleLayout title="What Is a Dealer Doc Fee?" breadcrumbPath="/what-is-a-dealer-doc-fee">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "What Is a Dealer Doc Fee? Ranges by State | Odigos", description: "A dealer doc fee is a paperwork charge set by the dealership, not the government. Learn what it covers, typical ranges by state, and what counts as normal.", path: "/what-is-a-dealer-doc-fee" }))}</script>
       </Helmet>

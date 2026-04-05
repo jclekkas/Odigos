@@ -16,7 +16,7 @@ export default function IsThisAGoodCarDeal() {
   }, []);
 
   return (
-    <ArticleLayout title="Is This a Good Car Deal?">
+    <ArticleLayout title="Is This a Good Car Deal?" breadcrumbPath="/is-this-a-good-car-deal">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Is This a Good Car Deal? 4 Signs It Is (and 3 Red Flags) | Odigos", description: "Learn how to tell if a car deal is actually good using 4 key signals and 3 red flags most buyers miss before signing.", path: "/is-this-a-good-car-deal" }))}</script>
       </Helmet>

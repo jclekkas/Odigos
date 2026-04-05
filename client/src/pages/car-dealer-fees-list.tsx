@@ -42,7 +42,7 @@ export default function CarDealerFeesList() {
   };
 
   return (
-    <ArticleLayout title="Car Dealer Fees List: Common Charges Explained">
+    <ArticleLayout title="Car Dealer Fees List: Common Charges Explained" breadcrumbPath="/car-dealer-fees-list">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Car Dealer Fees List: Common Dealer Charges and What They Mean | Odigos", description: "A complete list of common car dealer fees — from doc fees to market adjustments. Learn which charges are normal, which are negotiable, and how to compare dealers correctly.", path: "/car-dealer-fees-list" }))}</script>
       </Helmet>

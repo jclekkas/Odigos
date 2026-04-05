@@ -40,7 +40,7 @@ export default function HowToRemoveDealerAddOns() {
   };
 
   return (
-    <ArticleLayout title="How to Remove Dealer Add-Ons">
+    <ArticleLayout title="How to Remove Dealer Add-Ons" breadcrumbPath="/how-to-remove-dealer-add-ons">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "How to Remove Dealer Add-Ons: Step-by-Step Guide | Odigos", description: "A step-by-step guide to removing dealer add-ons before you sign. What to do before the visit, in the finance office, and after an initial refusal.", path: "/how-to-remove-dealer-add-ons" }))}</script>
       </Helmet>

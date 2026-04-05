@@ -19,7 +19,7 @@ export default function MonthlyPaymentTrap() {
   }, []);
 
   return (
-    <ArticleLayout title="The Monthly Payment Trap: How Dealers Use Payment-Focused Quotes to Hide the Real Cost">
+    <ArticleLayout title="The Monthly Payment Trap: How Dealers Use Payment-Focused Quotes to Hide the Real Cost" breadcrumbPath="/monthly-payment-trap">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "The Monthly Payment Trap in Car Buying | Odigos", description: "A $489/month payment could mean $29,340 or $35,208 depending on APR and term. Learn how payment-focused quotes hide the real cost and how to negotiate the out-the-door price first.", path: "/monthly-payment-trap" }))}</script>
       </Helmet>
@@ -107,6 +107,13 @@ export default function MonthlyPaymentTrap() {
             <p className="text-lg text-muted-foreground mb-8">
               If you already have a payment-focused quote from a dealer, Odigos can analyze what's missing and flag anything that looks unclear or incomplete.
             </p>
+
+            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Related Guides</h2>
+            <ul className="space-y-2 mb-8 text-muted-foreground">
+              <li><Link href="/out-the-door-price-vs-monthly-payment" className="underline text-foreground">OTD Price vs. Monthly Payment: Why the Total Matters More</Link></li>
+              <li><Link href="/calculate-out-the-door-price" className="underline text-foreground">How to Calculate Out-the-Door Price on a Car</Link></li>
+              <li><Link href="/dealer-wont-give-otd-price" className="underline text-foreground">Dealer Won't Give You an OTD Price? Here's Why</Link></li>
+            </ul>
           </div>
           
 

@@ -42,7 +42,7 @@ export default function AreDealerAddOnsRequiredByLaw() {
   };
 
   return (
-    <ArticleLayout title="Are Dealer Add-Ons Required by Law?">
+    <ArticleLayout title="Are Dealer Add-Ons Required by Law?" breadcrumbPath="/are-dealer-add-ons-required-by-law">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Are Dealer Add-Ons Required by Law? What's Mandatory vs. Optional | Odigos", description: "Dealers sometimes present add-ons as legally required. Here's what the law actually mandates — and how to tell the difference between a government fee and a dealer upsell.", path: "/are-dealer-add-ons-required-by-law" }))}</script>
       </Helmet>

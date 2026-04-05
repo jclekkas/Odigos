@@ -16,7 +16,7 @@ export default function OutTheDoorPriceVsMsrp() {
   }, []);
 
   return (
-    <ArticleLayout title="Out-the-Door Price vs. MSRP: The Gap Buyers Miss">
+    <ArticleLayout title="Out-the-Door Price vs. MSRP: The Gap Buyers Miss" breadcrumbPath="/out-the-door-price-vs-msrp">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Out-the-Door Price vs. MSRP: The Gap Buyers Miss | Odigos", description: "MSRP is a suggestion, not what you pay. Taxes, fees, and add-ons push real cost 8–15% above the sticker. Here's how to use that gap to your advantage.", path: "/out-the-door-price-vs-msrp" }))}</script>
       </Helmet>
@@ -172,6 +172,13 @@ export default function OutTheDoorPriceVsMsrp() {
         <p className="text-muted-foreground mb-8">
           If a dealer won't commit to an out-the-door number before you come in, read our guide on <Link href="/dealer-wont-give-otd-price" className="underline text-foreground">what to do when a dealer won't give the OTD price</Link>.
         </p>
+
+        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Related Guides</h2>
+        <ul className="space-y-2 mb-8 text-muted-foreground">
+          <li><Link href="/out-the-door-price-vs-monthly-payment" className="underline text-foreground">OTD Price vs. Monthly Payment: Why the Total Matters More</Link></li>
+          <li><Link href="/out-the-door-price-example" className="underline text-foreground">Out-the-Door Price Example: Three Scenarios Compared</Link></li>
+          <li><Link href="/calculate-out-the-door-price" className="underline text-foreground">How to Calculate Out-the-Door Price on a Car</Link></li>
+        </ul>
       </div>
 
       <ArticleCta />

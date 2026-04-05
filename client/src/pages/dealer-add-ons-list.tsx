@@ -42,7 +42,7 @@ export default function DealerAddOnsList() {
   };
 
   return (
-    <ArticleLayout title="Dealer Add-Ons List: What Dealers Try to Sell and What You Can Refuse">
+    <ArticleLayout title="Dealer Add-Ons List: What Dealers Try to Sell and What You Can Refuse" breadcrumbPath="/dealer-add-ons-list">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Add-Ons List: Costs and What You Can Refuse | Odigos", description: "See the full list of common dealer add-ons with typical prices, dealer cost, and whether each is optional. Know exactly what you can refuse before signing.", path: "/dealer-add-ons-list" }))}</script>
       </Helmet>

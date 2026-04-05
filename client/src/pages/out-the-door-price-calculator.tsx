@@ -78,7 +78,7 @@ export default function OutTheDoorPriceCalculator() {
   };
 
   return (
-    <ArticleLayout title="Out-the-Door Price Calculator">
+    <ArticleLayout title="Out-the-Door Price Calculator" breadcrumbPath="/out-the-door-price-calculator">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({
           title: "Out-the-Door Price Calculator (2026) - Estimate Car Total Cost Instantly",
@@ -291,6 +291,13 @@ export default function OutTheDoorPriceCalculator() {
             </Button>
           </Link>
         </div>
+
+        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Related Guides</h2>
+        <ul className="space-y-2 mb-8 text-muted-foreground">
+          <li><Link href="/out-the-door-price-example" className="underline text-foreground">Out-the-Door Price Example: Three Scenarios Compared</Link></li>
+          <li><Link href="/what-does-out-the-door-price-include" className="underline text-foreground">What Does the Out-the-Door Price Include?</Link></li>
+          <li><Link href="/out-the-door-price-vs-msrp" className="underline text-foreground">OTD Price vs. MSRP: Why the Sticker Price Is Misleading</Link></li>
+        </ul>
 
       </div>
 

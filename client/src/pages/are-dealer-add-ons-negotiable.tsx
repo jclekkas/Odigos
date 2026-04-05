@@ -40,7 +40,7 @@ export default function AreDealerAddOnsNegotiable() {
   };
 
   return (
-    <ArticleLayout title="Are Dealer Add-Ons Negotiable?">
+    <ArticleLayout title="Are Dealer Add-Ons Negotiable?" breadcrumbPath="/are-dealer-add-ons-negotiable">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Are Dealer Add-Ons Negotiable? What Dealers Will Actually Concede | Odigos", description: "Most dealer add-ons are negotiable, but not all. Learn which extras dealers will drop, when to push, and how to anchor your ask to get real concessions.", path: "/are-dealer-add-ons-negotiable" }))}</script>
       </Helmet>

@@ -17,7 +17,7 @@ export default function HiddenDealerFees() {
   }, []);
 
   return (
-    <ArticleLayout title="Hidden Dealer Fees">
+    <ArticleLayout title="Hidden Dealer Fees" breadcrumbPath="/hidden-dealer-fees">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Hidden Dealer Fees: What to Watch for on Any Quote | Odigos", description: "Market adjustment, prep fees, VIN etching, and more — hidden dealer fees add hundreds to a car purchase. Learn what each one is and what you can do.", path: "/hidden-dealer-fees" }))}</script>
       </Helmet>

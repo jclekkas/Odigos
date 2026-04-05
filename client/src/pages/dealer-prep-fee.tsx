@@ -17,7 +17,7 @@ export default function DealerPrepFee() {
   }, []);
 
   return (
-    <ArticleLayout title="Dealer Prep Fee">
+    <ArticleLayout title="Dealer Prep Fee" breadcrumbPath="/dealer-prep-fee">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Prep Fee: What It Is and Should You Pay It | Odigos", description: "Dealers charge a prep fee for getting a new car ready for delivery. Learn what it supposedly covers, why it's usually unjustified, and how to push back.", path: "/dealer-prep-fee" }))}</script>
       </Helmet>

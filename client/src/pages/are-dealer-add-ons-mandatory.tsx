@@ -42,7 +42,7 @@ export default function AreDealerAddOnsMandatory() {
   };
 
   return (
-    <ArticleLayout title="Are Dealer Add-Ons Mandatory? What You Can Actually Refuse">
+    <ArticleLayout title="Are Dealer Add-Ons Mandatory? What You Can Actually Refuse" breadcrumbPath="/are-dealer-add-ons-mandatory">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Are Dealer Add-Ons Mandatory? What You Can Refuse | Odigos", description: "Are dealer add-ons mandatory? Learn which fees and add-ons you can refuse and how to push back without losing the deal.", path: "/are-dealer-add-ons-mandatory" }))}</script>
       </Helmet>

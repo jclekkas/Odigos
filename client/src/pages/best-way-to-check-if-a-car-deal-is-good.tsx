@@ -17,7 +17,7 @@ export default function BestWayToCheckIfACarDealIsGood() {
   }, []);
 
   return (
-    <ArticleLayout title="The Best Way to Check if a Car Deal Is Good">
+    <ArticleLayout title="The Best Way to Check if a Car Deal Is Good" breadcrumbPath="/best-way-to-check-if-a-car-deal-is-good">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "The Fastest Way to Check a Car Deal Without Being Tricked | Odigos", description: "Quickly check if a car deal is good without spreadsheets or guesswork, and avoid common tricks dealers use to hide costs.", path: "/best-way-to-check-if-a-car-deal-is-good" }))}</script>
       </Helmet>

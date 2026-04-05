@@ -40,7 +40,7 @@ export default function DealerAddOnsExplained() {
   };
 
   return (
-    <ArticleLayout title="Dealer Add-Ons Explained">
+    <ArticleLayout title="Dealer Add-Ons Explained" breadcrumbPath="/dealer-add-ons-explained">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Add-Ons Explained: What Each One Actually Is | Odigos", description: "Plain-language explanations of every common dealer add-on — what it is, what the dealer says, what's actually true, and whether it's worth paying for.", path: "/dealer-add-ons-explained" }))}</script>
       </Helmet>

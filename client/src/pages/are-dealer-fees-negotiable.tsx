@@ -17,7 +17,7 @@ export default function AreDealerFeesNegotiable() {
   }, []);
 
   return (
-    <ArticleLayout title="Are Dealer Fees Negotiable?">
+    <ArticleLayout title="Are Dealer Fees Negotiable?" breadcrumbPath="/are-dealer-fees-negotiable">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Are Dealer Fees Negotiable? What to Push Back On | Odigos", description: "Some dealer fees are fixed by law; others are dealer profit items. Learn which are negotiable, how to push back, and the OTD strategy that works.", path: "/are-dealer-fees-negotiable" }))}</script>
       </Helmet>

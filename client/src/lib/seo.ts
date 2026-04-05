@@ -11,6 +11,8 @@ interface SeoMeta {
   title: string;
   description: string;
   path: string;
+  ogImage?: string;
+  ogImageAlt?: string;
 }
 
 function upsertMeta(property: string, content: string, isOg = true): HTMLMetaElement {
@@ -36,22 +38,24 @@ function upsertCanonical(href: string): HTMLLinkElement {
   return el;
 }
 
-export function setSeoMeta({ title, description, path }: SeoMeta) {
+export function setSeoMeta({ title, description, path, ogImage: customOgImage, ogImageAlt: customOgImageAlt }: SeoMeta) {
   document.title = title;
 
   const url = buildCanonical(path);
+  const imageUrl = customOgImage ?? OG_IMAGE;
+  const imageAlt = customOgImageAlt ?? OG_IMAGE_ALT;
 
   const descEl = upsertMeta("description", description, false);
   const ogTitle = upsertMeta("og:title", title);
   const ogDesc = upsertMeta("og:description", description);
   const ogUrl = upsertMeta("og:url", url);
   const ogType = upsertMeta("og:type", "article");
-  const ogImage = upsertMeta("og:image", OG_IMAGE);
-  const ogImageAlt = upsertMeta("og:image:alt", OG_IMAGE_ALT);
+  const ogImage = upsertMeta("og:image", imageUrl);
+  const ogImageAlt = upsertMeta("og:image:alt", imageAlt);
   const twCard = upsertMeta("twitter:card", "summary_large_image", false);
   const twTitle = upsertMeta("twitter:title", title, false);
   const twDesc = upsertMeta("twitter:description", description, false);
-  const twImage = upsertMeta("twitter:image", OG_IMAGE, false);
+  const twImage = upsertMeta("twitter:image", imageUrl, false);
   upsertCanonical(url);
 
   return () => {

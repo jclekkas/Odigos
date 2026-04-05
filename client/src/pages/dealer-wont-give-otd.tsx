@@ -42,7 +42,7 @@ export default function DealerWontGiveOtd() {
   };
 
   return (
-    <ArticleLayout title="What to Do When a Dealer Won't Give You the Out-the-Door Price">
+    <ArticleLayout title="What to Do When a Dealer Won't Give You the Out-the-Door Price" breadcrumbPath="/dealer-wont-give-otd">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Why Dealers Avoid Giving Out-the-Door Prices (and What to Do) | Odigos", description: "Learn why dealers avoid giving OTD prices, how it benefits them, and what it signals about the deal you're being offered.", path: "/dealer-wont-give-otd" }))}</script>
       </Helmet>

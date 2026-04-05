@@ -19,7 +19,7 @@ export default function CarDealerFeesExplained() {
   }, []);
 
   return (
-    <ArticleLayout title="Common Car Dealer Fees Explained: What You Should (and Shouldn't) Pay">
+    <ArticleLayout title="Common Car Dealer Fees Explained: What You Should (and Shouldn't) Pay" breadcrumbPath="/car-dealer-fees-explained">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Common Car Dealer Fees Explained | Odigos", description: "When you buy a car, the sale price is only part of what you pay. Learn which dealer fees are required, which are optional, and how to protect yourself before signing.", path: "/car-dealer-fees-explained" }))}</script>
       </Helmet>

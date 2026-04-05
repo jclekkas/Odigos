@@ -42,7 +42,7 @@ export default function FinanceOfficeChangedTheNumbers() {
   };
 
   return (
-    <ArticleLayout title="Why the Finance Office Numbers Look Different">
+    <ArticleLayout title="Why the Finance Office Numbers Look Different" breadcrumbPath="/finance-office-changed-the-numbers">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Why the Finance Office Numbers Look Different | Odigos", description: "You agreed on a price, but the finance office paperwork shows different numbers. Learn why this happens, what to check, and how to protect yourself before signing.", path: "/finance-office-changed-the-numbers" }))}</script>
       </Helmet>

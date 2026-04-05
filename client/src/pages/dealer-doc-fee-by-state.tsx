@@ -74,7 +74,7 @@ export default function DealerDocFeeByState() {
   };
 
   return (
-    <ArticleLayout title="Dealer Doc Fee by State (2026): Caps, Ranges & What You Should Pay">
+    <ArticleLayout title="Dealer Doc Fee by State (2026): Caps, Ranges & What You Should Pay" breadcrumbPath="/dealer-doc-fee-by-state">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(itemListSchema({
           name: "Dealer Doc Fee by State",
