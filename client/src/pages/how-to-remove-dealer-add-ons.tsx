@@ -15,7 +15,7 @@ export default function HowToRemoveDealerAddOns() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "How to Remove Dealer Add-Ons: Step-by-Step Guide | Odigos",
       description: "A step-by-step guide to removing dealer add-ons before you sign. What to do before the visit, in the finance office, and after an initial refusal.",
       path: "/how-to-remove-dealer-add-ons",

@@ -8,7 +8,7 @@ import ArticleCta from "@/components/ArticleCta";
 
 export default function HowToCompareCarDeals() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "How to Compare Car Deals Side by Side (OTD to OTD) | Odigos",
       description: "Compare car deals the right way by focusing on OTD price, not monthly payments, so you can avoid misleading financing tactics.",
       path: "/how-to-compare-car-deals",

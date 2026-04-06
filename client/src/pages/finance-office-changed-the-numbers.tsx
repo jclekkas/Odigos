@@ -17,7 +17,7 @@ export default function FinanceOfficeChangedTheNumbers() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Why the Finance Office Numbers Look Different | Odigos",
       description: "You agreed on a price, but the finance office paperwork shows different numbers. Learn why this happens, what to check, and how to protect yourself before signing.",
       path: "/finance-office-changed-the-numbers",

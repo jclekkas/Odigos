@@ -17,7 +17,7 @@ export default function CarDealerFeesList() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Car Dealer Fees List: Common Dealer Charges and What They Mean | Odigos",
       description: "A complete list of common car dealer fees — from doc fees to market adjustments. Learn which charges are normal, which are negotiable, and how to compare dealers correctly.",
       path: "/car-dealer-fees-list",

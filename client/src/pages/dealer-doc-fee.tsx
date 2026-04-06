@@ -38,7 +38,7 @@ const faqItems = [
 
 export default function DealerDocFee() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Dealer Doc Fee (2026): What It Is and What Dealers Can Legally Charge",
       description: "Doc fees range from $85 (CA cap) to $999+ in uncapped states like Florida. See which states cap them, whether it's negotiable, and how to push back on it.",
       path: "/dealer-doc-fee",

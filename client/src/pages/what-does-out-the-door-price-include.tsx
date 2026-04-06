@@ -8,7 +8,7 @@ import ArticleCta from "@/components/ArticleCta";
 
 export default function WhatDoesOutTheDoorPriceInclude() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "What Does Out-the-Door Price Include? | Odigos",
       description: "OTD price has six categories: vehicle price, sales tax, title, registration, doc fee, and add-ons. Here's what each line item means — and what to check.",
       path: "/what-does-out-the-door-price-include",

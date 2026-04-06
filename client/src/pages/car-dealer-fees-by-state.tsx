@@ -41,7 +41,7 @@ export default function CarDealerFeesByState() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Car Dealer Fees by State (2026): Caps, Limits, and What Dealers Can Charge You",
       description: "Which states cap dealer doc fees — and which let dealers charge whatever they want? See 2026 limits for all 50 states and how to compare out-the-door prices.",
       path: "/car-dealer-fees-by-state",

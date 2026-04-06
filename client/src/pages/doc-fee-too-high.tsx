@@ -17,7 +17,7 @@ export default function DocFeeTooHigh() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Dealer Doc Fee Too High? What You Can Actually Do | Odigos",
       description: "Doc fees vary widely by state and dealer. Learn what's normal, whether you can negotiate, and what red flags to watch for when a dealer's documentation fee seems too high.",
       path: "/doc-fee-too-high",

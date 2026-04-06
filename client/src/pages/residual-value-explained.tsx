@@ -9,7 +9,7 @@ import ArticleCta from "@/components/ArticleCta";
 
 export default function ResidualValueExplained() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Residual Value Explained: How It Controls Your Lease Payment | Odigos",
       description: "Residual value is the biggest factor in your monthly lease payment. Learn what it is, who sets it, typical percentages by vehicle type, and how to use it to get a better deal.",
       path: "/residual-value-explained",

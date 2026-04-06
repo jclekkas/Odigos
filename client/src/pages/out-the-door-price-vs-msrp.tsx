@@ -8,7 +8,7 @@ import ArticleCta from "@/components/ArticleCta";
 
 export default function OutTheDoorPriceVsMsrp() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Out-the-Door Price vs. MSRP: The Gap Buyers Miss | Odigos",
       description: "MSRP is a suggestion, not what you pay. Taxes, fees, and add-ons push real cost 8–15% above the sticker. Here's how to use that gap to your advantage.",
       path: "/out-the-door-price-vs-msrp",

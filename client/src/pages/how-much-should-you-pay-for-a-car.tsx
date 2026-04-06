@@ -8,7 +8,7 @@ import ArticleCta from "@/components/ArticleCta";
 
 export default function HowMuchShouldYouPayForACar() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "How Much Should You Pay for a Car? OTD Price vs. Monthly Payment | Odigos",
       description: "Find out how much you should really pay for a car by comparing OTD price instead of monthly payments and avoiding common traps.",
       path: "/how-much-should-you-pay-for-a-car",

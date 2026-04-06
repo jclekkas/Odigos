@@ -8,7 +8,7 @@ import ArticleCta from "@/components/ArticleCta";
 
 export default function OutTheDoorPriceExample() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Out-the-Door Price Example: Real Numbers | Odigos",
       description: "A $33,500 car becomes $37,947 after taxes, fees, and add-ons. Three real OTD scenarios with exact dollar amounts on every line so you know what to expect.",
       path: "/out-the-door-price-example",

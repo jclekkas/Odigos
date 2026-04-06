@@ -11,7 +11,7 @@ import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 export default function CarDealerFeesExplained() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Common Car Dealer Fees Explained | Odigos",
       description: "When you buy a car, the sale price is only part of what you pay. Learn which dealer fees are required, which are optional, and how to protect yourself before signing.",
       path: "/car-dealer-fees-explained",

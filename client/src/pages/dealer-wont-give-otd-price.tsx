@@ -60,7 +60,7 @@ export default function DealerWontGiveOtdPrice() {
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Dealer Won't Give an OTD Price? Here's Exactly What to Do (2026 Guide)",
       description: "When a dealer refuses to give an out-the-door price, here's what it means, why they do it, and the exact scripts to use to get full pricing — or walk away.",
       path: "/dealer-wont-give-otd-price",

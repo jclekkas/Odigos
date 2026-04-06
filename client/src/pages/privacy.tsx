@@ -5,7 +5,7 @@ import SiteFooter from "@/components/SiteFooter";
 
 export default function Privacy() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Privacy Policy | Odigos",
       description: "How Odigos handles submitted dealer quotes, what data is stored, and your rights.",
       path: "/privacy",

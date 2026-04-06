@@ -9,7 +9,7 @@ import ArticleCta from "@/components/ArticleCta";
 
 export default function HiddenDealerFees() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Hidden Dealer Fees: What to Watch for on Any Quote | Odigos",
       description: "Market adjustment, prep fees, VIN etching, and more — hidden dealer fees add hundreds to a car purchase. Learn what each one is and what you can do.",
       path: "/hidden-dealer-fees",

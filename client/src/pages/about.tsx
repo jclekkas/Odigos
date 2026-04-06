@@ -7,7 +7,7 @@ import { ArrowRight, ShieldCheck, Database, Mail } from "lucide-react";
 
 export default function About() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "About Odigos — The Independent Car Deal Guide",
       description:
         "Odigos (Greek for 'guide') is an independent tool that analyzes car dealer quotes for hidden fees and overcharges. No dealership affiliations. No referral fees. Just clarity before you sign.",

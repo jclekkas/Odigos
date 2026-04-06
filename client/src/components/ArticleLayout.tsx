@@ -12,7 +12,7 @@ export default function ArticleLayout({ children, title, showBreadcrumbs = true 
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
-      <main className="py-12 md:py-20 px-6">
+      <main className="py-10 md:py-16 px-6">
         <div className="max-w-[700px] mx-auto">
           {showBreadcrumbs && title && (
             <nav className="text-sm text-muted-foreground mb-6" aria-label="Breadcrumb" data-testid="nav-breadcrumbs">

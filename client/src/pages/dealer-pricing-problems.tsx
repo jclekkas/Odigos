@@ -120,7 +120,7 @@ const sections = [
 
 export default function DealerPricingProblems() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Dealer Tactics: Pricing Tricks and Negotiation Guides | Odigos",
       description: "Guides on hidden dealer fees, forced add-ons, the monthly payment trap, out-the-door pricing, and common dealership tactics — written for U.S. car buyers.",
       path: "/dealer-pricing-problems",

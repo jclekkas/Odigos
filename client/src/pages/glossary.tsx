@@ -8,7 +8,7 @@ import { glossaryTerms } from "@/data/glossary-terms";
 
 export default function Glossary() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Car Buying Glossary: Dealer Fees & Lease Terms Explained | Odigos",
       description: "Plain-English definitions of dealer fees, lease terms, and pricing jargon. Understand every line item on your car deal.",
       path: "/glossary",

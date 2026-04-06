@@ -26,7 +26,7 @@ export default function OutTheDoorPrice() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "What Is an Out-the-Door Price? The Full OTD Guide | Odigos",
       description: "The OTD price is every dollar you pay to drive off the lot. Learn what it includes, what dealers hide, red flags, and how to get it in writing.",
       path: "/out-the-door-price",

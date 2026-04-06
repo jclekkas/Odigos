@@ -48,7 +48,7 @@ export default function DealerDocFeeByState() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Dealer Doc Fee by State (2026): Caps, Ranges & What You Should Pay",
       description: "Compare dealer doc fees across all 50 states — updated for 2026. See which 17 states cap the fee, typical ranges from $85 to $999+, and how to spot if you're being overcharged.",
       path: "/dealer-doc-fee-by-state",

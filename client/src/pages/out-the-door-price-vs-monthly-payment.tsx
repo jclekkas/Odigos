@@ -8,7 +8,7 @@ import ArticleCta from "@/components/ArticleCta";
 
 export default function OutTheDoorPriceVsMonthlyPayment() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "OTD Price vs. Monthly Payment: What Dealers Hide | Odigos",
       description: "Dealers leading with a monthly payment hide the sale price, APR, loan term, and rolled-in add-ons. Here's how that mechanic works and how to stop it.",
       path: "/out-the-door-price-vs-monthly-payment",

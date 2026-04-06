@@ -10,7 +10,7 @@ import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 export default function WhatIsAFairPriceForACar() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "What Is a Fair Price for a Car? (OTD, Not Sticker) | Odigos",
       description: "A fair car price isn't the sticker—it's the OTD total. Learn how to evaluate true cost and avoid overpaying on your next deal.",
       path: "/what-is-a-fair-price-for-a-car",

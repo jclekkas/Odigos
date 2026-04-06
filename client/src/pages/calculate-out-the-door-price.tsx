@@ -27,7 +27,7 @@ export default function CalculateOutTheDoorPrice() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "How to Calculate Out-the-Door Price on a Car | Odigos",
       description: "OTD formula step-by-step: vehicle price + tax + title + doc fee + add-ons. Worked example, what dealers omit, and a message to get the full itemized price.",
       path: "/calculate-out-the-door-price",

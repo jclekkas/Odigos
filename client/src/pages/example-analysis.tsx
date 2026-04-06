@@ -7,7 +7,7 @@ import { AlertTriangle, ArrowRight } from "lucide-react";
 
 export default function ExampleAnalysis() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Example Dealer Quote Analysis | Odigos",
       description: "See exactly what an Odigos dealer quote analysis looks like on a real example — including flagged issues, verdict, and a copy-paste reply to send back to the dealer.",
       path: "/example-analysis",

@@ -11,7 +11,7 @@ import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 export default function MandatoryDealerAddOns() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Mandatory Dealer Add-Ons: Which Are Actually Required by the Dealer | Odigos",
       description: "Understand which dealer add-ons are truly required, which are optional, and why dealers pre-install extras to increase profit.",
       path: "/mandatory-dealer-add-ons",

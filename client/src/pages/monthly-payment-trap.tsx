@@ -11,7 +11,7 @@ import { ARTICLE_SOURCES } from "@/data/articleSources";
 
 export default function MonthlyPaymentTrap() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "The Monthly Payment Trap in Car Buying | Odigos",
       description: "A $489/month payment could mean $29,340 or $35,208 depending on APR and term. Learn how payment-focused quotes hide the real cost and how to negotiate the out-the-door price first.",
       path: "/monthly-payment-trap",
