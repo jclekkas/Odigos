@@ -58,15 +58,15 @@ export default function OutTheDoorPriceExample() {
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           Abstract explanations of OTD pricing only go so far. Below are three real scenarios — a clean deal, the same deal with add-ons, and a high-pressure scenario with a market adjustment — with exact dollar amounts on every line.
         </p>
-        <p className="text-muted-foreground mb-10">
+        <p className="text-muted-foreground">
           The vehicle: a 2025 midsize SUV in Texas with an MSRP of $35,200. The buyer negotiated the sale price down to $33,500.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Scenario A: Clean Deal with Common Add-Ons</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">Scenario A: Clean Deal with Common Add-Ons</h2>
+        <p className="text-muted-foreground">
           This is what a typical dealer quote looks like with fees and three common add-ons included.
         </p>
         <div className="rounded-md border border-border overflow-hidden mb-4" data-testid="table-scenario-a">
@@ -90,15 +90,15 @@ export default function OutTheDoorPriceExample() {
             </tbody>
           </table>
         </div>
-        <p className="text-muted-foreground mb-4">
+        <p className="text-muted-foreground">
           The add-ons — paint protection, nitrogen tires, VIN etching — add $1,330 above the fees-only price. None of these are required by law. For guidance on which add-ons you can decline, see <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">whether dealer add-ons are mandatory</Link>.
         </p>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           The buyer paid $4,447 above the negotiated sale price. That's 13.3% above the number they thought they were locking in.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Scenario B: Same Deal, No Add-Ons</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">Scenario B: Same Deal, No Add-Ons</h2>
+        <p className="text-muted-foreground">
           The buyer declines all three add-ons. Everything else is identical.
         </p>
         <div className="rounded-md border border-border overflow-hidden mb-4" data-testid="table-scenario-b">
@@ -122,7 +122,7 @@ export default function OutTheDoorPriceExample() {
             </tbody>
           </table>
         </div>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           Declining the three add-ons saves $1,330. Scenario A's OTD was $37,947; Scenario B is $36,617. The $1,330 difference is entirely add-on cost.
         </p>
 
@@ -138,8 +138,8 @@ export default function OutTheDoorPriceExample() {
           </Link>
         </div>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Scenario C: Market Adjustment and High Doc Fee</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">Scenario C: Market Adjustment and High Doc Fee</h2>
+        <p className="text-muted-foreground">
           Same vehicle. The dealer adds a $3,000 market adjustment above MSRP, charges a higher doc fee, and bundles add-ons into a "protection package."
         </p>
         <div className="rounded-md border border-border overflow-hidden mb-4" data-testid="table-scenario-c">
@@ -163,7 +163,7 @@ export default function OutTheDoorPriceExample() {
             </tbody>
           </table>
         </div>
-        <p className="text-muted-foreground mb-4">
+        <p className="text-muted-foreground">
           Scenario C costs $43,253 — $6,636 more than Scenario B for the same vehicle. The gap comes from:
         </p>
         <ul className="space-y-2 mb-8 text-muted-foreground">
@@ -180,7 +180,7 @@ export default function OutTheDoorPriceExample() {
           ))}
         </ul>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What the Numbers Show</h2>
+        <h2 className="text-2xl font-semibold text-foreground">What the Numbers Show</h2>
         <div className="rounded-md border border-border overflow-hidden mb-4" data-testid="table-scenario-summary">
           <table className="w-full text-sm">
             <thead>
@@ -205,12 +205,12 @@ export default function OutTheDoorPriceExample() {
             </tbody>
           </table>
         </div>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           The same vehicle, from different dealers, can have a real-world OTD price spread of over $6,600. This is why asking for a complete, itemized OTD quote from multiple dealers is the single most effective thing a buyer can do. For a full explanation of every category, see our page on <Link href="/what-does-out-the-door-price-include" className="underline text-foreground">what the OTD price includes</Link>. For real-world examples, see <Link href="/car-dealer-fees-florida" className="underline text-foreground">Florida — where doc fees alone can hit $999</Link> — or compare with <Link href="/car-dealer-fees-illinois" className="underline text-foreground">Illinois, where doc fees are capped at $378</Link>.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to Say to Get These Numbers</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">What to Say to Get These Numbers</h2>
+        <p className="text-muted-foreground">
           Request the complete OTD breakdown before you visit any dealership:
         </p>
         <div className="rounded-lg border border-border bg-muted/40 p-5 mb-4" data-testid="block-dealer-script">
@@ -218,10 +218,10 @@ export default function OutTheDoorPriceExample() {
             "Can you send me the full out-the-door price in writing? I need the sale price, taxes, title, registration, doc fee, and any dealer add-ons listed separately with individual pricing."
           </blockquote>
         </div>
-        <p className="text-muted-foreground mb-4">
+        <p className="text-muted-foreground">
           Dealers who provide this upfront are the ones worth visiting. Dealers who deflect to monthly payments or "come in and we'll figure it out" are protecting the flexibility you saw in Scenario C.
         </p>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           If you already have a quote and want to understand whether the numbers add up, see our overview of the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> to verify every line.
         </p>
       </div>

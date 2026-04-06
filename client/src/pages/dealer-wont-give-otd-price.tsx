@@ -92,7 +92,7 @@ export default function DealerWontGiveOtdPrice() {
         <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Won't Give OTD Price? Here's Exactly What to Do", description: "If your dealer refuses to give an out-the-door price, here's why they do it, what to say back, and how to calculate your OTD price yourself from any quote.", path: "/dealer-wont-give-otd-price" }))}</script>
         <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: allFaqsForSchema }))}</script>
       </Helmet>
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="text-sm text-muted-foreground">
             <Link href="/dealer-pricing-tactics" className="underline text-foreground" data-testid="link-breadcrumb-hub">Dealer Pricing Tactics</Link> &rsaquo; This Article
           </p>
 
@@ -108,10 +108,10 @@ export default function DealerWontGiveOtdPrice() {
           </div>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-lg text-muted-foreground mb-4">
+            <p className="text-lg text-muted-foreground">
               If a dealer won't give you an out-the-door (OTD) price, that's not random. It's usually one of several <Link href="/dealer-pricing-tactics" className="underline text-foreground" data-testid="link-inline-hub">common dealer pricing tactics</Link>.{" "}<SourceCitation sources={ARTICLE_SOURCES["dealer-wont-give-otd-price"].sources} lastVerified={ARTICLE_SOURCES["dealer-wont-give-otd-price"].lastVerified} />
             </p>
-            <p className="text-muted-foreground mb-3">
+            <p className="text-muted-foreground">
               An out-the-door price includes:
             </p>
             <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
@@ -121,32 +121,32 @@ export default function DealerWontGiveOtdPrice() {
               <li>Dealer fees</li>
               <li>Add-ons</li>
             </ul>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               In other words: the real total. You can <Link href="/calculate-out-the-door-price" className="underline text-foreground">calculate your expected OTD price</Link> before you even contact a dealer — which gives you a baseline to compare their quote against.
             </p>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               When a dealer avoids giving it, they're keeping leverage. You can <Link href="/analyze" className="underline text-foreground" data-testid="link-inline-analyze">paste any dealer quote into Odigos</Link> to see exactly what's missing — before you respond.
             </p>
-            <p className="text-muted-foreground mb-10">
+            <p className="text-muted-foreground">
               Here's why dealers avoid OTD pricing — and what you should do next.
             </p>
 
-            <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-5 mb-8">
+            <div className="rounded-lg border border-blue-600/20 bg-blue-600/5 p-5 mb-8">
               <p className="text-base font-semibold text-foreground mb-2">
                 Got a quote but no OTD price? Paste it here — Odigos calculates your true out-the-door cost and flags every hidden fee.
               </p>
-              <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white font-semibold">
+              <Button asChild variant="cta" className="font-semibold">
                 <Link href="/analyze">Get My Real OTD Price</Link>
               </Button>
             </div>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why Dealers Avoid Giving OTD Prices</h2>
-            <p className="text-muted-foreground mb-6">
+            <h2 className="text-2xl font-semibold text-foreground">Why Dealers Avoid Giving OTD Prices</h2>
+            <p className="text-muted-foreground">
               There are four common reasons.
             </p>
 
-            <h3 className="text-lg font-semibold mt-6 mb-2 text-foreground">1. They Want You In the Showroom</h3>
-            <p className="text-muted-foreground mb-3">
+            <h3 className="text-lg font-semibold text-foreground">1. They Want You In the Showroom</h3>
+            <p className="text-muted-foreground">
               It's easier to negotiate in person. Once you're sitting at a desk:
             </p>
             <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
@@ -155,12 +155,12 @@ export default function DealerWontGiveOtdPrice() {
               <li>Trade-in conversations begin</li>
               <li>Financing gets layered in</li>
             </ul>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               Refusing to give OTD pricing forces you to come in.
             </p>
 
-            <h3 className="text-lg font-semibold mt-6 mb-2 text-foreground">2. They Want to Separate the Numbers</h3>
-            <p className="text-muted-foreground mb-3">
+            <h3 className="text-lg font-semibold text-foreground">2. They Want to Separate the Numbers</h3>
+            <p className="text-muted-foreground">
               Dealers often break pricing into pieces:
             </p>
             <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
@@ -168,15 +168,15 @@ export default function DealerWontGiveOtdPrice() {
               <li>"Monthly payment"</li>
               <li>"Estimated fees"</li>
             </ul>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               If you only see parts, you can't compare deals properly.
             </p>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               OTD pricing removes ambiguity. That's why some avoid it.
             </p>
 
-            <h3 className="text-lg font-semibold mt-6 mb-2 text-foreground">3. They Plan to Add Fees Later</h3>
-            <p className="text-muted-foreground mb-3">
+            <h3 className="text-lg font-semibold text-foreground">3. They Plan to Add Fees Later</h3>
+            <p className="text-muted-foreground">
               Common surprise fees include:
             </p>
             <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
@@ -186,12 +186,12 @@ export default function DealerWontGiveOtdPrice() {
               <li>"Market adjustments"</li>
               <li>High doc fees</li>
             </ul>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               Without OTD pricing in writing, these get introduced later. Understanding the full <Link href="/dealer-add-ons-list" className="underline text-foreground">dealer add-ons list</Link> before you visit gives you a clear benchmark for what's been pre-installed and what it should actually cost.
             </p>
 
-            <h3 className="text-lg font-semibold mt-6 mb-2 text-foreground">4. They Want Flexibility to Adjust Based on You</h3>
-            <p className="text-muted-foreground mb-3">
+            <h3 className="text-lg font-semibold text-foreground">4. They Want Flexibility to Adjust Based on You</h3>
+            <p className="text-muted-foreground">
               Sometimes pricing changes based on:
             </p>
             <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
@@ -200,26 +200,26 @@ export default function DealerWontGiveOtdPrice() {
               <li>Whether you mention competing quotes</li>
               <li>How serious you seem</li>
             </ul>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               OTD pricing limits that flexibility.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Is It Legal for a Dealer to Refuse?</h2>
-            <p className="text-muted-foreground mb-4">
+            <h2 className="text-2xl font-semibold text-foreground">Is It Legal for a Dealer to Refuse?</h2>
+            <p className="text-muted-foreground">
               In most states, yes. Dealers are not legally required to provide a written OTD quote by email.
             </p>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               However: once a number is agreed upon in writing, changing it later can become a deceptive practice issue depending on state law. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's car buying guide</a> outlines key consumer rights worth reviewing before any negotiation.
             </p>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               The bigger issue isn't legality. It's transparency.
             </p>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               If a dealer refuses to give full pricing in writing, you lose negotiation clarity.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Is This a Red Flag?</h2>
-            <p className="text-muted-foreground mb-3">
+            <h2 className="text-2xl font-semibold text-foreground">Is This a Red Flag?</h2>
+            <p className="text-muted-foreground">
               Not always. Some dealerships:
             </p>
             <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
@@ -227,7 +227,7 @@ export default function DealerWontGiveOtdPrice() {
               <li>Require a stock number first</li>
               <li>Avoid "price shopping" scenarios</li>
             </ul>
-            <p className="text-muted-foreground mb-3">
+            <p className="text-muted-foreground">
               But it becomes concerning when:
             </p>
             <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground marker:text-amber-500">
@@ -236,7 +236,7 @@ export default function DealerWontGiveOtdPrice() {
               <li>They say "we'll figure that out when you come in"</li>
               <li>They shift conversation to monthly payments</li>
             </ul>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               That's when caution is warranted.
             </p>
 
@@ -249,8 +249,8 @@ export default function DealerWontGiveOtdPrice() {
               </Link>
             </div>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What You Should Say Back (Copy This)</h2>
-            <p className="text-muted-foreground mb-3">
+            <h2 className="text-2xl font-semibold text-foreground">What You Should Say Back (Copy This)</h2>
+            <p className="text-muted-foreground">
               Keep it simple and neutral. You can reply with:
             </p>
             <div className="relative my-4 rounded-lg border border-border bg-muted/40 p-5 pr-14" data-testid="block-otd-request">
@@ -270,7 +270,7 @@ export default function DealerWontGiveOtdPrice() {
                 <span className="absolute top-3 right-14 text-xs text-green-600 dark:text-green-400 font-medium">Copied</span>
               )}
             </div>
-            <p className="text-muted-foreground mb-3">
+            <p className="text-muted-foreground">
               If they still refuse:
             </p>
             <div className="relative my-4 rounded-lg border border-border bg-muted/40 p-5 pr-14" data-testid="block-walkaway">
@@ -290,12 +290,12 @@ export default function DealerWontGiveOtdPrice() {
                 <span className="absolute top-3 right-14 text-xs text-green-600 dark:text-green-400 font-medium">Copied</span>
               )}
             </div>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               No hostility. Just clarity.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to Protect Yourself If They Won't Send It</h2>
-            <p className="text-muted-foreground mb-3">
+            <h2 className="text-2xl font-semibold text-foreground">How to Protect Yourself If They Won't Send It</h2>
+            <p className="text-muted-foreground">
               If you decide to visit anyway:
             </p>
             <ol className="list-decimal pl-6 space-y-2 mb-4 text-muted-foreground">
@@ -304,15 +304,15 @@ export default function DealerWontGiveOtdPrice() {
               <li>Refuse to discuss monthly payments first</li>
               <li>Do not let them combine trade-in and vehicle price into one number</li>
             </ol>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               And most importantly: never agree verbally without seeing the full breakdown. Review <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds</a> to understand common fee structures before your visit.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why OTD Pricing Matters More Than Monthly Payments</h2>
-            <p className="text-muted-foreground mb-3">
+            <h2 className="text-2xl font-semibold text-foreground">Why OTD Pricing Matters More Than Monthly Payments</h2>
+            <p className="text-muted-foreground">
               Dealers often redirect to: "What monthly payment are you comfortable with?"
             </p>
-            <p className="text-muted-foreground mb-3">
+            <p className="text-muted-foreground">
               That hides:
             </p>
             <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
@@ -320,23 +320,23 @@ export default function DealerWontGiveOtdPrice() {
               <li>Marked-up interest rates</li>
               <li>Add-ons rolled into financing</li>
             </ul>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               OTD pricing forces transparency. Monthly payments obscure it. Use resources like <a href="https://www.kbb.com/car-advice/" target="_blank" rel="noopener" className="underline text-foreground">Kelley Blue Book</a> to compare total costs across vehicles before committing.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What Most Guides Don't Tell You</h2>
-            <p className="text-muted-foreground mb-4">
+            <h2 className="text-2xl font-semibold text-foreground">What Most Guides Don't Tell You</h2>
+            <p className="text-muted-foreground">
               Most car-buying advice focuses on what to do at the dealership. The real leverage happens before you walk in. Dealers know that once you're seated, commitment bias works against you — you've driven there, you've seen the car, you want it.
             </p>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               The move most buyers skip: contact three dealers by email before visiting any of them. Tell each one you're comparing OTD quotes. The dealer who responds with a real itemized total is signaling they're willing to compete on price. The one who insists on an in-person visit is signaling they're not. That information — gathered before you leave the house — is more valuable than any negotiation script.
             </p>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               You don't need to be aggressive. You just need to ask the right question early: "Can you send me the full out-the-door price for this VIN?" That one sentence separates transparent dealers from evasive ones in about 24 hours.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">When You Should Walk Away</h2>
-            <p className="text-muted-foreground mb-3">
+            <h2 className="text-2xl font-semibold text-foreground">When You Should Walk Away</h2>
+            <p className="text-muted-foreground">
               Walk if:
             </p>
             <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground marker:text-amber-500">
@@ -345,22 +345,22 @@ export default function DealerWontGiveOtdPrice() {
               <li>They increase price after agreement</li>
               <li>They pressure you to sign quickly</li>
             </ul>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               There are always other dealerships. Leverage is your biggest asset as a buyer.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">The Bottom Line</h2>
-            <p className="text-muted-foreground mb-4">
+            <h2 className="text-2xl font-semibold text-foreground">The Bottom Line</h2>
+            <p className="text-muted-foreground">
               If a dealer won't give you an OTD price, it's usually about control.
             </p>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               It doesn't automatically mean fraud.
             </p>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               But it does mean: you're negotiating in the dark. Before responding — or before visiting — run the numbers through a structured review.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Frequently Asked Questions</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Frequently Asked Questions</h2>
             <div className="space-y-6 mb-8">
               {faqs.map((faq, idx) => (
                 <div key={idx}>
@@ -370,7 +370,7 @@ export default function DealerWontGiveOtdPrice() {
               ))}
             </div>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Common Questions</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Common Questions</h2>
             <div className="space-y-6 mb-8">
               {commonQuestions.map((faq, idx) => (
                 <div key={idx}>
@@ -380,7 +380,7 @@ export default function DealerWontGiveOtdPrice() {
               ))}
             </div>
 
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               Back to <Link href="/dealer-pricing-tactics" className="underline text-foreground" data-testid="link-back-hub">all dealer pricing tactics</Link>.
             </p>
           </div>
@@ -388,7 +388,7 @@ export default function DealerWontGiveOtdPrice() {
 
           <div className="rounded-xl border border-border bg-muted/30 p-6 mt-12">
             <h3 className="text-base font-semibold text-foreground mb-2">Stop asking. Start checking.</h3>
-            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Paste your dealer quote into Odigos and get the out-the-door price they didn't want you to see — with every fee exposed.
             </p>
             <Link href="/analyze">

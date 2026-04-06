@@ -49,21 +49,21 @@ export default function AreDealerAddOnsNegotiable() {
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           Yes — most dealer add-ons are negotiable, even when the dealer tells you they're not. The key is knowing which ones dealers regularly drop, when your timing gives you leverage, and how to frame the ask so you're negotiating the right thing.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           This isn't about arguing. It's about understanding that add-ons are a profit center, not a fixed cost — and that dealers have more flexibility than they let on.
         </p>
 
-        <p className="text-sm text-muted-foreground mb-6">
+        <p className="text-sm text-muted-foreground">
           Already have a quote with add-ons? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see what's actually negotiable.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What dealers will almost always concede</h2>
+        <h2 className="text-2xl font-semibold text-foreground">What dealers will almost always concede</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           Some add-ons are easy wins because they're cheap to produce and the dealer knows their value is hard to defend:
         </p>
 
@@ -86,9 +86,9 @@ export default function AreDealerAddOnsNegotiable() {
           </li>
         </ul>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What dealers will rarely remove</h2>
+        <h2 className="text-2xl font-semibold text-foreground">What dealers will rarely remove</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           Some add-ons are harder to negotiate out because they're physically installed or have a plausible value argument:
         </p>
 
@@ -107,13 +107,13 @@ export default function AreDealerAddOnsNegotiable() {
           </li>
         </ul>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           The point isn't whether something can be physically removed — it's whether you're paying for it. If a dealer pre-installed paint protection before you arrived, that was their business decision. You're negotiating the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link>, not a parts manifest.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">When timing gives you leverage</h2>
+        <h2 className="text-2xl font-semibold text-foreground">When timing gives you leverage</h2>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           Timing matters more than most buyers realize:
         </p>
 
@@ -132,17 +132,17 @@ export default function AreDealerAddOnsNegotiable() {
           </li>
         </ul>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to anchor the negotiation correctly</h2>
+        <h2 className="text-2xl font-semibold text-foreground">How to anchor the negotiation correctly</h2>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           Most buyers make the mistake of negotiating the monthly payment. This obscures the real numbers and lets the dealer absorb concessions in ways you can't see. Always negotiate the total vehicle price — or the specific add-on price — not the monthly number.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           If a dealer won't remove an add-on, ask for the vehicle price to be reduced by that amount. If they won't do that, ask them to itemize each add-on individually with pricing. When dealers have to defend individual line items, the inflated markup becomes harder to justify.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           For a broader look at whether <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">add-ons are required at all</Link>, or if you want to know <Link href="/how-to-remove-dealer-add-ons" className="underline text-foreground">how to remove dealer add-ons</Link> step by step, those guides cover the process in more detail.
         </p>
 
@@ -153,9 +153,9 @@ export default function AreDealerAddOnsNegotiable() {
           </p>
         </div>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to say to the dealer</h2>
+        <h2 className="text-2xl font-semibold text-foreground">What to say to the dealer</h2>
 
-        <p className="text-muted-foreground mb-4">
+        <p className="text-muted-foreground">
           When you're ready to push back on specific add-ons, use this message. Replace the bracketed items with the actual add-on names from your quote:
         </p>
 
@@ -175,13 +175,13 @@ export default function AreDealerAddOnsNegotiable() {
           </Button>
         </Card>
 
-        <p className="text-muted-foreground mb-6">
+        <p className="text-muted-foreground">
           This works because it anchors to specific items, references a competing quote (if you have one), and signals you're a serious buyer — not someone walking away over price in general. It gives the dealer a clear path to close the deal.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">If the negotiation goes nowhere</h2>
+        <h2 className="text-2xl font-semibold text-foreground">If the negotiation goes nowhere</h2>
 
-        <p className="text-lg text-muted-foreground mb-8">
+        <p className="text-lg text-muted-foreground">
           If a dealer won't budge at all on add-ons or the vehicle price, that's useful information. Check whether the <Link href="/dealer-wont-give-otd-price" className="underline text-foreground">dealer is refusing to give you an out-the-door price</Link> — that's a separate red flag. And remember: walking is always an option. Dealers know that a buyer who leaves is often a buyer who comes back — or finds a better deal elsewhere.
         </p>
       </div>

@@ -51,17 +51,17 @@ export default function CarDealerFeesList() {
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Walk into any dealership and the sticker price is just the starting point. By the time you reach the finance office, a stack of fees — some required, some invented — can add hundreds or thousands to the total. This page lists the most common dealer fees you'll encounter, explains what each one actually covers, and tells you which ones deserve a closer look.{" "}<SourceCitation sources={ARTICLE_SOURCES["car-dealer-fees-list"].sources} lastVerified={ARTICLE_SOURCES["car-dealer-fees-list"].lastVerified} />
             </p>
 
-            <p className="text-sm text-muted-foreground mb-6">
+            <p className="text-sm text-muted-foreground">
               Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Common dealer fees at a glance</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Common dealer fees at a glance</h2>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               The table below covers roughly 14 fees you may see on a buyer's order or worksheet. Some are government-mandated, some are standard industry practice, and some are pure dealer profit. For a deeper explanation of the most common ones, see our guide on <Link href="/car-dealer-fees-explained" className="underline text-foreground">car dealer fees explained</Link>.
             </p>
 
@@ -149,35 +149,35 @@ export default function CarDealerFeesList() {
               </table>
             </div>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Which fees are normal?</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Which fees are normal?</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Government-mandated fees — sales tax, title, and registration — are non-negotiable and go directly to state or county agencies. The <Link href="/dealer-doc-fee" className="underline text-foreground">dealer doc fee</Link> is also standard, though the amount varies by state and dealership. The destination charge is set by the manufacturer and printed on the window sticker. These are the fees you should expect on every deal.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Which fees deserve questions?</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Which fees deserve questions?</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Anything beyond the fees above is worth asking about. A <Link href="/market-adjustment-fee" className="underline text-foreground">market adjustment</Link> is pure profit — it's the dealer deciding the car is worth more than MSRP. Dealer prep charges duplicate work that's already factored into the manufacturer's price. Paint protection, VIN etching, and nitrogen fills are high-margin add-ons with low actual value.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for new car buyers</a> recommends asking for itemized pricing and comparing across dealers — which is exactly why seeing the full fee list matters.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to compare dealers correctly</h2>
+            <h2 className="text-2xl font-semibold text-foreground">How to compare dealers correctly</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               The only number that matters for comparison is the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> — the total you'll pay to drive the car home. Two dealers can quote the same vehicle price but end up thousands apart once fees are added. Always request an itemized OTD breakdown from each dealer so you can see exactly where the money goes.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               When you have the full list side by side, it's easy to spot which dealer is padding the deal with unnecessary charges and which one is giving you a clean number.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to send the dealer</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What to send the dealer</h2>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               Use this message to request a complete fee breakdown before you visit. Copy and paste it directly:
             </p>
 
@@ -197,7 +197,7 @@ export default function CarDealerFeesList() {
               </Button>
             </Card>
 
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               This works because it sets the expectation that you want full transparency — before you're sitting in the finance office where pressure tactics are common.
             </p>
           </div>

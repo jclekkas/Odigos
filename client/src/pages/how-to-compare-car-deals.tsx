@@ -25,27 +25,27 @@ export default function HowToCompareCarDeals() {
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           The only valid way to compare two car deals is out-the-door price to out-the-door price. Comparing vehicle prices alone, or monthly payments, gives you an incomplete — and often misleading — picture of which deal is actually better.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           Dealers know this. A quote with a lower vehicle price may still cost more once fees and add-ons are factored in. Here's how to set up a real comparison.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why vehicle price comparisons fail</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Why vehicle price comparisons fail</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           When you tell two dealers you're shopping around, they'll often compete on vehicle price. Dealer A drops to $30,900. Dealer B quotes $31,200. Without seeing the full OTD breakdown, Dealer A looks like the better deal.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           But vehicle price is only part of what you pay. If Dealer A has a $1,500 market adjustment, a $799 doc fee, and a $995 paint protection package bundled in, the "lower" price disappears quickly. That's the problem with comparing on vehicle price alone.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">The same car — two very different deals</h2>
+        <h2 className="text-2xl font-semibold text-foreground">The same car — two very different deals</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           Here's a side-by-side comparison of two quotes for the same vehicle at the same MSRP:
         </p>
 
@@ -103,11 +103,11 @@ export default function HowToCompareCarDeals() {
           </table>
         </div>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           Quote B has the lower vehicle price by $600 — but costs $2,801 more out the door. The difference comes from a market adjustment, a higher doc fee, and two add-ons that weren't in Quote A. If you compared these two deals on vehicle price alone, you'd have chosen the more expensive one.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           Note also that sales tax is higher on Quote B — because tax is calculated on the subtotal, which includes the add-ons and adjustment. The <Link href="/out-the-door-price-example" className="underline text-foreground">out-the-door price example</Link> walks through this math in more detail.
         </p>
 
@@ -118,21 +118,21 @@ export default function HowToCompareCarDeals() {
           </p>
         </div>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to request a comparable quote from a second dealer</h2>
+        <h2 className="text-2xl font-semibold text-foreground">How to request a comparable quote from a second dealer</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           To get quotes you can actually compare, ask both dealers for the same format:
         </p>
 
-        <p className="text-muted-foreground mb-4 italic border-l-2 border-border pl-4">
+        <p className="text-muted-foreground italic border-l-2 border-border pl-4">
           "Can you send me a full out-the-door price with each line item listed separately? I need vehicle price, all dealer fees, any installed accessories or add-ons listed individually, estimated taxes, and title/registration. I'm comparing it to another quote in the same format."
         </p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           If a dealer won't provide this in writing, that's a signal. A transparent dealer should be able to produce a line-item OTD quote quickly. If they resist or redirect to monthly payment, see <Link href="/dealer-wont-give-otd-price" className="underline text-foreground">why dealers avoid giving OTD prices</Link>.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to line up when comparing quotes</h2>
+        <h2 className="text-2xl font-semibold text-foreground">What to line up when comparing quotes</h2>
 
         <ul className="space-y-3 mb-6 text-muted-foreground">
           <li className="flex items-start gap-2">
@@ -157,13 +157,13 @@ export default function HowToCompareCarDeals() {
           </li>
         </ul>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Using the comparison as leverage</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Using the comparison as leverage</h2>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           Once you have two OTD quotes for the same vehicle, you're in a legitimate negotiating position. Take the lower quote to the higher-priced dealer. You don't need to reveal exactly what the other dealer quoted — you can simply say you have a competing OTD price and ask if they can match or beat it.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-8">
+        <p className="text-lg text-muted-foreground">
           Some dealers will match. Others won't. Either outcome is useful — if the lower-OTD dealer genuinely is the better deal, you should go with them. For guidance on the full evaluation process, see <Link href="/is-this-a-good-car-deal" className="underline text-foreground">how to assess whether a car deal is actually good</Link>. If a dealer uses inflated pricing or high-pressure tactics during this process, see <Link href="/dealer-pricing-tactics" className="underline text-foreground">common dealer pricing tactics</Link> for what to watch for.
         </p>
       </div>

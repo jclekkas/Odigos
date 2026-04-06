@@ -27,15 +27,15 @@ export default function WhatIsAFairPriceForACar() {
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           A fair price for a car is not the MSRP, not the invoice price, and not the monthly payment. It's the out-the-door total — every dollar you pay to leave the lot with the vehicle. Until you know that number, you don't know what the deal actually costs.{" "}<SourceCitation sources={ARTICLE_SOURCES["what-is-a-fair-price-for-a-car"].sources} lastVerified={ARTICLE_SOURCES["what-is-a-fair-price-for-a-car"].lastVerified} />
         </p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           The challenge is that most buyer conversations, and most dealer quotes, focus on prices that leave things out. Here's what each number actually means and why only one of them matters.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">The four prices you'll hear — and what they actually mean</h2>
+        <h2 className="text-2xl font-semibold text-foreground">The four prices you'll hear — and what they actually mean</h2>
 
         <div className="space-y-6 mb-8">
           <div>
@@ -56,9 +56,9 @@ export default function WhatIsAFairPriceForACar() {
           </div>
         </div>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How a $32,000 MSRP becomes $37,500 OTD</h2>
+        <h2 className="text-2xl font-semibold text-foreground">How a $32,000 MSRP becomes $37,500 OTD</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           Here's a realistic example of how a vehicle price translates to an out-the-door total:
         </p>
 
@@ -103,11 +103,11 @@ export default function WhatIsAFairPriceForACar() {
           </table>
         </div>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           The gap between MSRP and OTD is $5,627 in this example — an 18% increase. That's not unusual. Depending on your state's tax rate, local fees, and any dealer add-ons, the gap between sticker and out-the-door can be $3,000 to $8,000+ on a typical vehicle.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           Two things in this example are worth scrutinizing:
         </p>
         <ul className="space-y-2 mb-6 text-muted-foreground">
@@ -128,9 +128,9 @@ export default function WhatIsAFairPriceForACar() {
           </p>
         </div>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What "fair" actually means for each line item</h2>
+        <h2 className="text-2xl font-semibold text-foreground">What "fair" actually means for each line item</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           Fairness isn't uniform across the OTD breakdown. Some parts are fixed, some are market-driven, and some are entirely negotiable:
         </p>
 
@@ -153,17 +153,17 @@ export default function WhatIsAFairPriceForACar() {
           </li>
         </ul>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to say to the dealer</h2>
+        <h2 className="text-2xl font-semibold text-foreground">What to say to the dealer</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           If you don't have an OTD breakdown yet, this is a direct way to request one:
         </p>
 
-        <p className="text-muted-foreground mb-4 italic border-l-2 border-border pl-4">
+        <p className="text-muted-foreground italic border-l-2 border-border pl-4">
           "Before we go further, can you send me a full out-the-door price with each line item listed separately — vehicle price, all fees, any add-ons, and estimated taxes? I'd like to compare it to another quote I have."
         </p>
 
-        <p className="text-lg text-muted-foreground mb-8">
+        <p className="text-lg text-muted-foreground">
           Mentioning a competing quote — real or prospective — signals that you're a buyer who will comparison shop. Dealers are more likely to provide transparent numbers when they know you're evaluating alternatives. For a step-by-step process of evaluating the quote once you have it, see <Link href="/how-to-tell-if-a-car-deal-is-good" className="underline text-foreground">how to tell if a car deal is good</Link>.
         </p>
       </div>

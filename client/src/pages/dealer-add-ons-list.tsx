@@ -50,26 +50,26 @@ export default function DealerAddOnsList() {
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               When you buy a car from a dealership, the price you were quoted often includes extras you never asked for. These dealer add-ons — sometimes called "dealer-installed options" or "accessories" — are products or services the dealership adds to the vehicle before you arrive. They're a significant profit center for the dealer, and most of them are completely optional.{" "}<SourceCitation sources={ARTICLE_SOURCES["dealer-add-ons-list"].sources} lastVerified={ARTICLE_SOURCES["dealer-add-ons-list"].lastVerified} />
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Understanding what's on the list — and what each item actually costs — puts you in a much stronger position to negotiate the total price or have charges removed entirely.
             </p>
 
-            <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-5 mb-8">
+            <div className="rounded-lg border border-blue-600/20 bg-blue-600/5 p-5 mb-8">
               <p className="text-base font-semibold text-foreground mb-2">
                 Dealer added extras to your quote? Paste it here — Odigos flags every add-on that's overpriced or unnecessary.
               </p>
-              <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white font-semibold">
+              <Button asChild variant="cta" className="font-semibold">
                 <Link href="/analyze">Check My Quote</Link>
               </Button>
             </div>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Common dealer add-ons</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Common dealer add-ons</h2>
 
-            <p className="text-lg text-muted-foreground mb-4">
+            <p className="text-lg text-muted-foreground">
               Below is a list of the most frequently added dealer extras. Nearly all of them are optional, even when presented as "included" or "already installed."
             </p>
 
@@ -154,23 +154,23 @@ export default function DealerAddOnsList() {
               </table>
             </div>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Which add-ons are optional?</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Which add-ons are optional?</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Virtually all dealer add-ons are optional. The only charges you truly cannot avoid are government-mandated fees: sales tax, title, and registration. A <Link href="/car-dealer-fees-explained" className="underline text-foreground">documentation fee</Link> is standard at most dealerships, though the amount varies and may be negotiable depending on your state.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Everything else — paint protection, VIN etching, nitrogen tires, protection packages, extended warranties — is a dealer profit item. Even when the dealer says "it's already on the car," you are not obligated to pay for products you didn't request. You can ask for the price to be reduced by the cost of unwanted add-ons, or request a quote on a vehicle without them. For a deeper look at <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">whether add-ons are truly mandatory</Link>, see our detailed guide.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Typical costs and markup ranges</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Typical costs and markup ranges</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               The pattern across nearly every dealer add-on is the same: the dealer's actual cost is a fraction of what they charge. Paint sealant that costs the dealer $50 in product is billed at $800. VIN etching that takes five minutes and costs $25 in materials is charged at $300. Protection packages bundle several of these low-cost items together and present a single price of $1,500 or more, making it harder to evaluate each item individually.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               This doesn't mean every add-on is worthless — window tint and floor mats have legitimate value. But you can almost always get the same products aftermarket for significantly less. The key is knowing what you're paying for so you can make an informed decision rather than accepting a bundled price.
             </p>
 
@@ -183,9 +183,9 @@ export default function DealerAddOnsList() {
               </Link>
             </div>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to say to the dealer</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What to say to the dealer</h2>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               If your quote includes add-ons you didn't ask for, use this message to request a clean breakdown. You can copy and paste it directly:
             </p>
 
@@ -205,21 +205,21 @@ export default function DealerAddOnsList() {
               </Button>
             </Card>
 
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground">
               This works because it's professional and specific. You're not arguing about individual products — you're asking for transparency so you can evaluate the total deal.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How Odigos helps</h2>
+            <h2 className="text-2xl font-semibold text-foreground">How Odigos helps</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               If you already have a dealer quote and aren't sure which charges are add-ons, paste it into Odigos. We'll identify every dealer-installed extra, flag the ones with high markup, and show you what the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> would look like without them. No guesswork, no math — just a clear picture of what's optional and what's not.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               For more on how dealer fees work across different states, see our <Link href="/car-dealer-fees-explained" className="underline text-foreground">car dealer fees explained</Link> guide, or check the <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for car buyers</a> for your rights as a consumer.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground">
               Keep in mind that some dealers layer a <Link href="/market-adjustment-fee" className="underline text-foreground">market adjustment fee</Link> on top of MSRP before you even get to the add-ons conversation. If you see a price that doesn't match the sticker, that's worth asking about separately.
             </p>
           </div>
@@ -227,7 +227,7 @@ export default function DealerAddOnsList() {
 
           <div className="rounded-xl border border-border bg-muted/30 p-6 mt-12">
             <h3 className="text-base font-semibold text-foreground mb-2">Add-ons are the most negotiable part of any dealer quote.</h3>
-            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Paste yours and see exactly which charges to push back on — with a DealScore for the whole deal.
             </p>
             <Link href="/analyze">

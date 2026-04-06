@@ -28,18 +28,18 @@ export default function MonthlyPaymentTrap() {
           </h1>
           
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               When a dealer asks "What monthly payment are you looking for?" instead of discussing the total price, that's a negotiation tactic, not a helpful question. Payment-focused selling shifts your attention away from the numbers that actually matter: the vehicle price, the interest rate, the loan term, and the total amount you'll pay over the life of the loan.{" "}
               <SourceCitation sources={ARTICLE_SOURCES["monthly-payment-trap"].sources} lastVerified={ARTICLE_SOURCES["monthly-payment-trap"].lastVerified} />
             </p>
 
-            <p className="text-sm text-muted-foreground mb-6">
+            <p className="text-sm text-muted-foreground">
               Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How the payment trap works</h2>
+            <h2 className="text-2xl font-semibold text-foreground">How the payment trap works</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               A $489/month payment sounds straightforward, but the total cost behind that number can vary dramatically depending on the APR and loan term. For example:
             </p>
 
@@ -54,13 +54,13 @@ export default function MonthlyPaymentTrap() {
               </li>
             </ul>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Same monthly number. Nearly $6,000 difference in what you actually pay. The dealer can also hit a lower monthly payment simply by extending the term to 72 or 84 months. That means more total interest paid and a higher risk of being underwater on the loan — owing more than the car is worth.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What payment-focused quotes typically hide</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What payment-focused quotes typically hide</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               When a quote leads with the monthly payment and leaves out the details, there are usually specific things being obscured:
             </p>
 
@@ -83,9 +83,9 @@ export default function MonthlyPaymentTrap() {
               </li>
             </ul>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to avoid the trap</h2>
+            <h2 className="text-2xl font-semibold text-foreground">How to avoid the trap</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               The most effective approach is to treat the vehicle price and the financing as two separate transactions — because they are. Negotiate the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> first: the total amount including tax, title, registration, and any dealer fees. Once you have that number agreed upon, then discuss financing terms separately.
             </p>
 
@@ -104,7 +104,7 @@ export default function MonthlyPaymentTrap() {
               </li>
             </ul>
 
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground">
               If you already have a payment-focused quote from a dealer, Odigos can analyze what's missing and flag anything that looks unclear or incomplete.
             </p>
           </div>

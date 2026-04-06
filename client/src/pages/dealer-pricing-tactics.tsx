@@ -40,10 +40,10 @@ export default function DealerPricingTactics() {
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-lg text-muted-foreground mb-4">
+            <p className="text-lg text-muted-foreground">
               Car dealers use a range of pricing tactics to keep buyers in the dark — from refusing to give out-the-door prices to bundling add-ons that inflate the final cost (see <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds' breakdown of common fees</a> for context). Understanding these tactics is the first step to negotiating from a position of strength.{" "}<SourceCitation sources={ARTICLE_SOURCES["dealer-pricing-tactics"].sources} lastVerified={ARTICLE_SOURCES["dealer-pricing-tactics"].lastVerified} />
             </p>
-            <p className="text-lg text-muted-foreground mb-10">
+            <p className="text-lg text-muted-foreground">
               Odigos helps you identify these tactics in real dealer quotes, emails, and texts — so you know what to ask and what to push back on before you visit the dealership. For a broader overview of your rights as a buyer, see the <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for car buyers</a>.
             </p>
           </div>

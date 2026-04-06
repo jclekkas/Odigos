@@ -51,12 +51,12 @@ export default function DealerWontGiveOtd() {
           </h1>
           
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               You've found a car, you text or email the dealer asking for the out-the-door price, and instead of a straight answer you get: "Come on in and we'll work the numbers" or just a monthly payment with no breakdown. This is common, and it's not accidental.{" "}<SourceCitation sources={ARTICLE_SOURCES["dealer-wont-give-otd"].sources} lastVerified={ARTICLE_SOURCES["dealer-wont-give-otd"].lastVerified} />
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why dealers avoid giving the OTD</h2>
-            <p className="text-muted-foreground mb-4">
+            <h2 className="text-2xl font-semibold text-foreground">Why dealers avoid giving the OTD</h2>
+            <p className="text-muted-foreground">
               When a dealer puts the full <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> in writing, they lose several advantages at once:
             </p>
             <ul className="space-y-2 mb-4 text-muted-foreground">
@@ -72,12 +72,12 @@ export default function DealerWontGiveOtd() {
                 </li>
               ))}
             </ul>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for car buyers</a> recommends getting all costs in writing before agreeing to a deal. Dealers who avoid this step are typically trying to preserve room to add fees later — including <Link href="/mandatory-dealer-add-ons" className="underline text-foreground">dealer add-ons</Link> and charges that appear only in the finance office.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to say when they dodge the question</h2>
-            <p className="text-muted-foreground mb-4">
+            <h2 className="text-2xl font-semibold text-foreground">What to say when they dodge the question</h2>
+            <p className="text-muted-foreground">
               If a dealer redirects you to "come in" or only offers a monthly payment, send them this message. You can copy and paste it directly:
             </p>
             <Card className="relative p-5 bg-muted/50 mb-4">
@@ -98,7 +98,7 @@ export default function DealerWontGiveOtd() {
                 <span className="absolute top-3 right-14 text-xs text-green-600 dark:text-green-400 font-medium">Copied</span>
               )}
             </Card>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               This works because it's specific, reasonable, and signals you're an informed buyer. You're not being confrontational — you're asking for the same information any serious buyer needs to make a decision.
             </p>
 
@@ -114,16 +114,16 @@ export default function DealerWontGiveOtd() {
               </Link>
             </div>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What if they still won't?</h2>
-            <p className="text-muted-foreground mb-4">
+            <h2 className="text-2xl font-semibold text-foreground">What if they still won't?</h2>
+            <p className="text-muted-foreground">
               Try other dealers. Most metro areas have multiple dealerships selling the same models, and many will compete on price over text or email. You don't owe your business to the first dealer you contacted.
             </p>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               A dealer who won't be transparent before you visit is unlikely to become more transparent in the finance office. If they won't put the number in writing now, expect additional fees and pressure when you're sitting across the desk. For a full breakdown of why this happens and when it becomes a real red flag, see our guide on <Link href="/dealer-wont-give-otd-price" className="underline text-foreground">what it means when a dealer refuses to give an OTD price</Link>.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How Odigos helps</h2>
-            <p className="text-muted-foreground mb-8">
+            <h2 className="text-2xl font-semibold text-foreground">How Odigos helps</h2>
+            <p className="text-muted-foreground">
               If you've received a partial quote — a monthly payment, a vague "around $35,000," or a worksheet with missing line items — Odigos analyzes exactly what's there and what's missing. You get a clear list of gaps and a suggested follow-up message so you can go back to the dealer with the right questions.
             </p>
           </div>

@@ -51,37 +51,37 @@ export default function DocFeeTooHigh() {
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               The documentation fee — sometimes called a "doc fee" or "dealer prep fee" — is one of the most common charges added to a car deal. It's supposed to cover the cost of processing your paperwork: title, registration, loan documents, and filing. But the amount dealers charge for this work varies wildly, from under $100 in some states to over $1,000 in others. If your doc fee looks too high, you're right to question it.{" "}<SourceCitation sources={ARTICLE_SOURCES["doc-fee-too-high"].sources} lastVerified={ARTICLE_SOURCES["doc-fee-too-high"].lastVerified} />
             </p>
 
-            <p className="text-sm text-muted-foreground mb-6">
+            <p className="text-sm text-muted-foreground">
               Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What's a normal doc fee?</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What's a normal doc fee?</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               There's no single "normal" amount — it depends on where you're buying. Some states cap doc fees by law. For example, California limits the fee to $85, while Florida and Colorado have no cap at all. In states without regulation, dealers may charge $500, $700, or even more. For a deeper look at what the <Link href="/dealer-doc-fee" className="underline text-foreground">dealer doc fee</Link> typically covers and how it varies by state, see our full breakdown.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               A reasonable rule of thumb: if the doc fee is significantly higher than what other dealers in your area charge for the same service, it's worth pushing back. You can check what's typical in your state through the <a href="https://www.ftc.gov/business-guidance/resources/dealers-guide-federal-requirement-used-car-rule" target="_blank" rel="noopener" className="underline text-foreground">FTC's dealer guidance</a> and your state's attorney general website. You can also see <Link href="/dealer-doc-fee-by-state" className="underline text-foreground">doc fee caps by state</Link> for a quick comparison across all 50 states.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Can you negotiate a doc fee?</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Can you negotiate a doc fee?</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               In most cases, yes — but it depends on the state and the dealer. Some dealers claim the doc fee is "set by the state" or "non-negotiable." In states without a cap, that's not true. The fee is set by the dealership, and it's the same for every customer only because the dealer chooses to make it that way.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Even in states that cap doc fees, the cap is a maximum — not a minimum. You can always ask the dealer to reduce it. If the dealer won't budge on the doc fee specifically, you can negotiate the vehicle price down by the same amount. The total <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> is what matters, not any individual line item.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to say to the dealer</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What to say to the dealer</h2>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               If the doc fee looks too high or wasn't disclosed upfront, send this message. You can copy and paste it directly:
             </p>
 
@@ -101,13 +101,13 @@ export default function DocFeeTooHigh() {
               </Button>
             </Card>
 
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground">
               This works because it's specific and professional. You're not accusing anyone — you're asking for a clear breakdown so you can evaluate the total deal on your terms.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to ask upfront</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What to ask upfront</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Before you get deep into negotiation, ask the dealer to provide the full out-the-door price — including the doc fee. This way, the doc fee is part of the total number you're evaluating, not a surprise at the end.
             </p>
 
@@ -126,9 +126,9 @@ export default function DocFeeTooHigh() {
               </li>
             </ul>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Red flags</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Red flags</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Not every high doc fee is a problem on its own — but certain patterns suggest the fee is being used to inflate the deal:
             </p>
 
@@ -151,7 +151,7 @@ export default function DocFeeTooHigh() {
               </li>
             </ul>
 
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground">
               If you already have a quote with a doc fee that seems high, Odigos can analyze the full breakdown and flag anything that doesn't add up.
             </p>
           </div>

@@ -92,7 +92,7 @@ export default function Landing() {
 
               <div className="flex-1 text-center lg:text-left">
                 <h1
-                  className="font-serif text-balance text-4xl font-bold tracking-tight sm:text-5xl lg:text-[3.25rem] text-foreground leading-[1.15]"
+                  className="text-balance text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-[3.25rem] text-foreground leading-[1.15]"
                   data-testid="text-hero-headline"
                 >
                   Is your dealer quote fair?
@@ -127,6 +127,12 @@ export default function Landing() {
                   <span className="text-sm text-muted-foreground">
                     Free instant preview &middot; No signup
                   </span>
+                </div>
+
+                <div className="mt-4 flex flex-wrap items-center justify-center lg:justify-start gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1"><Lock className="h-3 w-3" /> Your data stays private</span>
+                  <span className="flex items-center gap-1"><Check className="h-3 w-3" /> No signup required</span>
+                  <span className="flex items-center gap-1"><Check className="h-3 w-3" /> Not affiliated with any dealer</span>
                 </div>
 
                 {!statsError && (
@@ -233,7 +239,7 @@ export default function Landing() {
         {/* ── SOCIAL PROOF ─────────────────────────────────────────────────── */}
         <section className="py-14 sm:py-16" data-testid="section-testimonials">
           <div className="mx-auto max-w-4xl px-4 sm:px-6">
-            <h2 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl text-center mb-12">
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl text-center mb-12">
               Buyers who checked first
             </h2>
             <div className="grid gap-6 sm:grid-cols-3">
@@ -282,7 +288,7 @@ export default function Landing() {
         <section id="pricing" className="py-14 sm:py-16 border-t border-border bg-muted/30">
           <div className="mx-auto max-w-3xl px-4 sm:px-6">
             <div className="text-center mb-12">
-              <h2 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl">
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
                 Simple, one-time pricing
               </h2>
               <p className="mt-3 text-sm text-muted-foreground">
@@ -361,7 +367,7 @@ export default function Landing() {
             })}</script>
           </Helmet>
           <div className="mx-auto max-w-3xl px-4 sm:px-6">
-            <h2 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl mb-10" data-testid="text-faq-heading">
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl mb-10" data-testid="text-faq-heading">
               Questions
             </h2>
             <Accordion type="single" collapsible className="w-full">

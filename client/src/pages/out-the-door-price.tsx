@@ -59,20 +59,20 @@ export default function OutTheDoorPrice() {
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-5 mb-8">
+            <div className="rounded-lg border border-blue-600/20 bg-blue-600/5 p-5 mb-8">
               <p className="text-base font-semibold text-foreground mb-2">
                 Already have a quote? Skip the math — paste it into Odigos and we'll calculate your true out-the-door cost with every fee itemized.
               </p>
-              <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white font-semibold">
+              <Button asChild variant="cta" className="font-semibold">
                 <Link href="/analyze">Calculate My OTD Price</Link>
               </Button>
             </div>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">The Out-the-Door Price (OTD) Is the Real Cost of a Car</h2>
-            <p className="text-lg text-muted-foreground mb-4">
+            <h2 className="text-2xl font-semibold text-foreground">The Out-the-Door Price (OTD) Is the Real Cost of a Car</h2>
+            <p className="text-lg text-muted-foreground">
               The out-the-door price (OTD) is the total amount you pay to leave the dealership with the keys in your hand.{" "}<SourceCitation sources={ARTICLE_SOURCES["out-the-door-price"].sources} lastVerified={ARTICLE_SOURCES["out-the-door-price"].lastVerified} />
             </p>
-            <p className="text-muted-foreground mb-3">It includes:</p>
+            <p className="text-muted-foreground">It includes:</p>
             <ul className="space-y-2 mb-4 text-muted-foreground">
               {[
                 "The negotiated vehicle price",
@@ -88,15 +88,15 @@ export default function OutTheDoorPrice() {
                 </li>
               ))}
             </ul>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               If you don't have the full OTD in writing, you do not know what the car costs. For a broader overview of what to expect, see the <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide to buying a new car</a>.
             </p>
-            <p className="text-muted-foreground mb-10">
+            <p className="text-muted-foreground">
               Dealers often focus on the monthly payment. That hides fees. The OTD price is what protects you.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What an Out-the-Door Price Includes</h2>
-            <p className="text-muted-foreground mb-3">An itemized OTD breakdown should look like this:</p>
+            <h2 className="text-2xl font-semibold text-foreground">What an Out-the-Door Price Includes</h2>
+            <p className="text-muted-foreground">An itemized OTD breakdown should look like this:</p>
             <ul className="space-y-2 mb-4 text-muted-foreground">
               {[
                 "Vehicle sale price",
@@ -117,12 +117,12 @@ export default function OutTheDoorPrice() {
                 <span>Required state/local fees</span>
               </li>
             </ul>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               If even one of these is missing from a quote, the price is incomplete.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What Dealers Often Leave Out of the First Quote</h2>
-            <p className="text-muted-foreground mb-3">
+            <h2 className="text-2xl font-semibold text-foreground">What Dealers Often Leave Out of the First Quote</h2>
+            <p className="text-muted-foreground">
               These frequently appear later — usually in the finance office:
             </p>
             <ul className="space-y-2 mb-4 text-muted-foreground">
@@ -142,12 +142,12 @@ export default function OutTheDoorPrice() {
                 </li>
               ))}
             </ul>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               Many of these are optional — even when labeled "mandatory." Learn more about <Link href="/mandatory-dealer-add-ons" className="underline text-foreground">mandatory dealer add-ons</Link> and which ones you can decline. Resources like <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds' breakdown of dealer fees</a> can help you identify common charges.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why Dealers Avoid Giving the OTD Price in Writing</h2>
-            <p className="text-muted-foreground mb-3">There's a reason some dealerships hesitate.</p>
+            <h2 className="text-2xl font-semibold text-foreground">Why Dealers Avoid Giving the OTD Price in Writing</h2>
+            <p className="text-muted-foreground">There's a reason some dealerships hesitate.</p>
             <ul className="space-y-2 mb-4 text-muted-foreground">
               {[
                 "It makes comparison shopping easier",
@@ -161,15 +161,15 @@ export default function OutTheDoorPrice() {
                 </li>
               ))}
             </ul>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               Without a written OTD, numbers can shift in the finance office. Use tools like <a href="https://www.kbb.com/car-advice/" target="_blank" rel="noopener" className="underline text-foreground">Kelley Blue Book</a> to compare fair pricing before you negotiate.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground flex items-center gap-2">
+            <h2 className="text-2xl font-semibold text-foreground flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0" />
               Red Flags That the Quote Isn't Complete
             </h2>
-            <p className="text-muted-foreground mb-3">Watch for:</p>
+            <p className="text-muted-foreground">Watch for:</p>
             <ul className="space-y-2 mb-4 text-muted-foreground">
               {[
                 '"What monthly payment are you looking for?"',
@@ -184,7 +184,7 @@ export default function OutTheDoorPrice() {
                 </li>
               ))}
             </ul>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               If the dealer won't provide the total in writing, assume the number will change.
             </p>
 
@@ -197,7 +197,7 @@ export default function OutTheDoorPrice() {
               </Link>
             </div>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground flex items-center gap-2">
+            <h2 className="text-2xl font-semibold text-foreground flex items-center gap-2">
               <CircleDollarSign className="h-5 w-5 shrink-0" />
               Example: Itemized Out-the-Door Price Breakdown
             </h2>
@@ -227,9 +227,9 @@ export default function OutTheDoorPrice() {
               </table>
             </div>
             <p className="text-muted-foreground mb-2">Every dollar is visible.</p>
-            <p className="text-muted-foreground mb-8">If you can't see every dollar, you don't have the real number.</p>
+            <p className="text-muted-foreground">If you can't see every dollar, you don't have the real number.</p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Copy-Paste Message to Get the OTD Price in Writing</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Copy-Paste Message to Get the OTD Price in Writing</h2>
             <Card className="relative p-5 bg-muted/50 mb-4">
               <blockquote className="text-sm md:text-base text-foreground leading-relaxed italic pr-10">
                 {OTD_MESSAGE}
@@ -248,16 +248,16 @@ export default function OutTheDoorPrice() {
                 <span className="absolute top-3 right-14 text-xs text-green-600 dark:text-green-400 font-medium">Copied</span>
               )}
             </Card>
-            <p className="text-muted-foreground mb-8">If they refuse, that's a signal.</p>
+            <p className="text-muted-foreground">If they refuse, that's a signal.</p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Want to Estimate Your OTD First?</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Want to Estimate Your OTD First?</h2>
             <p className="text-muted-foreground mb-2">
               You can try our <Link href="/out-the-door-price-calculator" className="underline text-foreground">out-the-door price calculator</Link> to get a baseline estimate before contacting a dealer.
             </p>
-            <p className="text-muted-foreground mb-8">Just remember: calculators don't reveal hidden add-ons.</p>
+            <p className="text-muted-foreground">Just remember: calculators don't reveal hidden add-ons.</p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Related Guides</h2>
-            <p className="text-muted-foreground mb-4">
+            <h2 className="text-2xl font-semibold text-foreground">Related Guides</h2>
+            <p className="text-muted-foreground">
               If you're trying to understand dealership pricing tactics and hidden charges, these guides explain the most common situations buyers run into.
             </p>
             <ul className="space-y-2 mb-8 text-muted-foreground">
@@ -280,7 +280,7 @@ export default function OutTheDoorPrice() {
 
           <div className="rounded-xl border border-border bg-muted/30 p-6 mt-12">
             <h3 className="text-base font-semibold text-foreground mb-2">The out-the-door price is the only number that matters.</h3>
-            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Paste your dealer quote and Odigos breaks down every line item — taxes, fees, and charges you shouldn't be paying.
             </p>
             <Link href="/analyze">

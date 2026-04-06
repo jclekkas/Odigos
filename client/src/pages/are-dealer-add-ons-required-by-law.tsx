@@ -51,21 +51,21 @@ export default function AreDealerAddOnsRequiredByLaw() {
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           No. Dealer add-ons are not required by law. The only charges legally mandated in a car purchase are government fees set by your state — not products the dealership chose to add to the vehicle.{" "}<SourceCitation sources={ARTICLE_SOURCES["are-dealer-add-ons-required-by-law"].sources} lastVerified={ARTICLE_SOURCES["are-dealer-add-ons-required-by-law"].lastVerified} />
         </p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           This distinction matters because dealers sometimes use language that implies certain charges are mandatory or regulatory when they're not. Understanding exactly what the law requires — and what it doesn't — puts you in a much clearer position to push back.
         </p>
 
-        <p className="text-sm text-muted-foreground mb-6">
+        <p className="text-sm text-muted-foreground">
           Have a quote with charges that seem mandatory? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and we'll flag what's legally required vs. what's a dealer decision.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What is actually required by law</h2>
+        <h2 className="text-2xl font-semibold text-foreground">What is actually required by law</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           Every car purchase in the U.S. includes a small set of government-mandated charges. These are set by your state, not the dealership, and they're genuinely non-negotiable:
         </p>
 
@@ -84,13 +84,13 @@ export default function AreDealerAddOnsRequiredByLaw() {
           </li>
         </ul>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           Some states also require emissions testing fees or county-level surcharges. These will appear as government fees, not dealer products, and the amounts are publicly verifiable through your state's DMV.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What is not required by law</h2>
+        <h2 className="text-2xl font-semibold text-foreground">What is not required by law</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           Everything else in a dealer quote is a business decision — either a dealer-elected fee or a product the dealer chose to add. None of the following are legally required:
         </p>
 
@@ -128,25 +128,25 @@ export default function AreDealerAddOnsRequiredByLaw() {
           </p>
         </div>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">The gray area: documentation fees</h2>
+        <h2 className="text-2xl font-semibold text-foreground">The gray area: documentation fees</h2>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           The <Link href="/dealer-doc-fee" className="underline text-foreground">documentation fee</Link> sits in a different category from add-ons. It's a dealer-set processing charge for handling paperwork — not a government fee — but it's standard practice at virtually every dealership. Some states cap it; others don't. While it's technically a dealer decision, it's rarely waived entirely. It's worth knowing the typical range in your state before you walk in.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What the FTC says</h2>
+        <h2 className="text-2xl font-semibold text-foreground">What the FTC says</h2>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           The Federal Trade Commission has clear guidance on car buying. Dealers are required to disclose the price of optional add-ons and cannot include charges in the contract that weren't agreed to. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for buying a new car</a> specifically warns buyers to read contracts carefully and confirm that any optional items you declined aren't included in the final paperwork.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           In 2024, the FTC finalized the CARS Rule (Combating Auto Retail Scams), which imposes new requirements on dealers regarding price disclosure and add-on transparency. While enforcement timelines vary, the direction of regulation is toward greater transparency — not less.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How dealers make optional charges sound mandatory</h2>
+        <h2 className="text-2xl font-semibold text-foreground">How dealers make optional charges sound mandatory</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           There are specific patterns worth recognizing:
         </p>
 
@@ -165,13 +165,13 @@ export default function AreDealerAddOnsRequiredByLaw() {
           </li>
         </ul>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           For a broader look at <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">which add-ons you can actually refuse</Link>, that page covers the full picture. If you're trying to get specific items removed from your quote, see <Link href="/how-to-remove-dealer-add-ons" className="underline text-foreground">how to remove dealer add-ons</Link>.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to say to the dealer</h2>
+        <h2 className="text-2xl font-semibold text-foreground">What to say to the dealer</h2>
 
-        <p className="text-muted-foreground mb-4">
+        <p className="text-muted-foreground">
           If you're getting unclear answers about which charges are legally required, use this message to ask the dealer to clarify in writing:
         </p>
 
@@ -191,7 +191,7 @@ export default function AreDealerAddOnsRequiredByLaw() {
           </Button>
         </Card>
 
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           This message is deliberately non-confrontational. It's asking a reasonable question that any transparent dealer should be able to answer. A dealer who can't — or won't — clearly distinguish government fees from dealer products is telling you something important about how they operate.
         </p>
       </div>

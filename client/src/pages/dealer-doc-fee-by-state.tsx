@@ -117,36 +117,36 @@ export default function DealerDocFeeByState() {
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               The documentation fee — commonly called the "doc fee" — is one of the most inconsistent charges in a car deal. It covers the dealer's cost of processing title work, registration, and loan paperwork. But unlike taxes or registration, the doc fee is set by the dealership, not the government. That means the same paperwork that costs $85 in California can cost $900 in Florida — and both are perfectly legal.
             </p>
 
-            <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-5 mb-8">
+            <div className="rounded-lg border border-blue-600/20 bg-blue-600/5 p-5 mb-8">
               <p className="text-base font-semibold text-foreground mb-2">
                 Looking up your state? After you check the cap, paste your dealer quote into Odigos to see if they're actually following it.
               </p>
-              <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white font-semibold">
+              <Button asChild variant="cta" className="font-semibold">
                 <Link href="/analyze">Check My Dealer Quote</Link>
               </Button>
             </div>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why doc fees vary so much</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Why doc fees vary so much</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               The core issue is regulation — or the lack of it. Some states set a legal maximum on what dealers can charge for documentation. In those states, every dealership charges the same amount (or close to it) because there's a hard cap. Other states have no cap at all, which means the doc fee is entirely at the dealer's discretion.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               In uncapped states, dealers set their doc fee based on local competition, overhead costs, and profit strategy. A high-volume dealer in a competitive metro area might keep the fee lower to attract buyers. A dealer in a less competitive market might charge $700 or more because there's no regulatory reason not to. The actual work the fee covers — printing contracts, filing paperwork, submitting registration — is essentially the same everywhere.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               For a deeper look at what the doc fee actually covers and whether you can negotiate it, see our guide on the <Link href="/dealer-doc-fee" className="underline text-foreground">dealer documentation fee</Link>. The doc fee is just one component of many — for the full picture of what goes into a dealer quote, see <Link href="/what-does-out-the-door-price-include" className="underline text-foreground">what OTD includes</Link>.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Doc fee ranges by state</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Doc fee ranges by state</h2>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               The table below shows approximate documentation fee ranges for all 50 states and Washington D.C. Where a state caps the fee, the cap is noted. In uncapped states, the ranges reflect what buyers commonly report. Always verify current limits with your state's attorney general or motor vehicle agency.
             </p>
 
@@ -191,23 +191,23 @@ export default function DealerDocFeeByState() {
               </Link>
             </div>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What if your doc fee seems too high?</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What if your doc fee seems too high?</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               If the doc fee on your quote is significantly above the typical range for your state, that's worth questioning — but it's not automatically a red flag. Some dealers charge more for doc fees and less on the vehicle price. Others do the opposite. What matters most is the total <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link>, not any single line item.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               That said, a doc fee well above local averages is a sign you should ask questions. In states without a cap, the dealer sets this fee entirely on their own. If they're charging $900 when nearby dealers charge $400 for the same paperwork, that's $500 in pure margin — and you should know about it before you commit.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               For specific tactics on what to say and what to watch for, see our guide on <Link href="/doc-fee-too-high" className="underline text-foreground">what to do when a doc fee is too high</Link>.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to say to the dealer</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What to say to the dealer</h2>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               Before visiting or committing, send this message to get a clear breakdown. You can copy and paste it directly:
             </p>
 
@@ -227,31 +227,31 @@ export default function DealerDocFeeByState() {
               </Button>
             </Card>
 
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground">
               This works because it's specific without being confrontational. You're asking the dealer to itemize the doc fee so you can compare it against what's typical in your state.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to compare dealers on doc fees</h2>
+            <h2 className="text-2xl font-semibold text-foreground">How to compare dealers on doc fees</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Comparing doc fees across dealers is useful, but it only tells part of the story. A dealer with a $200 doc fee and a $500 higher vehicle price isn't actually cheaper than a dealer with a $600 doc fee and a lower base price. The right comparison is always the total out-the-door number.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               When shopping across state lines, doc fee differences become even more significant. A dealer in a capped state like California ($85) might seem cheaper on paper, but higher sales tax rates or a higher vehicle price can erase that advantage. Always compare the full OTD price — not just one fee.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               For a broader view of all the fees that show up on a car deal — not just doc fees — see our guide on <Link href="/car-dealer-fees-by-state" className="underline text-foreground">car dealer fees by state</Link>. You can also review the <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for car buyers</a> for details on what dealers must disclose.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground">
               If you already have a dealer quote and want to know whether the doc fee — or anything else — looks off, Odigos can analyze the full breakdown and flag anything that doesn't add up.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">State-by-state dealer fee guides</h2>
+            <h2 className="text-2xl font-semibold text-foreground">State-by-state dealer fee guides</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               For full breakdowns of doc fees, local tax rates, and what to watch for in each state:
             </p>
 
@@ -277,7 +277,7 @@ export default function DealerDocFeeByState() {
 
 
           <div className="rounded-xl border border-border bg-muted/30 p-6 mt-12">
-            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Knowing the cap is step one. Checking your actual quote is step two. Paste any dealer quote and Odigos scores it against your state's rules — every fee, every charge.
             </p>
             <Link href="/analyze">

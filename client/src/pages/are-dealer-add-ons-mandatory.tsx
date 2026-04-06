@@ -51,21 +51,21 @@ export default function AreDealerAddOnsMandatory() {
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               You found the car you want, asked for the price, and the quote came back with a list of extras you didn't ask for — paint protection, fabric coating, VIN etching, nitrogen tires, a "protection package." The dealer says they're included, already installed, or required. In almost every case, they're not.{" "}<SourceCitation sources={ARTICLE_SOURCES["are-dealer-add-ons-mandatory"].sources} lastVerified={ARTICLE_SOURCES["are-dealer-add-ons-mandatory"].lastVerified} />
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Dealer add-ons are products or services added by the dealership, not the manufacturer. They're profit items. Understanding which charges are actually required and which are optional puts you in a much stronger position before you sign anything.
             </p>
 
-            <p className="text-sm text-muted-foreground mb-6">
+            <p className="text-sm text-muted-foreground">
               Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What's actually required vs. what's optional</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What's actually required vs. what's optional</h2>
 
-            <p className="text-lg text-muted-foreground mb-4">
+            <p className="text-lg text-muted-foreground">
               Every car purchase includes government-mandated charges. These are non-negotiable because they're set by your state, not the dealer:
             </p>
 
@@ -84,7 +84,7 @@ export default function AreDealerAddOnsMandatory() {
               </li>
             </ul>
 
-            <p className="text-lg text-muted-foreground mb-4">
+            <p className="text-lg text-muted-foreground">
               Everything beyond those categories is a dealer-added product — and virtually all of them are optional, regardless of how they're presented:
             </p>
 
@@ -119,19 +119,19 @@ export default function AreDealerAddOnsMandatory() {
               </li>
             </ul>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why dealers present add-ons as mandatory</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Why dealers present add-ons as mandatory</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Dealer add-ons are a significant profit center. When a dealer says "it comes with the car" or "we can't remove that," they're usually describing a business decision, not a legal requirement. Common tactics include pre-installing products before you arrive so they can claim removal isn't possible, bundling multiple low-value items into a single package with a higher price tag, presenting optional extras as though they come standard with every vehicle on the lot, and using language like "mandatory" or "required" for charges that are neither.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               None of this means every dealer is trying to mislead you. But it does mean you should treat any charge beyond taxes, title, registration, and the doc fee as something you can question. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for car buyers</a> outlines what dealers are required to disclose and what rights you have as a buyer.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What "already installed" actually means</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What "already installed" actually means</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               One of the most common responses you'll hear is "it's already on the car." This is true — the product may already be applied or installed. But that doesn't mean you agreed to pay for it, and it doesn't eliminate your ability to negotiate the price. If a dealer added paint protection before you walked in, that was their decision. You're negotiating the total price, not approving a parts list. If you don't want to pay for a pre-installed add-on, you can ask for the vehicle price to be reduced by that amount.
             </p>
 
@@ -147,9 +147,9 @@ export default function AreDealerAddOnsMandatory() {
               </Link>
             </div>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to say when you want add-ons removed</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What to say when you want add-ons removed</h2>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               If your quote includes add-ons you didn't ask for, send this message. You can copy and paste it directly:
             </p>
 
@@ -169,13 +169,13 @@ export default function AreDealerAddOnsMandatory() {
               </Button>
             </Card>
 
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground">
               This works because it doesn't argue about individual products — it asks for the clean baseline price and leaves room to evaluate each add-on on its own merits. It's specific, professional, and puts the burden of itemization on the dealer.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">If the dealer won't budge</h2>
+            <h2 className="text-2xl font-semibold text-foreground">If the dealer won't budge</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Some dealers genuinely won't remove pre-installed add-ons. That doesn't mean you're stuck:
             </p>
 
@@ -198,17 +198,17 @@ export default function AreDealerAddOnsMandatory() {
               </li>
             </ul>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to spot add-ons before you go in</h2>
+            <h2 className="text-2xl font-semibold text-foreground">How to spot add-ons before you go in</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               The best time to deal with unwanted add-ons is before you visit the dealership. Request the full <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> in writing — every line item visible, including the vehicle price, taxes, government fees, the doc fee, and any dealer-installed products. When you can see each charge individually, you can decide what's worth paying for and what to push back on before you're in the finance office.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               If you already have a dealer quote and aren't sure which charges are optional, paste it into Odigos. We'll flag the add-ons, show you what's negotiable, and give you a clear picture of what the car actually costs without the extras.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground">
               Watch for <Link href="/market-adjustment-fee" className="underline text-foreground">market adjustment fees</Link> too — these are a separate type of markup that appears above MSRP on the sticker itself, distinct from dealer-installed add-ons, and require a different approach to negotiate.
             </p>
           </div>

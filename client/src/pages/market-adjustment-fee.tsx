@@ -51,41 +51,41 @@ export default function MarketAdjustmentFee() {
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               You found the car you want, but the window sticker has a second price label — sometimes called an "Additional Dealer Markup" (ADM) or "Market Adjustment." It can add $2,000, $5,000, or even $10,000 or more on top of the manufacturer's suggested retail price. If you've never seen one before, it can be confusing — and if you have, it's probably frustrating. Here's what's actually going on and what you can do about it.{" "}<SourceCitation sources={ARTICLE_SOURCES["market-adjustment-fee"].sources} lastVerified={ARTICLE_SOURCES["market-adjustment-fee"].lastVerified} />
             </p>
 
-            <p className="text-sm text-muted-foreground mb-6">
+            <p className="text-sm text-muted-foreground">
               Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What a market adjustment fee is</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What a market adjustment fee is</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               A market adjustment is a price increase that the dealer adds above the vehicle's MSRP. It's not set by the manufacturer — it's determined entirely by the dealership based on local demand and available inventory. When a particular model is in high demand or short supply, some dealers add this markup to take advantage of the scarcity. You'll typically see it on a separate addendum sticker next to the factory Monroney sticker on the window.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Unlike taxes, registration, or title fees, a market adjustment is pure profit for the dealership. It doesn't correspond to any additional product, service, or government requirement. It's simply a higher price because the dealer believes someone will pay it. This is different from <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">mandatory dealer add-ons</Link>, which bundle products or services into the price — a market adjustment adds nothing except a higher number.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Is it legal?</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Is it legal?</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               In most states, yes. Dealers are generally allowed to sell vehicles at any price above or below MSRP — the "suggested" in MSRP means exactly that. The manufacturer sets a recommended price, but the final sale price is between you and the dealer. Some states require that any addendum sticker be clearly disclosed, and a few have introduced legislation to limit markups, but in practice most dealerships operate within the law when they add a market adjustment.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               That said, legal doesn't mean non-negotiable. A dealer can set any price they want, and you can choose not to pay it.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Can you negotiate it?</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Can you negotiate it?</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Often, yes — especially as inventory conditions change. When a model first launches or when supply is genuinely constrained, some dealers hold firm on the markup. But as more units arrive or as the initial rush fades, many dealers will negotiate the adjustment down or remove it entirely. Your leverage depends on a few things: how many other dealers in your area carry the same vehicle, how long the car has been sitting on the lot, and whether you're willing to walk away.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               If a dealer won't budge, check with other dealerships — including ones further away. Some dealers advertise MSRP pricing as a policy, and the trip may be worth the savings. <a href="https://www.edmunds.com/car-buying/dealer-markups-and-addendum-stickers.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds</a> tracks dealer pricing trends and can help you identify fair pricing for specific models.
             </p>
 
@@ -101,9 +101,9 @@ export default function MarketAdjustmentFee() {
               </Link>
             </div>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to send the dealer</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What to send the dealer</h2>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               Before committing to a vehicle with a market adjustment, send this message to the dealer. You can copy and paste it directly:
             </p>
 
@@ -123,11 +123,11 @@ export default function MarketAdjustmentFee() {
               </Button>
             </Card>
 
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground">
               This works because it's direct and professional. You're not arguing about the markup — you're asking to see the numbers clearly. Once you have the MSRP and the adjusted price side by side, you can decide whether the premium is worth it or shop elsewhere.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Questions worth asking</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Questions worth asking</h2>
 
             <ul className="space-y-2 mb-6 text-muted-foreground">
               <li className="flex items-start gap-2">
@@ -152,21 +152,21 @@ export default function MarketAdjustmentFee() {
               </li>
             </ul>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to watch for in the quote</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What to watch for in the quote</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               If a dealer sends you a quote or a breakdown, look carefully at how the market adjustment is presented. Sometimes it's listed as a separate line item, which is transparent. Other times it's folded into the vehicle price without explanation, or buried under a vague label like "additional equipment" or "dealer accessories." If the total price doesn't match MSRP plus tax, title, and registration, ask what accounts for the difference.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Also be aware that a market adjustment can interact with your financing. If you're financing above MSRP, you may end up underwater on the loan immediately — meaning you owe more than the car is worth the moment you drive off. This is especially risky on longer loan terms.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               The best defense is knowing your <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> and comparing it across multiple dealers before committing.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground">
               If you have a dealer quote and you're not sure whether the pricing is fair, Odigos can break it down for you and flag anything that looks off. You can also use our <Link href="/calculate-out-the-door-price" className="underline text-foreground">out-the-door price calculation guide</Link> to estimate what you should be paying before the dealer adjusts any numbers.
             </p>
           </div>

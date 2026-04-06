@@ -25,13 +25,13 @@ export default function IsThisAGoodCarDeal() {
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           Most dealer quotes are missing at least one critical piece of information. That's not always intentional — but it does make a quote hard to evaluate fairly. The fastest way to assess a deal is to check four signals. If all four are present and clean, the deal is worth considering. If one or more are missing, you have a problem.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">The four signals that separate good deals from bad ones</h2>
+        <h2 className="text-2xl font-semibold text-foreground">The four signals that separate good deals from bad ones</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           Run through these before you go further with any dealer:
         </p>
 
@@ -66,9 +66,9 @@ export default function IsThisAGoodCarDeal() {
           </li>
         </ul>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Good, borderline, and bad — what each looks like</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Good, borderline, and bad — what each looks like</h2>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           Running all four signals against a real quote gives you a verdict tier:
         </p>
 
@@ -92,7 +92,7 @@ export default function IsThisAGoodCarDeal() {
           </div>
         </div>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to check before you sign</h2>
+        <h2 className="text-2xl font-semibold text-foreground">What to check before you sign</h2>
 
         <ul className="space-y-2 mb-6 text-muted-foreground">
           <li className="flex items-start gap-2">
@@ -120,13 +120,13 @@ export default function IsThisAGoodCarDeal() {
           </p>
         </div>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why dealers sometimes leave signals out</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Why dealers sometimes leave signals out</h2>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           A missing OTD price or bundled fee line isn't always deliberate. Dealership workflows vary, and some staff send quotes in whatever format they habitually use. But missing information — whatever the reason — puts the buyer at a disadvantage. You're being asked to make a large financial decision without the full picture.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-8">
+        <p className="text-lg text-muted-foreground">
           When you ask for a complete, itemized OTD price in writing, a cooperative dealer will provide it promptly. If a dealer resists or says the numbers "depend on financing" before you've agreed to anything, that's a signal about how the rest of the transaction will go. For a step-by-step evaluation process, see <Link href="/how-to-tell-if-a-car-deal-is-good" className="underline text-foreground">how to tell if a car deal is good</Link>.
         </p>
       </div>
