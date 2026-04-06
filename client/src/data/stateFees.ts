@@ -223,9 +223,9 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     slug: "california",
     docFeeRange: "Typically $85 or under",
     hasCap: true,
-    pageTitle: "California Dealer Doc Fee (2026): $85 State Cap — What Dealers Can Legally Charge",
+    pageTitle: "California Dealer Doc Fee (2026) — Are You Being Overcharged?",
     metaDescription:
-      "California caps dealer doc fees at $85 — one of the lowest state caps. Local tax rates reach 10.75%. See the full CA out-the-door breakdown for 2026.",
+      "California caps doc fees at $85—the lowest nationwide. Dealers often shift costs elsewhere. See what to watch for.",
     capNote:
       "California law limits the documentation fee dealers can charge. Most buyers see a doc fee at or near $85 — dealers cannot legally charge more. This cap is one of the strongest consumer protections in the country for car buyers.",
     salesTaxNote:
@@ -1468,9 +1468,9 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     slug: "new-york",
     docFeeRange: "Capped at $175",
     hasCap: true,
-    pageTitle: "New York Dealer Doc Fee: $175 Cap (2026) — NYC & Upstate Breakdown",
+    pageTitle: "New York Dealer Doc Fee (2026) — Are You Being Overcharged?",
     metaDescription:
-      "NY caps the dealer documentation fee at $175. NYC sales tax is 8.875%; upstate ranges 6–8%. Full breakdown of every fee New York dealers can charge, plus red flags to watch for.",
+      "New York caps dealer doc fees at $175. If your quote is higher, that's a red flag. See the breakdown and check your deal.",
     capNote:
       "New York caps dealer documentation fees at $175 per 15 NYCRR §78.19, set August 18, 2021 and still current as of March 2026. Dealers cannot legally charge more than $175 for documentation.",
     salesTaxNote:
@@ -1989,9 +1989,9 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     slug: "texas",
     docFeeRange: "Typically $150–$225 (capped at $225)",
     hasCap: true,
-    pageTitle: "Texas Dealer Doc Fee: $225 Cap (OCCC 2026) — Full Fee Breakdown",
+    pageTitle: "Texas Dealer Doc Fee (2026) — Are You Being Overcharged?",
     metaDescription:
-      "Texas caps the dealer documentary fee at $225 per the OCCC (eff. July 2024). Sales tax is 6.25% flat. See the full OTD breakdown for Houston, Dallas, and San Antonio — plus what to do if a dealer charges more.",
+      "Texas caps dealer doc fees at $225. Many quotes go higher with add-ons. See what's legal, what isn't, and check your deal.",
     capNote:
       "Texas caps dealer documentation fees at $225 — a 'presumed reasonable' limit effective July 11, 2024 (raised from approximately $150 previously). Dealers can charge above $225 only by filing a cost analysis with the OCCC (Texas Administrative Code §84.205). Most Texas dealers charge $150–$225.",
     salesTaxNote:
