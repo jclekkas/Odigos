@@ -5,7 +5,6 @@ import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
 import { articleSchema, faqPageSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
-import ArticleCta from "@/components/ArticleCta";
 import SourceCitation from "@/components/SourceCitation";
 import { ARTICLE_SOURCES } from "@/data/articleSources";
 
@@ -68,9 +67,14 @@ export default function DealerDocFee() {
               Understanding what a doc fee is, what's normal in your state, and how to push back can save you hundreds of dollars on your next car purchase.
             </p>
 
-            <p className="text-sm text-muted-foreground mb-6">
-              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
-            </p>
+            <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-5 mb-8">
+              <p className="text-base font-semibold text-foreground mb-2">
+                Wondering if your doc fee is too high? Paste your dealer quote — Odigos checks it against your state's cap instantly.
+              </p>
+              <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white font-semibold">
+                <Link href="/analyze">Check My Doc Fee</Link>
+              </Button>
+            </div>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What Is a Dealer Doc Fee?</h2>
             <p className="text-muted-foreground mb-4">
@@ -154,6 +158,15 @@ export default function DealerDocFee() {
               If any of these sound familiar, review the <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for car buyers</a> to understand your rights before signing.
             </p>
 
+            <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
+              <p className="text-sm font-semibold text-foreground mb-2">The average doc fee nationally is around $350, but legal caps vary from $0 to unlimited depending on your state.</p>
+              <Link href="/analyze">
+                <Button variant="cta" size="sm">
+                  Check My Doc Fee
+                </Button>
+              </Link>
+            </div>
+
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What To Say to Push Back</h2>
             <p className="text-muted-foreground mb-3">
               You don't need to argue about the doc fee directly. Instead, redirect the conversation to the total price:
@@ -190,7 +203,17 @@ export default function DealerDocFee() {
           </div>
 
 
-          <ArticleCta />
+          <div className="rounded-xl border border-border bg-muted/30 p-6 mt-12">
+            <h3 className="text-base font-semibold text-foreground mb-2">Your doc fee should match your state's rules — not your dealer's mood.</h3>
+            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+              Paste your quote and see how every charge stacks up.
+            </p>
+            <Link href="/analyze">
+              <Button variant="cta" size="lg">
+                Check My Quote Free
+              </Button>
+            </Link>
+          </div>
 
           <p className="text-xs text-muted-foreground mt-12">
             Not affiliated with any dealership. Optimized for U.S. car purchases.

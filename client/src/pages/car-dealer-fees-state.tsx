@@ -96,10 +96,12 @@ export default function CarDealerFeesState() {
         </p>
 
         <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-5 mb-8" data-testid={`cta-top-${data.slug}`}>
-          <p className="text-base font-semibold text-foreground mb-2">{data.ctaHeading}</p>
-          <p className="text-sm text-muted-foreground mb-3">
-            Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.
-          </p>
+          <p className="text-base font-semibold text-foreground mb-2">{data.ctaTopBody ?? data.ctaHeading}</p>
+          {!data.ctaTopBody && (
+            <p className="text-sm text-muted-foreground mb-3">
+              Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.
+            </p>
+          )}
           <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white font-semibold" data-testid={`button-cta-top-${data.slug}`}>
             <Link href="/analyze">Check my {data.name} quote</Link>
           </Button>
@@ -127,6 +129,17 @@ export default function CarDealerFeesState() {
           </Link>{" "}
           guide.
         </p>
+
+        {data.ctaMidBody && (
+          <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border" data-testid={`cta-mid-${data.slug}`}>
+            <p className="text-sm font-semibold text-foreground mb-2">{data.ctaMidBody}</p>
+            <Link href="/analyze">
+              <Button variant="cta" size="sm" data-testid={`button-cta-mid-${data.slug}`}>
+                {data.ctaMidLink ?? `Check my ${data.name} quote`}
+              </Button>
+            </Link>
+          </div>
+        )}
 
         <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">
           Sales tax and registration in {data.name}
@@ -304,7 +317,21 @@ export default function CarDealerFeesState() {
         )}
       </div>
 
-      <ArticleCta />
+      {data.ctaBottomBody ? (
+        <div className="rounded-xl border border-border bg-muted/30 p-6 mt-12" data-testid={`cta-bottom-${data.slug}`}>
+          {data.ctaBottomHeadline && (
+            <h3 className="text-base font-semibold text-foreground mb-2">{data.ctaBottomHeadline}</h3>
+          )}
+          <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{data.ctaBottomBody}</p>
+          <Link href="/analyze">
+            <Button variant="cta" size="lg" data-testid={`button-cta-bottom-${data.slug}`}>
+              {data.ctaBottomButton ?? "Check My Quote Free"}
+            </Button>
+          </Link>
+        </div>
+      ) : (
+        <ArticleCta />
+      )}
 
       <p className="text-xs text-muted-foreground mt-12">
         These figures are approximate and based on {data.lastVerified} source data. Verify with your state's attorney general or motor vehicle agency.

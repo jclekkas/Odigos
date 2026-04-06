@@ -7,7 +7,6 @@ import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
-import ArticleCta from "@/components/ArticleCta";
 import SourceCitation from "@/components/SourceCitation";
 import { ARTICLE_SOURCES } from "@/data/articleSources";
 
@@ -65,9 +64,14 @@ export default function CalculateOutTheDoorPrice() {
               The out-the-door price (OTD) is the total amount you'll actually pay to drive a car off the lot — not just the sticker price or the number the salesperson quotes first. Calculating it yourself before you walk into a dealership gives you the clearest possible picture of the real cost and makes it much harder for hidden fees to slip through.{" "}<SourceCitation sources={ARTICLE_SOURCES["calculate-out-the-door-price"].sources} lastVerified={ARTICLE_SOURCES["calculate-out-the-door-price"].lastVerified} />
             </p>
 
-            <p className="text-sm text-muted-foreground mb-6">
-              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
-            </p>
+            <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-5 mb-8">
+              <p className="text-base font-semibold text-foreground mb-2">
+                Skip the guesswork. Paste your dealer quote below and get your exact out-the-door price with every fee broken down.
+              </p>
+              <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white font-semibold">
+                <Link href="/analyze">Calculate My OTD Price</Link>
+              </Button>
+            </div>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">The OTD Formula</h2>
 
@@ -180,13 +184,10 @@ export default function CalculateOutTheDoorPrice() {
             </p>
 
             <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
-              <p className="text-sm font-semibold text-foreground mb-2">Have a quote that doesn't match your estimate?</p>
-              <p className="text-sm text-muted-foreground mb-3">
-                Paste it into Odigos. We'll show you exactly which line items are missing or higher than expected — so you can go back to the dealer with the right questions.
-              </p>
+              <p className="text-sm font-semibold text-foreground mb-2">Manual OTD math is error-prone and misses hidden fees.</p>
               <Link href="/analyze">
                 <Button variant="cta" size="sm" data-testid="button-cta-mid-article-calculate-otd">
-                  Analyze My Dealer Quote
+                  Paste Your Quote for an Instant Breakdown
                 </Button>
               </Link>
             </div>
@@ -236,7 +237,17 @@ export default function CalculateOutTheDoorPrice() {
           </div>
 
 
-          <ArticleCta />
+          <div className="rounded-xl border border-border bg-muted/30 p-6 mt-12">
+            <h3 className="text-base font-semibold text-foreground mb-2">Your out-the-door price shouldn't be a surprise.</h3>
+            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+              Paste any dealer quote — lease or finance — and Odigos calculates your real cost with every charge explained.
+            </p>
+            <Link href="/analyze">
+              <Button variant="cta" size="lg">
+                Calculate My OTD Price
+              </Button>
+            </Link>
+          </div>
 
           <p className="text-xs text-muted-foreground mt-12">
             Not affiliated with any dealership. Optimized for U.S. car purchases.

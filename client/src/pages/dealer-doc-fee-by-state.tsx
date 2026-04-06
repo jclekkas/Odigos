@@ -7,7 +7,6 @@ import { Check, Copy } from "lucide-react";
 import { setSeoMeta } from "@/lib/seo";
 import { itemListSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
-import ArticleCta from "@/components/ArticleCta";
 import SourceCitation from "@/components/SourceCitation";
 import stateFeeData from "@/data/state_fee_reference.json";
 import { STATE_FEES } from "@/data/stateFees";
@@ -122,9 +121,14 @@ export default function DealerDocFeeByState() {
               The documentation fee — commonly called the "doc fee" — is one of the most inconsistent charges in a car deal. It covers the dealer's cost of processing title work, registration, and loan paperwork. But unlike taxes or registration, the doc fee is set by the dealership, not the government. That means the same paperwork that costs $85 in California can cost $900 in Florida — and both are perfectly legal.
             </p>
 
-            <p className="text-sm text-muted-foreground mb-6">
-              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
-            </p>
+            <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-5 mb-8">
+              <p className="text-base font-semibold text-foreground mb-2">
+                Looking up your state? After you check the cap, paste your dealer quote into Odigos to see if they're actually following it.
+              </p>
+              <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white font-semibold">
+                <Link href="/analyze">Check My Dealer Quote</Link>
+              </Button>
+            </div>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why doc fees vary so much</h2>
 
@@ -177,6 +181,15 @@ export default function DealerDocFeeByState() {
                 lastVerified="2026-03"
               />
             </p>
+
+            <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
+              <p className="text-sm font-semibold text-foreground mb-2">Fun fact: 14 states have no doc fee cap at all. If you're in one of them, your only defense is knowing what others pay.</p>
+              <Link href="/analyze">
+                <Button variant="cta" size="sm">
+                  Check My Quote Against Market Data
+                </Button>
+              </Link>
+            </div>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What if your doc fee seems too high?</h2>
 
@@ -263,7 +276,16 @@ export default function DealerDocFeeByState() {
           </div>
 
 
-          <ArticleCta />
+          <div className="rounded-xl border border-border bg-muted/30 p-6 mt-12">
+            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+              Knowing the cap is step one. Checking your actual quote is step two. Paste any dealer quote and Odigos scores it against your state's rules — every fee, every charge.
+            </p>
+            <Link href="/analyze">
+              <Button variant="cta" size="lg">
+                Check My Dealer Quote
+              </Button>
+            </Link>
+          </div>
 
           <p className="text-xs text-muted-foreground mt-12">
             Not affiliated with any dealership. Optimized for U.S. car purchases.
