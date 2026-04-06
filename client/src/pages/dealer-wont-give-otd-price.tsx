@@ -6,7 +6,6 @@ import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
 import { articleSchema, faqPageSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
-import ArticleCta from "@/components/ArticleCta";
 import SourceCitation from "@/components/SourceCitation";
 import { ARTICLE_SOURCES } from "@/data/articleSources";
 
@@ -61,8 +60,8 @@ export default function DealerWontGiveOtdPrice() {
 
   useEffect(() => {
     setSeoMeta({
-      title: "Dealer Won't Give an OTD Price? Here's Exactly What to Do (2026 Guide)",
-      description: "When a dealer refuses to give an out-the-door price, here's what it means, why they do it, and the exact scripts to use to get full pricing — or walk away.",
+      title: "Dealer Won't Give OTD Price? Here's Exactly What to Do",
+      description: "If your dealer refuses to give an out-the-door price, here's why they do it, what to say back, and how to calculate your OTD price yourself from any quote.",
       path: "/dealer-wont-give-otd-price",
     });
   }, []);
@@ -90,7 +89,7 @@ export default function DealerWontGiveOtdPrice() {
   return (
     <ArticleLayout title="Dealer Won't Give OTD Price? Here's What That Means">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Won't Give an OTD Price? Here's Exactly What to Do (2026 Guide)", description: "When a dealer refuses to give an out-the-door price, here's what it means, why they do it, and the exact scripts to use to get full pricing — or walk away.", path: "/dealer-wont-give-otd-price" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Won't Give OTD Price? Here's Exactly What to Do", description: "If your dealer refuses to give an out-the-door price, here's why they do it, what to say back, and how to calculate your OTD price yourself from any quote.", path: "/dealer-wont-give-otd-price" }))}</script>
         <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: allFaqsForSchema }))}</script>
       </Helmet>
           <p className="text-sm text-muted-foreground mb-4">
@@ -132,9 +131,14 @@ export default function DealerWontGiveOtdPrice() {
               Here's why dealers avoid OTD pricing — and what you should do next.
             </p>
 
-            <p className="text-sm text-muted-foreground mb-6">
-              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
-            </p>
+            <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-5 mb-8">
+              <p className="text-base font-semibold text-foreground mb-2">
+                Got a quote but no OTD price? Paste it here — Odigos calculates your true out-the-door cost and flags every hidden fee.
+              </p>
+              <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white font-semibold">
+                <Link href="/analyze">Get My Real OTD Price</Link>
+              </Button>
+            </div>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why Dealers Avoid Giving OTD Prices</h2>
             <p className="text-muted-foreground mb-6">
@@ -237,13 +241,10 @@ export default function DealerWontGiveOtdPrice() {
             </p>
 
             <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
-              <p className="text-sm font-semibold text-foreground mb-2">Have a dealer quote you're unsure about?</p>
-              <p className="text-sm text-muted-foreground mb-3">
-                Paste it into Odigos and we'll flag what's missing, risky, or unclear — before you visit.
-              </p>
+              <p className="text-sm font-semibold text-foreground mb-2">You don't need the dealer to give you an OTD price. You just need their quote.</p>
               <Link href="/analyze">
                 <Button variant="cta" size="sm" data-testid="button-cta-mid-article">
-                  Analyze My Dealer Quote
+                  Paste It Here and We'll Calculate It
                 </Button>
               </Link>
             </div>
@@ -385,7 +386,17 @@ export default function DealerWontGiveOtdPrice() {
           </div>
 
 
-          <ArticleCta />
+          <div className="rounded-xl border border-border bg-muted/30 p-6 mt-12">
+            <h3 className="text-base font-semibold text-foreground mb-2">Stop asking. Start checking.</h3>
+            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+              Paste your dealer quote into Odigos and get the out-the-door price they didn't want you to see — with every fee exposed.
+            </p>
+            <Link href="/analyze">
+              <Button variant="cta" size="lg">
+                Get My Real OTD Price
+              </Button>
+            </Link>
+          </div>
 
           <p className="text-xs text-muted-foreground mt-12">
             Not affiliated with any dealership. Optimized for U.S. car purchases.

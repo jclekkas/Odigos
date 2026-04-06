@@ -6,6 +6,7 @@ import fs from "fs";
 import path from "path";
 import { nanoid } from "nanoid";
 import { isKnownRoute } from "../shared/routes";
+import { injectSeoMeta } from "./injectMeta";
 
 const viteLogger = createLogger();
 
@@ -56,6 +57,7 @@ export async function setupVite(server: Server, app: Express) {
         page = page.replace(/<script/g, `<script nonce="${nonce}"`);
       }
       const pathname = req.originalUrl.split("?")[0];
+      page = injectSeoMeta(page, pathname);
       const status = isKnownRoute(pathname) ? 200 : 404;
       res.status(status).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {

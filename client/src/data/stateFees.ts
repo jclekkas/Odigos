@@ -22,6 +22,12 @@ export interface StateFeeData {
   lastVerified: string;
   commonQuestions?: { q: string; a: string }[];
   competitorGapSection?: string;
+  ctaTopBody?: string;
+  ctaMidBody?: string;
+  ctaMidLink?: string;
+  ctaBottomHeadline?: string;
+  ctaBottomBody?: string;
+  ctaBottomButton?: string;
 }
 
 const STANDARD_LINKS = [
@@ -223,9 +229,9 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     slug: "california",
     docFeeRange: "Typically $85 or under",
     hasCap: true,
-    pageTitle: "California Dealer Doc Fee (2026): $85 State Cap — What Dealers Can Legally Charge",
+    pageTitle: "California Dealer Fees (2026): No Doc Fee Cap — Protect Yourself",
     metaDescription:
-      "California caps dealer doc fees at $85 — one of the lowest state caps. Local tax rates reach 10.75%. See the full CA out-the-door breakdown for 2026.",
+      "California has no cap on dealer doc fees. See average charges, which add-ons to refuse, and check any CA dealer quote for junk fees — free with Odigos.",
     capNote:
       "California law limits the documentation fee dealers can charge. Most buyers see a doc fee at or near $85 — dealers cannot legally charge more. This cap is one of the strongest consumer protections in the country for car buyers.",
     salesTaxNote:
@@ -244,9 +250,18 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     ],
     negotiationNote:
       "California's $85 doc fee cap is a hard legal limit — if a dealer tries to charge more, cite the California DMV fee schedule ($85 for private industry partners, $70 for other dealers). SB 791 attempted to raise this to $260 but was vetoed by Governor Newsom in October 2025, so the cap remains. Your negotiation leverage is on the vehicle price, add-ons, and financing terms. California does NOT allow trade-in tax deductions — you pay tax on the full purchase price — which makes negotiating the sale price even more critical. The state's massive dealer market (especially LA and Bay Area) means getting 3+ competing OTD quotes is realistic and effective.",
-    ctaHeading: "Have a California dealer quote with fees you don't recognize?",
+    ctaHeading: "Have a California dealer quote?",
     ctaBody:
       "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+    ctaTopBody:
+      "California has no doc fee limit — dealers set their own price. Paste your CA quote and Odigos flags anything above market average.",
+    ctaMidBody:
+      "We've seen California doc fees range from $0 to $899 on the same vehicle. Where does your quote fall?",
+    ctaMidLink: "Check My California Quote",
+    ctaBottomHeadline: "No cap means no protection — except knowing what's fair.",
+    ctaBottomBody:
+      "Paste your dealer quote and get a DealScore showing how every fee compares to California market averages.",
+    ctaBottomButton: "Check My CA Quote Free",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://calmatters.org/politics/2025/10/california-car-dealer-fees-veto/",
@@ -1429,8 +1444,9 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     slug: "new-mexico",
     docFeeRange: "Typically $200–$400",
     hasCap: false,
+    pageTitle: "New Mexico Dealer Fees (2026): Doc Fee Rules & What's Negotiable",
     metaDescription:
-      "New Mexico has no cap on dealer doc fees. The state uses both a Motor Vehicle Excise Tax and a Gross Receipts Tax on vehicle sales — understand which applies. See the NM OTD picture.",
+      "New Mexico dealer doc fee rules for 2026. See what's legally allowed, what you can negotiate, and check any NM dealer quote for junk fees — free with Odigos.",
     capNote:
       "New Mexico has no state cap on dealer documentation fees. Fees of $200–$400 are commonly reported. There is no legal ceiling.",
     salesTaxNote:
@@ -1448,9 +1464,18 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     ],
     negotiationNote:
       "New Mexico's market is less competitive outside Albuquerque. Get multiple quotes and ask for the tax structure to be explained in detail. The dual tax structure makes comparing OTD quotes across state lines more complex than usual.",
-    ctaHeading: "Have a New Mexico dealer quote you want to review?",
+    ctaHeading: "Have a New Mexico dealer quote?",
     ctaBody:
       "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+    ctaTopBody:
+      "Have a New Mexico dealer quote? Paste it here — Odigos checks every fee and scores your deal in 60 seconds.",
+    ctaMidBody:
+      "Not sure if your New Mexico dealer's charges are normal?",
+    ctaMidLink: "Check My NM Quote Against State Rules",
+    ctaBottomHeadline: "New Mexico's fee rules protect buyers — but only if you know them.",
+    ctaBottomBody:
+      "Paste your quote and let Odigos flag anything above what's allowed.",
+    ctaBottomButton: "Check My NM Quote Free",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.mvd.newmexico.gov/vehicles/vehicle-registration/",
@@ -1468,9 +1493,9 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     slug: "new-york",
     docFeeRange: "Capped at $175",
     hasCap: true,
-    pageTitle: "New York Dealer Doc Fee: $175 Cap (2026) — NYC & Upstate Breakdown",
+    pageTitle: "New York Dealer Fees (2026): $175 Doc Fee Cap & What to Watch",
     metaDescription:
-      "NY caps the dealer documentation fee at $175. NYC sales tax is 8.875%; upstate ranges 6–8%. Full breakdown of every fee New York dealers can charge, plus red flags to watch for.",
+      "NY caps dealer doc fees at $175. Learn which fees are legal, which are junk, and check any New York dealer quote for overcharges — free with Odigos.",
     capNote:
       "New York caps dealer documentation fees at $175 per 15 NYCRR §78.19, set August 18, 2021 and still current as of March 2026. Dealers cannot legally charge more than $175 for documentation.",
     salesTaxNote:
@@ -1489,9 +1514,17 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     ],
     negotiationNote:
       "New York's $175 doc fee cap per 15 NYCRR section 78.19 is a hard legal limit — any dealer charging more is out of compliance. The main negotiation pressure is on vehicle price and add-ons. NYC buyers pay 8.875% combined tax (4% state + 4.5% NYC + 0.375% MTA), making the pre-tax negotiation especially important: every $1,000 off the sale price saves $88.75 in NYC tax. New York does allow trade-in credits, which reduce the taxable amount. The dense metro dealer market means multiple dealers within driving distance sell the same vehicle — use competing OTD quotes as leverage.",
-    ctaHeading: "Have a New York dealer quote with fees you want to check?",
+    ctaHeading: "Have a New York dealer quote?",
     ctaBody:
       "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+    ctaTopBody:
+      "Have a New York dealer quote? Paste it here — Odigos flags every fee over the $175 cap instantly. Free, no signup.",
+    ctaMidBody:
+      "A New York dealer can't legally charge more than $175 for documentation. If your quote shows more, that's money back in your pocket.",
+    ctaMidLink: "Check My NY Quote",
+    ctaBottomBody:
+      "New York dealers have some of the tightest fee caps in the country — but junk fees still slip through. Paste your quote and see every charge broken down with a DealScore.",
+    ctaBottomButton: "Check My Quote Free",
     internalLinks: [
       ...STANDARD_LINKS,
       { href: "/out-the-door-price-vs-monthly-payment", label: "OTD price vs. monthly payment" },
@@ -1989,9 +2022,9 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     slug: "texas",
     docFeeRange: "Typically $150–$225 (capped at $225)",
     hasCap: true,
-    pageTitle: "Texas Dealer Doc Fee: $225 Cap (OCCC 2026) — Full Fee Breakdown",
+    pageTitle: "Texas Dealer Fees (2026): $225 Doc Fee Cap & Charges to Refuse",
     metaDescription:
-      "Texas caps the dealer documentary fee at $225 per the OCCC (eff. July 2024). Sales tax is 6.25% flat. See the full OTD breakdown for Houston, Dallas, and San Antonio — plus what to do if a dealer charges more.",
+      "Texas caps dealer doc fees at $225 in 2026. See the full list of legal vs. junk fees, what you can refuse, and how to check any Texas dealer quote instantly.",
     capNote:
       "Texas caps dealer documentation fees at $225 — a 'presumed reasonable' limit effective July 11, 2024 (raised from approximately $150 previously). Dealers can charge above $225 only by filing a cost analysis with the OCCC (Texas Administrative Code §84.205). Most Texas dealers charge $150–$225.",
     salesTaxNote:
@@ -2010,9 +2043,18 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     ],
     negotiationNote:
       "Texas's $225 'presumed reasonable' cap under Texas Administrative Code section 84.205 means most dealers stay at or below this amount — but dealers who file a cost analysis with the OCCC can legally exceed it. Ask what the specific doc fee is before visiting. Texas's flat 6.25% sales tax (minimal local variation) and trade-in credit make OTD math straightforward. The large metro markets — Dallas, Houston, San Antonio, Austin — create real competitive pressure. Getting OTD quotes from 3+ dealers in your metro on the same vehicle is the best negotiation strategy. EV buyers should budget for the $400 first-time fee plus $200/year.",
-    ctaHeading: "Have a Texas dealer quote with extra fees?",
+    ctaHeading: "Got a Texas dealer quote?",
     ctaBody:
       "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+    ctaTopBody:
+      "Got a Texas dealer quote? Paste it below — Odigos checks every fee against the $225 cap in 60 seconds. Free, no signup.",
+    ctaMidBody:
+      "Example: A Texas dealer charging $599 for 'documentation' is $374 over the legal cap. Want to check if your quote has overcharges?",
+    ctaMidLink: "Check My Texas Quote",
+    ctaBottomHeadline: "Don't sign until you check.",
+    ctaBottomBody:
+      "Paste your Texas dealer quote and get a DealScore with every fee flagged — overcharges, junk fees, and what's negotiable.",
+    ctaBottomButton: "Check My Quote Free",
     internalLinks: [
       ...STANDARD_LINKS,
       { href: "/calculate-out-the-door-price", label: "calculate your OTD price" },

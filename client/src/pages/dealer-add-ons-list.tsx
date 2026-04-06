@@ -7,7 +7,6 @@ import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
-import ArticleCta from "@/components/ArticleCta";
 import SourceCitation from "@/components/SourceCitation";
 import { ARTICLE_SOURCES } from "@/data/articleSources";
 
@@ -18,8 +17,8 @@ export default function DealerAddOnsList() {
 
   useEffect(() => {
     setSeoMeta({
-      title: "Dealer Add-Ons List: Costs and What You Can Refuse | Odigos",
-      description: "See the full list of common dealer add-ons with typical prices, dealer cost, and whether each is optional. Know exactly what you can refuse before signing.",
+      title: "Dealer Add-Ons List: Which Are Scams & Which You Need (2026)",
+      description: "Full list of dealer add-ons with verdict on each: VIN etching, nitrogen tires, paint protection & more. Know what to refuse before you sign.",
       path: "/dealer-add-ons-list",
     });
   }, []);
@@ -44,7 +43,7 @@ export default function DealerAddOnsList() {
   return (
     <ArticleLayout title="Dealer Add-Ons List: What Dealers Try to Sell and What You Can Refuse">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Add-Ons List: Costs and What You Can Refuse | Odigos", description: "See the full list of common dealer add-ons with typical prices, dealer cost, and whether each is optional. Know exactly what you can refuse before signing.", path: "/dealer-add-ons-list" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Add-Ons List: Which Are Scams & Which You Need (2026)", description: "Full list of dealer add-ons with verdict on each: VIN etching, nitrogen tires, paint protection & more. Know what to refuse before you sign.", path: "/dealer-add-ons-list" }))}</script>
       </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-addons-list-headline">
             Dealer Add-Ons List: What Dealers Try to Sell and What You Can Refuse
@@ -59,9 +58,14 @@ export default function DealerAddOnsList() {
               Understanding what's on the list — and what each item actually costs — puts you in a much stronger position to negotiate the total price or have charges removed entirely.
             </p>
 
-            <p className="text-sm text-muted-foreground mb-6">
-              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
-            </p>
+            <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-5 mb-8">
+              <p className="text-base font-semibold text-foreground mb-2">
+                Dealer added extras to your quote? Paste it here — Odigos flags every add-on that's overpriced or unnecessary.
+              </p>
+              <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white font-semibold">
+                <Link href="/analyze">Check My Quote</Link>
+              </Button>
+            </div>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Common dealer add-ons</h2>
 
@@ -171,13 +175,10 @@ export default function DealerAddOnsList() {
             </p>
 
             <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
-              <p className="text-sm font-semibold text-foreground mb-2">Seeing add-ons in your quote you didn't ask for?</p>
-              <p className="text-sm text-muted-foreground mb-3">
-                Paste your dealer quote into Odigos and we'll identify each dealer-installed extra, flag the markup, and show what the price looks like without them.
-              </p>
+              <p className="text-sm font-semibold text-foreground mb-2">Dealers make an average of $1,200+ on add-ons per vehicle. Most of it is negotiable or removable.</p>
               <Link href="/analyze">
                 <Button variant="cta" size="sm" data-testid="button-cta-mid-article-addons-list">
-                  Analyze My Dealer Quote
+                  Check What's in My Quote
                 </Button>
               </Link>
             </div>
@@ -224,7 +225,17 @@ export default function DealerAddOnsList() {
           </div>
 
 
-          <ArticleCta />
+          <div className="rounded-xl border border-border bg-muted/30 p-6 mt-12">
+            <h3 className="text-base font-semibold text-foreground mb-2">Add-ons are the most negotiable part of any dealer quote.</h3>
+            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+              Paste yours and see exactly which charges to push back on — with a DealScore for the whole deal.
+            </p>
+            <Link href="/analyze">
+              <Button variant="cta" size="lg">
+                Check My Quote Free
+              </Button>
+            </Link>
+          </div>
 
           <p className="text-xs text-muted-foreground mt-12">
             Not affiliated with any dealership. Optimized for U.S. car purchases.

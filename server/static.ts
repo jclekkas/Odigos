@@ -2,6 +2,7 @@ import express, { type Express, type Response } from "express";
 import fs from "fs";
 import path from "path";
 import { isKnownRoute } from "../shared/routes";
+import { injectSeoMeta } from "./injectMeta";
 
 /** Inject the per-request CSP nonce into every <script tag in the HTML. */
 function injectNonce(html: string, res: Response): string {
@@ -73,7 +74,8 @@ export function serveStatic(app: Express) {
     // Serve prerendered HTML if available
     if (prerenderedRoutes.has(normalized)) {
       const prerenderedFile = path.join(distPath, normalized, "index.html");
-      const html = fs.readFileSync(prerenderedFile, "utf-8");
+      let html = fs.readFileSync(prerenderedFile, "utf-8");
+      html = injectSeoMeta(html, normalized);
       return res.type("html").send(injectNonce(html, res));
     }
 
@@ -85,7 +87,8 @@ export function serveStatic(app: Express) {
   app.use("*", (req, res) => {
     const pathname = req.originalUrl.split("?")[0];
     const status = isKnownRoute(pathname) ? 200 : 404;
-    const html = fs.readFileSync(path.resolve(distPath, "index.html"), "utf-8");
+    let html = fs.readFileSync(path.resolve(distPath, "index.html"), "utf-8");
+    html = injectSeoMeta(html, pathname);
     res.status(status).type("html").send(injectNonce(html, res));
   });
 }

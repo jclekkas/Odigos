@@ -7,7 +7,6 @@ import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
-import ArticleCta from "@/components/ArticleCta";
 import SourceCitation from "@/components/SourceCitation";
 import { ARTICLE_SOURCES } from "@/data/articleSources";
 
@@ -27,8 +26,8 @@ export default function OutTheDoorPrice() {
 
   useEffect(() => {
     setSeoMeta({
-      title: "What Is an Out-the-Door Price? The Full OTD Guide | Odigos",
-      description: "The OTD price is every dollar you pay to drive off the lot. Learn what it includes, what dealers hide, red flags, and how to get it in writing.",
+      title: "Out-the-Door Price Explained: Your Real Cost Before Signing",
+      description: "Out-the-door price is the final amount you pay to drive off the lot. Learn what's included, how to calculate it, and how to spot hidden fees dealers add on.",
       path: "/out-the-door-price",
     });
   }, []);
@@ -53,16 +52,21 @@ export default function OutTheDoorPrice() {
   return (
     <ArticleLayout title="What Is an Out-the-Door Price (OTD)? The Only Number That Matters When Buying a Car">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "What Is an Out-the-Door Price? The Full OTD Guide | Odigos", description: "The OTD price is every dollar you pay to drive off the lot. Learn what it includes, what dealers hide, red flags, and how to get it in writing.", path: "/out-the-door-price" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Out-the-Door Price Explained: Your Real Cost Before Signing", description: "Out-the-door price is the final amount you pay to drive off the lot. Learn what's included, how to calculate it, and how to spot hidden fees dealers add on.", path: "/out-the-door-price" }))}</script>
       </Helmet>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-otd-headline">
             What Is an Out-the-Door Price (OTD)? The Only Number That Matters When Buying a Car
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-sm text-muted-foreground mb-6">
-              Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
-            </p>
+            <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-5 mb-8">
+              <p className="text-base font-semibold text-foreground mb-2">
+                Already have a quote? Skip the math — paste it into Odigos and we'll calculate your true out-the-door cost with every fee itemized.
+              </p>
+              <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white font-semibold">
+                <Link href="/analyze">Calculate My OTD Price</Link>
+              </Button>
+            </div>
 
             <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">The Out-the-Door Price (OTD) Is the Real Cost of a Car</h2>
             <p className="text-lg text-muted-foreground mb-4">
@@ -185,13 +189,10 @@ export default function OutTheDoorPrice() {
             </p>
 
             <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
-              <p className="text-sm font-semibold text-foreground mb-2">Already have a dealer quote?</p>
-              <p className="text-sm text-muted-foreground mb-3">
-                Paste it into Odigos and we'll check it against the complete OTD standard — flagging missing fees, surprise add-ons, and anything that doesn't add up.
-              </p>
+              <p className="text-sm font-semibold text-foreground mb-2">The gap between the sticker price and your OTD price is where dealers make extra margin.</p>
               <Link href="/analyze">
                 <Button variant="cta" size="sm" data-testid="button-cta-mid-article-otd">
-                  Analyze My Dealer Quote
+                  See What's Hiding in Your Quote
                 </Button>
               </Link>
             </div>
@@ -277,7 +278,17 @@ export default function OutTheDoorPrice() {
           </div>
 
 
-          <ArticleCta />
+          <div className="rounded-xl border border-border bg-muted/30 p-6 mt-12">
+            <h3 className="text-base font-semibold text-foreground mb-2">The out-the-door price is the only number that matters.</h3>
+            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+              Paste your dealer quote and Odigos breaks down every line item — taxes, fees, and charges you shouldn't be paying.
+            </p>
+            <Link href="/analyze">
+              <Button variant="cta" size="lg">
+                Calculate My OTD Price
+              </Button>
+            </Link>
+          </div>
 
           <p className="text-xs text-muted-foreground mt-12">
             Not affiliated with any dealership. Built for U.S. car buyers.

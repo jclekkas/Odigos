@@ -34,11 +34,13 @@ async function buildAll() {
   console.log("building client...");
   await viteBuild();
 
-  if (process.env.CI) {
-    console.log("skipping prerender in CI (no Chromium available)");
-  } else {
-    console.log("prerendering SEO routes...");
+  console.log("prerendering SEO routes (skipped if Chromium unavailable)...");
+  try {
     execSync("node scripts/prerender.mjs", { stdio: "inherit" });
+  } catch (err) {
+    console.warn(
+      "Prerender skipped (Chromium not available). Server-side meta injection will handle SEO metadata.",
+    );
   }
 
   console.log("building server...");
