@@ -17,7 +17,7 @@ export default function AreDealerAddOnsMandatory() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Are Dealer Add-Ons Mandatory? What You Can Refuse | Odigos",
       description: "Are dealer add-ons mandatory? Learn which fees and add-ons you can refuse and how to push back without losing the deal.",
       path: "/are-dealer-add-ons-mandatory",

@@ -21,7 +21,7 @@ export default function CarDealerFeesState() {
 
   useEffect(() => {
     if (!data) return;
-    return setSeoMeta({
+    setSeoMeta({
       title: data.pageTitle ?? `Car Dealer Fees in ${data.name}: What You'll Actually Pay | Odigos`,
       description: data.metaDescription,
       path: `/car-dealer-fees-${data.slug}`,

@@ -12,7 +12,7 @@ export default function GlossaryTerm() {
 
   useEffect(() => {
     if (term) {
-      return setSeoMeta({
+      setSeoMeta({
         title: term.seoTitle,
         description: term.seoDescription,
         path: `/glossary/${term.slug}`,

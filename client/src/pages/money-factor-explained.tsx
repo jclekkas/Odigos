@@ -9,7 +9,7 @@ import ArticleCta from "@/components/ArticleCta";
 
 export default function MoneyFactorExplained() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Money Factor Explained: The Hidden Interest Rate in Car Leases | Odigos",
       description: "Money factor is the lease equivalent of an interest rate. Learn how to convert it to APR, what a good money factor looks like, and how dealers mark it up without telling you.",
       path: "/money-factor-explained",

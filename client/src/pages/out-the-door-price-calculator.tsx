@@ -39,7 +39,7 @@ export default function OutTheDoorPriceCalculator() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Out-the-Door Price Calculator (2026) - Estimate Car Total Cost Instantly",
       description: "Use this out-the-door price calculator to estimate your total car cost with taxes and dealer fees. Get a real OTD estimate in seconds.",
       path: "/out-the-door-price-calculator",

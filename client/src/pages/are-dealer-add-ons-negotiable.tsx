@@ -15,7 +15,7 @@ export default function AreDealerAddOnsNegotiable() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Are Dealer Add-Ons Negotiable? What Dealers Will Actually Concede | Odigos",
       description: "Most dealer add-ons are negotiable, but not all. Learn which extras dealers will drop, when to push, and how to anchor your ask to get real concessions.",
       path: "/are-dealer-add-ons-negotiable",

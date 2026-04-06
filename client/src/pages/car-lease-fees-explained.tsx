@@ -9,7 +9,7 @@ import ArticleCta from "@/components/ArticleCta";
 
 export default function CarLeaseFeesExplained() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Car Lease Fees Explained: Every Fee on Your Lease Quote | Odigos",
       description: "A complete breakdown of every fee on a car lease: acquisition fee, disposition fee, excess mileage, wear-and-tear charges, early termination, and more. Know what you're paying before you sign.",
       path: "/car-lease-fees-explained",

@@ -17,7 +17,7 @@ export default function DealerWontGiveOtd() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Why Dealers Avoid Giving Out-the-Door Prices (and What to Do) | Odigos",
       description: "Learn why dealers avoid giving OTD prices, how it benefits them, and what it signals about the deal you're being offered.",
       path: "/dealer-wont-give-otd",

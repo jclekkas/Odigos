@@ -8,7 +8,7 @@ import ArticleCta from "@/components/ArticleCta";
 
 export default function WhyDealersWontGiveOutTheDoorPrice() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Why Dealers Won't Give Out-the-Door Price | Odigos",
       description: "Dealers resist OTD pricing because it removes structural advantages. Here's the incentive structure behind the refusal and what you can do about it.",
       path: "/why-dealers-wont-give-out-the-door-price",

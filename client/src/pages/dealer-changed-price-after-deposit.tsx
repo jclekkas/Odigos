@@ -17,7 +17,7 @@ export default function DealerChangedPriceAfterDeposit() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Dealer Changed the Price After Your Deposit? What It Means | Odigos",
       description: "If a dealer changed the price after you put down a deposit, here's why it happens, what protects you, and what to do next to get your money back or hold them to the original deal.",
       path: "/dealer-changed-price-after-deposit",

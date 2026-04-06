@@ -17,7 +17,7 @@ export default function DealerAddOnsList() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Dealer Add-Ons List: Costs and What You Can Refuse | Odigos",
       description: "See the full list of common dealer add-ons with typical prices, dealer cost, and whether each is optional. Know exactly what you can refuse before signing.",
       path: "/dealer-add-ons-list",

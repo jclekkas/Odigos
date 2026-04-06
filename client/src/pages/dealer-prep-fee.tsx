@@ -9,7 +9,7 @@ import ArticleCta from "@/components/ArticleCta";
 
 export default function DealerPrepFee() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Dealer Prep Fee: What It Is and Should You Pay It | Odigos",
       description: "Dealers charge a prep fee for getting a new car ready for delivery. Learn what it supposedly covers, why it's usually unjustified, and how to push back.",
       path: "/dealer-prep-fee",

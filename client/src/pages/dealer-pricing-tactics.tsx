@@ -26,7 +26,7 @@ const tactics = [
 
 export default function DealerPricingTactics() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Dealer Pricing Tactics: Complete Guide (2026) | Odigos",
       description: "Learn how car dealers use pricing tactics to keep buyers in the dark — and exactly what to say to get a fair, transparent deal.",
       path: "/dealer-pricing-tactics",

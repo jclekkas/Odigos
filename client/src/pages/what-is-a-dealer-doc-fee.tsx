@@ -9,7 +9,7 @@ import ArticleCta from "@/components/ArticleCta";
 
 export default function WhatIsADealerDocFee() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "What Is a Dealer Doc Fee? Ranges by State | Odigos",
       description: "A dealer doc fee is a paperwork charge set by the dealership, not the government. Learn what it covers, typical ranges by state, and what counts as normal.",
       path: "/what-is-a-dealer-doc-fee",

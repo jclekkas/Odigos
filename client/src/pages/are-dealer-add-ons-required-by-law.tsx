@@ -17,7 +17,7 @@ export default function AreDealerAddOnsRequiredByLaw() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Are Dealer Add-Ons Required by Law? What's Mandatory vs. Optional | Odigos",
       description: "Dealers sometimes present add-ons as legally required. Here's what the law actually mandates — and how to tell the difference between a government fee and a dealer upsell.",
       path: "/are-dealer-add-ons-required-by-law",

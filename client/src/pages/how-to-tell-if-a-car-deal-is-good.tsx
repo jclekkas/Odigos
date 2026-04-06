@@ -8,7 +8,7 @@ import ArticleCta from "@/components/ArticleCta";
 
 export default function HowToTellIfACarDealIsGood() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "How to Tell if a Car Deal Is Good: OTD, Fees, Add-Ons, Financing | Odigos",
       description: "Use this four-step checklist to evaluate any car deal, including OTD price, hidden fees, add-ons, and financing traps.",
       path: "/how-to-tell-if-a-car-deal-is-good",

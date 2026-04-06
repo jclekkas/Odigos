@@ -9,7 +9,7 @@ import ArticleCta from "@/components/ArticleCta";
 
 export default function JunkFeesExplained() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Car Dealer Junk Fees: The Complete 2026 Guide | Odigos",
       description: "Junk fees are hidden or surprise charges that provide little value to the buyer. Learn the 15+ most common dealer junk fees, which are legal, and how to fight back.",
       path: "/junk-fees-explained",

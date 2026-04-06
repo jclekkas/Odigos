@@ -9,7 +9,7 @@ import ArticleCta from "@/components/ArticleCta";
 
 export default function BestWayToCheckIfACarDealIsGood() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "The Fastest Way to Check a Car Deal Without Being Tricked | Odigos",
       description: "Quickly check if a car deal is good without spreadsheets or guesswork, and avoid common tricks dealers use to hide costs.",
       path: "/best-way-to-check-if-a-car-deal-is-good",

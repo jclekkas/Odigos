@@ -44,7 +44,7 @@ export default function Landing() {
   }, []);
 
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Odigos — Dealer Quote Analyzer | Detect Junk Fees & Hidden Charges",
       description: "Paste your dealer quote. Odigos detects junk fees, hidden charges, and missing details in 60 seconds. Get a GO/NO-GO verdict and a ready-to-send dealer reply. Free preview, full analysis $49.",
       path: "/",
@@ -86,7 +86,7 @@ export default function Landing() {
       <main id="main-content">
 
         {/* ── HERO ─────────────────────────────────────────────────────────── */}
-        <section className="pt-16 pb-20 sm:pt-24 sm:pb-28">
+        <section className="pt-12 pb-14 sm:pt-16 sm:pb-20">
           <div className="mx-auto max-w-5xl px-4 sm:px-6">
             <div className="flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-16">
 
@@ -207,7 +207,7 @@ export default function Landing() {
         </section>
 
         {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
-        <section className="py-16 border-t border-border bg-muted/30">
+        <section className="py-12 border-t border-border bg-muted/30">
           <div className="mx-auto max-w-3xl px-4 sm:px-6">
             <h2 className="text-xl font-bold text-center mb-10" data-testid="text-how-it-works-heading">
               Three steps. Under a minute.
@@ -231,7 +231,7 @@ export default function Landing() {
         </section>
 
         {/* ── SOCIAL PROOF ─────────────────────────────────────────────────── */}
-        <section className="py-20 sm:py-24" data-testid="section-testimonials">
+        <section className="py-14 sm:py-16" data-testid="section-testimonials">
           <div className="mx-auto max-w-4xl px-4 sm:px-6">
             <h2 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl text-center mb-12">
               Buyers who checked first
@@ -279,7 +279,7 @@ export default function Landing() {
         </section>
 
         {/* ── PRICING ──────────────────────────────────────────────────────── */}
-        <section id="pricing" className="py-20 sm:py-24 border-t border-border bg-muted/30">
+        <section id="pricing" className="py-14 sm:py-16 border-t border-border bg-muted/30">
           <div className="mx-auto max-w-3xl px-4 sm:px-6">
             <div className="text-center mb-12">
               <h2 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl">
@@ -348,7 +348,7 @@ export default function Landing() {
         </section>
 
         {/* ── FAQ ──────────────────────────────────────────────────────────── */}
-        <section id="faq" className="py-20 sm:py-24 border-t border-border">
+        <section id="faq" className="py-14 sm:py-16 border-t border-border">
           <Helmet>
             <script type="application/ld+json">{JSON.stringify({
               "@context": "https://schema.org",
@@ -380,7 +380,7 @@ export default function Landing() {
         </section>
 
         {/* ── FINAL CTA ───────────────────────────────────────────────────── */}
-        <section className="py-20 border-t border-border bg-muted/30">
+        <section className="py-14 border-t border-border bg-muted/30">
           <div className="max-w-2xl mx-auto text-center px-4">
             <h2 className="text-2xl sm:text-3xl font-bold mb-3">
               Don't sign until you check.

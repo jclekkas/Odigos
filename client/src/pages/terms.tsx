@@ -5,7 +5,7 @@ import SiteFooter from "@/components/SiteFooter";
 
 export default function Terms() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Terms of Service | Odigos",
       description: "Terms of Service for Odigos — independent dealer quote analysis. Read about acceptable use, disclaimers, and limitations of liability.",
       path: "/terms",

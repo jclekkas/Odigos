@@ -7,7 +7,7 @@ import { ArrowRight, AlertTriangle, CheckCircle2 } from "lucide-react";
 
 export default function HowOdigosWorks() {
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "How Odigos Works | Dealer Quote Analysis",
       description: "Learn how Odigos analyzes car dealer quotes for missing out-the-door pricing, hidden fees, and common dealership tactics — and what you get from the analysis.",
       path: "/how-odigos-works",

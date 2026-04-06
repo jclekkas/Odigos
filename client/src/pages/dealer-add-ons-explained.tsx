@@ -15,7 +15,7 @@ export default function DealerAddOnsExplained() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Dealer Add-Ons Explained: What Each One Actually Is | Odigos",
       description: "Plain-language explanations of every common dealer add-on — what it is, what the dealer says, what's actually true, and whether it's worth paying for.",
       path: "/dealer-add-ons-explained",

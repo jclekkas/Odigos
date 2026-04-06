@@ -17,7 +17,7 @@ export default function MarketAdjustmentFee() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    return setSeoMeta({
+    setSeoMeta({
       title: "Market Adjustment Fee: What It Is and What to Do | Odigos",
       description: "Market adjustment fees add thousands above MSRP. Learn what they are, whether they're legal, how to negotiate them down, and what to watch for in quotes.",
       path: "/market-adjustment-fee",

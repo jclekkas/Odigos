@@ -939,7 +939,7 @@ export default function Home() {
   useEffect(() => {
     trackPageView("/analyze");
     capture("analyze_page_viewed", { route: "/analyze" });
-    return setSeoMeta({
+    setSeoMeta({
       title: "Analyze Your Car Deal | Odigos",
       description: "Paste dealer texts, emails, or quotes into Odigos. Get an instant GO/NO-GO recommendation with hidden fee detection and suggested questions for the dealer.",
       path: "/analyze",
