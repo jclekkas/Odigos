@@ -27,8 +27,8 @@ export default function OutTheDoorPrice() {
 
   useEffect(() => {
     setSeoMeta({
-      title: "What Is an Out-the-Door Price? The Full OTD Guide | Odigos",
-      description: "The OTD price is every dollar you pay to drive off the lot. Learn what it includes, what dealers hide, red flags, and how to get it in writing.",
+      title: "Out-the-Door Price Explained: Your Real Cost Before Signing",
+      description: "Out-the-door price is the final amount you pay to drive off the lot. Learn what's included, how to calculate it, and how to spot hidden fees dealers add on.",
       path: "/out-the-door-price",
     });
   }, []);
@@ -53,7 +53,7 @@ export default function OutTheDoorPrice() {
   return (
     <ArticleLayout title="What Is an Out-the-Door Price (OTD)? The Only Number That Matters When Buying a Car">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "What Is an Out-the-Door Price? The Full OTD Guide | Odigos", description: "The OTD price is every dollar you pay to drive off the lot. Learn what it includes, what dealers hide, red flags, and how to get it in writing.", path: "/out-the-door-price" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Out-the-Door Price Explained: Your Real Cost Before Signing", description: "Out-the-door price is the final amount you pay to drive off the lot. Learn what's included, how to calculate it, and how to spot hidden fees dealers add on.", path: "/out-the-door-price" }))}</script>
       </Helmet>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-otd-headline">
             What Is an Out-the-Door Price (OTD)? The Only Number That Matters When Buying a Car

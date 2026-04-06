@@ -18,8 +18,8 @@ export default function DealerAddOnsList() {
 
   useEffect(() => {
     setSeoMeta({
-      title: "Dealer Add-Ons List: Costs and What You Can Refuse | Odigos",
-      description: "See the full list of common dealer add-ons with typical prices, dealer cost, and whether each is optional. Know exactly what you can refuse before signing.",
+      title: "Dealer Add-Ons List: Which Are Scams & Which You Need (2026)",
+      description: "Full list of dealer add-ons with verdict on each: VIN etching, nitrogen tires, paint protection & more. Know what to refuse before you sign.",
       path: "/dealer-add-ons-list",
     });
   }, []);
@@ -44,7 +44,7 @@ export default function DealerAddOnsList() {
   return (
     <ArticleLayout title="Dealer Add-Ons List: What Dealers Try to Sell and What You Can Refuse">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Add-Ons List: Costs and What You Can Refuse | Odigos", description: "See the full list of common dealer add-ons with typical prices, dealer cost, and whether each is optional. Know exactly what you can refuse before signing.", path: "/dealer-add-ons-list" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Add-Ons List: Which Are Scams & Which You Need (2026)", description: "Full list of dealer add-ons with verdict on each: VIN etching, nitrogen tires, paint protection & more. Know what to refuse before you sign.", path: "/dealer-add-ons-list" }))}</script>
       </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-addons-list-headline">
             Dealer Add-Ons List: What Dealers Try to Sell and What You Can Refuse

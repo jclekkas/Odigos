@@ -39,20 +39,20 @@ const faqItems = [
 export default function DealerDocFee() {
   useEffect(() => {
     setSeoMeta({
-      title: "Dealer Doc Fee (2026): What It Is and What Dealers Can Legally Charge",
-      description: "Doc fees range from $85 (CA cap) to $999+ in uncapped states like Florida. See which states cap them, whether it's negotiable, and how to push back on it.",
+      title: "What Is a Dealer Doc Fee? How to Know If Yours Is Too High",
+      description: "Dealer doc fees cover paperwork but some charge 3-4x the cap. Learn what's normal in your state and check if your dealer is overcharging.",
       path: "/dealer-doc-fee",
     });
   }, []);
 
   return (
-    <ArticleLayout title="Dealer Doc Fee (2026): What It Is and What Dealers Can Legally Charge">
+    <ArticleLayout title="What Is a Dealer Doc Fee? How to Know If Yours Is Too High">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Doc Fee (2026): What It Is and What Dealers Can Legally Charge", description: "Doc fees range from $85 (CA cap) to $999+ in uncapped states like Florida. See which states cap them, whether it's negotiable, and how to push back on it.", path: "/dealer-doc-fee" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "What Is a Dealer Doc Fee? How to Know If Yours Is Too High", description: "Dealer doc fees cover paperwork but some charge 3-4x the cap. Learn what's normal in your state and check if your dealer is overcharging.", path: "/dealer-doc-fee" }))}</script>
         <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: faqItems.map((f) => ({ question: f.question, answer: f.answer })) }))}</script>
       </Helmet>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-doc-fee-headline">
-            Dealer Doc Fee (2026): What It Is and What Dealers Can Legally Charge
+            What Is a Dealer Doc Fee? How to Know If Yours Is Too High
           </h1>
 
           <div className="rounded-lg border border-border bg-muted/30 p-5 mb-8" data-testid="block-snippet-doc-fee">

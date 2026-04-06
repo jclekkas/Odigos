@@ -61,8 +61,8 @@ export default function DealerWontGiveOtdPrice() {
 
   useEffect(() => {
     setSeoMeta({
-      title: "Dealer Won't Give an OTD Price? Here's Exactly What to Do (2026 Guide)",
-      description: "When a dealer refuses to give an out-the-door price, here's what it means, why they do it, and the exact scripts to use to get full pricing — or walk away.",
+      title: "Dealer Won't Give OTD Price? Here's Exactly What to Do",
+      description: "If your dealer refuses to give an out-the-door price, here's why they do it, what to say back, and how to calculate your OTD price yourself from any quote.",
       path: "/dealer-wont-give-otd-price",
     });
   }, []);
@@ -90,7 +90,7 @@ export default function DealerWontGiveOtdPrice() {
   return (
     <ArticleLayout title="Dealer Won't Give OTD Price? Here's What That Means">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Won't Give an OTD Price? Here's Exactly What to Do (2026 Guide)", description: "When a dealer refuses to give an out-the-door price, here's what it means, why they do it, and the exact scripts to use to get full pricing — or walk away.", path: "/dealer-wont-give-otd-price" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Dealer Won't Give OTD Price? Here's Exactly What to Do", description: "If your dealer refuses to give an out-the-door price, here's why they do it, what to say back, and how to calculate your OTD price yourself from any quote.", path: "/dealer-wont-give-otd-price" }))}</script>
         <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: allFaqsForSchema }))}</script>
       </Helmet>
           <p className="text-sm text-muted-foreground mb-4">

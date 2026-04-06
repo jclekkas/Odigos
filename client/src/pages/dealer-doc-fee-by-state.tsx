@@ -49,8 +49,8 @@ export default function DealerDocFeeByState() {
 
   useEffect(() => {
     setSeoMeta({
-      title: "Dealer Doc Fee by State (2026): Caps, Ranges & What You Should Pay",
-      description: "Compare dealer doc fees across all 50 states — updated for 2026. See which 17 states cap the fee, typical ranges from $85 to $999+, and how to spot if you're being overcharged.",
+      title: "Dealer Doc Fees by State (2026): Every Cap in One Table",
+      description: "Complete 2026 table of dealer doc fee caps for all 50 states. See which states have no cap, which limit fees, and how to check if your dealer is overcharging.",
       path: "/dealer-doc-fee-by-state",
     });
   }, []);
@@ -74,7 +74,7 @@ export default function DealerDocFeeByState() {
   };
 
   return (
-    <ArticleLayout title="Dealer Doc Fee by State (2026): Caps, Ranges & What You Should Pay">
+    <ArticleLayout title="Dealer Doc Fees by State (2026): Every Cap in One Table">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(itemListSchema({
           name: "Dealer Doc Fee by State",
@@ -114,7 +114,7 @@ export default function DealerDocFeeByState() {
         }))}</script>
       </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-doc-fee-by-state-headline">
-            Dealer Doc Fee by State (2026): Caps, Ranges & What You Should Pay
+            Dealer Doc Fees by State (2026): Every Cap in One Table
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
