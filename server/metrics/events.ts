@@ -16,6 +16,7 @@ export type EventType =
   | "state_detection"
   | "vitals"
   | "file_processing"
+  | "url_processing"
   | "stripe_webhook"
   | "file_upload_failed"
   | "analysis_failed"
