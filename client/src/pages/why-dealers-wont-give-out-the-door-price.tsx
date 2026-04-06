@@ -25,15 +25,15 @@ export default function WhyDealersWontGiveOutTheDoorPrice() {
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           When you ask a dealer for the out-the-door price and they redirect, deflect, or say "come on in and we'll figure it out" — that's not a coincidence or a policy quirk. It's a deliberate response to a specific incentive structure.
         </p>
-        <p className="text-muted-foreground mb-10">
+        <p className="text-muted-foreground">
           Understanding why dealers resist OTD pricing tells you exactly what leverage you're removing when you insist on it.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Dealer Revenue Isn't Just the Vehicle Margin</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">Dealer Revenue Isn't Just the Vehicle Margin</h2>
+        <p className="text-muted-foreground">
           A common misconception is that dealers make money primarily on the difference between invoice and sale price. In practice, dealership revenue comes from multiple sources:
         </p>
         <ul className="space-y-2 mb-4 text-muted-foreground">
@@ -50,26 +50,26 @@ export default function WhyDealersWontGiveOutTheDoorPrice() {
             </li>
           ))}
         </ul>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           A dealer who gives up vehicle margin can often recover it through F&I products. A complete, written OTD price makes that harder because it forces every cost into the open before you agree to anything.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Advantage 1: Showroom Control</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">Advantage 1: Showroom Control</h2>
+        <p className="text-muted-foreground">
           The showroom is designed to convert. Time pressure is real: you drove there, you may have traded in your current car, a salesperson has invested hours. Every hour you spend increases your psychological commitment to completing the deal.
         </p>
-        <p className="text-muted-foreground mb-3">
+        <p className="text-muted-foreground">
           A written OTD price in advance eliminates this dynamic. You can compare it against other dealers from home, before you ever step on the lot. Dealers who give OTD prices over email are effectively competing in a price-transparent market — which cuts margin.
         </p>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           Getting you into the showroom is worth the loss of a few phone shoppers. Not giving OTD pricing is partly a filtering strategy: buyers who push hard for written pricing tend to be informed buyers who negotiate effectively.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Advantage 2: Payment-Based Negotiation</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">Advantage 2: Payment-Based Negotiation</h2>
+        <p className="text-muted-foreground">
           When the conversation centers on monthly payments rather than total cost, dealers gain flexibility across multiple variables at once: the sale price, the APR, the loan term, and which add-ons get bundled in. This is the core mechanic behind the <Link href="/monthly-payment-trap" className="underline text-foreground">monthly payment trap</Link>.
         </p>
-        <p className="text-muted-foreground mb-3">
+        <p className="text-muted-foreground">
           A buyer focused on "under $500/month" may not notice:
         </p>
         <ul className="space-y-2 mb-4 text-muted-foreground">
@@ -84,7 +84,7 @@ export default function WhyDealersWontGiveOutTheDoorPrice() {
             </li>
           ))}
         </ul>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           An OTD price strips payment-based maneuvering away. You negotiate a total number, then finance it on your own terms.
         </p>
 
@@ -100,11 +100,11 @@ export default function WhyDealersWontGiveOutTheDoorPrice() {
           </Link>
         </div>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Advantage 3: Late Fee Introduction</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">Advantage 3: Late Fee Introduction</h2>
+        <p className="text-muted-foreground">
           The finance office is where many deals change shape. After you've agreed on a vehicle price in the sales room, a finance manager presents the final contract — and buyers in the finance office are already committed. They've agreed on a car, possibly traded in a vehicle, and spent hours at the dealership.
         </p>
-        <p className="text-muted-foreground mb-3">
+        <p className="text-muted-foreground">
           This is when fees introduced quietly are most likely to be accepted:
         </p>
         <ul className="space-y-2 mb-4 text-muted-foreground">
@@ -120,12 +120,12 @@ export default function WhyDealersWontGiveOutTheDoorPrice() {
             </li>
           ))}
         </ul>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           A written OTD price agreed upon before visiting prevents this because the total is already locked. Any fee that appears in the finance office above the agreed OTD number is a change to the deal — and you can refuse it.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Advantage 4: Per-Buyer Pricing Flexibility</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">Advantage 4: Per-Buyer Pricing Flexibility</h2>
+        <p className="text-muted-foreground">
           Without a committed price, dealers retain the ability to adjust the deal based on signals you give them:
         </p>
         <ul className="space-y-2 mb-4 text-muted-foreground">
@@ -141,20 +141,20 @@ export default function WhyDealersWontGiveOutTheDoorPrice() {
             </li>
           ))}
         </ul>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           A committed OTD price — negotiated over email or text before you visit — eliminates this flexibility. Dealers who give OTD prices in advance are committing to a number that doesn't change based on how you present yourself in person.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How This Differs from the Canonical Dealer Resistance Page</h2>
-        <p className="text-muted-foreground mb-4">
+        <h2 className="text-2xl font-semibold text-foreground">How This Differs from the Canonical Dealer Resistance Page</h2>
+        <p className="text-muted-foreground">
           If you've already read about what happens when a <Link href="/dealer-wont-give-otd-price" className="underline text-foreground">dealer won't give you an OTD price and what to do about it</Link>, this page goes deeper on the why — the structural incentives, not just the tactics. Understanding the incentive structure makes the tactics predictable, and predictable tactics are easier to counter.
         </p>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           For specifics on what OTD pricing should include, and how to verify a quote is complete, see our breakdown of <Link href="/what-does-out-the-door-price-include" className="underline text-foreground">what the out-the-door price includes</Link>.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to Say to the Dealer</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">What to Say to the Dealer</h2>
+        <p className="text-muted-foreground">
           When asking for OTD pricing, a direct and neutral request is most effective:
         </p>
         <div className="rounded-lg border border-border bg-muted/40 p-5 mb-4" data-testid="block-dealer-script">
@@ -162,7 +162,7 @@ export default function WhyDealersWontGiveOutTheDoorPrice() {
             "I'm comparing offers from a few dealers before deciding. Can you send me the full out-the-door price in writing — vehicle price, taxes, title, registration, doc fee, and any dealer add-ons itemized separately? I'll be moving quickly once I can review the complete breakdown."
           </blockquote>
         </div>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           This signals you're an informed buyer with alternatives. Most dealers who can compete on price will respond. Those who refuse are usually protecting add-on or financing revenue they know won't survive scrutiny.
         </p>
       </div>

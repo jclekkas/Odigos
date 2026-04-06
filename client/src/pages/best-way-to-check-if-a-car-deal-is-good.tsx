@@ -26,13 +26,13 @@ export default function BestWayToCheckIfACarDealIsGood() {
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           Most buyers try to evaluate a car deal by feel — the monthly payment seems reasonable, the salesperson seems trustworthy, and the vehicle price is close to what they saw online. That's not an evaluation. It's a guess. Here's why that approach fails and what actually works.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why manual evaluation usually fails</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Why manual evaluation usually fails</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           Four things cause most buyers to miss a bad deal:
         </p>
 
@@ -67,28 +67,28 @@ export default function BestWayToCheckIfACarDealIsGood() {
           </li>
         </ul>
 
-        <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-6 mb-8" data-testid="cta-mid-article">
+        <div className="rounded-lg border border-blue-600/20 bg-blue-600/5 p-6 mb-8" data-testid="cta-mid-article">
           <p className="text-base font-semibold text-foreground mb-2">The fastest way to get a verdict on your quote</p>
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="text-sm text-muted-foreground">
             Paste your quote. Odigos checks the OTD price, flags hidden fees, identifies forced add-ons, and gives you a GO / NO-GO verdict — no signup required.
           </p>
-          <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white font-semibold" data-testid="button-cta-best-way">
+          <Button asChild variant="cta" className="font-semibold" data-testid="button-cta-best-way">
             <Link href="/analyze">Check my deal now</Link>
           </Button>
         </div>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What a real evaluation actually requires</h2>
+        <h2 className="text-2xl font-semibold text-foreground">What a real evaluation actually requires</h2>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           A good deal evaluation has four components — an <Link href="/out-the-door-price" className="underline text-foreground">OTD price in writing</Link>, itemized fees (doc fee, prep fee, any market adjustment), individually named add-ons with prices, and disclosed financing terms (APR and loan term, not just monthly payment). Each element either exists in the quote or it doesn't. Missing components aren't just inconvenient — they're the mechanism dealers use to obscure cost.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-8">
+        <p className="text-lg text-muted-foreground">
           The problem isn't knowing what to look for. It's that most buyers don't know what's missing, don't recognize <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">which add-ons are optional</Link>, and don't have the state-level fee context to know what's inflated. That's where manual evaluation breaks down — and where a fast tool has an obvious advantage.</p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why this is hard to do manually</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Why this is hard to do manually</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           Even if you know what to look for, manual evaluation has a few real obstacles:
         </p>
 
@@ -111,13 +111,13 @@ export default function BestWayToCheckIfACarDealIsGood() {
           </li>
         </ul>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           For a step-by-step process you can follow yourself, see <Link href="/how-to-tell-if-a-car-deal-is-good" className="underline text-foreground">how to tell if a car deal is good</Link>. For a framework of what good, borderline, and bad deals look like, see <Link href="/is-this-a-good-car-deal" className="underline text-foreground">is this a good car deal</Link>.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">The shortcut: what Odigos does</h2>
+        <h2 className="text-2xl font-semibold text-foreground">The shortcut: what Odigos does</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           Odigos was built specifically for this problem. Paste your dealer quote — email, text, or screenshot — and Odigos runs the same four-point evaluation instantly:
         </p>
 
@@ -128,7 +128,7 @@ export default function BestWayToCheckIfACarDealIsGood() {
           <li className="flex items-start gap-2"><span>•</span><span>Checks whether financing terms are disclosed and what the total loan cost is</span></li>
         </ul>
 
-        <p className="text-lg text-muted-foreground mb-8">
+        <p className="text-lg text-muted-foreground">
           The result is a GO / NO-GO verdict with specific flags for anything that needs attention before you sign. No signup required — paste your quote and get a full analysis in about a minute.
         </p>
       </div>

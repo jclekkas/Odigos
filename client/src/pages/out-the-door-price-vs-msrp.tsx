@@ -25,18 +25,18 @@ export default function OutTheDoorPriceVsMsrp() {
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           MSRP is the number on the window sticker. The out-the-door price is what you actually pay when you leave. These two numbers are rarely the same — and the gap between them is where most car buyers get surprised.
         </p>
-        <p className="text-muted-foreground mb-10">
+        <p className="text-muted-foreground">
           Understanding the difference before you negotiate protects you from anchoring to a number that was never the real price.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What MSRP Actually Is</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">What MSRP Actually Is</h2>
+        <p className="text-muted-foreground">
           MSRP stands for Manufacturer's Suggested Retail Price. It is set by the manufacturer — not the dealer — and it covers one thing only: the vehicle itself, including any factory-installed options and packages.
         </p>
-        <p className="text-muted-foreground mb-3">What MSRP does not include:</p>
+        <p className="text-muted-foreground">What MSRP does not include:</p>
         <ul className="space-y-2 mb-4 text-muted-foreground">
           {[
             "State and local sales tax",
@@ -51,15 +51,15 @@ export default function OutTheDoorPriceVsMsrp() {
             </li>
           ))}
         </ul>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           The word "suggested" is accurate: dealers can sell above or below MSRP, and often do. MSRP is a manufacturer's signal to the market — it is not a price you pay.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">MSRP as a Negotiation Starting Point</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">MSRP as a Negotiation Starting Point</h2>
+        <p className="text-muted-foreground">
           Many buyers treat MSRP as the real price. Dealers know this and use it to their advantage. When you anchor to MSRP in a negotiation, the dealer controls the conversation around discounts — "we're giving you $1,500 off MSRP" sounds generous, even if the deal still includes $2,000 in add-ons you didn't ask for.
         </p>
-        <p className="text-muted-foreground mb-3">The better anchor is the out-the-door price because:</p>
+        <p className="text-muted-foreground">The better anchor is the out-the-door price because:</p>
         <ul className="space-y-2 mb-8 text-muted-foreground">
           {[
             "It includes every cost, so there's no room for fees to appear later",
@@ -74,8 +74,8 @@ export default function OutTheDoorPriceVsMsrp() {
           ))}
         </ul>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How Wide Is the Gap?</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">How Wide Is the Gap?</h2>
+        <p className="text-muted-foreground">
           For most buyers in most states, the out-the-door price runs 8–15% above MSRP before dealer add-ons. Here's a typical breakdown on a $35,000 vehicle:
         </p>
         <div className="rounded-md border border-border overflow-hidden mb-4" data-testid="table-msrp-vs-otd">
@@ -108,7 +108,7 @@ export default function OutTheDoorPriceVsMsrp() {
             </tbody>
           </table>
         </div>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           Even after negotiating $1,500 below MSRP, the OTD price is $2,739 above the sticker — and that's without add-ons. With the protection package included, the buyer pays $4,239 more than the MSRP they anchored to.
         </p>
 
@@ -124,8 +124,8 @@ export default function OutTheDoorPriceVsMsrp() {
           </Link>
         </div>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">When Dealers Sell Above MSRP</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">When Dealers Sell Above MSRP</h2>
+        <p className="text-muted-foreground">
           During periods of limited supply — a new model launch, production delays, or high-demand vehicles — dealers sometimes add a "market adjustment" on top of MSRP. This is an invented charge that has no relationship to the vehicle's value or cost.
         </p>
         <ul className="space-y-2 mb-4 text-muted-foreground">
@@ -141,20 +141,20 @@ export default function OutTheDoorPriceVsMsrp() {
             </li>
           ))}
         </ul>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           For more on market adjustments, see our guide to <Link href="/market-adjustment-fee" className="underline text-foreground">market adjustment fees</Link>.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">When Dealers Sell Below MSRP</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">When Dealers Sell Below MSRP</h2>
+        <p className="text-muted-foreground">
           On slower-moving vehicles or at end of model year, dealers sometimes price below MSRP to move inventory. This looks like a discount — but watch for add-ons that close the gap. A vehicle sold $2,000 below MSRP with $2,500 in mandatory add-ons is not a discount.
         </p>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           The only number that reveals the real cost is the full, itemized out-the-door price. For a complete explanation of what that includes, see <Link href="/what-does-out-the-door-price-include" className="underline text-foreground">what the out-the-door price includes</Link>.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to Use This in Negotiation</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">How to Use This in Negotiation</h2>
+        <p className="text-muted-foreground">
           When you contact a dealer, skip the MSRP conversation entirely. Ask for the full out-the-door price. This reframes the discussion:
         </p>
         <ul className="space-y-2 mb-4 text-muted-foreground">
@@ -169,7 +169,7 @@ export default function OutTheDoorPriceVsMsrp() {
             </li>
           ))}
         </ul>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           If a dealer won't commit to an out-the-door number before you come in, read our guide on <Link href="/dealer-wont-give-otd-price" className="underline text-foreground">what to do when a dealer won't give the OTD price</Link>.
         </p>
       </div>

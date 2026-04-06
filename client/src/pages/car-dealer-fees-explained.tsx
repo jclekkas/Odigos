@@ -35,7 +35,7 @@ export default function CarDealerFeesExplained() {
             Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
           </p>
 
-          <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Fees you should expect to pay</h2>
+          <h2 className="text-2xl font-semibold text-foreground">Fees you should expect to pay</h2>
 
           <p className="text-muted-foreground mb-4">
             Certain charges are unavoidable because they're set or collected by government agencies. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for new car buyers</a> outlines what dealers are legally required to disclose, and these fees are part of that picture.
@@ -56,7 +56,7 @@ export default function CarDealerFeesExplained() {
             </li>
           </ul>
 
-          <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Fees that are often negotiable or optional</h2>
+          <h2 className="text-2xl font-semibold text-foreground">Fees that are often negotiable or optional</h2>
 
           <p className="text-muted-foreground mb-4">
             Many line items on a dealer's worksheet are add-ons, not requirements. According to <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds</a>, buyers can often push back on these charges — or decline them entirely.
@@ -89,7 +89,7 @@ export default function CarDealerFeesExplained() {
             </li>
           </ul>
 
-          <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to protect yourself</h2>
+          <h2 className="text-2xl font-semibold text-foreground">How to protect yourself</h2>
 
           <p className="text-muted-foreground mb-6">
             The simplest defense is requesting the full <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> in writing before you visit the dealership. An itemized OTD quote shows every dollar — taxes, fees, and add-ons — and makes it straightforward to spot optional charges and negotiate them out before you're sitting in the finance office.

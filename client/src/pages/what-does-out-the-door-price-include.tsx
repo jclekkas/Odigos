@@ -25,18 +25,18 @@ export default function WhatDoesOutTheDoorPriceInclude() {
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           The out-the-door price is every dollar you pay to drive the car home — not just the sticker price. Understanding what's inside that number is how you catch fees before they surprise you at signing.
         </p>
-        <p className="text-muted-foreground mb-10">
+        <p className="text-muted-foreground">
           Below is a line-by-line breakdown of what should appear in a complete OTD quote.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">1. Negotiated Vehicle Price</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">1. Negotiated Vehicle Price</h2>
+        <p className="text-muted-foreground">
           This is the agreed sale price of the car itself — the number you negotiated down from MSRP or the dealer's asking price. It should be stated as a specific dollar amount, not a range. This is the foundation every other line item is calculated from.
         </p>
-        <p className="text-muted-foreground mb-3">What to check:</p>
+        <p className="text-muted-foreground">What to check:</p>
         <ul className="space-y-2 mb-8 text-muted-foreground">
           {[
             "Does it match the advertised or agreed price?",
@@ -50,11 +50,11 @@ export default function WhatDoesOutTheDoorPriceInclude() {
           ))}
         </ul>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">2. Sales Tax</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">2. Sales Tax</h2>
+        <p className="text-muted-foreground">
           Sales tax is calculated as a percentage of the vehicle's sale price and is set by your state and sometimes your county or city. It is not negotiable — the rate is fixed by law — but the amount you pay depends on the sale price you negotiate.
         </p>
-        <p className="text-muted-foreground mb-3">Key points:</p>
+        <p className="text-muted-foreground">Key points:</p>
         <ul className="space-y-2 mb-8 text-muted-foreground">
           {[
             "Rates range from 0% (some states) to over 10% in high-tax jurisdictions",
@@ -69,8 +69,8 @@ export default function WhatDoesOutTheDoorPriceInclude() {
           ))}
         </ul>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">3. Title Fee</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">3. Title Fee</h2>
+        <p className="text-muted-foreground">
           The title fee transfers legal ownership of the vehicle into your name. It is paid to the state, not to the dealer. Dealers collect it and forward it to the DMV.
         </p>
         <ul className="space-y-2 mb-8 text-muted-foreground">
@@ -86,8 +86,8 @@ export default function WhatDoesOutTheDoorPriceInclude() {
           ))}
         </ul>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">4. Registration Fee</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">4. Registration Fee</h2>
+        <p className="text-muted-foreground">
           Registration fees cover licensing your vehicle to operate on public roads. The amount is set by the state and often scales with vehicle weight, value, or age.
         </p>
         <ul className="space-y-2 mb-8 text-muted-foreground">
@@ -116,8 +116,8 @@ export default function WhatDoesOutTheDoorPriceInclude() {
           </Link>
         </div>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">5. Dealer Documentation Fee</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">5. Dealer Documentation Fee</h2>
+        <p className="text-muted-foreground">
           The doc fee is charged by the dealer — not the government — for processing paperwork. It is one of the few fees with significant variation across dealerships, though some states cap it.
         </p>
         <ul className="space-y-2 mb-4 text-muted-foreground">
@@ -133,12 +133,12 @@ export default function WhatDoesOutTheDoorPriceInclude() {
             </li>
           ))}
         </ul>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           For a full breakdown of doc fees by state, see our guide to <Link href="/dealer-doc-fee" className="underline text-foreground">dealer documentation fees</Link>.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">6. Dealer Add-Ons and Installed Accessories</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">6. Dealer Add-Ons and Installed Accessories</h2>
+        <p className="text-muted-foreground">
           This is the most variable — and most contested — category. Add-ons are products or services the dealer installs or bundles before delivery. Common examples:
         </p>
         <ul className="space-y-2 mb-4 text-muted-foreground">
@@ -157,15 +157,15 @@ export default function WhatDoesOutTheDoorPriceInclude() {
             </li>
           ))}
         </ul>
-        <p className="text-muted-foreground mb-4">
+        <p className="text-muted-foreground">
           Unlike taxes and government fees, most dealer add-ons are not mandatory — even when presented that way. For specifics on which you can refuse, see our article on <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">whether dealer add-ons are mandatory</Link>.
         </p>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           A complete OTD quote itemizes each add-on individually with its own price. If they're bundled under a single "protection package" line, ask for the breakdown.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What Should NOT Be in the OTD Price</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">What Should NOT Be in the OTD Price</h2>
+        <p className="text-muted-foreground">
           Some fees appear on dealer worksheets but don't belong in a legitimate OTD:
         </p>
         <ul className="space-y-2 mb-8 text-muted-foreground">
@@ -182,8 +182,8 @@ export default function WhatDoesOutTheDoorPriceInclude() {
           ))}
         </ul>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">A Complete OTD Quote: What It Looks Like</h2>
-        <p className="text-muted-foreground mb-3">A properly formatted OTD quote shows every line item separately:</p>
+        <h2 className="text-2xl font-semibold text-foreground">A Complete OTD Quote: What It Looks Like</h2>
+        <p className="text-muted-foreground">A properly formatted OTD quote shows every line item separately:</p>
         <div className="rounded-md border border-border overflow-hidden mb-8" data-testid="table-otd-components">
           <table className="w-full text-sm">
             <thead>
@@ -211,7 +211,7 @@ export default function WhatDoesOutTheDoorPriceInclude() {
           </table>
         </div>
 
-        <p className="text-muted-foreground mb-4">
+        <p className="text-muted-foreground">
           If any of these categories is missing, the quote is incomplete. For a broader overview of OTD pricing and why it matters, see our guide on <Link href="/out-the-door-price" className="underline text-foreground">what an out-the-door price is</Link>. See how these components play out in practice with <Link href="/car-dealer-fees-florida" className="underline text-foreground">Florida's fee structure</Link> or <Link href="/car-dealer-fees-illinois" className="underline text-foreground">Illinois's fee breakdown</Link>.
         </p>
       </div>

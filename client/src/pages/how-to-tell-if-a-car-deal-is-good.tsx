@@ -25,21 +25,21 @@ export default function HowToTellIfACarDealIsGood() {
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           A car deal is only evaluable if you have the right information in front of you. Most quotes — emails, texts, or printouts from the dealer — are missing at least one critical number. This is the process for finding out what's actually there, what's missing, and what to do about it.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           Work through these four steps in order. Don't skip ahead. Each step builds on the one before it.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Step 1: Get the out-the-door price in writing</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Step 1: Get the out-the-door price in writing</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           The <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> is the total you pay to drive the car home. It includes the vehicle price, all taxes, title and registration fees, doc fee, and any add-ons. It is the only number that lets you compare one deal to another.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           If the dealer hasn't given you an OTD total, that is the first thing to request — before anything else. Email or text is fine. Ask specifically: "Can you send me the full out-the-door price with each line item listed separately?"
         </p>
 
@@ -58,17 +58,17 @@ export default function HowToTellIfACarDealIsGood() {
           </li>
         </ul>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           If the dealer consistently avoids giving you a written OTD price, see <Link href="/dealer-wont-give-otd-price" className="underline text-foreground">why dealers won't give an out-the-door price</Link> — it explains the incentive behind the refusal and how to handle it.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Step 2: Itemize every fee</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Step 2: Itemize every fee</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           Once you have an OTD breakdown, go through each fee line. There are two categories: fees you can't change (government fees) and fees the dealer controls (dealer fees).
         </p>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           <strong className="text-foreground">Government fees — fixed, non-negotiable:</strong>
         </p>
         <ul className="space-y-2 mb-4 text-muted-foreground">
@@ -77,7 +77,7 @@ export default function HowToTellIfACarDealIsGood() {
           <li className="flex items-start gap-2"><span>•</span><span>Registration fee</span></li>
         </ul>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           <strong className="text-foreground">Dealer fees — set by the dealer:</strong>
         </p>
         <ul className="space-y-2 mb-6 text-muted-foreground">
@@ -86,17 +86,17 @@ export default function HowToTellIfACarDealIsGood() {
           <li className="flex items-start gap-2"><span>•</span><span><strong className="text-foreground">Market adjustment</strong> — an additional markup above MSRP, common during high-demand periods. Not a government fee and entirely negotiable.</span></li>
         </ul>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           If any fees are bundled into a single line labeled "dealer fees" or "miscellaneous fees," ask for them to be broken out individually. Bundling makes it easy to slip in charges that wouldn't survive individual scrutiny.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Step 3: Isolate every add-on</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Step 3: Isolate every add-on</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           Add-ons are dealer-installed extras — paint protection, fabric coating, VIN etching, nitrogen tires, theft systems, extended warranties. They're common, often high-margin, and frequently presented in a way that makes them seem like part of the vehicle.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           What to look for on the quote:
         </p>
 
@@ -115,7 +115,7 @@ export default function HowToTellIfACarDealIsGood() {
           </li>
         </ul>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           For a full breakdown of what each add-on is and whether it's worth keeping, see <Link href="/dealer-add-ons-explained" className="underline text-foreground">dealer add-ons explained</Link>.
         </p>
 
@@ -126,9 +126,9 @@ export default function HowToTellIfACarDealIsGood() {
           </p>
         </div>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Step 4: Verify the financing terms</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Step 4: Verify the financing terms</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           If you're financing the vehicle, you need three numbers — not one:
         </p>
 
@@ -147,11 +147,11 @@ export default function HowToTellIfACarDealIsGood() {
           </li>
         </ul>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           The <Link href="/monthly-payment-trap" className="underline text-foreground">monthly payment trap</Link> is one of the most effective dealer tactics because it shifts attention away from total cost. Always evaluate a deal by OTD price and total loan cost — not by what the payment looks like per month.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to check before you sign</h2>
+        <h2 className="text-2xl font-semibold text-foreground">What to check before you sign</h2>
 
         <ul className="space-y-2 mb-8 text-muted-foreground">
           <li className="flex items-start gap-2"><span>•</span><span>OTD price received in writing with individual line items</span></li>
@@ -161,7 +161,7 @@ export default function HowToTellIfACarDealIsGood() {
           <li className="flex items-start gap-2"><span>•</span><span>Final numbers match what was discussed — no new charges appear at signing</span></li>
         </ul>
 
-        <p className="text-lg text-muted-foreground mb-8">
+        <p className="text-lg text-muted-foreground">
           Once you have all four data points, you can compare the deal against other quotes. The only valid comparison is <Link href="/how-to-compare-car-deals" className="underline text-foreground">OTD price to OTD price</Link> — anything else is comparing apples to incomplete information.
         </p>
       </div>

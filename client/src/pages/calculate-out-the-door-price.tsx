@@ -60,22 +60,22 @@ export default function CalculateOutTheDoorPrice() {
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               The out-the-door price (OTD) is the total amount you'll actually pay to drive a car off the lot — not just the sticker price or the number the salesperson quotes first. Calculating it yourself before you walk into a dealership gives you the clearest possible picture of the real cost and makes it much harder for hidden fees to slip through.{" "}<SourceCitation sources={ARTICLE_SOURCES["calculate-out-the-door-price"].sources} lastVerified={ARTICLE_SOURCES["calculate-out-the-door-price"].lastVerified} />
             </p>
 
-            <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-5 mb-8">
+            <div className="rounded-lg border border-blue-600/20 bg-blue-600/5 p-5 mb-8">
               <p className="text-base font-semibold text-foreground mb-2">
                 Skip the guesswork. Paste your dealer quote below and get your exact out-the-door price with every fee broken down.
               </p>
-              <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white font-semibold">
+              <Button asChild variant="cta" className="font-semibold">
                 <Link href="/analyze">Calculate My OTD Price</Link>
               </Button>
             </div>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">The OTD Formula</h2>
+            <h2 className="text-2xl font-semibold text-foreground">The OTD Formula</h2>
 
-            <p className="text-lg text-muted-foreground mb-4">
+            <p className="text-lg text-muted-foreground">
               At its simplest, the out-the-door price is built from five components:
             </p>
 
@@ -85,13 +85,13 @@ export default function CalculateOutTheDoorPrice() {
               </p>
             </Card>
 
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               If any of these pieces are missing from a dealer's quote, the number they gave you is incomplete. For a full explanation of what the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> includes and why it matters, see our detailed guide. For state-specific fee details, see <Link href="/car-dealer-fees-florida" className="underline text-foreground">Florida dealer fees</Link> or <Link href="/car-dealer-fees-illinois" className="underline text-foreground">Illinois dealer fees</Link>.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Step-by-Step Calculation</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Step-by-Step Calculation</h2>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               Here's how to estimate your own OTD before contacting a dealer:
             </p>
 
@@ -118,9 +118,9 @@ export default function CalculateOutTheDoorPrice() {
               </li>
             </ul>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What Usually Gets Left Out</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What Usually Gets Left Out</h2>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               The most common reason a dealer's quoted price doesn't match your own calculation is that certain charges aren't disclosed until later — often in the finance office. Watch for:
             </p>
 
@@ -139,13 +139,13 @@ export default function CalculateOutTheDoorPrice() {
               ))}
             </ul>
 
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               Many of these charges are optional — even when the dealer presents them as required. For more detail, see our guide on <Link href="/car-dealer-fees-explained" className="underline text-foreground">car dealer fees explained</Link> and learn what you can push back on.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Example: Calculating OTD on a $28,500 Car</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Example: Calculating OTD on a $28,500 Car</h2>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               Here's a realistic example showing what a full OTD calculation looks like when every fee is included:
             </p>
 
@@ -179,7 +179,7 @@ export default function CalculateOutTheDoorPrice() {
               In this example, the car's listed price is $28,500 — but the real cost to drive it home is $31,774. That's over $3,200 in fees and taxes on top of the sale price.
             </p>
 
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               If the dealer had only quoted "$28,500 plus tax and fees," you wouldn't know about the $595 paint protection package until the finance office. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC recommends</a> getting the full price in writing before committing to any deal.
             </p>
 
@@ -192,9 +192,9 @@ export default function CalculateOutTheDoorPrice() {
               </Link>
             </div>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Copy-Paste Message to Get the Full OTD Breakdown</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Copy-Paste Message to Get the Full OTD Breakdown</h2>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               Send this to the dealer before you visit. It asks for every component you need to verify your own calculation:
             </p>
 
@@ -217,21 +217,21 @@ export default function CalculateOutTheDoorPrice() {
               )}
             </Card>
 
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               If they won't itemize the price, that tells you something. A dealer who is confident in their pricing will have no problem breaking it down. If they push back, you can read more about why in our guide on <Link href="/dealer-wont-give-otd-price" className="underline text-foreground">dealers who won't give an OTD price</Link>.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why Odigos Helps</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Why Odigos Helps</h2>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               Running the numbers yourself is a strong first step — but it only works if you know every fee the dealer plans to charge. Odigos analyzes the actual quote or text messages you receive from a dealer and flags anything that's missing, vague, or higher than expected.
             </p>
 
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground">
               Instead of guessing whether a fee is normal, paste the dealer's message and get a clear breakdown of what's included, what's missing, and what deserves a closer look.
             </p>
 
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               If dealer add-ons are part of what's inflating your estimate, see our <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">guide on mandatory dealer add-ons</Link> to learn which charges you can push back on and how to phrase it professionally.
             </p>
           </div>
@@ -239,7 +239,7 @@ export default function CalculateOutTheDoorPrice() {
 
           <div className="rounded-xl border border-border bg-muted/30 p-6 mt-12">
             <h3 className="text-base font-semibold text-foreground mb-2">Your out-the-door price shouldn't be a surprise.</h3>
-            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Paste any dealer quote — lease or finance — and Odigos calculates your real cost with every charge explained.
             </p>
             <Link href="/analyze">

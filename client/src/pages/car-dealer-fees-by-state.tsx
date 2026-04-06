@@ -101,43 +101,43 @@ export default function CarDealerFeesByState() {
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               If you've ever compared car prices across dealerships — or across state lines — you've probably noticed that the fees tacked onto the sale price can vary dramatically. Two dealers selling the same vehicle at the same advertised price can end up with out-the-door totals that differ by hundreds or even thousands of dollars, depending on where they're located.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               The reason is straightforward: sales tax and registration fees are set by state and local governments, but the <Link href="/dealer-doc-fee" className="underline text-foreground">dealer documentation fee</Link> is set by the dealership itself. Some states cap what dealers can charge for paperwork. Others have no cap at all, which means the doc fee is whatever the dealer decides it should be.
             </p>
 
-            <p className="text-sm text-muted-foreground mb-6">
+            <p className="text-sm text-muted-foreground">
               Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
             </p>
 
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground">
               Jump to a popular state: <Link href="/car-dealer-fees-texas" className="underline text-foreground">Texas</Link>, <Link href="/car-dealer-fees-california" className="underline text-foreground">California</Link>, <Link href="/car-dealer-fees-florida" className="underline text-foreground">Florida</Link>, <Link href="/car-dealer-fees-new-york" className="underline text-foreground">New York</Link>.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why dealer fees vary by state</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Why dealer fees vary by state</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               There are three categories of charges that show up on a car deal, and they behave very differently depending on where you're buying.
             </p>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               <strong className="text-foreground">Government fees</strong> include sales tax, title transfer, and vehicle registration. These are non-negotiable — they're set by your state, county, or city. Sales tax rates range from 0% in states like Montana and Oregon to over 10% in parts of Tennessee and Louisiana when local taxes are included. Registration fees vary too, with some states charging a flat rate and others basing the fee on the vehicle's value or weight.
             </p>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               <strong className="text-foreground">Dealer documentation fees</strong> cover the cost of processing your paperwork — title work, registration filing, loan documents, and contract preparation. Unlike government fees, these are set entirely by the dealer. In states with caps, the fee might be limited to $85 or $200. In uncapped states, dealers regularly charge $500 to $900 or more for the same paperwork. For a deeper look at what this fee actually covers, see our guide on <Link href="/doc-fee-too-high" className="underline text-foreground">what to do when a dealer doc fee seems too high</Link>.
             </p>
 
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground">
               <strong className="text-foreground">Optional dealer add-ons</strong> are products like paint protection, fabric coating, nitrogen-filled tires, VIN etching, or extended warranties. These are profit items added by the dealership and are almost always optional, even when they're presented as included or required.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Typical dealer doc fee ranges by state</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Typical dealer doc fee ranges by state</h2>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               The table below shows approximate documentation fee ranges for all 50 states and Washington D.C. Some states set legal caps; others allow dealers to charge whatever they choose. Where there's no cap, the ranges shown reflect what buyers commonly report.
             </p>
 
@@ -160,7 +160,7 @@ export default function CarDealerFeesByState() {
               </table>
             </div>
 
-            <p className="text-sm text-muted-foreground mb-6 italic">
+            <p className="text-sm text-muted-foreground italic">
               These ranges are approximate and based on commonly reported dealer practices. Fee limits and regulations can change — always verify with your state's attorney general or consumer protection office before relying on specific numbers.{" "}
               <SourceCitation
                 sources={[
@@ -171,9 +171,9 @@ export default function CarDealerFeesByState() {
               />
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Which fees are actually required</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Which fees are actually required</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Every car purchase includes certain charges that are genuinely non-negotiable because they're mandated by government agencies:
             </p>
 
@@ -196,27 +196,27 @@ export default function CarDealerFeesByState() {
               </li>
             </ul>
 
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground">
               Beyond these, most other charges on a dealer invoice are optional. Paint protection, fabric coating, window tinting, dealer-installed accessories, and extended warranties are all products the dealer adds for profit. They're rarely required, even when the dealer presents them that way. For a full breakdown of which charges are legitimate and which you can refuse, see our guide on <Link href="/car-dealer-fees-explained" className="underline text-foreground">common car dealer fees explained</Link>.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to compare dealer fees correctly</h2>
+            <h2 className="text-2xl font-semibold text-foreground">How to compare dealer fees correctly</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Comparing individual fees line by line across dealers is useful for spotting outliers, but it's not the most efficient way to evaluate a deal. One dealer might charge a lower doc fee but make up for it with a higher vehicle price or by adding optional products. Another dealer might have a higher doc fee but a lower overall total.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               The most reliable comparison is the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> — the total amount you'll pay to leave with the keys, including every fee, tax, and add-on. When you ask each dealer for their OTD price on the same vehicle, you're comparing apples to apples regardless of how they structure their fees internally.
             </p>
 
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground">
               This is especially important when shopping across state lines. A dealer in a state with lower sales tax but higher doc fees might still offer a better total price than a dealer in a capped-fee state with higher tax rates. The only way to know is to compare the final number.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to do if a dealer's fees seem high</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What to do if a dealer's fees seem high</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               If you're looking at a dealer's fee breakdown and something doesn't feel right, there are a few practical steps you can take before walking away or committing:
             </p>
 
@@ -239,7 +239,7 @@ export default function CarDealerFeesByState() {
               </li>
             </ul>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               Here's a message you can copy and send to any dealer before visiting. It asks for everything you need to compare deals:
             </p>
 
@@ -259,17 +259,17 @@ export default function CarDealerFeesByState() {
               </Button>
             </Card>
 
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground">
               This works because it's specific and professional. You're asking for a clear, itemized total — which is exactly what any transparent dealer should be willing to provide.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground">
               If you already have a dealer quote with fees that seem unusual, Odigos can analyze the full breakdown and flag anything that looks off.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">State-specific dealer fee guides</h2>
+            <h2 className="text-2xl font-semibold text-foreground">State-specific dealer fee guides</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               For state-by-state breakdowns covering doc fee ranges, local tax rates, cap status, and what buyers in each market should watch for:
             </p>
 

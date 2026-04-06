@@ -51,17 +51,17 @@ export default function FinanceOfficeChangedTheNumbers() {
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               You spent time negotiating a price with the salesperson. You shook hands, maybe even celebrated a little. Then you sit down in the finance office and the paperwork shows different numbers. The monthly payment is higher. The total doesn't match. New line items appeared. This happens more often than most buyers realize, and it's not always accidental.{" "}<SourceCitation sources={ARTICLE_SOURCES["finance-office-changed-the-numbers"].sources} lastVerified={ARTICLE_SOURCES["finance-office-changed-the-numbers"].lastVerified} />
             </p>
 
-            <p className="text-sm text-muted-foreground mb-6">
+            <p className="text-sm text-muted-foreground">
               Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why the numbers look different</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Why the numbers look different</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               There are a few common reasons the finance office paperwork doesn't match what you agreed on with the salesperson:
             </p>
 
@@ -84,9 +84,9 @@ export default function FinanceOfficeChangedTheNumbers() {
               </li>
             </ul>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to say to the finance manager</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What to say to the finance manager</h2>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               If the numbers don't match what you agreed on, send or say this before signing. You can copy and paste it directly:
             </p>
 
@@ -106,13 +106,13 @@ export default function FinanceOfficeChangedTheNumbers() {
               </Button>
             </Card>
 
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground">
               This works because it's direct and professional. You're not accusing anyone — you're asking for a clear comparison between what was agreed on and what's on the contract. That clarity alone often resolves the issue.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to do</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What to do</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Before you sign anything, go through this checklist:
             </p>
 
@@ -139,13 +139,13 @@ export default function FinanceOfficeChangedTheNumbers() {
               </li>
             </ul>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">The one thing that protects you most</h2>
+            <h2 className="text-2xl font-semibold text-foreground">The one thing that protects you most</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               The single most effective thing you can do is get the full <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> in writing before you ever sit down in the finance office. That means the vehicle price, all taxes, all fees, and the total amount — not just the monthly payment. When you have that number documented, you have a clear reference point. Any deviation in the finance office becomes immediately obvious, and you have leverage to push back.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground">
               If you already have a quote or contract and the numbers don't look right, Odigos can break it down and flag what changed.
             </p>
           </div>

@@ -45,7 +45,7 @@ export default function GlossaryTerm() {
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
-        <p className="text-lg text-muted-foreground mb-4 font-medium">
+        <p className="text-lg text-muted-foreground font-medium">
           {term.shortDefinition}
         </p>
 

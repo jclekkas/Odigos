@@ -26,19 +26,19 @@ export default function DealerPrepFee() {
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           A dealer prep fee is a charge added to the purchase price of a new vehicle, supposedly covering the work the dealership does to prepare the car for delivery. You'll see it listed on buyer's orders under various names: "dealer preparation," "vehicle preparation fee," "pre-delivery inspection," or "PDI fee."
         </p>
-        <p className="text-lg text-muted-foreground mb-10">
+        <p className="text-lg text-muted-foreground">
           The core issue with this fee is that what it supposedly covers — washing, detailing, removing shipping materials, and a basic inspection — is part of operating a car dealership, not an itemizable cost to pass on to buyers. Understanding what the fee is and why it's generally unjustified gives you the basis to push back on it.
         </p>
 
-        <p className="text-sm text-muted-foreground mb-6">
+        <p className="text-sm text-muted-foreground">
           Have a dealer quote with a prep fee on it? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and we'll flag it.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What Dealers Say the Prep Fee Covers</h2>
-        <p className="text-muted-foreground mb-4">
+        <h2 className="text-2xl font-semibold text-foreground">What Dealers Say the Prep Fee Covers</h2>
+        <p className="text-muted-foreground">
           Dealers typically describe the prep fee as covering some combination of the following:
         </p>
         <ul className="space-y-2 mb-8 text-muted-foreground">
@@ -60,25 +60,25 @@ export default function DealerPrepFee() {
           </li>
         </ul>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What the Prep Fee Actually Is</h2>
-        <p className="text-muted-foreground mb-4">
+        <h2 className="text-2xl font-semibold text-foreground">What the Prep Fee Actually Is</h2>
+        <p className="text-muted-foreground">
           The work described above is routine. Every new car that arrives at a dealership goes through this process. It is the baseline cost of operating a retail car lot, similar to stocking shelves at a grocery store. No one pays a grocery store a "shelf preparation fee" because the store arranged the products.
         </p>
-        <p className="text-muted-foreground mb-4">
+        <p className="text-muted-foreground">
           Manufacturers account for delivery and prep costs in the margin built into vehicle pricing. The pre-delivery inspection, in particular, is often covered under the manufacturer's dealer holdback — money paid to the dealer by the automaker for each vehicle sold. Charging the buyer separately for PDI work is, in most cases, double-dipping.
         </p>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           The prep fee is a profit line. The actual labor cost for washing and prepping a car is $50–$150. Dealers commonly charge $200–$500, with some higher-volume operations charging more.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Is the Dealer Prep Fee Required?</h2>
-        <p className="text-muted-foreground mb-4">
+        <h2 className="text-2xl font-semibold text-foreground">Is the Dealer Prep Fee Required?</h2>
+        <p className="text-muted-foreground">
           In most cases, no. Some dealers treat it as a fixed part of their pricing structure — much like the doc fee — and won't remove it as a standalone line item. But that doesn't mean you have to absorb it without negotiation.
         </p>
-        <p className="text-muted-foreground mb-4">
+        <p className="text-muted-foreground">
           Unlike government fees (sales tax, title, registration), which are fixed by law, the prep fee is entirely dealer-controlled. There is no statute requiring dealers to charge it. A dealer who claims it's "mandatory" or "required by the manufacturer" is not being accurate — manufacturers do not set dealer prep fees for the buyer.
         </p>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           The most practical approach is to treat it as part of the total out-the-door price and negotiate accordingly. If the dealer won't remove the $350 prep fee, ask for the vehicle price to be reduced by $350. The total you pay is what matters. For a broader look at which dealer fees you can push back on, see our guide on <Link href="/are-dealer-fees-negotiable" className="underline text-foreground">which dealer fees are negotiable</Link>.
         </p>
 
@@ -94,7 +94,7 @@ export default function DealerPrepFee() {
           </Link>
         </div>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Red Flags Around Prep Fees</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Red Flags Around Prep Fees</h2>
         <ul className="space-y-2 mb-8 text-muted-foreground">
           <li className="flex items-start gap-2">
             <span className="text-amber-500 mt-1.5 shrink-0">•</span>
@@ -117,20 +117,20 @@ export default function DealerPrepFee() {
             <span>The dealer refuses to describe specifically what work was done under the prep fee</span>
           </li>
         </ul>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           For a broader overview of charges that commonly appear without prior disclosure, see our guide on <Link href="/hidden-dealer-fees" className="underline text-foreground">hidden dealer fees</Link>.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How It Differs from a Reconditioning Fee</h2>
-        <p className="text-muted-foreground mb-4">
+        <h2 className="text-2xl font-semibold text-foreground">How It Differs from a Reconditioning Fee</h2>
+        <p className="text-muted-foreground">
           The dealer prep fee applies to new vehicles — the preparation done before a car is delivered to its first owner. This is distinct from a reconditioning fee, which applies to used vehicles and covers the work involved in bringing a previously owned car up to resale condition.
         </p>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           The two fees reflect different types of work and should never appear on the same deal. If you're buying a used car and see a "prep fee," ask whether the dealer means reconditioning. If both appear on the same contract, that's a red flag worth examining. For more on the reconditioning fee specifically, see our guide on <Link href="/dealer-reconditioning-fee" className="underline text-foreground">dealer reconditioning fees</Link>.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to Say to the Dealer</h2>
-        <p className="text-muted-foreground mb-3">
+        <h2 className="text-2xl font-semibold text-foreground">What to Say to the Dealer</h2>
+        <p className="text-muted-foreground">
           If the prep fee appears on your quote and you want to address it:
         </p>
         <div className="rounded-md border border-border p-5 bg-muted/50 mb-8">
@@ -138,7 +138,7 @@ export default function DealerPrepFee() {
             "I'd like to understand what's included in the prep fee. If it covers work the dealership does for every vehicle, I'd ask that it be removed or reflected in a lower vehicle price. I'm comparing total out-the-door prices across a few dealers, so the overall number matters more than any individual line item."
           </p>
         </div>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           This keeps the tone professional, signals that you're comparison shopping, and redirects the conversation to the total cost — which is where you have the most leverage. For more on how to get a complete price in writing, see our guide on the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> and what it includes in our guide on <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">which dealer add-ons are mandatory</Link>.
         </p>
       </div>

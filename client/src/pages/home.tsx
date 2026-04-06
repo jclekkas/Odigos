@@ -461,9 +461,9 @@ function LockedTier2Section({ onUnlock, isLoading, stripeConfigured, ctaLabel }:
           Use the full review when you need to reply to the dealer, pressure-test the quote, or decide whether to keep negotiating.
         </p>
         <Button
-          variant="default"
+          variant="cta"
           onClick={onUnlock}
-          className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+          className="w-full"
           disabled={isLoading || !stripeConfigured}
           data-testid="button-unlock-49"
         >
@@ -527,9 +527,9 @@ function LockedTier3Section({ onUnlock, isLoading, stripeConfigured }: LockedTie
         </p>
         {stripeConfigured ? (
           <Button
-            variant="default"
+            variant="cta"
             onClick={onUnlock}
-            className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+            className="w-full"
             disabled={isLoading}
             data-testid="button-unlock-79"
           >

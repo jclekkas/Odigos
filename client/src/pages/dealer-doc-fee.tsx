@@ -60,46 +60,46 @@ export default function DealerDocFee() {
           </div>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-lg text-muted-foreground mb-4">
+            <p className="text-lg text-muted-foreground">
               If you've ever reviewed a car deal closely, you've probably noticed a line item called a "documentation fee," "doc fee," or "dealer processing fee." It typically ranges from $100 to $1,000 or more depending on where you live. Some buyers assume it's a government charge. It's not. It's a dealer-imposed fee, and in many cases, it's negotiable.{" "}<SourceCitation sources={ARTICLE_SOURCES["dealer-doc-fee"].sources} lastVerified={ARTICLE_SOURCES["dealer-doc-fee"].lastVerified} />
             </p>
-            <p className="text-lg text-muted-foreground mb-10">
+            <p className="text-lg text-muted-foreground">
               Understanding what a doc fee is, what's normal in your state, and how to push back can save you hundreds of dollars on your next car purchase.
             </p>
 
-            <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-5 mb-8">
+            <div className="rounded-lg border border-blue-600/20 bg-blue-600/5 p-5 mb-8">
               <p className="text-base font-semibold text-foreground mb-2">
                 Wondering if your doc fee is too high? Paste your dealer quote — Odigos checks it against your state's cap instantly.
               </p>
-              <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white font-semibold">
+              <Button asChild variant="cta" className="font-semibold">
                 <Link href="/analyze">Check My Doc Fee</Link>
               </Button>
             </div>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What Is a Dealer Doc Fee?</h2>
-            <p className="text-muted-foreground mb-4">
+            <h2 className="text-2xl font-semibold text-foreground">What Is a Dealer Doc Fee?</h2>
+            <p className="text-muted-foreground">
               A dealer documentation fee is a charge the dealership adds to cover the cost of preparing and processing the paperwork for your vehicle purchase. This includes title work, registration filing, contract preparation, and other administrative tasks.
             </p>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               The fee is not set by the government. It's set by the dealership. That means the amount varies widely from one dealer to another, even within the same city. Some dealers charge $150. Others charge $899. The paperwork involved is essentially the same. For a full overview of typical charges, see <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds' guide to dealership fees</a>.
             </p>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               In most states, the doc fee must be disclosed on the buyer's order or purchase agreement. But many buyers don't notice it until they're sitting in the finance office, ready to sign.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Are Doc Fees Mandatory?</h2>
-            <p className="text-muted-foreground mb-4">
+            <h2 className="text-2xl font-semibold text-foreground">Are Doc Fees Mandatory?</h2>
+            <p className="text-muted-foreground">
               Not exactly. Dealers are allowed to charge a doc fee, and in most states, they must charge the same doc fee to every customer (they can't waive it for one buyer and charge another). But that doesn't mean you have to accept it without question.
             </p>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               Some states cap doc fees by law. Others don't. In states with no cap, dealers can charge almost anything they want. If a dealer tells you "it's required by law," that's misleading. The fee is required by their internal policy, not by statute.
             </p>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               Even in states where the fee is consistent across all customers at a given dealership, you can still negotiate the vehicle price or other line items to offset it.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How Much Is Normal? (By State)</h2>
-            <p className="text-muted-foreground mb-4">
+            <h2 className="text-2xl font-semibold text-foreground">How Much Is Normal? (By State)</h2>
+            <p className="text-muted-foreground">
               Doc fee norms vary significantly by state. Here are a few examples to illustrate how much rules vary by state (always confirm locally):
             </p>
             <ul className="space-y-2 mb-8 text-muted-foreground">
@@ -116,22 +116,22 @@ export default function DealerDocFee() {
                 <span><strong className="text-foreground">Rule of thumb:</strong> Treat the doc fee as part of your total out-the-door price and compare dealers on the full itemized OTD.</span>
               </li>
             </ul>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               If a dealer in a no-cap state is charging $999, it's technically legal — but it's worth asking whether competitors nearby charge less. You can also check <a href="https://www.kbb.com/car-advice/" target="_blank" rel="noopener" className="underline text-foreground">Kelley Blue Book</a> for regional pricing benchmarks. The fee should be part of your total deal comparison, not treated as a fixed cost.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Can You Negotiate a Doc Fee?</h2>
-            <p className="text-muted-foreground mb-4">
+            <h2 className="text-2xl font-semibold text-foreground">Can You Negotiate a Doc Fee?</h2>
+            <p className="text-muted-foreground">
               In most cases, the dealer won't reduce the doc fee itself — especially in states that require uniform pricing for all customers. But you can absolutely negotiate the overall deal to account for it.
             </p>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               For example, if a dealer charges a $799 doc fee, you can ask for $799 more off the sale price. The net effect is the same. The doc fee stays on the paperwork, but the total out-the-door cost drops.
             </p>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               What matters isn't any single line item — it's the total out-the-door price. That's why you should always ask for an itemized OTD breakdown before agreeing to anything.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Red Flags to Watch For</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Red Flags to Watch For</h2>
             <ul className="space-y-2 mb-8 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-amber-500 mt-1.5 shrink-0">•</span>
@@ -154,7 +154,7 @@ export default function DealerDocFee() {
                 <span>Dealer refuses to provide a written out-the-door price that includes the doc fee</span>
               </li>
             </ul>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               If any of these sound familiar, review the <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for car buyers</a> to understand your rights before signing.
             </p>
 
@@ -167,8 +167,8 @@ export default function DealerDocFee() {
               </Link>
             </div>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What To Say to Push Back</h2>
-            <p className="text-muted-foreground mb-3">
+            <h2 className="text-2xl font-semibold text-foreground">What To Say to Push Back</h2>
+            <p className="text-muted-foreground">
               You don't need to argue about the doc fee directly. Instead, redirect the conversation to the total price:
             </p>
             <div className="rounded-md border border-border p-5 bg-muted/50 mb-8">
@@ -176,22 +176,22 @@ export default function DealerDocFee() {
                 "I understand the doc fee is standard at your dealership. I'm focused on the total out-the-door price. Can you bring the overall number down by [amount] so the total works for my budget?"
               </p>
             </div>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               This keeps the negotiation professional and focused on what matters — the amount you're actually paying. Most dealers will work with you on the overall number even if they can't change the doc fee line item.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What Most Buyers Miss About Doc Fees</h2>
-            <p className="text-muted-foreground mb-4">
+            <h2 className="text-2xl font-semibold text-foreground">What Most Buyers Miss About Doc Fees</h2>
+            <p className="text-muted-foreground">
               The doc fee is often the last thing buyers look at — but it's also one of the most reliable signals about a dealer's overall pricing approach. A dealer charging $899 in a state where competitors charge $399 is almost certainly making up the difference somewhere else too.
             </p>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               Before visiting any dealer, ask for the full itemized OTD price by email. The doc fee will appear in that breakdown. If it's above average for your state, use it as a negotiating lever on the vehicle price. If they won't itemize at all, that itself tells you something.
             </p>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground">
               Comparing dealers isn't just about the vehicle price — it's about the total package. Two dealers can quote the same MSRP and differ by $1,000 in actual out-the-door cost based on fees alone.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Frequently Asked Questions About Doc Fees</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Frequently Asked Questions About Doc Fees</h2>
             <div className="space-y-6 mb-8">
               {faqItems.map((faq, idx) => (
                 <div key={idx}>
@@ -205,7 +205,7 @@ export default function DealerDocFee() {
 
           <div className="rounded-xl border border-border bg-muted/30 p-6 mt-12">
             <h3 className="text-base font-semibold text-foreground mb-2">Your doc fee should match your state's rules — not your dealer's mood.</h3>
-            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Paste your quote and see how every charge stacks up.
             </p>
             <Link href="/analyze">

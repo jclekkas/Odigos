@@ -51,31 +51,31 @@ export default function DealerAddedFeesAfterAgreement() {
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               You thought the price was settled. Maybe you got a number over text, agreed on a worksheet, or shook hands on the sales floor. Then the paperwork came out — and the total was higher. New line items appeared that weren't part of the original conversation.{" "}<SourceCitation sources={ARTICLE_SOURCES["dealer-added-fees-after-agreement"].sources} lastVerified={ARTICLE_SOURCES["dealer-added-fees-after-agreement"].lastVerified} />
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               This is one of the most common frustrations in car buying. Taxes, title, and registration are expected — they're government fees that apply to every purchase. But when dealer-added charges show up after you've already committed time and energy to a deal, that's a different situation. And it's one you can handle if you know what to look for.
             </p>
 
-            <p className="text-sm text-muted-foreground mb-6">
+            <p className="text-sm text-muted-foreground">
               Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why dealers add fees after the agreement</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Why dealers add fees after the agreement</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Many dealerships separate the buying process into stages. You negotiate the vehicle price with a salesperson, then move to the finance office for the paperwork. By the time you're sitting across from the finance manager, you've already invested hours — test drives, trade-in appraisals, back-and-forth on price. That momentum works in the dealer's favor.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Common patterns include introducing add-on products late in the process, presenting optional items as though they come standard with the vehicle, slipping protection packages into the worksheet without a separate conversation, and relying on buyer fatigue after a long negotiation. None of this means every dealer is acting in bad faith — but it does mean the buyer needs to stay attentive when the final numbers come out.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Which fees are legitimate and which are red flags</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Which fees are legitimate and which are red flags</h2>
 
-            <p className="text-lg text-muted-foreground mb-4">
+            <p className="text-lg text-muted-foreground">
               Some charges are unavoidable. These are set or collected by government agencies and will appear on every car purchase:
             </p>
 
@@ -94,7 +94,7 @@ export default function DealerAddedFeesAfterAgreement() {
               </li>
             </ul>
 
-            <p className="text-lg text-muted-foreground mb-4">
+            <p className="text-lg text-muted-foreground">
               Then there are charges that should prompt questions. These aren't automatically illegitimate, but a fee appearing on paperwork doesn't make it required. The <a href="https://consumer.ftc.gov/articles/buying-new-car" target="_blank" rel="noopener" className="underline text-foreground">FTC's guide for car buyers</a> outlines what dealers must disclose — and many of the items below fall outside that:
             </p>
 
@@ -125,9 +125,9 @@ export default function DealerAddedFeesAfterAgreement() {
               </li>
             </ul>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to say when the price changes</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What to say when the price changes</h2>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               If new fees appear after your original agreement, send this message. You can copy and paste it directly:
             </p>
 
@@ -147,13 +147,13 @@ export default function DealerAddedFeesAfterAgreement() {
               </Button>
             </Card>
 
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground">
               This works because it's specific and calm. It doesn't accuse anyone of anything — it simply asks for transparency. By requesting that government fees be separated from dealer-added products, you make it easy to see exactly what changed and decide what to accept.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What if they say the fees are non-negotiable?</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What if they say the fees are non-negotiable?</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               Even when a dealer says a charge can't be removed, you still have options:
             </p>
 
@@ -176,13 +176,13 @@ export default function DealerAddedFeesAfterAgreement() {
               </li>
             </ul>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">How to protect yourself before you go in</h2>
+            <h2 className="text-2xl font-semibold text-foreground">How to protect yourself before you go in</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               The strongest position is having the full <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> in writing before you visit the dealership — every dollar itemized, including tax, title, registration, doc fee, and any dealer-installed products. When you have that baseline, anything that changes later is something you can name and question. Without it, you're comparing a memory to a worksheet, and that's a much harder negotiation.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground">
               If you already have a text, quote, or worksheet where the numbers changed from what you originally agreed to, paste it into Odigos. We'll show you what's there, what's missing, and what to ask next — before you sign anything.
             </p>
           </div>

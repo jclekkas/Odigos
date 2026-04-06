@@ -85,9 +85,9 @@ export default function CarDealerFeesState() {
       </div>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
-        <p className="text-lg text-muted-foreground mb-6">{data.introAngle}</p>
+        <p className="text-lg text-muted-foreground">{data.introAngle}</p>
 
-        <p className="text-sm text-muted-foreground mb-6">
+        <p className="text-sm text-muted-foreground">
           Already have a {data.name} dealer quote?{" "}
           <Link href="/analyze" className="underline text-foreground">
             Paste it here
@@ -95,30 +95,30 @@ export default function CarDealerFeesState() {
           and see if any fees look off.
         </p>
 
-        <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-5 mb-8" data-testid={`cta-top-${data.slug}`}>
+        <div className="rounded-lg border border-blue-600/20 bg-blue-600/5 p-5 mb-8" data-testid={`cta-top-${data.slug}`}>
           <p className="text-base font-semibold text-foreground mb-2">{data.ctaTopBody ?? data.ctaHeading}</p>
           {!data.ctaTopBody && (
             <p className="text-sm text-muted-foreground mb-3">
               Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.
             </p>
           )}
-          <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white font-semibold" data-testid={`button-cta-top-${data.slug}`}>
+          <Button asChild variant="cta" className="font-semibold" data-testid={`button-cta-top-${data.slug}`}>
             <Link href="/analyze">Check my {data.name} quote</Link>
           </Button>
         </div>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">
+        <h2 className="text-2xl font-semibold text-foreground">
           Documentation fee in {data.name}
         </h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           <strong className="text-foreground">Typical range: {data.docFeeRange}</strong>{" "}
           <SourceCitation sources={data.sources} lastVerified={data.lastVerified} />
         </p>
 
-        <p className="text-lg text-muted-foreground mb-6">{data.capNote}</p>
+        <p className="text-lg text-muted-foreground">{data.capNote}</p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           The{" "}
           <Link href="/dealer-doc-fee" className="underline text-foreground">
             documentation fee
@@ -141,23 +141,23 @@ export default function CarDealerFeesState() {
           </div>
         )}
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">
+        <h2 className="text-2xl font-semibold text-foreground">
           Sales tax and registration in {data.name}
         </h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           <strong className="text-foreground">Sales tax / title tax:</strong>{" "}
           {data.salesTaxNote}{" "}
           <SourceCitation sources={data.sources} lastVerified={data.lastVerified} />
         </p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           <strong className="text-foreground">Registration fees:</strong>{" "}
           {data.registrationNote}{" "}
           <SourceCitation sources={data.sources} lastVerified={data.lastVerified} />
         </p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           Government fees — sales tax, title, and registration — are non-negotiable. They're set by the state and local authorities and don't vary between dealerships. If two {data.name} dealers quote different tax amounts on the same vehicle, the math on one of them is likely wrong. For a full breakdown of which charges are fixed and which are negotiable, see{" "}
           <Link href="/car-dealer-fees-explained" className="underline text-foreground">
             car dealer fees explained
@@ -171,7 +171,7 @@ export default function CarDealerFeesState() {
 
         {data.specialNotes && (
           <>
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">
+            <h2 className="text-2xl font-semibold text-foreground">
               Special notes for {data.name} buyers
             </h2>
             <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-5 mb-8">
@@ -180,7 +180,7 @@ export default function CarDealerFeesState() {
           </>
         )}
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">
+        <h2 className="text-2xl font-semibold text-foreground">
           What {data.name} buyers should watch for
         </h2>
 
@@ -206,13 +206,13 @@ export default function CarDealerFeesState() {
           })}
         </ul>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">
+        <h2 className="text-2xl font-semibold text-foreground">
           Negotiation note for {data.name} buyers
         </h2>
 
-        <p className="text-lg text-muted-foreground mb-6">{data.negotiationNote}</p>
+        <p className="text-lg text-muted-foreground">{data.negotiationNote}</p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           The most important number to negotiate toward is the{" "}
           <Link href="/out-the-door-price" className="underline text-foreground">
             out-the-door price
@@ -224,7 +224,7 @@ export default function CarDealerFeesState() {
           before contacting a dealer to have a baseline for comparison.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-8">
+        <p className="text-lg text-muted-foreground">
           Most{" "}
           <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">
             dealer add-ons
@@ -234,18 +234,18 @@ export default function CarDealerFeesState() {
 
         {data.competitorGapSection && (
           <>
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">
+            <h2 className="text-2xl font-semibold text-foreground">
               What most guides miss for {data.name} buyers
             </h2>
-            <p className="text-lg text-muted-foreground mb-8">{data.competitorGapSection}</p>
+            <p className="text-lg text-muted-foreground">{data.competitorGapSection}</p>
           </>
         )}
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">
+        <h2 className="text-2xl font-semibold text-foreground">
           What to say to the dealer
         </h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           Before visiting any {data.name} dealership, send this message to get a complete itemized quote you can actually compare:
         </p>
 
@@ -267,7 +267,7 @@ export default function CarDealerFeesState() {
 
         {data.commonQuestions && data.commonQuestions.length > 0 && (
           <>
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">
+            <h2 className="text-2xl font-semibold text-foreground">
               Common questions from {data.name} buyers
             </h2>
             <div className="space-y-6 mb-8">
@@ -281,7 +281,7 @@ export default function CarDealerFeesState() {
           </>
         )}
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Related guides</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Related guides</h2>
 
         <ul className="space-y-2 mb-8 text-muted-foreground">
           {data.internalLinks.map((link) => (
@@ -296,7 +296,7 @@ export default function CarDealerFeesState() {
 
         {data.sources && data.sources.length > 0 && (
           <>
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Sources</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Sources</h2>
             <ul className="space-y-2 mb-8 text-muted-foreground text-sm">
               {data.sources.map((src) => (
                 <li key={src} className="flex items-start gap-2">
@@ -322,7 +322,7 @@ export default function CarDealerFeesState() {
           {data.ctaBottomHeadline && (
             <h3 className="text-base font-semibold text-foreground mb-2">{data.ctaBottomHeadline}</h3>
           )}
-          <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{data.ctaBottomBody}</p>
+          <p className="text-sm text-muted-foreground leading-relaxed">{data.ctaBottomBody}</p>
           <Link href="/analyze">
             <Button variant="cta" size="lg" data-testid={`button-cta-bottom-${data.slug}`}>
               {data.ctaBottomButton ?? "Check My Quote Free"}

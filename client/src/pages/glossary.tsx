@@ -37,11 +37,11 @@ export default function Glossary() {
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
-        <p className="text-lg text-muted-foreground mb-10">
+        <p className="text-lg text-muted-foreground">
           Plain-English definitions of every fee, term, and piece of jargon you'll encounter when buying or leasing a car. Click any term for a full explanation.
         </p>
 
-        <p className="text-sm text-muted-foreground mb-6">
+        <p className="text-sm text-muted-foreground">
           Have a dealer quote with terms you don't recognize? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and we'll explain everything.
         </p>
 

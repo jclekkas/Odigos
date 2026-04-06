@@ -49,35 +49,35 @@ export default function HowToRemoveDealerAddOns() {
       </h1>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           Dealer add-ons appear at every stage of the car-buying process — in the online listing, the initial quote, and again in the finance office. The good news is that most are removable. The bad news is that dealers count on buyer inertia to keep them in the deal.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           This guide walks through what to do at each stage: before you visit, during negotiations, in the finance office, and after a first refusal.
         </p>
 
-        <p className="text-sm text-muted-foreground mb-6">
+        <p className="text-sm text-muted-foreground">
           Have a quote already? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> to see which add-ons are in it and what they're worth.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Step 1: Before you visit — request the out-the-door price in writing</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Step 1: Before you visit — request the out-the-door price in writing</h2>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           The most effective time to deal with add-ons is before you set foot in the dealership. Request a full <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> by email or text, with every line item listed: vehicle price, taxes, title, registration, documentation fee, and any dealer-installed products separately itemized.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           When you can see each charge in writing, you can respond to specific items before you're in a high-pressure environment. Most dealers will provide this if you ask directly. If a dealer <Link href="/dealer-wont-give-otd-price" className="underline text-foreground">won't give you a clear out-the-door price</Link>, treat that as a warning sign.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Step 2: Respond by email — name the add-ons you want removed</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Step 2: Respond by email — name the add-ons you want removed</h2>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           Once you have the itemized quote, reply in writing naming each add-on you want removed. Don't call — email creates a paper trail, gives the dealer time to respond without feeling cornered, and makes it harder to claim there was a misunderstanding later.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           Be specific. Instead of "I don't want the extras," say "Please remove the paint protection, VIN etching, and fabric coating from the quote." Specificity signals that you've read the contract and know what you're declining.
         </p>
 
@@ -88,9 +88,9 @@ export default function HowToRemoveDealerAddOns() {
           </p>
         </div>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Step 3: Handle common dealer responses</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Step 3: Handle common dealer responses</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           Here's what you'll likely hear, and what it actually means:
         </p>
 
@@ -121,23 +121,23 @@ export default function HowToRemoveDealerAddOns() {
           </li>
         </ul>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Step 4: In the finance office</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Step 4: In the finance office</h2>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           The finance office is where add-ons get reintroduced — often ones you already declined, or new ones disguised as standard contract terms. Go in with your written quote in hand. Before signing anything, compare the contract line by line to the quote you agreed on.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           If new charges appear, stop and ask for each one to be explained and removed before you sign. Dealers will sometimes say you already agreed to these items — you have the written quote to refute that. This is why getting everything in writing beforehand matters.
         </p>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           Extended warranties and service contracts are commonly pitched here. They're always optional — regardless of how they're presented — and can almost always be purchased later from third-party providers for less. Don't feel rushed to decide.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Step 5: After a first refusal — escalate or walk</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Step 5: After a first refusal — escalate or walk</h2>
 
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-muted-foreground">
           If the initial salesperson says the add-ons can't be removed, you have options:
         </p>
 
@@ -160,13 +160,13 @@ export default function HowToRemoveDealerAddOns() {
           </li>
         </ul>
 
-        <p className="text-lg text-muted-foreground mb-6">
+        <p className="text-lg text-muted-foreground">
           For more on what dealers are actually <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">required to include vs. what's optional</Link>, that guide covers the legal side in detail.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to say to the dealer</h2>
+        <h2 className="text-2xl font-semibold text-foreground">What to say to the dealer</h2>
 
-        <p className="text-muted-foreground mb-4">
+        <p className="text-muted-foreground">
           Use this message when you're ready to request an updated quote without specific add-ons. Replace the bracketed section with the items from your quote:
         </p>
 
@@ -186,7 +186,7 @@ export default function HowToRemoveDealerAddOns() {
           </Button>
         </Card>
 
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground">
           This works because it's direct, lists specific items, and requests a written confirmation if something can't be removed. That last clause matters — it puts the dealer on record rather than leaving the conversation vague.
         </p>
       </div>

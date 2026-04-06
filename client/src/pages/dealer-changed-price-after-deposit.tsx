@@ -51,17 +51,17 @@ export default function DealerChangedPriceAfterDeposit() {
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               You agreed on a price, put down a deposit, and now the dealer is telling you the numbers have changed. Maybe they say the manager didn't approve the deal, or that the rebate expired, or that financing fell through. Whatever the reason, it feels like a bait-and-switch — because in many cases, that's exactly what it is.{" "}<SourceCitation sources={ARTICLE_SOURCES["dealer-changed-price-after-deposit"].sources} lastVerified={ARTICLE_SOURCES["dealer-changed-price-after-deposit"].lastVerified} />
             </p>
 
-            <p className="text-sm text-muted-foreground mb-6">
+            <p className="text-sm text-muted-foreground">
               Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and see if anything is missing.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Why dealers do this</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Why dealers do this</h2>
 
-            <p className="text-lg text-muted-foreground mb-4">
+            <p className="text-lg text-muted-foreground">
               There are several reasons a dealer might try to change the price after collecting a deposit:
             </p>
 
@@ -88,9 +88,9 @@ export default function DealerChangedPriceAfterDeposit() {
               </li>
             </ul>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to say to the dealer</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What to say to the dealer</h2>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground">
               If the price changed after your deposit, send this message to the dealer. You can copy and paste it directly:
             </p>
 
@@ -110,13 +110,13 @@ export default function DealerChangedPriceAfterDeposit() {
               </Button>
             </Card>
 
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground">
               This message is effective because it stays calm, asks for specifics in writing, and makes it clear you know you have the option to get your deposit back. Dealers respond differently when they know you're informed.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What actually protects you</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What actually protects you</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               In most U.S. states, a deposit on a vehicle does not create a binding purchase contract unless both parties have signed a formal agreement with all the material terms — price, trade-in value, financing, and fees. A verbal agreement or a handshake deal is difficult to enforce. However, you do have some protections:
             </p>
 
@@ -135,9 +135,9 @@ export default function DealerChangedPriceAfterDeposit() {
               </li>
             </ul>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">What to do right now</h2>
+            <h2 className="text-2xl font-semibold text-foreground">What to do right now</h2>
 
-            <p className="text-lg text-muted-foreground mb-4">
+            <p className="text-lg text-muted-foreground">
               If a dealer has changed the price after you put down a deposit, here's a step-by-step approach:
             </p>
 
@@ -159,13 +159,13 @@ export default function DealerChangedPriceAfterDeposit() {
               </li>
             </ol>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4 text-foreground">Before you go back in</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Before you go back in</h2>
 
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground">
               If you're considering going back to the dealership to renegotiate, make sure you know your <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> — the total amount including tax, title, registration, and all dealer fees. This is the only number that tells you what you're actually paying. Comparing monthly payments or sticker prices won't give you the full picture. If the dealer refuses to provide a clear total, that's a separate red flag — see <Link href="/dealer-wont-give-otd-price" className="underline text-foreground">dealers who won't give an OTD price</Link>.
             </p>
 
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground">
               If you have the original quote and the revised numbers, Odigos can compare them side by side and flag exactly what changed — so you walk in knowing where you stand.
             </p>
           </div>
