@@ -217,6 +217,7 @@ export function registerBIRoutes(app: Express): void {
         FROM public.deal_feedback df
         JOIN public.dealer_submissions ds ON ds.id = df.listing_id
         WHERE ds.deal_score IN ('GREEN', 'YELLOW', 'RED')
+          AND ds.exclude_from_metrics = false
         GROUP BY ds.deal_score
       `);
       const byScoreColor: { GREEN: number | null; YELLOW: number | null; RED: number | null } = {
@@ -249,6 +250,7 @@ export function registerBIRoutes(app: Express): void {
         JOIN public.dealer_submissions ds ON ds.id = df.listing_id
         JOIN core.listings cl ON cl.dealer_submission_id = ds.id
         JOIN core.dealers d ON d.id = cl.dealer_id
+        WHERE ds.exclude_from_metrics = false
         GROUP BY d.id, d.dealer_name
         HAVING COUNT(CASE WHEN df.rating IS NOT NULL THEN 1 END) >= 3
         ORDER BY total_feedback_count DESC

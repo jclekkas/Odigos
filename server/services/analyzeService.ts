@@ -316,6 +316,81 @@ This is a LEASE quote. Apply these additional rules:
 7. If money factor is missing, add to missingInfo: "What is the money factor (or lease APR equivalent)?"
 8. For lease quotes, disposition fees are common ($300-$500) but should be disclosed upfront.
 ` : ""}
+FINANCIAL IMPACT FRAMING (CRITICAL — this is the lead story):
+Before explaining anything else, determine the money at stake. The buyer needs to see — within seconds — how much they may be overpaying, what a more normal deal would look like, and the single biggest driver of the problem.
+
+1. Classify the deal into ONE of:
+   - meaningfully overpriced
+   - roughly normal (close to market)
+   - underpriced / unusually strong
+
+2. Estimate a CONSERVATIVE overpayment (or remaining savings opportunity) RANGE in dollars:
+   - Use ranges, NOT single exact numbers. Never use fake precision.
+   - Prefer rounded, human-friendly numbers: 300–700, 1,200–2,100, 0–400.
+   - If the evidence is too weak to quantify, return null for the min/max. Do not fabricate.
+   - If the deal looks roughly fair, still estimate remaining negotiable room with a small conservative range (e.g. 0–300, 200–600). Not every deal must look bad.
+
+3. Estimate a PLAUSIBLE NORMAL OTD range — what this deal should look like if structured fairly given the vehicle, state, and market context. Use null when evidence is weak.
+
+4. Identify the SINGLE biggest issue driving the assessment (one primary issue, not a vague list):
+   - Examples: "Inflated doc fee", "Market adjustment above normal", "Hidden add-ons", "Payment-only quote hides true cost", "Price appears fair", "Price is strong; limited savings left".
+
+5. Produce ONE short market-comparison sentence grounded in state-level context when available:
+   - Good: "Your $800 doc fee is above the North Carolina average."
+   - Good: "This deal is near the middle of the range we've seen in Maryland."
+   - If state context is thin or absent: "We do not yet have enough local examples for a strong state comparison."
+   - Hedge explicitly when state sample is limited (e.g. "based on limited market examples in your state", "from the small sample we have in your state").
+
+6. Produce one short user-facing financialSummary sentence leading with the dollars:
+   - Good: "You may be overpaying by roughly $1,200 to $2,100, mostly due to an inflated doc fee and add-ons."
+   - Good: "This deal appears broadly fair, with only limited room left to negotiate."
+
+FINANCIAL IMPACT — HARD RULES:
+- Do NOT fabricate certainty. If the evidence is weak, return null rather than a made-up number.
+- Do NOT invent dealer-specific patterns or claim "this dealer always…".
+- Do NOT base seeded-inclusive comparisons on tactic-flag prevalence ("N% of dealers use market adjustments"). Use numeric anchors (doc fee, selling price, OTD) only.
+- When market context is present but sample is thin, keep comparisons at the STATE/market level and use cautious wording. Never convert thin seeded context into a confident dealer-specific claim.
+- Never say "every dealer", "always", "never", "all dealers".
+- Ranges must be internally consistent: min ≤ max, both non-negative.
+
+FINANCIAL IMPACT — EXAMPLES:
+
+Overpriced deal:
+{
+  "estimatedOverpaymentMin": 1200,
+  "estimatedOverpaymentMax": 2100,
+  "estimatedNormalOtdMin": 39200,
+  "estimatedNormalOtdMax": 40000,
+  "primaryIssue": "Inflated doc fee",
+  "marketComparison": "Your $800 doc fee is above the North Carolina average based on limited examples we have in that state.",
+  "financialImpactConfidence": "medium",
+  "financialSummary": "You may be overpaying by roughly $1,200 to $2,100, driven mainly by a high doc fee and above-normal total price."
+}
+
+Roughly fair deal:
+{
+  "estimatedOverpaymentMin": 0,
+  "estimatedOverpaymentMax": 400,
+  "estimatedNormalOtdMin": 37100,
+  "estimatedNormalOtdMax": 37500,
+  "primaryIssue": "Price appears fair",
+  "marketComparison": "This deal looks close to the normal range for similar examples we have.",
+  "financialImpactConfidence": "low",
+  "financialSummary": "This deal appears broadly fair, with only limited room left to negotiate."
+}
+
+Evidence too weak to quantify:
+{
+  "estimatedOverpaymentMin": null,
+  "estimatedOverpaymentMax": null,
+  "estimatedNormalOtdMin": null,
+  "estimatedNormalOtdMax": null,
+  "primaryIssue": "Payment-only quote hides true cost",
+  "marketComparison": "We do not yet have enough local examples for a strong state comparison.",
+  "financialImpactConfidence": "low",
+  "financialSummary": "We can't estimate a dollar range yet — the quote is missing the out-the-door total needed to compare."
+}
+
 You must respond with a valid JSON object with this exact structure:
 {
   "dealScore": "GREEN" | "YELLOW" | "RED",
@@ -323,6 +398,14 @@ You must respond with a valid JSON object with this exact structure:
   "verdictLabel": "Short action-oriented label like 'PROCEED — CONFIRM DETAILS' or 'PAUSE — GET OTD BREAKDOWN'",
   "goNoGo": "GO" | "NO-GO" | "NEED-MORE-INFO",
   "summary": "Plain English explanation following this structure: (1) What we know - facts only, (2) Why it's good/bad, (3) What's missing + next questions. Keep to 4-6 sentences max.",
+  "estimatedOverpaymentMin": number or null (conservative low end of likely overpayment range, USD, rounded),
+  "estimatedOverpaymentMax": number or null (conservative high end of likely overpayment range, USD, rounded),
+  "estimatedNormalOtdMin": number or null (plausible fair OTD low end, USD),
+  "estimatedNormalOtdMax": number or null (plausible fair OTD high end, USD),
+  "primaryIssue": string or null (ONE short label — the single biggest issue),
+  "marketComparison": string or null (ONE short sentence grounded in state/market context),
+  "financialImpactConfidence": "low" | "medium" | "high" or null,
+  "financialSummary": string or null (ONE short sentence leading with dollars),
   "detectedFields": {
     "salePrice": number or null,
     "msrp": number or null,
@@ -481,6 +564,68 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     if (df.fees === null) df.fees = [];
   }
   if (rawResult.missingInfo === null) rawResult.missingInfo = [];
+
+  // Normalize financial impact fields:
+  //  - coerce to finite numbers or null
+  //  - enforce non-negative values
+  //  - enforce min <= max (swap if the model inverted them)
+  //  - round to whole dollars (no false precision)
+  const coerceDollarField = (key: string) => {
+    const v = rawResult[key];
+    if (v == null) {
+      rawResult[key] = null;
+      return;
+    }
+    const n = typeof v === "number" ? v : Number(v);
+    if (!Number.isFinite(n) || n < 0) {
+      rawResult[key] = null;
+      return;
+    }
+    rawResult[key] = Math.round(n);
+  };
+  for (const k of [
+    "estimatedOverpaymentMin",
+    "estimatedOverpaymentMax",
+    "estimatedNormalOtdMin",
+    "estimatedNormalOtdMax",
+  ]) {
+    coerceDollarField(k);
+  }
+  const fixPair = (minKey: string, maxKey: string) => {
+    const mn = rawResult[minKey];
+    const mx = rawResult[maxKey];
+    if (typeof mn === "number" && typeof mx === "number" && mn > mx) {
+      rawResult[minKey] = mx;
+      rawResult[maxKey] = mn;
+    }
+    // If only one side is present, drop the pair entirely — we only
+    // surface ranges, never single half-ranges.
+    if ((mn == null) !== (mx == null)) {
+      rawResult[minKey] = null;
+      rawResult[maxKey] = null;
+    }
+  };
+  fixPair("estimatedOverpaymentMin", "estimatedOverpaymentMax");
+  fixPair("estimatedNormalOtdMin", "estimatedNormalOtdMax");
+
+  const coerceString = (key: string) => {
+    const v = rawResult[key];
+    if (v == null || typeof v !== "string" || v.trim() === "") {
+      rawResult[key] = null;
+      return;
+    }
+    rawResult[key] = v.trim();
+  };
+  coerceString("primaryIssue");
+  coerceString("marketComparison");
+  coerceString("financialSummary");
+
+  // Normalize financialImpactConfidence to lowercase enum (the model
+  // occasionally returns HIGH/MEDIUM/LOW from habit).
+  if (rawResult.financialImpactConfidence != null) {
+    const conf = String(rawResult.financialImpactConfidence).toLowerCase();
+    rawResult.financialImpactConfidence = ["low", "medium", "high"].includes(conf) ? conf : null;
+  }
 
   const validationResult = analysisResponseSchema.safeParse(rawResult);
   if (!validationResult.success) {

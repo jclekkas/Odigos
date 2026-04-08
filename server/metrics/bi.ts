@@ -335,9 +335,13 @@ export async function getBIDealOutcome(range: DateRange): Promise<BIDealOutcome>
   if (process.env.DATABASE_URL) {
     const { db } = await import("../db");
     const { dealerSubmissions } = await import("@shared/schema");
-    const { gte } = await import("drizzle-orm");
+    const { gte, and, eq } = await import("drizzle-orm");
 
     const { start } = getDateBounds(range);
+    // Exclude seeded rows from funnel/business metrics via
+    // exclude_from_metrics = false (NOT ingestion_source = 'user'; the
+    // boolean flag is future-proof for non-seed exclusions).
+    const excludeSeeded = eq(dealerSubmissions.excludeFromMetrics, false);
     const rows = await (start
       ? db.select({
           feeNames: dealerSubmissions.feeNames,
@@ -346,7 +350,7 @@ export async function getBIDealOutcome(range: DateRange): Promise<BIDealOutcome>
           flagMissingOtd: dealerSubmissions.flagMissingOtd,
           flagVagueFees: dealerSubmissions.flagVagueFees,
           flagHighCostAddons: dealerSubmissions.flagHighCostAddons,
-        }).from(dealerSubmissions).where(gte(dealerSubmissions.submittedAt, start))
+        }).from(dealerSubmissions).where(and(gte(dealerSubmissions.submittedAt, start), excludeSeeded))
       : db.select({
           feeNames: dealerSubmissions.feeNames,
           flagMarketAdjustment: dealerSubmissions.flagMarketAdjustment,
@@ -354,7 +358,7 @@ export async function getBIDealOutcome(range: DateRange): Promise<BIDealOutcome>
           flagMissingOtd: dealerSubmissions.flagMissingOtd,
           flagVagueFees: dealerSubmissions.flagVagueFees,
           flagHighCostAddons: dealerSubmissions.flagHighCostAddons,
-        }).from(dealerSubmissions));
+        }).from(dealerSubmissions).where(excludeSeeded));
 
     const feeNameCounts: Record<string, number> = {};
     const tacticCounts: Record<string, number> = {
@@ -423,18 +427,20 @@ export async function getBIGeographic(range: DateRange): Promise<BIGeographic> {
   if (process.env.DATABASE_URL) {
     const { db } = await import("../db");
     const { dealerSubmissions } = await import("@shared/schema");
-    const { gte } = await import("drizzle-orm");
+    const { gte, and, eq } = await import("drizzle-orm");
 
     const { start } = getDateBounds(range);
+    // Exclude seeded rows from geographic/funnel metrics.
+    const excludeSeeded = eq(dealerSubmissions.excludeFromMetrics, false);
     const rows = await (start
       ? db.select({
           stateCode: dealerSubmissions.stateCode,
           dealScore: dealerSubmissions.dealScore,
-        }).from(dealerSubmissions).where(gte(dealerSubmissions.submittedAt, start))
+        }).from(dealerSubmissions).where(and(gte(dealerSubmissions.submittedAt, start), excludeSeeded))
       : db.select({
           stateCode: dealerSubmissions.stateCode,
           dealScore: dealerSubmissions.dealScore,
-        }).from(dealerSubmissions));
+        }).from(dealerSubmissions).where(excludeSeeded));
 
     const stateCounts: Record<string, { submissions: number; scores: number[] }> = {};
     const scoreVal = (s: string) => s === "GREEN" ? 3 : s === "YELLOW" ? 2 : 1;

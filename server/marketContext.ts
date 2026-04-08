@@ -10,6 +10,42 @@
  * - docFeeVsStateAvg is clamped: if abs > 2000, set to null (prevents absurd comparisons).
  * - sampleSize thresholds replaced by graded confidence tiers (none/thin/moderate/strong).
  * - Data is returned whenever sampleSize >= 1; strength communicates data quality.
+ *
+ * ---------------------------------------------------------------------------
+ * Seeded-data policy (cold-start data flywheel)
+ * ---------------------------------------------------------------------------
+ * Seeded rows (curated forum-derived quotes, tagged via seedForumQuotes.ts)
+ * are handled metric-by-metric — NOT via a global include/exclude filter.
+ *
+ *  STATE-LEVEL aggregates — seeded rows ALLOWED.
+ *   - Reads from `core.state_stats`, which aggregates ALL `core.listings`
+ *     regardless of ingestion_source. Seeded rows (ingestion_source = 'seed')
+ *     naturally contribute to avgDocFee / avgDealScore at the state level.
+ *   - The `core.state_stats` definition already filters out rows where
+ *     the aggregated field is NULL (`AVG(...)` ignores NULLs), satisfying
+ *     the "partial rows cannot pollute averages" rule.
+ *   - Seeded rows with no stateCode never contribute, because
+ *     `core.state_stats` groups by `state_code` and the seed script
+ *     refuses to propagate a listing without a valid state.
+ *
+ *  DEALER-LEVEL aggregates — seeded rows DISALLOWED.
+ *   - `core.dealers.listing_count` is a counter maintained by the warehouse
+ *     writer. The seed script (seedForumQuotes.ts::tagSeededRow) DECREMENTS
+ *     this counter immediately after tagging a row as seed, so the counter
+ *     reflects only real user submissions. `getDealerStats()` below reads
+ *     that counter and naturally excludes seeded rows.
+ *   - `core.dealer_feedback_stats` joins `deal_feedback` → `dealer_submissions`
+ *     → `core.listings.dealer_id`. Seeded rows never receive feedback, so
+ *     they do not contribute to feedback aggregates.
+ *
+ *  TACTIC FLAGS (flag_market_adjustment, flag_vague_fees, ...) — HARD RULE.
+ *   - These are LLM inferences from reconstructed prose when the source row
+ *     is seeded. This file MUST NOT aggregate on `flag_*` columns in any
+ *     seeded-inclusive query. Every aggregate here uses numeric columns
+ *     (doc_fee, deal_score) only.
+ *
+ * Changes to this file that introduce new aggregates must classify the new
+ * metric against this policy before merging.
  */
 import { db } from "./db";
 import { sql } from "drizzle-orm";

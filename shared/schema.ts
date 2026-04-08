@@ -89,6 +89,14 @@ export type MissingInfo = z.infer<typeof missingInfoSchema>;
 export const confidenceLevelSchema = z.enum(["HIGH", "MEDIUM", "LOW"]);
 export type ConfidenceLevel = z.infer<typeof confidenceLevelSchema>;
 
+// Financial-impact confidence (used by the "money at risk" hero block).
+// Lower-case and separate from `confidenceLevel` because they answer
+// different questions: `confidenceLevel` is confidence in the overall
+// analysis; `financialImpactConfidence` is confidence in the specific
+// overpayment range / normal OTD range.
+export const financialImpactConfidenceSchema = z.enum(["low", "medium", "high"]);
+export type FinancialImpactConfidence = z.infer<typeof financialImpactConfidenceSchema>;
+
 // Analysis response schema
 export const analysisResponseSchema = z.object({
   dealScore: z.enum(["GREEN", "YELLOW", "RED"]),
@@ -104,6 +112,19 @@ export const analysisResponseSchema = z.object({
   marketContextUsed: z.boolean().optional(),
   marketContextStrength: marketContextStrengthSchema.optional(),
   marketContextSummary: z.string().optional(),
+  // ---------------------------------------------------------------------
+  // Financial impact fields — power the "money at risk" hero block
+  // ---------------------------------------------------------------------
+  // All are nullable so old analyses / weak-evidence rows degrade
+  // gracefully instead of forcing false precision.
+  estimatedOverpaymentMin: z.number().nullable().optional(),
+  estimatedOverpaymentMax: z.number().nullable().optional(),
+  estimatedNormalOtdMin: z.number().nullable().optional(),
+  estimatedNormalOtdMax: z.number().nullable().optional(),
+  primaryIssue: z.string().nullable().optional(),
+  marketComparison: z.string().nullable().optional(),
+  financialImpactConfidence: financialImpactConfidenceSchema.nullable().optional(),
+  financialSummary: z.string().nullable().optional(),
 });
 
 export type AnalysisResponse = z.infer<typeof analysisResponseSchema>;
@@ -236,6 +257,20 @@ export const dealerSubmissions = pgTable(
     // --- Content deduplication ---
     // SHA-256 hex hash of normalized submission text (CRLF→LF, outer whitespace trimmed)
     contentHash: text("content_hash"),
+
+    // --- Provenance & exclusion flags for seeded rows ---
+    // Orthogonal design: `isSeeded` is the provenance marker, while
+    // `excludeFromMetrics`/`excludeFromEval` are independent exclusion
+    // controls so we can later exclude non-seeded rows (e.g. internal
+    // test data) without rewriting every metrics query. Metrics queries
+    // must filter on `exclude_from_metrics = false`, not on
+    // `ingestion_source = 'user'`.
+    ingestionSource: text("ingestion_source").notNull().default("user"),
+    isSeeded: boolean("is_seeded").notNull().default(false),
+    excludeFromMetrics: boolean("exclude_from_metrics").notNull().default(false),
+    excludeFromEval: boolean("exclude_from_eval").notNull().default(false),
+    seedBatchId: text("seed_batch_id"),
+    seededAt: timestamp("seeded_at"),
   },
   (table) => ({
     submittedAtIdx: index("ds_submitted_at_idx").on(table.submittedAt),
@@ -243,6 +278,9 @@ export const dealerSubmissions = pgTable(
     stateCodeIdx: index("ds_state_code_idx").on(table.stateCode),
     flagMarketAdjIdx: index("ds_flag_market_adj_idx").on(table.flagMarketAdjustment),
     feeNamesIdx: index("ds_fee_names_idx").on(table.feeNames),
+    ingestionSourceIdx: index("ds_ingestion_source_idx").on(table.ingestionSource),
+    isSeededIdx: index("ds_is_seeded_idx").on(table.isSeeded),
+    excludeFromMetricsIdx: index("ds_exclude_from_metrics_idx").on(table.excludeFromMetrics),
   }),
 );
 
