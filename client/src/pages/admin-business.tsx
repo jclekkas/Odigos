@@ -1260,7 +1260,7 @@ interface SubscriptionHealth {
   checkoutConversionRate: number;
   checkoutsWithoutPayment: number;
   estimatedRevenue: number;
-  tierBreakdown: { tier49: number; tier79: number; other: number };
+  tierBreakdown: { tier29: number; tier49: number; tier79: number; other: number };
   dailyNewPayers: Array<{ date: string; count: number }>;
   activeSubscribers: number;
   mrr: number | null;
@@ -1301,14 +1301,16 @@ function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateR
     );
   }
 
+  const tier29 = data?.tierBreakdown.tier29 ?? 0;
   const tier49 = data?.tierBreakdown.tier49 ?? 0;
   const tier79 = data?.tierBreakdown.tier79 ?? 0;
   const tierOther = data?.tierBreakdown.other ?? 0;
-  const tierTotal = tier49 + tier79 + tierOther;
+  const tierTotal = tier29 + tier49 + tier79 + tierOther;
   const tierData = [
-    { name: "$49 Standard", value: tier49, color: "hsl(var(--primary))" },
-    { name: "$79 Premium", value: tier79, color: "#22c55e" },
-    ...(tierOther > 0 ? [{ name: "Other", value: tierOther, color: "#94a3b8" }] : []),
+    { name: "Weekend Warrior Pass ($29)", value: tier29, color: "#94a3b8" },
+    { name: "Car Buyer's Pass ($49)", value: tier49, color: "hsl(var(--primary))" },
+    { name: "$79 Premium (legacy)", value: tier79, color: "#22c55e" },
+    ...(tierOther > 0 ? [{ name: "Other", value: tierOther, color: "#cbd5e1" }] : []),
   ].filter(d => d.value > 0);
 
   const chartData = (data?.dailyNewPayers ?? []).map(d => ({
@@ -1329,7 +1331,7 @@ function SubscriptionPanel({ adminKey, range }: { adminKey: string; range: DateR
     <div className="space-y-6" data-testid="panel-subscription-health">
       {hasStripe && (
         <p className="text-xs text-muted-foreground italic">
-          * Odigos is a one-time payment product — upcomingRenewals is 0 and MRR reflects 30-day revenue. Showing Stripe-verified payment data.
+          * Odigos sells one-time time-windowed passes (72h or 14d) — upcomingRenewals is 0 because passes don't auto-renew. MRR reflects 30-day pass revenue. Showing Stripe-verified payment data.
         </p>
       )}
 

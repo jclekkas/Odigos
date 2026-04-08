@@ -87,7 +87,7 @@ export default function About() {
             The free preview gives you a GO / NO-GO verdict, a deal score, and the pricing terms found in the quote.
           </p>
           <p className="text-muted-foreground mb-2">
-            The full review ($49, one-time) adds a complete breakdown of red flags, a checklist of missing information, and a copy-paste reply you can send directly to the dealer.
+            The full review unlocks with a pass &mdash; Weekend Warrior ($29, 72 hours) or Car Buyer's Pass ($49, 14 days) of unlimited scans &mdash; and adds a complete breakdown of red flags, a checklist of missing information, and a copy-paste reply you can send directly to the dealer.
           </p>
           <p className="text-muted-foreground">
             Your submission is not shared with any dealership. PII-redacted text is deleted within 90 days.

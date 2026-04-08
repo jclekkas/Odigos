@@ -625,7 +625,7 @@ export async function getBIRevenue(range: DateRange): Promise<BIRevenue> {
 
   const getRevAmount = (e: (typeof allEvents)[0]) => {
     const tier = e.metadata?.tier;
-    return tier === "49" ? 49 : tier === "79" ? 79 : 49;
+    return tier === "29" ? 29 : tier === "79" ? 79 : 49;
   };
 
   const payments = ranged.filter(e => e.eventType === "payment_completed");
@@ -756,7 +756,7 @@ export interface BISubscriptionHealth {
   checkoutConversionRate: number;
   checkoutsWithoutPayment: number;
   estimatedRevenue: number;
-  tierBreakdown: { tier49: number; tier79: number; other: number };
+  tierBreakdown: { tier29: number; tier49: number; tier79: number; other: number };
   dailyNewPayers: Array<{ date: string; count: number }>;
 }
 
@@ -805,11 +805,12 @@ export async function getBISubscriptionHealth(range: DateRange): Promise<BISubsc
     return !sid || !paidStripeIds.has(sid);
   }).length;
 
-  const tierBreakdown = { tier49: 0, tier79: 0, other: 0 };
+  const tierBreakdown = { tier29: 0, tier49: 0, tier79: 0, other: 0 };
   let estimatedRevenue = 0;
   payments.forEach(e => {
     const tier = e.metadata?.tier;
-    if (tier === "49") { tierBreakdown.tier49++; estimatedRevenue += 49; }
+    if (tier === "29") { tierBreakdown.tier29++; estimatedRevenue += 29; }
+    else if (tier === "49") { tierBreakdown.tier49++; estimatedRevenue += 49; }
     else if (tier === "79") { tierBreakdown.tier79++; estimatedRevenue += 79; }
     else { tierBreakdown.other++; estimatedRevenue += 49; }
   });

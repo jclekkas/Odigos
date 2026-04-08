@@ -11,7 +11,7 @@ Core User Flow
 4. The user receives a simple explanation and optional response text they can send back to the dealer
 
 Current Pricing
-$49 per analysis.
+Two-tier pass model. Weekend Warrior Pass ($29 / 72h unlimited) and Car Buyer's Pass ($49 / 14d unlimited). One-time charges, no subscription. Both passes unlock identical features — only the shopping window differs.
 
 Positioning
 Consumer protection for car buyers.

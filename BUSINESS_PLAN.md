@@ -31,8 +31,17 @@ Purpose:
 Give the user an immediate answer to the question:
 "Does this deal look safe or suspicious?"
 
-Paid ($49 one-time)
-Unlocks the full report:
+Paid (two-tier time-windowed passes, one-time)
+
+Weekend Warrior Pass — $29 / 72 hours unlimited scans
+- Built for buyers hitting 2–3 dealers this weekend
+- Same paid features as Car Buyer's Pass; intentionally constrained by time
+
+Car Buyer's Pass — $49 / 14 days unlimited scans (default)
+- Built for the typical buyer comparing 4–6 quotes over a couple of weeks
+- Covers the entire car-shopping cycle
+
+Both unlock the same full report:
 - detailed reasoning
 - missing information checklist
 - negotiation reply script
@@ -40,9 +49,10 @@ Unlocks the full report:
 - confidence assessment
 
 Purpose:
-Help the buyer respond to the dealer and correct the deal.
+Help the buyer respond to multiple dealers and correct the deal across the
+full shopping cycle, not just a single quote.
 
-This model mirrors the buyer's behavior: the purchase is episodic and high-stakes, so a single-transaction payment aligns better than a subscription.
+This model mirrors how buyers actually shop: car purchases are episodic but **non-atomic** — most buyers solicit quotes from multiple dealers across a weekend or a couple of weeks before committing. A time-windowed pass aligns the purchase to the *shopping cycle*, not the *individual quote*. The 72-hour Weekend Warrior tier captures decisive weekend shoppers; the 14-day Car Buyer's Pass captures the more deliberate multi-week comparison shopper. Both avoid the friction of subscriptions because the window is intentionally short — you buy a pass for *this car purchase*, not forever.
 
 ## The Core Problem
 
@@ -201,7 +211,7 @@ The long-term value of Odigos is not simply using AI, but applying it to a narro
 
 Odigos uses a simple transaction model.
 
-Price: $49 per analysis unlock
+Price: $29 (72-hour Weekend Warrior Pass) or $49 (14-day Car Buyer's Pass). Customers buy one pass per car-shopping cycle and run unlimited scans inside the window.
 
 Typical costs per transaction:
 - AI analysis: ~$0.02–$0.10

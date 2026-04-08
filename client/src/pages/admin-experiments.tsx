@@ -33,8 +33,8 @@ const VARIANT_LABELS: Record<string, Record<string, string>> = {
     urgency: "Urgency — \"Don't sign until you know what the dealer isn't telling you.\"",
   },
   unlock_cta: {
-    control: "Control — \"Unlock Full Deal Review — $49 (one-time)\"",
-    value: "Value — \"Unlock Full Deal Review — $49 · Less Than a Doc Fee\"",
+    control: "Control — \"Start 14 Days of Unlimited Scans — $49\"",
+    value: "Value — \"$49 = 14 days of unlimited scans (less than one doc fee)\"",
   },
 };
 

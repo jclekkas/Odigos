@@ -37,7 +37,8 @@ export interface EventMetadata {
   dealScore?: "GREEN" | "YELLOW" | "RED";
   vehicle?: string;
   zipCode?: string;
-  tier?: "49" | "79";
+  tier?: "29" | "49" | "79";
+  selected_pass?: "weekend_warrior" | "car_buyers_pass";
   page?: string;
   referrer?: string;
   endpoint?: string;
