@@ -359,11 +359,13 @@ function MarketComparisonBlock({ marketComparison, marketContext, detectedDocFee
 
 interface BiggestIssueCardProps {
   primaryIssue: string | null | undefined;
-  fallbackIssue: string | null;
 }
 
-function BiggestIssueCard({ primaryIssue, fallbackIssue }: BiggestIssueCardProps) {
-  const issue = primaryIssue?.trim() || fallbackIssue;
+function BiggestIssueCard({ primaryIssue }: BiggestIssueCardProps) {
+  // Only render when the LLM actually surfaced a primary issue. We do NOT
+  // fall back to verdictLabel here — that field is a verdict statement
+  // ("GO — TERMS LOOK CLEAN"), not an issue description.
+  const issue = primaryIssue?.trim();
   if (!issue) return null;
 
   return (
@@ -1997,11 +1999,8 @@ export default function Home() {
                 }
               />
 
-              {/* 3) Biggest issue — the single primary problem (or "price appears fair") */}
-              <BiggestIssueCard
-                primaryIssue={result.primaryIssue}
-                fallbackIssue={result.verdictLabel ?? null}
-              />
+              {/* 3) Biggest issue — the single primary problem (renders only when set) */}
+              <BiggestIssueCard primaryIssue={result.primaryIssue} />
 
               {/* 4) Expected normal range — plausible fair OTD band */}
               <ExpectedNormalRangeCard
