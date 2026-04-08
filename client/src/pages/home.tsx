@@ -29,12 +29,12 @@ import { trackConversion, useExperiment } from "@/lib/experiments";
 import { tagFlow } from "@/lib/sentry";
 import { setSeoMeta } from "@/lib/seo";
 import { howToSchema } from "@/lib/jsonld";
-import { 
-  ChevronDown, 
-  ChevronUp, 
-  Loader2, 
-  Copy, 
-  Check, 
+import {
+  ChevronDown,
+  ChevronUp,
+  Loader2,
+  Copy,
+  Check,
   HelpCircle,
   DollarSign,
   FileText,
@@ -44,7 +44,10 @@ import {
   Upload,
   Download,
   Share2,
-  Link2 as LinkIcon
+  Link2 as LinkIcon,
+  AlertTriangle,
+  TrendingUp,
+  Target,
 } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
@@ -175,6 +178,239 @@ function formatCurrency(value: number | null | undefined): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(value);
+}
+
+// -----------------------------------------------------------------------
+// Financial-impact presentation (the "money at risk" hero block + peers).
+//
+// These components lead the result page so the buyer sees dollars before
+// verdicts, flags, or explanations. They intentionally display ranges
+// (never false precision) and hedge when confidence is low.
+// -----------------------------------------------------------------------
+
+function formatCurrencyRange(min: number | null | undefined, max: number | null | undefined): string | null {
+  if (min == null || max == null) return null;
+  if (min === max) return formatCurrency(min);
+  return `${formatCurrency(min)}–${formatCurrency(max)}`;
+}
+
+type FinancialImpactConfidence = "low" | "medium" | "high";
+
+interface FinancialImpactHeroProps {
+  overpaymentMin: number | null | undefined;
+  overpaymentMax: number | null | undefined;
+  confidence: FinancialImpactConfidence | null | undefined;
+  financialSummary: string | null | undefined;
+  fallbackSummary: string;
+}
+
+function FinancialImpactHero({
+  overpaymentMin,
+  overpaymentMax,
+  confidence,
+  financialSummary,
+  fallbackSummary,
+}: FinancialImpactHeroProps) {
+  const range = formatCurrencyRange(overpaymentMin, overpaymentMax);
+  const hasRange = range != null;
+
+  // Tone: "roughly fair" if the range starts at 0 and max is small; otherwise
+  // treat as a money-at-risk situation. Threshold is intentionally loose —
+  // the LLM is the source of truth, we just pick visual tone.
+  const isRoughlyFair = hasRange && overpaymentMin === 0 && (overpaymentMax ?? 0) <= 500;
+
+  const headline = hasRange
+    ? isRoughlyFair
+      ? `Likely fair deal · Savings opportunity: ${range}`
+      : `You may be overpaying by ${range}`
+    : "Dollar impact not yet estimable";
+
+  const toneClasses = !hasRange
+    ? {
+        border: "border-border/60",
+        bg: "bg-muted/30",
+        text: "text-foreground",
+        chipBg: "bg-muted/50",
+        chipBorder: "border-border/60",
+        chipText: "text-muted-foreground",
+      }
+    : isRoughlyFair
+    ? {
+        border: "border-emerald-500/30",
+        bg: "bg-emerald-500/5",
+        text: "text-emerald-700 dark:text-emerald-400",
+        chipBg: "bg-emerald-500/15",
+        chipBorder: "border-emerald-500/30",
+        chipText: "text-emerald-700 dark:text-emerald-400",
+      }
+    : {
+        border: "border-red-500/30",
+        bg: "bg-red-500/5",
+        text: "text-red-700 dark:text-red-400",
+        chipBg: "bg-red-500/15",
+        chipBorder: "border-red-500/30",
+        chipText: "text-red-700 dark:text-red-400",
+      };
+
+  const confidenceChipLabel: Record<FinancialImpactConfidence, string> = {
+    low: "Low confidence",
+    medium: "Medium confidence",
+    high: "High confidence",
+  };
+
+  return (
+    <div
+      className={`rounded-xl border-2 ${toneClasses.border} ${toneClasses.bg} p-6 sm:p-8 space-y-4 shadow-sm`}
+      data-testid="financial-impact-hero"
+    >
+      <div className="flex items-center gap-2">
+        <DollarSign className={`w-5 h-5 ${toneClasses.text}`} aria-hidden="true" />
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Money at risk
+        </span>
+      </div>
+      <h3
+        className={`text-2xl sm:text-3xl font-bold leading-tight ${toneClasses.text}`}
+        data-testid="financial-impact-headline"
+      >
+        {headline}
+      </h3>
+      <p
+        className="text-base leading-relaxed text-foreground/90"
+        data-testid="financial-impact-summary"
+      >
+        {financialSummary ?? fallbackSummary}
+      </p>
+      {confidence && (
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium border ${toneClasses.chipBg} ${toneClasses.chipBorder} ${toneClasses.chipText}`}
+            data-testid="financial-impact-confidence-chip"
+          >
+            {confidenceChipLabel[confidence]}
+          </span>
+          {!hasRange && (
+            <span className="text-xs text-muted-foreground">
+              We need more pricing details to quantify the range.
+            </span>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface MarketComparisonBlockProps {
+  marketComparison: string | null | undefined;
+  marketContext: MarketContext | null | undefined;
+  detectedDocFee: number | null;
+}
+
+function MarketComparisonBlock({ marketComparison, marketContext, detectedDocFee }: MarketComparisonBlockProps) {
+  const state = marketContext?.stateCode ?? null;
+  const stateAvgDocFee = marketContext?.stateAvgDocFee ?? null;
+
+  const hasLocalData = state != null && stateAvgDocFee != null;
+  const fallback = "We do not yet have enough local examples for a strong state comparison.";
+  const sentence = marketComparison?.trim() || fallback;
+
+  return (
+    <Card className="bg-muted/20 border-border/40" data-testid="market-comparison-block">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wider">
+          <TrendingUp className="w-4 h-4" aria-hidden="true" />
+          Market comparison
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <p
+          className="text-base leading-relaxed text-foreground"
+          data-testid="market-comparison-sentence"
+        >
+          {sentence}
+        </p>
+        {hasLocalData && detectedDocFee != null && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div className="rounded-md border border-border/50 bg-background/60 px-3 py-2">
+              <div className="text-xs text-muted-foreground">Your doc fee</div>
+              <div className="text-base font-semibold font-mono text-foreground">
+                {formatCurrency(detectedDocFee)}
+              </div>
+            </div>
+            <div className="rounded-md border border-border/50 bg-background/60 px-3 py-2">
+              <div className="text-xs text-muted-foreground">
+                {state} average
+              </div>
+              <div className="text-base font-semibold font-mono text-foreground">
+                {formatCurrency(stateAvgDocFee)}
+              </div>
+            </div>
+          </div>
+        )}
+        {!hasLocalData && (
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Based on limited local examples in your state — treat as early signal only.
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+interface BiggestIssueCardProps {
+  primaryIssue: string | null | undefined;
+  fallbackIssue: string | null;
+}
+
+function BiggestIssueCard({ primaryIssue, fallbackIssue }: BiggestIssueCardProps) {
+  const issue = primaryIssue?.trim() || fallbackIssue;
+  if (!issue) return null;
+
+  return (
+    <Card className="border-amber-500/30 bg-amber-500/5" data-testid="biggest-issue-card">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wider">
+          <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+          Biggest issue
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-lg font-semibold leading-snug text-foreground" data-testid="biggest-issue-text">
+          {issue}
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+
+interface ExpectedNormalRangeCardProps {
+  normalOtdMin: number | null | undefined;
+  normalOtdMax: number | null | undefined;
+}
+
+function ExpectedNormalRangeCard({ normalOtdMin, normalOtdMax }: ExpectedNormalRangeCardProps) {
+  const range = formatCurrencyRange(normalOtdMin, normalOtdMax);
+  if (!range) return null;
+
+  return (
+    <Card className="bg-muted/20 border-border/40" data-testid="expected-normal-range-card">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wider">
+          <Target className="w-4 h-4" aria-hidden="true" />
+          Expected normal range
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-base leading-relaxed text-foreground">
+          A more normal out-the-door price for this deal would likely be around{" "}
+          <span className="font-semibold font-mono text-foreground" data-testid="expected-normal-range-value">
+            {range}
+          </span>
+          .
+        </p>
+      </CardContent>
+    </Card>
+  );
 }
 
 interface DealScoreBadgeProps {
@@ -1735,11 +1971,49 @@ export default function Home() {
 
         {result && (
           <div ref={resultsRef} className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="border-t border-border/50 pt-8">
-              <h2 className="text-sm font-medium text-muted-foreground text-center mb-4 uppercase tracking-wider">Your deal analysis</h2>
-              
-              <DealScoreBadge 
-                score={result.dealScore} 
+            <div className="border-t border-border/50 pt-8 space-y-6">
+              <h2 className="text-sm font-medium text-muted-foreground text-center uppercase tracking-wider">Your deal analysis</h2>
+
+              {/* 1) Financial impact hero — dollars first, always visible */}
+              <FinancialImpactHero
+                overpaymentMin={result.estimatedOverpaymentMin}
+                overpaymentMax={result.estimatedOverpaymentMax}
+                confidence={result.financialImpactConfidence ?? null}
+                financialSummary={result.financialSummary}
+                fallbackSummary={
+                  result.estimatedOverpaymentMin == null || result.estimatedOverpaymentMax == null
+                    ? "We need more pricing details to estimate the dollar impact of this quote."
+                    : result.summary
+                }
+              />
+
+              {/* 2) Market comparison — one short sentence grounded in state context */}
+              <MarketComparisonBlock
+                marketComparison={result.marketComparison}
+                marketContext={result.marketContext ?? null}
+                detectedDocFee={
+                  (result.detectedFields?.fees ?? [])
+                    .find((f) => /doc.?fee|document/i.test(f.name))?.amount ?? null
+                }
+              />
+
+              {/* 3) Biggest issue — the single primary problem (or "price appears fair") */}
+              <BiggestIssueCard
+                primaryIssue={result.primaryIssue}
+                fallbackIssue={result.verdictLabel ?? null}
+              />
+
+              {/* 4) Expected normal range — plausible fair OTD band */}
+              <ExpectedNormalRangeCard
+                normalOtdMin={result.estimatedNormalOtdMin}
+                normalOtdMax={result.estimatedNormalOtdMax}
+              />
+            </div>
+
+            {/* 5) Existing detailed analysis — verdict badge, flags, negotiation script, etc. */}
+            <div className="pt-2">
+              <DealScoreBadge
+                score={result.dealScore}
                 goNoGo={result.goNoGo}
                 confidenceLevel={result.confidenceLevel}
                 verdictLabel={result.verdictLabel}
