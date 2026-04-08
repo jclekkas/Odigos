@@ -40,8 +40,8 @@ export default function OutTheDoorPriceCalculator() {
 
   useEffect(() => {
     setSeoMeta({
-      title: "Out-the-Door Price Calculator (2026) - Estimate Car Total Cost Instantly",
-      description: "Use this out-the-door price calculator to estimate your total car cost with taxes and dealer fees. Get a real OTD estimate in seconds.",
+      title: "Out-the-Door Price Calculator & Hidden Fee Checker (2026)",
+      description: "Calculate your exact out-the-door price. Instantly spot if your dealer is padding the quote with hidden markups or illegal add-ons.",
       path: "/out-the-door-price-calculator",
     });
   }, []);
@@ -78,21 +78,21 @@ export default function OutTheDoorPriceCalculator() {
   };
 
   return (
-    <ArticleLayout title="Out-the-Door Price Calculator">
+    <ArticleLayout title="Out-the-Door Price Calculator & Hidden Fee Checker">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(articleSchema({
-          title: "Out-the-Door Price Calculator (2026) - Estimate Car Total Cost Instantly",
-          description: "Use this out-the-door price calculator to estimate your total car cost with taxes and dealer fees. Get a real OTD estimate in seconds.",
+          title: "Out-the-Door Price Calculator & Hidden Fee Checker (2026)",
+          description: "Calculate your exact out-the-door price. Instantly spot if your dealer is padding the quote with hidden markups or illegal add-ons.",
           path: "/out-the-door-price-calculator",
         }))}</script>
       </Helmet>
 
       <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 leading-tight" data-testid="text-otd-calc-headline">
-        Out-the-Door Price Calculator
+        Out-the-Door Price Calculator & Hidden Fee Checker
       </h1>
 
       <p className="text-lg text-muted-foreground">
-        Estimate your total car price including taxes, fees, and dealer add-ons in seconds. Enter your numbers below to see a realistic out-the-door figure before you walk into the dealership.{" "}<SourceCitation sources={ARTICLE_SOURCES["out-the-door-price-calculator"].sources} lastVerified={ARTICLE_SOURCES["out-the-door-price-calculator"].lastVerified} />
+        Calculate your exact out-the-door price and spot if a dealer is padding the quote with hidden markups, inflated doc fees, or illegal add-ons. Enter your numbers below — then paste your actual dealer quote into Odigos for a full hidden-fee check.{" "}<SourceCitation sources={ARTICLE_SOURCES["out-the-door-price-calculator"].sources} lastVerified={ARTICLE_SOURCES["out-the-door-price-calculator"].lastVerified} />
       </p>
 
       {/* Interactive Calculator */}
