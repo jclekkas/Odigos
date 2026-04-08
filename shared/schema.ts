@@ -236,6 +236,20 @@ export const dealerSubmissions = pgTable(
     // --- Content deduplication ---
     // SHA-256 hex hash of normalized submission text (CRLF→LF, outer whitespace trimmed)
     contentHash: text("content_hash"),
+
+    // --- Provenance & exclusion flags for seeded rows ---
+    // Orthogonal design: `isSeeded` is the provenance marker, while
+    // `excludeFromMetrics`/`excludeFromEval` are independent exclusion
+    // controls so we can later exclude non-seeded rows (e.g. internal
+    // test data) without rewriting every metrics query. Metrics queries
+    // must filter on `exclude_from_metrics = false`, not on
+    // `ingestion_source = 'user'`.
+    ingestionSource: text("ingestion_source").notNull().default("user"),
+    isSeeded: boolean("is_seeded").notNull().default(false),
+    excludeFromMetrics: boolean("exclude_from_metrics").notNull().default(false),
+    excludeFromEval: boolean("exclude_from_eval").notNull().default(false),
+    seedBatchId: text("seed_batch_id"),
+    seededAt: timestamp("seeded_at"),
   },
   (table) => ({
     submittedAtIdx: index("ds_submitted_at_idx").on(table.submittedAt),
@@ -243,6 +257,9 @@ export const dealerSubmissions = pgTable(
     stateCodeIdx: index("ds_state_code_idx").on(table.stateCode),
     flagMarketAdjIdx: index("ds_flag_market_adj_idx").on(table.flagMarketAdjustment),
     feeNamesIdx: index("ds_fee_names_idx").on(table.feeNames),
+    ingestionSourceIdx: index("ds_ingestion_source_idx").on(table.ingestionSource),
+    isSeededIdx: index("ds_is_seeded_idx").on(table.isSeeded),
+    excludeFromMetricsIdx: index("ds_exclude_from_metrics_idx").on(table.excludeFromMetrics),
   }),
 );
 
