@@ -54,9 +54,9 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
       "Complete 2026 table of dealer doc fee caps for all 50 states. See which states have no cap, which limit fees, and how to check if your dealer is overcharging.",
   },
   "/out-the-door-price": {
-    title: "Out-the-Door Price Explained: Your Real Cost Before Signing",
+    title: "Out-the-Door Price Checker: Instantly Spot Hidden Dealer Fees",
     description:
-      "Out-the-door price is the final amount you pay to drive off the lot. Learn what's included, how to calculate it, and how to spot hidden fees dealers add on.",
+      "Is your dealer hiding fees? Check your out-the-door (OTD) price instantly. Find out if you're overpaying for markups, doc fees, or bad math.",
   },
   "/dealer-add-ons-list": {
     title: "Dealer Add-Ons List: Which Are Scams & Which You Need (2026)",
@@ -251,9 +251,9 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
       "Quickly check if a car deal is good without spreadsheets or guesswork, and avoid common tricks dealers use to hide costs.",
   },
   "/out-the-door-price-calculator": {
-    title: "Out-the-Door Price Calculator (2026) - Estimate Car Total Cost Instantly",
+    title: "Out-the-Door Price Calculator & Hidden Fee Checker (2026)",
     description:
-      "Use this out-the-door price calculator to estimate your total car cost with taxes and dealer fees. Get a real OTD estimate in seconds.",
+      "Calculate your exact out-the-door price. Instantly spot if your dealer is padding the quote with hidden markups or illegal add-ons.",
   },
   "/what-does-out-the-door-price-include": {
     title: "What Does Out-the-Door Price Include? | Odigos",
