@@ -1333,53 +1333,93 @@ export default function Home() {
 
   useEffect(() => {
     setCheckoutLoading(false);
-    
+
     const params = new URLSearchParams(window.location.search);
-    const paid = params.get("paid");
+    // Stripe Embedded Checkout returns to `return_url` with a `session_id`
+    // query param. `product` is passed through as a hint; the authoritative
+    // passProduct comes from the server via /api/verify-session, which
+    // reads it from Stripe session metadata.
+    const sessionId = params.get("session_id");
     const product = params.get("product");
     const canceled = params.get("canceled");
 
-    if (canceled === "0" || canceled === "1") {
-      if (canceled === "0" || paid === "0") {
-        toast({
-          title: "Payment Canceled",
-          description: "You can try again anytime.",
-        });
-      }
+    if (canceled === "1") {
+      toast({
+        title: "Payment Canceled",
+        description: "You can try again anytime.",
+      });
       window.history.replaceState({}, "", window.location.pathname);
       return;
     }
 
-    if (paid === "1" && product) {
+    if (!sessionId) return;
+
+    // Verify the session with the server before activating the pass.
+    // This guards against URL tampering and is the same contract used by
+    // the webhook path.
+    let cancelled = false;
+    (async () => {
       try {
-        // Map legacy product key → new pass product
-        const productKey: PassProductKey | null =
-          product === "weekend_warrior"
-            ? "weekend_warrior"
-            : product === "car_buyers_pass" || product === "deal_clarity" || product === "negotiation_pack"
-              ? "car_buyers_pass"
-              : null;
+        const res = await fetch(
+          `/api/verify-session?session_id=${encodeURIComponent(sessionId)}`,
+        );
+        const data = await res.json();
+        if (cancelled) return;
 
-        if (productKey) {
-          const pass = savePass(productKey);
-          setActivePass(pass);
-          setUnlockTier("active");
-          capture("paid_conversion", { product: productKey, selected_pass: productKey });
-          trackConversion("paid_conversion");
-
-          const productInfo = PASS_PRODUCTS[productKey];
-          const title =
-            productKey === "weekend_warrior"
-              ? `Weekend Pass activated — ${productInfo.durationLabel} of unlimited scans`
-              : `Car Buyer's Pass activated — ${productInfo.durationLabel} of unlimited scans`;
-          toast({
-            title,
-            description: "Now run every quote you have — most buyers miss hidden fees on their second offer.",
-          });
+        if (!data?.paid) {
+          // Payment not confirmed by Stripe — don't activate, don't toast.
+          window.history.replaceState({}, "", window.location.pathname);
+          return;
         }
-      } catch {}
-      window.history.replaceState({}, "", window.location.pathname);
-    }
+
+        // Prefer server-verified passProduct; fall back to the URL hint for
+        // legacy sessions that predate metadata.
+        const serverPass = data.passProduct as string | null | undefined;
+        const productKey: PassProductKey | null =
+          serverPass === "weekend_warrior" || serverPass === "car_buyers_pass"
+            ? serverPass
+            : product === "weekend_warrior"
+              ? "weekend_warrior"
+              : product === "car_buyers_pass" ||
+                  product === "deal_clarity" ||
+                  product === "negotiation_pack"
+                ? "car_buyers_pass"
+                : null;
+
+        if (!productKey) {
+          window.history.replaceState({}, "", window.location.pathname);
+          return;
+        }
+
+        const pass = savePass(productKey);
+        setActivePass(pass);
+        setUnlockTier("active");
+        capture("paid_conversion", { product: productKey, selected_pass: productKey });
+        trackConversion("paid_conversion");
+
+        const productInfo = PASS_PRODUCTS[productKey];
+        const title =
+          productKey === "weekend_warrior"
+            ? `Weekend Pass activated — ${productInfo.durationLabel} of unlimited scans`
+            : `Car Buyer's Pass activated — ${productInfo.durationLabel} of unlimited scans`;
+        toast({
+          title,
+          description:
+            "Now run every quote you have — most buyers miss hidden fees on their second offer.",
+        });
+      } catch {
+        // Swallow errors — user can retry; don't flash a scary toast over a
+        // successful payment.
+      } finally {
+        if (!cancelled) {
+          window.history.replaceState({}, "", window.location.pathname);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [toast]);
 
   useEffect(() => {
