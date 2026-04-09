@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, lazy, Suspense } from "react";
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import AnalysisProgressBar from "@/components/AnalysisProgressBar";
 import { Link, useSearch } from "wouter";
 import { Helmet } from "react-helmet-async";
@@ -91,76 +91,52 @@ import {
   type ActivePass,
 } from "@/lib/pass";
 
-// NOTE: @stripe/stripe-js and @stripe/react-stripe-js need to be installed:
-//   npm install @stripe/stripe-js @stripe/react-stripe-js
-// Using conditional dynamic imports so the code compiles without them.
-// The dynamic import paths are constructed at runtime to avoid TypeScript
-// module resolution errors when the packages are not installed.
+// Stripe client SDK imports — loaded statically so Vite bundles them.
+// `loadStripe` must be called with the publishable key at build time (via
+// VITE_STRIPE_PUBLISHABLE_KEY). The resulting promise is passed to
+// `EmbeddedCheckoutProvider`, which awaits it internally.
+import { loadStripe, type Stripe } from "@stripe/stripe-js";
+import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
 
-const STRIPE_JS_MODULE = "@stripe/stripe-js";
-const STRIPE_REACT_MODULE = "@stripe/react-stripe-js";
+let stripePromise: Promise<Stripe | null> | null = null;
 
-let stripePromise: Promise<unknown> | null = null;
-
-function getStripePromise() {
+function getStripePromise(): Promise<Stripe | null> | null {
   if (!stripePromise) {
     const key = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
     if (!key) return null;
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-implied-eval
-      stripePromise = (new Function("mod", "return import(mod)"))(STRIPE_JS_MODULE)
-        .then((mod: { loadStripe: (key: string) => Promise<unknown> }) =>
-          mod.loadStripe(key)
-        )
-        .catch(() => null);
-    } catch {
-      return null;
-    }
+    stripePromise = loadStripe(key);
   }
   return stripePromise;
 }
 
 /**
- * Lazy-loaded wrapper for Stripe Embedded Checkout.
- * Falls back gracefully if @stripe/react-stripe-js is not installed.
+ * Wrapper for Stripe Embedded Checkout. Renders the Stripe modal inline
+ * using the clientSecret from /api/checkout.
  */
-const StripeEmbeddedCheckoutWrapper = lazy(() =>
-  ((new Function("mod", "return import(mod)"))(STRIPE_REACT_MODULE) as Promise<{
-    EmbeddedCheckoutProvider: React.ComponentType<{ stripe: unknown; options: { clientSecret: string }; children: React.ReactNode }>;
-    EmbeddedCheckout: React.ComponentType;
-  }>).then((mod) => ({
-    default: ({
-      clientSecret,
-      onClose,
-    }: {
-      clientSecret: string;
-      onClose: () => void;
-    }) => {
-      const sp = getStripePromise();
-      if (!sp) return null;
-      return (
-        <div className="relative border rounded-lg p-4 bg-background shadow-lg">
-          <button
-            onClick={onClose}
-            className="absolute top-2 right-2 text-muted-foreground hover:text-foreground text-sm z-10"
-            aria-label="Close checkout"
-          >
-            &times;
-          </button>
-          <mod.EmbeddedCheckoutProvider
-            stripe={sp as never}
-            options={{ clientSecret }}
-          >
-            <mod.EmbeddedCheckout />
-          </mod.EmbeddedCheckoutProvider>
-        </div>
-      );
-    },
-  })).catch(() => ({
-    // If @stripe/react-stripe-js is not installed, render nothing
-    default: () => null as never,
-  }))
-);
+function StripeEmbeddedCheckoutWrapper({
+  clientSecret,
+  onClose,
+}: {
+  clientSecret: string;
+  onClose: () => void;
+}) {
+  const sp = getStripePromise();
+  if (!sp) return null;
+  return (
+    <div className="relative border rounded-lg p-4 bg-background shadow-lg">
+      <button
+        onClick={onClose}
+        className="absolute top-2 right-2 text-muted-foreground hover:text-foreground text-sm z-10"
+        aria-label="Close checkout"
+      >
+        &times;
+      </button>
+      <EmbeddedCheckoutProvider stripe={sp} options={{ clientSecret }}>
+        <EmbeddedCheckout />
+      </EmbeddedCheckoutProvider>
+    </div>
+  );
+}
 
 type AnalysisResponseWithExtras = AnalysisResponse & {
   listingId?: string;
