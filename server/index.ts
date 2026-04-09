@@ -89,11 +89,11 @@ app.use((_req, res, next) => {
   const directives = [
     "default-src 'self'",
     `script-src 'self' https://js.stripe.com 'nonce-${nonce}'`,
-    "connect-src 'self' https://api.stripe.com https://*.sentry.io https://app.posthog.com https://us.posthog.com",
-    "frame-src https://js.stripe.com",
+    "connect-src 'self' https://api.stripe.com https://checkout.stripe.com https://*.sentry.io https://app.posthog.com https://us.posthog.com",
+    "frame-src 'self' https://js.stripe.com https://checkout.stripe.com https://hooks.stripe.com",
     "img-src 'self' data: https:",
-    "style-src 'self' 'unsafe-inline'",
-    "font-src 'self' data:",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' data: https://fonts.gstatic.com",
   ];
   res.setHeader("Content-Security-Policy", directives.join("; "));
   next();
