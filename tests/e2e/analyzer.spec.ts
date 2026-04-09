@@ -1,12 +1,14 @@
 import { test, expect, Page } from "@playwright/test";
 
-// Pre-accept the cookie consent banner for all e2e tests so it doesn't
-// intercept clicks on CTAs near the bottom of the page or fail visibility
-// checks. The banner uses localStorage to persist consent, so we set it
-// before any page script runs via addInitScript.
+// Pre-accept the cookie consent banner AND the upload consent checkbox for
+// all e2e tests so they don't intercept clicks or keep the analyze button
+// disabled. Both are persisted in localStorage by the governance compliance
+// UI commit (Task #158). Set them via addInitScript so the values are in
+// place before any page script runs and React initializes its state.
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem("odigos_cookie_consent", "accepted");
+    localStorage.setItem("odigos_upload_consent", "accepted");
   });
 });
 
