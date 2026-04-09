@@ -36,6 +36,7 @@ import {
   Loader2,
   Copy,
   Check,
+  CheckCircle2,
   HelpCircle,
   DollarSign,
   FileText,
@@ -81,6 +82,14 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel, MarketContext } from "@shared/schema";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
+import {
+  getActivePass,
+  savePass,
+  formatRemaining,
+  PASS_PRODUCTS,
+  type PassProductKey,
+  type ActivePass,
+} from "@/lib/pass";
 
 // NOTE: @stripe/stripe-js and @stripe/react-stripe-js need to be installed:
 //   npm install @stripe/stripe-js @stripe/react-stripe-js
@@ -660,137 +669,164 @@ Low down payment options available.
 We added some protection packages that everyone gets, but we can talk about that later.
 Let me know what time you're coming in today!!!`;
 
-type UnlockTier = "free" | "49";
+type UnlockTier = "free" | "active";
 
-interface LockedTier2Props {
-  onUnlock: () => void;
+interface PaywallCardsProps {
+  onUnlock: (productKey: PassProductKey) => void;
   isLoading: boolean;
+  loadingProduct: PassProductKey | null;
   stripeConfigured: boolean;
-  ctaLabel?: string;
+  carBuyerCtaLabel?: string;
 }
 
-function LockedTier2Section({ onUnlock, isLoading, stripeConfigured, ctaLabel }: LockedTier2Props) {
+function PaywallCards({
+  onUnlock,
+  isLoading,
+  loadingProduct,
+  stripeConfigured,
+  carBuyerCtaLabel,
+}: PaywallCardsProps) {
   useEffect(() => {
     trackPaywallView();
   }, []);
 
+  const features = [
+    "Unlimited scans inside your window",
+    "Every red flag & hidden fee",
+    "Copy-paste dealer replies",
+    "Full analysis reasoning & negotiation guidance",
+  ];
+
   return (
-    <Card className="border-border bg-muted/20">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base font-semibold">
-          <Lock className="w-4 h-4 text-muted-foreground" />
-          Unlock the full review
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ul className="space-y-2 mb-4">
-          {[
-            "Checklist of missing information to request from the dealer",
-            "Copy-paste reply you can send to the dealer directly",
-            "Detailed breakdown of fees, add-ons, and negotiation risks",
-            "Clear guidance on whether to proceed, push back, or walk away",
-          ].map((item, idx) => (
-            <li key={idx} className="flex items-start gap-2 text-sm">
-              <Check className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-              <span className="text-muted-foreground">{item}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-          Use the full review when you need to reply to the dealer, pressure-test the quote, or decide whether to keep negotiating.
+    <div>
+      <div className="mb-4 text-center">
+        <h3 className="text-lg font-semibold">Pick a pass to unlock the full review</h3>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Both passes unlock the same things — pick the window that matches how long you'll be shopping.
         </p>
-        <Button
-          variant="cta"
-          onClick={onUnlock}
-          className="w-full whitespace-normal h-auto py-3"
-          disabled={isLoading || !stripeConfigured}
-          data-testid="button-unlock-49"
+        <p className="mt-2 text-sm font-medium text-foreground">
+          Most buyers run multiple quotes — don't stop at the first offer.
+        </p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 items-stretch">
+        {/* ── WEEKEND WARRIOR — secondary ─────────────────────────── */}
+        <Card className="border-border bg-card flex flex-col" data-testid="card-paywall-weekend">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold flex items-baseline justify-between">
+              <span>Weekend Warrior Pass</span>
+              <span className="text-sm text-muted-foreground">$29 / 72h</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col flex-1">
+            <p className="text-sm text-muted-foreground mb-2">
+              Only for 2–3 dealer quotes. Ideal if you're ready to decide this weekend.
+            </p>
+            <ul className="space-y-1.5 mb-3">
+              {features.map((f, idx) => (
+                <li key={idx} className="flex items-start gap-2 text-sm">
+                  <Check className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                  <span className="text-muted-foreground">{f}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="text-xs text-amber-600/90 dark:text-amber-400/90 mb-4 leading-relaxed">
+              ⚠ Most buyers need more than a weekend — if you're still comparing next week, you'll need another pass. Choosing $29 when you need more time can cost you $58 total.
+            </p>
+            <div className="mt-auto">
+              <Button
+                variant="outline"
+                onClick={() => onUnlock("weekend_warrior")}
+                className="w-full whitespace-normal h-auto py-3"
+                disabled={isLoading || !stripeConfigured}
+                data-testid="button-unlock-weekend-warrior"
+              >
+                {isLoading && loadingProduct === "weekend_warrior" ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : !stripeConfigured ? (
+                  "Checkout unavailable"
+                ) : (
+                  "Get Weekend Pass — $29"
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* ── CAR BUYER'S PASS — primary ──────────────────────────── */}
+        <Card
+          className="border-2 border-primary bg-primary/5 flex flex-col relative md:scale-[1.02] shadow-md"
+          data-testid="card-paywall-car-buyer"
         >
-          {isLoading ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Processing...
-            </>
-          ) : !stripeConfigured ? (
-            "Checkout unavailable"
-          ) : (
-            ctaLabel ?? "Unlock Full Deal Review — $49 (one-time)"
-          )}
-        </Button>
-        <p className="text-xs text-muted-foreground text-center mt-2">
-          Unlocks immediately after payment · One-time · Not affiliated with any dealership
-        </p>
-        <p className="text-xs text-muted-foreground text-center mt-4">
-          <Link href="/example-analysis" className="underline underline-offset-2 hover:text-foreground transition-colors" data-testid="link-example-analysis-paywall">
-            Still unsure? See a full example analysis
-          </Link>
-        </p>
-      </CardContent>
-    </Card>
+          <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-semibold px-3 py-0.5 rounded-full">
+            Most popular
+          </span>
+          <CardHeader className="pb-3 pt-5">
+            <CardTitle className="text-base font-semibold flex items-baseline justify-between">
+              <span>Car Buyer's Pass</span>
+              <span className="text-sm text-muted-foreground">$49 / 14d</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col flex-1">
+            <p className="text-sm mb-1">
+              Most buyers compare 4–6 quotes before deciding. Covers your entire car shopping process.
+            </p>
+            <p className="text-sm font-medium mb-1">
+              One pass. Every dealer. No limits.
+            </p>
+            <p className="text-xs text-muted-foreground mb-3">
+              Costs less than one dealer fee — protects your entire purchase.
+            </p>
+            <ul className="space-y-1.5 mb-4">
+              {features.map((f, idx) => (
+                <li key={idx} className="flex items-start gap-2 text-sm">
+                  <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-auto">
+              <Button
+                variant="cta"
+                onClick={() => onUnlock("car_buyers_pass")}
+                className="w-full"
+                disabled={isLoading || !stripeConfigured}
+                data-testid="button-unlock-car-buyers-pass"
+              >
+                {isLoading && loadingProduct === "car_buyers_pass" ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : !stripeConfigured ? (
+                  "Checkout unavailable"
+                ) : (
+                  carBuyerCtaLabel ?? "Start 14 Days of Unlimited Scans — $49"
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <p className="text-center text-xs text-muted-foreground mt-4">
+        One-time charge. No subscription. No auto-renewal.
+      </p>
+      <p className="text-xs text-muted-foreground text-center mt-3">
+        <Link
+          href="/example-analysis"
+          className="underline underline-offset-2 hover:text-foreground transition-colors"
+          data-testid="link-example-analysis-paywall"
+        >
+          Still unsure? See a full example analysis
+        </Link>
+      </p>
+    </div>
   );
 }
-
-/* $79 Negotiation Pack - Hidden for single-tier pricing
-interface LockedTier3Props {
-  onUnlock: () => void;
-  isLoading: boolean;
-  stripeConfigured: boolean;
-}
-
-function LockedTier3Section({ onUnlock, isLoading, stripeConfigured }: LockedTier3Props) {
-  return (
-    <Card className="border-amber-500/30 bg-amber-500/5">
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Lock className="w-5 h-5 text-amber-500" />
-          Unlock Negotiation Pack
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground mb-4">
-          Get a copy-paste reply to send the dealer + the full reasoning behind this analysis.
-        </p>
-        <ul className="space-y-2 mb-4">
-          {[
-            "Copy-paste reply tailored to this deal",
-            "Full analysis reasoning and methodology"
-          ].map((item, idx) => (
-            <li key={idx} className="flex items-start gap-2 text-sm">
-              <Check className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-              <span className="text-muted-foreground">{item}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="text-xs text-muted-foreground mb-4">
-          One-time payment. Not affiliated with any dealership.
-        </p>
-        {stripeConfigured ? (
-          <Button
-            variant="cta"
-            onClick={onUnlock}
-            className="w-full"
-            disabled={isLoading}
-            data-testid="button-unlock-79"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              "Unlock for $79"
-            )}
-          </Button>
-        ) : (
-          <p className="text-sm text-center text-muted-foreground">
-            Payments not configured
-          </p>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-*/
 
 function SuggestedReplyCard({ reply }: { reply: string }) {
   const [copied, setCopied] = useState(false);
@@ -1137,24 +1173,15 @@ function EmailPreviewForm({ analysisResult }: { analysisResult: AnalysisResponse
 }
 
 function getStoredTier(): UnlockTier {
-  try {
-    if (localStorage.getItem("paid_negotiation_pack") === "true") return "49";
-    if (localStorage.getItem("paid_deal_clarity") === "true") return "49";
-    if (localStorage.getItem("odigos_unlock_tier") === "79") return "49";
-    if (localStorage.getItem("odigos_unlock_tier") === "49") return "49";
-    if (localStorage.getItem("odigos_premium_unlocked") === "true") return "49";
-    return "free";
-  } catch {
-    return "free";
-  }
+  return getActivePass() ? "active" : "free";
 }
 
 const ALLOWED_UPLOAD_TYPES = ["image/png", "image/jpeg", "image/webp", "application/pdf"];
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
 const UNLOCK_CTA_LABELS: Record<string, string> = {
-  control: "Unlock Full Deal Review — $49 (one-time)",
-  value: "Unlock Full Deal Review — $49 · Less Than a Doc Fee",
+  control: "Start 14 Days of Unlimited Scans — $49",
+  value: "$49 = 14 days of unlimited scans (less than one doc fee)",
 };
 
 export default function Home() {
@@ -1164,6 +1191,8 @@ export default function Home() {
   const [unlockTier, setUnlockTier] = useState<UnlockTier>(getStoredTier);
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [loadingProduct, setLoadingProduct] = useState<PassProductKey | null>(null);
+  const [activePass, setActivePass] = useState<ActivePass | null>(() => getActivePass());
   const [checkoutClientSecret, setCheckoutClientSecret] = useState<string | null>(null);
   const [formStartTracked, setFormStartTracked] = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
@@ -1347,14 +1376,29 @@ export default function Home() {
 
     if (paid === "1" && product) {
       try {
-        if (product === "deal_clarity" || product === "negotiation_pack") {
-          localStorage.setItem("paid_deal_clarity", "true");
-          capture("paid_conversion", { product: "full_review" });
+        // Map legacy product key → new pass product
+        const productKey: PassProductKey | null =
+          product === "weekend_warrior"
+            ? "weekend_warrior"
+            : product === "car_buyers_pass" || product === "deal_clarity" || product === "negotiation_pack"
+              ? "car_buyers_pass"
+              : null;
+
+        if (productKey) {
+          const pass = savePass(productKey);
+          setActivePass(pass);
+          setUnlockTier("active");
+          capture("paid_conversion", { product: productKey, selected_pass: productKey });
           trackConversion("paid_conversion");
-          setUnlockTier("49");
+
+          const productInfo = PASS_PRODUCTS[productKey];
+          const title =
+            productKey === "weekend_warrior"
+              ? `Weekend Pass activated — ${productInfo.durationLabel} of unlimited scans`
+              : `Car Buyer's Pass activated — ${productInfo.durationLabel} of unlimited scans`;
           toast({
-            title: "Payment Successful",
-            description: "Full Deal Review unlocked!",
+            title,
+            description: "Now run every quote you have — most buyers miss hidden fees on their second offer.",
           });
         }
       } catch {}
@@ -1368,13 +1412,18 @@ export default function Home() {
     }
   }, [result]);
 
-  const handleUnlockTier = async () => {
+  const handleUnlockPass = async (productKey: PassProductKey) => {
     setCheckoutLoading(true);
-    trackCheckoutInitiated();
+    setLoadingProduct(productKey);
+    trackCheckoutInitiated(productKey);
+    capture("checkout_initiated", { selected_pass: productKey });
 
     try {
       tagFlow("checkout", "/api/checkout");
-      const response = await apiRequest("POST", "/api/checkout", { product: "deal_clarity", sessionId: getSessionId() });
+      const response = await apiRequest("POST", "/api/checkout", {
+        product: productKey,
+        sessionId: getSessionId(),
+      });
       const data = await response.json();
 
       if (data.error === "PAYMENTS_NOT_CONFIGURED") {
@@ -1386,6 +1435,7 @@ export default function Home() {
           variant: "destructive",
         });
         setCheckoutLoading(false);
+        setLoadingProduct(null);
         return;
       }
 
@@ -1393,6 +1443,7 @@ export default function Home() {
       if (data.clientSecret && getStripePromise()) {
         setCheckoutClientSecret(data.clientSecret);
         setCheckoutLoading(false);
+        setLoadingProduct(null);
         return;
       }
 
@@ -1416,8 +1467,28 @@ export default function Home() {
         variant: "destructive",
       });
       setCheckoutLoading(false);
+      setLoadingProduct(null);
     }
   };
+
+  // Auto-open checkout if landing-page CTA passed `?pass=weekend_warrior`
+  // or `?pass=car_buyers_pass` and the user doesn't already have a pass.
+  const passQueryHandledRef = useRef(false);
+  useEffect(() => {
+    if (passQueryHandledRef.current) return;
+    const params = new URLSearchParams(window.location.search);
+    const passParam = params.get("pass");
+    if (!passParam) return;
+    if (passParam !== "weekend_warrior" && passParam !== "car_buyers_pass") return;
+    if (getActivePass()) return; // already has an active pass — don't re-checkout
+    passQueryHandledRef.current = true;
+    // Strip the param so a refresh doesn't re-trigger
+    const url = new URL(window.location.href);
+    url.searchParams.delete("pass");
+    window.history.replaceState({}, "", url.pathname + (url.search ? url.search : "") + url.hash);
+    handleUnlockPass(passParam);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const formatIssueLabel = useCallback((field: string): string => {
     const ISSUE_LABELS: Record<string, string> = {
@@ -2013,6 +2084,22 @@ export default function Home() {
 
         {result && (
           <div ref={resultsRef} className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {activePass && (
+              <div
+                className="flex items-start gap-2 rounded-md border border-green-500/30 bg-green-500/5 px-3 py-2 text-sm"
+                data-testid="banner-active-pass"
+              >
+                <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-500" />
+                <div className="leading-snug">
+                  <p className="font-medium text-foreground">
+                    {PASS_PRODUCTS[activePass.productKey].label} active — {formatRemaining(activePass)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    You can run unlimited analyses during this time.
+                  </p>
+                </div>
+              </div>
+            )}
             <div className="border-t border-border/50 pt-8 space-y-6">
               <h2 className="text-sm font-medium text-muted-foreground text-center uppercase tracking-wider">Your deal analysis</h2>
 
@@ -2211,11 +2298,12 @@ export default function Home() {
                     />
                   </Suspense>
                 ) : (
-                  <LockedTier2Section
-                    onUnlock={() => handleUnlockTier()}
+                  <PaywallCards
+                    onUnlock={(productKey) => handleUnlockPass(productKey)}
                     isLoading={checkoutLoading || isCheckingPayment}
+                    loadingProduct={loadingProduct}
                     stripeConfigured={stripeConfigured}
-                    ctaLabel={unlockCtaLabel}
+                    carBuyerCtaLabel={unlockCtaLabel}
                   />
                 )}
               </>

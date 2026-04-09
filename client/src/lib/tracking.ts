@@ -108,6 +108,9 @@ export function trackPaywallView(): void {
   track("paywall_view", { page: window.location.pathname });
 }
 
-export function trackCheckoutInitiated(): void {
-  track("checkout_initiated", { page: window.location.pathname });
+export function trackCheckoutInitiated(selectedPass?: "weekend_warrior" | "car_buyers_pass"): void {
+  track("checkout_initiated", {
+    page: window.location.pathname,
+    ...(selectedPass ? { selected_pass: selectedPass } : {}),
+  });
 }

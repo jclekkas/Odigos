@@ -13,46 +13,58 @@ export function productSchema() {
       "@type": "Brand",
       "name": "Odigos"
     },
-    "offers": {
-      "@type": "Offer",
-      "price": "49",
-      "priceCurrency": "USD",
-      "availability": "https://schema.org/InStock",
-      "priceValidUntil": "2026-12-31",
-      "url": buildCanonical("/"),
-      "hasMerchantReturnPolicy": {
-        "@type": "MerchantReturnPolicy",
-        "applicableCountry": "US",
-        "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted"
-      },
-      "shippingDetails": {
-        "@type": "OfferShippingDetails",
-        "shippingRate": {
-          "@type": "MonetaryAmount",
-          "value": "0",
-          "currency": "USD"
+    "offers": [
+      {
+        "@type": "Offer",
+        "name": "Weekend Warrior Pass",
+        "description": "72 hours of unlimited dealer quote analyses.",
+        "price": "29",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2026-12-31",
+        "url": buildCanonical("/?pass=weekend_warrior"),
+        "hasMerchantReturnPolicy": {
+          "@type": "MerchantReturnPolicy",
+          "applicableCountry": "US",
+          "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted"
         },
-        "deliveryTime": {
-          "@type": "ShippingDeliveryTime",
-          "handlingTime": {
-            "@type": "QuantitativeValue",
-            "minValue": 0,
-            "maxValue": 0,
-            "unitCode": "DAY"
+        "shippingDetails": {
+          "@type": "OfferShippingDetails",
+          "shippingRate": { "@type": "MonetaryAmount", "value": "0", "currency": "USD" },
+          "deliveryTime": {
+            "@type": "ShippingDeliveryTime",
+            "handlingTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 0, "unitCode": "DAY" },
+            "transitTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 0, "unitCode": "DAY" }
           },
-          "transitTime": {
-            "@type": "QuantitativeValue",
-            "minValue": 0,
-            "maxValue": 0,
-            "unitCode": "DAY"
-          }
+          "shippingDestination": { "@type": "DefinedRegion", "addressCountry": "US" }
+        }
+      },
+      {
+        "@type": "Offer",
+        "name": "Car Buyer's Pass",
+        "description": "14 days of unlimited dealer quote analyses. The default choice for buyers comparing multiple dealers.",
+        "price": "49",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2026-12-31",
+        "url": buildCanonical("/?pass=car_buyers_pass"),
+        "hasMerchantReturnPolicy": {
+          "@type": "MerchantReturnPolicy",
+          "applicableCountry": "US",
+          "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted"
         },
-        "shippingDestination": {
-          "@type": "DefinedRegion",
-          "addressCountry": "US"
+        "shippingDetails": {
+          "@type": "OfferShippingDetails",
+          "shippingRate": { "@type": "MonetaryAmount", "value": "0", "currency": "USD" },
+          "deliveryTime": {
+            "@type": "ShippingDeliveryTime",
+            "handlingTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 0, "unitCode": "DAY" },
+            "transitTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 0, "unitCode": "DAY" }
+          },
+          "shippingDestination": { "@type": "DefinedRegion", "addressCountry": "US" }
         }
       }
-    },
+    ],
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": "4.8",
@@ -116,7 +128,7 @@ export function howToSchema() {
         "@type": "HowToStep",
         "position": 4,
         "name": "Send a reply to the dealer",
-        "text": "Unlock the full review to get a copy-paste reply you can send directly to the dealer requesting the missing information or pushing back on fees."
+        "text": "Unlock the full review with a pass (Weekend Warrior or Car Buyer's Pass) to get a copy-paste reply you can send directly to the dealer requesting the missing information or pushing back on fees."
       }
     ]
   };

@@ -93,7 +93,7 @@ export default function HowOdigosWorks() {
             </li>
           </ul>
           <p className="text-muted-foreground ml-10 mb-2">
-            The Full Deal Review ($49 one-time) adds:
+            Unlock the full review with a pass &mdash; $29 for 72 hours (Weekend Warrior) or $49 for 14 days (Car Buyer's Pass) of unlimited scans. Both add:
           </p>
           <ul className="space-y-2 ml-10">
             <li className="flex items-center gap-3">

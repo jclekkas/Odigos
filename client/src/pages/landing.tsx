@@ -20,7 +20,11 @@ const faqsSchema = [
   },
   {
     q: "What's free vs. paid?",
-    a: "The free preview gives you the GO/NO-GO verdict, deal score, and top issues found. The $49 full review adds: every missing detail to request, a ready-to-send reply to the dealer, and the complete analysis reasoning. One-time payment, no subscription.",
+    a: "The free preview gives you the GO/NO-GO verdict, deal score, and top issues found. To unlock the full review — every red flag, the missing-info checklist, the copy-paste dealer reply, and the full reasoning — pick a pass. Weekend Warrior Pass: $29 for 72 hours of unlimited scans, built for the buyer hitting 2–3 dealers this weekend who's ready to decide fast. Car Buyer's Pass: $49 for 14 days of unlimited scans, built for the typical buyer who compares 4–6 quotes over a couple of weeks before choosing. Both unlock the exact same analysis features. The only difference is how long your shopping window is. Both are one-time charges — no subscription, no auto-renewal.",
+  },
+  {
+    q: "Why two passes?",
+    a: "Most car buyers compare 4–6 dealers before deciding — that's why the Car Buyer's Pass (14 days) is the default choice for most shoppers. The 72-hour Weekend Warrior Pass exists for buyers who already have a short list and are deciding this weekend. If you're not sure, the 14-day pass is the safer pick.",
   },
   {
     q: "Is my data safe?",
@@ -46,7 +50,7 @@ export default function Landing() {
   useEffect(() => {
     setSeoMeta({
       title: "Odigos — Dealer Quote Analyzer | Detect Junk Fees & Hidden Charges",
-      description: "Paste your dealer quote. Odigos detects junk fees, hidden charges, and missing details in 60 seconds. Get a GO/NO-GO verdict and a ready-to-send dealer reply. Free preview, full analysis $49.",
+      description: "Paste your dealer quote. Odigos detects junk fees, hidden charges, and missing details in 60 seconds. Get a GO/NO-GO verdict free, then unlock unlimited scans with a 72-hour or 14-day pass.",
       path: "/",
     });
   }, []);
@@ -102,7 +106,7 @@ export default function Landing() {
                   className="mt-5 text-lg text-foreground/75 leading-relaxed max-w-lg mx-auto lg:mx-0"
                   data-testid="text-hero-subheadline"
                 >
-                  Paste it below. In 60 seconds we'll flag junk fees, missing details, and pricing tricks — then give you the exact words to say back.
+                  Paste it below. In 60 seconds we'll flag junk fees, missing details, and pricing tricks — then give you the exact words to say back. One pass, every dealer.
                 </p>
 
                 <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
@@ -194,7 +198,7 @@ export default function Landing() {
                       <div className="flex items-center gap-1.5 mb-1">
                         <Lock className="w-3 h-3 text-muted-foreground/60" />
                         <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-                          Full review &mdash; $49
+                          Unlock with a pass
                         </p>
                       </div>
                       {["Missing info checklist", "Copy-paste dealer reply", "Negotiation guidance"].map((line) => (
@@ -257,10 +261,10 @@ export default function Landing() {
                   saved: "$810",
                 },
                 {
-                  quote: "The free preview alone told me my deal was solid. Paid $49 for the full report just for peace of mind before a $42k purchase.",
+                  quote: "I collected quotes from five different dealers over 10 days. The Car Buyer's Pass paid for itself on the second analysis — and I ran every single quote through it. Caught a hidden $1,400 add-on at the dealer I was about to sign with.",
                   name: "Michelle R.",
                   location: "Florida",
-                  saved: "Peace of mind",
+                  saved: "$1,400 across 5 dealers",
                 },
               ].map((t) => (
                 <Card key={t.name} className="relative">
@@ -289,19 +293,23 @@ export default function Landing() {
           <div className="mx-auto max-w-3xl px-4 sm:px-6">
             <div className="text-center mb-12">
               <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                Simple, one-time pricing
+                Pay once. Scan every dealer.
               </h2>
               <p className="mt-3 text-sm text-muted-foreground">
-                No subscription. No upsells. Pay once per deal.
+                Most buyers compare multiple dealers before choosing. Pick the window that matches how you shop.
+              </p>
+              <p className="mt-2 text-sm font-medium text-foreground">
+                Most buyers run multiple quotes &mdash; don't stop at the first offer.
               </p>
             </div>
-            <div className="grid gap-6 md:grid-cols-2 max-w-2xl mx-auto">
-              <div className="rounded-lg border border-border bg-card p-6" data-testid="card-pricing-tier1">
+            <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto items-stretch">
+              {/* ── FREE ─────────────────────────────────────────────── */}
+              <div className="rounded-lg border border-border bg-card p-6 flex flex-col" data-testid="card-pricing-free">
                 <h3 className="font-medium mb-1">Free Preview</h3>
                 <div className="flex items-baseline gap-1 mb-4">
                   <span className="text-2xl font-semibold">$0</span>
                 </div>
-                <ul className="space-y-2 text-sm text-muted-foreground mb-6">
+                <ul className="space-y-2 text-sm text-muted-foreground mb-6 flex-1">
                   {["GO / NO-GO verdict", "Deal score & confidence", "Top issues identified"].map((f) => (
                     <li key={f} className="flex items-start gap-2">
                       <Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
@@ -313,43 +321,98 @@ export default function Landing() {
                   <Link href="/analyze">Try Free</Link>
                 </Button>
               </div>
-              <div className="rounded-lg border-2 border-primary bg-primary/5 p-6 relative" data-testid="card-pricing-tier2">
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-semibold px-3 py-0.5 rounded-full">
-                  Most popular
-                </span>
-                <h3 className="font-medium mb-1">Full Deal Review</h3>
+
+              {/* ── WEEKEND WARRIOR — $29 / 72h — SECONDARY ──────────── */}
+              <div className="rounded-lg border border-border bg-card p-6 flex flex-col" data-testid="card-pricing-weekend">
+                <h3 className="font-medium mb-1">Weekend Warrior Pass</h3>
                 <div className="flex items-baseline gap-1 mb-1">
-                  <span className="text-2xl font-semibold">$49</span>
-                  <span className="text-xs text-muted-foreground">(one-time)</span>
+                  <span className="text-2xl font-semibold">$29</span>
+                  <span className="text-xs text-muted-foreground">/ 72 hours</span>
                 </div>
-                <p className="text-xs text-muted-foreground mb-4">Less than most dealer doc fees</p>
-                <ul className="space-y-2 text-sm text-muted-foreground mb-6">
+                <p className="text-sm text-muted-foreground mb-3">
+                  Only for 2&ndash;3 dealer quotes. Ideal if you're ready to decide this weekend.
+                </p>
+                <ul className="space-y-2 text-sm text-muted-foreground mb-3 flex-1">
                   {[
-                    "Everything in Free",
+                    "Unlimited scans for 72 hours",
                     "Every red flag & hidden fee",
-                    "Missing info checklist",
-                    "Copy-paste dealer reply",
+                    "Copy-paste dealer replies",
                     "Full analysis reasoning",
                   ].map((f) => (
                     <li key={f} className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                      <Check className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
                       <span>{f}</span>
                     </li>
                   ))}
                 </ul>
-                <Button variant="cta" asChild className="w-full" data-testid="button-cta-full-review">
+                <p className="text-xs text-amber-600/90 dark:text-amber-400/90 mb-4 leading-relaxed">
+                  &#9888; Most buyers need more than a weekend &mdash; if you're still comparing next week, you'll need another pass. Choosing $29 when you need more time can cost you $58 total.
+                </p>
+                <Button variant="outline" asChild className="w-full" data-testid="button-cta-weekend-warrior">
                   <Link
-                    href="/analyze"
+                    href="/analyze?pass=weekend_warrior"
                     onClick={() => {
-                      trackCtaClick("pricing-full-review", "Get Full Review");
-                      capture("landing_cta_clicked", { location: "pricing" });
+                      trackCtaClick("pricing-weekend-warrior", "Get Weekend Pass");
+                      capture("landing_cta_clicked", { location: "pricing", selected_pass: "weekend_warrior" });
                     }}
                   >
-                    Get Full Review &mdash; $49
+                    Get Weekend Pass &mdash; $29
+                  </Link>
+                </Button>
+              </div>
+
+              {/* ── CAR BUYER'S PASS — $49 / 14d — PRIMARY ───────────── */}
+              <div
+                className="rounded-lg border-2 border-primary bg-primary/5 p-6 relative md:scale-[1.02] shadow-md flex flex-col"
+                data-testid="card-pricing-car-buyer"
+              >
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-semibold px-3 py-0.5 rounded-full">
+                  Most popular
+                </span>
+                <h3 className="font-medium mb-1">Car Buyer's Pass</h3>
+                <div className="flex items-baseline gap-1 mb-1">
+                  <span className="text-2xl font-semibold">$49</span>
+                  <span className="text-xs text-muted-foreground">/ 14 days</span>
+                </div>
+                <p className="text-sm mb-1">
+                  Most buyers compare 4&ndash;6 quotes before deciding. Covers your entire car shopping process.
+                </p>
+                <p className="text-sm font-medium mb-1">
+                  One pass. Every dealer. No limits.
+                </p>
+                <p className="text-xs text-muted-foreground mb-4">
+                  Costs less than one dealer fee &mdash; protects your entire purchase.
+                </p>
+                <ul className="space-y-2 text-sm mb-6 flex-1">
+                  {[
+                    "Unlimited scans for 14 days",
+                    "Every red flag & hidden fee",
+                    "Copy-paste dealer replies",
+                    "Full analysis reasoning",
+                    "Avoid missing a better deal mid-week",
+                  ].map((f) => (
+                    <li key={f} className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-500 mt-0.5 shrink-0" />
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Button variant="cta" asChild className="w-full" data-testid="button-cta-car-buyers-pass">
+                  <Link
+                    href="/analyze?pass=car_buyers_pass"
+                    onClick={() => {
+                      trackCtaClick("pricing-car-buyers-pass", "Get Car Buyer's Pass");
+                      capture("landing_cta_clicked", { location: "pricing", selected_pass: "car_buyers_pass" });
+                    }}
+                  >
+                    Start 14 Days of Unlimited Scans &mdash; $49
                   </Link>
                 </Button>
               </div>
             </div>
+            <p className="text-center text-xs text-muted-foreground mt-6">
+              One-time charge. No subscription. No auto-renewal. Both passes unlock the same features &mdash; pick the window that matches how you shop.
+            </p>
           </div>
         </section>
 

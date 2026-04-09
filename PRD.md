@@ -16,7 +16,7 @@ Odigos is a web app where a user pastes a dealer quote, text, or email. An AI ba
 - **Red flags** (hidden fees, payment-only framing, vague terms)
 - **Suggested questions** to ask the dealer before visiting
 
-A free preview shows the verdict and score. A one-time **$49 Full Deal Review** unlocks the complete analysis: red flags, missing info checklist, copy-paste dealer reply, and full reasoning.
+A free preview shows the verdict and score. To unlock the complete analysis (red flags, missing info checklist, copy-paste dealer reply, full reasoning), buyers pick a **time-windowed pass**: Weekend Warrior Pass ($29 / 72 hours) or Car Buyer's Pass ($49 / 14 days). Both unlock identical features and grant unlimited scans inside the window. The default is the 14-day pass — most buyers compare 4–6 dealers before deciding.
 
 ## Target User
 
@@ -29,7 +29,7 @@ U.S. car buyers who have received a dealer quote (text, email, or written offer)
 3. Pastes dealer text into the form, optionally adds context (vehicle, location)
 4. Submits → AI analyzes the message
 5. Free preview displays: verdict (GREEN/YELLOW/RED), score, detected pricing fields
-6. User clicks "Unlock Full Review" → Stripe checkout ($49 one-time)
+6. User picks a pass (Weekend Warrior $29 / 72h, or Car Buyer's Pass $49 / 14d) → Stripe checkout (one-time)
 7. After payment → full analysis revealed: red flags, missing info, copy-paste reply, reasoning
 
 ## Pages & Routes
@@ -81,8 +81,10 @@ The `/out-the-door-price` page is the **primary SEO acquisition page**, not just
 ## Monetization
 
 - **Free Preview**: Verdict, score, detected pricing fields
-- **Full Deal Review**: $49 one-time via Stripe — red flags, missing info checklist, copy-paste dealer reply, full analysis reasoning
-- No subscriptions, no upsells
+- **Weekend Warrior Pass**: $29 one-time via Stripe — 72 hours of unlimited scans. Built for buyers hitting 2–3 dealers this weekend who're ready to decide fast.
+- **Car Buyer's Pass**: $49 one-time via Stripe — 14 days of unlimited scans. The default tier; built for the typical buyer comparing 4–6 quotes over a couple of weeks.
+- Both passes unlock the same paid content (red flags, missing info checklist, copy-paste dealer reply, full analysis reasoning). Differentiation is positioning, not features.
+- No subscriptions, no auto-renewal, no upsells.
 
 ## Tech Stack
 
@@ -116,7 +118,9 @@ Every surface reinforces independence and safety:
 |---|---|
 | Submission volume | Free analyses started |
 | Conversion rate | Submissions → Stripe checkout → payment completed |
-| Revenue | $49 per completed payment |
+| Revenue | $29 (Weekend Warrior) or $49 (Car Buyer's Pass) per completed pass purchase |
+| Pass selection ratio | % of paid users selecting Car Buyer's Pass — target: majority |
+| Analyses per paid session | Distribution of 1 / 2–3 / 4–5 / 6+ — usage activation health |
 | Score distribution | GREEN/YELLOW/RED mix (indicates analysis quality) |
 | Funnel drop-off | Landing → CTA → form → submit → checkout → payment |
 | OTD page traffic | Organic search visits to `/out-the-door-price` |

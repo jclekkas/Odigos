@@ -177,6 +177,19 @@ Sentry is integrated for production error tracking on both frontend and backend.
 
 > **Note**: Frontend and backend can use different Sentry projects/DSNs. A missing DSN always results in a safe no-op (no crash, no error).
 
+### Stripe Configuration
+| Variable | Purpose |
+|---|---|
+| `STRIPE_SECRET_KEY` | Stripe API secret key. Live mode (`sk_live_...`) in Replit Secrets for production. |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret (`whsec_...`). Required for `/api/stripe-webhook` signature verification. |
+| `STRIPE_PRICE_ID_29` | One-time **$29 Weekend Warrior Pass** Price ID (72 hours unlimited). Required — Weekend Warrior checkout returns `PAYMENTS_NOT_CONFIGURED` without it. |
+| `STRIPE_PRICE_ID_49` | One-time **$49 Car Buyer's Pass** Price ID (14 days unlimited). Required for the primary $49 CTA. |
+| `STRIPE_PRICE_ID_79` | Legacy `$79 Negotiation Pack` Price ID. Optional — only needed if legacy in-flight $79 checkouts still need to complete. Kept on the backend for one deploy cycle after the pricing pivot. |
+
+> **Important**: Production runs on Replit (the customer-facing domain `odigosauto.com` is served from Replit). Use **live-mode** Price IDs (`price_1T...RtBIuPpWgS...` and `price_1S...RtBIuPpWgS...` — from `dashboard.stripe.com/...` without `/test/`) in Replit Secrets. Do NOT mix in test-mode Price IDs on production — they'll silently fail against a live-mode Stripe account.
+
+> **Pass model (see `client/src/lib/pass.ts`)**: Both passes unlock identical features; the only difference is the time window (72h vs 14d). Entitlement is stored client-side in `localStorage.odigos_pass`; the server never looks up pass state. Legacy `paid_deal_clarity = "true"` is migrated on first read into a 30-day Car Buyer's Pass.
+
 ### What Is Captured
 - Uncaught frontend exceptions and unhandled promise rejections
 - React component render errors (via Error Boundary)

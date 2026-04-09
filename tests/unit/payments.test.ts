@@ -160,24 +160,98 @@ describe("POST /api/checkout", () => {
     expect(res.body.error).toBe("INVALID_PRODUCT");
   });
 
+  it("accepts the new car_buyers_pass product key", async () => {
+    process.env.STRIPE_SECRET_KEY = "sk_test_xxx";
+    process.env.STRIPE_PRICE_ID_49 = "price_test_49";
+    mockSessionsCreate.mockResolvedValue({
+      id: "cs_test_999",
+      client_secret: "cs_secret_999",
+    });
+
+    const res = await request(app)
+      .post("/api/checkout")
+      .send({ product: "car_buyers_pass", sessionId: "sess-x" });
+
+    expect(res.status).toBe(200);
+    expect(res.body.clientSecret).toBe("cs_secret_999");
+    // Verify metadata included passProduct + durationHours
+    const createArgs = mockSessionsCreate.mock.calls[0][0];
+    expect(createArgs.metadata).toMatchObject({
+      passProduct: "car_buyers_pass",
+      durationHours: "336",
+      product: "car_buyers_pass",
+    });
+  });
+
+  it("accepts the new weekend_warrior product key with $29 price", async () => {
+    process.env.STRIPE_SECRET_KEY = "sk_test_xxx";
+    process.env.STRIPE_PRICE_ID_29 = "price_test_29";
+    mockSessionsCreate.mockResolvedValue({
+      id: "cs_test_888",
+      client_secret: "cs_secret_888",
+    });
+
+    const res = await request(app)
+      .post("/api/checkout")
+      .send({ product: "weekend_warrior", sessionId: "sess-y" });
+
+    expect(res.status).toBe(200);
+    const createArgs = mockSessionsCreate.mock.calls[0][0];
+    expect(createArgs.line_items[0].price).toBe("price_test_29");
+    expect(createArgs.metadata).toMatchObject({
+      passProduct: "weekend_warrior",
+      durationHours: "72",
+    });
+  });
+
+  it("treats legacy deal_clarity as alias for car_buyers_pass", async () => {
+    process.env.STRIPE_SECRET_KEY = "sk_test_xxx";
+    process.env.STRIPE_PRICE_ID_49 = "price_test_49";
+    mockSessionsCreate.mockResolvedValue({
+      id: "cs_test_777",
+      client_secret: "cs_secret_777",
+    });
+
+    const res = await request(app)
+      .post("/api/checkout")
+      .send({ product: "deal_clarity" });
+
+    expect(res.status).toBe(200);
+    const createArgs = mockSessionsCreate.mock.calls[0][0];
+    expect(createArgs.metadata.passProduct).toBe("car_buyers_pass");
+    expect(createArgs.metadata.product).toBe("car_buyers_pass");
+  });
+
   it("returns 400 when STRIPE_SECRET_KEY is missing", async () => {
     delete process.env.STRIPE_SECRET_KEY;
 
     const res = await request(app)
       .post("/api/checkout")
-      .send({ product: "deal_clarity" });
+      .send({ product: "car_buyers_pass" });
 
     expect(res.status).toBe(400);
     expect(res.body.error).toBe("PAYMENTS_NOT_CONFIGURED");
   });
 
-  it("returns 400 when price ID env var is missing", async () => {
+  it("returns 400 when STRIPE_PRICE_ID_49 is missing for car_buyers_pass", async () => {
     process.env.STRIPE_SECRET_KEY = "sk_test_xxx";
     delete process.env.STRIPE_PRICE_ID_49;
 
     const res = await request(app)
       .post("/api/checkout")
-      .send({ product: "deal_clarity" });
+      .send({ product: "car_buyers_pass" });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe("PAYMENTS_NOT_CONFIGURED");
+  });
+
+  it("returns 400 when STRIPE_PRICE_ID_29 is missing for weekend_warrior", async () => {
+    process.env.STRIPE_SECRET_KEY = "sk_test_xxx";
+    delete process.env.STRIPE_PRICE_ID_29;
+
+    const res = await request(app)
+      .post("/api/checkout")
+      .send({ product: "weekend_warrior" });
 
     expect(res.status).toBe(400);
     expect(res.body.error).toBe("PAYMENTS_NOT_CONFIGURED");
@@ -187,7 +261,7 @@ describe("POST /api/checkout", () => {
 // ─── GET /api/verify-session ─────────────────────────────────────────────────
 
 describe("GET /api/verify-session", () => {
-  it("returns { paid: true, tier } for a paid session", async () => {
+  it("returns paid + tier + passProduct for a paid legacy $79 session", async () => {
     mockSessionsRetrieve.mockResolvedValue({
       payment_status: "paid",
       metadata: { tier: "79", sessionId: "sess-1" },
@@ -199,7 +273,72 @@ describe("GET /api/verify-session", () => {
       .query({ session_id: "cs_test_456" });
 
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ paid: true, tier: "79" });
+    expect(res.body).toEqual({
+      paid: true,
+      tier: "79",
+      passProduct: null,
+      durationHours: null,
+    });
+  });
+
+  it("returns car_buyers_pass passProduct + 336h for a $49 session", async () => {
+    mockSessionsRetrieve.mockResolvedValue({
+      payment_status: "paid",
+      metadata: { passProduct: "car_buyers_pass", durationHours: "336", sessionId: "sess-2" },
+      line_items: { data: [] },
+    });
+
+    const res = await request(app)
+      .get("/api/verify-session")
+      .query({ session_id: "cs_test_car" });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      paid: true,
+      tier: "49",
+      passProduct: "car_buyers_pass",
+      durationHours: 14 * 24,
+    });
+  });
+
+  it("returns weekend_warrior passProduct + 72h for a $29 session", async () => {
+    mockSessionsRetrieve.mockResolvedValue({
+      payment_status: "paid",
+      metadata: { passProduct: "weekend_warrior", durationHours: "72", sessionId: "sess-3" },
+      line_items: { data: [] },
+    });
+
+    const res = await request(app)
+      .get("/api/verify-session")
+      .query({ session_id: "cs_test_weekend" });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      paid: true,
+      tier: "29",
+      passProduct: "weekend_warrior",
+      durationHours: 72,
+    });
+  });
+
+  it("falls back to amount-based inference when metadata is absent", async () => {
+    mockSessionsRetrieve.mockResolvedValue({
+      payment_status: "paid",
+      metadata: {},
+      line_items: { data: [{ price: { unit_amount: 2900 } }] },
+    });
+
+    const res = await request(app)
+      .get("/api/verify-session")
+      .query({ session_id: "cs_test_legacy" });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      paid: true,
+      tier: "29",
+      passProduct: "weekend_warrior",
+      durationHours: 72,
+    });
   });
 
   it("returns { paid: false } for an unpaid session", async () => {
@@ -214,20 +353,31 @@ describe("GET /api/verify-session", () => {
       .query({ session_id: "cs_test_789" });
 
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ paid: false, tier: null });
+    expect(res.body).toEqual({
+      paid: false,
+      tier: null,
+      passProduct: null,
+      durationHours: null,
+    });
   });
 
   it("returns { paid: false } when session_id is missing", async () => {
     const res = await request(app).get("/api/verify-session");
 
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ paid: false, tier: null });
+    expect(res.body).toEqual({
+      paid: false,
+      tier: null,
+      passProduct: null,
+      durationHours: null,
+    });
   });
 });
 
 afterEach(() => {
   delete process.env.STRIPE_WEBHOOK_SECRET;
   delete process.env.STRIPE_SECRET_KEY;
+  delete process.env.STRIPE_PRICE_ID_29;
   delete process.env.STRIPE_PRICE_ID_49;
   delete process.env.STRIPE_PRICE_ID_79;
 });

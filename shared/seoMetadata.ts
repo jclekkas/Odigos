@@ -19,7 +19,7 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
   "/": {
     title: "Odigos — Dealer Quote Analyzer | Detect Junk Fees & Hidden Charges",
     description:
-      "Paste your dealer quote. Odigos detects junk fees, hidden charges, and missing details in 60 seconds. Get a GO/NO-GO verdict and a ready-to-send dealer reply. Free preview, full analysis $49.",
+      "Paste your dealer quote. Odigos detects junk fees, hidden charges, and missing details in 60 seconds. Get a GO/NO-GO verdict free, then unlock unlimited scans with a 72-hour or 14-day pass.",
   },
   "/analyze": {
     title: "Analyze Your Car Deal | Odigos",
