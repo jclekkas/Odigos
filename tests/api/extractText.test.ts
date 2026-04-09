@@ -75,6 +75,14 @@ describe("POST /api/extract-text", () => {
     expect(res.status).toBe(400);
   });
 
+  it("does NOT invoke extractTextFromFile when no file is uploaded", async () => {
+    vi.mocked(extractTextFromFile).mockClear();
+    await request(app)
+      .post("/api/extract-text")
+      .set("Content-Type", "multipart/form-data");
+    expect(extractTextFromFile).not.toHaveBeenCalled();
+  });
+
   it("returns 400 for unsupported file type (text/plain)", async () => {
     const res = await request(app)
       .post("/api/extract-text")
@@ -149,6 +157,13 @@ describe("GET /api/stripe-status", () => {
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("configured");
     expect(typeof res.body.configured).toBe("boolean");
+    // Our mock in this file returns false from isStripeConfigured — assert value.
+    expect(res.body.configured).toBe(false);
+  });
+
+  it("returns JSON content-type", async () => {
+    const res = await request(app).get("/api/stripe-status");
+    expect(res.headers["content-type"]).toMatch(/application\/json/);
   });
 });
 
@@ -158,5 +173,16 @@ describe("GET /api/health", () => {
   it("returns 200 with ok status", async () => {
     const res = await request(app).get("/api/health");
     expect(res.status).toBe(200);
+  });
+
+  it("returns JSON content-type", async () => {
+    const res = await request(app).get("/api/health");
+    expect(res.headers["content-type"]).toMatch(/application\/json/);
+  });
+
+  it("returns a JSON body object", async () => {
+    const res = await request(app).get("/api/health");
+    expect(typeof res.body).toBe("object");
+    expect(res.body).not.toBeNull();
   });
 });
