@@ -165,7 +165,7 @@ async function initRateLimiters(): Promise<void> {
       await redisClient.connect();
       await redisClient.ping();
       redisClient.off("error", suppressError);
-      redisClient.on("error", (err) => console.error("[rate-limiter] Redis error:", err));
+      redisClient.on("error", (err: Error) => console.error("[rate-limiter] Redis error:", err));
       rateLimitStore = new RedisStore({
         sendCommand: (command: string, ...args: string[]) =>
           redisClient!.call(command, ...args) as Promise<RedisReply>,

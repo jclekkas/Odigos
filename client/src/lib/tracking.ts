@@ -12,7 +12,9 @@ type EventType =
   | "analyze_start"
   | "analysis_complete"
   | "paywall_view"
-  | "checkout_initiated";
+  | "checkout_initiated"
+  | "email_capture_submitted"
+  | "email_capture_failed";
 
 interface TrackingMetadata {
   page?: string;

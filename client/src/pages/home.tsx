@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { z } from "zod";
 import { drawScorecard } from "@/components/ShareCard";
 import {
+  track,
   trackPageView,
   trackFormStart,
   trackFormFocus,
