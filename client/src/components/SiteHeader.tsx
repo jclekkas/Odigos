@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { capture } from "@/lib/analytics";
+import { Menu, X } from "lucide-react";
 
 function useScrollToHash() {
   const [location, navigate] = useLocation();
@@ -19,12 +21,16 @@ function useScrollToHash() {
 export default function SiteHeader() {
   const [location] = useLocation();
   const scrollToHash = useScrollToHash();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   function handleHashLink(e: React.MouseEvent<HTMLAnchorElement>, hash: string) {
-    if (location === "/") {
-      e.preventDefault();
-      scrollToHash(hash);
-    }
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    scrollToHash(hash);
+  }
+
+  function handleMobileNavLink() {
+    setMobileMenuOpen(false);
   }
 
   return (
@@ -74,8 +80,52 @@ export default function SiteHeader() {
               Check a Dealer Quote
             </Link>
           </Button>
+
+          <button
+            className="flex items-center justify-center md:hidden min-h-[44px] min-w-[44px] text-muted-foreground hover:text-foreground transition-colors"
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenuOpen}
+            data-testid="button-mobile-menu-toggle"
+          >
+            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
       </div>
+
+      {mobileMenuOpen && (
+        <div
+          className="md:hidden border-t border-border/80 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+          data-testid="nav-mobile-menu"
+        >
+          <nav className="mx-auto flex max-w-4xl flex-col px-4 py-2 sm:px-6">
+            <Link
+              href="/dealer-pricing-problems"
+              onClick={handleMobileNavLink}
+              className="flex items-center text-sm text-muted-foreground transition-colors hover:text-foreground min-h-[44px]"
+              data-testid="link-mobile-nav-dealer-tactics"
+            >
+              Dealer Tactics
+            </Link>
+            <a
+              href="/#pricing"
+              onClick={(e) => handleHashLink(e, "pricing")}
+              className="flex items-center text-sm text-muted-foreground transition-colors hover:text-foreground min-h-[44px]"
+              data-testid="link-mobile-nav-pricing"
+            >
+              Pricing
+            </a>
+            <a
+              href="/#faq"
+              onClick={(e) => handleHashLink(e, "faq")}
+              className="flex items-center text-sm text-muted-foreground transition-colors hover:text-foreground min-h-[44px]"
+              data-testid="link-mobile-nav-questions"
+            >
+              Questions
+            </a>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }

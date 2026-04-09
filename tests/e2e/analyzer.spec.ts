@@ -1,5 +1,24 @@
 import { test, expect, Page } from "@playwright/test";
 
+// The governance compliance UI commit (Task #158) gates the analyze
+// button behind a per-submission upload consent checkbox. The button is
+// disabled until consentChecked === true. consentChecked initializes
+// from `localStorage.odigos_upload_consent === "accepted"` on first
+// React mount.
+//
+// Both `addInitScript` and `test.use({ storageState })` failed to set
+// the localStorage value early enough — the React useState initializer
+// reads it on mount and we never see "accepted" there. Fall back to
+// the brute-force approach: after navigation, click the consent
+// checkbox if it's visible. This guarantees consentChecked = true
+// regardless of localStorage state.
+async function acceptUploadConsent(page: Page): Promise<void> {
+  const checkbox = page.getByTestId("checkbox-upload-consent");
+  if (await checkbox.isVisible({ timeout: 1000 }).catch(() => false)) {
+    await checkbox.check();
+  }
+}
+
 const MOCK_ANALYSIS = {
   dealScore: "GREEN",
   confidenceLevel: "HIGH",
@@ -128,6 +147,7 @@ test.describe("Analyzer — happy path", () => {
     await interceptStatsRoutes(page);
     await interceptAnalyzeRoute(page, MOCK_ANALYSIS);
     await page.goto("/analyze");
+    await acceptUploadConsent(page);
   });
 
   test("renders the analyze form", async ({ page }) => {
@@ -166,6 +186,7 @@ test.describe("Analyzer — validation", () => {
       await route.fulfill({ status: 200, body: JSON.stringify(MOCK_ANALYSIS) });
     });
     await page.goto("/analyze");
+    await acceptUploadConsent(page);
 
     await page.getByTestId("button-analyze").click();
     await page.waitForTimeout(1000);
@@ -176,6 +197,7 @@ test.describe("Analyzer — validation", () => {
   test("analyze button is present and interactive", async ({ page }) => {
     await interceptStatsRoutes(page);
     await page.goto("/analyze");
+    await acceptUploadConsent(page);
     const btn = page.getByTestId("button-analyze");
     await expect(btn).toBeVisible();
     await expect(btn).toBeEnabled();
@@ -189,6 +211,7 @@ test.describe("Analyzer — RED/NO-GO result", () => {
     await interceptStatsRoutes(page);
     await interceptAnalyzeRoute(page, RED_ANALYSIS);
     await page.goto("/analyze");
+    await acceptUploadConsent(page);
 
     const textarea = page.getByTestId("input-dealer-text");
     await textarea.fill("$895 doc fee. CA dealer. APR 5%.");
@@ -204,6 +227,7 @@ test.describe("File upload", () => {
   test("upload tab reveals the file input", async ({ page }) => {
     await interceptStatsRoutes(page);
     await page.goto("/analyze");
+    await acceptUploadConsent(page);
     await page.getByTestId("tab-upload").click();
     const fileInput = page.getByTestId("input-file-upload");
     // File input is intentionally hidden (class="hidden") — custom upload UI triggers it.
@@ -214,6 +238,7 @@ test.describe("File upload", () => {
   test("upload button is present on the upload tab", async ({ page }) => {
     await interceptStatsRoutes(page);
     await page.goto("/analyze");
+    await acceptUploadConsent(page);
     await page.getByTestId("tab-upload").click();
     const uploadBtn = page.getByTestId("button-upload-file");
     await expect(uploadBtn).toBeVisible({ timeout: 5000 });
@@ -222,6 +247,7 @@ test.describe("File upload", () => {
   test("file input accepts image and PDF types", async ({ page }) => {
     await interceptStatsRoutes(page);
     await page.goto("/analyze");
+    await acceptUploadConsent(page);
     await page.getByTestId("tab-upload").click();
     const fileInput = page.getByTestId("input-file-upload");
     const accept = await fileInput.getAttribute("accept");
@@ -239,6 +265,7 @@ test.describe("File upload", () => {
       })
     );
     await page.goto("/analyze");
+    await acceptUploadConsent(page);
     await page.getByTestId("tab-upload").click();
 
     const fileInput = page.getByTestId("input-file-upload");
@@ -258,6 +285,7 @@ test.describe("Free/paid tier UI", () => {
     await interceptStatsRoutes(page);
     await interceptAnalyzeRoute(page, MOCK_ANALYSIS);
     await page.goto("/analyze");
+    await acceptUploadConsent(page);
 
     await page.getByTestId("input-dealer-text").fill(
       "OTD $35,000. APR 4.9% for 60 months."
@@ -280,6 +308,7 @@ test("no unintercepted network requests to openai.com are made", async ({ page }
   await interceptStatsRoutes(page);
   await interceptAnalyzeRoute(page, MOCK_ANALYSIS);
   await page.goto("/analyze");
+  await acceptUploadConsent(page);
   const textarea = page.getByTestId("input-dealer-text");
   await textarea.fill("Test quote OTD $30,000.");
   await page.getByTestId("button-analyze").click();
@@ -298,6 +327,7 @@ test("no OpenAI API key appears in any request header or body", async ({ page })
   await interceptStatsRoutes(page);
   await interceptAnalyzeRoute(page, MOCK_ANALYSIS);
   await page.goto("/analyze");
+  await acceptUploadConsent(page);
   await page.getByTestId("input-dealer-text").fill("OTD $35,000 APR 4.9%.");
   await page.getByTestId("button-analyze").click();
   await page.waitForTimeout(2000);

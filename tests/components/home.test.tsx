@@ -102,6 +102,7 @@ function setupFetchMock(analyzeResponse: object = VALID_ANALYSIS, status = 200) 
 
 beforeEach(() => {
   setupFetchMock();
+  localStorage.setItem("odigos_upload_consent", "accepted");
 });
 
 // ─── Rendering ────────────────────────────────────────────────────────────────

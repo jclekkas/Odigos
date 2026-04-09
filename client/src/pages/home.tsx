@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { z } from "zod";
 import { drawScorecard } from "@/components/ShareCard";
 import {
+  track,
   trackPageView,
   trackFormStart,
   trackFormFocus,
@@ -701,7 +702,7 @@ function LockedTier2Section({ onUnlock, isLoading, stripeConfigured, ctaLabel }:
         <Button
           variant="cta"
           onClick={onUnlock}
-          className="w-full"
+          className="w-full whitespace-normal h-auto py-3"
           disabled={isLoading || !stripeConfigured}
           data-testid="button-unlock-49"
         >
@@ -1057,8 +1058,16 @@ function EmailPreviewForm({ analysisResult }: { analysisResult: AnalysisResponse
   });
 
   const handleSend = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setErrorMessage("Please enter a valid email address");
+      setStatus("error");
+      return;
+    }
     setStatus("idle");
     setErrorMessage(null);
+    setEmail(email.trim());
+    track("email_capture_submitted");
     emailMutation.mutate();
   };
 
@@ -1069,7 +1078,7 @@ function EmailPreviewForm({ analysisResult }: { analysisResult: AnalysisResponse
         data-testid="email-preview-success"
       >
         <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-        <p className="text-sm text-muted-foreground">Check your inbox!</p>
+        <p className="text-sm text-muted-foreground">Check your inbox — we sent your analysis</p>
       </div>
     );
   }
@@ -1079,7 +1088,8 @@ function EmailPreviewForm({ analysisResult }: { analysisResult: AnalysisResponse
       className="border border-border/40 rounded-xl px-4 py-3 bg-muted/10 space-y-2"
       data-testid="email-preview-form"
     >
-      <p className="text-sm font-medium text-foreground">Email me a copy</p>
+      <p className="text-sm font-medium text-foreground">Want a copy of this analysis?</p>
+      <p className="text-xs text-muted-foreground">Send it to your email so you can review it later</p>
       <div className="flex gap-2 items-start">
         <div className="flex-1 min-w-0">
           <Input
@@ -1113,7 +1123,7 @@ function EmailPreviewForm({ analysisResult }: { analysisResult: AnalysisResponse
               Sending…
             </>
           ) : (
-            "Send"
+            "Email me this analysis"
           )}
         </Button>
       </div>
@@ -1144,7 +1154,7 @@ const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
 const UNLOCK_CTA_LABELS: Record<string, string> = {
   control: "Unlock Full Deal Review — $49 (one-time)",
-  value: "Unlock Full Deal Review — $49 (Less Than Most Doc Fees)",
+  value: "Unlock Full Deal Review — $49 · Less Than a Doc Fee",
 };
 
 export default function Home() {
@@ -1165,6 +1175,13 @@ export default function Home() {
   const [summaryCopied, setSummaryCopied] = useState<"idle" | "success" | "failed">("idle");
   const [scorecardDownloading, setScorecardDownloading] = useState(false);
   const [showDoneState, setShowDoneState] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(() => {
+    try {
+      return localStorage.getItem("odigos_upload_consent") === "accepted";
+    } catch {
+      return false;
+    }
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const inputStartedRef = useRef(false);
   const resultFiredRef = useRef(false);
@@ -1921,12 +1938,35 @@ export default function Home() {
             </Collapsible>
 
             <div className="border-t border-border/40 pt-5">
+            {!consentChecked && (
+              <div className="mb-4 p-3 rounded-lg border border-border/60 bg-muted/30" data-testid="section-upload-consent">
+                <label className="flex gap-3 cursor-pointer items-start" htmlFor="upload-consent-checkbox">
+                  <input
+                    id="upload-consent-checkbox"
+                    type="checkbox"
+                    className="mt-0.5 h-4 w-4 rounded border-border accent-primary flex-shrink-0"
+                    defaultChecked={false}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        try { localStorage.setItem("odigos_upload_consent", "accepted"); } catch {}
+                        setConsentChecked(true);
+                      }
+                    }}
+                    data-testid="checkbox-upload-consent"
+                  />
+                  <span className="text-xs text-muted-foreground leading-relaxed">
+                    By analyzing, I agree that anonymized pricing signals from my submission may be used to improve Odigos. No personal info is retained beyond 90 days.{" "}
+                    <a href="/terms#data-license" className="underline hover:text-foreground transition-colors">Learn more</a>
+                  </span>
+                </label>
+              </div>
+            )}
             <Button
               variant="cta"
               type="submit"
               size="lg"
               className="w-full"
-              disabled={analyzeMutation.isPending || showDoneState}
+              disabled={analyzeMutation.isPending || showDoneState || !consentChecked}
               data-testid="button-analyze"
             >
               {analyzeMutation.isPending ? (
@@ -1940,6 +1980,7 @@ export default function Home() {
                 "Analyze Deal"
               )}
             </Button>
+            <AnalysisProgressBar isPending={analyzeMutation.isPending} />
             {analyzeMutation.isPending ? (
               <p className="text-xs text-muted-foreground text-center mt-2" data-testid="text-what-happens-next">
                 Still working — this is normal and usually takes 40–60 seconds. Stay on this page.
@@ -1949,7 +1990,6 @@ export default function Home() {
                 Results usually take about 40–60 seconds and will appear below.
               </p>
             )}
-            {analyzeMutation.isPending && <AnalysisProgressBar isPending={analyzeMutation.isPending} />}
             <p className="text-xs text-muted-foreground text-center mt-3" data-testid="text-data-disclosure">
               Pricing signals (not your personal details) are stored anonymously to improve our dealer fee database. Your submission is not shared with any dealership.{" "}
               <a href="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</a>

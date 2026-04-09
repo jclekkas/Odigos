@@ -1,4 +1,6 @@
 import { timingSafeEqual } from "crypto";
+import * as fs from "fs";
+import * as path from "path";
 import type { Express, Request, Response } from "express";
 import { getStripeClient, isStripeConfigured } from "../stripeClient";
 import { getImportedSessionIds, importHistoricalEvents } from "../events";
@@ -168,6 +170,35 @@ export function registerAdminRoutes(app: Express): void {
         errorClass: err instanceof Error ? err.name : "UnknownError",
       });
       next(err);
+    }
+  });
+
+  app.get("/api/admin/backup/status", (req, res) => {
+    if (!requireAdminKey(req, res)) return;
+    try {
+      const backupsDir = path.resolve("backups");
+      if (!fs.existsSync(backupsDir)) {
+        return res.json({ backup: null });
+      }
+
+      const files = fs.readdirSync(backupsDir).filter((f) => f.endsWith(".dump"));
+      if (files.length === 0) {
+        return res.json({ backup: null });
+      }
+
+      let newest: { name: string; size: number; modifiedAt: string } | null = null;
+      for (const file of files) {
+        const filePath = path.join(backupsDir, file);
+        const stat = fs.statSync(filePath);
+        if (!newest || stat.mtimeMs > new Date(newest.modifiedAt).getTime()) {
+          newest = { name: file, size: stat.size, modifiedAt: stat.mtime.toISOString() };
+        }
+      }
+
+      res.json({ backup: newest });
+    } catch (err: any) {
+      console.error("[admin] /api/admin/backup/status error:", err?.message || err);
+      res.status(500).json({ error: "Failed to read backup status", message: err?.message });
     }
   });
 }

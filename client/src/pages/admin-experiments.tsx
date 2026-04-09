@@ -34,7 +34,7 @@ const VARIANT_LABELS: Record<string, Record<string, string>> = {
   },
   unlock_cta: {
     control: "Control — \"Unlock Full Deal Review — $49 (one-time)\"",
-    value: "Value — \"Unlock Full Deal Review — $49 (Less Than Most Doc Fees)\"",
+    value: "Value — \"Unlock Full Deal Review — $49 · Less Than a Doc Fee\"",
   },
 };
 

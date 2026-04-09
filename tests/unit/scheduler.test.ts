@@ -28,8 +28,8 @@ describe("Daily scheduler", () => {
   it("startDailyScheduler sets up intervals", () => {
     const setIntervalSpy = vi.spyOn(global, "setInterval");
     startDailyScheduler();
-    // One interval for view refresh, one for PII cleanup
-    expect(setIntervalSpy).toHaveBeenCalledTimes(2);
+    // Three intervals: view refresh, PII cleanup, pg_dump backup (Task #170)
+    expect(setIntervalSpy).toHaveBeenCalledTimes(3);
     setIntervalSpy.mockRestore();
   });
 
@@ -37,8 +37,8 @@ describe("Daily scheduler", () => {
     const clearIntervalSpy = vi.spyOn(global, "clearInterval");
     startDailyScheduler();
     stopDailyScheduler();
-    // Should have cleared both intervals
-    expect(clearIntervalSpy).toHaveBeenCalledTimes(2);
+    // Should clear all three intervals (view refresh, PII cleanup, pg_dump backup)
+    expect(clearIntervalSpy).toHaveBeenCalledTimes(3);
     clearIntervalSpy.mockRestore();
   });
 
