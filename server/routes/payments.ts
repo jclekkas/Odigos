@@ -70,12 +70,6 @@ export function registerPaymentRoutes(app: Express): void {
       const session = await stripe.checkout.sessions.create({
         mode: "payment",
         ui_mode: "embedded",
-        // Restrict to card only — disables Stripe Link (which requires
-        // hCaptcha + camera/microphone permissions that our cross-origin
-        // iframe Permissions-Policy blocks). Apple Pay and Google Pay
-        // still work because they ride the card rails via the browser
-        // Payment Request API.
-        payment_method_types: ["card"],
         line_items: [{ price: priceId, quantity: 1 }],
         return_url: `${baseUrl}/analyze?session_id={CHECKOUT_SESSION_ID}&product=${normalisedProduct}`,
         metadata,
@@ -149,8 +143,6 @@ export function registerPaymentRoutes(app: Express): void {
       const session = await stripe.checkout.sessions.create({
         mode: "payment",
         ui_mode: "embedded",
-        // Restrict to card only — see note in /api/checkout above.
-        payment_method_types: ["card"],
         line_items: [{ price: priceId, quantity: 1 }],
         return_url: `${baseUrl}/analyze?session_id={CHECKOUT_SESSION_ID}&analysisId=${analysisId}`,
         metadata,
