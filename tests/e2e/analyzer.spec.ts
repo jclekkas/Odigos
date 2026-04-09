@@ -1,5 +1,15 @@
 import { test, expect, Page } from "@playwright/test";
 
+// Pre-accept the cookie consent banner for all e2e tests so it doesn't
+// intercept clicks on CTAs near the bottom of the page or fail visibility
+// checks. The banner uses localStorage to persist consent, so we set it
+// before any page script runs via addInitScript.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("odigos_cookie_consent", "accepted");
+  });
+});
+
 const MOCK_ANALYSIS = {
   dealScore: "GREEN",
   confidenceLevel: "HIGH",
