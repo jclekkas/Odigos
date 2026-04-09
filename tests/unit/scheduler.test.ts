@@ -8,9 +8,14 @@ vi.mock("../../server/jobs/piiCleanup", () => ({
   runPiiCleanup: vi.fn().mockResolvedValue(undefined),
 }));
 
+vi.mock("../../server/jobs/backup", () => ({
+  runBackup: vi.fn().mockReturnValue({ filePath: "/tmp/backup.dump", sizeBytes: 1024 }),
+}));
+
 import { startDailyScheduler, stopDailyScheduler } from "../../server/warehouse/scheduler";
 import { refreshAllViews } from "../../server/warehouse/warehouseUtils";
 import { runPiiCleanup } from "../../server/jobs/piiCleanup";
+import { runBackup } from "../../server/jobs/backup";
 
 describe("Daily scheduler", () => {
   beforeEach(() => {
@@ -71,5 +76,51 @@ describe("Daily scheduler", () => {
     const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
     vi.advanceTimersByTime(TWENTY_FOUR_HOURS);
     expect(runPiiCleanup).toHaveBeenCalledTimes(2);
+  });
+
+  it("database backup interval fires after 24 hours", () => {
+    startDailyScheduler();
+
+    expect(runBackup).not.toHaveBeenCalled();
+
+    const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+    vi.advanceTimersByTime(TWENTY_FOUR_HOURS);
+
+    expect(runBackup).toHaveBeenCalledTimes(1);
+
+    vi.advanceTimersByTime(TWENTY_FOUR_HOURS);
+    expect(runBackup).toHaveBeenCalledTimes(2);
+  });
+
+  it("a single runDailyRefresh failure does not stop subsequent interval ticks", async () => {
+    (refreshAllViews as ReturnType<typeof vi.fn>)
+      .mockRejectedValueOnce(new Error("db down"))
+      .mockResolvedValueOnce(undefined);
+
+    startDailyScheduler();
+
+    const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+    await vi.advanceTimersByTimeAsync(TWENTY_FOUR_HOURS);
+    await vi.advanceTimersByTimeAsync(TWENTY_FOUR_HOURS);
+
+    expect(refreshAllViews).toHaveBeenCalledTimes(2);
+  });
+
+  it("a runBackup failure does not throw out of the scheduled tick", () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    (runBackup as ReturnType<typeof vi.fn>).mockImplementationOnce(() => {
+      throw new Error("pg_dump not installed");
+    });
+
+    startDailyScheduler();
+
+    const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+    expect(() => vi.advanceTimersByTime(TWENTY_FOUR_HOURS)).not.toThrow();
+    expect(runBackup).toHaveBeenCalledTimes(1);
+    expect(errorSpy).toHaveBeenCalledWith(
+      "[scheduler] Daily backup failed:",
+      expect.any(Error),
+    );
+    errorSpy.mockRestore();
   });
 });
