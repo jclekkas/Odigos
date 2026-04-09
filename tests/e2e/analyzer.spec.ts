@@ -1,15 +1,30 @@
 import { test, expect, Page } from "@playwright/test";
 
-// Pre-accept the cookie consent banner AND the upload consent checkbox for
-// all e2e tests so they don't intercept clicks or keep the analyze button
-// disabled. Both are persisted in localStorage by the governance compliance
-// UI commit (Task #158). Set them via addInitScript so the values are in
-// place before any page script runs and React initializes its state.
-test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => {
-    localStorage.setItem("odigos_cookie_consent", "accepted");
-    localStorage.setItem("odigos_upload_consent", "accepted");
-  });
+// Pre-populate localStorage for the origin before any test runs.
+// The governance compliance UI commit (Task #158) gates the analyze button
+// behind a per-submission upload consent checkbox (`!consentChecked`) and
+// also renders a CookieConsentBanner that can intercept clicks. Both read
+// localStorage on first mount via useState initializers, so the values
+// MUST be present before React mounts. `addInitScript` was unreliable here
+// (the script may run after about:blank but before the localhost origin is
+// established, so the localStorage write happens on the wrong origin).
+//
+// `test.use({ storageState })` sets the browser context's storage state
+// before any page is created, so when the test navigates to localhost:5000
+// the localStorage is already populated for that origin.
+test.use({
+  storageState: {
+    cookies: [],
+    origins: [
+      {
+        origin: "http://localhost:5000",
+        localStorage: [
+          { name: "odigos_cookie_consent", value: "accepted" },
+          { name: "odigos_upload_consent", value: "accepted" },
+        ],
+      },
+    ],
+  },
 });
 
 const MOCK_ANALYSIS = {
