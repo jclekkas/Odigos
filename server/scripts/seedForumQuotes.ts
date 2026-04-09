@@ -8,6 +8,10 @@
  * `dealer_submissions` (source of truth) and `core.listings` (analytics)
  * to tag them as seeded / exclude-from-metrics.
  *
+ * All validation rules and row-tagging behavior live in
+ * `server/services/seedService.ts` so the CLI and the admin web UI
+ * stay in lockstep.
+ *
  * Modes:
  *   (none)          — implicit --dry-run, no writes
  *   --validate      — validation only, exit non-zero if any row fails
@@ -33,99 +37,36 @@ import { fileURLToPath } from "node:url";
 
 import { runAnalysis, type AnalyzeInput } from "../services/analyzeService";
 import { storage } from "../storage";
-import { db } from "../db";
-import { sql } from "drizzle-orm";
 import { normalizeSubmissionText, sha256Hex, refreshAllViews } from "../warehouse/warehouseUtils";
+import {
+  validateEntry,
+  tagSeededRow,
+  estimateEntryCostUsd,
+  type SeedEntry,
+} from "../services/seedService";
 
 // ---------------------------------------------------------------------------
-// Fixture shape + validation
+// Fixture loading + validation aggregation
 // ---------------------------------------------------------------------------
 
-interface FixtureEntry {
-  sourceId: string;
-  reviewStatus: string;
-  vehicle: string;
-  zipCode?: string;
-  stateCode?: string;
-  condition: "unknown" | "new" | "used";
-  purchaseType: "unknown" | "cash" | "finance" | "lease";
-  msrp?: number;
-  sellingPrice?: number;
-  docFee?: number;
-  otdPrice?: number;
-  dealerText: string;
-}
-
-interface ValidationResult {
-  approved: FixtureEntry[];
-  rejected: Array<{ entry: Partial<FixtureEntry>; reason: string }>;
+interface AggregateValidationResult {
+  approved: SeedEntry[];
+  rejected: Array<{ entry: Partial<SeedEntry>; reason: string }>;
   missingStateCode: number;
 }
 
-function validateAll(fixtures: unknown[]): ValidationResult {
-  const approved: FixtureEntry[] = [];
-  const rejected: Array<{ entry: Partial<FixtureEntry>; reason: string }> = [];
+function validateAll(fixtures: unknown[]): AggregateValidationResult {
+  const approved: SeedEntry[] = [];
+  const rejected: Array<{ entry: Partial<SeedEntry>; reason: string }> = [];
   let missingStateCode = 0;
 
   for (const raw of fixtures) {
-    const entry = raw as Partial<FixtureEntry>;
+    const entry = raw as Partial<SeedEntry>;
     const label = entry.sourceId ?? "(no sourceId)";
 
-    if (entry.reviewStatus !== "approved") {
-      rejected.push({ entry, reason: `${label}: reviewStatus must be "approved"` });
-      continue;
-    }
-    if (!entry.dealerText || typeof entry.dealerText !== "string") {
-      rejected.push({ entry, reason: `${label}: missing dealerText` });
-      continue;
-    }
-    if (!entry.condition) {
-      rejected.push({ entry, reason: `${label}: missing condition` });
-      continue;
-    }
-    if (!entry.purchaseType) {
-      rejected.push({ entry, reason: `${label}: missing purchaseType` });
-      continue;
-    }
-
-    const hasAnyPricing =
-      entry.msrp != null ||
-      entry.sellingPrice != null ||
-      entry.docFee != null ||
-      entry.otdPrice != null;
-    if (!hasAnyPricing) {
-      rejected.push({ entry, reason: `${label}: must include at least one of msrp/sellingPrice/docFee/otdPrice` });
-      continue;
-    }
-
-    // Numeric consistency — HARD REJECT
-    const numericFields: Array<[string, number | undefined]> = [
-      ["msrp", entry.msrp],
-      ["sellingPrice", entry.sellingPrice],
-      ["docFee", entry.docFee],
-      ["otdPrice", entry.otdPrice],
-    ];
-    let consistencyReason: string | null = null;
-    for (const [name, val] of numericFields) {
-      if (val != null && (!Number.isFinite(val) || val < 0)) {
-        consistencyReason = `${label}: ${name} is negative or non-finite`;
-        break;
-      }
-    }
-    if (!consistencyReason && entry.otdPrice != null && entry.sellingPrice != null && entry.otdPrice < entry.sellingPrice) {
-      consistencyReason = `${label}: otdPrice ($${entry.otdPrice}) < sellingPrice ($${entry.sellingPrice})`;
-    }
-    if (!consistencyReason && entry.docFee != null && entry.otdPrice != null && entry.docFee > entry.otdPrice) {
-      consistencyReason = `${label}: docFee ($${entry.docFee}) > otdPrice ($${entry.otdPrice})`;
-    }
-    if (!consistencyReason && entry.sellingPrice != null && entry.msrp != null && entry.sellingPrice > entry.msrp * 2) {
-      consistencyReason = `${label}: sellingPrice ($${entry.sellingPrice}) > 2x MSRP ($${entry.msrp})`;
-    }
-    if (!consistencyReason && entry.docFee != null && entry.docFee > 5000) {
-      consistencyReason = `${label}: docFee ($${entry.docFee}) exceeds sanity bound $5000`;
-    }
-    if (consistencyReason) {
-      rejected.push({ entry, reason: consistencyReason });
+    const result = validateEntry(entry);
+    if (!result.valid) {
+      rejected.push({ entry, reason: `${label}: ${result.errors.join("; ")}` });
       continue;
     }
 
@@ -133,23 +74,10 @@ function validateAll(fixtures: unknown[]): ValidationResult {
       missingStateCode++;
     }
 
-    approved.push(entry as FixtureEntry);
+    approved.push(entry as SeedEntry);
   }
 
   return { approved, rejected, missingStateCode };
-}
-
-// ---------------------------------------------------------------------------
-// Cost estimation (rough — gpt-4o-class pricing)
-// ---------------------------------------------------------------------------
-
-function estimateCost(entry: FixtureEntry): number {
-  // Rough budget: each seeded row runs one full runAnalysis() call which
-  // includes prompt + completion tokens. Budget conservatively at $0.04/row.
-  const textLen = entry.dealerText.length;
-  const base = 0.02;
-  const perChar = 0.00003;
-  return base + textLen * perChar;
 }
 
 // ---------------------------------------------------------------------------
@@ -198,7 +126,7 @@ function parseArgs(argv: string[]): Args {
 function printValidationReport(
   args: Args,
   total: number,
-  validation: ValidationResult,
+  validation: AggregateValidationResult,
   projectedCost: number,
 ): void {
   const approvedCount = validation.approved.length;
@@ -220,60 +148,6 @@ function printValidationReport(
     }
   }
   console.log("");
-}
-
-// ---------------------------------------------------------------------------
-// Post-commit patching: tag both dealer_submissions AND core.listings
-// ---------------------------------------------------------------------------
-
-/**
- * After a seeded row lands in `dealer_submissions` + `core.listings`, patch
- * both tables so the row is correctly excluded from funnel metrics and
- * dealer-level aggregates, while still contributing to state-level
- * aggregates (via `core.state_stats`).
- *
- * Actions:
- *  1. `storage.markAsSeed()` — sets is_seeded/exclude_* flags on dealer_submissions
- *  2. Updates core.listings for the matching dealer_submission_id:
- *     - ingestion_source = 'seed' (already an allowed value per CHECK constraint)
- *     - counts_toward_real_deals = false (excludes from platform_metrics)
- *  3. Decrements core.dealers.listing_count for the dealer row the writer
- *     associated this listing with, so dealer-level listing counts reflect
- *     only real user submissions. (marketContext.getDealerStats reads this
- *     counter directly.)
- */
-async function tagSeededRow(
-  dealerSubmissionId: string,
-  batchId: string,
-): Promise<void> {
-  await storage.markAsSeed(dealerSubmissionId, { seedBatchId: batchId });
-
-  const listingRows = await db.execute<{ id: string; dealer_id: string | null }>(sql`
-    SELECT id, dealer_id
-    FROM core.listings
-    WHERE dealer_submission_id = ${dealerSubmissionId}
-    LIMIT 1
-  `);
-  const listingRow = listingRows.rows?.[0];
-  if (!listingRow) {
-    console.warn(`[seed] No core.listings row found for submission ${dealerSubmissionId} — patching skipped.`);
-    return;
-  }
-
-  await db.execute(sql`
-    UPDATE core.listings
-    SET ingestion_source = 'seed',
-        counts_toward_real_deals = false
-    WHERE id = ${listingRow.id}
-  `);
-
-  if (listingRow.dealer_id) {
-    await db.execute(sql`
-      UPDATE core.dealers
-      SET listing_count = GREATEST(listing_count - 1, 0)
-      WHERE id = ${listingRow.dealer_id}
-    `);
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -306,7 +180,7 @@ async function main(): Promise<void> {
   }
 
   const validation = validateAll(fixtures);
-  const projectedCost = validation.approved.reduce((sum, e) => sum + estimateCost(e), 0);
+  const projectedCost = validation.approved.reduce((sum, e) => sum + estimateEntryCostUsd(e), 0);
 
   if (args.mode === "validate") {
     printValidationReport(args, fixtures.length, validation, projectedCost);
@@ -345,7 +219,7 @@ async function main(): Promise<void> {
       continue;
     }
 
-    const estimate = estimateCost(entry);
+    const estimate = estimateEntryCostUsd(entry);
     if (totalCostUsd + estimate > args.maxCostUsd) {
       console.error(`  [abort] cost cap exceeded: ${(totalCostUsd + estimate).toFixed(2)} > ${args.maxCostUsd}`);
       break;

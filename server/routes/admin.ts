@@ -2,8 +2,20 @@ import { timingSafeEqual } from "crypto";
 import type { Express, Request, Response } from "express";
 import { getStripeClient, isStripeConfigured } from "../stripeClient";
 import { getImportedSessionIds, importHistoricalEvents } from "../events";
-import { listAuditLog } from "../storage";
+import { listAuditLog, storage } from "../storage";
 import { writeAuditEvent } from "../audit";
+import {
+  validateEntry,
+  processSeedEntry,
+  type SeedEntry,
+} from "../services/seedService";
+
+/**
+ * Per-request cost cap for the admin seed UI. Deliberately low — a single
+ * quote should cost ~$0.03, so $0.10 is a generous ceiling that still
+ * prevents runaway spend if a giant payload slips through.
+ */
+const ADMIN_SEED_MAX_COST_USD = 0.10;
 
 export function requireAdminKey(req: Request, res: Response): boolean {
   const configuredKey = process.env.ADMIN_KEY;
@@ -125,6 +137,168 @@ export function registerAdminRoutes(app: Express): void {
     } catch (error: unknown) {
       console.error("Stripe import error:", error);
       res.status(500).json({ error: "Failed to import Stripe history" });
+    }
+  });
+
+  // ───────────────────────────────────────────────────────────────────────
+  // Admin seed UI endpoints
+  //
+  // Private, ADMIN_KEY-gated endpoints powering the /admin/seed page.
+  // They wrap the same shared seedService that the CLI script uses so
+  // validation rules, row-tagging, and cost accounting stay identical
+  // across both entrypoints.
+  //
+  // - POST /api/admin/seed/validate: dry-check one entry, no writes
+  // - POST /api/admin/seed/commit:   validate → runAnalysis → tag → refresh
+  // - GET  /api/admin/seed/recent:   list most recent seeded rows
+  //
+  // Per-request cost cap is hardcoded to ADMIN_SEED_MAX_COST_USD ($0.10).
+  // ───────────────────────────────────────────────────────────────────────
+
+  /**
+   * Coerce a raw JSON value from req.body into a clean SeedEntry shape.
+   * Anything ambiguous becomes undefined so downstream validation can
+   * produce clean error messages. Numbers are parsed and coerced from
+   * strings since HTML form inputs deliver strings.
+   */
+  function coerceSeedEntry(body: unknown): Partial<SeedEntry> {
+    const b = (body ?? {}) as Record<string, unknown>;
+    const str = (v: unknown): string | undefined =>
+      typeof v === "string" && v.trim() ? v.trim() : undefined;
+    const num = (v: unknown): number | undefined => {
+      if (v == null || v === "") return undefined;
+      const n = typeof v === "number" ? v : Number(v);
+      return Number.isFinite(n) ? n : undefined;
+    };
+    const condition = (() => {
+      const c = str(b.condition);
+      return c === "new" || c === "used" || c === "unknown" ? c : undefined;
+    })();
+    const purchaseType = (() => {
+      const p = str(b.purchaseType);
+      return p === "new" ? undefined : p === "cash" || p === "finance" || p === "lease" || p === "unknown" ? p : undefined;
+    })();
+    return {
+      sourceId: str(b.sourceId),
+      reviewStatus: str(b.reviewStatus) ?? "approved",
+      vehicle: str(b.vehicle),
+      zipCode: str(b.zipCode),
+      stateCode: str(b.stateCode)?.toUpperCase().slice(0, 2),
+      condition,
+      purchaseType,
+      msrp: num(b.msrp),
+      sellingPrice: num(b.sellingPrice),
+      docFee: num(b.docFee),
+      otdPrice: num(b.otdPrice),
+      dealerText: str(b.dealerText) ?? "",
+    };
+  }
+
+  app.post("/api/admin/seed/validate", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
+    try {
+      const entry = coerceSeedEntry(req.body);
+      const result = validateEntry(entry);
+      res.json({
+        valid: result.valid,
+        errors: result.errors,
+        missingStateCode: !entry.stateCode,
+      });
+    } catch (err: unknown) {
+      console.error("[admin/seed/validate] error:", err instanceof Error ? err.message : err);
+      res.status(500).json({ error: "Validation failed" });
+    }
+  });
+
+  app.post("/api/admin/seed/commit", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
+    try {
+      const body = (req.body ?? {}) as Record<string, unknown>;
+      const rawBatchId = typeof body.batchId === "string" ? body.batchId.trim() : "";
+      if (!rawBatchId) {
+        return res.status(400).json({ error: "batchId is required" });
+      }
+      // Prevent weirdness in the batch id — only allow [A-Za-z0-9-_]
+      if (!/^[A-Za-z0-9_-]{1,64}$/.test(rawBatchId)) {
+        return res.status(400).json({
+          error: "batchId must be 1–64 chars: letters, digits, hyphens, underscores only",
+        });
+      }
+
+      const partial = coerceSeedEntry(req.body);
+      const upfront = validateEntry(partial);
+      if (!upfront.valid) {
+        return res.status(400).json({
+          status: "validation_failed",
+          errors: upfront.errors,
+        });
+      }
+
+      const outcome = await processSeedEntry({
+        entry: partial as SeedEntry,
+        batchId: rawBatchId,
+        maxCostUsd: ADMIN_SEED_MAX_COST_USD,
+        refreshViewsAfter: true,
+      });
+
+      if (outcome.status === "committed") {
+        const stateSummary = await storage.getStateAggregateSummary();
+        await writeAuditEvent(req, "admin_action", "success", {
+          route: req.originalUrl,
+          method: req.method,
+          statusCode: 200,
+          action: "seed_commit",
+          listingId: outcome.listingId,
+          batchId: rawBatchId,
+          stateCode: partial.stateCode ?? null,
+        });
+        return res.json({
+          status: "committed",
+          listingId: outcome.listingId,
+          coreListingId: outcome.coreListingId,
+          costUsd: outcome.costUsd,
+          analysis: outcome.analysis,
+          stateAggregateSummary: stateSummary,
+        });
+      }
+
+      // Non-committed outcomes: validation_failed / duplicate / cost_capped / analysis_failed
+      const statusCode =
+        outcome.status === "validation_failed" ? 400
+        : outcome.status === "duplicate" ? 409
+        : outcome.status === "cost_capped" ? 402
+        : 502;
+
+      await writeAuditEvent(req, "admin_action", "failure", {
+        route: req.originalUrl,
+        method: req.method,
+        statusCode,
+        action: "seed_commit",
+        reason: outcome.status,
+      });
+      return res.status(statusCode).json(outcome);
+    } catch (err: unknown) {
+      console.error("[admin/seed/commit] error:", err instanceof Error ? err.message : err);
+      await writeAuditEvent(req, "admin_action", "failure", {
+        route: req.originalUrl,
+        method: req.method,
+        statusCode: 500,
+        action: "seed_commit",
+        errorClass: err instanceof Error ? err.name : "UnknownError",
+      });
+      res.status(500).json({ error: "Commit failed" });
+    }
+  });
+
+  app.get("/api/admin/seed/recent", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
+    try {
+      const limit = Math.min(Math.max(Number(req.query.limit) || 20, 1), 100);
+      const rows = await storage.listRecentSeededRows(limit);
+      res.json({ rows });
+    } catch (err: unknown) {
+      console.error("[admin/seed/recent] error:", err instanceof Error ? err.message : err);
+      res.status(500).json({ error: "Failed to list recent seeded rows" });
     }
   });
 

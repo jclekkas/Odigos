@@ -60,6 +60,17 @@ export interface StateAggregateSummaryRow {
   count: number;
 }
 
+export interface RecentSeededRow {
+  id: string;
+  seedBatchId: string | null;
+  seededAt: Date | null;
+  stateCode: string | null;
+  dealScore: string;
+  verdictLabel: string;
+  salePrice: string | null;
+  otdPrice: string | null;
+}
+
 export interface IStorage {
   saveDealerSubmission(data: InsertDealerSubmission): Promise<{ id: string } | null>;
   getDealerSubmission(id: string): Promise<DealerSubmission | null>;
@@ -67,6 +78,7 @@ export interface IStorage {
   findByContentHash(hash: string): Promise<DealerSubmission | null>;
   markAsSeed(id: string, opts: { seedBatchId: string }): Promise<void>;
   getStateAggregateSummary(): Promise<StateAggregateSummaryRow[]>;
+  listRecentSeededRows(limit: number): Promise<RecentSeededRow[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -91,6 +103,10 @@ export class MemStorage implements IStorage {
   }
 
   async getStateAggregateSummary(): Promise<StateAggregateSummaryRow[]> {
+    return [];
+  }
+
+  async listRecentSeededRows(_limit: number): Promise<RecentSeededRow[]> {
     return [];
   }
 }
@@ -167,6 +183,26 @@ export class DrizzleStorage implements IStorage {
       avgDocFee: row.avg_doc_fee != null ? Number(row.avg_doc_fee) : null,
       count: Number(row.listing_count),
     }));
+  }
+
+  async listRecentSeededRows(limit: number): Promise<RecentSeededRow[]> {
+    const safeLimit = Math.min(Math.max(1, Math.floor(limit)), 100);
+    const rows = await db
+      .select({
+        id: dealerSubmissions.id,
+        seedBatchId: dealerSubmissions.seedBatchId,
+        seededAt: dealerSubmissions.seededAt,
+        stateCode: dealerSubmissions.stateCode,
+        dealScore: dealerSubmissions.dealScore,
+        verdictLabel: dealerSubmissions.verdictLabel,
+        salePrice: dealerSubmissions.salePrice,
+        otdPrice: dealerSubmissions.otdPrice,
+      })
+      .from(dealerSubmissions)
+      .where(eq(dealerSubmissions.isSeeded, true))
+      .orderBy(desc(dealerSubmissions.seededAt))
+      .limit(safeLimit);
+    return rows;
   }
 }
 
