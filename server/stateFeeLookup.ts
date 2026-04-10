@@ -1,5 +1,5 @@
 import { zipToStateCode } from "./zipToState.js";
-import stateFeeReferenceJson from "./state_fee_reference.json";
+import stateFeeReferenceJson from "./state_fee_reference.json" with { type: "json" };
 
 interface CpiIndexing {
   isIndexed: boolean;

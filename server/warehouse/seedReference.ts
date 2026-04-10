@@ -1,7 +1,7 @@
 import { db } from "../db.js";
 import { sql } from "drizzle-orm";
 import { coreStates, coreMetroAreas } from "../../shared/warehouse.js";
-import stateRef from "../state_fee_reference.json";
+import stateRef from "../state_fee_reference.json" with { type: "json" };
 
 type StateData = {
   name: string;
