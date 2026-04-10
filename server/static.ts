@@ -1,7 +1,7 @@
 import express, { type Express, type Response } from "express";
 import fs from "fs";
 import path from "path";
-import { isKnownRoute } from "../shared/routes";
+import { isKnownRoute } from "../shared/routes.js";
 import { injectSeoMeta } from "./injectMeta";
 
 /** Inject the per-request CSP nonce into every <script tag in the HTML. */
