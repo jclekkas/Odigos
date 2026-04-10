@@ -288,7 +288,7 @@ export default function OutTheDoorPrice() {
           ))}
         </ul>
         <p className="text-muted-foreground">
-          Many of these are optional — even when labeled "mandatory." Learn more about <Link href="/mandatory-dealer-add-ons" className="underline text-foreground">mandatory dealer add-ons</Link> and which ones you can decline. Resources like <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds' breakdown of dealer fees</a> can help you identify common charges.
+          Many of these are optional — even when labeled "mandatory." Learn more about <Link href="/are-dealer-add-ons-mandatory" className="underline text-foreground">mandatory dealer add-ons</Link> and which ones you can decline. Resources like <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds' breakdown of dealer fees</a> can help you identify common charges.
         </p>
 
         <h2 className="text-2xl font-semibold text-foreground flex items-center gap-2">

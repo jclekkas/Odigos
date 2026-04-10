@@ -52,14 +52,6 @@ export const ARTICLE_SOURCES: Record<
     sources: ["https://consumer.ftc.gov/articles/buying-new-car"],
     lastVerified: "2026-03",
   },
-  "mandatory-dealer-add-ons": {
-    sources: [
-      "https://consumer.ftc.gov/articles/buying-new-car",
-      "https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html",
-      "https://www.kbb.com/car-advice/",
-    ],
-    lastVerified: "2026-03",
-  },
   "dealer-add-ons-list": {
     sources: ["https://consumer.ftc.gov/articles/buying-new-car"],
     lastVerified: "2026-03",
@@ -83,10 +75,6 @@ export const ARTICLE_SOURCES: Record<
       "https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html",
       "https://www.kbb.com/car-advice/",
     ],
-    lastVerified: "2026-03",
-  },
-  "dealer-wont-give-otd": {
-    sources: ["https://consumer.ftc.gov/articles/buying-new-car"],
     lastVerified: "2026-03",
   },
   "dealer-added-fees-after-agreement": {

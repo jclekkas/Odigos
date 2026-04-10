@@ -141,7 +141,7 @@ export default function HowToCompareCarDeals() {
           </li>
           <li className="flex items-start gap-2">
             <span className="text-muted-foreground">•</span>
-            <span><strong className="text-foreground">Doc fee</strong> — should be similar for both dealers in the same state, since norms are geographic. A large discrepancy is worth questioning. See <Link href="/what-is-a-dealer-doc-fee" className="underline text-foreground">what a dealer doc fee is</Link>.</span>
+            <span><strong className="text-foreground">Doc fee</strong> — should be similar for both dealers in the same state, since norms are geographic. A large discrepancy is worth questioning. See <Link href="/dealer-doc-fee" className="underline text-foreground">what a dealer doc fee is</Link>.</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-muted-foreground">•</span>

@@ -74,9 +74,9 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
       "If your dealer refuses to give an out-the-door price, here's why they do it, what to say back, and how to calculate your OTD price yourself from any quote.",
   },
   "/dealer-doc-fee": {
-    title: "What Is a Dealer Doc Fee? How to Know If Yours Is Too High",
+    title: "What Is a Dealer Doc Fee? Ranges by State & How to Negotiate | Odigos",
     description:
-      "Dealer doc fees cover paperwork but some charge 3-4x the cap. Learn what's normal in your state and check if your dealer is overcharging.",
+      "A dealer doc fee is a paperwork charge set by the dealership, not the government. Learn what it covers, ranges by state, whether it's negotiable, and red flags to watch for.",
   },
 
   // ── Other content pages ──────────────────────────────────────
@@ -135,25 +135,15 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
     description:
       "Market adjustment fees add thousands above MSRP. Learn what they are, whether they're legal, how to negotiate them down, and what to watch for in quotes.",
   },
-  "/dealer-wont-give-otd": {
-    title: "Why Dealers Avoid Giving Out-the-Door Prices (and What to Do) | Odigos",
-    description:
-      "Learn why dealers avoid giving OTD prices, how it benefits them, and what it signals about the deal you're being offered.",
-  },
   "/monthly-payment-trap": {
     title: "The Monthly Payment Trap in Car Buying | Odigos",
     description:
       "A $489/month payment could mean $29,340 or $35,208 depending on APR and term. Learn how payment-focused quotes hide the real cost and how to negotiate the out-the-door price first.",
   },
-  "/mandatory-dealer-add-ons": {
-    title: "Mandatory Dealer Add-Ons: Which Are Actually Required by the Dealer | Odigos",
-    description:
-      "Understand which dealer add-ons are truly required, which are optional, and why dealers pre-install extras to increase profit.",
-  },
   "/are-dealer-add-ons-mandatory": {
     title: "Are Dealer Add-Ons Mandatory? What You Can Refuse | Odigos",
     description:
-      "Are dealer add-ons mandatory? Learn which fees and add-ons you can refuse and how to push back without losing the deal.",
+      "Are dealer add-ons mandatory? Learn which are legally required vs optional, what each one actually costs the dealer, and how to push back without losing the deal.",
   },
   "/are-dealer-add-ons-negotiable": {
     title: "Are Dealer Add-Ons Negotiable? What Dealers Will Actually Concede | Odigos",
@@ -205,11 +195,6 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
     description:
       "Doc fees vary widely by state and dealer. Learn what's normal, whether you can negotiate, and what red flags to watch for when a dealer's documentation fee seems too high.",
   },
-  "/what-is-a-dealer-doc-fee": {
-    title: "What Is a Dealer Doc Fee? Ranges by State | Odigos",
-    description:
-      "A dealer doc fee is a paperwork charge set by the dealership, not the government. Learn what it covers, typical ranges by state, and what counts as normal.",
-  },
   "/dealer-prep-fee": {
     title: "Dealer Prep Fee: What It Is and Should You Pay It | Odigos",
     description:
@@ -221,34 +206,19 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
       "A dealer reconditioning fee covers used car refurbishment. Learn what is legitimate, when fees are inflated, red flags to watch for, and how to negotiate.",
   },
   "/is-this-a-good-car-deal": {
-    title: "Is This a Good Car Deal? 4 Signs It Is (and 3 Red Flags) | Odigos",
+    title: "Is This a Good Car Deal? 4-Step Checklist & Red Flags | Odigos",
     description:
-      "Learn how to tell if a car deal is actually good using 4 key signals and 3 red flags most buyers miss before signing.",
-  },
-  "/how-to-tell-if-a-car-deal-is-good": {
-    title: "How to Tell if a Car Deal Is Good: OTD, Fees, Add-Ons, Financing | Odigos",
-    description:
-      "Use this four-step checklist to evaluate any car deal, including OTD price, hidden fees, add-ons, and financing traps.",
-  },
-  "/what-is-a-fair-price-for-a-car": {
-    title: "How Much Should You Pay for a Car? OTD Price vs. Monthly Payment | Odigos",
-    description:
-      "Find out how much you should really pay for a car by comparing OTD price instead of monthly payments and avoiding common traps.",
+      "Learn how to tell if a car deal is actually good using a 4-step checklist covering OTD price, fees, add-ons, and financing. Includes verdict tiers and red flags most buyers miss.",
   },
   "/how-much-should-you-pay-for-a-car": {
-    title: "How Much Should You Pay for a Car? OTD Price vs. Monthly Payment | Odigos",
+    title: "How Much Should You Pay for a Car? Fair Price, OTD & Financing | Odigos",
     description:
-      "Find out how much you should really pay for a car by comparing OTD price instead of monthly payments and avoiding common traps.",
+      "A fair car price isn't the sticker — it's the OTD total. Learn what MSRP, invoice, and market value actually mean, and how to evaluate the real cost including financing.",
   },
   "/how-to-compare-car-deals": {
     title: "How to Compare Car Deals Side by Side (OTD to OTD) | Odigos",
     description:
       "Compare car deals the right way by focusing on OTD price, not monthly payments, so you can avoid misleading financing tactics.",
-  },
-  "/best-way-to-check-if-a-car-deal-is-good": {
-    title: "The Fastest Way to Check a Car Deal Without Being Tricked | Odigos",
-    description:
-      "Quickly check if a car deal is good without spreadsheets or guesswork, and avoid common tricks dealers use to hide costs.",
   },
   "/what-does-out-the-door-price-include": {
     title: "What Does Out-the-Door Price Include? | Odigos",
@@ -271,9 +241,9 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
       "A $33,500 car becomes $37,947 after taxes, fees, and add-ons. Three real OTD scenarios with exact dollar amounts on every line so you know what to expect.",
   },
   "/why-dealers-wont-give-out-the-door-price": {
-    title: "Why Dealers Won't Give Out-the-Door Price | Odigos",
+    title: "Why Dealers Won't Give Out-the-Door Price (and What to Do) | Odigos",
     description:
-      "Dealers resist OTD pricing because it removes structural advantages. Here's the incentive structure behind the refusal and what you can do about it.",
+      "Dealers resist OTD pricing because it removes structural advantages. Here's the incentive structure behind the refusal, what to say, and what to do when they dodge.",
   },
   "/glossary": {
     title: "Car Buying Glossary: Dealer Fees & Lease Terms Explained | Odigos",

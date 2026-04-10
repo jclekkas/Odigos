@@ -60,7 +60,7 @@ const sections = [
         description: "The most common tactics used at dealerships and how to recognize them.",
       },
       {
-        href: "/mandatory-dealer-add-ons",
+        href: "/are-dealer-add-ons-mandatory",
         title: "Mandatory Dealer Add-Ons Explained",
         description: "What's actually required vs. what dealers present as mandatory.",
       },
