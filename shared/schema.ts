@@ -97,6 +97,50 @@ export type ConfidenceLevel = z.infer<typeof confidenceLevelSchema>;
 export const financialImpactConfidenceSchema = z.enum(["low", "medium", "high"]);
 export type FinancialImpactConfidence = z.infer<typeof financialImpactConfidenceSchema>;
 
+// ---------------------------------------------------------------------------
+// Lease Math Engine result schemas
+// ---------------------------------------------------------------------------
+
+export const rateMarkupResultSchema = z.object({
+  dealerAPR: z.number(),
+  buyRateAPR: z.number(),
+  markupAPR: z.number(),
+  markupPerMonth: z.number(),
+  totalMarkupDollars: z.number(),
+});
+
+export const paymentValidationResultSchema = z.object({
+  expectedPaymentPreTax: z.number(),
+  quotedPayment: z.number(),
+  discrepancy: z.number(),
+  isSignificant: z.boolean(),
+});
+
+export const residualCheckResultSchema = z.object({
+  residualPercent: z.number(),
+  brandRange: z.tuple([z.number(), z.number()]),
+  status: z.enum(["low", "normal", "high"]),
+  deviationFromRange: z.number(),
+});
+
+export const acqFeeBenchmarkResultSchema = z.object({
+  charged: z.number(),
+  brandStandard: z.number(),
+  overage: z.number(),
+  isMarkedUp: z.boolean(),
+});
+
+export const leaseMathResultSchema = z.object({
+  apr: z.number().nullable(),
+  rateMarkup: rateMarkupResultSchema.nullable(),
+  paymentValidation: paymentValidationResultSchema.nullable(),
+  residualCheck: residualCheckResultSchema.nullable(),
+  acquisitionFeeBenchmark: acqFeeBenchmarkResultSchema.nullable(),
+  brandMatched: z.string().nullable(),
+});
+
+export type LeaseMathResult = z.infer<typeof leaseMathResultSchema>;
+
 // Analysis response schema
 export const analysisResponseSchema = z.object({
   dealScore: z.enum(["GREEN", "YELLOW", "RED"]),
@@ -125,6 +169,10 @@ export const analysisResponseSchema = z.object({
   marketComparison: z.string().nullable().optional(),
   financialImpactConfidence: financialImpactConfidenceSchema.nullable().optional(),
   financialSummary: z.string().nullable().optional(),
+  // ---------------------------------------------------------------------
+  // Lease Math Engine — deterministic post-LLM computations
+  // ---------------------------------------------------------------------
+  leaseMath: leaseMathResultSchema.nullable().optional(),
 });
 
 export type AnalysisResponse = z.infer<typeof analysisResponseSchema>;

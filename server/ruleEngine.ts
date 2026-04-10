@@ -1,4 +1,5 @@
 import type { AnalysisResponse, DetectedFields, Fee } from "@shared/schema";
+import type { LeaseMathResult } from "./leaseMathEngine";
 
 interface RuleEngineResult {
   dealScore: "GREEN" | "YELLOW" | "RED";
@@ -228,7 +229,8 @@ export function applyRuleEngine(
   llmResult: AnalysisResponse,
   fields: DetectedFields,
   docFeeCapResult?: DocFeeCapResult | null,
-  purchaseType?: string
+  purchaseType?: string,
+  leaseMath?: LeaseMathResult | null,
 ): RuleEngineResult {
   if (docFeeCapResult?.violated) {
     return {
@@ -241,11 +243,45 @@ export function applyRuleEngine(
 
   // Lease-specific rules (applied before general rules)
   if (isLeaseQuote(fields, purchaseType)) {
-    if (hasHighAcquisitionFee(fields)) {
+    // Brand-aware acquisition fee check (replaces fixed $1000 threshold when brand data available)
+    if (leaseMath?.acquisitionFeeBenchmark?.isMarkedUp) {
+      return {
+        dealScore: "YELLOW",
+        confidenceLevel: "MEDIUM",
+        verdictLabel: "PAUSE — ACQUISITION FEE ABOVE LENDER STANDARD",
+        goNoGo: "NEED-MORE-INFO",
+      };
+    }
+    if (!leaseMath?.acquisitionFeeBenchmark && hasHighAcquisitionFee(fields)) {
       return {
         dealScore: "YELLOW",
         confidenceLevel: "MEDIUM",
         verdictLabel: "PAUSE — HIGH ACQUISITION FEE",
+        goNoGo: "NEED-MORE-INFO",
+      };
+    }
+    // Lease math-driven rules
+    if (leaseMath?.rateMarkup && leaseMath.rateMarkup.totalMarkupDollars > 1500) {
+      return {
+        dealScore: "YELLOW",
+        confidenceLevel: "MEDIUM",
+        verdictLabel: "PAUSE — RATE MARKUP DETECTED",
+        goNoGo: "NEED-MORE-INFO",
+      };
+    }
+    if (leaseMath?.paymentValidation?.isSignificant && Math.abs(leaseMath.paymentValidation.discrepancy) > 50) {
+      return {
+        dealScore: "YELLOW",
+        confidenceLevel: "MEDIUM",
+        verdictLabel: "PAUSE — PAYMENT DOESN'T MATCH",
+        goNoGo: "NEED-MORE-INFO",
+      };
+    }
+    if (leaseMath?.residualCheck?.status === "low") {
+      return {
+        dealScore: "YELLOW",
+        confidenceLevel: "MEDIUM",
+        verdictLabel: "PAUSE — LOW RESIDUAL VALUE",
         goNoGo: "NEED-MORE-INFO",
       };
     }
