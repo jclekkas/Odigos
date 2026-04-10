@@ -8,8 +8,10 @@ if (!process.env.DATABASE_URL) {
 
 const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
-  max: 10,
-  idleTimeoutMillis: 30000,
+  // Serverless functions (Vercel) create a new pool per invocation; keep it
+  // small to avoid exhausting database connections under concurrency.
+  max: process.env.VERCEL ? 1 : 10,
+  idleTimeoutMillis: process.env.VERCEL ? 10000 : 30000,
   connectionTimeoutMillis: 10000,
 });
 
