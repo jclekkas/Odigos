@@ -5,7 +5,7 @@ import {
   dealerSubmissions,
   dealFeedback,
   auditLog,
-} from "@shared/schema";
+} from "../shared/schema.js";
 import { and, desc, eq, gte, lte, sql } from "drizzle-orm";
 import { db } from "./db.js";
 

@@ -7,9 +7,9 @@
  */
 import { db } from "../db.js";
 import { sql, eq, and } from "drizzle-orm";
-import type { AnalysisResponse, AnalysisRequest, DetectedFields } from "@shared/schema";
-import { failedWarehouseWrites, detectedFieldsSchema } from "@shared/schema";
-import { rawUserAnalyses, coreDealers, coreListings } from "@shared/warehouse";
+import type { AnalysisResponse, AnalysisRequest, DetectedFields } from "../../shared/schema.js";
+import { failedWarehouseWrites, detectedFieldsSchema } from "../../shared/schema.js";
+import { rawUserAnalyses, coreDealers, coreListings } from "../../shared/warehouse.js";
 import {
   normalizeDealerName,
   validateStateCode,

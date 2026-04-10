@@ -1,4 +1,4 @@
-import type { AnalysisResponse, DetectedFields, Fee } from "@shared/schema";
+import type { AnalysisResponse, DetectedFields, Fee } from "../shared/schema.js";
 import type { LeaseMathResult } from "./leaseMathEngine.js";
 
 interface RuleEngineResult {

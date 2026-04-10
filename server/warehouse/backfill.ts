@@ -12,12 +12,12 @@
  */
 import { db } from "../db.js";
 import { sql } from "drizzle-orm";
-import { dealerSubmissions } from "@shared/schema";
+import { dealerSubmissions } from "../../shared/schema.js";
 import {
   rawUserAnalyses,
   coreDealers,
   coreListings,
-} from "@shared/warehouse";
+} from "../../shared/warehouse.js";
 import { normalizeDealerName, validateStateCode, refreshAllViews } from "./warehouseUtils.js";
 
 // Sentinel city value for unknown dealer rows (state full name)

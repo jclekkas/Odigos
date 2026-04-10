@@ -9,7 +9,7 @@
  */
 import { db } from "../db.js";
 import { sql } from "drizzle-orm";
-import { coreDealers, coreListings, coreStates } from "@shared/warehouse";
+import { coreDealers, coreListings, coreStates } from "../../shared/warehouse.js";
 import { normalizeDealerName, refreshAllViews } from "./warehouseUtils.js";
 
 // ─── Vehicle catalogue ───────────────────────────────────────────────────────

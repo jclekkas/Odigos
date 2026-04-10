@@ -13,7 +13,7 @@
 import * as Sentry from "@sentry/node";
 import { db } from "../db.js";
 import { lte, eq, and, or, sql } from "drizzle-orm";
-import { failedWarehouseWrites } from "@shared/schema";
+import { failedWarehouseWrites } from "../../shared/schema.js";
 import { performWarehouseWriteById } from "./warehouseWriter.js";
 import { jitteredBackoffMs } from "../lib/reliability.js";
 

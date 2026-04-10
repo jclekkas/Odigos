@@ -20,8 +20,8 @@
 import { storage } from "./storage.js";
 import { redactPII } from "./piiRedact.js";
 import { zipToStateCode } from "./zipToState.js";
-import type { AnalysisResponse, AnalysisRequest } from "@shared/schema";
-import { dealerSubmissions } from "@shared/schema";
+import type { AnalysisResponse, AnalysisRequest } from "../shared/schema.js";
+import { dealerSubmissions } from "../shared/schema.js";
 import { normalizeSubmissionText, sha256Hex } from "./warehouse/warehouseUtils.js";
 import { db } from "./db.js";
 import { eq, isNull } from "drizzle-orm";

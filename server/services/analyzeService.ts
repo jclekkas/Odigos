@@ -6,7 +6,7 @@ import {
   type AnalysisResponse,
   type MarketContext,
   type MarketContextStrength,
-} from "@shared/schema";
+} from "../../shared/schema.js";
 import { applyRuleEngine, checkDocFeeCap } from "../ruleEngine.js";
 import { runLeaseMath } from "../leaseMathEngine.js";
 import { detectStateFromText, getStateFeeData, getAmbiguousCityOptions } from "../stateFeeLookup.js";

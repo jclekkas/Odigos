@@ -49,7 +49,7 @@
  */
 import { db } from "./db.js";
 import { sql } from "drizzle-orm";
-import type { MarketContext, MarketContextStrength } from "@shared/schema";
+import type { MarketContext, MarketContextStrength } from "../shared/schema.js";
 import { normalizeDealerName } from "./warehouse/warehouseUtils.js";
 
 const DOC_FEE_DELTA_MAX = 2000;

@@ -11,7 +11,7 @@
  * All functions are pure — no side effects, no external calls, never throw.
  */
 
-import type { DetectedFields } from "@shared/schema";
+import type { DetectedFields } from "../shared/schema.js";
 import { lookupBrand, type LeaseBrandInfo } from "./leaseBrandData.js";
 
 // ---------------------------------------------------------------------------
