@@ -41,7 +41,7 @@ vi.mock("../../server/db", () => ({
 import express from "express";
 import { createServer } from "http";
 import request from "supertest";
-import { registerPaymentRoutes } from "../../server/routes/payments";
+import { registerPaymentRoutes, __resetWebhookIdempotencyForTests } from "../../server/routes/payments";
 import { trackEvent } from "../../server/events";
 import { writeAuditEvent } from "../../server/audit";
 
@@ -67,6 +67,7 @@ function buildApp() {
 beforeEach(() => {
   app = buildApp();
   vi.clearAllMocks();
+  __resetWebhookIdempotencyForTests();
 });
 
 // ─── POST /api/stripe-webhook ────────────────────────────────────────────────
@@ -145,6 +146,99 @@ describe("POST /api/stripe-webhook", () => {
       .send({ data: "test" });
 
     expect(res.status).toBe(500);
+  });
+
+  it("deduplicates a redelivered checkout.session.completed event", async () => {
+    process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
+    const event = {
+      id: "evt_duplicate_123",
+      type: "checkout.session.completed",
+      data: {
+        object: {
+          id: "cs_test_dup",
+          payment_status: "paid",
+          metadata: { tier: "49", sessionId: "sess-dup" },
+        },
+      },
+    };
+    mockConstructEvent.mockReturnValue(event);
+
+    const res1 = await request(app)
+      .post(WEBHOOK_URL)
+      .set("stripe-signature", "valid_sig")
+      .send({ data: "test" });
+
+    expect(res1.status).toBe(200);
+    expect(res1.body).toEqual({ received: true });
+
+    // Clear per-call mocks but NOT the idempotency state
+    vi.clearAllMocks();
+    mockConstructEvent.mockReturnValue(event);
+
+    const res2 = await request(app)
+      .post(WEBHOOK_URL)
+      .set("stripe-signature", "valid_sig")
+      .send({ data: "test" });
+
+    expect(res2.status).toBe(200);
+    expect(res2.body).toEqual({ received: true, duplicate: true });
+
+    // payment_completed should NOT have fired on the second delivery
+    expect(mockTrackEvent).not.toHaveBeenCalledWith(
+      "payment_completed",
+      expect.anything(),
+    );
+    // Audit write for the success path should NOT have fired on the second delivery
+    expect(mockWriteAuditEvent).not.toHaveBeenCalledWith(
+      expect.anything(),
+      "payment",
+      "success",
+      expect.anything(),
+    );
+  });
+
+  it("treats two DIFFERENT events as independent (not all webhooks collapse)", async () => {
+    process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
+    mockConstructEvent
+      .mockReturnValueOnce({
+        id: "evt_aaa",
+        type: "checkout.session.completed",
+        data: {
+          object: {
+            id: "cs_test_a",
+            payment_status: "paid",
+            metadata: { tier: "29", sessionId: "sess-a" },
+          },
+        },
+      })
+      .mockReturnValueOnce({
+        id: "evt_bbb",
+        type: "checkout.session.completed",
+        data: {
+          object: {
+            id: "cs_test_b",
+            payment_status: "paid",
+            metadata: { tier: "49", sessionId: "sess-b" },
+          },
+        },
+      });
+
+    const res1 = await request(app)
+      .post(WEBHOOK_URL)
+      .set("stripe-signature", "sig1")
+      .send({ data: "a" });
+    const res2 = await request(app)
+      .post(WEBHOOK_URL)
+      .set("stripe-signature", "sig2")
+      .send({ data: "b" });
+
+    expect(res1.body).toEqual({ received: true });
+    expect(res2.body).toEqual({ received: true });
+    // Both should fire payment_completed independently
+    const paymentCalls = mockTrackEvent.mock.calls.filter(
+      ([name]: [string]) => name === "payment_completed",
+    );
+    expect(paymentCalls).toHaveLength(2);
   });
 });
 

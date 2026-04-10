@@ -4,6 +4,34 @@ import { getStripeClient, isStripeConfigured } from "../stripeClient";
 import { trackEvent } from "../events";
 import { writeAuditEvent } from "../audit";
 
+// ── Webhook idempotency ─────────────────────────────────────────────────────
+// Stripe retries webhooks on non-2xx responses. This in-memory Set deduplicates
+// events by event.id so that redelivered events don't fire duplicate analytics
+// or audit writes. Bounded to 10k entries (~1 MB) with FIFO eviction.
+
+const processedWebhookEventIds = new Set<string>();
+const MAX_PROCESSED_WEBHOOK_EVENTS = 10_000;
+
+function markWebhookEventProcessed(eventId: string): boolean {
+  if (processedWebhookEventIds.has(eventId)) return false;
+  if (processedWebhookEventIds.size >= MAX_PROCESSED_WEBHOOK_EVENTS) {
+    const evictCount = Math.floor(MAX_PROCESSED_WEBHOOK_EVENTS / 2);
+    const iter = processedWebhookEventIds.values();
+    for (let i = 0; i < evictCount; i++) {
+      const next = iter.next();
+      if (next.done) break;
+      processedWebhookEventIds.delete(next.value);
+    }
+  }
+  processedWebhookEventIds.add(eventId);
+  return true;
+}
+
+/** Testing seam — clear dedup state between test cases. */
+export function __resetWebhookIdempotencyForTests(): void {
+  processedWebhookEventIds.clear();
+}
+
 export function registerPaymentRoutes(app: Express): void {
   app.get("/api/stripe-status", async (_req, res) => {
     try {
@@ -258,6 +286,12 @@ export function registerPaymentRoutes(app: Express): void {
       return res.status(400).json({ error: "Webhook signature verification failed" });
     }
     trackEvent("stripe_webhook", { webhookEvent: event.type, webhookStatus: "success" });
+
+    // ── Idempotency: skip redelivered events ────────────────────────────
+    if (!markWebhookEventProcessed(event.id)) {
+      console.log(`[stripe-webhook] Duplicate event ${event.id} — skipping`);
+      return res.json({ received: true, duplicate: true });
+    }
 
     // ── Process relevant payment events ──────────────────────────────────
     switch (event.type) {

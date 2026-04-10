@@ -1,5 +1,16 @@
 import { test, expect, Page } from "@playwright/test";
 
+// Vite's HMR WebSocket may not connect in headless/sandboxed environments,
+// causing the default "load" waitUntil to hang. Use "domcontentloaded" so
+// page.goto returns as soon as the DOM is ready (React hydrates before all
+// HMR scripts finish).
+async function goto(page: Page, path: string): Promise<void> {
+  await page.goto(path, { waitUntil: "commit" });
+  // Wait for the React root to mount — Vite's HMR module loading
+  // can delay DOMContentLoaded indefinitely in sandboxed environments.
+  await page.waitForSelector("#root", { timeout: 15000 });
+}
+
 // The governance compliance UI commit (Task #158) gates the analyze
 // button behind a per-submission upload consent checkbox. The button is
 // disabled until consentChecked === true. consentChecked initializes
@@ -14,8 +25,13 @@ import { test, expect, Page } from "@playwright/test";
 // regardless of localStorage state.
 async function acceptUploadConsent(page: Page): Promise<void> {
   const checkbox = page.getByTestId("checkbox-upload-consent");
-  if (await checkbox.isVisible({ timeout: 1000 }).catch(() => false)) {
-    await checkbox.check();
+  if (await checkbox.isVisible({ timeout: 2000 }).catch(() => false)) {
+    // Use dispatchEvent instead of check() because Playwright's check()
+    // waits for "scheduled navigations to finish" after the click, which
+    // hangs when the React state update triggers re-renders that the
+    // older Chromium interprets as pending navigations.
+    await checkbox.dispatchEvent("click");
+    await page.waitForTimeout(300);
   }
 }
 
@@ -92,7 +108,7 @@ async function interceptStatsRoutes(page: Page) {
 test.describe("Landing page", () => {
   test("shows hero headline and CTA button", async ({ page }) => {
     await interceptStatsRoutes(page);
-    await page.goto("/");
+    await goto(page, "/");
     const headline = page.getByTestId("text-hero-headline");
     await expect(headline).toBeVisible();
     const cta = page.getByTestId("button-cta-hero");
@@ -101,7 +117,7 @@ test.describe("Landing page", () => {
 
   test("CTA button navigates to the analyzer", async ({ page }) => {
     await interceptStatsRoutes(page);
-    await page.goto("/");
+    await goto(page, "/");
     const cta = page.getByTestId("button-cta-hero");
     const href = await cta.getAttribute("href");
     expect(href).toBeTruthy();
@@ -109,7 +125,7 @@ test.describe("Landing page", () => {
 
   test("hero CTA click navigates to /analyze", async ({ page }) => {
     await interceptStatsRoutes(page);
-    await page.goto("/");
+    await goto(page, "/");
     const cta = page.getByTestId("button-cta-hero");
     await expect(cta).toBeVisible();
     await cta.click();
@@ -118,7 +134,7 @@ test.describe("Landing page", () => {
 
   test("header CTA click navigates to /analyze", async ({ page }) => {
     await interceptStatsRoutes(page);
-    await page.goto("/");
+    await goto(page, "/");
     const headerCta = page.getByTestId("button-cta-header");
     await expect(headerCta).toBeVisible();
     await headerCta.click();
@@ -131,7 +147,7 @@ test.describe("Landing page", () => {
 test.describe("Article CTA", () => {
   test("article CTA link on /hidden-dealer-fees points to /analyze", async ({ page }) => {
     await interceptStatsRoutes(page);
-    await page.goto("/hidden-dealer-fees");
+    await goto(page, "/hidden-dealer-fees");
     const cta = page.getByTestId("button-cta-mid-article-hidden-fees");
     await expect(cta).toBeVisible();
     const parent = page.locator("a:has([data-testid='button-cta-mid-article-hidden-fees'])");
@@ -146,7 +162,7 @@ test.describe("Analyzer — happy path", () => {
   test.beforeEach(async ({ page }) => {
     await interceptStatsRoutes(page);
     await interceptAnalyzeRoute(page, MOCK_ANALYSIS);
-    await page.goto("/analyze");
+    await goto(page, "/analyze");
     await acceptUploadConsent(page);
   });
 
@@ -185,7 +201,7 @@ test.describe("Analyzer — validation", () => {
       analyzeCalled = true;
       await route.fulfill({ status: 200, body: JSON.stringify(MOCK_ANALYSIS) });
     });
-    await page.goto("/analyze");
+    await goto(page, "/analyze");
     await acceptUploadConsent(page);
 
     await page.getByTestId("button-analyze").click();
@@ -196,7 +212,7 @@ test.describe("Analyzer — validation", () => {
 
   test("analyze button is present and interactive", async ({ page }) => {
     await interceptStatsRoutes(page);
-    await page.goto("/analyze");
+    await goto(page, "/analyze");
     await acceptUploadConsent(page);
     const btn = page.getByTestId("button-analyze");
     await expect(btn).toBeVisible();
@@ -210,7 +226,7 @@ test.describe("Analyzer — RED/NO-GO result", () => {
   test("displays NO-GO for a deal with CA doc fee violation", async ({ page }) => {
     await interceptStatsRoutes(page);
     await interceptAnalyzeRoute(page, RED_ANALYSIS);
-    await page.goto("/analyze");
+    await goto(page, "/analyze");
     await acceptUploadConsent(page);
 
     const textarea = page.getByTestId("input-dealer-text");
@@ -226,7 +242,7 @@ test.describe("Analyzer — RED/NO-GO result", () => {
 test.describe("File upload", () => {
   test("upload tab reveals the file input", async ({ page }) => {
     await interceptStatsRoutes(page);
-    await page.goto("/analyze");
+    await goto(page, "/analyze");
     await acceptUploadConsent(page);
     await page.getByTestId("tab-upload").click();
     const fileInput = page.getByTestId("input-file-upload");
@@ -237,7 +253,7 @@ test.describe("File upload", () => {
 
   test("upload button is present on the upload tab", async ({ page }) => {
     await interceptStatsRoutes(page);
-    await page.goto("/analyze");
+    await goto(page, "/analyze");
     await acceptUploadConsent(page);
     await page.getByTestId("tab-upload").click();
     const uploadBtn = page.getByTestId("button-upload-file");
@@ -246,7 +262,7 @@ test.describe("File upload", () => {
 
   test("file input accepts image and PDF types", async ({ page }) => {
     await interceptStatsRoutes(page);
-    await page.goto("/analyze");
+    await goto(page, "/analyze");
     await acceptUploadConsent(page);
     await page.getByTestId("tab-upload").click();
     const fileInput = page.getByTestId("input-file-upload");
@@ -264,7 +280,7 @@ test.describe("File upload", () => {
         body: JSON.stringify({ message: "That file type isn't supported." }),
       })
     );
-    await page.goto("/analyze");
+    await goto(page, "/analyze");
     await acceptUploadConsent(page);
     await page.getByTestId("tab-upload").click();
 
@@ -274,7 +290,8 @@ test.describe("File upload", () => {
       mimeType: "text/plain",
       buffer: Buffer.from("hello world"),
     });
-    await page.waitForTimeout(2000);
+    await expect(page.getByTestId("text-upload-error")).toBeVisible({ timeout: 5000 });
+    await expect(page.getByTestId("text-upload-error")).toContainText(/isn't supported/i);
   });
 });
 
@@ -284,7 +301,7 @@ test.describe("Free/paid tier UI", () => {
   test("analyze page loads correctly in free mode (Stripe not configured)", async ({ page }) => {
     await interceptStatsRoutes(page);
     await interceptAnalyzeRoute(page, MOCK_ANALYSIS);
-    await page.goto("/analyze");
+    await goto(page, "/analyze");
     await acceptUploadConsent(page);
 
     await page.getByTestId("input-dealer-text").fill(
@@ -307,12 +324,16 @@ test("no unintercepted network requests to openai.com are made", async ({ page }
   });
   await interceptStatsRoutes(page);
   await interceptAnalyzeRoute(page, MOCK_ANALYSIS);
-  await page.goto("/analyze");
+  await goto(page, "/analyze");
   await acceptUploadConsent(page);
   const textarea = page.getByTestId("input-dealer-text");
   await textarea.fill("Test quote OTD $30,000.");
-  await page.getByTestId("button-analyze").click();
-  await page.waitForTimeout(2000);
+  const [_] = await Promise.all([
+    page.waitForResponse(
+      (r) => r.url().includes("/api/analyze") && r.request().method() === "POST",
+    ),
+    page.getByTestId("button-analyze").click(),
+  ]);
   expect(openaiRequests).toHaveLength(0);
 });
 
@@ -326,11 +347,15 @@ test("no OpenAI API key appears in any request header or body", async ({ page })
   });
   await interceptStatsRoutes(page);
   await interceptAnalyzeRoute(page, MOCK_ANALYSIS);
-  await page.goto("/analyze");
+  await goto(page, "/analyze");
   await acceptUploadConsent(page);
   await page.getByTestId("input-dealer-text").fill("OTD $35,000 APR 4.9%.");
-  await page.getByTestId("button-analyze").click();
-  await page.waitForTimeout(2000);
+  const [response] = await Promise.all([
+    page.waitForResponse(
+      (r) => r.url().includes("/api/analyze") && r.request().method() === "POST",
+    ),
+    page.getByTestId("button-analyze").click(),
+  ]);
   expect(keyLeaks).toHaveLength(0);
 });
 
