@@ -1,0 +1,95 @@
+name: Fix JSON Imports
+on:
+  workflow_dispatch:
+jobs:
+  fix-json:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Create fix script
+        run: |
+          cat > fix-json-imports.mjs << 'SCRIPT'
+          import { readdir, readFile, writeFile } from 'fs/promises';
+          import { join, resolve } from 'path';
+
+          const ROOT = resolve('.');
+          const DIRS = ['server', 'api', 'shared'];
+
+          async function getAllTsFiles(dir) {
+            const files = [];
+            try {
+              const entries = await readdir(dir, { withFileTypes: true });
+              for (const entry of entries) {
+                const fullPath = join(dir, entry.name);
+                if (entry.isDirectory()) {
+                  if (entry.name.startsWith('.') || entry.name === 'node_modules') continue;
+                  files.push(...await getAllTsFiles(fullPath));
+                } else if (entry.name.endsWith('.ts') && !entry.name.endsWith('.d.ts')) {
+                  files.push(fullPath);
+                }
+              }
+            } catch (e) {}
+            return files;
+          }
+
+          async function main() {
+            let allFiles = [];
+            for (const dir of DIRS) {
+              allFiles.push(...await getAllTsFiles(join(ROOT, dir)));
+            }
+
+            console.log('Found ' + allFiles.length + ' TypeScript files to check.');
+
+            let fixedCount = 0;
+            for (const file of allFiles) {
+              const relativePath = file.replace(ROOT + '/', '');
+              const content = await readFile(file, 'utf-8');
+
+              // Match: import ... from "...json"; or import ... from '...json';
+              // that do NOT already have 'with { type: "json" }' or 'assert { type: "json" }'
+              const jsonImportRe = /(import\s+[\s\S]*?\s+from\s+)(['"])([^'"]+\.json)\2(\s*;)/g;
+
+              let newContent = content;
+              let changed = false;
+
+              newContent = content.replace(jsonImportRe, (match, prefix, quote, specifier, semi) => {
+                // Check if this line already has 'with' or 'assert'
+                if (match.includes(' with ') || match.includes(' assert ')) return match;
+                changed = true;
+                return prefix + quote + specifier + quote + ' with { type: "json" }' + semi;
+              });
+
+              if (changed) {
+                await writeFile(file, newContent, 'utf-8');
+                fixedCount++;
+                console.log('Fixed: ' + relativePath);
+              }
+            }
+
+            if (fixedCount > 0) {
+              console.log('\nFixed ' + fixedCount + ' files.');
+            } else {
+              console.log('\nNo JSON imports needed fixing.');
+            }
+          }
+
+          main().catch(err => { console.error(err); process.exit(1); });
+          SCRIPT
+      - name: Run fix script
+        run: node fix-json-imports.mjs
+      - name: Cleanup
+        run: |
+          rm -f fix-json-imports.mjs
+          rm -f .github/workflows/fix-json-imports.yml
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "fix: add import assertion for JSON imports (ESM compatibility)"
+          git push
