@@ -29,19 +29,19 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
 
   // ── Top 10 GSC pages (updated SEO copy) ──────────────────────
   "/car-dealer-fees-texas": {
-    title: "Texas Dealer Fees (2026): $225 Doc Fee Cap & Charges to Refuse",
+    title: "Texas Dealer Doc Fee (2026): No Legal Cap — What Dealers Can Charge",
     description:
-      "Texas caps dealer doc fees at $225 in 2026. See the full list of legal vs. junk fees, what you can refuse, and how to check any Texas dealer quote instantly.",
+      "Texas has no legal cap on dealer doc fees. See how pricing varies and how to evaluate your deal.",
   },
   "/car-dealer-fees-new-york": {
-    title: "New York Dealer Fees (2026): $175 Doc Fee Cap & What to Watch",
+    title: "New York Dealer Doc Fee (2026): $175 Legal Cap — Don't Pay More",
     description:
-      "NY caps dealer doc fees at $175. Learn which fees are legal, which are junk, and check any New York dealer quote for overcharges — free with Odigos.",
+      "New York caps dealer doc fees at $175. Learn the legal limit and check if your dealer added extra fees.",
   },
   "/car-dealer-fees-california": {
-    title: "California Dealer Fees (2026): No Doc Fee Cap — Protect Yourself",
+    title: "California Dealer Doc Fee (2026): $85 Cap — Know the Legal Limit",
     description:
-      "California has no cap on dealer doc fees. See average charges, which add-ons to refuse, and check any CA dealer quote for junk fees — free with Odigos.",
+      "California caps dealer doc fees at $85. Learn the legal limit and how extra fees may still increase your total cost.",
   },
   "/car-dealer-fees-new-mexico": {
     title: "New Mexico Dealer Fees (2026): Doc Fee Rules & What's Negotiable",
@@ -49,9 +49,9 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
       "New Mexico dealer doc fee rules for 2026. See what's legally allowed, what you can negotiate, and check any NM dealer quote for junk fees — free with Odigos.",
   },
   "/dealer-doc-fee-by-state": {
-    title: "Dealer Doc Fees by State (2026): Every Cap in One Table",
+    title: "Dealer Doc Fee by State (2026): Legal Caps and Limits",
     description:
-      "Complete 2026 table of dealer doc fee caps for all 50 states. See which states have no cap, which limit fees, and how to check if your dealer is overcharging.",
+      "See dealer doc fee limits by state, including capped and uncapped states, and understand how fees vary.",
   },
   "/out-the-door-price": {
     title: "Out-the-Door Price Calculator & Hidden Fee Checker (2026)",

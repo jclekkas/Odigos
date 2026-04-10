@@ -48,8 +48,8 @@ export default function DealerDocFeeByState() {
 
   useEffect(() => {
     setSeoMeta({
-      title: "Dealer Doc Fees by State (2026): Every Cap in One Table",
-      description: "Complete 2026 table of dealer doc fee caps for all 50 states. See which states have no cap, which limit fees, and how to check if your dealer is overcharging.",
+      title: "Dealer Doc Fee by State (2026): Legal Caps and Limits",
+      description: "See dealer doc fee limits by state, including capped and uncapped states, and understand how fees vary.",
       path: "/dealer-doc-fee-by-state",
     });
   }, []);
@@ -73,7 +73,7 @@ export default function DealerDocFeeByState() {
   };
 
   return (
-    <ArticleLayout title="Dealer Doc Fees by State (2026): Every Cap in One Table">
+    <ArticleLayout title="Dealer Doc Fee by State (2026): Caps and Limits">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(itemListSchema({
           name: "Dealer Doc Fee by State",
@@ -113,12 +113,15 @@ export default function DealerDocFeeByState() {
         }))}</script>
       </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-doc-fee-by-state-headline">
-            Dealer Doc Fees by State (2026): Every Cap in One Table
+            Dealer Doc Fee by State (2026): Caps and Limits
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground">
-              The documentation fee — commonly called the "doc fee" — is one of the most inconsistent charges in a car deal. It covers the dealer's cost of processing title work, registration, and loan paperwork. But unlike taxes or registration, the doc fee is set by the dealership, not the government. That means the same paperwork that costs $85 in California can cost $900 in Florida — and both are perfectly legal.
+              Dealer documentation fees vary by state. Some states set a legal maximum, while others allow dealers to determine pricing.
+            </p>
+            <p className="text-lg text-muted-foreground">
+              Understanding whether your state has a cap is the first step in evaluating your deal.
             </p>
 
             <div className="rounded-lg border border-blue-600/20 bg-blue-600/5 p-5 mb-8">
