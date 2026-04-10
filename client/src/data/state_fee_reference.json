@@ -13,7 +13,8 @@
       "All dollar amounts in USD. All rates as decimals.",
       "IMPORTANT: This data should be reviewed quarterly. State legislatures frequently adjust caps and rates.",
       "confidence: 'high' = verified against primary statute/bulletin, 'medium' = verified against secondary sources, 'low' = needs human spot-check",
-      "verificationMethod: describes how the data was verified"
+      "verificationMethod: describes how the data was verified",
+      "statuteCitation: statute or regulation reference for capped states; null if uncapped or unverified"
     ]
   },
   "states": {
@@ -22,7 +23,10 @@
       "abbreviation": "AL",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [400, 700],
+      "docFeeTypicalRange": [
+        400,
+        700
+      ],
       "docFeeAverage": 489,
       "stateSalesTaxRate": 0.04,
       "maxCombinedTaxRate": 0.11,
@@ -30,29 +34,37 @@
       "titleFee": 15,
       "registrationFee": "~$23 state + county fees",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "AK": {
       "name": "Alaska",
       "abbreviation": "AK",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [0, 500],
+      "docFeeTypicalRange": [
+        0,
+        500
+      ],
       "docFeeAverage": null,
-      "stateSalesTaxRate": 0.0,
+      "stateSalesTaxRate": 0,
       "maxCombinedTaxRate": 0.095,
       "tradeInTaxCredit": false,
       "titleFee": 15,
       "registrationFee": "~$100 for 2-year period",
       "lastVerified": "2026-03",
-      "confidence": "low"
+      "confidence": "low",
+      "statuteCitation": null
     },
     "AZ": {
       "name": "Arizona",
       "abbreviation": "AZ",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [400, 600],
+      "docFeeTypicalRange": [
+        400,
+        600
+      ],
       "docFeeAverage": 495,
       "stateSalesTaxRate": 0.056,
       "maxCombinedTaxRate": 0.112,
@@ -60,14 +72,18 @@
       "titleFee": 4,
       "registrationFee": "$8 base + Vehicle License Tax based on value",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "AR": {
       "name": "Arkansas",
       "abbreviation": "AR",
       "docFeeCap": true,
       "docFeeCapAmount": 129,
-      "docFeeTypicalRange": [129, 129],
+      "docFeeTypicalRange": [
+        129,
+        129
+      ],
       "docFeeAverage": 129,
       "stateSalesTaxRate": 0.065,
       "maxCombinedTaxRate": 0.115,
@@ -75,14 +91,18 @@
       "titleFee": 10,
       "registrationFee": "$17-$30 based on weight",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": "A.C.A. § 23-112-402"
     },
     "CA": {
       "name": "California",
       "abbreviation": "CA",
       "docFeeCap": true,
       "docFeeCapAmount": 85,
-      "docFeeTypicalRange": [70, 85],
+      "docFeeTypicalRange": [
+        70,
+        85
+      ],
       "docFeeAverage": 85,
       "stateSalesTaxRate": 0.0725,
       "maxCombinedTaxRate": 0.1075,
@@ -90,14 +110,18 @@
       "titleFee": 15,
       "registrationFee": "$62 base + value-based fees",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": "CA Vehicle Code § 11713.1(i)"
     },
     "CO": {
       "name": "Colorado",
       "abbreviation": "CO",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [400, 700],
+      "docFeeTypicalRange": [
+        400,
+        700
+      ],
       "docFeeAverage": 595,
       "stateSalesTaxRate": 0.029,
       "maxCombinedTaxRate": 0.08,
@@ -105,14 +129,18 @@
       "titleFee": 7,
       "registrationFee": "Varies by weight, age, and value",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "CT": {
       "name": "Connecticut",
       "abbreviation": "CT",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [300, 600],
+      "docFeeTypicalRange": [
+        300,
+        600
+      ],
       "docFeeAverage": 450,
       "stateSalesTaxRate": 0.0635,
       "maxCombinedTaxRate": 0.0775,
@@ -120,29 +148,37 @@
       "titleFee": 25,
       "registrationFee": "$120 for 3-year + various surcharges",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "DE": {
       "name": "Delaware",
       "abbreviation": "DE",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [300, 600],
+      "docFeeTypicalRange": [
+        300,
+        600
+      ],
       "docFeeAverage": null,
-      "stateSalesTaxRate": 0.0,
+      "stateSalesTaxRate": 0,
       "maxCombinedTaxRate": 0.0525,
       "tradeInTaxCredit": true,
       "titleFee": 35,
       "registrationFee": "$40/year",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "FL": {
       "name": "Florida",
       "abbreviation": "FL",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [500, 1000],
+      "docFeeTypicalRange": [
+        500,
+        1000
+      ],
       "docFeeAverage": 670,
       "stateSalesTaxRate": 0.06,
       "maxCombinedTaxRate": 0.075,
@@ -150,14 +186,18 @@
       "titleFee": 76,
       "registrationFee": "$225 initial; $46-$120 annual renewal",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": null
     },
     "GA": {
       "name": "Georgia",
       "abbreviation": "GA",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [400, 700],
+      "docFeeTypicalRange": [
+        400,
+        700
+      ],
       "docFeeAverage": 502,
       "stateSalesTaxRate": 0.04,
       "maxCombinedTaxRate": 0.09,
@@ -165,14 +205,18 @@
       "titleFee": 18,
       "registrationFee": "Included in TAVT",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": null
     },
     "HI": {
       "name": "Hawaii",
       "abbreviation": "HI",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [150, 350],
+      "docFeeTypicalRange": [
+        150,
+        350
+      ],
       "docFeeAverage": 250,
       "stateSalesTaxRate": 0.04,
       "maxCombinedTaxRate": 0.045,
@@ -180,14 +224,18 @@
       "titleFee": 10,
       "registrationFee": "$46 state + county weight tax",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "ID": {
       "name": "Idaho",
       "abbreviation": "ID",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [200, 400],
+      "docFeeTypicalRange": [
+        200,
+        400
+      ],
       "docFeeAverage": 265,
       "stateSalesTaxRate": 0.06,
       "maxCombinedTaxRate": 0.09,
@@ -195,14 +243,18 @@
       "titleFee": 14,
       "registrationFee": "Varies by weight and value",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "IL": {
       "name": "Illinois",
       "abbreviation": "IL",
       "docFeeCap": true,
       "docFeeCapAmount": 378,
-      "docFeeTypicalRange": [378, 378],
+      "docFeeTypicalRange": [
+        378,
+        378
+      ],
       "docFeeAverage": 378,
       "stateSalesTaxRate": 0.0625,
       "maxCombinedTaxRate": 0.1025,
@@ -210,14 +262,18 @@
       "titleFee": 165,
       "registrationFee": "$151/year; +$100 annual EV fee",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": "815 ILCS 306/1"
     },
     "IN": {
       "name": "Indiana",
       "abbreviation": "IN",
       "docFeeCap": true,
       "docFeeCapAmount": 251,
-      "docFeeTypicalRange": [251, 251],
+      "docFeeTypicalRange": [
+        251,
+        251
+      ],
       "docFeeAverage": 251,
       "stateSalesTaxRate": 0.07,
       "maxCombinedTaxRate": 0.07,
@@ -225,14 +281,18 @@
       "titleFee": 15,
       "registrationFee": "$21.35 + $15 infrastructure fee",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": "IC 9-23-3-7"
     },
     "IA": {
       "name": "Iowa",
       "abbreviation": "IA",
       "docFeeCap": true,
       "docFeeCapAmount": 180,
-      "docFeeTypicalRange": [180, 180],
+      "docFeeTypicalRange": [
+        180,
+        180
+      ],
       "docFeeAverage": 180,
       "stateSalesTaxRate": 0.05,
       "maxCombinedTaxRate": 0.06,
@@ -240,14 +300,18 @@
       "titleFee": 35,
       "registrationFee": "Variable by weight and list price",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": "Iowa Code § 322.19A"
     },
     "KS": {
       "name": "Kansas",
       "abbreviation": "KS",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [200, 400],
+      "docFeeTypicalRange": [
+        200,
+        400
+      ],
       "docFeeAverage": 300,
       "stateSalesTaxRate": 0.065,
       "maxCombinedTaxRate": 0.106,
@@ -255,14 +319,18 @@
       "titleFee": 21,
       "registrationFee": "$42.50-$52.25",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "KY": {
       "name": "Kentucky",
       "abbreviation": "KY",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [300, 600],
+      "docFeeTypicalRange": [
+        300,
+        600
+      ],
       "docFeeAverage": 450,
       "stateSalesTaxRate": 0.06,
       "maxCombinedTaxRate": 0.06,
@@ -270,14 +338,18 @@
       "titleFee": 9,
       "registrationFee": "$21/year",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "LA": {
       "name": "Louisiana",
       "abbreviation": "LA",
       "docFeeCap": true,
       "docFeeCapAmount": 425,
-      "docFeeTypicalRange": [300, 425],
+      "docFeeTypicalRange": [
+        300,
+        425
+      ],
       "docFeeAverage": 400,
       "stateSalesTaxRate": 0.05,
       "maxCombinedTaxRate": 0.135,
@@ -285,14 +357,18 @@
       "titleFee": 69,
       "registrationFee": "0.1% of vehicle value (min $20, 2-year)",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": "RS 6:969.18"
     },
     "ME": {
       "name": "Maine",
       "abbreviation": "ME",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [300, 600],
+      "docFeeTypicalRange": [
+        300,
+        600
+      ],
       "docFeeAverage": 499,
       "stateSalesTaxRate": 0.055,
       "maxCombinedTaxRate": 0.055,
@@ -300,14 +376,18 @@
       "titleFee": 33,
       "registrationFee": "$35 base (2-year)",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "MD": {
       "name": "Maryland",
       "abbreviation": "MD",
       "docFeeCap": true,
       "docFeeCapAmount": 800,
-      "docFeeTypicalRange": [300, 800],
+      "docFeeTypicalRange": [
+        300,
+        800
+      ],
       "docFeeAverage": 500,
       "stateSalesTaxRate": 0.065,
       "maxCombinedTaxRate": 0.065,
@@ -315,14 +395,18 @@
       "titleFee": 200,
       "registrationFee": "$120.50-$191.50/year by weight",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": "Md. Code, Transp. § 15-311.1"
     },
     "MA": {
       "name": "Massachusetts",
       "abbreviation": "MA",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [300, 500],
+      "docFeeTypicalRange": [
+        300,
+        500
+      ],
       "docFeeAverage": 400,
       "stateSalesTaxRate": 0.0625,
       "maxCombinedTaxRate": 0.0625,
@@ -330,14 +414,18 @@
       "titleFee": 75,
       "registrationFee": "$60 (2-year)",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "MI": {
       "name": "Michigan",
       "abbreviation": "MI",
       "docFeeCap": true,
       "docFeeCapAmount": 280,
-      "docFeeTypicalRange": [200, 280],
+      "docFeeTypicalRange": [
+        200,
+        280
+      ],
       "docFeeAverage": 260,
       "stateSalesTaxRate": 0.06,
       "maxCombinedTaxRate": 0.06,
@@ -345,14 +433,18 @@
       "titleFee": 15,
       "registrationFee": "$15 (1-year) or $29 (2-year) base + % of MSRP",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": "DIFS Bulletin 2025-03-CF"
     },
     "MN": {
       "name": "Minnesota",
       "abbreviation": "MN",
       "docFeeCap": true,
       "docFeeCapAmount": 350,
-      "docFeeTypicalRange": [125, 350],
+      "docFeeTypicalRange": [
+        125,
+        350
+      ],
       "docFeeAverage": 300,
       "stateSalesTaxRate": 0.06875,
       "maxCombinedTaxRate": 0.07375,
@@ -360,14 +452,18 @@
       "titleFee": 34,
       "registrationFee": "1.575% of MSRP + $11.25 universal fees",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": "Minn. Stat. § 168.27 Subd. 11a"
     },
     "MS": {
       "name": "Mississippi",
       "abbreviation": "MS",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [300, 550],
+      "docFeeTypicalRange": [
+        300,
+        550
+      ],
       "docFeeAverage": 425,
       "stateSalesTaxRate": 0.05,
       "maxCombinedTaxRate": 0.0525,
@@ -375,14 +471,18 @@
       "titleFee": 9,
       "registrationFee": "$14 first-time or $12.75 renewal + ~$15 county tax",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "MO": {
       "name": "Missouri",
       "abbreviation": "MO",
       "docFeeCap": true,
       "docFeeCapAmount": 500,
-      "docFeeTypicalRange": [300, 500],
+      "docFeeTypicalRange": [
+        300,
+        500
+      ],
       "docFeeAverage": 400,
       "stateSalesTaxRate": 0.04225,
       "maxCombinedTaxRate": 0.101,
@@ -390,29 +490,37 @@
       "titleFee": 15,
       "registrationFee": "$18.25-$51.25/year by horsepower + $9 processing",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": "Mo. Rev. Stat. § 301.560"
     },
     "MT": {
       "name": "Montana",
       "abbreviation": "MT",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [200, 400],
+      "docFeeTypicalRange": [
+        200,
+        400
+      ],
       "docFeeAverage": 299,
-      "stateSalesTaxRate": 0.0,
-      "maxCombinedTaxRate": 0.0,
+      "stateSalesTaxRate": 0,
+      "maxCombinedTaxRate": 0,
       "tradeInTaxCredit": false,
       "titleFee": 12,
       "registrationFee": "$217 (0-4 years) or $130 (5-10 years) + county option",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "NE": {
       "name": "Nebraska",
       "abbreviation": "NE",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [200, 400],
+      "docFeeTypicalRange": [
+        200,
+        400
+      ],
       "docFeeAverage": 280,
       "stateSalesTaxRate": 0.055,
       "maxCombinedTaxRate": 0.075,
@@ -420,14 +528,18 @@
       "titleFee": 18,
       "registrationFee": "$68 base + statutory fees",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "NV": {
       "name": "Nevada",
       "abbreviation": "NV",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [400, 700],
+      "docFeeTypicalRange": [
+        400,
+        700
+      ],
       "docFeeAverage": 499,
       "stateSalesTaxRate": 0.046,
       "maxCombinedTaxRate": 0.0824,
@@ -435,29 +547,37 @@
       "titleFee": 28,
       "registrationFee": "$33 base + value-based fees",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "NH": {
       "name": "New Hampshire",
       "abbreviation": "NH",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [300, 500],
+      "docFeeTypicalRange": [
+        300,
+        500
+      ],
       "docFeeAverage": 459,
-      "stateSalesTaxRate": 0.0,
-      "maxCombinedTaxRate": 0.0,
+      "stateSalesTaxRate": 0,
+      "maxCombinedTaxRate": 0,
       "tradeInTaxCredit": false,
       "titleFee": 37,
       "registrationFee": "$18-$15 per $1,000 of vehicle value",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "NJ": {
       "name": "New Jersey",
       "abbreviation": "NJ",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [200, 900],
+      "docFeeTypicalRange": [
+        200,
+        900
+      ],
       "docFeeAverage": 500,
       "stateSalesTaxRate": 0.06625,
       "maxCombinedTaxRate": 0.08625,
@@ -465,14 +585,18 @@
       "titleFee": 60,
       "registrationFee": "Varies by type/weight",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "NM": {
       "name": "New Mexico",
       "abbreviation": "NM",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [200, 400],
+      "docFeeTypicalRange": [
+        200,
+        400
+      ],
       "docFeeAverage": 300,
       "stateSalesTaxRate": 0.04,
       "maxCombinedTaxRate": 0.0944,
@@ -480,14 +604,18 @@
       "titleFee": 20,
       "registrationFee": "$27-$62/year by weight/age",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "NY": {
       "name": "New York",
       "abbreviation": "NY",
       "docFeeCap": true,
       "docFeeCapAmount": 175,
-      "docFeeTypicalRange": [175, 175],
+      "docFeeTypicalRange": [
+        175,
+        175
+      ],
       "docFeeAverage": 175,
       "stateSalesTaxRate": 0.04,
       "maxCombinedTaxRate": 0.08875,
@@ -495,14 +623,18 @@
       "titleFee": 50,
       "registrationFee": "$26-$56.50 state weight fee + $25 plate fee + county tax",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": "NY DMV Reg. 78.17"
     },
     "NC": {
       "name": "North Carolina",
       "abbreviation": "NC",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [500, 800],
+      "docFeeTypicalRange": [
+        500,
+        800
+      ],
       "docFeeAverage": 550,
       "stateSalesTaxRate": 0.03,
       "maxCombinedTaxRate": 0.03,
@@ -510,14 +642,18 @@
       "titleFee": 56,
       "registrationFee": "$46.25/year",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": null
     },
     "ND": {
       "name": "North Dakota",
       "abbreviation": "ND",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [100, 250],
+      "docFeeTypicalRange": [
+        100,
+        250
+      ],
       "docFeeAverage": 175,
       "stateSalesTaxRate": 0.05,
       "maxCombinedTaxRate": 0.05,
@@ -525,14 +661,18 @@
       "titleFee": 5,
       "registrationFee": "Varies by year registered + vehicle weight",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "OH": {
       "name": "Ohio",
       "abbreviation": "OH",
       "docFeeCap": true,
       "docFeeCapAmount": 387,
-      "docFeeTypicalRange": [200, 387],
+      "docFeeTypicalRange": [
+        200,
+        387
+      ],
       "docFeeAverage": 350,
       "stateSalesTaxRate": 0.0575,
       "maxCombinedTaxRate": 0.0825,
@@ -540,14 +680,18 @@
       "titleFee": 18,
       "registrationFee": "Varies by type",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": "ORC § 4517.261"
     },
     "OK": {
       "name": "Oklahoma",
       "abbreviation": "OK",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [200, 400],
+      "docFeeTypicalRange": [
+        200,
+        400
+      ],
       "docFeeAverage": 299,
       "stateSalesTaxRate": 0.045,
       "maxCombinedTaxRate": 0.045,
@@ -555,29 +699,37 @@
       "titleFee": 11,
       "registrationFee": "$96 (1st-4th year); decreases by age",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "OR": {
       "name": "Oregon",
       "abbreviation": "OR",
       "docFeeCap": true,
       "docFeeCapAmount": 250,
-      "docFeeTypicalRange": [150, 250],
+      "docFeeTypicalRange": [
+        150,
+        250
+      ],
       "docFeeAverage": 200,
-      "stateSalesTaxRate": 0.0,
+      "stateSalesTaxRate": 0,
       "maxCombinedTaxRate": 0.005,
       "tradeInTaxCredit": false,
       "titleFee": 77,
       "registrationFee": "$43 (2-year)",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": "ORS § 822.043"
     },
     "PA": {
       "name": "Pennsylvania",
       "abbreviation": "PA",
       "docFeeCap": true,
       "docFeeCapAmount": 490,
-      "docFeeTypicalRange": [300, 490],
+      "docFeeTypicalRange": [
+        300,
+        490
+      ],
       "docFeeAverage": 420,
       "stateSalesTaxRate": 0.06,
       "maxCombinedTaxRate": 0.08,
@@ -585,14 +737,18 @@
       "titleFee": 72,
       "registrationFee": "$200-$300 varies by weight",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": "37 Pa. Code § 301.4"
     },
     "RI": {
       "name": "Rhode Island",
       "abbreviation": "RI",
       "docFeeCap": true,
       "docFeeCapAmount": 400,
-      "docFeeTypicalRange": [200, 400],
+      "docFeeTypicalRange": [
+        200,
+        400
+      ],
       "docFeeAverage": 300,
       "stateSalesTaxRate": 0.07,
       "maxCombinedTaxRate": 0.07,
@@ -600,14 +756,18 @@
       "titleFee": 23,
       "registrationFee": "$30-$50/year",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": "R.I. Gen. Laws § 31-5.2-3"
     },
     "SC": {
       "name": "South Carolina",
       "abbreviation": "SC",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [300, 600],
+      "docFeeTypicalRange": [
+        300,
+        600
+      ],
       "docFeeAverage": 350,
       "stateSalesTaxRate": 0.06,
       "maxCombinedTaxRate": 0.09,
@@ -615,14 +775,18 @@
       "titleFee": 19,
       "registrationFee": "$30-$100/year varies by type",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "SD": {
       "name": "South Dakota",
       "abbreviation": "SD",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [75, 200],
+      "docFeeTypicalRange": [
+        75,
+        200
+      ],
       "docFeeAverage": 115,
       "stateSalesTaxRate": 0.042,
       "maxCombinedTaxRate": 0.062,
@@ -630,14 +794,18 @@
       "titleFee": 12,
       "registrationFee": "Varies by weight + 4% excise tax",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "TN": {
       "name": "Tennessee",
       "abbreviation": "TN",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [300, 600],
+      "docFeeTypicalRange": [
+        300,
+        600
+      ],
       "docFeeAverage": 450,
       "stateSalesTaxRate": 0.07,
       "maxCombinedTaxRate": 0.0975,
@@ -645,14 +813,18 @@
       "titleFee": 14,
       "registrationFee": "$14.50-$36 base + county wheel tax",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "TX": {
       "name": "Texas",
       "abbreviation": "TX",
       "docFeeCap": true,
       "docFeeCapAmount": 225,
-      "docFeeTypicalRange": [150, 225],
+      "docFeeTypicalRange": [
+        150,
+        225
+      ],
       "docFeeAverage": 200,
       "stateSalesTaxRate": 0.0625,
       "maxCombinedTaxRate": 0.0825,
@@ -660,14 +832,18 @@
       "titleFee": 30,
       "registrationFee": "Varies by weight",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": "Tex. Occ. Code § 2301.258"
     },
     "UT": {
       "name": "Utah",
       "abbreviation": "UT",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [149, 400],
+      "docFeeTypicalRange": [
+        149,
+        400
+      ],
       "docFeeAverage": 300,
       "stateSalesTaxRate": 0.047,
       "maxCombinedTaxRate": 0.087,
@@ -675,14 +851,18 @@
       "titleFee": null,
       "registrationFee": "~$1,541 average for new vehicle (weight-based)",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "VT": {
       "name": "Vermont",
       "abbreviation": "VT",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [150, 300],
+      "docFeeTypicalRange": [
+        150,
+        300
+      ],
       "docFeeAverage": 210,
       "stateSalesTaxRate": 0.06,
       "maxCombinedTaxRate": 0.07,
@@ -690,14 +870,18 @@
       "titleFee": 35,
       "registrationFee": "$76/year or $140/2-year",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": null
     },
     "VA": {
       "name": "Virginia",
       "abbreviation": "VA",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [500, 800],
+      "docFeeTypicalRange": [
+        500,
+        800
+      ],
       "docFeeAverage": 650,
       "stateSalesTaxRate": 0.0415,
       "maxCombinedTaxRate": 0.07,
@@ -705,14 +889,18 @@
       "titleFee": 15,
       "registrationFee": "$30.75/year (0-4,000 lbs)",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": null
     },
     "WA": {
       "name": "Washington",
       "abbreviation": "WA",
       "docFeeCap": true,
       "docFeeCapAmount": 200,
-      "docFeeTypicalRange": [150, 200],
+      "docFeeTypicalRange": [
+        150,
+        200
+      ],
       "docFeeAverage": 200,
       "stateSalesTaxRate": 0.065,
       "maxCombinedTaxRate": 0.106,
@@ -720,14 +908,18 @@
       "titleFee": 7,
       "registrationFee": "$43.25 base + weight/location adjustments",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": "RCW 46.70.180"
     },
     "WV": {
       "name": "West Virginia",
       "abbreviation": "WV",
       "docFeeCap": true,
       "docFeeCapAmount": 575,
-      "docFeeTypicalRange": [300, 575],
+      "docFeeTypicalRange": [
+        300,
+        575
+      ],
       "docFeeAverage": 499,
       "stateSalesTaxRate": 0.06,
       "maxCombinedTaxRate": 0.07,
@@ -735,14 +927,18 @@
       "titleFee": null,
       "registrationFee": "Varies; includes annual wheel tax",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": "WV Code § 17A-6A-8A"
     },
     "WI": {
       "name": "Wisconsin",
       "abbreviation": "WI",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [295, 500],
+      "docFeeTypicalRange": [
+        295,
+        500
+      ],
       "docFeeAverage": 400,
       "stateSalesTaxRate": 0.05,
       "maxCombinedTaxRate": 0.079,
@@ -750,14 +946,18 @@
       "titleFee": 215,
       "registrationFee": "$85/year",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": null
     },
     "WY": {
       "name": "Wyoming",
       "abbreviation": "WY",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [200, 400],
+      "docFeeTypicalRange": [
+        200,
+        400
+      ],
       "docFeeAverage": 300,
       "stateSalesTaxRate": 0.04,
       "maxCombinedTaxRate": 0.09,
@@ -765,14 +965,18 @@
       "titleFee": null,
       "registrationFee": "$30 state + county fee",
       "lastVerified": "2026-03",
-      "confidence": "medium"
+      "confidence": "medium",
+      "statuteCitation": null
     },
     "DC": {
       "name": "District of Columbia",
       "abbreviation": "DC",
       "docFeeCap": false,
       "docFeeCapAmount": null,
-      "docFeeTypicalRange": [300, 600],
+      "docFeeTypicalRange": [
+        300,
+        600
+      ],
       "docFeeAverage": null,
       "stateSalesTaxRate": 0.06,
       "maxCombinedTaxRate": 0.09,
@@ -780,7 +984,8 @@
       "titleFee": 26,
       "registrationFee": "Weight-based; varies significantly",
       "lastVerified": "2026-03",
-      "confidence": "high"
+      "confidence": "high",
+      "statuteCitation": null
     }
   }
 }

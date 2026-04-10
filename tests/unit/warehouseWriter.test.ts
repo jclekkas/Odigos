@@ -437,7 +437,7 @@ describe("writeSubmissionToWarehouse — vehicle fields", () => {
 describe("ruleEngine doc-fee cap — unchanged behavior", () => {
   it("checkDocFeeCap still returns violation when fee exceeds state cap", async () => {
     const { checkDocFeeCap } = await import("../../server/ruleEngine");
-    const CA_STATE = { docFeeCap: true, docFeeCapAmount: 85 };
+    const CA_STATE = { docFeeCap: true, docFeeCapAmount: 85, name: "California", abbreviation: "CA", statuteCitation: "CA Vehicle Code § 11713.1(i)" };
     const fees = [{ name: "documentation fee", amount: 200 }];
     const result = checkDocFeeCap(fees, CA_STATE);
     expect(result).not.toBeNull();
@@ -447,7 +447,7 @@ describe("ruleEngine doc-fee cap — unchanged behavior", () => {
 
   it("checkDocFeeCap returns null when state has no doc fee cap", async () => {
     const { checkDocFeeCap } = await import("../../server/ruleEngine");
-    const NO_CAP_STATE = { docFeeCap: false, docFeeCapAmount: null };
+    const NO_CAP_STATE = { docFeeCap: false, docFeeCapAmount: null, name: "Alabama", abbreviation: "AL", statuteCitation: null };
     const fees = [{ name: "doc fee", amount: 999 }];
     expect(checkDocFeeCap(fees, NO_CAP_STATE)).toBeNull();
   });

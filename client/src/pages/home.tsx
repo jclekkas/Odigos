@@ -80,7 +80,7 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel, MarketContext } from "@shared/schema";
+import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel, MarketContext, DocFeeCapCheck } from "@shared/schema";
 import LeaseMathBlock from "@/components/LeaseMathBlock";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import {
@@ -283,6 +283,42 @@ function FinancialImpactHero({
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+interface StatutoryCapCalloutProps {
+  docFeeCapCheck: DocFeeCapCheck | null | undefined;
+}
+
+function StatutoryCapCallout({ docFeeCapCheck }: StatutoryCapCalloutProps) {
+  if (!docFeeCapCheck?.violated) return null;
+
+  const { chargedAmount, capAmount, overage, stateName, statuteCitation } = docFeeCapCheck;
+
+  return (
+    <div
+      role="alert"
+      className="rounded-xl border-2 border-red-500/40 bg-red-500/10 p-5 sm:p-6 space-y-2 shadow-sm"
+      data-testid="statutory-cap-callout"
+    >
+      <div className="flex items-center gap-2">
+        <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" aria-hidden="true" />
+        <span className="text-xs font-semibold uppercase tracking-wider text-red-700 dark:text-red-400">
+          State fee cap exceeded
+        </span>
+      </div>
+      <p className="text-lg sm:text-xl font-bold leading-snug text-red-700 dark:text-red-300">
+        This dealer&rsquo;s ${chargedAmount} doc fee exceeds {stateName}&rsquo;s ${capAmount} cap
+      </p>
+      <p className="text-sm text-foreground/80 leading-relaxed">
+        That is ${overage} over the legal limit.
+        {statuteCitation ? (
+          <> Per <span className="font-medium">{statuteCitation}</span>, dealers in {stateName} cannot charge more than ${capAmount} for documentation fees.</>
+        ) : (
+          <> {stateName} law limits documentation fees to ${capAmount}. Request the dealer lower this fee to comply.</>
+        )}
+      </p>
     </div>
   );
 }
@@ -2138,6 +2174,9 @@ export default function Home() {
                     : result.summary
                 }
               />
+
+              {/* 1.5) Statutory cap violation — urgent legal callout, always visible */}
+              <StatutoryCapCallout docFeeCapCheck={result.docFeeCapCheck} />
 
               {/* 2) Market comparison — one short sentence grounded in state context */}
               <MarketComparisonBlock

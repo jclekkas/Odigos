@@ -77,7 +77,7 @@ beforeAll(async () => {
   app = express();
   app.use(express.json());
   server = createServer(app);
-  await registerRoutes(server, app);
+  await registerRoutes(app);
 });
 
 afterAll(() => {

@@ -13,11 +13,17 @@ export interface DocFeeCapResult {
   capAmount: number;
   chargedAmount: number;
   overage: number;
+  stateName: string;
+  stateAbbreviation: string;
+  statuteCitation: string | null;
 }
 
 interface StateData {
   docFeeCap: boolean;
   docFeeCapAmount: number | null;
+  name?: string;
+  abbreviation?: string;
+  statuteCitation?: string | null;
   cpiIndexing?: {
     isIndexed: boolean;
     currentAmount: number;
@@ -79,15 +85,22 @@ export function checkDocFeeCap(fees: Fee[], stateData: StateData): DocFeeCapResu
   if (chargedAmount === null) {
     return null;
   }
+  const stateName = stateData.name ?? "Unknown";
+  const stateAbbreviation = stateData.abbreviation ?? "";
+  const statuteCitation = stateData.statuteCitation ?? null;
+
   if (chargedAmount > capAmount) {
     return {
       violated: true,
       capAmount,
       chargedAmount,
       overage: chargedAmount - capAmount,
+      stateName,
+      stateAbbreviation,
+      statuteCitation,
     };
   }
-  return { violated: false, capAmount, chargedAmount, overage: 0 };
+  return { violated: false, capAmount, chargedAmount, overage: 0, stateName, stateAbbreviation, statuteCitation };
 }
 
 // "Junk fees" — charges that provide little/no value or duplicate other charges.
