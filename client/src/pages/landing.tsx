@@ -348,7 +348,7 @@ export default function Landing() {
                 <p className="text-xs text-amber-600/90 dark:text-amber-400/90 mb-4 leading-relaxed">
                   &#9888; Most buyers need more than a weekend &mdash; if you're still comparing next week, you'll need another pass. Choosing $29 when you need more time can cost you $58 total.
                 </p>
-                <Button variant="outline" asChild className="w-full" data-testid="button-cta-weekend-warrior">
+                <Button variant="outline" asChild className="w-full whitespace-normal h-auto py-3" data-testid="button-cta-weekend-warrior">
                   <Link
                     href="/analyze?pass=weekend_warrior"
                     onClick={() => {
@@ -397,7 +397,7 @@ export default function Landing() {
                     </li>
                   ))}
                 </ul>
-                <Button variant="cta" asChild className="w-full" data-testid="button-cta-car-buyers-pass">
+                <Button variant="cta" asChild className="w-full whitespace-normal h-auto py-3" data-testid="button-cta-car-buyers-pass">
                   <Link
                     href="/analyze?pass=car_buyers_pass"
                     onClick={() => {

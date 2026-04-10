@@ -768,7 +768,7 @@ function PaywallCards({
               <Button
                 variant="cta"
                 onClick={() => onUnlock("car_buyers_pass")}
-                className="w-full"
+                className="w-full whitespace-normal h-auto py-3"
                 disabled={isLoading || !stripeConfigured}
                 data-testid="button-unlock-car-buyers-pass"
               >
