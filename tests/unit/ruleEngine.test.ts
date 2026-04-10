@@ -39,8 +39,8 @@ const makeLlm = (overrides: Partial<AnalysisResponse> = {}): AnalysisResponse =>
 // ─── checkDocFeeCap ────────────────────────────────────────────────────────────
 
 describe("checkDocFeeCap", () => {
-  const CA_STATE = { docFeeCap: true, docFeeCapAmount: 85 };
-  const NO_CAP_STATE = { docFeeCap: false, docFeeCapAmount: null };
+  const CA_STATE = { docFeeCap: true, docFeeCapAmount: 85, name: "California", abbreviation: "CA", statuteCitation: "CA Vehicle Code § 11713.1(i)" };
+  const NO_CAP_STATE = { docFeeCap: false, docFeeCapAmount: null, name: "Alabama", abbreviation: "AL", statuteCitation: null };
 
   it("returns null when state has no doc fee cap", () => {
     const fees: Fee[] = [{ name: "Doc Fee", amount: 999 }];
@@ -60,6 +60,9 @@ describe("checkDocFeeCap", () => {
     expect(result!.capAmount).toBe(85);
     expect(result!.chargedAmount).toBe(150);
     expect(result!.overage).toBe(65);
+    expect(result!.stateName).toBe("California");
+    expect(result!.stateAbbreviation).toBe("CA");
+    expect(result!.statuteCitation).toBe("CA Vehicle Code § 11713.1(i)");
   });
 
   it("does not flag a violation when doc fee is at or below cap", () => {
@@ -68,6 +71,8 @@ describe("checkDocFeeCap", () => {
     expect(result).not.toBeNull();
     expect(result!.violated).toBe(false);
     expect(result!.overage).toBe(0);
+    expect(result!.stateName).toBe("California");
+    expect(result!.statuteCitation).toBe("CA Vehicle Code § 11713.1(i)");
   });
 
   it("picks the maximum doc fee when multiple matching fees exist", () => {
@@ -80,6 +85,15 @@ describe("checkDocFeeCap", () => {
     expect(result!.violated).toBe(true);
   });
 
+  it("returns null statuteCitation when state has no citation", () => {
+    const TX_STATE = { docFeeCap: true, docFeeCapAmount: 225, name: "Texas", abbreviation: "TX", statuteCitation: null };
+    const fees: Fee[] = [{ name: "doc fee", amount: 300 }];
+    const result = checkDocFeeCap(fees, TX_STATE);
+    expect(result!.violated).toBe(true);
+    expect(result!.stateName).toBe("Texas");
+    expect(result!.statuteCitation).toBeNull();
+  });
+
   it("treats broad keyword 'dealer fee' as a doc fee when no exact match exists", () => {
     const fees: Fee[] = [{ name: "dealer fee", amount: 200 }];
     const result = checkDocFeeCap(fees, CA_STATE);
@@ -87,7 +101,7 @@ describe("checkDocFeeCap", () => {
   });
 
   it("IL cap is $378 — detects violation correctly", () => {
-    const IL_STATE = { docFeeCap: true, docFeeCapAmount: 378 };
+    const IL_STATE = { docFeeCap: true, docFeeCapAmount: 378, name: "Illinois", abbreviation: "IL", statuteCitation: "815 ILCS 306/1" };
     const fees: Fee[] = [{ name: "doc fee", amount: 400 }];
     const result = checkDocFeeCap(fees, IL_STATE);
     expect(result!.violated).toBe(true);
@@ -95,7 +109,7 @@ describe("checkDocFeeCap", () => {
   });
 
   it("IN cap is $251 — no violation when fee is below cap", () => {
-    const IN_STATE = { docFeeCap: true, docFeeCapAmount: 251 };
+    const IN_STATE = { docFeeCap: true, docFeeCapAmount: 251, name: "Indiana", abbreviation: "IN", statuteCitation: "IC 9-23-3-7" };
     const fees: Fee[] = [{ name: "doc fee", amount: 200 }];
     const result = checkDocFeeCap(fees, IN_STATE);
     expect(result!.violated).toBe(false);
@@ -106,7 +120,7 @@ describe("checkDocFeeCap", () => {
 
 describe("applyRuleEngine", () => {
   it("returns RED/NO-GO immediately when doc fee cap is violated", () => {
-    const capResult = { violated: true, capAmount: 85, chargedAmount: 300, overage: 215 };
+    const capResult = { violated: true, capAmount: 85, chargedAmount: 300, overage: 215, stateName: "California", stateAbbreviation: "CA", statuteCitation: "CA Vehicle Code § 11713.1(i)" };
     const result = applyRuleEngine(makeLlm(), makeFields(), capResult);
     expect(result.dealScore).toBe("RED");
     expect(result.goNoGo).toBe("NO-GO");
@@ -222,6 +236,9 @@ describe("checkDocFeeCap with CPI indexing", () => {
     const IL_STATE_CPI = {
       docFeeCap: true,
       docFeeCapAmount: 300, // base amount
+      name: "Illinois",
+      abbreviation: "IL",
+      statuteCitation: "815 ILCS 306/1",
       cpiIndexing: { isIndexed: true, currentAmount: 378 },
     };
     const fees: Fee[] = [{ name: "doc fee", amount: 350 }];
@@ -236,6 +253,9 @@ describe("checkDocFeeCap with CPI indexing", () => {
     const IL_STATE_CPI = {
       docFeeCap: true,
       docFeeCapAmount: 300,
+      name: "Illinois",
+      abbreviation: "IL",
+      statuteCitation: "815 ILCS 306/1",
       cpiIndexing: { isIndexed: true, currentAmount: 378 },
     };
     const fees: Fee[] = [{ name: "documentation fee", amount: 400 }];
@@ -246,7 +266,7 @@ describe("checkDocFeeCap with CPI indexing", () => {
   });
 
   it("falls back to docFeeCapAmount when cpiIndexing is absent", () => {
-    const CA_STATE = { docFeeCap: true, docFeeCapAmount: 85 };
+    const CA_STATE = { docFeeCap: true, docFeeCapAmount: 85, name: "California", abbreviation: "CA", statuteCitation: "CA Vehicle Code § 11713.1(i)" };
     const fees: Fee[] = [{ name: "doc fee", amount: 100 }];
     const result = checkDocFeeCap(fees, CA_STATE);
     expect(result!.violated).toBe(true);
@@ -257,6 +277,9 @@ describe("checkDocFeeCap with CPI indexing", () => {
     const STATE = {
       docFeeCap: true,
       docFeeCapAmount: 200,
+      name: "Washington",
+      abbreviation: "WA",
+      statuteCitation: "RCW 46.70.180",
       cpiIndexing: { isIndexed: false, currentAmount: 999 },
     };
     const fees: Fee[] = [{ name: "doc fee", amount: 250 }];
@@ -348,7 +371,7 @@ describe("applyRuleEngine — lease-specific rules", () => {
   });
 
   it("doc fee cap violation still takes priority over lease rules", () => {
-    const capResult = { violated: true, capAmount: 85, chargedAmount: 300, overage: 215 };
+    const capResult = { violated: true, capAmount: 85, chargedAmount: 300, overage: 215, stateName: "California", stateAbbreviation: "CA", statuteCitation: "CA Vehicle Code § 11713.1(i)" };
     const fields = makeFields({ acquisitionFee: 1500 });
     const result = applyRuleEngine(makeLlm(), fields, capResult, "lease");
     expect(result.dealScore).toBe("RED");

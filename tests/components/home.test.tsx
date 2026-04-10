@@ -60,6 +60,7 @@ const VALID_ANALYSIS = {
   missingInfo: [],
   suggestedReply: "Thank you, looking forward to finalizing the deal.",
   reasoning: "OTD price, APR, and term are clearly stated.",
+  docFeeCapCheck: null,
 };
 
 function setupFetchMock(analyzeResponse: object = VALID_ANALYSIS, status = 200) {
@@ -184,5 +185,56 @@ describe("Free/paid tier boundary", () => {
         expect.anything()
       );
     });
+  });
+});
+
+// ─── Statutory cap callout ───────────────────────────────────────────────────
+
+describe("Statutory cap callout", () => {
+  it("renders the callout banner when doc fee cap is violated", async () => {
+    const user = userEvent.setup();
+    const violationAnalysis = {
+      ...VALID_ANALYSIS,
+      dealScore: "RED",
+      goNoGo: "NO-GO",
+      verdictLabel: "NO-GO — DOC FEE EXCEEDS STATE CAP",
+      docFeeCapCheck: {
+        violated: true,
+        capAmount: 85,
+        chargedAmount: 499,
+        overage: 414,
+        stateName: "California",
+        stateAbbreviation: "CA",
+        statuteCitation: "CA Vehicle Code § 11713.1(i)",
+      },
+    };
+    setupFetchMock(violationAnalysis);
+    renderHome();
+
+    const textarea = await screen.findByTestId("input-dealer-text");
+    await user.type(textarea, "Doc fee $499 in California");
+    const btn = await screen.findByTestId("button-analyze");
+    await user.click(btn);
+
+    const callout = await screen.findByTestId("statutory-cap-callout");
+    expect(callout).toBeInTheDocument();
+    expect(callout).toHaveTextContent("$499");
+    expect(callout).toHaveTextContent("$85");
+    expect(callout).toHaveTextContent("California");
+    expect(callout).toHaveTextContent("CA Vehicle Code § 11713.1(i)");
+  });
+
+  it("does not render the callout when no cap violation", async () => {
+    const user = userEvent.setup();
+    setupFetchMock(VALID_ANALYSIS);
+    renderHome();
+
+    const textarea = await screen.findByTestId("input-dealer-text");
+    await user.type(textarea, "OTD $35,000 with doc fee $199");
+    const btn = await screen.findByTestId("button-analyze");
+    await user.click(btn);
+
+    await screen.findByTestId("text-market-context-disclosure");
+    expect(screen.queryByTestId("statutory-cap-callout")).not.toBeInTheDocument();
   });
 });

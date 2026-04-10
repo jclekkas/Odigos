@@ -14,7 +14,8 @@
       "IMPORTANT: This data should be reviewed quarterly. State legislatures frequently adjust caps and rates.",
       "cpiIndexing: structured CPI adjustment tracking for states with inflation-indexed doc fee caps",
       "confidence: 'high' = verified against primary statute/bulletin, 'medium' = verified against secondary sources, 'low' = needs human spot-check",
-      "verificationMethod: describes how the data was verified"
+      "verificationMethod: describes how the data was verified",
+      "statuteCitation: statute or regulation reference for capped states; null if uncapped or unverified"
     ]
   },
   "states": {
@@ -41,7 +42,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: CarEdge state guide + AL Revenue dept rate table"
+      "verificationMethod": "Secondary: CarEdge state guide + AL Revenue dept rate table",
+      "statuteCitation": null
     },
     "AK": {
       "name": "Alaska",
@@ -53,7 +55,7 @@
         500
       ],
       "docFeeAverage": null,
-      "stateSalesTaxRate": 0.0,
+      "stateSalesTaxRate": 0,
       "maxCombinedTaxRate": 0.095,
       "vehicleTaxNotes": "No state sales tax. Municipalities may impose 0%-9.5%. Lithia Motors fined $300K in Dec 2025 for hidden doc fees.",
       "tradeInTaxCredit": false,
@@ -66,7 +68,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "low",
-      "verificationMethod": "Alaska AG press release (Dec 2025 Lithia Motors) + no direct fee regulation research. Unusual market."
+      "verificationMethod": "Alaska AG press release (Dec 2025 Lithia Motors) + no direct fee regulation research. Unusual market.",
+      "statuteCitation": null
     },
     "AZ": {
       "name": "Arizona",
@@ -91,7 +94,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: CarEdge + AZ DOR Transaction Privilege Tax table"
+      "verificationMethod": "Secondary: CarEdge + AZ DOR Transaction Privilege Tax table",
+      "statuteCitation": null
     },
     "AR": {
       "name": "Arkansas",
@@ -116,7 +120,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: CarEdge + AR DFA tax rate page. Cap amount needs statute verification."
+      "verificationMethod": "Secondary: CarEdge + AR DFA tax rate page. Cap amount needs statute verification.",
+      "statuteCitation": "A.C.A. § 23-112-402"
     },
     "CA": {
       "name": "California",
@@ -142,7 +147,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: CA DMV fee schedule + SB 791 veto coverage (Oct 2025)"
+      "verificationMethod": "Primary: CA DMV fee schedule + SB 791 veto coverage (Oct 2025)",
+      "statuteCitation": "CA Vehicle Code § 11713.1(i)"
     },
     "CO": {
       "name": "Colorado",
@@ -167,7 +173,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: CarEdge + CO tax.colorado.gov. No cap claim needs verification."
+      "verificationMethod": "Secondary: CarEdge + CO tax.colorado.gov. No cap claim needs verification.",
+      "statuteCitation": null
     },
     "CT": {
       "name": "Connecticut",
@@ -191,7 +198,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: CT DMV calculator. No-cap status verified via pending bill research (HB 06544 not enacted)."
+      "verificationMethod": "Secondary: CT DMV calculator. No-cap status verified via pending bill research (HB 06544 not enacted).",
+      "statuteCitation": null
     },
     "DE": {
       "name": "Delaware",
@@ -203,7 +211,7 @@
         600
       ],
       "docFeeAverage": null,
-      "stateSalesTaxRate": 0.0,
+      "stateSalesTaxRate": 0,
       "maxCombinedTaxRate": 0.0525,
       "vehicleTaxNotes": "0% sales tax. 5.25% Document Fee applies instead (increased from 4.25% effective Oct 1, 2025). HB 295 proposes $475 dealer doc fee cap (pending).",
       "tradeInTaxCredit": true,
@@ -217,7 +225,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: Delaware DMV news release (Oct 2025 fee increase). HB 295 cap pending."
+      "verificationMethod": "Secondary: Delaware DMV news release (Oct 2025 fee increase). HB 295 cap pending.",
+      "statuteCitation": null
     },
     "FL": {
       "name": "Florida",
@@ -242,7 +251,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: Florida Revenue statutes + etags.com dealer analysis"
+      "verificationMethod": "Primary: Florida Revenue statutes + etags.com dealer analysis",
+      "statuteCitation": null
     },
     "GA": {
       "name": "Georgia",
@@ -268,7 +278,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: Georgia DOR TAVT FAQ + AG consumer guidance"
+      "verificationMethod": "Primary: Georgia DOR TAVT FAQ + AG consumer guidance",
+      "statuteCitation": null
     },
     "HI": {
       "name": "Hawaii",
@@ -294,7 +305,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: CarEdge + Hawaii GET rate page. Trade-in credit status needs verification."
+      "verificationMethod": "Secondary: CarEdge + Hawaii GET rate page. Trade-in credit status needs verification.",
+      "statuteCitation": null
     },
     "ID": {
       "name": "Idaho",
@@ -320,7 +332,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: CarEdge + Idaho tax guide. Trade-in credit status corrected to true per IDAPA."
+      "verificationMethod": "Secondary: CarEdge + Idaho tax guide. Trade-in credit status corrected to true per IDAPA.",
+      "statuteCitation": null
     },
     "IL": {
       "name": "Illinois",
@@ -356,7 +369,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: Illinois Automobile Dealers Assoc. + ILSOS fee schedule"
+      "verificationMethod": "Primary: Illinois Automobile Dealers Assoc. + ILSOS fee schedule",
+      "statuteCitation": "815 ILCS 306/1"
     },
     "IN": {
       "name": "Indiana",
@@ -391,7 +405,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: Indiana SOS Auto Dealer Services Division guidance PDF"
+      "verificationMethod": "Primary: Indiana SOS Auto Dealer Services Division guidance PDF",
+      "statuteCitation": "IC 9-23-3-7"
     },
     "IA": {
       "name": "Iowa",
@@ -417,7 +432,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: Iowa Code \u00a7322.19A. Cap amount $180 from statute text."
+      "verificationMethod": "Secondary: Iowa Code §322.19A. Cap amount $180 from statute text.",
+      "statuteCitation": "Iowa Code § 322.19A"
     },
     "KS": {
       "name": "Kansas",
@@ -443,7 +459,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: CarEdge + KS Revenue pub1526. No-cap claim needs verification."
+      "verificationMethod": "Secondary: CarEdge + KS Revenue pub1526. No-cap claim needs verification.",
+      "statuteCitation": null
     },
     "KY": {
       "name": "Kentucky",
@@ -469,7 +486,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: CarEdge + KY Revenue Motor Vehicle Usage Tax page"
+      "verificationMethod": "Secondary: CarEdge + KY Revenue Motor Vehicle Usage Tax page",
+      "statuteCitation": null
     },
     "LA": {
       "name": "Louisiana",
@@ -503,7 +521,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: HB 476 enrolled text + LA RS 6:969.18"
+      "verificationMethod": "Primary: HB 476 enrolled text + LA RS 6:969.18",
+      "statuteCitation": "RS 6:969.18"
     },
     "ME": {
       "name": "Maine",
@@ -529,7 +548,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: Maine statute \u00a7953-A + Revenue tax rate page"
+      "verificationMethod": "Secondary: Maine statute §953-A + Revenue tax rate page",
+      "statuteCitation": null
     },
     "MD": {
       "name": "Maryland",
@@ -553,7 +573,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: SB 362 enrolled text + MVA Bulletin"
+      "verificationMethod": "Primary: SB 362 enrolled text + MVA Bulletin",
+      "statuteCitation": "Md. Code, Transp. § 15-311.1"
     },
     "MA": {
       "name": "Massachusetts",
@@ -578,7 +599,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: Mass Directive 14-1 (title prep only). General doc fee no-cap claim needs verification."
+      "verificationMethod": "Secondary: Mass Directive 14-1 (title prep only). General doc fee no-cap claim needs verification.",
+      "statuteCitation": null
     },
     "MI": {
       "name": "Michigan",
@@ -613,7 +635,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: Michigan DIFS Bulletin 2025-03-CF"
+      "verificationMethod": "Primary: Michigan DIFS Bulletin 2025-03-CF",
+      "statuteCitation": "DIFS Bulletin 2025-03-CF"
     },
     "MN": {
       "name": "Minnesota",
@@ -631,13 +654,14 @@
       "tradeInTaxCredit": true,
       "titleFee": 34,
       "registrationFee": "1.575% of MSRP + $11.25 universal fees",
-      "specialNotes": "MAJOR CHANGE: Cap increased from ~$125 to $350 effective July 1, 2025. Or 10% of sale value for vehicles \u2264$3,499, whichever is less.",
+      "specialNotes": "MAJOR CHANGE: Cap increased from ~$125 to $350 effective July 1, 2025. Or 10% of sale value for vehicles ≤$3,499, whichever is less.",
       "sources": [
         "https://mada.org/doc-fee-increase/"
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: MADA official announcement + statute"
+      "verificationMethod": "Primary: MADA official announcement + statute",
+      "statuteCitation": "Minn. Stat. § 168.27 Subd. 11a"
     },
     "MS": {
       "name": "Mississippi",
@@ -661,7 +685,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: MMVC Regulation 8. District-based cap system is unusual \u2014 needs human review."
+      "verificationMethod": "Secondary: MMVC Regulation 8. District-based cap system is unusual — needs human review.",
+      "statuteCitation": null
     },
     "MO": {
       "name": "Missouri",
@@ -695,7 +720,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: RSMo \u00a7301.558 + 12 CSR 10-26.231"
+      "verificationMethod": "Primary: RSMo §301.558 + 12 CSR 10-26.231",
+      "statuteCitation": "Mo. Rev. Stat. § 301.560"
     },
     "MT": {
       "name": "Montana",
@@ -707,11 +733,11 @@
         400
       ],
       "docFeeAverage": 299,
-      "stateSalesTaxRate": 0.0,
-      "maxCombinedTaxRate": 0.0,
+      "stateSalesTaxRate": 0,
+      "maxCombinedTaxRate": 0,
       "vehicleTaxNotes": "NO sales tax on vehicles.",
       "tradeInTaxCredit": false,
-      "tradeInTaxCreditNotes": "N/A \u2014 no sales tax",
+      "tradeInTaxCreditNotes": "N/A — no sales tax",
       "titleFee": 12,
       "registrationFee": "$217 (0-4 years) or $130 (5-10 years) + county option ~$10",
       "specialNotes": "One of five states with no sales tax on vehicles (along with AK, DE, NH, OR).",
@@ -721,7 +747,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: CarEdge. No sales tax is well-established."
+      "verificationMethod": "Secondary: CarEdge. No sales tax is well-established.",
+      "statuteCitation": null
     },
     "NE": {
       "name": "Nebraska",
@@ -746,7 +773,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: NE DMV registration fees page + CarEdge"
+      "verificationMethod": "Secondary: NE DMV registration fees page + CarEdge",
+      "statuteCitation": null
     },
     "NV": {
       "name": "Nevada",
@@ -771,7 +799,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: CarEdge + NV DMV fee schedule. No-cap claim needs verification."
+      "verificationMethod": "Secondary: CarEdge + NV DMV fee schedule. No-cap claim needs verification.",
+      "statuteCitation": null
     },
     "NH": {
       "name": "New Hampshire",
@@ -784,11 +813,11 @@
         500
       ],
       "docFeeAverage": 459,
-      "stateSalesTaxRate": 0.0,
-      "maxCombinedTaxRate": 0.0,
+      "stateSalesTaxRate": 0,
+      "maxCombinedTaxRate": 0,
       "vehicleTaxNotes": "NO sales tax.",
       "tradeInTaxCredit": false,
-      "tradeInTaxCreditNotes": "N/A \u2014 no sales tax",
+      "tradeInTaxCreditNotes": "N/A — no sales tax",
       "titleFee": 37,
       "registrationFee": "$18-$15 per $1,000 of vehicle value",
       "specialNotes": "Two-part fee structure: (1) $27 state doc fee (capped by statute), (2) Dealer admin fee (uncapped, must be itemized). Total fees average $459. Title fee increased to $37 effective Jan 1, 2026.",
@@ -798,7 +827,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: NH Banking Dept FAQ for $27 cap. Uncapped admin fee avg from CarEdge."
+      "verificationMethod": "Secondary: NH Banking Dept FAQ for $27 cap. Uncapped admin fee avg from CarEdge.",
+      "statuteCitation": null
     },
     "NJ": {
       "name": "New Jersey",
@@ -822,7 +852,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: NJ MVC fee schedule. No-cap claim needs verification."
+      "verificationMethod": "Secondary: NJ MVC fee schedule. No-cap claim needs verification.",
+      "statuteCitation": null
     },
     "NM": {
       "name": "New Mexico",
@@ -840,13 +871,14 @@
       "tradeInTaxCredit": true,
       "titleFee": 20,
       "registrationFee": "$27-$62/year by weight/age",
-      "specialNotes": "New Mexico uses both a Motor Vehicle Excise Tax and a Gross Receipts Tax \u2014 verify which applies to your transaction.",
+      "specialNotes": "New Mexico uses both a Motor Vehicle Excise Tax and a Gross Receipts Tax — verify which applies to your transaction.",
       "sources": [
         "https://www.mvd.newmexico.gov/vehicles/vehicle-registration/"
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: NM MVD + dual tax structure (excise + GRT) is complex."
+      "verificationMethod": "Secondary: NM MVD + dual tax structure (excise + GRT) is complex.",
+      "statuteCitation": null
     },
     "NY": {
       "name": "New York",
@@ -870,7 +902,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: 15 NYCRR \u00a778.19 + NYIADA confirmation"
+      "verificationMethod": "Primary: 15 NYCRR §78.19 + NYIADA confirmation",
+      "statuteCitation": "NY DMV Reg. 78.17"
     },
     "NC": {
       "name": "North Carolina",
@@ -895,7 +928,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: NCDOT Highway Use Tax page"
+      "verificationMethod": "Primary: NCDOT Highway Use Tax page",
+      "statuteCitation": null
     },
     "ND": {
       "name": "North Dakota",
@@ -920,7 +954,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: ND DOT + CarEdge. Low-population state, limited data."
+      "verificationMethod": "Secondary: ND DOT + CarEdge. Low-population state, limited data.",
+      "statuteCitation": null
     },
     "OH": {
       "name": "Ohio",
@@ -945,7 +980,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: Ohio Revised Code \u00a74517.261, bmv.ohio.gov"
+      "verificationMethod": "Primary: Ohio Revised Code §4517.261, bmv.ohio.gov",
+      "statuteCitation": "ORC § 4517.261"
     },
     "OK": {
       "name": "Oklahoma",
@@ -970,7 +1006,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: Oklahoma.gov fee schedule + CarEdge"
+      "verificationMethod": "Secondary: Oklahoma.gov fee schedule + CarEdge",
+      "statuteCitation": null
     },
     "OR": {
       "name": "Oregon",
@@ -982,11 +1019,11 @@
         250
       ],
       "docFeeAverage": 200,
-      "stateSalesTaxRate": 0.0,
+      "stateSalesTaxRate": 0,
       "maxCombinedTaxRate": 0.005,
       "vehicleTaxNotes": "NO sales tax. 0.5% Vehicle Privilege Tax on new vehicles only. HB 3991 proposes increase to 2.25% (pending referendum).",
       "tradeInTaxCredit": false,
-      "tradeInTaxCreditNotes": "N/A \u2014 no sales tax. Privilege tax applies to gross sale price.",
+      "tradeInTaxCreditNotes": "N/A — no sales tax. Privilege tax applies to gross sale price.",
       "titleFee": 77,
       "registrationFee": "$43 (2-year); +$60 increase for EV/40+ MPG vehicles effective Jan 1, 2026",
       "specialNotes": "$250 with integrator / $200 without integrator. Title fee is sliding scale $77-$192 based on MPG.",
@@ -995,7 +1032,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Primary: ORS \u00a7822.043 confirmed $250/$200 cap. Rate: $250 with integrator."
+      "verificationMethod": "Primary: ORS §822.043 confirmed $250/$200 cap. Rate: $250 with integrator.",
+      "statuteCitation": "ORS § 822.043"
     },
     "PA": {
       "name": "Pennsylvania",
@@ -1029,7 +1067,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: Pennsylvania Bulletin Vol.55 Issue 1 (Jan 13, 2026)"
+      "verificationMethod": "Primary: Pennsylvania Bulletin Vol.55 Issue 1 (Jan 13, 2026)",
+      "statuteCitation": "37 Pa. Code § 301.4"
     },
     "RI": {
       "name": "Rhode Island",
@@ -1054,7 +1093,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: 280-RICR-30-20-1.6 confirmed via LII/Cornell. $400 cap for vehicles $10K+."
+      "verificationMethod": "Secondary: 280-RICR-30-20-1.6 confirmed via LII/Cornell. $400 cap for vehicles $10K+.",
+      "statuteCitation": "R.I. Gen. Laws § 31-5.2-3"
     },
     "SC": {
       "name": "South Carolina",
@@ -1079,7 +1119,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: SC Consumer Affairs + DOR local tax tables"
+      "verificationMethod": "Secondary: SC Consumer Affairs + DOR local tax tables",
+      "statuteCitation": null
     },
     "SD": {
       "name": "South Dakota",
@@ -1103,7 +1144,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: SD DOR fee schedule + CarEdge"
+      "verificationMethod": "Secondary: SD DOR fee schedule + CarEdge",
+      "statuteCitation": null
     },
     "TN": {
       "name": "Tennessee",
@@ -1127,7 +1169,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: TN Revenue title/registration page. High combined rates confirmed."
+      "verificationMethod": "Secondary: TN Revenue title/registration page. High combined rates confirmed.",
+      "statuteCitation": null
     },
     "TX": {
       "name": "Texas",
@@ -1151,7 +1194,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: Texas Administrative Code \u00a784.205, OCCC rule adoption document"
+      "verificationMethod": "Primary: Texas Administrative Code §84.205, OCCC rule adoption document",
+      "statuteCitation": "Tex. Occ. Code § 2301.258"
     },
     "UT": {
       "name": "Utah",
@@ -1176,7 +1220,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: Utah DMV registration fees + state tax commission rates"
+      "verificationMethod": "Secondary: Utah DMV registration fees + state tax commission rates",
+      "statuteCitation": null
     },
     "VT": {
       "name": "Vermont",
@@ -1201,7 +1246,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: Vermont DMV fee schedule + registration page"
+      "verificationMethod": "Primary: Vermont DMV fee schedule + registration page",
+      "statuteCitation": null
     },
     "VA": {
       "name": "Virginia",
@@ -1227,7 +1273,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: Virginia DMV fee calculator + tax.virginia.gov"
+      "verificationMethod": "Primary: Virginia DMV fee calculator + tax.virginia.gov",
+      "statuteCitation": null
     },
     "WA": {
       "name": "Washington",
@@ -1253,7 +1300,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: Washington DOR industry guide (dor.wa.gov)"
+      "verificationMethod": "Primary: Washington DOR industry guide (dor.wa.gov)",
+      "statuteCitation": "RCW 46.70.180"
     },
     "WV": {
       "name": "West Virginia",
@@ -1288,7 +1336,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: WVADA News confirmed $575 cap (July 2024). Statute 17A-6A-8A. Needs primary verification."
+      "verificationMethod": "Secondary: WVADA News confirmed $575 cap (July 2024). Statute 17A-6A-8A. Needs primary verification.",
+      "statuteCitation": "WV Code § 17A-6A-8A"
     },
     "WI": {
       "name": "Wisconsin",
@@ -1313,7 +1362,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: Wisconsin DOT fee schedule + DOR rate tables"
+      "verificationMethod": "Primary: Wisconsin DOT fee schedule + DOR rate tables",
+      "statuteCitation": null
     },
     "WY": {
       "name": "Wyoming",
@@ -1337,7 +1387,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: Wyoming license plate org + Avalara rates"
+      "verificationMethod": "Secondary: Wyoming license plate org + Avalara rates",
+      "statuteCitation": null
     },
     "DC": {
       "name": "District of Columbia",
@@ -1362,7 +1413,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: DC DMV fee estimator + DC tax handbook"
+      "verificationMethod": "Primary: DC DMV fee estimator + DC tax handbook",
+      "statuteCitation": null
     }
   },
   "_summary": {
@@ -1520,13 +1572,48 @@
       "WV"
     ],
     "cpiIndexedStates": [
-      { "state": "IL", "currentAmount": 378, "frequency": "annual", "nextExpectedDate": "2027-01-01" },
-      { "state": "IN", "currentAmount": 251, "frequency": "annual", "nextExpectedDate": "2026-07-01" },
-      { "state": "LA", "currentAmount": 425, "frequency": "annual", "nextExpectedDate": "2027-01-01" },
-      { "state": "MI", "currentAmount": 280, "frequency": "biennial", "nextExpectedDate": "2027-01-01" },
-      { "state": "MO", "currentAmount": 500, "frequency": "annual", "nextExpectedDate": "2026-08-17" },
-      { "state": "PA", "currentAmount": 490, "frequency": "annual", "nextExpectedDate": "2027-01-01" },
-      { "state": "WV", "currentAmount": 575, "frequency": "annual", "nextExpectedDate": "2025-07-01" }
+      {
+        "state": "IL",
+        "currentAmount": 378,
+        "frequency": "annual",
+        "nextExpectedDate": "2027-01-01"
+      },
+      {
+        "state": "IN",
+        "currentAmount": 251,
+        "frequency": "annual",
+        "nextExpectedDate": "2026-07-01"
+      },
+      {
+        "state": "LA",
+        "currentAmount": 425,
+        "frequency": "annual",
+        "nextExpectedDate": "2027-01-01"
+      },
+      {
+        "state": "MI",
+        "currentAmount": 280,
+        "frequency": "biennial",
+        "nextExpectedDate": "2027-01-01"
+      },
+      {
+        "state": "MO",
+        "currentAmount": 500,
+        "frequency": "annual",
+        "nextExpectedDate": "2026-08-17"
+      },
+      {
+        "state": "PA",
+        "currentAmount": 490,
+        "frequency": "annual",
+        "nextExpectedDate": "2027-01-01"
+      },
+      {
+        "state": "WV",
+        "currentAmount": 575,
+        "frequency": "annual",
+        "nextExpectedDate": "2025-07-01"
+      }
     ]
   }
 }

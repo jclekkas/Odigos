@@ -677,26 +677,20 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   }
 
   if (docFeeCapResult?.violated && stateData) {
-    const { capAmount, chargedAmount, overage } = docFeeCapResult;
+    const { capAmount, chargedAmount, overage, statuteCitation } = docFeeCapResult;
     const stateName = stateData.name;
     const capViolationPrefix = `ALERT: Doc fee of $${chargedAmount} exceeds ${stateName}'s legal cap of $${capAmount} by $${overage}.`;
 
-    let statuteCitation = "";
-    if (stateData.specialNotes) {
-      const statuteMatch = stateData.specialNotes.match(/([A-Z]{2,3}[\s.]+[\d.]+[\w.]*|§\s*[\d.]+[\w.]*|\b(?:Section|Sec\.|RS|RCW|ORS|MCL|CGS|GS|A\.?C\.?A\.?|C\.?R\.?S\.?|NRS|HSA|MCA)\s+[\d.-]+\w*)/i);
-      if (statuteMatch) {
-        statuteCitation = ` (${statuteMatch[0].trim()})`;
-      }
-    }
+    const citationSuffix = statuteCitation ? ` (${statuteCitation})` : "";
 
     if (!llmResult.summary.includes(String(capAmount))) {
       llmResult.summary = `${capViolationPrefix} ${llmResult.summary}`;
     }
     if (!llmResult.reasoning.includes(String(overage))) {
-      llmResult.reasoning = `Doc fee cap violation: ${stateName} cap is $${capAmount}${statuteCitation}. Charged: $${chargedAmount}. Overage: $${overage}. This is a hard NO-GO regardless of other deal terms. ` + llmResult.reasoning;
+      llmResult.reasoning = `Doc fee cap violation: ${stateName} cap is $${capAmount}${citationSuffix}. Charged: $${chargedAmount}. Overage: $${overage}. This is a hard NO-GO regardless of other deal terms. ` + llmResult.reasoning;
     }
     if (!llmResult.suggestedReply.includes(String(capAmount)) && !llmResult.suggestedReply.includes(String(overage))) {
-      const replyStatuteNote = statuteCitation ? ` per state law${statuteCitation}` : " to comply with state law";
+      const replyStatuteNote = citationSuffix ? ` per state law${citationSuffix}` : " to comply with state law";
       llmResult.suggestedReply = `I noticed the documentation fee of $${chargedAmount} exceeds the ${stateName} state cap of $${capAmount} by $${overage}. Please adjust the doc fee${replyStatuteNote}. ` + llmResult.suggestedReply;
     }
   }
@@ -827,6 +821,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   payload.marketContextUsed = marketContextUsed;
   payload.marketContextStrength = finalOverallStrength;
   if (marketContextSummary) payload.marketContextSummary = marketContextSummary;
+  payload.docFeeCapCheck = docFeeCapResult ?? null;
 
   trackEvent("submission_score", {
     dealScore: finalResult.dealScore,

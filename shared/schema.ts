@@ -97,6 +97,19 @@ export type ConfidenceLevel = z.infer<typeof confidenceLevelSchema>;
 export const financialImpactConfidenceSchema = z.enum(["low", "medium", "high"]);
 export type FinancialImpactConfidence = z.infer<typeof financialImpactConfidenceSchema>;
 
+// Doc fee cap check result — structured violation data for the statutory cap callout
+export const docFeeCapCheckSchema = z.object({
+  violated: z.boolean(),
+  capAmount: z.number(),
+  chargedAmount: z.number(),
+  overage: z.number(),
+  stateName: z.string(),
+  stateAbbreviation: z.string(),
+  statuteCitation: z.string().nullable(),
+});
+
+export type DocFeeCapCheck = z.infer<typeof docFeeCapCheckSchema>;
+
 // Analysis response schema
 export const analysisResponseSchema = z.object({
   dealScore: z.enum(["GREEN", "YELLOW", "RED"]),
@@ -125,6 +138,7 @@ export const analysisResponseSchema = z.object({
   marketComparison: z.string().nullable().optional(),
   financialImpactConfidence: financialImpactConfidenceSchema.nullable().optional(),
   financialSummary: z.string().nullable().optional(),
+  docFeeCapCheck: docFeeCapCheckSchema.nullable().optional(),
 });
 
 export type AnalysisResponse = z.infer<typeof analysisResponseSchema>;

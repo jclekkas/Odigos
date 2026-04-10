@@ -27,6 +27,7 @@ interface StateFeeData {
   titleFee: number | null;
   registrationFee: string;
   specialNotes: string | null;
+  statuteCitation: string | null;
   cpiIndexing?: CpiIndexing;
   sources: string[];
   lastVerified: string;
