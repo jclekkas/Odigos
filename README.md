@@ -69,7 +69,8 @@ docs/            Documentation
 |----------|-------------|
 | `DATABASE_URL` | PostgreSQL connection string |
 | `STRIPE_SECRET_KEY` | Stripe secret key |
-| `STRIPE_PRICE_ID_49` | Stripe price ID for Car Buyer's Pass |
+| `STRIPE_PRICE_ID_29` | Stripe price ID for Weekend Warrior Pass ($29 / 72h) |
+| `STRIPE_PRICE_ID_49` | Stripe price ID for Car Buyer's Pass ($49 / 14d) |
 | `SENTRY_DSN` | Sentry error tracking DSN |
 | `NODE_ENV` | `development` or `production` |
 
