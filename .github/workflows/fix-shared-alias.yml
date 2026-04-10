@@ -1,0 +1,79 @@
+name: Fix Shared Alias
+on:
+  workflow_dispatch:
+
+jobs:
+  fix-alias:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Create fix script
+        run: |
+          cat > fix-alias.mjs << 'SCRIPT'
+          import { readdir, readFile, writeFile } from 'fs/promises';
+          import { join, resolve, relative, dirname } from 'path';
+          const ROOT = resolve('.');
+          async function getAllTsFiles(dir) {
+            const files = [];
+            try {
+              const entries = await readdir(dir, { withFileTypes: true });
+              for (const entry of entries) {
+                const fullPath = join(dir, entry.name);
+                if (entry.isDirectory()) {
+                  if (entry.name.startsWith('.') || entry.name === 'node_modules') continue;
+                  files.push(...await getAllTsFiles(fullPath));
+                } else if (entry.name.endsWith('.ts') && !entry.name.endsWith('.d.ts')) {
+                  files.push(fullPath);
+                }
+              }
+            } catch (e) {}
+            return files;
+          }
+          let allFiles = [];
+          for (const d of ['server', 'api', 'shared']) {
+            allFiles.push(...await getAllTsFiles(join(ROOT, d)));
+          }
+          let fixed = 0;
+          for (const file of allFiles) {
+            const src = await readFile(file, 'utf-8');
+            let changed = false;
+            const fileDir = dirname(file);
+            const sharedDir = join(ROOT, 'shared');
+            const out = src.replace(
+              /((?:import|export)\s+(?:[\s\S]*?\s+from\s+|))(['"])@shared\/([^'"]+)\2/g,
+              (m, pre, q, rest) => {
+                changed = true;
+                let rel = relative(fileDir, sharedDir);
+                if (!rel.startsWith('.')) rel = './' + rel;
+                let specifier = rel + '/' + rest;
+                if (!specifier.endsWith('.js')) specifier += '.js';
+                return pre + q + specifier + q;
+              }
+            );
+            if (changed) {
+              await writeFile(file, out, 'utf-8');
+              fixed++;
+              console.log('Fixed:', file.replace(ROOT + '/', ''));
+            }
+          }
+          console.log('Total fixed:', fixed);
+          SCRIPT
+      - name: Run fix script
+        run: node fix-alias.mjs
+      - name: Cleanup
+        run: |
+          rm -f fix-alias.mjs
+          rm -f .github/workflows/fix-shared-alias.yml
+          rm -f .github/workflows/fix-esm-imports.yml
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "fix: replace @shared alias with relative paths for Vercel compatibility"
+          git push
