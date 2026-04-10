@@ -1,1 +1,1 @@
-export * from "./metrics/bi";
+export * from "./metrics/bi.js";

@@ -1,4 +1,4 @@
-import { getSeoMeta } from "../shared/seoMetadata";
+import { getSeoMeta } from "../shared/seoMetadata.js";
 
 /**
  * Replace the generic SPA shell metadata with page-specific values.

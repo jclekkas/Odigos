@@ -17,13 +17,13 @@
  * Redis, BullMQ, or a similar durable queue is required for reliability and
  * cross-instance coordination when scaling beyond one process.
  */
-import { storage } from "./storage";
-import { redactPII } from "./piiRedact";
-import { zipToStateCode } from "./zipToState";
+import { storage } from "./storage.js";
+import { redactPII } from "./piiRedact.js";
+import { zipToStateCode } from "./zipToState.js";
 import type { AnalysisResponse, AnalysisRequest } from "@shared/schema";
 import { dealerSubmissions } from "@shared/schema";
-import { normalizeSubmissionText, sha256Hex } from "./warehouse/warehouseUtils";
-import { db } from "./db";
+import { normalizeSubmissionText, sha256Hex } from "./warehouse/warehouseUtils.js";
+import { db } from "./db.js";
 import { eq, isNull } from "drizzle-orm";
 
 export interface SubmissionPayload {

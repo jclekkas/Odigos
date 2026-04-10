@@ -2,7 +2,7 @@ import express, { type Express, type Response } from "express";
 import fs from "fs";
 import path from "path";
 import { isKnownRoute } from "../shared/routes.js";
-import { injectSeoMeta } from "./injectMeta";
+import { injectSeoMeta } from "./injectMeta.js";
 
 /** Inject the per-request CSP nonce into every <script tag in the HTML. */
 function injectNonce(html: string, res: Response): string {

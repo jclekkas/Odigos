@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import type { ChatCompletion, ChatCompletionCreateParamsNonStreaming } from "openai/resources/chat/completions";
-import { trackEvent } from "./metrics";
+import { trackEvent } from "./metrics.js";
 
 const rawClient = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,

@@ -37,7 +37,7 @@
  */
 
 import type { Express } from "express";
-import { requireAdminKey } from "./admin";
+import { requireAdminKey } from "./admin.js";
 import * as fs from "fs";
 import * as path from "path";
 import { XMLParser } from "fast-xml-parser";

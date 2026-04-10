@@ -183,7 +183,7 @@
  * every 24 hours.
  */
 
-import { db } from "../db";
+import { db } from "../db.js";
 import { sql } from "drizzle-orm";
 
 export const PII_RETENTION_DAYS = 90;

@@ -47,10 +47,10 @@
  * Changes to this file that introduce new aggregates must classify the new
  * metric against this policy before merging.
  */
-import { db } from "./db";
+import { db } from "./db.js";
 import { sql } from "drizzle-orm";
 import type { MarketContext, MarketContextStrength } from "@shared/schema";
-import { normalizeDealerName } from "./warehouse/warehouseUtils";
+import { normalizeDealerName } from "./warehouse/warehouseUtils.js";
 
 const DOC_FEE_DELTA_MAX = 2000;
 

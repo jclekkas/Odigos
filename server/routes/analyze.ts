@@ -3,11 +3,11 @@ import type { Express, Request, Response } from "express";
 import multer from "multer";
 import { z } from "zod";
 import { analysisRequestSchema } from "@shared/schema";
-import { trackEvent } from "../events";
-import { extractTextFromFile, extractTextFromUrl } from "../extractText";
-import { storage } from "../storage";
-import { writeAuditEvent } from "../audit";
-import { runAnalysis, AnalyzeServiceError } from "../services/analyzeService";
+import { trackEvent } from "../events.js";
+import { extractTextFromFile, extractTextFromUrl } from "../extractText.js";
+import { storage } from "../storage.js";
+import { writeAuditEvent } from "../audit.js";
+import { runAnalysis, AnalyzeServiceError } from "../services/analyzeService.js";
 
 // OpenAI base URL configured via AI_INTEGRATIONS_OPENAI_BASE_URL env var
 

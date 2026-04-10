@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import type { Request } from "express";
-import { insertAuditLog } from "./storage";
-import type { AuditEventType, AuditOutcome } from "./storage";
+import { insertAuditLog } from "./storage.js";
+import type { AuditEventType, AuditOutcome } from "./storage.js";
 
 export function sha256Hex(value: string): string {
   return crypto.createHash("sha256").update(value).digest("hex");

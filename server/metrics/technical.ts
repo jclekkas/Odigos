@@ -1,4 +1,4 @@
-import { loadMetrics } from "./events";
+import { loadMetrics } from "./events.js";
 
 export interface MetricsSummary {
   totalSubmissions: number;

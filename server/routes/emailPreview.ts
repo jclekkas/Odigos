@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { z } from "zod";
-import { createSmtpTransport } from "../alerts";
+import { createSmtpTransport } from "../alerts.js";
 
 const emailPreviewSchema = z.object({
   email: z.string().email("A valid email address is required"),

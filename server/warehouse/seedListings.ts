@@ -7,10 +7,10 @@
  *
  * Run with: npm run warehouse:seed
  */
-import { db } from "../db";
+import { db } from "../db.js";
 import { sql } from "drizzle-orm";
 import { coreDealers, coreListings, coreStates } from "@shared/warehouse";
-import { normalizeDealerName, refreshAllViews } from "./warehouseUtils";
+import { normalizeDealerName, refreshAllViews } from "./warehouseUtils.js";
 
 // ─── Vehicle catalogue ───────────────────────────────────────────────────────
 

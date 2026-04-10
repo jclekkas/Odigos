@@ -5,7 +5,7 @@
  * dealer_submissions row has been successfully written.  All failures are
  * caught by the caller — nothing here should ever throw to the user.
  */
-import { db } from "../db";
+import { db } from "../db.js";
 import { sql, eq, and } from "drizzle-orm";
 import type { AnalysisResponse, AnalysisRequest, DetectedFields } from "@shared/schema";
 import { failedWarehouseWrites, detectedFieldsSchema } from "@shared/schema";
@@ -18,7 +18,7 @@ import {
   validateFinancialBounds,
   safeSerializePayload,
   getErrorMessage,
-} from "./warehouseUtils";
+} from "./warehouseUtils.js";
 
 export interface WarehouseWritePayload {
   dealerSubmissionId: string;

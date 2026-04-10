@@ -1,7 +1,7 @@
 import type { Express, Request } from "express";
-import type { DateRange } from "../bi";
-import { requireAdminKey } from "./admin";
-import { getStripeClient, isStripeConfigured } from "../stripeClient";
+import type { DateRange } from "../bi.js";
+import { requireAdminKey } from "./admin.js";
+import { getStripeClient, isStripeConfigured } from "../stripeClient.js";
 
 function getErrorMessage(e: unknown): string {
   return e instanceof Error ? e.message : String(e);

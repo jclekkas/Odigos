@@ -11,11 +11,11 @@
  */
 
 import * as Sentry from "@sentry/node";
-import { db } from "../db";
+import { db } from "../db.js";
 import { lte, eq, and, or, sql } from "drizzle-orm";
 import { failedWarehouseWrites } from "@shared/schema";
-import { performWarehouseWriteById } from "./warehouseWriter";
-import { jitteredBackoffMs } from "../lib/reliability";
+import { performWarehouseWriteById } from "./warehouseWriter.js";
+import { jitteredBackoffMs } from "../lib/reliability.js";
 
 const DLQ_PAGE_SIZE = parseInt(process.env.DLQ_PAGE_SIZE ?? "20", 10);
 const DLQ_LEASE_TIMEOUT_MS = parseInt(process.env.DLQ_LEASE_TIMEOUT_MS ?? "120000", 10);

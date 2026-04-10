@@ -12,7 +12,7 @@
  */
 
 import type { DetectedFields } from "@shared/schema";
-import { lookupBrand, type LeaseBrandInfo } from "./leaseBrandData";
+import { lookupBrand, type LeaseBrandInfo } from "./leaseBrandData.js";
 
 // ---------------------------------------------------------------------------
 // Result types

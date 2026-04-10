@@ -1,5 +1,5 @@
 import type { Express } from "express";
-import { getStateFeeData } from "../stateFeeLookup";
+import { getStateFeeData } from "../stateFeeLookup.js";
 
 export function registerReferenceRoutes(app: Express): void {
   app.get("/api/state-fee/:state", (req, res) => {

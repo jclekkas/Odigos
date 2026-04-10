@@ -1,4 +1,4 @@
-import { openai } from "./openaiClient";
+import { openai } from "./openaiClient.js";
 
 const IMAGE_MIME_TYPES = ["image/png", "image/jpeg", "image/webp"];
 const PDF_MIME_TYPE = "application/pdf";

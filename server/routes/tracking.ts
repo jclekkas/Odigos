@@ -1,7 +1,7 @@
 import { createHash } from "crypto";
 import type { Express } from "express";
-import { trackEvent } from "../events";
-import { getExperimentStats } from "../analytics";
+import { trackEvent } from "../events.js";
+import { getExperimentStats } from "../analytics.js";
 
 function hashIp(req: { ip?: string; headers: Record<string, string | string[] | undefined> }): string {
   const forwarded = req.headers["x-forwarded-for"];

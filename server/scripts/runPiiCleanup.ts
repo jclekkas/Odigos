@@ -9,7 +9,7 @@
  * Cutoff rule: submitted_at < (NOW - 90 days), strict less-than.
  */
 
-import { runPiiCleanup, PII_RETENTION_DAYS } from "../jobs/piiCleanup";
+import { runPiiCleanup, PII_RETENTION_DAYS } from "../jobs/piiCleanup.js";
 
 const dryRun = process.argv.includes("--dry-run");
 

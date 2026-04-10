@@ -7,17 +7,17 @@ import {
   type MarketContext,
   type MarketContextStrength,
 } from "@shared/schema";
-import { applyRuleEngine, checkDocFeeCap } from "../ruleEngine";
-import { runLeaseMath } from "../leaseMathEngine";
-import { detectStateFromText, getStateFeeData, getAmbiguousCityOptions } from "../stateFeeLookup";
-import { trackEvent } from "../events";
-import { openai } from "../openaiClient";
-import { enqueueSubmission } from "../ingestor";
-import { storage } from "../storage";
-import { getMarketContext, getDealerStats } from "../marketContext";
-import { withJitteredBackoff, isRetriableError } from "../lib/reliability";
-import { aiCircuitBreaker, CircuitOpenError } from "../lib/circuitBreaker";
-import { logger } from "../logger";
+import { applyRuleEngine, checkDocFeeCap } from "../ruleEngine.js";
+import { runLeaseMath } from "../leaseMathEngine.js";
+import { detectStateFromText, getStateFeeData, getAmbiguousCityOptions } from "../stateFeeLookup.js";
+import { trackEvent } from "../events.js";
+import { openai } from "../openaiClient.js";
+import { enqueueSubmission } from "../ingestor.js";
+import { storage } from "../storage.js";
+import { getMarketContext, getDealerStats } from "../marketContext.js";
+import { withJitteredBackoff, isRetriableError } from "../lib/reliability.js";
+import { aiCircuitBreaker, CircuitOpenError } from "../lib/circuitBreaker.js";
+import { logger } from "../logger.js";
 
 export type AnalyzeInput = z.infer<typeof analysisRequestSchema>;
 

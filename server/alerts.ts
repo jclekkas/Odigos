@@ -1,4 +1,4 @@
-import { getMetricsSummary, getTechnicalSummary, getPaymentCountLastNHours } from "./metrics";
+import { getMetricsSummary, getTechnicalSummary, getPaymentCountLastNHours } from "./metrics.js";
 
 const REPLIT_DB_URL = process.env.REPLIT_DB_URL;
 

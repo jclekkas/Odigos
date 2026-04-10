@@ -1,5 +1,5 @@
 import type { AnalysisResponse, DetectedFields, Fee } from "@shared/schema";
-import type { LeaseMathResult } from "./leaseMathEngine";
+import type { LeaseMathResult } from "./leaseMathEngine.js";
 
 interface RuleEngineResult {
   dealScore: "GREEN" | "YELLOW" | "RED";

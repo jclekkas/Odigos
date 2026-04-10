@@ -1,8 +1,8 @@
 import * as Sentry from "@sentry/node";
 import type { Express } from "express";
-import { getStripeClient, isStripeConfigured } from "../stripeClient";
-import { trackEvent } from "../events";
-import { writeAuditEvent } from "../audit";
+import { getStripeClient, isStripeConfigured } from "../stripeClient.js";
+import { trackEvent } from "../events.js";
+import { writeAuditEvent } from "../audit.js";
 
 export function registerPaymentRoutes(app: Express): void {
   app.get("/api/stripe-status", async (_req, res) => {

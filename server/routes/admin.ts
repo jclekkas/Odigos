@@ -2,10 +2,10 @@ import { timingSafeEqual } from "crypto";
 import * as fs from "fs";
 import * as path from "path";
 import type { Express, Request, Response } from "express";
-import { getStripeClient, isStripeConfigured } from "../stripeClient";
-import { getImportedSessionIds, importHistoricalEvents } from "../events";
-import { listAuditLog } from "../storage";
-import { writeAuditEvent } from "../audit";
+import { getStripeClient, isStripeConfigured } from "../stripeClient.js";
+import { getImportedSessionIds, importHistoricalEvents } from "../events.js";
+import { listAuditLog } from "../storage.js";
+import { writeAuditEvent } from "../audit.js";
 
 export function requireAdminKey(req: Request, res: Response): boolean {
   const configuredKey = process.env.ADMIN_KEY;

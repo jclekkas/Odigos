@@ -1,12 +1,12 @@
 import { type Express } from "express";
 import { createServer as createViteServer, createLogger } from "vite";
 import { type Server } from "http";
-import viteConfig from "../vite.config";
+import viteConfig from "../vite.config.js";
 import fs from "fs";
 import path from "path";
 import { nanoid } from "nanoid";
-import { isKnownRoute } from "../shared/routes";
-import { injectSeoMeta } from "./injectMeta";
+import { isKnownRoute } from "../shared/routes.js";
+import { injectSeoMeta } from "./injectMeta.js";
 
 const viteLogger = createLogger();
 

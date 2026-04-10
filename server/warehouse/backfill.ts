@@ -10,7 +10,7 @@
  *
  * Run with: npm run warehouse:backfill
  */
-import { db } from "../db";
+import { db } from "../db.js";
 import { sql } from "drizzle-orm";
 import { dealerSubmissions } from "@shared/schema";
 import {
@@ -18,7 +18,7 @@ import {
   coreDealers,
   coreListings,
 } from "@shared/warehouse";
-import { normalizeDealerName, validateStateCode, refreshAllViews } from "./warehouseUtils";
+import { normalizeDealerName, validateStateCode, refreshAllViews } from "./warehouseUtils.js";
 
 // Sentinel city value for unknown dealer rows (state full name)
 const STATE_FULL_NAMES: Record<string, string> = {

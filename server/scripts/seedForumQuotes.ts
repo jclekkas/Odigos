@@ -31,11 +31,11 @@ import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { runAnalysis, type AnalyzeInput } from "../services/analyzeService";
-import { storage } from "../storage";
-import { db } from "../db";
+import { runAnalysis, type AnalyzeInput } from "../services/analyzeService.js";
+import { storage } from "../storage.js";
+import { db } from "../db.js";
 import { sql } from "drizzle-orm";
-import { normalizeSubmissionText, sha256Hex, refreshAllViews } from "../warehouse/warehouseUtils";
+import { normalizeSubmissionText, sha256Hex, refreshAllViews } from "../warehouse/warehouseUtils.js";
 
 // ---------------------------------------------------------------------------
 // Fixture shape + validation

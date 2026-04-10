@@ -1,6 +1,6 @@
-import { refreshAllViews } from "./warehouseUtils";
-import { runPiiCleanup } from "../jobs/piiCleanup";
-import { runBackup } from "../jobs/backup";
+import { refreshAllViews } from "./warehouseUtils.js";
+import { runPiiCleanup } from "../jobs/piiCleanup.js";
+import { runBackup } from "../jobs/backup.js";
 
 const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
 const STARTUP_DELAY_MS = 30_000;

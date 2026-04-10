@@ -1,4 +1,4 @@
-import { loadMetrics } from "./events";
+import { loadMetrics } from "./events.js";
 
 // ── In-memory cache for heavy BI aggregations (TTL: 2 minutes) ───────────────
 const BI_CACHE_TTL_MS = 2 * 60 * 1000;
