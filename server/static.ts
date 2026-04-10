@@ -111,7 +111,7 @@ export function serveStatic(app: Express) {
     next();
   });
 
-  app.use(express.static(distPath, { redirect: false }));
+  app.use(express.static(distPath, { redirect: false, index: false }));
 
   app.use("*", (req, res) => {
     const pathname = req.originalUrl.split("?")[0];
