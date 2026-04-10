@@ -40,10 +40,6 @@ export const ARTICLE_SOURCES: Record<
     ],
     lastVerified: "2026-03",
   },
-  "out-the-door-price-calculator": {
-    sources: ["https://consumer.ftc.gov/articles/buying-new-car"],
-    lastVerified: "2026-03",
-  },
   "calculate-out-the-door-price": {
     sources: ["https://consumer.ftc.gov/articles/buying-new-car"],
     lastVerified: "2026-03",

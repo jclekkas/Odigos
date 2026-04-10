@@ -9,7 +9,6 @@ const CHROMIUM_PATH = process.env.CHROMIUM_PATH || "/nix/store/zi4f80l169xlmivz8
 const ROUTES = [
   // OTD cluster
   "/out-the-door-price",
-  "/out-the-door-price-calculator",
   "/calculate-out-the-door-price",
   "/what-does-out-the-door-price-include",
   "/out-the-door-price-vs-msrp",

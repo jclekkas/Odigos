@@ -8,7 +8,6 @@ export const STATIC_ROUTES: string[] = [
   "/car-dealer-fees-explained",
   "/dealer-doc-fee",
   "/mandatory-dealer-add-ons",
-  "/out-the-door-price-calculator",
   "/dealer-pricing-tactics",
   "/dealer-wont-give-otd-price",
   "/are-dealer-add-ons-mandatory",

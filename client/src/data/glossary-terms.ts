@@ -43,7 +43,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     relatedPages: [
       { label: "Out-the-Door Price Guide", path: "/out-the-door-price" },
       { label: "What Does OTD Include?", path: "/what-does-out-the-door-price-include" },
-      { label: "OTD Calculator", path: "/out-the-door-price-calculator" },
+      { label: "OTD Calculator", path: "/out-the-door-price" },
     ],
     seoTitle: "What Is Out-the-Door Price? OTD Price Explained | Odigos",
     seoDescription: "Out-the-door price (OTD) is the total you pay including all taxes and fees. Learn what it includes and why it matters.",

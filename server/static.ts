@@ -57,6 +57,10 @@ export function serveStatic(app: Express) {
       return res.redirect(301, "/dealer-pricing-tactics");
     }
 
+    if (rawPath === "/out-the-door-price-calculator") {
+      return res.redirect(301, "/out-the-door-price");
+    }
+
     // Normalize trailing slash
     const normalized =
       rawPath.length > 1 && rawPath.endsWith("/")

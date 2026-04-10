@@ -90,7 +90,7 @@ const sections = [
         description: "The total cost to drive away — and why it's the only number that matters.",
       },
       {
-        href: "/out-the-door-price-calculator",
+        href: "/out-the-door-price",
         title: "Out-the-Door Price Calculator",
         description: "Estimate your full purchase cost including tax, title, registration, and fees.",
       },
