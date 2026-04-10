@@ -36,7 +36,12 @@ function discoverPrerenderedRoutes(distPath: string): Set<string> {
 }
 
 export function serveStatic(app: Express) {
-  const distPath = path.resolve(__dirname, "public");
+  // On Vercel serverless, __dirname points to the function bundle directory,
+  // not the build output. Use process.cwd() which maps to /var/task/ where
+  // includeFiles are placed. On Replit/local, __dirname is dist/ so both work.
+  const distPath = process.env.VERCEL
+    ? path.resolve(process.cwd(), "dist", "public")
+    : path.resolve(__dirname, "public");
   if (!fs.existsSync(distPath)) {
     throw new Error(
       `Could not find the build directory: ${distPath}, make sure to build the client first`,

@@ -8,6 +8,7 @@ import {
   type MarketContextStrength,
 } from "@shared/schema";
 import { applyRuleEngine, checkDocFeeCap } from "../ruleEngine";
+import { runLeaseMath } from "../leaseMathEngine";
 import { detectStateFromText, getStateFeeData, getAmbiguousCityOptions } from "../stateFeeLookup";
 import { trackEvent } from "../events";
 import { openai } from "../openaiClient";
@@ -695,7 +696,9 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     }
   }
 
-  const ruleEngineAdjustments = applyRuleEngine(llmResult, llmResult.detectedFields, docFeeCapResult, data.purchaseType);
+  const leaseMathResult = runLeaseMath(llmResult.detectedFields, data.purchaseType);
+
+  const ruleEngineAdjustments = applyRuleEngine(llmResult, llmResult.detectedFields, docFeeCapResult, data.purchaseType, leaseMathResult);
 
   const finalResult: AnalysisResponse = {
     ...llmResult,
@@ -703,6 +706,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     confidenceLevel: ruleEngineAdjustments.confidenceLevel,
     verdictLabel: ruleEngineAdjustments.verdictLabel,
     goNoGo: ruleEngineAdjustments.goNoGo,
+    leaseMath: leaseMathResult,
   };
 
   logger.info("Analysis successful", { source: "analyze", dealScore: finalResult.dealScore, confidence: finalResult.confidenceLevel });

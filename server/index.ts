@@ -57,7 +57,6 @@ if (sentryEnabled) {
 }
 
 const app = express();
-const httpServer = createServer(app);
 
 declare module "http" {
   interface IncomingMessage {
@@ -118,6 +117,10 @@ const corsMiddleware = cors({
     ) {
       return callback(null, true);
     }
+    // Allow Vercel preview deployments
+    if (/\.vercel\.app$/.test(origin)) {
+      return callback(null, true);
+    }
     return callback(new Error("Not allowed by CORS"), false);
   },
   methods: ["GET", "POST"],
@@ -125,7 +128,7 @@ const corsMiddleware = cors({
 });
 
 app.use((req, res, next) => {
-  if (req.hostname && req.hostname.endsWith(".replit.app")) {
+  if (!process.env.VERCEL && req.hostname && req.hostname.endsWith(".replit.app")) {
     return res.redirect(301, `https://odigosauto.com${req.originalUrl}`);
   }
   return next();
@@ -494,13 +497,14 @@ async function ensureAppSchema(): Promise<void> {
   }
 }
 
-(async () => {
+// ── Async initialization (shared by Vercel serverless + standalone) ─────────
+export async function initialize(): Promise<void> {
   await initRateLimiters();
 
   await ensureWarehouseSchema();
   await ensureAppSchema();
 
-  await registerRoutes(httpServer, app);
+  await registerRoutes(app);
 
   if (sentryEnabled) {
     Sentry.setupExpressErrorHandler(app);
@@ -515,86 +519,92 @@ async function ensureAppSchema(): Promise<void> {
     throw err;
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
+  // In production, serve static assets and inject SEO metadata.
+  // In development, Vite dev server is set up in the standalone block below.
   if (process.env.NODE_ENV === "production") {
     serveStatic(app);
-  } else {
-    const { setupVite } = await import("./vite");
-    await setupVite(httpServer, app);
   }
+}
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || "5000", 10);
-  httpServer.listen(
-    {
-      port,
-      host: "0.0.0.0",
-      reusePort: true,
-    },
-    async () => {
-      logger.info("server started", { port });
+export { app };
 
-      try {
-        const { startDailyScheduler } = await import("./warehouse/scheduler");
-        startDailyScheduler();
-      } catch (err) {
-        logger.error("Failed to start daily scheduler", { source: "scheduler", error: String(err) });
-      }
+// ── Standalone server (Replit / local dev — skipped on Vercel) ──────────────
+if (!process.env.VERCEL) {
+  (async () => {
+    await initialize();
 
-      try {
-        const { startAlertScheduler } = await import("./alerts");
-        startAlertScheduler();
-      } catch (err) {
-        logger.error("Failed to start alert scheduler", { source: "alerts", error: String(err) });
-      }
+    const httpServer = createServer(app);
 
-      try {
-        const { startDlqReplayWorker } = await import("./warehouse/dlqReplay");
-        startDlqReplayWorker();
-      } catch (err) {
-        logger.error("Failed to start DLQ replay worker", { source: "dlq-replay", error: String(err) });
-      }
-    },
-  );
-
-  // ── Graceful shutdown ────────────────────────────────────────────────────────
-  let shuttingDown = false;
-  async function shutdown(signal: string) {
-    if (shuttingDown) return;
-    shuttingDown = true;
-    logger.info("starting graceful shutdown", { signal });
-
-    // 1. Stop accepting new connections
-    httpServer.close(() => {
-      logger.info("HTTP server closed");
-    });
-
-    // 2. Stop scheduled tasks
-    try {
-      const { stopDailyScheduler } = await import("./warehouse/scheduler");
-      stopDailyScheduler();
-    } catch { /* scheduler may not have been imported */ }
-
-    // 3. Drain database pool
-    try {
-      const { pool } = await import("./db");
-      await pool.end();
-      logger.info("Database pool drained");
-    } catch { /* pool may not exist */ }
-
-    // 4. Flush Sentry
-    if (sentryEnabled) {
-      await Sentry.close(2000);
+    // Set up Vite dev server in development (after all routes so catch-all
+    // doesn't interfere)
+    if (process.env.NODE_ENV !== "production") {
+      const { setupVite } = await import("./vite");
+      await setupVite(httpServer, app);
     }
 
-    process.exit(0);
-  }
+    const port = parseInt(process.env.PORT || "5000", 10);
+    httpServer.listen(
+      {
+        port,
+        host: "0.0.0.0",
+        reusePort: true,
+      },
+      async () => {
+        logger.info("server started", { port });
 
-  process.on("SIGTERM", () => shutdown("SIGTERM"));
-  process.on("SIGINT", () => shutdown("SIGINT"));
-})();
+        try {
+          const { startDailyScheduler } = await import("./warehouse/scheduler");
+          startDailyScheduler();
+        } catch (err) {
+          logger.error("Failed to start daily scheduler", { source: "scheduler", error: String(err) });
+        }
+
+        try {
+          const { startAlertScheduler } = await import("./alerts");
+          startAlertScheduler();
+        } catch (err) {
+          logger.error("Failed to start alert scheduler", { source: "alerts", error: String(err) });
+        }
+
+        try {
+          const { startDlqReplayWorker } = await import("./warehouse/dlqReplay");
+          startDlqReplayWorker();
+        } catch (err) {
+          logger.error("Failed to start DLQ replay worker", { source: "dlq-replay", error: String(err) });
+        }
+      },
+    );
+
+    // ── Graceful shutdown ──────────────────────────────────────────────────────
+    let shuttingDown = false;
+    async function shutdown(signal: string) {
+      if (shuttingDown) return;
+      shuttingDown = true;
+      logger.info("starting graceful shutdown", { signal });
+
+      httpServer.close(() => {
+        logger.info("HTTP server closed");
+      });
+
+      try {
+        const { stopDailyScheduler } = await import("./warehouse/scheduler");
+        stopDailyScheduler();
+      } catch { /* scheduler may not have been imported */ }
+
+      try {
+        const { pool } = await import("./db");
+        await pool.end();
+        logger.info("Database pool drained");
+      } catch { /* pool may not exist */ }
+
+      if (sentryEnabled) {
+        await Sentry.close(2000);
+      }
+
+      process.exit(0);
+    }
+
+    process.on("SIGTERM", () => shutdown("SIGTERM"));
+    process.on("SIGINT", () => shutdown("SIGINT"));
+  })();
+}

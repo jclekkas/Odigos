@@ -1,17 +1,182 @@
-import { useEffect } from "react";
-import { Link } from "wouter";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "wouter";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { AlertTriangle, ArrowRight, Check, CheckCircle2, Lock, Quote } from "lucide-react";
+import { ArrowRight, Check, CheckCircle2, Lock, Quote } from "lucide-react";
 import { trackPageView, trackCtaClick } from "@/lib/tracking";
 import { capture } from "@/lib/analytics";
 import SiteHeader from "@/components/SiteHeader";
 import { setSeoMeta } from "@/lib/seo";
 import { productSchema } from "@/lib/jsonld";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
+
+const PLACEHOLDER_EXAMPLES = [
+  "Hey! We can do $32,245 out-the-door on the Sportage LX AWD. 1.99% for 60 months. Let me know when you can come in.",
+  "Great news! Your monthly payment comes out to $589. We'll go over the details when you get here!",
+  "Hi, the vehicle is $28,995. With taxes, fees, and protection package you're looking at $34,200 OTD.",
+  "We added paint protection and fabric guard that everyone gets — $1,995. APR depends on credit.",
+  "Doc fee is $895. That's standard for every deal we do. The price is firm but I can work on the payment.",
+];
+
+const HOW_IT_WORKS_STEPS = [
+  { step: "1", title: "Paste", desc: "your dealer's message" },
+  { step: "2", title: "Review", desc: "hidden fees & red flags" },
+  { step: "3", title: "Respond", desc: "with a ready-made reply" },
+];
+
+function HeroSection({
+  statsData,
+  statsLoading,
+  statsError,
+}: {
+  statsData: { count: number; type: string } | undefined;
+  statsLoading: boolean;
+  statsError: boolean;
+}) {
+  const [, navigate] = useLocation();
+  const [heroText, setHeroText] = useState("");
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [placeholderFading, setPlaceholderFading] = useState(false);
+  const [userEngaged, setUserEngaged] = useState(false);
+  const focusTrackedRef = useRef(false);
+
+  // Cycle placeholder every 4 seconds until user engages
+  useEffect(() => {
+    if (userEngaged) return;
+    const id = setInterval(() => {
+      setPlaceholderFading(true);
+      setTimeout(() => {
+        setPlaceholderIndex((i) => (i + 1) % PLACEHOLDER_EXAMPLES.length);
+        setPlaceholderFading(false);
+      }, 150);
+    }, 4000);
+    return () => clearInterval(id);
+  }, [userEngaged]);
+
+  const handleFocus = useCallback(() => {
+    if (!focusTrackedRef.current) {
+      focusTrackedRef.current = true;
+      capture("hero_textarea_focused");
+      capture("hero_placeholder_visible", { index: placeholderIndex });
+    }
+    setUserEngaged(true);
+  }, [placeholderIndex]);
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setHeroText(e.target.value);
+    if (!userEngaged) setUserEngaged(true);
+  }, [userEngaged]);
+
+  const handleAnalyze = useCallback(() => {
+    trackCtaClick("hero-analyze", "Check Your Deal");
+    capture("hero_textarea_submitted", { text_length: heroText.length });
+    if (heroText.trim()) {
+      sessionStorage.setItem("odigos_hero_text", heroText);
+    }
+    navigate("/analyze");
+  }, [heroText, navigate]);
+
+  return (
+    <>
+      <section className="pt-12 pb-10 sm:pt-16 sm:pb-14">
+        <div className="mx-auto max-w-2xl px-4 sm:px-6 text-center">
+          <h1
+            className="text-balance text-3xl font-extrabold tracking-tight sm:text-5xl text-foreground leading-[1.15]"
+            data-testid="text-hero-headline"
+          >
+            Is your dealer quote fair?
+          </h1>
+
+          <p
+            className="mt-4 text-lg text-foreground/75 leading-relaxed"
+            data-testid="text-hero-subheadline"
+          >
+            Paste it below. We'll flag junk fees, missing details, and pricing tricks in about a minute.
+          </p>
+
+          {/* Textarea card */}
+          <div className="mt-8 rounded-xl border border-border bg-card shadow-lg p-4 text-left">
+            <Textarea
+              value={heroText}
+              onChange={handleChange}
+              onFocus={handleFocus}
+              placeholder={PLACEHOLDER_EXAMPLES[placeholderIndex]}
+              className="min-h-40 text-base resize-none border-0 shadow-none focus-visible:ring-0 bg-transparent"
+              style={{
+                transition: "opacity 150ms ease",
+                opacity: !userEngaged && placeholderFading ? 0.3 : 1,
+              }}
+              data-testid="input-hero-textarea"
+            />
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-3 pt-3 border-t border-border/50">
+              <span className="text-xs text-muted-foreground">
+                Free instant preview &middot; No signup
+              </span>
+              <Button
+                variant="cta"
+                size="lg"
+                className="gap-2 font-semibold shadow text-base w-full sm:w-auto"
+                onClick={handleAnalyze}
+                data-testid="button-cta-hero"
+              >
+                Check Your Deal
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Trust signals */}
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1"><Lock className="h-3 w-3" /> Your data stays private</span>
+            <span className="flex items-center gap-1"><Check className="h-3 w-3" /> No signup required</span>
+            <span className="flex items-center gap-1"><Check className="h-3 w-3" /> Not affiliated with any dealer</span>
+          </div>
+
+          {/* Deals counter */}
+          {!statsError && (
+            <div className="mt-5 flex justify-center" data-testid="container-deals-counter">
+              {statsLoading ? (
+                <Skeleton className="h-5 w-40 rounded-full" data-testid="skeleton-deals-counter" />
+              ) : statsData && statsData.count >= 100 && statsData.type !== "none" ? (
+                <span
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/50 px-3 py-1 text-xs text-muted-foreground"
+                  data-testid="text-deals-counter"
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                  {statsData.count.toLocaleString()} deals analyzed
+                </span>
+              ) : null}
+            </div>
+          )}
+
+          {/* How it works strip */}
+          <div className="mt-10 flex items-center justify-center gap-2 sm:gap-3" data-testid="container-how-it-works">
+            {HOW_IT_WORKS_STEPS.map((item, idx) => (
+              <div key={item.step} className="flex items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-primary text-primary-foreground font-bold text-xs shrink-0">
+                    {item.step}
+                  </span>
+                  <div className="text-left">
+                    <p className="text-xs font-semibold text-foreground leading-none">{item.title}</p>
+                    <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">{item.desc}</p>
+                  </div>
+                </div>
+                {idx < HOW_IT_WORKS_STEPS.length - 1 && (
+                  <div className="h-px w-4 sm:w-6 bg-border shrink-0" />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
 
 const faqsSchema = [
   {
@@ -90,155 +255,7 @@ export default function Landing() {
       <main id="main-content">
 
         {/* ── HERO ─────────────────────────────────────────────────────────── */}
-        <section className="pt-12 pb-14 sm:pt-16 sm:pb-20">
-          <div className="mx-auto max-w-5xl px-4 sm:px-6">
-            <div className="flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-16">
-
-              <div className="flex-1 text-center lg:text-left">
-                <h1
-                  className="text-balance text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-[3.25rem] text-foreground leading-[1.15]"
-                  data-testid="text-hero-headline"
-                >
-                  Is your dealer quote fair?
-                </h1>
-
-                <p
-                  className="mt-5 text-lg text-foreground/75 leading-relaxed max-w-lg mx-auto lg:mx-0"
-                  data-testid="text-hero-subheadline"
-                >
-                  Paste it below. In 60 seconds we'll flag junk fees, missing details, and pricing tricks — then give you the exact words to say back. One pass, every dealer.
-                </p>
-
-                <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
-                  <Button
-                    variant="cta"
-                    size="lg"
-                    className="gap-2 font-semibold shadow text-base px-8"
-                    asChild
-                    data-testid="button-cta-hero"
-                  >
-                    <Link
-                      href="/analyze"
-                      onClick={() => {
-                        trackCtaClick("hero-analyze", "Check Your Deal");
-                        capture("landing_cta_clicked", { location: "hero" });
-                      }}
-                    >
-                      Check Your Deal
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                  <span className="text-sm text-muted-foreground">
-                    Free instant preview &middot; No signup
-                  </span>
-                </div>
-
-                <div className="mt-4 flex flex-wrap items-center justify-center lg:justify-start gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1"><Lock className="h-3 w-3" /> Your data stays private</span>
-                  <span className="flex items-center gap-1"><Check className="h-3 w-3" /> No signup required</span>
-                  <span className="flex items-center gap-1"><Check className="h-3 w-3" /> Not affiliated with any dealer</span>
-                </div>
-
-                {!statsError && (
-                  <div className="mt-6 flex justify-center lg:justify-start" data-testid="container-deals-counter">
-                    {statsLoading ? (
-                      <Skeleton className="h-5 w-40 rounded-full" data-testid="skeleton-deals-counter" />
-                    ) : statsData && statsData.count >= 100 && statsData.type !== "none" ? (
-                      <span
-                        className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/50 px-3 py-1 text-xs text-muted-foreground"
-                        data-testid="text-deals-counter"
-                      >
-                        <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                        {statsData.count.toLocaleString()} deals analyzed
-                      </span>
-                    ) : null}
-                  </div>
-                )}
-              </div>
-
-              {/* Example result card */}
-              <div className="lg:w-[340px] lg:shrink-0" data-testid="card-preview-result">
-                <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 shadow-lg p-5 space-y-4">
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-amber-600/70 dark:text-amber-400/60">
-                    Sample result
-                  </p>
-
-                  <div>
-                    <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-semibold tracking-wide border bg-amber-500/15 border-amber-500/30 text-amber-700 dark:text-amber-400">
-                        NO-GO
-                      </span>
-                      <span className="text-xs text-muted-foreground border border-border/60 px-2 py-0.5 rounded bg-muted/40">
-                        High confidence
-                      </span>
-                    </div>
-                    <p className="text-sm font-semibold leading-snug text-amber-700 dark:text-amber-400">
-                      3 red flags found &mdash; don't sign yet
-                    </p>
-                  </div>
-
-                  <div className="border-t border-amber-500/15 pt-3 space-y-2">
-                    {[
-                      { field: "No OTD price", note: "Only monthly payment quoted" },
-                      { field: "Hidden fee", note: "$895 doc fee exceeds CA cap" },
-                      { field: "Add-on", note: "$1,995 protection not itemized" },
-                    ].map((item) => (
-                      <div key={item.field} className="flex items-start gap-2">
-                        <AlertTriangle className="w-3.5 h-3.5 text-amber-500 mt-0.5 shrink-0" />
-                        <p className="text-xs leading-snug">
-                          <span className="font-medium text-foreground">{item.field}:</span>{" "}
-                          <span className="text-muted-foreground">{item.note}</span>
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="border-t border-amber-500/15 pt-3">
-                    <div className="rounded-lg border border-border/50 bg-background/60 p-3 space-y-1.5 relative overflow-hidden">
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <Lock className="w-3 h-3 text-muted-foreground/60" />
-                        <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-                          Unlock with a pass
-                        </p>
-                      </div>
-                      {["Missing info checklist", "Copy-paste dealer reply", "Negotiation guidance"].map((line) => (
-                        <div key={line} className="flex items-center gap-2 opacity-40 select-none">
-                          <Check className="w-3 h-3 text-muted-foreground shrink-0" />
-                          <p className="text-xs text-muted-foreground">{line}</p>
-                        </div>
-                      ))}
-                      <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent pointer-events-none" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
-        <section className="py-12 border-t border-border bg-muted/30">
-          <div className="mx-auto max-w-3xl px-4 sm:px-6">
-            <h2 className="text-xl font-bold text-center mb-10" data-testid="text-how-it-works-heading">
-              Three steps. Under a minute.
-            </h2>
-            <div className="grid gap-8 sm:grid-cols-3">
-              {[
-                { step: "1", title: "Paste", desc: "Copy the dealer's email, text, or quote" },
-                { step: "2", title: "Review", desc: "See what's missing, hidden, or overpriced" },
-                { step: "3", title: "Respond", desc: "Send the dealer a ready-made reply" },
-              ].map((item) => (
-                <div key={item.step} className="text-center">
-                  <span className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-primary text-primary-foreground font-bold text-lg mb-3">
-                    {item.step}
-                  </span>
-                  <h3 className="font-semibold text-foreground mb-1">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        <HeroSection statsData={statsData} statsLoading={statsLoading} statsError={statsError} />
 
         {/* ── SOCIAL PROOF ─────────────────────────────────────────────────── */}
         <section className="py-14 sm:py-16" data-testid="section-testimonials">

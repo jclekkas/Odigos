@@ -81,6 +81,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel, MarketContext, DocFeeCapCheck } from "@shared/schema";
+import LeaseMathBlock from "@/components/LeaseMathBlock";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import {
   getActivePass,
@@ -1365,6 +1366,12 @@ export default function Home() {
       form.setValue("dealerText", SAMPLE_BAD_DEAL);
       window.history.replaceState({}, "", window.location.pathname);
     }
+
+    const heroText = sessionStorage.getItem("odigos_hero_text");
+    if (heroText) {
+      form.setValue("dealerText", heroText);
+      sessionStorage.removeItem("odigos_hero_text");
+    }
   }, [search, form]);
 
   useEffect(() => {
@@ -2201,6 +2208,9 @@ export default function Home() {
                 missingInfo={unlockTier === "free" ? result.missingInfo : []}
               />
             </div>
+
+            {/* 5b) Lease Math — deterministic financial validation (renders only for leases) */}
+            <LeaseMathBlock leaseMath={result.leaseMath} />
 
             <div className="flex items-center justify-center gap-3" data-testid="section-share-actions">
               <Button
