@@ -6,14 +6,12 @@ import cors from "cors";
 import rateLimit from "express-rate-limit";
 import { RedisStore, type RedisReply } from "rate-limit-redis";
 import Redis from "ioredis";
-import { registerRoutes } from "./routes";
-import { serveStatic } from "./static";
-import { createServer } from "http";
-import { trackEvent } from "./metrics";
-import { db } from "./db";
-import { sql } from "drizzle-orm";
-import { writeAuditEvent } from "./audit";
-import { logger } from "./logger";
+import { registerRoutes } from "./routes.js";
+import { serveStatic } from "./static.js";
+import { trackEvent } from "./metrics.js";
+import { db } from "./db.js";
+import { writeAuditEvent } from "./audit.js";
+import { logger } from "./logger.js";
 
 const SENSITIVE_KEYS = ["dealerText", "body", "text", "content", "rawBody", "file", "buffer", "password", "token"];
 
