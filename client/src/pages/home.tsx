@@ -1329,6 +1329,12 @@ export default function Home() {
       form.setValue("dealerText", SAMPLE_BAD_DEAL);
       window.history.replaceState({}, "", window.location.pathname);
     }
+
+    const heroText = sessionStorage.getItem("odigos_hero_text");
+    if (heroText) {
+      form.setValue("dealerText", heroText);
+      sessionStorage.removeItem("odigos_hero_text");
+    }
   }, [search, form]);
 
   useEffect(() => {
