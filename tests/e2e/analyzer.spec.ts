@@ -15,7 +15,8 @@ import { test, expect, Page } from "@playwright/test";
 async function acceptUploadConsent(page: Page): Promise<void> {
   const checkbox = page.getByTestId("checkbox-upload-consent");
   if (await checkbox.isVisible({ timeout: 1000 }).catch(() => false)) {
-    await checkbox.check();
+    await checkbox.click();
+    await page.getByTestId("section-upload-consent").waitFor({ state: "detached", timeout: 3000 });
   }
 }
 
