@@ -1,0 +1,77 @@
+name: Fix ESM Imports
+on:
+  workflow_dispatch:
+
+jobs:
+  fix-imports:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Create fix script
+        run: |
+          cat > fix-imports.mjs << 'SCRIPT'
+          import { readdir, readFile, writeFile } from 'fs/promises';
+          import { join, resolve } from 'path';
+          const ROOT = resolve('.');
+          async function getAllTsFiles(dir) {
+            const files = [];
+            try {
+              const entries = await readdir(dir, { withFileTypes: true });
+              for (const entry of entries) {
+                const fullPath = join(dir, entry.name);
+                if (entry.isDirectory()) {
+                  if (entry.name.startsWith('.') || entry.name === 'node_modules') continue;
+                  files.push(...await getAllTsFiles(fullPath));
+                } else if (entry.name.endsWith('.ts') && !entry.name.endsWith('.d.ts')) {
+                  files.push(fullPath);
+                }
+              }
+            } catch (e) {}
+            return files;
+          }
+          function needsJs(s) {
+            if (!s.startsWith('./') && !s.startsWith('../')) return false;
+            if (/\.(js|json|cjs|mjs)$/.test(s)) return false;
+            return true;
+          }
+          let allFiles = [];
+          for (const d of ['server', 'api', 'shared']) {
+            allFiles.push(...await getAllTsFiles(join(ROOT, d)));
+          }
+          let fixed = 0;
+          for (const file of allFiles) {
+            const src = await readFile(file, 'utf-8');
+            let changed = false;
+            const out = src.replace(
+              /((?:import|export)\s+(?:[\s\S]*?\s+from\s+|))(['"])([^'"]+)\2/g,
+              (m, pre, q, spec) => {
+                if (needsJs(spec)) { changed = true; return pre + q + spec + '.js' + q; }
+                return m;
+              }
+            );
+            if (changed) {
+              await writeFile(file, out, 'utf-8');
+              fixed++;
+              console.log('Fixed:', file.replace(ROOT + '/', ''));
+            }
+          }
+          console.log('Total fixed:', fixed);
+          SCRIPT
+      - name: Run fix script
+        run: node fix-imports.mjs
+      - name: Cleanup
+        run: |
+          rm -f fix-imports.mjs
+          rm -f .github/workflows/fix-esm-imports.yml
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "fix: add .js extensions to all relative ESM imports"
+          git push
