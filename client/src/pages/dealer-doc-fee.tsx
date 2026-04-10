@@ -38,8 +38,8 @@ const faqItems = [
 export default function DealerDocFee() {
   useEffect(() => {
     setSeoMeta({
-      title: "What Is a Dealer Doc Fee? How to Know If Yours Is Too High",
-      description: "Dealer doc fees cover paperwork but some charge 3-4x the cap. Learn what's normal in your state and check if your dealer is overcharging.",
+      title: "What Is a Dealer Doc Fee? Ranges by State & How to Negotiate | Odigos",
+      description: "A dealer doc fee is a paperwork charge set by the dealership, not the government. Learn what it covers, ranges by state, whether it's negotiable, and red flags to watch for.",
       path: "/dealer-doc-fee",
     });
   }, []);
@@ -47,7 +47,7 @@ export default function DealerDocFee() {
   return (
     <ArticleLayout title="What Is a Dealer Doc Fee? How to Know If Yours Is Too High">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "What Is a Dealer Doc Fee? How to Know If Yours Is Too High", description: "Dealer doc fees cover paperwork but some charge 3-4x the cap. Learn what's normal in your state and check if your dealer is overcharging.", path: "/dealer-doc-fee" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "What Is a Dealer Doc Fee? Ranges by State & How to Negotiate | Odigos", description: "A dealer doc fee is a paperwork charge set by the dealership, not the government. Learn what it covers, ranges by state, whether it's negotiable, and red flags to watch for.", path: "/dealer-doc-fee" }))}</script>
         <script type="application/ld+json">{JSON.stringify(faqPageSchema({ questions: faqItems.map((f) => ({ question: f.question, answer: f.answer })) }))}</script>
       </Helmet>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-doc-fee-headline">
@@ -84,7 +84,28 @@ export default function DealerDocFee() {
               The fee is not set by the government. It's set by the dealership. That means the amount varies widely from one dealer to another, even within the same city. Some dealers charge $150. Others charge $899. The paperwork involved is essentially the same. For a full overview of typical charges, see <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds' guide to dealership fees</a>.
             </p>
             <p className="text-muted-foreground">
-              In most states, the doc fee must be disclosed on the buyer's order or purchase agreement. But many buyers don't notice it until they're sitting in the finance office, ready to sign.
+              In most states, the doc fee must be disclosed on the buyer's order or purchase agreement. But many buyers don't notice it until they're sitting in the finance office, ready to sign. The work it covers typically includes:
+            </p>
+            <ul className="space-y-2 mb-4 text-muted-foreground">
+              <li className="flex items-start gap-2">
+                <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
+                <span>Preparing the purchase agreement, financing contracts, and disclosure documents</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
+                <span>Filing the title transfer with the state DMV on the buyer's behalf</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
+                <span>Processing vehicle registration documents</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
+                <span>Maintaining transaction records as required by state dealer licensing laws</span>
+              </li>
+            </ul>
+            <p className="text-muted-foreground">
+              Every car sale involves this work. The doc fee is the dealer's way of charging for it as a separate line item rather than folding the cost into the vehicle price. Government fees (title fee, registration fee) are set by the state — the dealer collects them and forwards the money. The doc fee, by contrast, is dealer revenue with no government formula behind it.
             </p>
 
             <h2 className="text-2xl font-semibold text-foreground">Are Doc Fees Mandatory?</h2>

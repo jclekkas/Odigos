@@ -14,12 +14,7 @@
   <!-- OTD cluster -->
   <url>
     <loc>https://odigosauto.com/out-the-door-price</loc>
-    <lastmod>2026-04-08</lastmod>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://odigosauto.com/out-the-door-price-calculator</loc>
-    <lastmod>2026-04-08</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>monthly</changefreq>
   </url>
   <url>
@@ -62,25 +57,10 @@
     <lastmod>2026-03-23</lastmod>
     <changefreq>monthly</changefreq>
   </url>
-  <url>
-    <loc>https://odigosauto.com/dealer-wont-give-otd</loc>
-    <lastmod>2026-03-23</lastmod>
-    <changefreq>monthly</changefreq>
-  </url>
 
   <!-- Good deal decision cluster -->
   <url>
     <loc>https://odigosauto.com/is-this-a-good-car-deal</loc>
-    <lastmod>2026-03-23</lastmod>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://odigosauto.com/how-to-tell-if-a-car-deal-is-good</loc>
-    <lastmod>2026-03-23</lastmod>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://odigosauto.com/what-is-a-fair-price-for-a-car</loc>
     <lastmod>2026-03-23</lastmod>
     <changefreq>monthly</changefreq>
   </url>
@@ -91,11 +71,6 @@
   </url>
   <url>
     <loc>https://odigosauto.com/how-to-compare-car-deals</loc>
-    <lastmod>2026-03-23</lastmod>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://odigosauto.com/best-way-to-check-if-a-car-deal-is-good</loc>
     <lastmod>2026-03-23</lastmod>
     <changefreq>monthly</changefreq>
   </url>
@@ -382,11 +357,6 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://odigosauto.com/what-is-a-dealer-doc-fee</loc>
-    <lastmod>2026-03-23</lastmod>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
     <loc>https://odigosauto.com/doc-fee-too-high</loc>
     <lastmod>2026-03-23</lastmod>
     <changefreq>monthly</changefreq>
@@ -550,11 +520,6 @@
   </url>
 
   <!-- Add-ons cluster -->
-  <url>
-    <loc>https://odigosauto.com/mandatory-dealer-add-ons</loc>
-    <lastmod>2026-03-23</lastmod>
-    <changefreq>monthly</changefreq>
-  </url>
   <url>
     <loc>https://odigosauto.com/are-dealer-add-ons-mandatory</loc>
     <lastmod>2026-03-23</lastmod>

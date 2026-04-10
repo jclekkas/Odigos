@@ -248,7 +248,7 @@ async function run(): Promise<void> {
 
   await checkEndpoint("/example-analysis");
 
-  await checkEndpoint("/out-the-door-price-calculator");
+  await checkEndpoint("/out-the-door-price");
 
   // POST /api/analyze — minimal payload; any non-5xx response is acceptable.
   {

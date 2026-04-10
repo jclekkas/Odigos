@@ -9,24 +9,19 @@ const CHROMIUM_PATH = process.env.CHROMIUM_PATH || "/nix/store/zi4f80l169xlmivz8
 const ROUTES = [
   // OTD cluster
   "/out-the-door-price",
-  "/out-the-door-price-calculator",
   "/calculate-out-the-door-price",
   "/what-does-out-the-door-price-include",
   "/out-the-door-price-vs-msrp",
   "/out-the-door-price-vs-monthly-payment",
   "/out-the-door-price-example",
   "/monthly-payment-trap",
-  "/dealer-wont-give-otd",
   "/dealer-wont-give-otd-price",
   "/why-dealers-wont-give-out-the-door-price",
 
   // Good deal decision cluster
   "/is-this-a-good-car-deal",
-  "/how-to-tell-if-a-car-deal-is-good",
-  "/what-is-a-fair-price-for-a-car",
   "/how-much-should-you-pay-for-a-car",
   "/how-to-compare-car-deals",
-  "/best-way-to-check-if-a-car-deal-is-good",
 
   // Dealer fees cluster
   "/car-dealer-fees-explained",
@@ -48,7 +43,6 @@ const ROUTES = [
   ].map(s => `/car-dealer-fees-${s}`),
   "/dealer-doc-fee",
   "/dealer-doc-fee-by-state",
-  "/what-is-a-dealer-doc-fee",
   "/doc-fee-too-high",
   "/are-dealer-fees-negotiable",
   "/hidden-dealer-fees",
@@ -57,7 +51,6 @@ const ROUTES = [
   "/dealer-reconditioning-fee",
 
   // Add-ons cluster
-  "/mandatory-dealer-add-ons",
   "/are-dealer-add-ons-mandatory",
   "/are-dealer-add-ons-negotiable",
   "/are-dealer-add-ons-required-by-law",

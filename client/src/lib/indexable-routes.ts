@@ -3,7 +3,6 @@ export const INDEXABLE_ROUTES: string[] = [
   "/analyze",
 
   "/out-the-door-price",
-  "/out-the-door-price-calculator",
   "/calculate-out-the-door-price",
   "/what-does-out-the-door-price-include",
   "/out-the-door-price-vs-msrp",
@@ -14,11 +13,8 @@ export const INDEXABLE_ROUTES: string[] = [
   "/why-dealers-wont-give-out-the-door-price",
 
   "/is-this-a-good-car-deal",
-  "/how-to-tell-if-a-car-deal-is-good",
-  "/what-is-a-fair-price-for-a-car",
   "/how-much-should-you-pay-for-a-car",
   "/how-to-compare-car-deals",
-  "/best-way-to-check-if-a-car-deal-is-good",
 
   "/car-dealer-fees-explained",
   "/car-dealer-fees-list",
@@ -77,7 +73,6 @@ export const INDEXABLE_ROUTES: string[] = [
 
   "/dealer-doc-fee",
   "/dealer-doc-fee-by-state",
-  "/what-is-a-dealer-doc-fee",
   "/doc-fee-too-high",
   "/are-dealer-fees-negotiable",
   "/hidden-dealer-fees",
@@ -85,7 +80,6 @@ export const INDEXABLE_ROUTES: string[] = [
   "/dealer-prep-fee",
   "/dealer-reconditioning-fee",
 
-  "/mandatory-dealer-add-ons",
   "/are-dealer-add-ons-mandatory",
   "/are-dealer-add-ons-negotiable",
   "/are-dealer-add-ons-required-by-law",
@@ -98,7 +92,6 @@ export const INDEXABLE_ROUTES: string[] = [
   "/dealer-added-fees-after-agreement",
   "/dealer-changed-price-after-deposit",
   "/finance-office-changed-the-numbers",
-  "/dealer-wont-give-otd",
 
   "/how-odigos-works",
   "/example-analysis",

@@ -1,24 +1,50 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Check, Copy } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { setSeoMeta } from "@/lib/seo";
 import { articleSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
+import SourceCitation from "@/components/SourceCitation";
+import { ARTICLE_SOURCES } from "@/data/articleSources";
+
+const OTD_REQUEST_MESSAGE = `Before I come in, I'd like to see the full out-the-door price in writing, including the sale price, sales tax, title and registration, doc fee, and any dealer-installed add-ons. If add-ons are included, please itemize each one with pricing. I'm ready to move forward once I can review the complete breakdown.`;
 
 export default function WhyDealersWontGiveOutTheDoorPrice() {
+  const [copied, setCopied] = useState(false);
+
   useEffect(() => {
     setSeoMeta({
-      title: "Why Dealers Won't Give Out-the-Door Price | Odigos",
-      description: "Dealers resist OTD pricing because it removes structural advantages. Here's the incentive structure behind the refusal and what you can do about it.",
+      title: "Why Dealers Won't Give Out-the-Door Price (and What to Do) | Odigos",
+      description: "Dealers resist OTD pricing because it removes structural advantages. Here's the incentive structure behind the refusal, what to say, and what to do when they dodge.",
       path: "/why-dealers-wont-give-out-the-door-price",
     });
   }, []);
 
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(OTD_REQUEST_MESSAGE);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = OTD_REQUEST_MESSAGE;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
+  };
+
   return (
     <ArticleLayout title="Why Dealers Won't Give Out-the-Door Price">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Why Dealers Won't Give Out-the-Door Price | Odigos", description: "Dealers resist OTD pricing because it removes structural advantages. Here's the incentive structure behind the refusal and what you can do about it.", path: "/why-dealers-wont-give-out-the-door-price" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Why Dealers Won't Give Out-the-Door Price (and What to Do) | Odigos", description: "Dealers resist OTD pricing because it removes structural advantages. Here's the incentive structure behind the refusal, what to say, and what to do when they dodge.", path: "/why-dealers-wont-give-out-the-door-price" }))}</script>
       </Helmet>
       <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.15]" data-testid="text-why-dealers-headline">
         Why Dealers Won't Give Out-the-Door Price
@@ -26,7 +52,7 @@ export default function WhyDealersWontGiveOutTheDoorPrice() {
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
         <p className="text-lg text-muted-foreground">
-          When you ask a dealer for the out-the-door price and they redirect, deflect, or say "come on in and we'll figure it out" — that's not a coincidence or a policy quirk. It's a deliberate response to a specific incentive structure.
+          When you ask a dealer for the out-the-door price and they redirect, deflect, or say "come on in and we'll figure it out" — that's not a coincidence or a policy quirk. It's a deliberate response to a specific incentive structure.{" "}<SourceCitation sources={ARTICLE_SOURCES["dealer-wont-give-otd-price"].sources} lastVerified={ARTICLE_SOURCES["dealer-wont-give-otd-price"].lastVerified} />
         </p>
         <p className="text-muted-foreground">
           Understanding why dealers resist OTD pricing tells you exactly what leverage you're removing when you insist on it.
@@ -145,25 +171,38 @@ export default function WhyDealersWontGiveOutTheDoorPrice() {
           A committed OTD price — negotiated over email or text before you visit — eliminates this flexibility. Dealers who give OTD prices in advance are committing to a number that doesn't change based on how you present yourself in person.
         </p>
 
-        <h2 className="text-2xl font-semibold text-foreground">How This Differs from the Canonical Dealer Resistance Page</h2>
+        <h2 className="text-2xl font-semibold text-foreground">What to say when they dodge the question</h2>
         <p className="text-muted-foreground">
-          If you've already read about what happens when a <Link href="/dealer-wont-give-otd-price" className="underline text-foreground">dealer won't give you an OTD price and what to do about it</Link>, this page goes deeper on the why — the structural incentives, not just the tactics. Understanding the incentive structure makes the tactics predictable, and predictable tactics are easier to counter.
+          If a dealer redirects you to "come in" or only offers a monthly payment, send this message. You can copy and paste it directly:
         </p>
-        <p className="text-muted-foreground">
-          For specifics on what OTD pricing should include, and how to verify a quote is complete, see our breakdown of <Link href="/what-does-out-the-door-price-include" className="underline text-foreground">what the out-the-door price includes</Link>.
-        </p>
-
-        <h2 className="text-2xl font-semibold text-foreground">What to Say to the Dealer</h2>
-        <p className="text-muted-foreground">
-          When asking for OTD pricing, a direct and neutral request is most effective:
-        </p>
-        <div className="rounded-lg border border-border bg-muted/40 p-5 mb-4" data-testid="block-dealer-script">
-          <blockquote className="text-sm md:text-base text-foreground leading-relaxed italic">
-            "I'm comparing offers from a few dealers before deciding. Can you send me the full out-the-door price in writing — vehicle price, taxes, title, registration, doc fee, and any dealer add-ons itemized separately? I'll be moving quickly once I can review the complete breakdown."
+        <Card className="relative p-5 bg-muted/50 mb-4">
+          <blockquote className="text-sm md:text-base text-foreground leading-relaxed italic pr-10">
+            {OTD_REQUEST_MESSAGE}
           </blockquote>
-        </div>
+          <Button
+            variant="outline"
+            size="icon"
+            className="absolute top-3 right-3"
+            onClick={handleCopy}
+            data-testid="button-copy-otd-message"
+            aria-label="Copy message"
+          >
+            {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+          </Button>
+          {copied && (
+            <span className="absolute top-3 right-14 text-xs text-green-600 dark:text-green-400 font-medium">Copied</span>
+          )}
+        </Card>
         <p className="text-muted-foreground">
           This signals you're an informed buyer with alternatives. Most dealers who can compete on price will respond. Those who refuse are usually protecting add-on or financing revenue they know won't survive scrutiny.
+        </p>
+
+        <h2 className="text-2xl font-semibold text-foreground">What if they still won't?</h2>
+        <p className="text-muted-foreground">
+          Try other dealers. Most metro areas have multiple dealerships selling the same models, and many will compete on price over text or email. You don't owe your business to the first dealer you contacted.
+        </p>
+        <p className="text-muted-foreground">
+          A dealer who won't be transparent before you visit is unlikely to become more transparent in the finance office. If they won't put the number in writing now, expect additional fees and pressure when you're sitting across the desk. For specifics on what OTD pricing should include, see our breakdown of <Link href="/what-does-out-the-door-price-include" className="underline text-foreground">what the out-the-door price includes</Link>.
         </p>
       </div>
 

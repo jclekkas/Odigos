@@ -57,6 +57,30 @@ export function serveStatic(app: Express) {
       return res.redirect(301, "/dealer-pricing-tactics");
     }
 
+    if (rawPath === "/out-the-door-price-calculator") {
+      return res.redirect(301, "/out-the-door-price");
+    }
+
+    if (rawPath === "/what-is-a-fair-price-for-a-car") {
+      return res.redirect(301, "/how-much-should-you-pay-for-a-car");
+    }
+
+    if (rawPath === "/mandatory-dealer-add-ons") {
+      return res.redirect(301, "/are-dealer-add-ons-mandatory");
+    }
+
+    if (rawPath === "/how-to-tell-if-a-car-deal-is-good" || rawPath === "/best-way-to-check-if-a-car-deal-is-good") {
+      return res.redirect(301, "/is-this-a-good-car-deal");
+    }
+
+    if (rawPath === "/what-is-a-dealer-doc-fee") {
+      return res.redirect(301, "/dealer-doc-fee");
+    }
+
+    if (rawPath === "/dealer-wont-give-otd") {
+      return res.redirect(301, "/why-dealers-wont-give-out-the-door-price");
+    }
+
     // Normalize trailing slash
     const normalized =
       rawPath.length > 1 && rawPath.endsWith("/")

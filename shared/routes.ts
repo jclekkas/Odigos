@@ -4,11 +4,8 @@ export const STATIC_ROUTES: string[] = [
   "/out-the-door-price",
   "/monthly-payment-trap",
   "/is-this-a-good-car-deal",
-  "/dealer-wont-give-otd",
   "/car-dealer-fees-explained",
   "/dealer-doc-fee",
-  "/mandatory-dealer-add-ons",
-  "/out-the-door-price-calculator",
   "/dealer-pricing-tactics",
   "/dealer-wont-give-otd-price",
   "/are-dealer-add-ons-mandatory",
@@ -39,16 +36,12 @@ export const STATIC_ROUTES: string[] = [
   "/out-the-door-price-vs-monthly-payment",
   "/why-dealers-wont-give-out-the-door-price",
   "/out-the-door-price-example",
-  "/what-is-a-dealer-doc-fee",
   "/are-dealer-fees-negotiable",
   "/hidden-dealer-fees",
   "/dealer-prep-fee",
   "/dealer-reconditioning-fee",
-  "/how-to-tell-if-a-car-deal-is-good",
-  "/what-is-a-fair-price-for-a-car",
   "/how-much-should-you-pay-for-a-car",
   "/how-to-compare-car-deals",
-  "/best-way-to-check-if-a-car-deal-is-good",
 ];
 
 export const VALID_STATE_SLUGS = new Set([

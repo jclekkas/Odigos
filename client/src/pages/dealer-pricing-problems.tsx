@@ -60,7 +60,7 @@ const sections = [
         description: "The most common tactics used at dealerships and how to recognize them.",
       },
       {
-        href: "/mandatory-dealer-add-ons",
+        href: "/are-dealer-add-ons-mandatory",
         title: "Mandatory Dealer Add-Ons Explained",
         description: "What's actually required vs. what dealers present as mandatory.",
       },
@@ -90,7 +90,7 @@ const sections = [
         description: "The total cost to drive away — and why it's the only number that matters.",
       },
       {
-        href: "/out-the-door-price-calculator",
+        href: "/out-the-door-price",
         title: "Out-the-Door Price Calculator",
         description: "Estimate your full purchase cost including tax, title, registration, and fees.",
       },

@@ -28,7 +28,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     shortDefinition: "A dealer-set charge for processing the paperwork involved in a vehicle sale — contracts, title transfer, and registration filing. Not a government fee.",
     fullDefinition: "A documentation fee (commonly called a 'doc fee') is charged by the dealership to cover administrative costs of completing the sale. It covers preparing purchase agreements, financing contracts, filing title transfers, and maintaining records. Doc fees are regulated or capped in many states — for example, California caps them at $85, while Florida has no cap and fees can exceed $1,000. Doc fees are typically non-negotiable on their own but can be offset by negotiating the vehicle price.",
     relatedPages: [
-      { label: "What Is a Dealer Doc Fee?", path: "/what-is-a-dealer-doc-fee" },
+      { label: "What Is a Dealer Doc Fee?", path: "/dealer-doc-fee" },
       { label: "Doc Fee by State", path: "/dealer-doc-fee-by-state" },
       { label: "Doc Fee Too High?", path: "/doc-fee-too-high" },
     ],
@@ -43,7 +43,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     relatedPages: [
       { label: "Out-the-Door Price Guide", path: "/out-the-door-price" },
       { label: "What Does OTD Include?", path: "/what-does-out-the-door-price-include" },
-      { label: "OTD Calculator", path: "/out-the-door-price-calculator" },
+      { label: "OTD Calculator", path: "/out-the-door-price" },
     ],
     seoTitle: "What Is Out-the-Door Price? OTD Price Explained | Odigos",
     seoDescription: "Out-the-door price (OTD) is the total you pay including all taxes and fees. Learn what it includes and why it matters.",
@@ -137,7 +137,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     shortDefinition: "The price the dealer pays the manufacturer for the vehicle. Knowing invoice price helps you estimate the dealer's profit margin on a deal.",
     fullDefinition: "Invoice price is what the manufacturer charges the dealer for the vehicle. It is typically 2-5% below MSRP for most models. Dealers also receive holdback payments (1-3% of MSRP) from the manufacturer, making their true cost even lower than invoice. Knowing the invoice price gives you a reference point for negotiation — paying invoice price or slightly below is generally considered a good deal. Online tools like Edmunds and KBB publish estimated invoice prices.",
     relatedPages: [
-      { label: "What Is a Fair Price?", path: "/what-is-a-fair-price-for-a-car" },
+      { label: "What Is a Fair Price?", path: "/how-much-should-you-pay-for-a-car" },
     ],
     seoTitle: "What Is Invoice Price? Dealer Cost Explained | Odigos",
     seoDescription: "Invoice price is what the dealer pays the manufacturer for a car. Learn how to use it to negotiate a better deal.",

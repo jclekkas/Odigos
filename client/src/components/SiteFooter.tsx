@@ -23,7 +23,7 @@ export default function SiteFooter() {
           <Link href="/legal" className="transition-colors hover:text-foreground" data-testid="link-footer-legal">
             Legal
           </Link>
-          <Link href="/out-the-door-price-calculator" className="transition-colors hover:text-foreground" data-testid="footer-otd-calculator-link">
+          <Link href="/out-the-door-price" className="transition-colors hover:text-foreground" data-testid="footer-otd-calculator-link">
             OTD Calculator
           </Link>
         </nav>
