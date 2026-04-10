@@ -390,10 +390,10 @@ async function ensureWarehouseSchema(): Promise<void> {
 
     console.log("[warehouse] raw.user_analyses not found — running warehouse bootstrap...");
 
-    const { setupWarehouseViews } = await import("./warehouse/setupViews");
+    const { setupWarehouseViews } = await import("./warehouse/setupViews.js");
     await setupWarehouseViews();
 
-    const { seedReferenceData } = await import("./warehouse/seedReference");
+    const { seedReferenceData } = await import("./warehouse/seedReference.js");
     await seedReferenceData();
 
     console.log("[warehouse] Bootstrap complete.");
@@ -536,7 +536,7 @@ if (!process.env.VERCEL) {
     // Set up Vite dev server in development (after all routes so catch-all
     // doesn't interfere)
     if (process.env.NODE_ENV !== "production") {
-      const { setupVite } = await import("./vite");
+      const { setupVite } = await import("./vite.js");
       await setupVite(httpServer, app);
     }
 
@@ -551,21 +551,21 @@ if (!process.env.VERCEL) {
         logger.info("server started", { port });
 
         try {
-          const { startDailyScheduler } = await import("./warehouse/scheduler");
+          const { startDailyScheduler } = await import("./warehouse/scheduler.js");
           startDailyScheduler();
         } catch (err) {
           logger.error("Failed to start daily scheduler", { source: "scheduler", error: String(err) });
         }
 
         try {
-          const { startAlertScheduler } = await import("./alerts");
+          const { startAlertScheduler } = await import("./alerts.js");
           startAlertScheduler();
         } catch (err) {
           logger.error("Failed to start alert scheduler", { source: "alerts", error: String(err) });
         }
 
         try {
-          const { startDlqReplayWorker } = await import("./warehouse/dlqReplay");
+          const { startDlqReplayWorker } = await import("./warehouse/dlqReplay.js");
           startDlqReplayWorker();
         } catch (err) {
           logger.error("Failed to start DLQ replay worker", { source: "dlq-replay", error: String(err) });
@@ -585,12 +585,12 @@ if (!process.env.VERCEL) {
       });
 
       try {
-        const { stopDailyScheduler } = await import("./warehouse/scheduler");
+        const { stopDailyScheduler } = await import("./warehouse/scheduler.js");
         stopDailyScheduler();
       } catch { /* scheduler may not have been imported */ }
 
       try {
-        const { pool } = await import("./db");
+        const { pool } = await import("./db.js");
         await pool.end();
         logger.info("Database pool drained");
       } catch { /* pool may not exist */ }
