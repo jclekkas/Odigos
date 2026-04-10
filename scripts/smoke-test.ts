@@ -224,8 +224,8 @@ async function run(): Promise<void> {
 
   await checkEndpoint("/", {
     bodyAssert: (body) => {
-      if (!body.includes("Free Car Deal Analyzer")) {
-        return `Homepage HTML missing expected app title "Free Car Deal Analyzer"`;
+      if (!body.includes("Odigos \u2014 Dealer Quote Analyzer")) {
+        return `Homepage HTML missing expected app title "Odigos \u2014 Dealer Quote Analyzer"`;
       }
       return null;
     },
