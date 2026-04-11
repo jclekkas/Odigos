@@ -1341,8 +1341,21 @@ export default function Home() {
       form.setValue("source", source);
       setInputTab("paste");
 
-      // Distinguish full vs partial OCR success
-      const isPartial = extractedText.trim().length < 30;
+      // Partial-OCR classification: flag extractions that likely represent
+      // an incomplete read rather than a valid short quote.
+      //
+      // A pure character-count threshold misclassifies short-but-valid dealer
+      // notes like "$499 doc fee" or "399/mo 3k down" as partial failures.
+      //
+      // Heuristic: text is "partial" only when it is both short AND lacks any
+      // numeric content.  Short strings that contain numbers (dollar amounts,
+      // percentages, monthly payments) are treated as successful — the source
+      // material was simply concise.  Short strings with zero numbers are more
+      // likely OCR noise / junk fragments.
+      const PARTIAL_LENGTH_THRESHOLD = 30;
+      const trimmed = extractedText.trim();
+      const hasNumericContent = /\d/.test(trimmed);
+      const isPartial = trimmed.length < PARTIAL_LENGTH_THRESHOLD && !hasNumericContent;
       if (isPartial) {
         setUploadError("We could only read a small amount of text. Review and edit what we found, or try a clearer image.");
         setImageIntakeStatus("partial");

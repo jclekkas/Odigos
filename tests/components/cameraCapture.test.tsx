@@ -645,11 +645,21 @@ describe("Retry behavior after failure", () => {
 
 // ─── Partial OCR result ──────────────────────────────────────────────────────
 
+// Partial-OCR classification rule:
+//
+// Text is "partial" only when BOTH conditions are true:
+//   1. Fewer than 30 characters (short)
+//   2. Contains no digits (no numeric pricing content)
+//
+// Short strings WITH numbers (e.g. "$499 doc fee", "399/mo 3k down") are
+// treated as successful — the source material was simply concise.
+// Short strings WITHOUT numbers are likely OCR noise/junk.
+
 describe("Partial OCR result", () => {
-  it("inserts short OCR text and shows partial warning", async () => {
+  it("flags short text with no numbers as partial", async () => {
     mockMobileViewport();
-    // Text under 30 chars = partial
-    setupFetchMock({ ok: true, status: 200, body: { text: "$399/mo 3k down" } });
+    // Short AND no digits → partial
+    setupFetchMock({ ok: true, status: 200, body: { text: "see attached sheet" } });
     renderHome();
 
     const cameraInput = await screen.findByTestId("input-camera-capture");
@@ -657,7 +667,79 @@ describe("Partial OCR result", () => {
 
     const textarea = await screen.findByTestId("input-dealer-text");
     await waitFor(() => {
-      expect(textarea).toHaveValue("$399/mo 3k down");
+      expect(textarea).toHaveValue("see attached sheet");
+    });
+
+    const warning = await screen.findByTestId("text-upload-error");
+    expect(warning).toBeInTheDocument();
+    expect(warning).toHaveTextContent("small amount");
+  });
+
+  it("treats '$499 doc fee' as success, not partial", async () => {
+    mockMobileViewport();
+    // Short but contains a dollar amount → success
+    setupFetchMock({ ok: true, status: 200, body: { text: "$499 doc fee" } });
+    renderHome();
+
+    const cameraInput = await screen.findByTestId("input-camera-capture");
+    fireEvent.change(cameraInput, { target: { files: [createFakeImageFile()] } });
+
+    const textarea = await screen.findByTestId("input-dealer-text");
+    await waitFor(() => {
+      expect(textarea).toHaveValue("$499 doc fee");
+    });
+
+    // Should be success, not partial — no warning shown
+    expect(screen.queryByTestId("text-upload-error")).not.toBeInTheDocument();
+    await screen.findByTestId("text-ocr-success");
+  });
+
+  it("treats '399/mo 3k down' as success, not partial", async () => {
+    mockMobileViewport();
+    setupFetchMock({ ok: true, status: 200, body: { text: "399/mo 3k down" } });
+    renderHome();
+
+    const cameraInput = await screen.findByTestId("input-camera-capture");
+    fireEvent.change(cameraInput, { target: { files: [createFakeImageFile()] } });
+
+    const textarea = await screen.findByTestId("input-dealer-text");
+    await waitFor(() => {
+      expect(textarea).toHaveValue("399/mo 3k down");
+    });
+
+    expect(screen.queryByTestId("text-upload-error")).not.toBeInTheDocument();
+    await screen.findByTestId("text-ocr-success");
+  });
+
+  it("treats 'OTD 32,800' as success, not partial", async () => {
+    mockMobileViewport();
+    setupFetchMock({ ok: true, status: 200, body: { text: "OTD 32,800" } });
+    renderHome();
+
+    const cameraInput = await screen.findByTestId("input-camera-capture");
+    fireEvent.change(cameraInput, { target: { files: [createFakeImageFile()] } });
+
+    const textarea = await screen.findByTestId("input-dealer-text");
+    await waitFor(() => {
+      expect(textarea).toHaveValue("OTD 32,800");
+    });
+
+    expect(screen.queryByTestId("text-upload-error")).not.toBeInTheDocument();
+    await screen.findByTestId("text-ocr-success");
+  });
+
+  it("still flags short non-numeric junk text as partial", async () => {
+    mockMobileViewport();
+    // Junk OCR noise with no pricing content
+    setupFetchMock({ ok: true, status: 200, body: { text: "blurry text here" } });
+    renderHome();
+
+    const cameraInput = await screen.findByTestId("input-camera-capture");
+    fireEvent.change(cameraInput, { target: { files: [createFakeImageFile()] } });
+
+    const textarea = await screen.findByTestId("input-dealer-text");
+    await waitFor(() => {
+      expect(textarea).toHaveValue("blurry text here");
     });
 
     const warning = await screen.findByTestId("text-upload-error");
