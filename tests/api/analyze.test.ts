@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, vi, beforeAll, afterAll, beforeEach } from "vitest";
 import express from "express";
 import { createServer } from "http";
 import request from "supertest";
@@ -16,6 +16,37 @@ const { mockIsOpenAIConfigured, MockOpenAIConfigurationError } = vi.hoisted(() =
   };
 });
 
+// Minimal stand-in for the real parseOpenAIError helper. Mirrors the field
+// extraction logic so tests can assert on requestId / code / retryAfter
+// without pulling the real implementation into the mock (which would
+// require an async factory via importOriginal).
+function mockParseOpenAIError(err: unknown) {
+  const e = (err ?? {}) as Record<string, unknown>;
+  const inner = (e.error ?? {}) as Record<string, unknown>;
+  const headers = (e.headers ?? {}) as Record<string, unknown>;
+  return {
+    status: typeof e.status === "number" ? (e.status as number) : undefined,
+    code:
+      (typeof e.code === "string" && e.code) ||
+      (typeof inner.code === "string" && inner.code) ||
+      undefined,
+    type:
+      (typeof e.type === "string" && e.type) ||
+      (typeof inner.type === "string" && inner.type) ||
+      undefined,
+    param: undefined,
+    requestId:
+      (typeof e.request_id === "string" && (e.request_id as string)) ||
+      (typeof e.requestID === "string" && (e.requestID as string)) ||
+      (typeof headers["x-request-id"] === "string" && (headers["x-request-id"] as string)) ||
+      undefined,
+    retryAfter:
+      (typeof headers["retry-after"] === "string" && (headers["retry-after"] as string)) ||
+      undefined,
+    message: err instanceof Error ? err.message : String(err),
+  };
+}
+
 vi.mock("../../server/openaiClient", () => ({
   openai: {
     chat: {
@@ -26,6 +57,7 @@ vi.mock("../../server/openaiClient", () => ({
   },
   isOpenAIConfigured: mockIsOpenAIConfigured,
   OpenAIConfigurationError: MockOpenAIConfigurationError,
+  parseOpenAIError: mockParseOpenAIError,
 }));
 
 vi.mock("../../server/metrics", () => ({
@@ -61,6 +93,7 @@ vi.mock("../../server/db", () => ({
 
 import { openai } from "../../server/openaiClient";
 import { registerRoutes } from "../../server/routes";
+import { aiCircuitBreaker } from "../../server/lib/circuitBreaker";
 
 const VALID_LLM_RESPONSE = {
   dealScore: "GREEN",
@@ -93,6 +126,15 @@ beforeAll(async () => {
   app.use(express.json());
   server = createServer(app);
   await registerRoutes(app);
+});
+
+beforeEach(() => {
+  // Reset the process-global AI mock and the AI circuit breaker so that
+  // one test's persistent mockRejectedValue or accumulated failures
+  // cannot bleed into the next test (which would otherwise trip the
+  // breaker → fast-fail → assertion failure).
+  (openai.chat.completions.create as ReturnType<typeof vi.fn>).mockReset();
+  aiCircuitBreaker.reset();
 });
 
 afterAll(() => {
@@ -289,5 +331,115 @@ describe("POST /api/analyze", () => {
       .send({ dealerText: "OTD $30,000 from a Texas dealer." });
     expect(res.status).toBe(504);
     expect(res.body.error).toBe("AI service timeout");
+  });
+
+  it("returns 402 'AI quota exhausted' when OpenAI returns insufficient_quota", async () => {
+    const quotaErr = Object.assign(new Error("You exceeded your current quota"), {
+      status: 429,
+      code: "insufficient_quota",
+      request_id: "req_quota_123",
+    });
+    (openai.chat.completions.create as ReturnType<typeof vi.fn>).mockRejectedValue(quotaErr);
+    const res = await request(app)
+      .post("/api/analyze")
+      .send({ dealerText: "OTD $30,000 from a Texas dealer." });
+    expect(res.status).toBe(402);
+    expect(res.body.error).toBe("AI quota exhausted");
+    expect(res.body.code).toBe("insufficient_quota");
+    expect(res.body.requestId).toBe("req_quota_123");
+  });
+
+  it("returns 429 with retryAfter when OpenAI rate limits (not quota)", async () => {
+    const rateLimitErr = Object.assign(new Error("Rate limit reached"), {
+      status: 429,
+      code: "rate_limit_exceeded",
+      headers: { "retry-after": "12" },
+      request_id: "req_rl_456",
+    });
+    (openai.chat.completions.create as ReturnType<typeof vi.fn>).mockRejectedValue(rateLimitErr);
+    const res = await request(app)
+      .post("/api/analyze")
+      .send({ dealerText: "OTD $30,000 from a Texas dealer." });
+    expect(res.status).toBe(429);
+    expect(res.body.error).toBe("AI rate limit");
+    expect(res.body.retryAfter).toBe("12");
+    expect(res.body.requestId).toBe("req_rl_456");
+  });
+
+  it("retries against the fallback model when primary returns model_not_found", async () => {
+    const modelErr = Object.assign(new Error("The model `gpt-4o` does not exist"), {
+      status: 404,
+      code: "model_not_found",
+      request_id: "req_mnf_789",
+    });
+    const createMock = openai.chat.completions.create as ReturnType<typeof vi.fn>;
+    // Primary (gpt-4o) rejects once, then the fallback (gpt-4o-mini) call succeeds.
+    createMock.mockRejectedValueOnce(modelErr).mockResolvedValueOnce({
+      choices: [
+        {
+          message: { content: JSON.stringify(VALID_LLM_RESPONSE) },
+          finish_reason: "stop",
+        },
+      ],
+      usage: { prompt_tokens: 100, completion_tokens: 300, total_tokens: 400 },
+    });
+    const res = await request(app)
+      .post("/api/analyze")
+      .send({ dealerText: "OTD $35,000, APR 4.9%, 60 months. CA dealer." });
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("dealScore");
+    // Assert the second call was the fallback model.
+    expect(createMock).toHaveBeenCalledTimes(2);
+    const secondCallArgs = createMock.mock.calls[1][0];
+    expect(secondCallArgs.model).toBe("gpt-4o-mini");
+  });
+
+  it("returns 502 'AI model unavailable' when both primary and fallback fail", async () => {
+    const modelErr = Object.assign(new Error("model_not_found"), {
+      status: 404,
+      code: "model_not_found",
+      request_id: "req_fb_fail",
+    });
+    (openai.chat.completions.create as ReturnType<typeof vi.fn>).mockRejectedValue(modelErr);
+    const res = await request(app)
+      .post("/api/analyze")
+      .send({ dealerText: "OTD $30,000 from a Texas dealer." });
+    expect(res.status).toBe(502);
+    expect(res.body.error).toBe("AI model unavailable");
+    expect(res.body.message).toMatch(/gpt-4o/);
+    expect(res.body.message).toMatch(/gpt-4o-mini/);
+    expect(res.body.code).toBe("model_not_found");
+  });
+
+  it("returns 502 'AI provider unavailable' when OpenAI responds with 5xx", async () => {
+    // 503 is retriable so the retry loop will fire; make ALL attempts return 503
+    // so the backoff exhausts and classification kicks in.
+    const upstreamErr = Object.assign(new Error("Bad gateway from OpenAI"), {
+      status: 503,
+      code: "server_error",
+      request_id: "req_upstream_001",
+    });
+    (openai.chat.completions.create as ReturnType<typeof vi.fn>).mockRejectedValue(upstreamErr);
+    const res = await request(app)
+      .post("/api/analyze")
+      .send({ dealerText: "OTD $30,000 from a Texas dealer." });
+    expect(res.status).toBe(502);
+    expect(res.body.error).toBe("AI provider unavailable");
+    expect(res.body.message).toMatch(/upstream 503/);
+    expect(res.body.requestId).toBe("req_upstream_001");
+  });
+
+  it("includes debugCode and requestId in the generic 502 fallback body", async () => {
+    const unknownErr = Object.assign(new Error("Something weird happened"), {
+      request_id: "req_unknown_999",
+    });
+    (openai.chat.completions.create as ReturnType<typeof vi.fn>).mockRejectedValue(unknownErr);
+    const res = await request(app)
+      .post("/api/analyze")
+      .send({ dealerText: "OTD $30,000 from a Texas dealer." });
+    expect(res.status).toBe(502);
+    expect(res.body.error).toBe("AI service error");
+    expect(res.body.requestId).toBe("req_unknown_999");
+    expect(res.body.debugCode).toBeDefined();
   });
 });

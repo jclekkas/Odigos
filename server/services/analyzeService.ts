@@ -11,13 +11,14 @@ import { applyRuleEngine, checkDocFeeCap } from "../ruleEngine.js";
 import { runLeaseMath } from "../leaseMathEngine.js";
 import { detectStateFromText, getStateFeeData, getAmbiguousCityOptions } from "../stateFeeLookup.js";
 import { trackEvent } from "../events.js";
-import { openai, isOpenAIConfigured, OpenAIConfigurationError } from "../openaiClient.js";
+import { openai, isOpenAIConfigured, OpenAIConfigurationError, parseOpenAIError, type ParsedOpenAIError } from "../openaiClient.js";
 import { enqueueSubmission } from "../ingestor.js";
 import { storage } from "../storage.js";
 import { getMarketContext, getDealerStats } from "../marketContext.js";
 import { withJitteredBackoff, isRetriableError } from "../lib/reliability.js";
 import { aiCircuitBreaker, CircuitOpenError } from "../lib/circuitBreaker.js";
 import { logger } from "../logger.js";
+import { AI_PRIMARY_MODEL, AI_FALLBACK_MODEL } from "../config/aiModel.js";
 
 export type AnalyzeInput = z.infer<typeof analysisRequestSchema>;
 
@@ -116,16 +117,16 @@ export async function runAnalysis(data: AnalyzeInput): Promise<AnalyzeServiceRes
   logger.info("New submission", { source: "analyze", textLength: data.dealerText?.length ?? 0 });
 
   // Pre-flight: fail fast with an actionable message if the AI service is not
-  // configured at all. Without this, a missing AI_INTEGRATIONS_OPENAI_API_KEY
-  // bubbles through the retry loop and gets collapsed into a generic 502
-  // "AI service error", which gives the operator no clue what's wrong.
+  // configured at all. Without this, a missing API key bubbles through the
+  // retry loop and gets collapsed into a generic 502 "AI service error", which
+  // gives the operator no clue what's wrong.
   if (!isOpenAIConfigured()) {
-    logger.error("AI service not configured — AI_INTEGRATIONS_OPENAI_API_KEY missing", { source: "analyze" });
+    logger.error("AI service not configured — OpenAI API key missing", { source: "analyze" });
     throw new AnalyzeServiceError(503, {
       error: "AI service not configured",
       message:
         "The AI analysis service is not configured on this deployment. " +
-        "Ask the operator to set AI_INTEGRATIONS_OPENAI_API_KEY and redeploy.",
+        "Ask the operator to set AI_INTEGRATIONS_OPENAI_API_KEY (or OPENAI_API_KEY) and redeploy.",
     });
   }
 
@@ -485,7 +486,28 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   if (data.termMonths) userMessage += `\nLoan term: ${data.termMonths} months`;
   if (data.downPayment) userMessage += `\nDown payment: $${data.downPayment}`;
 
-  logger.info("AI call starting", { source: "analyze", promptLength: userMessage.length });
+  logger.info("AI call starting", { source: "analyze", promptLength: userMessage.length, model: AI_PRIMARY_MODEL });
+
+  const chatMessages = [
+    { role: "system" as const, content: systemPrompt },
+    { role: "user" as const, content: userMessage },
+  ];
+
+  const invokeModel = (model: string, attempt: number) =>
+    Promise.race([
+      openai.chat.completions.create({
+        model,
+        messages: chatMessages,
+        response_format: { type: "json_object" },
+        max_tokens: 4096,
+      }),
+      new Promise<never>((_, reject) =>
+        setTimeout(
+          () => reject(new Error(`AI attempt ${attempt} timed out after ${AI_ATTEMPT_TIMEOUT_MS}ms`)),
+          AI_ATTEMPT_TIMEOUT_MS,
+        )
+      ),
+    ]);
 
   let aiResponse: Awaited<ReturnType<typeof openai.chat.completions.create>>;
   try {
@@ -494,25 +516,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
         if (attempt > 1) {
           logger.info("AI retry attempt", { source: "analyze", attempt, maxAttempts: AI_MAX_RETRIES + 1 });
         }
-        return aiCircuitBreaker.execute(() =>
-          Promise.race([
-            openai.chat.completions.create({
-              model: "gpt-4o",
-              messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: userMessage },
-              ],
-              response_format: { type: "json_object" },
-              max_tokens: 4096,
-            }),
-            new Promise<never>((_, reject) =>
-              setTimeout(
-                () => reject(new Error(`AI attempt ${attempt} timed out after ${AI_ATTEMPT_TIMEOUT_MS}ms`)),
-                AI_ATTEMPT_TIMEOUT_MS,
-              )
-            ),
-          ])
-        );
+        return aiCircuitBreaker.execute(() => invokeModel(AI_PRIMARY_MODEL, attempt));
       },
       {
         maxAttempts: AI_MAX_RETRIES + 1,
@@ -532,6 +536,13 @@ Respond entirely in Spanish. All text fields in your JSON response — including
       },
     );
   } catch (aiErr) {
+    // ── Error classification ──────────────────────────────────────────────
+    // Normalize the SDK's error shape once, then walk known buckets in order
+    // from most-specific to most-generic. Every branch logs the *parsed*
+    // shape (status / code / type / requestId) so operators can pinpoint the
+    // real cause from log output alone, without opening Sentry.
+    const parsed = parseOpenAIError(aiErr);
+
     if (aiErr instanceof CircuitOpenError) {
       logger.error("AI circuit breaker is OPEN, fast-failing", { source: "analyze" });
       Sentry.captureException(aiErr, { level: "error" });
@@ -544,50 +555,177 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     // the lazy client still refuses (e.g. the env var was cleared mid-request,
     // or a future validation tightens what counts as "configured").
     if (aiErr instanceof OpenAIConfigurationError) {
-      logger.error("AI client configuration error", { source: "analyze", error: String(aiErr) });
-      Sentry.captureException(aiErr, { level: "error" });
+      logger.error("AI client configuration error", { source: "analyze", openai: parsed });
+      Sentry.captureException(aiErr, { level: "error", extra: { ...parsed } });
       throw new AnalyzeServiceError(503, {
         error: "AI service not configured",
         message:
           "The AI analysis service is not configured on this deployment. " +
-          "Ask the operator to set AI_INTEGRATIONS_OPENAI_API_KEY and redeploy.",
+          "Ask the operator to set AI_INTEGRATIONS_OPENAI_API_KEY (or OPENAI_API_KEY) and redeploy.",
       });
     }
     // Surface auth failures from the AI provider distinctly so the operator
     // knows to rotate / check the API key rather than blaming a transient
     // outage. The OpenAI SDK attaches a numeric `.status` to APIError.
-    const errStatus = (aiErr as { status?: unknown })?.status;
-    if (errStatus === 401 || errStatus === 403) {
-      logger.error("AI authentication failed", { source: "analyze", status: errStatus });
-      Sentry.captureException(aiErr, { level: "error" });
+    if (parsed.status === 401 || parsed.status === 403) {
+      logger.error("AI authentication failed", { source: "analyze", openai: parsed });
+      Sentry.captureException(aiErr, { level: "error", extra: { ...parsed } });
       throw new AnalyzeServiceError(502, {
         error: "AI authentication failed",
         message:
           "The AI provider rejected our credentials. The API key may be invalid, " +
           "revoked, or missing access to the required model.",
+        code: parsed.code,
+        requestId: parsed.requestId,
       });
     }
-    // Surface per-attempt / total-budget timeouts as 504 so the client can
+    // Per-attempt / total-budget timeouts as 504 so the client can
     // distinguish "try again" from "something is broken".
-    const errMsg = aiErr instanceof Error ? aiErr.message.toLowerCase() : "";
+    const errMsg = parsed.message.toLowerCase();
     if (errMsg.includes("timed out") || errMsg.includes("timeout")) {
-      logger.error("AI call timed out", { source: "analyze", error: String(aiErr) });
-      Sentry.captureException(aiErr, { level: "error" });
+      logger.error("AI call timed out", { source: "analyze", openai: parsed });
+      Sentry.captureException(aiErr, { level: "error", extra: { ...parsed } });
       throw new AnalyzeServiceError(504, {
         error: "AI service timeout",
         message: "The AI service took too long to respond. Please try again.",
+        requestId: parsed.requestId,
       });
     }
-    const isRetriable = isRetriableError(aiErr as Error);
-    logger.error("AI call exhausted retries", { source: "analyze", retriable: isRetriable, error: String(aiErr) });
-    Sentry.captureException(aiErr, {
-      level: "error",
-      extra: { maxRetries: AI_MAX_RETRIES, budgetMs: AI_TOTAL_BUDGET_MS },
-    });
-    throw new AnalyzeServiceError(502, {
-      error: "AI service error",
-      message: "Unable to analyze the deal at this time. Please try again.",
-    });
+    // Quota exhausted — the billing account is out of credit. This is a
+    // different operator action (top up) from a plain rate-limit, so we
+    // surface it with a distinct status and message.
+    if (parsed.status === 429 && parsed.code === "insufficient_quota") {
+      logger.error("AI quota exhausted", { source: "analyze", openai: parsed });
+      Sentry.captureException(aiErr, { level: "error", extra: { ...parsed } });
+      throw new AnalyzeServiceError(402, {
+        error: "AI quota exhausted",
+        message:
+          "AI quota exhausted — the deployment's OpenAI billing is out of credit. " +
+          "Ask the operator to top up.",
+        code: parsed.code,
+        requestId: parsed.requestId,
+      });
+    }
+    // Plain rate limit — transient, client should retry after the server's
+    // suggested delay (propagated from OpenAI's Retry-After header).
+    if (parsed.status === 429) {
+      logger.error("AI rate limited", { source: "analyze", openai: parsed });
+      Sentry.captureException(aiErr, { level: "error", extra: { ...parsed } });
+      throw new AnalyzeServiceError(429, {
+        error: "AI rate limit",
+        message: "We're hitting our AI rate limit. Please try again in a few seconds.",
+        code: parsed.code,
+        retryAfter: parsed.retryAfter,
+        requestId: parsed.requestId,
+      });
+    }
+    // Model access error. Most commonly: the API key's org does not have
+    // access to gpt-4o. Attempt a one-shot fallback against a more broadly
+    // available model before giving up. Runs OUTSIDE the retry loop and
+    // circuit breaker so we don't double-budget or trip the breaker on a
+    // recoverable configuration issue.
+    const isModelNotFound =
+      parsed.status === 404 ||
+      parsed.code === "model_not_found" ||
+      parsed.code === "model_not_available";
+    if (isModelNotFound && AI_FALLBACK_MODEL && AI_FALLBACK_MODEL !== AI_PRIMARY_MODEL) {
+      logger.warn("Primary AI model unavailable, attempting fallback", {
+        source: "analyze",
+        event: "model_fallback",
+        primary: AI_PRIMARY_MODEL,
+        fallback: AI_FALLBACK_MODEL,
+        openai: parsed,
+      });
+      Sentry.addBreadcrumb({
+        category: "ai-fallback",
+        message: `Falling back from ${AI_PRIMARY_MODEL} to ${AI_FALLBACK_MODEL}`,
+        level: "warning",
+        data: { primary: AI_PRIMARY_MODEL, fallback: AI_FALLBACK_MODEL, status: parsed.status, code: parsed.code },
+      });
+      try {
+        aiResponse = await invokeModel(AI_FALLBACK_MODEL, 1);
+        logger.info("AI fallback model succeeded", {
+          source: "analyze",
+          event: "model_fallback_success",
+          fallback: AI_FALLBACK_MODEL,
+        });
+      } catch (fallbackErr) {
+        const fallbackParsed = parseOpenAIError(fallbackErr);
+        logger.error("AI fallback model also failed", {
+          source: "analyze",
+          event: "model_fallback_failed",
+          primary: AI_PRIMARY_MODEL,
+          fallback: AI_FALLBACK_MODEL,
+          openai: fallbackParsed,
+        });
+        Sentry.captureException(fallbackErr, {
+          level: "error",
+          extra: { primary: AI_PRIMARY_MODEL, fallback: AI_FALLBACK_MODEL, ...fallbackParsed },
+        });
+        throw new AnalyzeServiceError(502, {
+          error: "AI model unavailable",
+          message:
+            `AI model unavailable — the API key does not have access to either ` +
+            `the primary model (${AI_PRIMARY_MODEL}) or the fallback (${AI_FALLBACK_MODEL}). ` +
+            "Ask the operator to enable model access or set AI_INTEGRATIONS_OPENAI_MODEL " +
+            "to a model the key can use.",
+          code: fallbackParsed.code ?? parsed.code,
+          requestId: fallbackParsed.requestId ?? parsed.requestId,
+        });
+      }
+      // Fall through to the happy-path response parsing below.
+    } else if (isModelNotFound) {
+      logger.error("AI model unavailable (no fallback configured)", { source: "analyze", openai: parsed });
+      Sentry.captureException(aiErr, { level: "error", extra: { ...parsed } });
+      throw new AnalyzeServiceError(502, {
+        error: "AI model unavailable",
+        message:
+          `AI model unavailable — the API key does not have access to the configured model ` +
+          `(${AI_PRIMARY_MODEL}).`,
+        code: parsed.code,
+        requestId: parsed.requestId,
+      });
+    } else if (typeof parsed.status === "number" && parsed.status >= 500) {
+      // Upstream OpenAI outage.
+      logger.error("AI provider upstream error", { source: "analyze", openai: parsed });
+      Sentry.captureException(aiErr, { level: "error", extra: { ...parsed } });
+      throw new AnalyzeServiceError(502, {
+        error: "AI provider unavailable",
+        message: `AI provider is temporarily unavailable (upstream ${parsed.status}). Please try again.`,
+        code: parsed.code,
+        requestId: parsed.requestId,
+      });
+    } else if (parsed.code === "content_filter" || parsed.type === "content_filter") {
+      logger.warn("AI content filter triggered", { source: "analyze", openai: parsed });
+      Sentry.captureException(aiErr, { level: "warning", extra: { ...parsed } });
+      throw new AnalyzeServiceError(422, {
+        error: "Content filtered",
+        message:
+          "The AI could not analyze this content due to a safety filter. " +
+          "Try rephrasing or removing sensitive text.",
+        code: parsed.code,
+        requestId: parsed.requestId,
+      });
+    } else {
+      // True fallback — unknown failure mode. Surface debug code and
+      // request id so operators can trace it in OpenAI's dashboard.
+      const isRetriable = isRetriableError(aiErr as Error);
+      logger.error("AI call exhausted retries", {
+        source: "analyze",
+        retriable: isRetriable,
+        openai: parsed,
+      });
+      Sentry.captureException(aiErr, {
+        level: "error",
+        extra: { maxRetries: AI_MAX_RETRIES, budgetMs: AI_TOTAL_BUDGET_MS, ...parsed },
+      });
+      throw new AnalyzeServiceError(502, {
+        error: "AI service error",
+        message: "Unable to analyze the deal at this time. Please try again.",
+        debugCode: parsed.code ?? (typeof parsed.status === "number" ? `http_${parsed.status}` : "unknown"),
+        requestId: parsed.requestId,
+      });
+    }
   }
 
   logger.info("AI response received", { source: "analyze", finishReason: aiResponse.choices[0]?.finish_reason });

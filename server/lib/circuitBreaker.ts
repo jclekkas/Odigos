@@ -68,6 +68,18 @@ export class CircuitBreaker {
     return this.state;
   }
 
+  /**
+   * Reset the breaker to CLOSED and clear all recorded outcomes. Intended
+   * for test isolation — production code should never need this, since the
+   * breaker heals itself through the OPEN → HALF_OPEN → CLOSED cycle.
+   */
+  reset(): void {
+    this.state = "CLOSED";
+    this.outcomes = [];
+    this.openedAt = null;
+    this.halfOpenProbeCount = 0;
+  }
+
   private pruneWindow(): void {
     const cutoff = Date.now() - this.windowMs;
     this.outcomes = this.outcomes.filter((o) => o.at >= cutoff);

@@ -1,4 +1,5 @@
 import { openai } from "./openaiClient.js";
+import { AI_PRIMARY_MODEL } from "./config/aiModel.js";
 
 const IMAGE_MIME_TYPES = ["image/png", "image/jpeg", "image/webp"];
 const PDF_MIME_TYPE = "application/pdf";
@@ -9,7 +10,7 @@ const VISION_PROMPT =
 async function extractTextViaVision(buffer: Buffer, mimetype: string): Promise<string> {
   const base64 = buffer.toString("base64");
   const response = await openai.chat.completions.create({
-    model: "gpt-4o",
+    model: AI_PRIMARY_MODEL,
     messages: [
       {
         role: "user",
