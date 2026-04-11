@@ -107,6 +107,7 @@ const corsMiddleware = cors({
     if (!origin) return callback(null, true);
     if (
       origin === "https://odigosauto.com" ||
+      origin === "https://www.odigosauto.com" ||
       /^http:\/\/localhost(:\d+)?$/.test(origin)
     ) {
       return callback(null, true);
@@ -124,7 +125,7 @@ const corsMiddleware = cors({
     return callback(new Error("Not allowed by CORS"), false);
   },
   methods: ["GET", "POST"],
-  credentials: false,
+  credentials: true,
 });
 
 app.use((req, res, next) => {
