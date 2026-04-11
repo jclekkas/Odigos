@@ -66,6 +66,7 @@ export default function CarDealerFeesState() {
   const pageHeading = data.pageTitle
     ? data.pageTitle.replace(/ \| Odigos$/, "")
     : `Car Dealer Fees in ${data.name}: What You'll Actually Pay`;
+  const h1Text = data.h1 ?? pageHeading;
 
   return (
     <ArticleLayout title={pageHeading}>
@@ -76,7 +77,7 @@ export default function CarDealerFeesState() {
         className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight"
         data-testid={`text-${data.slug}-headline`}
       >
-        {pageHeading}
+        {h1Text}
       </h1>
 
       <div className="rounded-lg border border-border bg-muted/30 p-5 mb-8" data-testid={`block-snippet-${data.slug}`}>
