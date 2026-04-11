@@ -11,7 +11,7 @@ import { applyRuleEngine, checkDocFeeCap } from "../ruleEngine.js";
 import { runLeaseMath } from "../leaseMathEngine.js";
 import { detectStateFromText, getStateFeeData, getAmbiguousCityOptions } from "../stateFeeLookup.js";
 import { trackEvent } from "../events.js";
-import { openai } from "../openaiClient.js";
+import { openai, isOpenAIConfigured, OpenAIConfigurationError } from "../openaiClient.js";
 import { enqueueSubmission } from "../ingestor.js";
 import { storage } from "../storage.js";
 import { getMarketContext, getDealerStats } from "../marketContext.js";
@@ -114,6 +114,20 @@ const AI_TOTAL_BUDGET_MS = 25_000;
 
 export async function runAnalysis(data: AnalyzeInput): Promise<AnalyzeServiceResult> {
   logger.info("New submission", { source: "analyze", textLength: data.dealerText?.length ?? 0 });
+
+  // Pre-flight: fail fast with an actionable message if the AI service is not
+  // configured at all. Without this, a missing AI_INTEGRATIONS_OPENAI_API_KEY
+  // bubbles through the retry loop and gets collapsed into a generic 502
+  // "AI service error", which gives the operator no clue what's wrong.
+  if (!isOpenAIConfigured()) {
+    logger.error("AI service not configured — AI_INTEGRATIONS_OPENAI_API_KEY missing", { source: "analyze" });
+    throw new AnalyzeServiceError(503, {
+      error: "AI service not configured",
+      message:
+        "The AI analysis service is not configured on this deployment. " +
+        "Ask the operator to set AI_INTEGRATIONS_OPENAI_API_KEY and redeploy.",
+    });
+  }
 
   const stateDetection = detectStateFromText(data.dealerText, data.zipCode);
   const stateData = stateDetection.state ? getStateFeeData(stateDetection.state) : null;
@@ -524,6 +538,44 @@ Respond entirely in Spanish. All text fields in your JSON response — including
       throw new AnalyzeServiceError(503, {
         error: "Service temporarily unavailable",
         message: "The analysis service is temporarily unavailable. Please try again in a moment.",
+      });
+    }
+    // Covers the race where isOpenAIConfigured() was true at pre-flight but
+    // the lazy client still refuses (e.g. the env var was cleared mid-request,
+    // or a future validation tightens what counts as "configured").
+    if (aiErr instanceof OpenAIConfigurationError) {
+      logger.error("AI client configuration error", { source: "analyze", error: String(aiErr) });
+      Sentry.captureException(aiErr, { level: "error" });
+      throw new AnalyzeServiceError(503, {
+        error: "AI service not configured",
+        message:
+          "The AI analysis service is not configured on this deployment. " +
+          "Ask the operator to set AI_INTEGRATIONS_OPENAI_API_KEY and redeploy.",
+      });
+    }
+    // Surface auth failures from the AI provider distinctly so the operator
+    // knows to rotate / check the API key rather than blaming a transient
+    // outage. The OpenAI SDK attaches a numeric `.status` to APIError.
+    const errStatus = (aiErr as { status?: unknown })?.status;
+    if (errStatus === 401 || errStatus === 403) {
+      logger.error("AI authentication failed", { source: "analyze", status: errStatus });
+      Sentry.captureException(aiErr, { level: "error" });
+      throw new AnalyzeServiceError(502, {
+        error: "AI authentication failed",
+        message:
+          "The AI provider rejected our credentials. The API key may be invalid, " +
+          "revoked, or missing access to the required model.",
+      });
+    }
+    // Surface per-attempt / total-budget timeouts as 504 so the client can
+    // distinguish "try again" from "something is broken".
+    const errMsg = aiErr instanceof Error ? aiErr.message.toLowerCase() : "";
+    if (errMsg.includes("timed out") || errMsg.includes("timeout")) {
+      logger.error("AI call timed out", { source: "analyze", error: String(aiErr) });
+      Sentry.captureException(aiErr, { level: "error" });
+      throw new AnalyzeServiceError(504, {
+        error: "AI service timeout",
+        message: "The AI service took too long to respond. Please try again.",
       });
     }
     const isRetriable = isRetriableError(aiErr as Error);

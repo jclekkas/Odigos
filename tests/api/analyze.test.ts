@@ -3,6 +3,19 @@ import express from "express";
 import { createServer } from "http";
 import request from "supertest";
 
+const { mockIsOpenAIConfigured, MockOpenAIConfigurationError } = vi.hoisted(() => {
+  class MockOpenAIConfigurationError extends Error {
+    constructor(message: string) {
+      super(message);
+      this.name = "OpenAIConfigurationError";
+    }
+  }
+  return {
+    mockIsOpenAIConfigured: vi.fn(() => true),
+    MockOpenAIConfigurationError,
+  };
+});
+
 vi.mock("../../server/openaiClient", () => ({
   openai: {
     chat: {
@@ -11,6 +24,8 @@ vi.mock("../../server/openaiClient", () => ({
       },
     },
   },
+  isOpenAIConfigured: mockIsOpenAIConfigured,
+  OpenAIConfigurationError: MockOpenAIConfigurationError,
 }));
 
 vi.mock("../../server/metrics", () => ({
@@ -236,5 +251,43 @@ describe("POST /api/analyze", () => {
         purchaseType: "finance",
       });
     expect(res.status).toBe(200);
+  });
+
+  // ─── Error classification regression guards ───────────────────────────────
+  // These guard against the "every failure looks like a generic 502" bug
+  // where a missing API key, an auth failure, and a transient outage all
+  // returned the same opaque body, making production diagnosis impossible.
+
+  it("returns 503 'AI service not configured' when the API key is missing", async () => {
+    mockIsOpenAIConfigured.mockReturnValueOnce(false);
+    const res = await request(app)
+      .post("/api/analyze")
+      .send({ dealerText: "OTD $30,000 from a Texas dealer." });
+    expect(res.status).toBe(503);
+    expect(res.body.error).toBe("AI service not configured");
+    expect(res.body.message).toMatch(/AI_INTEGRATIONS_OPENAI_API_KEY/);
+    // Must NOT have called the AI — pre-flight short-circuits before the retry loop.
+    expect(openai.chat.completions.create).not.toHaveBeenCalled();
+  });
+
+  it("returns 502 'AI authentication failed' when OpenAI rejects credentials (401)", async () => {
+    const authErr = Object.assign(new Error("Invalid API key provided"), { status: 401 });
+    (openai.chat.completions.create as ReturnType<typeof vi.fn>).mockRejectedValue(authErr);
+    const res = await request(app)
+      .post("/api/analyze")
+      .send({ dealerText: "OTD $30,000 from a Texas dealer." });
+    expect(res.status).toBe(502);
+    expect(res.body.error).toBe("AI authentication failed");
+  });
+
+  it("returns 504 'AI service timeout' when the per-attempt timer fires", async () => {
+    (openai.chat.completions.create as ReturnType<typeof vi.fn>).mockRejectedValue(
+      new Error("AI attempt 1 timed out after 22000ms")
+    );
+    const res = await request(app)
+      .post("/api/analyze")
+      .send({ dealerText: "OTD $30,000 from a Texas dealer." });
+    expect(res.status).toBe(504);
+    expect(res.body.error).toBe("AI service timeout");
   });
 });
