@@ -5,7 +5,6 @@ import path from "path";
 export default defineConfig({
   plugins: [
     react(),
-    ...(process.env.NODE_ENV !== "production" &&
   ],
   resolve: {
     alias: {
