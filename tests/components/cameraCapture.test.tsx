@@ -416,7 +416,10 @@ describe("Invalid file handling", () => {
     renderHome();
 
     // Images are capped at 15 MB (OpenAI Vision binary ceiling); anything
-    // larger is rejected client-side before any upload attempt.
+    // larger is rejected client-side before any compression or upload
+    // attempt.  Files in the 4.5–15 MB range are compressed client-side
+    // first and (if that fails) routed through the Blob direct-upload path,
+    // so they should NOT trigger the "too large" error.
     const bigFile = createFakeImageFile("huge.jpg", "image/jpeg", 16 * 1024);
     const cameraInput = await screen.findByTestId("input-camera-capture");
     fireEvent.change(cameraInput, { target: { files: [bigFile] } });

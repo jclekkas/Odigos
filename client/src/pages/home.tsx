@@ -1322,6 +1322,13 @@ export default function Home() {
       try {
         const result = await uploadFileForExtraction(file);
         extractedText = result.text ?? "";
+        if (result.compressed) {
+          capture("file_upload_compressed", {
+            original_bytes: result.compressed.originalBytes,
+            compressed_bytes: result.compressed.compressedBytes,
+            input_method: source,
+          });
+        }
       } catch (err) {
         if (err instanceof FileTooLargeError) {
           const reason = "file_too_large";
