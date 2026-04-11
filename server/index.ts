@@ -12,6 +12,7 @@ import { trackEvent } from "./metrics.js";
 import { db } from "./db.js";
 import { writeAuditEvent } from "./audit.js";
 import { logger } from "./logger.js";
+import { isAllowedCorsOrigin } from "./corsOrigin.js";
 import { createServer } from "http";
 import { sql } from "drizzle-orm";
 
@@ -104,24 +105,7 @@ app.use((_req, res, next) => {
 // (these are server-to-server routes)
 const corsMiddleware = cors({
   origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    if (
-      origin === "https://odigosauto.com" ||
-      origin === "https://www.odigosauto.com" ||
-      /^http:\/\/localhost(:\d+)?$/.test(origin)
-    ) {
-      return callback(null, true);
-    }
-    if (
-      process.env.NODE_ENV !== "production" &&
-      /\.replit\.dev$/.test(origin)
-    ) {
-      return callback(null, true);
-    }
-    // Allow Vercel preview deployments
-    if (/\.vercel\.app$/.test(origin)) {
-      return callback(null, true);
-    }
+    if (isAllowedCorsOrigin(origin)) return callback(null, true);
     return callback(new Error("Not allowed by CORS"), false);
   },
   methods: ["GET", "POST"],
