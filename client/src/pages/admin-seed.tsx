@@ -12,7 +12,7 @@
  * useAdminKey hooks the other admin dashboards use.
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AdminShell } from "@/components/admin-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,7 +27,152 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, CheckCircle2, AlertCircle, FileText } from "lucide-react";
+import { Loader2, CheckCircle2, AlertCircle, FileText, Sparkles, RotateCcw } from "lucide-react";
+
+// ---------------------------------------------------------------------------
+// Friction-reducing helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Best-effort regex extraction of pricing fields from dealer prose. Good
+ * enough for ~80% of quotes; the user can override any field manually.
+ * Runs on the client — no cost, no latency, non-destructive (only fills
+ * fields that are still empty).
+ *
+ * Pattern strategy:
+ *  - NUMBER fragment is strict: `42,150` or `42150` or `42150.00`, never
+ *    captures a trailing comma (which would pollute neighbouring labels).
+ *  - Each field tries "number-first" patterns first (e.g. "$800 doc fee")
+ *    then falls back to permissive "label-first" patterns with `[^\d$]{0,N}`
+ *    filler so phrases like "doc fee is only $129" still match.
+ */
+// NUMBER: a dollar amount like 42,150 / 42150 / 42150.00; never trailing comma.
+const NUM = "(\\d{1,3}(?:,\\d{3})+(?:\\.\\d{2})?|\\d+(?:\\.\\d{2})?)";
+
+function extractPricingFromText(text: string): {
+  msrp?: number;
+  sellingPrice?: number;
+  docFee?: number;
+  otdPrice?: number;
+} {
+  const result: { msrp?: number; sellingPrice?: number; docFee?: number; otdPrice?: number } = {};
+
+  const firstMatch = (patterns: RegExp[]): number | undefined => {
+    for (const re of patterns) {
+      const m = text.match(re);
+      if (m && m[1]) {
+        const cleaned = m[1].replace(/,/g, "").replace(/\.00?$/, "");
+        const n = parseInt(cleaned, 10);
+        if (Number.isFinite(n) && n > 0 && n < 1_000_000) return n;
+      }
+    }
+    return undefined;
+  };
+
+  // MSRP / sticker / list price — label before OR after the number
+  result.msrp = firstMatch([
+    new RegExp(`MSRP[^\\d$]{0,30}\\$?\\s*${NUM}`, "i"),
+    new RegExp(`\\$?\\s*${NUM}\\s+MSRP`, "i"),
+    new RegExp(`(?:sticker|list)\\s*price[^\\d$]{0,30}\\$?\\s*${NUM}`, "i"),
+  ]);
+
+  // Selling / sale price — label before or after the number; "price" is
+  // optional ("Selling $37,505" should still match).
+  result.sellingPrice = firstMatch([
+    new RegExp(`(?:selling|sale)\\s*price[^\\d$]{0,30}\\$?\\s*${NUM}`, "i"),
+    new RegExp(`(?:selling|sale)\\s+\\$?\\s*${NUM}`, "i"),
+    new RegExp(`(?:sell|sold)(?:ing)?\\s*(?:at|for)[^\\d$]{0,30}\\$?\\s*${NUM}`, "i"),
+    new RegExp(`\\$?\\s*${NUM}\\s+(?:selling|sale)\\s*price`, "i"),
+  ]);
+
+  // Doc / documentation / processing fee — "number first" tried before
+  // "label first" so "$800 doc fee and $100 DMV" correctly captures 800
+  // rather than skipping to the next number after the label.
+  result.docFee = firstMatch([
+    new RegExp(`\\$?\\s*${NUM}\\s+doc[\\w\\/]*\\s*(?:fee|fees|charge|charges)`, "i"),
+    new RegExp(`\\$?\\s*${NUM}\\s+documentation\\s*(?:fee|fees|charge)`, "i"),
+    new RegExp(`\\$?\\s*${NUM}\\s+processing\\s*(?:fee|fees|charge)`, "i"),
+    new RegExp(`doc[\\w\\/]*\\s*(?:fee|fees|charge|charges)[^\\d$]{0,30}\\$?\\s*${NUM}`, "i"),
+    new RegExp(`documentation\\s*(?:fee|charge)[^\\d$]{0,30}\\$?\\s*${NUM}`, "i"),
+    new RegExp(`processing\\s*(?:fee|fees|charge)[^\\d$]{0,30}\\$?\\s*${NUM}`, "i"),
+  ]);
+
+  // Out-the-door / OTD — label before or after the number. The label-first
+  // fallback uses [^$\d]{0,50} for its filler so it can't accidentally
+  // latch onto a vehicle year like "2025" that sits between the label
+  // and the actual price (see fixture cases involving
+  // "out-the-door on the 2025 Explorer…"). It also requires an explicit
+  // $ before the number to avoid false positives.
+  result.otdPrice = firstMatch([
+    new RegExp(`\\$?\\s*${NUM}\\s+(?:out[- ]the[- ]door|OTD\\b)`, "i"),
+    new RegExp(`(?:out[- ]the[- ]door|OTD)\\b[^$\\d]{0,50}\\$\\s*${NUM}`, "i"),
+    new RegExp(`OTD\\s*(?:price|total)[^$\\d]{0,30}\\$\\s*${NUM}`, "i"),
+  ]);
+
+  return result;
+}
+
+/**
+ * Generate a human-readable sourceId from the vehicle + state + a short
+ * random suffix. Falls back to "manual-<ts>" if there's no vehicle.
+ */
+function generateSourceId(vehicle: string | undefined, stateCode: string | undefined): string {
+  const vehicleSlug = (vehicle ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40);
+  const stateSlug = (stateCode ?? "").toLowerCase();
+  const suffix = Math.random().toString(36).slice(2, 6);
+  const parts = [vehicleSlug || "manual", stateSlug, suffix].filter(Boolean);
+  return parts.join("-");
+}
+
+// ---------------------------------------------------------------------------
+// sessionStorage draft persistence — scoped to the tab, cleared on success
+// ---------------------------------------------------------------------------
+
+const DRAFT_STORAGE_KEY = "odigos_admin_seed_draft_v1";
+
+function readDraft(): Partial<SeedFormState> | null {
+  try {
+    const raw = sessionStorage.getItem(DRAFT_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return typeof parsed === "object" && parsed != null ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeDraft(form: SeedFormState): void {
+  try {
+    sessionStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(form));
+  } catch {
+    // Quota exceeded or storage disabled — silently drop.
+  }
+}
+
+function clearDraft(): void {
+  try {
+    sessionStorage.removeItem(DRAFT_STORAGE_KEY);
+  } catch {
+    // ignore
+  }
+}
+
+function draftIsMeaningful(draft: Partial<SeedFormState> | null): boolean {
+  if (!draft) return false;
+  return !!(
+    draft.dealerText?.trim() ||
+    draft.vehicle?.trim() ||
+    draft.stateCode?.trim() ||
+    draft.msrp?.trim() ||
+    draft.sellingPrice?.trim() ||
+    draft.docFee?.trim() ||
+    draft.otdPrice?.trim()
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Form shape + defaults
@@ -161,7 +306,7 @@ function toNumberOrNull(v: string): number | null {
 function buildPayload(form: SeedFormState) {
   return {
     reviewStatus: "approved",
-    sourceId: form.sourceId || `manual-${Date.now()}`,
+    sourceId: form.sourceId || generateSourceId(form.vehicle, form.stateCode),
     vehicle: form.vehicle || undefined,
     stateCode: form.stateCode || undefined,
     zipCode: form.zipCode || undefined,
@@ -189,15 +334,41 @@ export default function AdminSeedPage() {
 }
 
 function AdminSeedInner({ adminKey, clearKey: _clearKey }: { adminKey: string; clearKey: () => void }) {
-  const [form, setForm] = useState<SeedFormState>(emptyForm);
+  // Restore any session-persisted draft on mount so accidental refreshes
+  // don't wipe the operator's work. The draft is cleared on successful
+  // commit and on explicit Reset. sessionStorage is per-tab — closing the
+  // tab clears it automatically.
+  const [form, setForm] = useState<SeedFormState>(() => {
+    const draft = readDraft();
+    if (draftIsMeaningful(draft)) {
+      return { ...emptyForm(), ...draft } as SeedFormState;
+    }
+    return emptyForm();
+  });
+  const [draftWasRestored, setDraftWasRestored] = useState<boolean>(() =>
+    draftIsMeaningful(readDraft()),
+  );
   const [validation, setValidation] = useState<ValidateResponse | null>(null);
   const [commitResult, setCommitResult] = useState<CommitResponse | null>(null);
   const [isValidating, setIsValidating] = useState(false);
   const [isCommitting, setIsCommitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Tracks which pricing fields were auto-filled by extractPricingFromText
+  // so we can show a subtle "Auto-filled" hint. Never used to block edits.
+  const [autoFilled, setAutoFilled] = useState<{
+    msrp: boolean;
+    sellingPrice: boolean;
+    docFee: boolean;
+    otdPrice: boolean;
+  }>({ msrp: false, sellingPrice: false, docFee: false, otdPrice: false });
 
-  const update = <K extends keyof SeedFormState>(k: K, v: SeedFormState[K]) =>
+  const update = <K extends keyof SeedFormState>(k: K, v: SeedFormState[K]) => {
+    // Any manual edit to a pricing field clears its auto-filled flag.
+    if (k === "msrp" || k === "sellingPrice" || k === "docFee" || k === "otdPrice") {
+      setAutoFilled((prev) => ({ ...prev, [k]: false }));
+    }
     setForm((prev) => ({ ...prev, [k]: v }));
+  };
 
   // Clear validation/result whenever any form field changes (stale state
   // from a previous submission is misleading).
@@ -218,6 +389,57 @@ function AdminSeedInner({ adminKey, clearKey: _clearKey }: { adminKey: string; c
     form.otdPrice,
     form.dealerText,
   ]);
+
+  // Persist the form to sessionStorage on every change (debounced 300ms).
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (draftIsMeaningful(form)) {
+        writeDraft(form);
+      } else {
+        clearDraft();
+      }
+    }, 300);
+    return () => clearTimeout(t);
+  }, [form]);
+
+  // Auto-extract pricing from the dealer text (debounced 500ms).
+  // Non-destructive: only fills fields that are currently empty. The user
+  // can always override by typing into a pricing field, which both
+  // clears the auto-filled flag and suppresses further re-extraction for
+  // that field.
+  useEffect(() => {
+    const text = form.dealerText;
+    if (!text || text.length < 20) return;
+    const t = setTimeout(() => {
+      const extracted = extractPricingFromText(text);
+      setForm((prev) => {
+        const next = { ...prev };
+        const nextAuto = { ...autoFilled };
+        if (!prev.msrp && extracted.msrp != null) {
+          next.msrp = String(extracted.msrp);
+          nextAuto.msrp = true;
+        }
+        if (!prev.sellingPrice && extracted.sellingPrice != null) {
+          next.sellingPrice = String(extracted.sellingPrice);
+          nextAuto.sellingPrice = true;
+        }
+        if (!prev.docFee && extracted.docFee != null) {
+          next.docFee = String(extracted.docFee);
+          nextAuto.docFee = true;
+        }
+        if (!prev.otdPrice && extracted.otdPrice != null) {
+          next.otdPrice = String(extracted.otdPrice);
+          nextAuto.otdPrice = true;
+        }
+        setAutoFilled(nextAuto);
+        return next;
+      });
+    }, 500);
+    return () => clearTimeout(t);
+    // autoFilled is intentionally omitted — we read it inside the updater
+    // but don't want to re-run the effect when it changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.dealerText]);
 
   const recentQuery = useQuery<{ rows: RecentRow[] }>({
     queryKey: ["/api/admin/seed/recent", adminKey],
@@ -278,6 +500,10 @@ function AdminSeedInner({ adminKey, clearKey: _clearKey }: { adminKey: string; c
       const data = (await res.json()) as CommitResponse;
       setCommitResult(data);
       if (data.status === "committed") {
+        // Successful commit — clear the saved draft so we don't
+        // accidentally re-submit the same quote on next visit.
+        clearDraft();
+        setDraftWasRestored(false);
         // Refetch the recent list so the operator sees their new row
         void recentQuery.refetch();
       }
@@ -293,6 +519,14 @@ function AdminSeedInner({ adminKey, clearKey: _clearKey }: { adminKey: string; c
     setValidation(null);
     setCommitResult(null);
     setError(null);
+    setAutoFilled({ msrp: false, sellingPrice: false, docFee: false, otdPrice: false });
+    clearDraft();
+    setDraftWasRestored(false);
+  };
+
+  const handleSeedAnother = () => {
+    handleReset();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const hasRequired = useMemo(() => {
@@ -304,6 +538,27 @@ function AdminSeedInner({ adminKey, clearKey: _clearKey }: { adminKey: string; c
     return form.dealerText.trim() !== "" && hasPricing && form.batchId.trim() !== "";
   }, [form]);
 
+  // Cmd/Ctrl+Enter anywhere on the page triggers Analyze & Seed. We route
+  // through a ref so the keydown handler doesn't re-register on every
+  // keystroke (which would be noisy) while still capturing the latest
+  // handleCommit + hasRequired values.
+  const commitRef = useRef<() => void>(() => {});
+  commitRef.current = () => {
+    if (hasRequired && !isCommitting && !isValidating) {
+      void handleCommit();
+    }
+  };
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        commitRef.current();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6">
       <div>
@@ -311,10 +566,36 @@ function AdminSeedInner({ adminKey, clearKey: _clearKey }: { adminKey: string; c
           Seed a dealer quote
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Paste a quote, validate, and commit it as a seeded row. This page is private — not linked
-          from anywhere, and every request requires your admin key.
+          Paste a quote — pricing auto-extracts from the text. Use{" "}
+          <kbd className="px-1 py-0.5 text-xs font-mono bg-muted rounded border border-border/60">
+            ⌘ Enter
+          </kbd>{" "}
+          to submit. Drafts are saved per-tab and restored on refresh.
         </p>
       </div>
+
+      {draftWasRestored && (
+        <div
+          className="flex items-center justify-between gap-3 rounded-md border border-blue-500/30 bg-blue-500/5 px-3 py-2 text-sm"
+          data-testid="banner-draft-restored"
+        >
+          <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400">
+            <RotateCcw className="w-4 h-4" />
+            <span>Restored an in-progress draft from this session.</span>
+          </div>
+          <button
+            type="button"
+            className="text-xs text-muted-foreground hover:text-foreground"
+            onClick={() => {
+              handleReset();
+              setDraftWasRestored(false);
+            }}
+            data-testid="button-discard-draft"
+          >
+            Discard and start over
+          </button>
+        </div>
+      )}
 
       {/* ─── Form ─────────────────────────────────────────────────────── */}
       <Card>
@@ -417,10 +698,24 @@ function AdminSeedInner({ adminKey, clearKey: _clearKey }: { adminKey: string; c
           </div>
 
           <div>
-            <Label className="text-sm font-semibold">Pricing (at least one required)</Label>
+            <div className="flex items-center justify-between">
+              <Label className="text-sm font-semibold">Pricing (at least one required)</Label>
+              {(autoFilled.msrp || autoFilled.sellingPrice || autoFilled.docFee || autoFilled.otdPrice) && (
+                <span
+                  className="inline-flex items-center gap-1 text-xs text-emerald-700 dark:text-emerald-400"
+                  data-testid="hint-autofilled"
+                >
+                  <Sparkles className="w-3 h-3" />
+                  Auto-filled from text — verify or override
+                </span>
+              )}
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">
               <div>
-                <Label htmlFor="msrp" className="text-xs text-muted-foreground">MSRP</Label>
+                <Label htmlFor="msrp" className="text-xs text-muted-foreground flex items-center gap-1">
+                  MSRP
+                  {autoFilled.msrp && <Sparkles className="w-3 h-3 text-emerald-600 dark:text-emerald-400" aria-label="auto-filled" />}
+                </Label>
                 <Input
                   id="msrp"
                   type="number"
@@ -430,11 +725,15 @@ function AdminSeedInner({ adminKey, clearKey: _clearKey }: { adminKey: string; c
                   value={form.msrp}
                   onChange={(e) => update("msrp", e.target.value)}
                   placeholder="42150"
+                  className={autoFilled.msrp ? "border-emerald-500/40" : undefined}
                   data-testid="input-msrp"
                 />
               </div>
               <div>
-                <Label htmlFor="sellingPrice" className="text-xs text-muted-foreground">Selling price</Label>
+                <Label htmlFor="sellingPrice" className="text-xs text-muted-foreground flex items-center gap-1">
+                  Selling price
+                  {autoFilled.sellingPrice && <Sparkles className="w-3 h-3 text-emerald-600 dark:text-emerald-400" aria-label="auto-filled" />}
+                </Label>
                 <Input
                   id="sellingPrice"
                   type="number"
@@ -444,11 +743,15 @@ function AdminSeedInner({ adminKey, clearKey: _clearKey }: { adminKey: string; c
                   value={form.sellingPrice}
                   onChange={(e) => update("sellingPrice", e.target.value)}
                   placeholder="39400"
+                  className={autoFilled.sellingPrice ? "border-emerald-500/40" : undefined}
                   data-testid="input-selling-price"
                 />
               </div>
               <div>
-                <Label htmlFor="docFee" className="text-xs text-muted-foreground">Doc fee</Label>
+                <Label htmlFor="docFee" className="text-xs text-muted-foreground flex items-center gap-1">
+                  Doc fee
+                  {autoFilled.docFee && <Sparkles className="w-3 h-3 text-emerald-600 dark:text-emerald-400" aria-label="auto-filled" />}
+                </Label>
                 <Input
                   id="docFee"
                   type="number"
@@ -458,11 +761,15 @@ function AdminSeedInner({ adminKey, clearKey: _clearKey }: { adminKey: string; c
                   value={form.docFee}
                   onChange={(e) => update("docFee", e.target.value)}
                   placeholder="800"
+                  className={autoFilled.docFee ? "border-emerald-500/40" : undefined}
                   data-testid="input-doc-fee"
                 />
               </div>
               <div>
-                <Label htmlFor="otdPrice" className="text-xs text-muted-foreground">OTD price</Label>
+                <Label htmlFor="otdPrice" className="text-xs text-muted-foreground flex items-center gap-1">
+                  OTD price
+                  {autoFilled.otdPrice && <Sparkles className="w-3 h-3 text-emerald-600 dark:text-emerald-400" aria-label="auto-filled" />}
+                </Label>
                 <Input
                   id="otdPrice"
                   type="number"
@@ -472,6 +779,7 @@ function AdminSeedInner({ adminKey, clearKey: _clearKey }: { adminKey: string; c
                   value={form.otdPrice}
                   onChange={(e) => update("otdPrice", e.target.value)}
                   placeholder="41500"
+                  className={autoFilled.otdPrice ? "border-emerald-500/40" : undefined}
                   data-testid="input-otd-price"
                 />
               </div>
@@ -533,6 +841,12 @@ function AdminSeedInner({ adminKey, clearKey: _clearKey }: { adminKey: string; c
             >
               Reset form
             </Button>
+            <span className="text-xs text-muted-foreground self-center ml-auto hidden sm:inline">
+              <kbd className="px-1 py-0.5 font-mono bg-muted rounded border border-border/60">⌘</kbd>
+              {" + "}
+              <kbd className="px-1 py-0.5 font-mono bg-muted rounded border border-border/60">Enter</kbd>
+              {" to submit"}
+            </span>
           </div>
         </CardContent>
       </Card>
@@ -590,7 +904,9 @@ function AdminSeedInner({ adminKey, clearKey: _clearKey }: { adminKey: string; c
       )}
 
       {/* ─── Commit result ────────────────────────────────────────────── */}
-      {commitResult && <CommitResultPanel result={commitResult} />}
+      {commitResult && (
+        <CommitResultPanel result={commitResult} onSeedAnother={handleSeedAnother} />
+      )}
 
       {/* ─── Recent seeds ─────────────────────────────────────────────── */}
       <Card>
@@ -653,7 +969,13 @@ function AdminSeedInner({ adminKey, clearKey: _clearKey }: { adminKey: string; c
 // CommitResultPanel — inline preview of analysis + state aggregate impact
 // ---------------------------------------------------------------------------
 
-function CommitResultPanel({ result }: { result: CommitResponse }) {
+function CommitResultPanel({
+  result,
+  onSeedAnother,
+}: {
+  result: CommitResponse;
+  onSeedAnother: () => void;
+}) {
   if (result.status !== "committed") {
     const label: Record<typeof result.status, string> = {
       validation_failed: "Validation failed",
@@ -690,9 +1012,19 @@ function CommitResultPanel({ result }: { result: CommitResponse }) {
     <div className="space-y-4">
       <Card className="border-emerald-500/30 bg-emerald-500/5" data-testid="card-commit-success">
         <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base text-emerald-700 dark:text-emerald-400">
-            <CheckCircle2 className="w-4 h-4" />
-            Seeded successfully
+          <CardTitle className="flex items-center justify-between gap-2 text-base text-emerald-700 dark:text-emerald-400">
+            <span className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4" />
+              Seeded successfully
+            </span>
+            <Button
+              type="button"
+              size="sm"
+              onClick={onSeedAnother}
+              data-testid="button-seed-another"
+            >
+              Seed another quote
+            </Button>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
