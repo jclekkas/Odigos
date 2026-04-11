@@ -8,6 +8,14 @@ import { extractTextFromFile, extractTextFromUrl } from "../extractText.js";
 import { storage } from "../storage.js";
 import { writeAuditEvent } from "../audit.js";
 import { runAnalysis, AnalyzeServiceError } from "../services/analyzeService.js";
+import {
+  isOpenAIConfigured,
+  OpenAIConfigurationError,
+  parseOpenAIError,
+} from "../openaiClient.js";
+import { CircuitOpenError } from "../lib/circuitBreaker.js";
+import { AI_PRIMARY_MODEL } from "../config/aiModel.js";
+import { logger } from "../logger.js";
 
 // OpenAI base URL configured via AI_INTEGRATIONS_OPENAI_BASE_URL env var
 
@@ -105,13 +113,173 @@ export function registerAnalyzeRoutes(app: Express): void {
         trackEvent("file_processing", { fileSuccess: false, fileFailReason: "unsupported_mime_type" });
         return res.status(400).json({ message: "That file type isn't supported." });
       }
+
+      // Pre-flight: fail fast with an actionable message if the AI service
+      // is not configured at all. Without this, a missing API key bubbles
+      // up from the OpenAI vision call and gets masked as the misleading
+      // "couldn't read enough text" error — giving operators zero signal
+      // that the real problem is a missing OPENAI_API_KEY env var.
+      //
+      // Only relevant for image uploads — PDF parsing is purely local
+      // and does not hit OpenAI.
+      if (mimetype !== "application/pdf" && !isOpenAIConfigured()) {
+        logger.error("extract-text called but AI service is not configured", { source: "extract-text" });
+        trackEvent("file_processing", { fileSuccess: false, fileFailReason: "ai_not_configured" });
+        return res.status(503).json({
+          error: "AI service not configured",
+          message:
+            "The AI analysis service is not configured on this deployment. " +
+            "Ask the operator to set AI_INTEGRATIONS_OPENAI_API_KEY (or OPENAI_API_KEY) and redeploy.",
+        });
+      }
+
       let text: string;
       try {
         text = await extractTextFromFile(buffer, mimetype);
       } catch (err) {
+        // ── Error classification ──────────────────────────────────────
+        // Distinguish real OCR-short-text from OpenAI failures, PDF
+        // parse failures, config issues, etc. Before this block existed,
+        // every failure mode was collapsed into the same misleading 422
+        // "couldn't read enough text" message, which blamed the user's
+        // photo for a missing API key / auth failure / rate limit.
         console.error("Text extraction error:", err);
-        trackEvent("file_processing", { fileSuccess: false, fileFailReason: err instanceof Error ? err.message.slice(0, 100) : "extraction_error" });
-        return res.status(422).json({ message: SHORT_TEXT_MSG });
+
+        // PDF-specific errors from extractTextFromFile keep the 422
+        // "short text" surface — they are genuinely about the file,
+        // not the AI provider.
+        const errMessage = err instanceof Error ? err.message : String(err);
+        if (
+          errMessage === "Could not parse PDF file" ||
+          errMessage === "PDF contained insufficient extractable text"
+        ) {
+          trackEvent("file_processing", { fileSuccess: false, fileFailReason: "pdf_short" });
+          return res.status(422).json({ message: SHORT_TEXT_MSG });
+        }
+
+        // Everything below is an error from the OpenAI vision call.
+        // Normalize once and classify.
+        const parsed = parseOpenAIError(err);
+
+        if (err instanceof CircuitOpenError) {
+          logger.error("extract-text: AI circuit breaker is OPEN", { source: "extract-text" });
+          Sentry.captureException(err, { level: "error" });
+          trackEvent("file_processing", { fileSuccess: false, fileFailReason: "circuit_open" });
+          return res.status(503).json({
+            error: "Service temporarily unavailable",
+            message: "The text-extraction service is temporarily unavailable. Please try again in a moment.",
+          });
+        }
+        if (err instanceof OpenAIConfigurationError) {
+          logger.error("extract-text: AI client configuration error", { source: "extract-text", openai: parsed });
+          Sentry.captureException(err, { level: "error", extra: { ...parsed } });
+          trackEvent("file_processing", { fileSuccess: false, fileFailReason: "ai_not_configured" });
+          return res.status(503).json({
+            error: "AI service not configured",
+            message:
+              "The AI analysis service is not configured on this deployment. " +
+              "Ask the operator to set AI_INTEGRATIONS_OPENAI_API_KEY (or OPENAI_API_KEY) and redeploy.",
+          });
+        }
+        if (parsed.status === 401 || parsed.status === 403) {
+          logger.error("extract-text: AI authentication failed", { source: "extract-text", openai: parsed });
+          Sentry.captureException(err, { level: "error", extra: { ...parsed } });
+          trackEvent("file_processing", { fileSuccess: false, fileFailReason: "ai_auth_failed" });
+          return res.status(502).json({
+            error: "AI authentication failed",
+            message:
+              "The AI provider rejected our credentials. The API key may be invalid, " +
+              "revoked, or missing access to the required model.",
+            code: parsed.code,
+            requestId: parsed.requestId,
+          });
+        }
+        if (parsed.status === 429 && parsed.code === "insufficient_quota") {
+          logger.error("extract-text: AI quota exhausted", { source: "extract-text", openai: parsed });
+          Sentry.captureException(err, { level: "error", extra: { ...parsed } });
+          trackEvent("file_processing", { fileSuccess: false, fileFailReason: "ai_quota_exhausted" });
+          return res.status(402).json({
+            error: "AI quota exhausted",
+            message:
+              "AI quota exhausted — the deployment's OpenAI billing is out of credit. " +
+              "Ask the operator to top up.",
+            code: parsed.code,
+            requestId: parsed.requestId,
+          });
+        }
+        if (parsed.status === 429) {
+          logger.error("extract-text: AI rate limited", { source: "extract-text", openai: parsed });
+          Sentry.captureException(err, { level: "error", extra: { ...parsed } });
+          trackEvent("file_processing", { fileSuccess: false, fileFailReason: "ai_rate_limit" });
+          return res.status(429).json({
+            error: "AI rate limit",
+            message: "We're hitting our AI rate limit. Please try again in a few seconds.",
+            code: parsed.code,
+            retryAfter: parsed.retryAfter,
+            requestId: parsed.requestId,
+          });
+        }
+        const isModelNotFound =
+          parsed.status === 404 ||
+          parsed.code === "model_not_found" ||
+          parsed.code === "model_not_available";
+        if (isModelNotFound) {
+          logger.error("extract-text: AI model unavailable", { source: "extract-text", openai: parsed });
+          Sentry.captureException(err, { level: "error", extra: { ...parsed } });
+          trackEvent("file_processing", { fileSuccess: false, fileFailReason: "ai_model_unavailable" });
+          return res.status(502).json({
+            error: "AI model unavailable",
+            message:
+              `AI model unavailable — the API key does not have access to the configured model (${AI_PRIMARY_MODEL}).`,
+            code: parsed.code,
+            requestId: parsed.requestId,
+          });
+        }
+        if (typeof parsed.status === "number" && parsed.status >= 500) {
+          logger.error("extract-text: AI provider upstream error", { source: "extract-text", openai: parsed });
+          Sentry.captureException(err, { level: "error", extra: { ...parsed } });
+          trackEvent("file_processing", { fileSuccess: false, fileFailReason: "ai_upstream_error" });
+          return res.status(502).json({
+            error: "AI provider unavailable",
+            message: `AI provider is temporarily unavailable (upstream ${parsed.status}). Please try again.`,
+            code: parsed.code,
+            requestId: parsed.requestId,
+          });
+        }
+        if (parsed.code === "content_filter" || parsed.type === "content_filter") {
+          logger.warn("extract-text: content filter triggered", { source: "extract-text", openai: parsed });
+          Sentry.captureException(err, { level: "warning", extra: { ...parsed } });
+          trackEvent("file_processing", { fileSuccess: false, fileFailReason: "content_filter" });
+          return res.status(422).json({
+            error: "Content filtered",
+            message:
+              "The AI could not process this image due to a safety filter. " +
+              "Try a different photo or paste the text.",
+            code: parsed.code,
+            requestId: parsed.requestId,
+          });
+        }
+
+        // True fallback — unknown failure mode. Surface debug code + request
+        // id so operators can trace it in OpenAI's dashboard instead of
+        // debugging a misleading "couldn't read enough text" bug report.
+        logger.error("extract-text: unclassified extraction error", { source: "extract-text", openai: parsed });
+        Sentry.withScope((scope) => {
+          scope.setTag("feature", "extract-text");
+          scope.setTag("route", "/api/extract-text");
+          Sentry.captureException(err, { extra: { ...parsed } });
+        });
+        trackEvent("file_processing", {
+          fileSuccess: false,
+          fileFailReason: errMessage.slice(0, 100),
+        });
+        return res.status(500).json({
+          error: "Text extraction failed",
+          message:
+            "We couldn't extract text from that file. Please try again, upload a clearer image, or paste the text.",
+          debugCode: parsed.code ?? (typeof parsed.status === "number" ? `http_${parsed.status}` : "unknown"),
+          requestId: parsed.requestId,
+        });
       }
       if (text.length < 20) {
         trackEvent("file_processing", { fileSuccess: false, fileFailReason: "too_short" });
