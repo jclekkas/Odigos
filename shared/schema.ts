@@ -10,7 +10,7 @@ export const analysisRequestSchema = z.object({
   apr: z.number().optional(),
   termMonths: z.number().optional(),
   downPayment: z.number().optional(),
-  source: z.enum(["paste", "upload", "url"]).default("paste").optional(),
+  source: z.enum(["paste", "upload", "url", "camera"]).default("paste").optional(),
   sessionId: z.string().optional(),
   language: z.enum(["en", "es"]).optional().default("en"),
 });

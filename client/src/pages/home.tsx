@@ -50,6 +50,7 @@ import {
   AlertTriangle,
   TrendingUp,
   Target,
+  Camera,
 } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
@@ -79,6 +80,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { apiRequest } from "@/lib/queryClient";
 import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel, MarketContext, DocFeeCapCheck } from "@shared/schema";
 import LeaseMathBlock from "@/components/LeaseMathBlock";
@@ -152,10 +154,13 @@ const formSchema = z.object({
   apr: z.string().optional(),
   termMonths: z.string().optional(),
   downPayment: z.string().optional(),
-  source: z.enum(["paste", "upload", "url"]).default("paste").optional(),
+  source: z.enum(["paste", "upload", "url", "camera"]).default("paste").optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
+
+/** Explicit state machine for image intake (camera capture and upload). */
+type ImageIntakeStatus = "idle" | "processing" | "success" | "partial" | "failed" | "invalid";
 
 function formatCurrency(value: number | null | undefined): string {
   if (value == null) return "Not specified";
@@ -1210,7 +1215,8 @@ export default function Home() {
   const [formStartTracked, setFormStartTracked] = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [inputTab, setInputTab] = useState<"paste" | "upload" | "url">("paste");
+  const [inputTab, setInputTab] = useState<"paste" | "upload" | "url" | "camera">("paste");
+  const [imageIntakeStatus, setImageIntakeStatus] = useState<ImageIntakeStatus>("idle");
   const [urlInput, setUrlInput] = useState("");
   const [urlLoading, setUrlLoading] = useState(false);
   const [urlError, setUrlError] = useState<string | null>(null);
@@ -1225,10 +1231,12 @@ export default function Home() {
     }
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const inputStartedRef = useRef(false);
   const resultFiredRef = useRef(false);
   const resultsRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const unlockCtaVariant = useExperiment("unlock_cta");
   const unlockCtaLabel = UNLOCK_CTA_LABELS[unlockCtaVariant || "control"] ?? UNLOCK_CTA_LABELS.control;
@@ -1266,29 +1274,39 @@ export default function Home() {
     },
   });
 
-  const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (e.target) e.target.value = "";
-    if (!file) return;
-
+  /**
+   * Shared image-ingestion pipeline used by both camera capture and file upload.
+   * Validates the file, sends it through the OCR endpoint, and populates the
+   * textarea with extracted text (append if content already exists, replace if empty).
+   */
+  const handleImageIngestion = useCallback(async (file: File, source: "upload" | "camera") => {
     setUploadError(null);
+    setImageIntakeStatus("idle");
 
     if (!ALLOWED_UPLOAD_TYPES.includes(file.type)) {
       const reason = "unsupported_file_type";
       setUploadError("That file type isn't supported. Please upload a PNG, JPG, WEBP, or PDF.");
-      capture("file_upload_failed", { reason, file_type: file.type });
+      capture("file_upload_failed", { reason, file_type: file.type, input_method: source });
       trackFileUploadFailed(reason);
+      setImageIntakeStatus("invalid");
       return;
     }
     if (file.size > MAX_UPLOAD_BYTES) {
       const reason = "file_too_large";
       setUploadError("That file is too large to process. Please use a file under 10 MB.");
-      capture("file_upload_failed", { reason, file_size_bytes: file.size });
+      capture("file_upload_failed", { reason, file_size_bytes: file.size, input_method: source });
       trackFileUploadFailed(reason);
+      setImageIntakeStatus("invalid");
       return;
     }
 
+    if (!inputStartedRef.current) {
+      inputStartedRef.current = true;
+      capture("analysis_input_started", { input_method: source });
+    }
+
     setUploadLoading(true);
+    setImageIntakeStatus("processing");
     try {
       tagFlow("extract-text", "/api/extract-text");
       const formData = new FormData();
@@ -1297,23 +1315,79 @@ export default function Home() {
       const data = await response.json();
       if (!response.ok) {
         const reason = data.message ?? "server_error";
-        setUploadError(data.message ?? "We couldn't process that file. Please try again.");
-        capture("file_upload_failed", { reason, status: response.status });
+        setUploadError(data.message ?? "We couldn't process that image. Please try again or paste the text manually.");
+        capture("file_upload_failed", { reason, status: response.status, input_method: source });
         trackFileUploadFailed(reason);
+        setImageIntakeStatus("failed");
         return;
       }
-      form.setValue("dealerText", data.text);
-      form.setValue("source", "upload");
+
+      const extractedText: string = data.text ?? "";
+      if (!extractedText.trim()) {
+        setUploadError("We couldn't read any text from that image. Try a clearer, well-lit photo, or paste the quote manually.");
+        capture("file_upload_failed", { reason: "empty_ocr_result", input_method: source });
+        trackFileUploadFailed("empty_ocr_result");
+        setImageIntakeStatus("failed");
+        return;
+      }
+
+      // Append-vs-replace: preserve existing user content
+      const currentText = form.getValues("dealerText") ?? "";
+      if (currentText.trim()) {
+        form.setValue("dealerText", currentText.trimEnd() + "\n\n---\n\n" + extractedText);
+      } else {
+        form.setValue("dealerText", extractedText);
+      }
+      form.setValue("source", source);
       setInputTab("paste");
-    } catch (err) {
+
+      // Partial-OCR classification: flag extractions that likely represent
+      // an incomplete read rather than a valid short quote.
+      //
+      // A pure character-count threshold misclassifies short-but-valid dealer
+      // notes like "$499 doc fee" or "399/mo 3k down" as partial failures.
+      //
+      // Heuristic: text is "partial" only when it is both short AND lacks any
+      // numeric content.  Short strings that contain numbers (dollar amounts,
+      // percentages, monthly payments) are treated as successful — the source
+      // material was simply concise.  Short strings with zero numbers are more
+      // likely OCR noise / junk fragments.
+      const PARTIAL_LENGTH_THRESHOLD = 30;
+      const trimmed = extractedText.trim();
+      const hasNumericContent = /\d/.test(trimmed);
+      const isPartial = trimmed.length < PARTIAL_LENGTH_THRESHOLD && !hasNumericContent;
+      if (isPartial) {
+        setUploadError("We could only read a small amount of text. Review and edit what we found, or try a clearer image.");
+        setImageIntakeStatus("partial");
+      } else {
+        setImageIntakeStatus("success");
+      }
+    } catch {
       const reason = "network_error";
       setUploadError("Something went wrong. Please try again or paste the text manually.");
-      capture("file_upload_failed", { reason });
+      capture("file_upload_failed", { reason, input_method: source });
       trackFileUploadFailed(reason);
+      setImageIntakeStatus("failed");
     } finally {
       setUploadLoading(false);
     }
   }, [form]);
+
+  /** Standard file upload handler (desktop upload tab + mobile upload option). */
+  const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (e.target) e.target.value = "";
+    if (!file) return;
+    handleImageIngestion(file, "upload");
+  }, [handleImageIngestion]);
+
+  /** Camera capture handler (mobile only). */
+  const handleCameraCapture = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (e.target) e.target.value = "";
+    if (!file) return;
+    handleImageIngestion(file, "camera");
+  }, [handleImageIngestion]);
 
   const handleUrlExtract = useCallback(async () => {
     if (!urlInput.trim()) return;
@@ -1715,65 +1789,40 @@ export default function Home() {
                 <CardTitle className="text-base font-semibold">Your Dealer Quote</CardTitle>
               </CardHeader>
               <CardContent>
-                <Tabs value={inputTab} onValueChange={(v) => setInputTab(v as "paste" | "upload" | "url")} className="w-full" data-testid="tabs-input-mode">
-                  <TabsList className="w-full flex h-11 mb-4" data-testid="tabs-input-mode-list">
-                    <TabsTrigger value="paste" className="flex-1 text-sm font-medium" data-testid="tab-paste-text">
-                      <FileText className="h-4 w-4 mr-2" />
-                      Paste Text
-                    </TabsTrigger>
-                    <TabsTrigger value="upload" className="flex-1 text-sm font-medium" data-testid="tab-upload">
-                      <Upload className="h-4 w-4 mr-2" />
-                      Upload
-                    </TabsTrigger>
-                    <TabsTrigger value="url" className="flex-1 text-sm font-medium" data-testid="tab-url">
-                      <LinkIcon className="h-4 w-4 mr-2" />
-                      Listing URL
-                    </TabsTrigger>
-                  </TabsList>
+                {isMobile ? (
+                  /* ── Mobile: textarea-first with camera action ── */
+                  <div className="space-y-4" data-testid="mobile-input-surface">
+                    {/* Hidden camera file input — opens rear camera via capture="environment" */}
+                    <input
+                      ref={cameraInputRef}
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      className="hidden"
+                      onChange={handleCameraCapture}
+                      aria-label="Take a photo of your dealer quote"
+                      data-testid="input-camera-capture"
+                    />
+                    {/* Hidden standard file input for upload */}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".png,.jpg,.jpeg,.webp,.pdf"
+                      className="hidden"
+                      onChange={handleFileUpload}
+                      aria-label="Upload a screenshot or PDF"
+                      data-testid="input-file-upload"
+                    />
 
-                  <TabsContent value="paste" className="mt-0 space-y-4">
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => form.setValue("dealerText", SAMPLE_GOOD_DEAL)}
-                        data-testid="button-sample-good"
-                      >
-                        Try a good deal example
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => form.setValue("dealerText", SAMPLE_BAD_DEAL)}
-                        data-testid="button-sample-bad"
-                      >
-                        Try a bad deal example
-                      </Button>
-                    </div>
-
-                    <div className="rounded-lg bg-muted/40 border border-border/40 px-4 py-3" data-testid="block-example-message">
-                      <div className="flex items-center gap-2 mb-2">
-                        <p className="text-xs font-medium text-muted-foreground">Example dealer message</p>
-                        <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60 border border-border/50 rounded px-1.5 py-0.5 leading-none">Example</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground leading-relaxed italic" data-testid="text-example-message">
-                        "Hi, the vehicle is $28,995. With taxes, fees, and protection package you're looking at $34,200 OTD. Monthly comes out to about $540 depending on credit. Let me know when you can come in."
-                      </p>
-                    </div>
-
+                    {/* Textarea — always visible, always primary */}
                     <FormField
                       control={form.control}
                       name="dealerText"
                       render={({ field }) => (
                         <FormItem>
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                            <FormLabel className="text-sm font-medium text-foreground">Paste a dealer quote, email, or text message.</FormLabel>
-                            <Link href="/example-analysis" className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors shrink-0" data-testid="link-example-analysis-textarea">
-                              Not sure what to paste? See an example
-                            </Link>
-                          </div>
+                          <FormLabel className="text-sm font-medium text-foreground">
+                            Paste, upload, or snap your dealer quote
+                          </FormLabel>
                           <FormControl>
                             <Textarea
                               {...field}
@@ -1781,6 +1830,9 @@ export default function Home() {
                               onChange={(e) => {
                                 field.onChange(e);
                                 if (uploadError) setUploadError(null);
+                                if (imageIntakeStatus !== "idle" && imageIntakeStatus !== "processing") {
+                                  setImageIntakeStatus("idle");
+                                }
                               }}
                               onInput={() => {
                                 if (!inputStartedRef.current) {
@@ -1795,96 +1847,240 @@ export default function Home() {
                                 }
                               }}
                               placeholder="Paste the dealer's email, text message, or quote — any format works"
-                              className="min-h-48 text-base resize-y"
+                              className="min-h-36 text-base resize-y"
                               data-testid="input-dealer-text"
                             />
                           </FormControl>
                           <FormMessage />
-                          <p className="text-xs text-muted-foreground" data-testid="text-input-guidance">
-                            For best results, include pricing, fees, and any messages from the dealer.
-                          </p>
                         </FormItem>
                       )}
                     />
-                    <p className="text-xs text-muted-foreground" data-testid="text-privacy-reassurance">
-                      Your information is not shared with any dealership. This is an independent analysis.
-                    </p>
-                  </TabsContent>
 
-                  <TabsContent value="upload" className="mt-0">
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept=".png,.jpg,.jpeg,.webp,.pdf"
-                      className="hidden"
-                      onChange={handleFileUpload}
-                      data-testid="input-file-upload"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={uploadLoading}
-                      className="w-full min-h-48 flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-border/80 bg-muted/30 hover:bg-muted/50 hover:border-foreground/20 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                      data-testid="button-upload-file"
-                    >
-                      {uploadLoading ? (
-                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                      ) : (
-                        <Upload className="h-8 w-8 text-muted-foreground" />
-                      )}
-                      <div className="text-center">
-                        <p className="text-sm font-medium text-foreground">
-                          {uploadLoading ? "Processing file…" : "Upload a screenshot or PDF of the dealer quote"}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          PNG, JPG, JPEG, WEBP, or PDF — up to 10 MB
-                        </p>
-                      </div>
-                    </button>
+                    {/* Camera + Upload actions */}
+                    <div className="flex gap-2" data-testid="mobile-action-buttons">
+                      <button
+                        type="button"
+                        onClick={() => cameraInputRef.current?.click()}
+                        disabled={uploadLoading}
+                        className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-border/80 bg-muted/30 hover:bg-muted/50 hover:border-foreground/20 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed py-3 px-4 min-h-[48px]"
+                        aria-label="Take a photo of your dealer quote"
+                        data-testid="button-camera-capture"
+                      >
+                        {uploadLoading && imageIntakeStatus === "processing" ? (
+                          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground shrink-0" />
+                        ) : (
+                          <Camera className="h-5 w-5 text-muted-foreground shrink-0" />
+                        )}
+                        <span className="text-sm font-medium text-foreground">
+                          {uploadLoading && imageIntakeStatus === "processing" ? "Processing..." : "Take Photo"}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploadLoading}
+                        className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-border/80 bg-muted/30 hover:bg-muted/50 hover:border-foreground/20 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed py-3 px-4 min-h-[48px]"
+                        aria-label="Upload a screenshot or PDF"
+                        data-testid="button-upload-file"
+                      >
+                        <Upload className="h-5 w-5 text-muted-foreground shrink-0" />
+                        <span className="text-sm font-medium text-foreground">Upload</span>
+                      </button>
+                    </div>
+
+                    <p className="text-xs text-muted-foreground" data-testid="text-input-guidance">
+                      Works with worksheets, screenshots, buyer's orders, and handwritten dealer notes. You can edit the extracted text before analyzing.
+                    </p>
+
+                    {/* Image intake status messages */}
                     {uploadError && (
-                      <p className="text-xs text-destructive mt-2" data-testid="text-upload-error">
+                      <p className="text-xs text-destructive" role="alert" data-testid="text-upload-error">
                         {uploadError}
                       </p>
                     )}
-                  </TabsContent>
-                  <TabsContent value="url" className="mt-0">
-                    <div className="space-y-3">
-                      <div className="flex gap-2">
-                        <input
-                          type="url"
-                          value={urlInput}
-                          onChange={(e) => setUrlInput(e.target.value)}
-                          placeholder="https://www.dealer-website.com/listing/..."
-                          className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                          disabled={urlLoading}
-                          data-testid="input-url"
-                        />
+                    {imageIntakeStatus === "success" && !uploadError && (
+                      <p className="text-xs text-green-600" role="status" data-testid="text-ocr-success">
+                        Text extracted — review and edit above, then analyze.
+                      </p>
+                    )}
+
+                    <p className="text-xs text-muted-foreground" data-testid="text-privacy-reassurance">
+                      Your information is not shared with any dealership. This is an independent analysis.
+                    </p>
+                  </div>
+                ) : (
+                  /* ── Desktop: tabbed input (Paste | Upload | URL) ── */
+                  <Tabs value={inputTab} onValueChange={(v) => setInputTab(v as "paste" | "upload" | "url")} className="w-full" data-testid="tabs-input-mode">
+                    <TabsList className="w-full flex h-11 mb-4" data-testid="tabs-input-mode-list">
+                      <TabsTrigger value="paste" className="flex-1 text-sm font-medium" data-testid="tab-paste-text">
+                        <FileText className="h-4 w-4 mr-2" />
+                        Paste Text
+                      </TabsTrigger>
+                      <TabsTrigger value="upload" className="flex-1 text-sm font-medium" data-testid="tab-upload">
+                        <Upload className="h-4 w-4 mr-2" />
+                        Upload
+                      </TabsTrigger>
+                      <TabsTrigger value="url" className="flex-1 text-sm font-medium" data-testid="tab-url">
+                        <LinkIcon className="h-4 w-4 mr-2" />
+                        Listing URL
+                      </TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="paste" className="mt-0 space-y-4">
+                      <div className="flex flex-col sm:flex-row gap-2">
                         <Button
                           type="button"
-                          onClick={handleUrlExtract}
-                          disabled={urlLoading || !urlInput.trim()}
-                          variant="outline"
-                          size="default"
-                          data-testid="button-fetch-url"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => form.setValue("dealerText", SAMPLE_GOOD_DEAL)}
+                          data-testid="button-sample-good"
                         >
-                          {urlLoading ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            "Fetch"
-                          )}
+                          Try a good deal example
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => form.setValue("dealerText", SAMPLE_BAD_DEAL)}
+                          data-testid="button-sample-bad"
+                        >
+                          Try a bad deal example
                         </Button>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        Paste a dealer listing URL and we'll extract the pricing details automatically.
+
+                      <div className="rounded-lg bg-muted/40 border border-border/40 px-4 py-3" data-testid="block-example-message">
+                        <div className="flex items-center gap-2 mb-2">
+                          <p className="text-xs font-medium text-muted-foreground">Example dealer message</p>
+                          <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60 border border-border/50 rounded px-1.5 py-0.5 leading-none">Example</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed italic" data-testid="text-example-message">
+                          "Hi, the vehicle is $28,995. With taxes, fees, and protection package you're looking at $34,200 OTD. Monthly comes out to about $540 depending on credit. Let me know when you can come in."
+                        </p>
+                      </div>
+
+                      <FormField
+                        control={form.control}
+                        name="dealerText"
+                        render={({ field }) => (
+                          <FormItem>
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                              <FormLabel className="text-sm font-medium text-foreground">Paste a dealer quote, email, or text message.</FormLabel>
+                              <Link href="/example-analysis" className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors shrink-0" data-testid="link-example-analysis-textarea">
+                                Not sure what to paste? See an example
+                              </Link>
+                            </div>
+                            <FormControl>
+                              <Textarea
+                                {...field}
+                                onFocus={() => handleFormStart()}
+                                onChange={(e) => {
+                                  field.onChange(e);
+                                  if (uploadError) setUploadError(null);
+                                }}
+                                onInput={() => {
+                                  if (!inputStartedRef.current) {
+                                    inputStartedRef.current = true;
+                                    capture("analysis_input_started", { input_method: "typing" });
+                                  }
+                                }}
+                                onPaste={() => {
+                                  if (!inputStartedRef.current) {
+                                    inputStartedRef.current = true;
+                                    capture("analysis_input_started", { input_method: "paste" });
+                                  }
+                                }}
+                                placeholder="Paste the dealer's email, text message, or quote — any format works"
+                                className="min-h-48 text-base resize-y"
+                                data-testid="input-dealer-text"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                            <p className="text-xs text-muted-foreground" data-testid="text-input-guidance">
+                              For best results, include pricing, fees, and any messages from the dealer.
+                            </p>
+                          </FormItem>
+                        )}
+                      />
+                      <p className="text-xs text-muted-foreground" data-testid="text-privacy-reassurance">
+                        Your information is not shared with any dealership. This is an independent analysis.
                       </p>
-                      {urlError && (
-                        <p className="text-xs text-destructive" data-testid="text-url-error">
-                          {urlError}
+                    </TabsContent>
+
+                    <TabsContent value="upload" className="mt-0">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".png,.jpg,.jpeg,.webp,.pdf"
+                        className="hidden"
+                        onChange={handleFileUpload}
+                        data-testid="input-file-upload"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploadLoading}
+                        className="w-full min-h-48 flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-border/80 bg-muted/30 hover:bg-muted/50 hover:border-foreground/20 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        data-testid="button-upload-file"
+                      >
+                        {uploadLoading ? (
+                          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                        ) : (
+                          <Upload className="h-8 w-8 text-muted-foreground" />
+                        )}
+                        <div className="text-center">
+                          <p className="text-sm font-medium text-foreground">
+                            {uploadLoading ? "Processing file..." : "Upload a screenshot or PDF of the dealer quote"}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            PNG, JPG, JPEG, WEBP, or PDF — up to 10 MB
+                          </p>
+                        </div>
+                      </button>
+                      {uploadError && (
+                        <p className="text-xs text-destructive mt-2" data-testid="text-upload-error">
+                          {uploadError}
                         </p>
                       )}
-                    </div>
-                  </TabsContent>
-                </Tabs>
+                    </TabsContent>
+                    <TabsContent value="url" className="mt-0">
+                      <div className="space-y-3">
+                        <div className="flex gap-2">
+                          <input
+                            type="url"
+                            value={urlInput}
+                            onChange={(e) => setUrlInput(e.target.value)}
+                            placeholder="https://www.dealer-website.com/listing/..."
+                            className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            disabled={urlLoading}
+                            data-testid="input-url"
+                          />
+                          <Button
+                            type="button"
+                            onClick={handleUrlExtract}
+                            disabled={urlLoading || !urlInput.trim()}
+                            variant="outline"
+                            size="default"
+                            data-testid="button-fetch-url"
+                          >
+                            {urlLoading ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              "Fetch"
+                            )}
+                          </Button>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Paste a dealer listing URL and we'll extract the pricing details automatically.
+                        </p>
+                        {urlError && (
+                          <p className="text-xs text-destructive" data-testid="text-url-error">
+                            {urlError}
+                          </p>
+                        )}
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                )}
               </CardContent>
             </Card>
 
