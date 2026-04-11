@@ -113,10 +113,18 @@ export function serveStatic(app: Express) {
 
   app.use(express.static(distPath, { redirect: false, index: false }));
 
+  // The SPA shell is renamed to _shell.html during the build (see
+  // script/build.ts) so Vercel doesn't serve it as a static directory index
+  // for `/`, which would bypass meta injection. Fall back to index.html for
+  // local dev where the build hasn't run.
+  const shellPath = fs.existsSync(path.resolve(distPath, "_shell.html"))
+    ? path.resolve(distPath, "_shell.html")
+    : path.resolve(distPath, "index.html");
+
   app.use("*", (req, res) => {
     const pathname = req.originalUrl.split("?")[0];
     const status = isKnownRoute(pathname) ? 200 : 404;
-    let html = fs.readFileSync(path.resolve(distPath, "index.html"), "utf-8");
+    let html = fs.readFileSync(shellPath, "utf-8");
     html = injectSeoMeta(html, pathname);
     res.status(status).type("html").send(injectNonce(html, res));
   });

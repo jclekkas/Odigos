@@ -1,6 +1,7 @@
 import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
-import { rm, readFile } from "fs/promises";
+import { rm, readFile, rename } from "fs/promises";
+import { existsSync } from "fs";
 import { execSync } from "child_process";
 
 // server deps to bundle to reduce openat(2) syscalls
@@ -41,6 +42,14 @@ async function buildAll() {
     console.warn(
       "Prerender skipped (Chromium not available). Server-side meta injection will handle SEO metadata.",
     );
+  }
+
+  // Rename the SPA shell so Vercel doesn't serve it as a static directory
+  // index for `/`, which would bypass server-side meta injection. The Express
+  // catch-all reads from this renamed file and injects per-route meta tags.
+  if (existsSync("dist/public/index.html")) {
+    console.log("renaming dist/public/index.html → dist/public/_shell.html...");
+    await rename("dist/public/index.html", "dist/public/_shell.html");
   }
 
   console.log("building server...");
