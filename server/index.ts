@@ -59,6 +59,13 @@ if (sentryEnabled) {
 
 const app = express();
 
+// Module-level init state so that diagnostic routes (e.g. /api/health) can
+// report whether initialize() succeeded. Updated from inside initialize().
+const initState: { done: boolean; error: unknown } = { done: false, error: null };
+export function getInitState(): Readonly<{ done: boolean; error: unknown }> {
+  return initState;
+}
+
 declare module "http" {
   interface IncomingMessage {
     rawBody: unknown;
@@ -290,6 +297,28 @@ app.use((req, res, next) => {
   next();
 });
 
+// Always-available diagnostic endpoint. Registered synchronously at module
+// load (before initialize() runs) so that operators can still reach
+// /api/health and read initState even when initialization failed.
+app.get("/api/health", (_req, res) => {
+  const uptimeSeconds = process.uptime();
+  const mem = process.memoryUsage();
+  const heapUsedMb = Math.round((mem.heapUsed / 1024 / 1024) * 10) / 10;
+  const heapTotalMb = Math.round((mem.heapTotal / 1024 / 1024) * 10) / 10;
+  const rssMb = Math.round((mem.rss / 1024 / 1024) * 10) / 10;
+  const memoryStatus = rssMb > 1536 ? "degraded" : "ok";
+  const status = initState.error ? "degraded" : memoryStatus;
+  res.json({
+    status,
+    uptimeSeconds: Math.round(uptimeSeconds),
+    memory: { heapUsedMb, heapTotalMb, rssMb },
+    initialized: initState.done,
+    initError: initState.error
+      ? String((initState.error as Error)?.message ?? initState.error)
+      : null,
+  });
+});
+
 /**
  * Ensures the warehouse schema exists on every server startup.
  *
@@ -299,6 +328,10 @@ app.use((req, res, next) => {
  * server always starts even if the warehouse is unavailable.
  */
 async function ensureWarehouseSchema(): Promise<void> {
+  if (!process.env.DATABASE_URL) {
+    console.log("[warehouse] DATABASE_URL not set — skipping schema bootstrap.");
+    return;
+  }
   try {
     const result = await db.execute(sql`
       SELECT EXISTS (
@@ -484,30 +517,56 @@ async function ensureAppSchema(): Promise<void> {
 
 // ── Async initialization (shared by Vercel serverless + standalone) ─────────
 export async function initialize(): Promise<void> {
-  await initRateLimiters();
+  try {
+    // Structured log of which critical env vars are present. Boolean-only
+    // (no values) so this cannot leak secrets. Essential for diagnosing
+    // Vercel production failures where misconfigured env vars are the most
+    // common root cause.
+    logger.info("startup env presence", {
+      DATABASE_URL: Boolean(process.env.DATABASE_URL),
+      AI_INTEGRATIONS_OPENAI_API_KEY: Boolean(process.env.AI_INTEGRATIONS_OPENAI_API_KEY),
+      AI_INTEGRATIONS_OPENAI_BASE_URL: Boolean(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL),
+      REDIS_URL: Boolean(process.env.REDIS_URL),
+      SENTRY_DSN: Boolean(process.env.SENTRY_DSN),
+      NODE_ENV: process.env.NODE_ENV ?? null,
+      VERCEL: Boolean(process.env.VERCEL),
+    });
 
-  await ensureWarehouseSchema();
-  await ensureAppSchema();
+    await initRateLimiters();
 
-  await registerRoutes(app);
+    await ensureWarehouseSchema();
+    await ensureAppSchema();
 
-  if (sentryEnabled) {
-    Sentry.setupExpressErrorHandler(app);
-  }
+    await registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+    if (sentryEnabled) {
+      Sentry.setupExpressErrorHandler(app);
+    }
 
-    logger.error("unhandled error", { statusCode: status, error: message });
-    res.status(status).json({ message });
+    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+      const status = err.status || err.statusCode || 500;
+      const message = err.message || "Internal Server Error";
+
+      logger.error("unhandled error", { statusCode: status, error: message, stack: err?.stack });
+      if (!res.headersSent) {
+        res.status(status).json({ message });
+      }
+    });
+
+    // In production, serve static assets and inject SEO metadata.
+    // In development, Vite dev server is set up in the standalone block below.
+    if (process.env.NODE_ENV === "production") {
+      serveStatic(app);
+    }
+
+    initState.done = true;
+  } catch (err) {
+    initState.error = err;
+    logger.error("initialize() failed", {
+      error: String(err),
+      stack: (err as Error)?.stack,
+    });
     throw err;
-  });
-
-  // In production, serve static assets and inject SEO metadata.
-  // In development, Vite dev server is set up in the standalone block below.
-  if (process.env.NODE_ENV === "production") {
-    serveStatic(app);
   }
 }
 
@@ -577,9 +636,11 @@ if (!process.env.VERCEL) {
       } catch { /* scheduler may not have been imported */ }
 
       try {
-        const { pool } = await import("./db.js");
-        await pool.end();
-        logger.info("Database pool drained");
+        const dbModule = await import("./db.js");
+        if (dbModule.isPoolInitialized()) {
+          await dbModule.pool.end();
+          logger.info("Database pool drained");
+        }
       } catch { /* pool may not exist */ }
 
       if (sentryEnabled) {

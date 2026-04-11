@@ -101,9 +101,16 @@ export class AnalyzeServiceError extends Error {
   }
 }
 
-const AI_MAX_RETRIES = 2;
-const AI_ATTEMPT_TIMEOUT_MS = 30_000;
-const AI_TOTAL_BUDGET_MS = 75_000;
+// Vercel function maxDuration is 30s (see vercel.json). These constants must
+// leave enough headroom for Express middleware, DB writes, response
+// serialization, and cold-start jitter. Total AI budget (25s) + everything
+// else (~1s) + headroom (~4s) = under 30s. One retry covers transient OpenAI
+// hiccups; a second retry cannot fit in the remaining budget after a 22s
+// first attempt, so withJitteredBackoff correctly skips it and we return a
+// real 502 from the handler rather than dying at the Vercel boundary.
+const AI_MAX_RETRIES = 1;
+const AI_ATTEMPT_TIMEOUT_MS = 22_000;
+const AI_TOTAL_BUDGET_MS = 25_000;
 
 export async function runAnalysis(data: AnalyzeInput): Promise<AnalyzeServiceResult> {
   logger.info("New submission", { source: "analyze", textLength: data.dealerText?.length ?? 0 });

@@ -11,19 +11,9 @@ export function registerReferenceRoutes(app: Express): void {
     return res.json(data);
   });
 
-  app.get("/api/health", (_req, res) => {
-    const uptimeSeconds = process.uptime();
-    const mem = process.memoryUsage();
-    const heapUsedMb = Math.round(mem.heapUsed / 1024 / 1024 * 10) / 10;
-    const heapTotalMb = Math.round(mem.heapTotal / 1024 / 1024 * 10) / 10;
-    const rssM = Math.round(mem.rss / 1024 / 1024 * 10) / 10;
-    const status = rssM > 1536 ? "degraded" : "ok";
-    res.json({
-      status,
-      uptimeSeconds: Math.round(uptimeSeconds),
-      memory: { heapUsedMb, heapTotalMb, rssMb: rssM },
-    });
-  });
+  // /api/health is registered synchronously at module load in server/index.ts
+  // so that it remains available even when initialize() fails. Do not add it
+  // here — Express would just shadow this registration with the synchronous one.
 
   app.get("/sitemap.xml", (_req, res) => {
     res.type("application/xml");

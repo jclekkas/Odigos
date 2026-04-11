@@ -167,22 +167,6 @@ describe("GET /api/stripe-status", () => {
   });
 });
 
-// ─── GET /api/health ──────────────────────────────────────────────────────────
-
-describe("GET /api/health", () => {
-  it("returns 200 with ok status", async () => {
-    const res = await request(app).get("/api/health");
-    expect(res.status).toBe(200);
-  });
-
-  it("returns JSON content-type", async () => {
-    const res = await request(app).get("/api/health");
-    expect(res.headers["content-type"]).toMatch(/application\/json/);
-  });
-
-  it("returns a JSON body object", async () => {
-    const res = await request(app).get("/api/health");
-    expect(typeof res.body).toBe("object");
-    expect(res.body).not.toBeNull();
-  });
-});
+// Note: /api/health is now registered synchronously in server/index.ts (not
+// via registerRoutes) so that it remains available when initialize() fails.
+// Its integration is covered by scripts/smoke-test.ts against a running server.
