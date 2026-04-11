@@ -329,6 +329,12 @@ describe("Cancellation behavior", () => {
     expect(cameraBtn).toBeInTheDocument();
     expect(cameraBtn).not.toBeDisabled();
 
+    // No error message should appear
+    expect(screen.queryByTestId("text-upload-error")).not.toBeInTheDocument();
+
+    // No success message either
+    expect(screen.queryByTestId("text-ocr-success")).not.toBeInTheDocument();
+
     // Textarea remains intact
     const textarea = await screen.findByTestId("input-dealer-text");
     expect(textarea).toHaveValue("");
@@ -347,6 +353,26 @@ describe("Cancellation behavior", () => {
     fireEvent.change(cameraInput, { target: { files: [] } });
 
     expect(textarea).toHaveValue("Existing content");
+    // No error or loading state from a cancellation
+    expect(screen.queryByTestId("text-upload-error")).not.toBeInTheDocument();
+  });
+
+  it("cancellation after a previous error clears no additional state", async () => {
+    mockMobileViewport();
+    setupFetchMock({ ok: false, status: 500, body: { message: "Server error" } });
+    renderHome();
+
+    // First: trigger a real failure
+    const cameraInput = await screen.findByTestId("input-camera-capture");
+    fireEvent.change(cameraInput, { target: { files: [createFakeImageFile()] } });
+    await screen.findByTestId("text-upload-error");
+
+    // Then: cancel a second attempt (empty files)
+    fireEvent.change(cameraInput, { target: { files: [] } });
+
+    // Camera button should still be enabled for retry
+    const cameraBtn = await screen.findByTestId("button-camera-capture");
+    expect(cameraBtn).not.toBeDisabled();
   });
 });
 
@@ -510,6 +536,113 @@ describe("OCR exception / timeout", () => {
   });
 });
 
+// ─── Retry behavior after failure ────────────────────────────────────────────
+
+describe("Retry behavior after failure", () => {
+  it("allows successful retry after a failed OCR attempt", async () => {
+    mockMobileViewport();
+    let extractCallCount = 0;
+    // Mock fetch to fail on first extract-text call, succeed on second
+    vi.stubGlobal("fetch", vi.fn((url: string) => {
+      if (url.includes("stripe-status")) {
+        return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(mockStripeStatus), text: () => Promise.resolve("{}") });
+      }
+      if (url.includes("stats")) {
+        return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(mockStatsCount), text: () => Promise.resolve("{}") });
+      }
+      if (url.includes("/api/extract-text")) {
+        extractCallCount++;
+        if (extractCallCount === 1) {
+          return Promise.resolve({
+            ok: false, status: 500,
+            json: () => Promise.resolve({ message: "Server error" }),
+            text: () => Promise.resolve("{}"),
+          });
+        }
+        return Promise.resolve({
+          ok: true, status: 200,
+          json: () => Promise.resolve({ text: "Retry succeeded: OTD $35,000 with APR 4.9% for 60 months." }),
+          text: () => Promise.resolve(JSON.stringify({ text: "Retry succeeded: OTD $35,000 with APR 4.9% for 60 months." })),
+        });
+      }
+      return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({}), text: () => Promise.resolve("{}") });
+    }));
+    renderHome();
+
+    // First attempt: fails
+    const cameraInput = await screen.findByTestId("input-camera-capture");
+    fireEvent.change(cameraInput, { target: { files: [createFakeImageFile()] } });
+
+    // Verify failure state
+    await screen.findByTestId("text-upload-error");
+    const cameraBtn = await screen.findByTestId("button-camera-capture");
+    expect(cameraBtn).not.toBeDisabled();
+
+    // Second attempt: succeeds (same fetch mock, different call count)
+    const cameraInputRetry = await screen.findByTestId("input-camera-capture");
+    fireEvent.change(cameraInputRetry, { target: { files: [createFakeImageFile("retry.jpg")] } });
+
+    const textarea = await screen.findByTestId("input-dealer-text");
+    await waitFor(() => {
+      expect(textarea).toHaveValue("Retry succeeded: OTD $35,000 with APR 4.9% for 60 months.");
+    });
+
+    // Error should be cleared after successful retry
+    expect(screen.queryByTestId("text-upload-error")).not.toBeInTheDocument();
+
+    // Success message should appear
+    await waitFor(() => {
+      expect(screen.getByTestId("text-ocr-success")).toBeInTheDocument();
+    });
+  });
+
+  it("allows retry after empty OCR result", async () => {
+    mockMobileViewport();
+    let extractCallCount = 0;
+    // Mock fetch: first extract-text returns empty, second returns real text
+    vi.stubGlobal("fetch", vi.fn((url: string) => {
+      if (url.includes("stripe-status")) {
+        return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(mockStripeStatus), text: () => Promise.resolve("{}") });
+      }
+      if (url.includes("stats")) {
+        return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(mockStatsCount), text: () => Promise.resolve("{}") });
+      }
+      if (url.includes("/api/extract-text")) {
+        extractCallCount++;
+        if (extractCallCount === 1) {
+          return Promise.resolve({
+            ok: true, status: 200,
+            json: () => Promise.resolve({ text: "" }),
+            text: () => Promise.resolve(JSON.stringify({ text: "" })),
+          });
+        }
+        return Promise.resolve({
+          ok: true, status: 200,
+          json: () => Promise.resolve({ text: "Now it worked: $28,995 OTD" }),
+          text: () => Promise.resolve(JSON.stringify({ text: "Now it worked: $28,995 OTD" })),
+        });
+      }
+      return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({}), text: () => Promise.resolve("{}") });
+    }));
+    renderHome();
+
+    // First attempt: empty OCR
+    const cameraInput = await screen.findByTestId("input-camera-capture");
+    fireEvent.change(cameraInput, { target: { files: [createFakeImageFile()] } });
+    await screen.findByTestId("text-upload-error");
+    expect(screen.queryByTestId("text-ocr-success")).not.toBeInTheDocument();
+
+    // Second attempt: success
+    const cameraInputRetry = await screen.findByTestId("input-camera-capture");
+    fireEvent.change(cameraInputRetry, { target: { files: [createFakeImageFile("clearer.jpg")] } });
+
+    const textarea = await screen.findByTestId("input-dealer-text");
+    await waitFor(() => {
+      expect(textarea).toHaveValue("Now it worked: $28,995 OTD");
+    });
+  });
+});
+
 // ─── Partial OCR result ──────────────────────────────────────────────────────
 
 describe("Partial OCR result", () => {
@@ -588,5 +721,127 @@ describe("Accessibility basics", () => {
 
     const uploadBtn = await screen.findByTestId("button-upload-file");
     expect(uploadBtn.className).toContain("min-h-[48px]");
+  });
+});
+
+// ─── Source field propagation ────────────────────────────────────────────────
+
+describe("Source field propagation", () => {
+  it("camera capture sets source to 'camera' and submits it to the API", async () => {
+    mockMobileViewport();
+    const extractedText = "OTD $35,000. APR 4.9% for 60 months.";
+    // Mock both extract-text and analyze endpoints
+    vi.stubGlobal("fetch", vi.fn((url: string, opts?: RequestInit) => {
+      if (url.includes("stripe-status")) {
+        return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(mockStripeStatus), text: () => Promise.resolve("{}") });
+      }
+      if (url.includes("stats")) {
+        return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(mockStatsCount), text: () => Promise.resolve("{}") });
+      }
+      if (url.includes("/api/extract-text")) {
+        return Promise.resolve({
+          ok: true, status: 200,
+          json: () => Promise.resolve({ text: extractedText }),
+          text: () => Promise.resolve(JSON.stringify({ text: extractedText })),
+        });
+      }
+      if (url.includes("/api/analyze") && opts?.method === "POST") {
+        // Capture the payload and verify source field
+        const body = JSON.parse(opts.body as string);
+        expect(body.source).toBe("camera");
+        return Promise.resolve({
+          ok: true, status: 200,
+          json: () => Promise.resolve({
+            dealScore: "GREEN", confidenceLevel: "HIGH", verdictLabel: "GO",
+            goNoGo: "GO", summary: "OK", detectedFields: {
+              salePrice: 35000, msrp: null, rebates: null, fees: [],
+              outTheDoorPrice: 35000, monthlyPayment: null, tradeInValue: null,
+              apr: 4.9, termMonths: 60, downPayment: null,
+            },
+            missingInfo: [], suggestedReply: "", reasoning: "", docFeeCapCheck: null,
+          }),
+          text: () => Promise.resolve("{}"),
+        });
+      }
+      return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({}), text: () => Promise.resolve("{}") });
+    }));
+    const user = userEvent.setup();
+    renderHome();
+
+    // Camera capture → OCR fills textarea
+    const cameraInput = await screen.findByTestId("input-camera-capture");
+    fireEvent.change(cameraInput, { target: { files: [createFakeImageFile()] } });
+    const textarea = await screen.findByTestId("input-dealer-text");
+    await waitFor(() => {
+      expect(textarea).toHaveValue(extractedText);
+    });
+
+    // Submit the form — the assertion on body.source is inside the fetch mock above
+    const analyzeBtn = await screen.findByTestId("button-analyze");
+    await user.click(analyzeBtn);
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/api/analyze"),
+        expect.objectContaining({ method: "POST" })
+      );
+    });
+  });
+
+  it("standard upload sets source to 'upload', not 'camera'", async () => {
+    mockMobileViewport();
+    vi.stubGlobal("fetch", vi.fn((url: string, opts?: RequestInit) => {
+      if (url.includes("stripe-status")) {
+        return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(mockStripeStatus), text: () => Promise.resolve("{}") });
+      }
+      if (url.includes("stats")) {
+        return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(mockStatsCount), text: () => Promise.resolve("{}") });
+      }
+      if (url.includes("/api/extract-text")) {
+        return Promise.resolve({
+          ok: true, status: 200,
+          json: () => Promise.resolve({ text: "Upload text here for testing." }),
+          text: () => Promise.resolve(JSON.stringify({ text: "Upload text here for testing." })),
+        });
+      }
+      if (url.includes("/api/analyze") && opts?.method === "POST") {
+        const body = JSON.parse(opts.body as string);
+        expect(body.source).toBe("upload");
+        return Promise.resolve({
+          ok: true, status: 200,
+          json: () => Promise.resolve({
+            dealScore: "GREEN", confidenceLevel: "HIGH", verdictLabel: "GO",
+            goNoGo: "GO", summary: "OK", detectedFields: {
+              salePrice: 30000, msrp: null, rebates: null, fees: [],
+              outTheDoorPrice: 30000, monthlyPayment: null, tradeInValue: null,
+              apr: null, termMonths: null, downPayment: null,
+            },
+            missingInfo: [], suggestedReply: "", reasoning: "", docFeeCapCheck: null,
+          }),
+          text: () => Promise.resolve("{}"),
+        });
+      }
+      return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({}), text: () => Promise.resolve("{}") });
+    }));
+    const user = userEvent.setup();
+    renderHome();
+
+    // Use the upload input (not camera)
+    const fileInput = await screen.findByTestId("input-file-upload");
+    fireEvent.change(fileInput, { target: { files: [createFakeImageFile("screenshot.png", "image/png")] } });
+    const textarea = await screen.findByTestId("input-dealer-text");
+    await waitFor(() => {
+      expect(textarea).toHaveValue("Upload text here for testing.");
+    });
+
+    const analyzeBtn = await screen.findByTestId("button-analyze");
+    await user.click(analyzeBtn);
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/api/analyze"),
+        expect.objectContaining({ method: "POST" })
+      );
+    });
   });
 });
