@@ -13,6 +13,7 @@ import { db } from "./db.js";
 import { writeAuditEvent } from "./audit.js";
 import { logger } from "./logger.js";
 import { isAllowedCorsOrigin } from "./corsOrigin.js";
+import { isOpenAIConfigured } from "./openaiClient.js";
 import { createServer } from "http";
 import { sql } from "drizzle-orm";
 
@@ -316,6 +317,7 @@ app.get("/api/health", (_req, res) => {
     initError: initState.error
       ? String((initState.error as Error)?.message ?? initState.error)
       : null,
+    ai: { configured: isOpenAIConfigured() },
   });
 });
 

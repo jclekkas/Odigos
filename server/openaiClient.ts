@@ -2,6 +2,19 @@ import OpenAI from "openai";
 import type { ChatCompletion, ChatCompletionCreateParamsNonStreaming } from "openai/resources/chat/completions";
 import { trackEvent } from "./metrics.js";
 
+/**
+ * Thrown when the OpenAI client cannot be constructed because required
+ * configuration (API key) is missing. Distinct from transient network or
+ * provider errors so callers can surface an actionable, operator-facing
+ * message instead of collapsing it into a generic "AI service error".
+ */
+export class OpenAIConfigurationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "OpenAIConfigurationError";
+  }
+}
+
 // Lazy-init so the module can be imported even if AI_INTEGRATIONS_OPENAI_API_KEY
 // is missing. Constructing the OpenAI client with an undefined apiKey throws
 // synchronously ("Missing credentials"), which would otherwise crash the whole
@@ -13,7 +26,7 @@ function getRawClient(): OpenAI {
   if (_rawClient) return _rawClient;
   const apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
   if (!apiKey) {
-    throw new Error(
+    throw new OpenAIConfigurationError(
       "AI_INTEGRATIONS_OPENAI_API_KEY is not set — AI analysis is unavailable. " +
       "Set AI_INTEGRATIONS_OPENAI_API_KEY on the Vercel project and redeploy.",
     );
