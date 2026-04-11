@@ -1,6 +1,7 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import { breadcrumbListSchema } from "@/lib/jsonld";
 
 interface ArticleLayoutProps {
   children: React.ReactNode;
@@ -9,9 +10,19 @@ interface ArticleLayoutProps {
 }
 
 export default function ArticleLayout({ children, title, showBreadcrumbs = true }: ArticleLayoutProps) {
+  const [location] = useLocation();
+
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
+      {showBreadcrumbs && title && (
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbListSchema([
+            { name: "Guides", path: "/dealer-pricing-problems" },
+            { name: title, path: location },
+          ]))}
+        </script>
+      )}
       <main className="py-10 md:py-16 px-6">
         <div className="max-w-[700px] mx-auto">
           {showBreadcrumbs && title && (

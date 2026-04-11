@@ -30,6 +30,8 @@ interface GscPageItem {
   nextStep: string;
   clicks: number;
   impressions: number;
+  ctr: number;
+  position: number;
   inSitemap: boolean;
 }
 
@@ -148,6 +150,16 @@ function PageRow({
         </div>
         <div className="flex items-center gap-3 flex-shrink-0">
           <StatusBadge status={item.status} />
+          {item.position > 0 && (
+            <span className="flex items-center gap-1 text-xs text-muted-foreground" data-testid="text-position" title="Avg. search position">
+              #{Math.round(item.position)}
+            </span>
+          )}
+          {item.impressions > 0 && (
+            <span className="flex items-center gap-1 text-xs text-muted-foreground" data-testid="text-ctr" title="Click-through rate">
+              {(item.ctr * 100).toFixed(1)}%
+            </span>
+          )}
           {item.clicks > 0 && (
             <span className="flex items-center gap-1 text-xs text-muted-foreground" data-testid="text-clicks">
               <MousePointer className="h-3 w-3" /> {item.clicks.toLocaleString()}

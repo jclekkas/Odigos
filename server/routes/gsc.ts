@@ -84,6 +84,8 @@ interface GscPageItem {
   nextStep: string;
   clicks: number;
   impressions: number;
+  ctr: number;
+  position: number;
   inSitemap: boolean;
 }
 
@@ -283,7 +285,7 @@ async function fetchSearchAnalyticsRaw(
 async function fetchSearchAnalytics(
   accessToken: string,
   siteUrl: string
-): Promise<Map<string, { clicks: number; impressions: number }>> {
+): Promise<Map<string, { clicks: number; impressions: number; ctr: number; position: number }>> {
   const response = await fetchSearchAnalyticsRaw(accessToken, siteUrl);
 
   if (!response.ok) {
@@ -291,13 +293,18 @@ async function fetchSearchAnalytics(
     throw new Error(`GSC search analytics request failed: ${response.status} ${text}`);
   }
 
-  const map = new Map<string, { clicks: number; impressions: number }>();
+  const map = new Map<string, { clicks: number; impressions: number; ctr: number; position: number }>();
   const data = await response.json() as Record<string, unknown>;
   for (const row of (data?.rows as Array<Record<string, unknown>>) ?? []) {
     const keys = row.keys as string[] | undefined;
     const url: string = keys?.[0] ?? "";
     if (url) {
-      map.set(url, { clicks: (row.clicks as number) ?? 0, impressions: (row.impressions as number) ?? 0 });
+      map.set(url, {
+        clicks: (row.clicks as number) ?? 0,
+        impressions: (row.impressions as number) ?? 0,
+        ctr: (row.ctr as number) ?? 0,
+        position: (row.position as number) ?? 0,
+      });
     }
   }
   return map;
@@ -319,7 +326,7 @@ export function registerGscRoutes(app: Express): void {
 
       const resolvedSiteUrl = await getResolvedSiteUrl(accessToken);
 
-      let analyticsMap = new Map<string, { clicks: number; impressions: number }>();
+      let analyticsMap = new Map<string, { clicks: number; impressions: number; ctr: number; position: number }>();
       try {
         analyticsMap = await fetchSearchAnalytics(accessToken, resolvedSiteUrl);
       } catch (e: unknown) {
@@ -332,7 +339,7 @@ export function registerGscRoutes(app: Express): void {
 
       const normalizeUrl = (u: string) => u.replace(/\/$/, "");
 
-      const analyticsNormalizedMap = new Map<string, { clicks: number; impressions: number }>();
+      const analyticsNormalizedMap = new Map<string, { clicks: number; impressions: number; ctr: number; position: number }>();
       for (const [url, perf] of Array.from(analyticsMap.entries())) {
         analyticsNormalizedMap.set(normalizeUrl(url), perf);
       }
@@ -349,7 +356,7 @@ export function registerGscRoutes(app: Express): void {
             try {
               const { verdict, coverageState } = await fetchUrlInspection(accessToken, resolvedSiteUrl, url);
               const { reason, nextStep } = mapStatusToPlainEnglish(verdict, coverageState);
-              const perf = analyticsNormalizedMap.get(normalizeUrl(url)) ?? { clicks: 0, impressions: 0 };
+              const perf = analyticsNormalizedMap.get(normalizeUrl(url)) ?? { clicks: 0, impressions: 0, ctr: 0, position: 0 };
               const item: GscPageItem = {
                 url,
                 status: coverageState || verdict,
@@ -357,6 +364,8 @@ export function registerGscRoutes(app: Express): void {
                 nextStep,
                 clicks: perf.clicks,
                 impressions: perf.impressions,
+                ctr: perf.ctr,
+                position: perf.position,
                 inSitemap: true,
               };
               const cat = categorise(item);
@@ -390,6 +399,8 @@ export function registerGscRoutes(app: Express): void {
             nextStep: "Google found this page through a link but it's not in your sitemap. If you want Google to index it, add its URL to your sitemap.xml file. If you don't want it indexed, add a 'noindex' tag to the page.",
             clicks: perf.clicks,
             impressions: perf.impressions,
+            ctr: perf.ctr,
+            position: perf.position,
             inSitemap: false,
           });
         }
