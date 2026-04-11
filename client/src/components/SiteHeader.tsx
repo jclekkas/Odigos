@@ -9,8 +9,10 @@ function useScrollToHash() {
 
   return function scrollToHash(hash: string) {
     if (location === "/") {
-      document.getElementById(hash)?.scrollIntoView({ behavior: "smooth" });
-      history.replaceState(null, "", `/#${hash}`);
+        setTimeout(() => {
+          document.getElementById(hash)?.scrollIntoView({ behavior: "smooth" });
+          history.replaceState(null, "", `/#${hash}`);
+        }, 100);
     } else {
       sessionStorage.setItem("scrollToHash", hash);
       navigate("/");
