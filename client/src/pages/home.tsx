@@ -28,6 +28,12 @@ import {
 import { capture } from "@/lib/analytics";
 import { trackConversion, useExperiment } from "@/lib/experiments";
 import { tagFlow } from "@/lib/sentry";
+import {
+  uploadFileForExtraction,
+  maxUploadBytesFor,
+  FileTooLargeError,
+  UploadExtractionError,
+} from "@/lib/uploadForExtraction";
 import { setSeoMeta } from "@/lib/seo";
 import { howToSchema } from "@/lib/jsonld";
 import {
@@ -1195,7 +1201,10 @@ function getStoredTier(): UnlockTier {
 }
 
 const ALLOWED_UPLOAD_TYPES = ["image/png", "image/jpeg", "image/webp", "application/pdf"];
-const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+
+function formatSizeCopy(bytes: number): string {
+  return `${Math.round(bytes / (1024 * 1024))} MB`;
+}
 
 const UNLOCK_CTA_LABELS: Record<string, string> = {
   control: "Start 14 Days of Unlimited Scans — $49",
@@ -1291,9 +1300,10 @@ export default function Home() {
       setImageIntakeStatus("invalid");
       return;
     }
-    if (file.size > MAX_UPLOAD_BYTES) {
+    const maxBytes = maxUploadBytesFor(file.type);
+    if (file.size > maxBytes) {
       const reason = "file_too_large";
-      setUploadError("That file is too large to process. Please use a file under 10 MB.");
+      setUploadError(`That file is too large to process. Please use a file under ${formatSizeCopy(maxBytes)}.`);
       capture("file_upload_failed", { reason, file_size_bytes: file.size, input_method: source });
       trackFileUploadFailed(reason);
       setImageIntakeStatus("invalid");
@@ -1308,21 +1318,29 @@ export default function Home() {
     setUploadLoading(true);
     setImageIntakeStatus("processing");
     try {
-      tagFlow("extract-text", "/api/extract-text");
-      const formData = new FormData();
-      formData.append("file", file);
-      const response = await fetch("/api/extract-text", { method: "POST", body: formData });
-      const data = await response.json();
-      if (!response.ok) {
-        const reason = data.message ?? "server_error";
-        setUploadError(data.message ?? "We couldn't process that image. Please try again or paste the text manually.");
-        capture("file_upload_failed", { reason, status: response.status, input_method: source });
-        trackFileUploadFailed(reason);
-        setImageIntakeStatus("failed");
-        return;
+      let extractedText: string;
+      try {
+        const result = await uploadFileForExtraction(file);
+        extractedText = result.text ?? "";
+      } catch (err) {
+        if (err instanceof FileTooLargeError) {
+          const reason = "file_too_large";
+          setUploadError(`That file is too large to process. Please use a file under ${formatSizeCopy(err.cap)}.`);
+          capture("file_upload_failed", { reason, file_size_bytes: file.size, input_method: source });
+          trackFileUploadFailed(reason);
+          setImageIntakeStatus("invalid");
+          return;
+        }
+        if (err instanceof UploadExtractionError) {
+          const reason = err.reason || "server_error";
+          setUploadError(err.message);
+          capture("file_upload_failed", { reason, status: err.status, input_method: source });
+          trackFileUploadFailed(reason);
+          setImageIntakeStatus("failed");
+          return;
+        }
+        throw err;
       }
-
-      const extractedText: string = data.text ?? "";
       if (!extractedText.trim()) {
         setUploadError("We couldn't read any text from that image. Try a clearer, well-lit photo, or paste the quote manually.");
         capture("file_upload_failed", { reason: "empty_ocr_result", input_method: source });

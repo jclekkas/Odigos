@@ -415,8 +415,9 @@ describe("Invalid file handling", () => {
     setupFetchMock();
     renderHome();
 
-    // Create a file larger than 10 MB
-    const bigFile = createFakeImageFile("huge.jpg", "image/jpeg", 11 * 1024);
+    // Images are capped at 15 MB (OpenAI Vision binary ceiling); anything
+    // larger is rejected client-side before any upload attempt.
+    const bigFile = createFakeImageFile("huge.jpg", "image/jpeg", 16 * 1024);
     const cameraInput = await screen.findByTestId("input-camera-capture");
     fireEvent.change(cameraInput, { target: { files: [bigFile] } });
 
