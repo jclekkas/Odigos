@@ -1,0 +1,73 @@
+name: Remove Replit Dependencies
+on:
+  workflow_dispatch:
+jobs:
+  fix-replit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Create fix script
+        run: |
+          cat > fix-replit-deps.mjs << 'SCRIPT'
+          import fs from 'fs';
+
+          // 1. Fix payments.ts - replace REPLIT_DOMAINS with VITE_SITE_URL
+          const paymentsPath = 'server/routes/payments.ts';
+          let payments = fs.readFileSync(paymentsPath, 'utf8');
+          // Match the multi-line baseUrl pattern with REPLIT_DOMAINS
+          const replitDomainsPattern = /const baseUrl = process\.env\.REPLIT_DOMAINS\s*\n\s*\? `https:\/\/\$\{process\.env\.REPLIT_DOMAINS\.split\(",")\[0\]\}`\s*\n\s*: "http:\/\/localhost:5000";/g;
+          const newBaseUrl = 'const baseUrl = process.env.VITE_SITE_URL\n      ? process.env.VITE_SITE_URL.replace(/\\\\/$/, "")\n      : "https://www.odigosauto.com";';
+          payments = payments.replace(replitDomainsPattern, newBaseUrl);
+          fs.writeFileSync(paymentsPath, payments);
+          const count1 = (payments.match(/REPLIT_DOMAINS/g) || []).length;
+          console.log('payments.ts: remaining REPLIT_DOMAINS refs:', count1);
+
+          // 2. Fix alerts.ts - disable REPLIT_DB_URL (use in-memory only)
+          const alertsPath = 'server/alerts.ts';
+          let alerts = fs.readFileSync(alertsPath, 'utf8');
+          alerts = alerts.replace(
+            'const REPLIT_DB_URL = process.env.REPLIT_DB_URL;',
+            'const REPLIT_DB_URL: string | undefined = undefined; // Removed Replit KV — in-memory state on Vercel'
+          );
+          fs.writeFileSync(alertsPath, alerts);
+          console.log('alerts.ts: fixed');
+
+          // 3. Fix vite.config.ts - remove Replit plugins
+          const vitePath = 'vite.config.ts';
+          let vite = fs.readFileSync(vitePath, 'utf8');
+          // Remove runtimeErrorOverlay import line
+          vite = vite.replace(/import runtimeErrorOverlay from "@replit\/vite-plugin-runtime-error-modal";\n/, '');
+          // Remove runtimeErrorOverlay() call from plugins
+          vite = vite.replace(/    runtimeErrorOverlay\(\),\n/, '');
+          // Remove the conditional Replit plugins spread
+          vite = vite.replace(/    \.\.\.\(process\.env\.NODE_ENV !== "production" &&[\s\S]*?:\s*\[\]\),\n/, '');
+          fs.writeFileSync(vitePath, vite);
+          console.log('vite.config.ts: fixed');
+          SCRIPT
+      - name: Run fix script
+        run: node fix-replit-deps.mjs
+      - name: Verify no REPLIT references remain in key files
+        run: |
+          echo "Checking payments.ts..."
+          ! grep -n "REPLIT_DOMAINS" server/routes/payments.ts || (echo "FAIL: REPLIT_DOMAINS still present" && exit 1)
+          echo "Checking alerts.ts for active REPLIT_DB_URL..."
+          ! grep -n "process.env.REPLIT_DB_URL" server/alerts.ts || (echo "FAIL: process.env.REPLIT_DB_URL still present" && exit 1)
+          echo "Checking vite.config.ts..."
+          ! grep -n "REPL_ID" vite.config.ts || (echo "FAIL: REPL_ID still present" && exit 1)
+          echo "All checks passed!"
+      - name: Cleanup
+        run: |
+          rm -f fix-replit-deps.mjs
+          rm -f .github/workflows/remove-replit-deps.yml
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "fix: remove Replit-specific dependencies for Vercel deployment"
+          git push
