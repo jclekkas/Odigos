@@ -2,17 +2,35 @@ import OpenAI from "openai";
 import type { ChatCompletion, ChatCompletionCreateParamsNonStreaming } from "openai/resources/chat/completions";
 import { trackEvent } from "./metrics.js";
 
-const rawClient = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-});
+// Lazy-init so the module can be imported even if AI_INTEGRATIONS_OPENAI_API_KEY
+// is missing. Constructing the OpenAI client with an undefined apiKey throws
+// synchronously ("Missing credentials"), which would otherwise crash the whole
+// serverless function at cold-start and make /api/health unreachable. Callers
+// see an informative error only when they actually invoke the API.
+let _rawClient: OpenAI | undefined;
+
+function getRawClient(): OpenAI {
+  if (_rawClient) return _rawClient;
+  const apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error(
+      "AI_INTEGRATIONS_OPENAI_API_KEY is not set — AI analysis is unavailable. " +
+      "Set AI_INTEGRATIONS_OPENAI_API_KEY on the Vercel project and redeploy.",
+    );
+  }
+  _rawClient = new OpenAI({
+    apiKey,
+    baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+  });
+  return _rawClient;
+}
 
 async function trackedCreate(
   params: ChatCompletionCreateParamsNonStreaming
 ): Promise<ChatCompletion> {
   const start = Date.now();
   try {
-    const response = await rawClient.chat.completions.create(params);
+    const response = await getRawClient().chat.completions.create(params);
     const latencyMs = Date.now() - start;
     const usage = response.usage;
     trackEvent("api_request", {
@@ -45,3 +63,7 @@ export const openai = {
     },
   },
 };
+
+export function isOpenAIConfigured(): boolean {
+  return Boolean(process.env.AI_INTEGRATIONS_OPENAI_API_KEY);
+}
