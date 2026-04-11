@@ -415,8 +415,9 @@ describe("Invalid file handling", () => {
     setupFetchMock();
     renderHome();
 
-    // Create a file larger than 10 MB
-    const bigFile = createFakeImageFile("huge.jpg", "image/jpeg", 11 * 1024);
+    // Create a file larger than the 20 MB source ceiling (anything below
+    // that now gets client-side compressed rather than rejected outright).
+    const bigFile = createFakeImageFile("huge.jpg", "image/jpeg", 21 * 1024);
     const cameraInput = await screen.findByTestId("input-camera-capture");
     fireEvent.change(cameraInput, { target: { files: [bigFile] } });
 
