@@ -215,8 +215,30 @@ async function initRateLimiters(): Promise<void> {
     },
   });
 
+  // Blob upload path: cap anonymous callers at 10 token-issues + extract calls
+  // per 10-minute window per IP.  Shares a single bucket across both routes
+  // so one completed large upload costs one token from the bucket.
+  const blobUploadLimiter = rateLimit({
+    windowMs: 10 * 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    ...storeOption,
+    handler: async (req, res) => {
+      await writeAuditEvent(req, "rate_limit_breach", "failure", {
+        route: req.originalUrl,
+        method: req.method,
+        rateLimitBucket: "blob_upload",
+        statusCode: 429,
+      });
+      res.status(429).json({ error: "Too many requests", message: "Upload rate limit exceeded. Please wait a few minutes before trying again." });
+    },
+  });
+
   app.use("/api/", generalLimiter);
   app.use("/api/analyze", analyzeLimiter);
+  app.use("/api/blob/upload-token", blobUploadLimiter);
+  app.use("/api/extract-text-from-blob", blobUploadLimiter);
 }
 
 app.use(

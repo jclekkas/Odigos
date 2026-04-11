@@ -28,9 +28,14 @@ import {
 import { capture } from "@/lib/analytics";
 import { trackConversion, useExperiment } from "@/lib/experiments";
 import { tagFlow } from "@/lib/sentry";
+import {
+  uploadFileForExtraction,
+  maxUploadBytesFor,
+  FileTooLargeError,
+  UploadExtractionError,
+} from "@/lib/uploadForExtraction";
 import { setSeoMeta } from "@/lib/seo";
 import { howToSchema } from "@/lib/jsonld";
-import { compressImageFile, ImageCompressionError } from "@/lib/compressImage";
 import {
   ChevronDown,
   ChevronUp,
@@ -1196,17 +1201,10 @@ function getStoredTier(): UnlockTier {
 }
 
 const ALLOWED_UPLOAD_TYPES = ["image/png", "image/jpeg", "image/webp", "application/pdf"];
-// Ceiling on the *source* file before any compression. Raised to 20 MB so
-// that typical 8–15 MB phone camera shots survive the initial check and are
-// then squeezed below the upload limit by compressImageFile. Anything over
-// 20 MB is almost certainly a screenshot or scan the user should trim first.
-const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
-// Vercel serverless functions reject request bodies over ~4.5 MB at the edge
-// (413 Payload Too Large) before the function handler runs, so `multer`'s
-// larger server-side limit never gets a chance. We compress images down to
-// this ceiling client-side, and fail PDFs over it fast with an actionable
-// message — PDFs cannot be canvas-compressed so there is nothing else to do.
-const VERCEL_SAFE_UPLOAD_BYTES = 3_500_000;
+
+function formatSizeCopy(bytes: number): string {
+  return `${Math.round(bytes / (1024 * 1024))} MB`;
+}
 
 const UNLOCK_CTA_LABELS: Record<string, string> = {
   control: "Start 14 Days of Unlimited Scans — $49",
@@ -1302,23 +1300,10 @@ export default function Home() {
       setImageIntakeStatus("invalid");
       return;
     }
-    if (file.size > MAX_UPLOAD_BYTES) {
+    const maxBytes = maxUploadBytesFor(file.type);
+    if (file.size > maxBytes) {
       const reason = "file_too_large";
-      setUploadError("That file is too large to process. Please use a file under 20 MB.");
-      capture("file_upload_failed", { reason, file_size_bytes: file.size, input_method: source });
-      trackFileUploadFailed(reason);
-      setImageIntakeStatus("invalid");
-      return;
-    }
-    // PDFs cannot be canvas-compressed client-side, so a PDF above Vercel's
-    // 4.5 MB function-body ceiling would hit a 413 at the edge and look like
-    // a generic network failure. Fail fast with an actionable message.
-    if (file.type === "application/pdf" && file.size > VERCEL_SAFE_UPLOAD_BYTES) {
-      const reason = "pdf_too_large_for_upload";
-      const mb = (file.size / 1_000_000).toFixed(1);
-      setUploadError(
-        `That PDF is too large to upload directly (${mb} MB). Please export just the dealer quote page as an image, or paste the text.`,
-      );
+      setUploadError(`That file is too large to process. Please use a file under ${formatSizeCopy(maxBytes)}.`);
       capture("file_upload_failed", { reason, file_size_bytes: file.size, input_method: source });
       trackFileUploadFailed(reason);
       setImageIntakeStatus("invalid");
@@ -1333,69 +1318,36 @@ export default function Home() {
     setUploadLoading(true);
     setImageIntakeStatus("processing");
     try {
-      // Compress supported images (PNG/JPEG/WEBP) down to a size that fits
-      // inside Vercel's request body limit. Small files and PDFs pass
-      // through unchanged. `compressImageFile` throws `ImageCompressionError`
-      // only when the image truly cannot be squeezed small enough.
-      let uploadFile = file;
-      if (file.type !== "application/pdf") {
-        try {
-          uploadFile = await compressImageFile(file, {
-            maxBytes: VERCEL_SAFE_UPLOAD_BYTES,
+      let extractedText: string;
+      try {
+        const result = await uploadFileForExtraction(file);
+        extractedText = result.text ?? "";
+        if (result.compressed) {
+          capture("file_upload_compressed", {
+            original_bytes: result.compressed.originalBytes,
+            compressed_bytes: result.compressed.compressedBytes,
+            input_method: source,
           });
-          if (uploadFile !== file) {
-            capture("file_upload_compressed", {
-              original_bytes: file.size,
-              compressed_bytes: uploadFile.size,
-              input_method: source,
-            });
-          }
-        } catch (compressErr) {
-          const reason = "compression_failed";
-          const message =
-            compressErr instanceof ImageCompressionError
-              ? compressErr.message
-              : "We couldn't prepare that image for upload. Please try a smaller photo or paste the text.";
-          setUploadError(message);
+        }
+      } catch (err) {
+        if (err instanceof FileTooLargeError) {
+          const reason = "file_too_large";
+          setUploadError(`That file is too large to process. Please use a file under ${formatSizeCopy(err.cap)}.`);
           capture("file_upload_failed", { reason, file_size_bytes: file.size, input_method: source });
           trackFileUploadFailed(reason);
-          setImageIntakeStatus("failed");
-          setUploadLoading(false);
+          setImageIntakeStatus("invalid");
           return;
         }
-      }
-
-      tagFlow("extract-text", "/api/extract-text");
-      const formData = new FormData();
-      formData.append("file", uploadFile);
-      const response = await fetch("/api/extract-text", { method: "POST", body: formData });
-      if (!response.ok) {
-        // 413 responses from Vercel's edge come back as HTML, not JSON.
-        // Try JSON first, then fall back to status-aware plain-text handling
-        // so the user sees something actionable instead of "Something went wrong".
-        let serverMessage: string | undefined;
-        try {
-          serverMessage = (await response.clone().json()).message;
-        } catch {
-          // non-JSON body (HTML error page from the platform) — ignore
+        if (err instanceof UploadExtractionError) {
+          const reason = err.reason || "server_error";
+          setUploadError(err.message);
+          capture("file_upload_failed", { reason, status: err.status, input_method: source });
+          trackFileUploadFailed(reason);
+          setImageIntakeStatus("failed");
+          return;
         }
-        const isPayloadTooLarge = response.status === 413;
-        const reason = isPayloadTooLarge
-          ? "payload_too_large"
-          : serverMessage ?? "server_error";
-        setUploadError(
-          isPayloadTooLarge
-            ? "That file is too large for upload. Please try a smaller photo or paste the text manually."
-            : serverMessage ?? "We couldn't process that image. Please try again or paste the text manually.",
-        );
-        capture("file_upload_failed", { reason, status: response.status, input_method: source });
-        trackFileUploadFailed(reason);
-        setImageIntakeStatus("failed");
-        return;
+        throw err;
       }
-      const data = await response.json();
-
-      const extractedText: string = data.text ?? "";
       if (!extractedText.trim()) {
         setUploadError("We couldn't read any text from that image. Try a clearer, well-lit photo, or paste the quote manually.");
         capture("file_upload_failed", { reason: "empty_ocr_result", input_method: source });

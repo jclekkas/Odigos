@@ -64,6 +64,7 @@
     "@types/pdf-parse": "^1.1.5",
     "@types/supertest": "^7.2.0",
     "@typescript-eslint/eslint-plugin": "^8.57.2",
+    "@vercel/blob": "^0.27.3",
     "@typescript-eslint/parser": "^8.57.2",
     "@vitest/coverage-v8": "^4.1.1",
     "class-variance-authority": "^0.7.1",

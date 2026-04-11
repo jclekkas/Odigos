@@ -2,6 +2,8 @@ import * as Sentry from "@sentry/node";
 import type { Express, Request, Response } from "express";
 import multer from "multer";
 import { z } from "zod";
+import { del } from "@vercel/blob";
+import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { analysisRequestSchema } from "../../shared/schema.js";
 import { trackEvent } from "../events.js";
 import { extractTextFromFile, extractTextFromUrl } from "../extractText.js";
@@ -20,8 +22,18 @@ import { logger } from "../logger.js";
 // OpenAI base URL configured via AI_INTEGRATIONS_OPENAI_BASE_URL env var
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
-const ALLOWED_MIME_TYPES = ["image/png", "image/jpeg", "image/webp", "application/pdf"];
+const ALLOWED_MIME_TYPES = ["image/png", "image/jpeg", "image/webp", "application/pdf"] as const;
+const ALLOWED_MIME_SET: readonly string[] = ALLOWED_MIME_TYPES;
 const SHORT_TEXT_MSG = "We couldn't read enough text from that file. Try pasting the text or uploading a clearer image.";
+
+// Per-type ceilings for the Vercel Blob escape hatch.  Images are bounded by
+// OpenAI Vision's binary payload limit (~15 MB); PDFs run through pdf-parse
+// locally so they can go higher.
+const IMAGE_BLOB_CAP = 15 * 1024 * 1024;
+const PDF_BLOB_CAP = 100 * 1024 * 1024;
+const BLOB_HOST_SUFFIX = ".public.blob.vercel-storage.com";
+const BLOB_PATH_PREFIX = "dealer-quotes/";
+const BLOB_FETCH_TIMEOUT_MS = 25_000;
 
 function runUploadMiddleware(req: Request, res: Response): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -109,7 +121,7 @@ export function registerAnalyzeRoutes(app: Express): void {
         return res.status(400).json({ message: "No file uploaded." });
       }
       const { mimetype, buffer } = req.file;
-      if (!ALLOWED_MIME_TYPES.includes(mimetype)) {
+      if (!ALLOWED_MIME_SET.includes(mimetype)) {
         trackEvent("file_processing", { fileSuccess: false, fileFailReason: "unsupported_mime_type" });
         return res.status(400).json({ message: "That file type isn't supported." });
       }
@@ -296,6 +308,164 @@ export function registerAnalyzeRoutes(app: Express): void {
         Sentry.captureException(err);
       });
       res.status(500).json({ message: "Something went wrong. Please try again." });
+    }
+  });
+
+  // ─── POST /api/blob/upload-token ────────────────────────────────────────────
+  // Issues a short-lived client upload token for Vercel Blob.  Called by the
+  // browser before a direct-to-storage upload when a file exceeds the inline
+  // 20 MB multipart ceiling.  onBeforeGenerateToken enforces the MIME allowlist
+  // and the largest per-type cap (PDFs).  The narrower image cap is enforced
+  // on the /api/extract-text-from-blob route because contentType isn't known
+  // at token-issue time for all flows.
+  app.post("/api/blob/upload-token", async (req, res) => {
+    try {
+      const body = req.body as HandleUploadBody;
+      const json = await handleUpload({
+        body,
+        request: req,
+        onBeforeGenerateToken: async (pathname) => {
+          if (!pathname.startsWith(BLOB_PATH_PREFIX)) {
+            throw new Error("Invalid pathname prefix");
+          }
+          return {
+            allowedContentTypes: [...ALLOWED_MIME_TYPES],
+            addRandomSuffix: true,
+            maximumSizeInBytes: PDF_BLOB_CAP,
+            validUntil: Date.now() + 60_000,
+          };
+        },
+        onUploadCompleted: async () => {
+          // Synchronous text extraction happens via POST /api/extract-text-from-blob
+          // issued by the client after upload() resolves.  This webhook just
+          // signals completion; nothing else to do.
+        },
+      });
+      return res.json(json);
+    } catch (err) {
+      console.error("[blob-upload-token] error:", err);
+      Sentry.withScope((scope) => {
+        scope.setTag("feature", "blob-upload-token");
+        scope.setTag("route", "/api/blob/upload-token");
+        scope.setTag("error_type", err instanceof Error ? err.constructor.name : "unknown");
+        Sentry.captureException(err);
+      });
+      return res.status(400).json({
+        message: "Unable to authorize upload. Please try again.",
+      });
+    }
+  });
+
+  // ─── POST /api/extract-text-from-blob ──────────────────────────────────────
+  // Companion endpoint to /api/blob/upload-token.  Fetches a blob that the
+  // browser just uploaded, runs the same extractor used by /api/extract-text,
+  // and always deletes the blob afterward to prevent orphaned storage.
+  app.post("/api/extract-text-from-blob", async (req, res) => {
+    const blobSchema = z.object({
+      blobUrl: z.string().url(),
+      contentType: z.enum(ALLOWED_MIME_TYPES),
+    });
+    const parseResult = blobSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      trackEvent("file_processing", { fileSuccess: false, fileFailReason: "invalid_request" });
+      return res.status(400).json({ message: "Invalid request." });
+    }
+    const { blobUrl, contentType } = parseResult.data;
+
+    // SSRF guard: only accept Vercel Blob storage hostnames over HTTPS.
+    let parsedUrl: URL;
+    try {
+      parsedUrl = new URL(blobUrl);
+    } catch {
+      trackEvent("file_processing", { fileSuccess: false, fileFailReason: "invalid_blob_url" });
+      return res.status(400).json({ message: "Invalid blob URL." });
+    }
+    if (parsedUrl.protocol !== "https:" || !parsedUrl.hostname.endsWith(BLOB_HOST_SUFFIX)) {
+      trackEvent("file_processing", { fileSuccess: false, fileFailReason: "blob_host_rejected" });
+      return res.status(400).json({ message: "Invalid blob URL." });
+    }
+
+    const perTypeCap = contentType === "application/pdf" ? PDF_BLOB_CAP : IMAGE_BLOB_CAP;
+
+    try {
+      // Streaming fetch with a running byte cap.  Do NOT trust Content-Length —
+      // it's advisory and can be spoofed.  If the running total exceeds the
+      // cap we abort the fetch and return 413.
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), BLOB_FETCH_TIMEOUT_MS);
+
+      let buffer: Buffer;
+      try {
+        const response = await fetch(blobUrl, { signal: controller.signal });
+        if (!response.ok) {
+          trackEvent("file_processing", { fileSuccess: false, fileFailReason: "blob_fetch_failed" });
+          return res.status(502).json({ message: "Unable to retrieve uploaded file." });
+        }
+        if (!response.body) {
+          trackEvent("file_processing", { fileSuccess: false, fileFailReason: "blob_empty_body" });
+          return res.status(502).json({ message: "Unable to retrieve uploaded file." });
+        }
+
+        const reader = response.body.getReader();
+        const chunks: Uint8Array[] = [];
+        let total = 0;
+        let capped = false;
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          if (value) {
+            total += value.byteLength;
+            if (total > perTypeCap) {
+              capped = true;
+              try { controller.abort(); } catch { /* ignore */ }
+              break;
+            }
+            chunks.push(value);
+          }
+        }
+        if (capped) {
+          trackEvent("file_processing", { fileSuccess: false, fileFailReason: "file_too_large" });
+          return res.status(413).json({
+            message: `That file is too large to process. Please use a file under ${Math.round(perTypeCap / (1024 * 1024))} MB.`,
+          });
+        }
+        buffer = Buffer.concat(chunks, total);
+      } finally {
+        clearTimeout(timeout);
+      }
+
+      let text: string;
+      try {
+        text = await extractTextFromFile(buffer, contentType);
+      } catch (err) {
+        console.error("[extract-text-from-blob] extraction error:", err);
+        trackEvent("file_processing", {
+          fileSuccess: false,
+          fileFailReason: err instanceof Error ? err.message.slice(0, 100) : "extraction_error",
+        });
+        return res.status(422).json({ message: SHORT_TEXT_MSG });
+      }
+
+      if (text.length < 20) {
+        trackEvent("file_processing", { fileSuccess: false, fileFailReason: "too_short" });
+        return res.status(422).json({ message: SHORT_TEXT_MSG });
+      }
+
+      trackEvent("file_processing", { fileSuccess: true });
+      return res.json({ text });
+    } catch (err) {
+      console.error("[extract-text-from-blob] error:", err);
+      Sentry.withScope((scope) => {
+        scope.setTag("feature", "extract-text-blob");
+        scope.setTag("route", "/api/extract-text-from-blob");
+        scope.setTag("error_type", err instanceof Error ? err.constructor.name : "unknown");
+        Sentry.captureException(err);
+      });
+      return res.status(500).json({ message: "Something went wrong. Please try again." });
+    } finally {
+      // Always clean up — runs on success, extraction error, and timeout.
+      del(blobUrl).catch((err) => console.error("[blob] del failed:", err));
     }
   });
 
