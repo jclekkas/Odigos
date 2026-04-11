@@ -57,7 +57,7 @@ export function registerPaymentRoutes(app: Express): void {
 
       const stripe = await getStripeClient();
       const baseUrl = process.env.VITE_SITE_URL
-        ? process.env.VITE_SITE_URL.replace(/\\/$/, "")
+        ? process.env.VITE_SITE_URL.replace(/\/$/, "")
         : "https://www.odigosauto.com";
 
       const metadata: Record<string, string> = {
@@ -106,7 +106,7 @@ export function registerPaymentRoutes(app: Express): void {
         tier === "29" ? "29" : tier === "49" ? "49" : "79";
       const stripe = await getStripeClient();
       const baseUrl = process.env.VITE_SITE_URL
-        ? process.env.VITE_SITE_URL.replace(/\\/$/, "")
+        ? process.env.VITE_SITE_URL.replace(/\/$/, "")
         : "https://www.odigosauto.com";
 
       // Price IDs must be pre-configured in Stripe Dashboard — never create at request time
