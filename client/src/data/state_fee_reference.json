@@ -819,11 +819,11 @@
     "TX": {
       "name": "Texas",
       "abbreviation": "TX",
-      "docFeeCap": true,
-      "docFeeCapAmount": 225,
+      "docFeeCap": false,
+      "docFeeCapAmount": null,
       "docFeeTypicalRange": [
         150,
-        225
+        300
       ],
       "docFeeAverage": 200,
       "stateSalesTaxRate": 0.0625,

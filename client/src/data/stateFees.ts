@@ -2067,14 +2067,14 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Texas",
     abbreviation: "TX",
     slug: "texas",
-    docFeeRange: "Typically $150–$225 (capped at $225)",
-    hasCap: true,
+    docFeeRange: "Typically $150–$300+",
+    hasCap: false,
     pageTitle: "Texas Dealer Doc Fee (2026): No Legal Cap — What Dealers Can Charge",
     h1: "Texas Dealer Doc Fee (2026): No State Limit",
     metaDescription:
       "Texas has no legal cap on dealer doc fees. See how pricing varies and how to evaluate your deal.",
     capNote:
-      "Texas caps dealer documentation fees at $225 — a 'presumed reasonable' limit effective July 11, 2024 (raised from approximately $150 previously). Dealers can charge above $225 only by filing a cost analysis with the OCCC (Texas Administrative Code §84.205). Most Texas dealers charge $150–$225.",
+      "Texas does not set a hard legal cap on dealer documentation fees. A $225 'presumed reasonable' guideline took effect July 11, 2024 (Texas Administrative Code §84.205), but dealers can exceed it by filing a cost analysis with the OCCC. Most dealers charge $150–$225, though higher fees are not uncommon.",
     salesTaxNote:
       "Texas charges a flat 6.25% state motor vehicle sales tax. Local add-ons are limited, so buyers across the state generally see the same effective rate. The tax is calculated on the full purchase price of the vehicle.",
     registrationNote:
@@ -2090,14 +2090,14 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "EV registration fees: if you're buying an electric vehicle in Texas, budget for the $400 first-time fee plus $200 annually.",
     ],
     negotiationNote:
-      "Texas's $225 'presumed reasonable' cap under Texas Administrative Code section 84.205 means most dealers stay at or below this amount — but dealers who file a cost analysis with the OCCC can legally exceed it. Ask what the specific doc fee is before visiting. Texas's flat 6.25% sales tax (minimal local variation) and trade-in credit make OTD math straightforward. The large metro markets — Dallas, Houston, San Antonio, Austin — create real competitive pressure. Getting OTD quotes from 3+ dealers in your metro on the same vehicle is the best negotiation strategy. EV buyers should budget for the $400 first-time fee plus $200/year.",
+      "Texas's $225 'presumed reasonable' guideline under Texas Administrative Code section 84.205 means most dealers stay at or below this amount — but dealers who file a cost analysis with the OCCC can legally exceed it. Ask what the specific doc fee is before visiting. Texas's flat 6.25% sales tax (minimal local variation) and trade-in credit make OTD math straightforward. The large metro markets — Dallas, Houston, San Antonio, Austin — create real competitive pressure. Getting OTD quotes from 3+ dealers in your metro on the same vehicle is the best negotiation strategy. EV buyers should budget for the $400 first-time fee plus $200/year.",
     ctaHeading: "Got a Texas dealer quote?",
     ctaBody:
       "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
     ctaTopBody:
-      "Got a Texas dealer quote? Paste it below — Odigos checks every fee against the $225 cap in 60 seconds. Free, no signup.",
+      "Got a Texas dealer quote? Paste it below — Odigos checks every fee against typical Texas pricing in 60 seconds. Free, no signup.",
     ctaMidBody:
-      "Example: A Texas dealer charging $599 for 'documentation' is $374 over the legal cap. Want to check if your quote has overcharges?",
+      "Texas has no hard cap on doc fees — some dealers charge well above $225. Want to check if your quote has overcharges?",
     ctaMidLink: "Check My Texas Quote",
     ctaBottomHeadline: "Don't sign until you check.",
     ctaBottomBody:
@@ -2111,18 +2111,18 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "https://occc.texas.gov/wp-content/uploads/2025/11/rc-docfee-adoption-fc-090524.pdf",
     ],
     specialNotes:
-      "MAJOR CHANGE: Cap raised to $225 (presumed reasonable) effective July 11, 2024. Fees over $225 require OCCC notification and cost analysis. Previously ~$150.",
+      "MAJOR CHANGE: $225 'presumed reasonable' guideline effective July 11, 2024. Not a hard cap — fees over $225 require OCCC notification and cost analysis. Previously ~$150.",
     dealerMessage:
-      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (Texas's cap is $225 as of July 2024), all additional dealer fees, Texas sales tax (6.25% flat), title fee ($30), and registration costs? I'd like to see the complete total. Thank you.",
+      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee, all additional dealer fees, Texas sales tax (6.25% flat), title fee ($30), and registration costs? I'd like to see the complete total. Thank you.",
     lastVerified: "2026-03",
     commonQuestions: [
       {
         q: "What is the maximum doc fee a Texas dealer can charge in 2026?",
-        a: "Texas dealers are capped at $225 under the 'presumed reasonable' limit effective July 11, 2024 (raised from ~$150). A dealer can charge more only by filing a cost justification with the OCCC. Most Texas dealers operate at or below the $225 cap.",
+        a: "Texas has no hard legal cap on dealer doc fees. A $225 'presumed reasonable' guideline took effect July 11, 2024, but dealers can exceed it by filing a cost analysis with the OCCC. Most dealers charge $150–$225, though higher fees are not uncommon.",
       },
       {
         q: "Do all Texas dealers charge the same doc fee?",
-        a: "No. Many dealers charge between $150 and $225, but the specific amount varies by dealership. Some dealers charge exactly at the $225 cap while others charge less. Always ask for the doc fee to be disclosed before visiting.",
+        a: "No. Many dealers charge between $150 and $225, but the specific amount varies by dealership. Some charge at the $225 guideline level while others charge less — or more. Always ask for the doc fee to be disclosed before visiting.",
       },
       {
         q: "Is Texas sales tax the same everywhere in the state?",
@@ -2138,8 +2138,8 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       },
     ],
     competitorGapSection:
-      "Most Texas car-buying guides stop at quoting the $225 cap without explaining when dealers can exceed it. The key detail: dealers who file a cost analysis with the OCCC can legally charge above $225, and some do. Before visiting, ask the specific dealer what their current doc fee is — don't assume the cap applies. If the fee exceeds $225, ask to see the justification or request that the vehicle price be reduced to offset it. Also note that market adjustment markups on high-demand vehicles are a separate line item from the doc fee and are fully negotiable.",
-    buyerTip: "Texas raised its doc fee cap from approximately $150 to $225 effective July 11, 2024 — under a 'presumed reasonable' standard rather than a hard legal ceiling. Dealers can exceed $225 by filing a cost analysis with the OCCC, and some high-volume stores do. If you see a Texas dealer quoting $350 or more in documentation fees, it's worth asking directly: 'Has this store filed a cost analysis with the OCCC, and can I see it?' The cap is not as absolute as many guides imply.",
+      "Most Texas car-buying guides quote $225 as a hard cap without explaining that it's a 'presumed reasonable' guideline, not a legal ceiling. The key detail: dealers who file a cost analysis with the OCCC can legally charge above $225, and some do. Before visiting, ask the specific dealer what their current doc fee is — don't assume $225 is the maximum. If the fee exceeds $225, ask to see the justification or request that the vehicle price be reduced to offset it. Also note that market adjustment markups on high-demand vehicles are a separate line item from the doc fee and are fully negotiable.",
+    buyerTip: "Texas set a $225 'presumed reasonable' guideline effective July 11, 2024 — but this is not a hard legal ceiling. Dealers can exceed $225 by filing a cost analysis with the OCCC, and some high-volume stores do. If you see a Texas dealer quoting $350 or more in documentation fees, it's worth asking directly: 'Has this store filed a cost analysis with the OCCC, and can I see it?' The guideline is not as absolute as many guides imply.",
   },
 
   utah: {
