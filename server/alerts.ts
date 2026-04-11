@@ -1,6 +1,6 @@
 import { getMetricsSummary, getTechnicalSummary, getPaymentCountLastNHours } from "./metrics.js";
 
-const REPLIT_DB_URL = process.env.REPLIT_DB_URL;
+const REPLIT_DB_URL: string | undefined = undefined; // Removed Replit KV — in-memory state on Vercel
 
 async function kvGet(key: string): Promise<string | null> {
   if (!REPLIT_DB_URL) return null;

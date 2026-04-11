@@ -56,9 +56,9 @@ export function registerPaymentRoutes(app: Express): void {
       }
 
       const stripe = await getStripeClient();
-      const baseUrl = process.env.REPLIT_DOMAINS
-        ? `https://${process.env.REPLIT_DOMAINS.split(",")[0]}`
-        : "http://localhost:5000";
+      const baseUrl = process.env.VITE_SITE_URL
+        ? process.env.VITE_SITE_URL.replace(/\\/$/, "")
+        : "https://www.odigosauto.com";
 
       const metadata: Record<string, string> = {
         product: normalisedProduct,
@@ -105,9 +105,9 @@ export function registerPaymentRoutes(app: Express): void {
       const selectedTier: "29" | "49" | "79" =
         tier === "29" ? "29" : tier === "49" ? "49" : "79";
       const stripe = await getStripeClient();
-      const baseUrl = process.env.REPLIT_DOMAINS
-        ? `https://${process.env.REPLIT_DOMAINS.split(",")[0]}`
-        : "http://localhost:5000";
+      const baseUrl = process.env.VITE_SITE_URL
+        ? process.env.VITE_SITE_URL.replace(/\\/$/, "")
+        : "https://www.odigosauto.com";
 
       // Price IDs must be pre-configured in Stripe Dashboard — never create at request time
       // (dynamic creation causes race conditions and duplicate products)
