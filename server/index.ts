@@ -14,6 +14,7 @@ import { writeAuditEvent } from "./audit.js";
 import { logger } from "./logger.js";
 import { isAllowedCorsOrigin } from "./corsOrigin.js";
 import { isOpenAIConfigured } from "./openaiClient.js";
+import { AI_PRIMARY_MODEL, AI_FALLBACK_MODEL } from "./config/aiModel.js";
 import { createServer } from "http";
 import { sql } from "drizzle-orm";
 
@@ -317,7 +318,11 @@ app.get("/api/health", (_req, res) => {
     initError: initState.error
       ? String((initState.error as Error)?.message ?? initState.error)
       : null,
-    ai: { configured: isOpenAIConfigured() },
+    ai: {
+      configured: isOpenAIConfigured(),
+      model: AI_PRIMARY_MODEL,
+      fallbackModel: AI_FALLBACK_MODEL,
+    },
   });
 });
 
@@ -527,7 +532,10 @@ export async function initialize(): Promise<void> {
     logger.info("startup env presence", {
       DATABASE_URL: Boolean(process.env.DATABASE_URL),
       AI_INTEGRATIONS_OPENAI_API_KEY: Boolean(process.env.AI_INTEGRATIONS_OPENAI_API_KEY),
+      OPENAI_API_KEY: Boolean(process.env.OPENAI_API_KEY),
       AI_INTEGRATIONS_OPENAI_BASE_URL: Boolean(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL),
+      AI_INTEGRATIONS_OPENAI_MODEL: process.env.AI_INTEGRATIONS_OPENAI_MODEL ?? null,
+      AI_INTEGRATIONS_OPENAI_FALLBACK_MODEL: process.env.AI_INTEGRATIONS_OPENAI_FALLBACK_MODEL ?? null,
       REDIS_URL: Boolean(process.env.REDIS_URL),
       SENTRY_DSN: Boolean(process.env.SENTRY_DSN),
       NODE_ENV: process.env.NODE_ENV ?? null,
