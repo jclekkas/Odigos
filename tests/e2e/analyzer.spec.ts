@@ -100,15 +100,6 @@ test.describe("Landing page", () => {
     await expect(cta).toBeVisible();
   });
 
-  test("CTA button navigates to the analyzer", async ({ page }) => {
-    await interceptStatsRoutes(page);
-    await page.goto("/");
-    const cta = page.getByTestId("button-cta-hero");
-    await expect(cta).toBeVisible();
-    await cta.click();
-    await expect(page).toHaveURL(/\/analyze/);
-  });
-
   test("hero CTA click navigates to /analyze", async ({ page }) => {
     await interceptStatsRoutes(page);
     await page.goto("/");
