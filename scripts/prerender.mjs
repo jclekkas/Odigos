@@ -69,10 +69,26 @@ const ROUTES = [
   "/how-odigos-works",
   "/example-analysis",
 
+  // Lease / glossary cluster
+  "/junk-fees-explained",
+  "/car-lease-fees-explained",
+  "/money-factor-explained",
+  "/residual-value-explained",
+  "/glossary",
+  ...[
+    "junk-fee", "doc-fee", "out-the-door-price", "market-adjustment",
+    "money-factor", "residual-value", "acquisition-fee", "disposition-fee",
+    "dealer-prep-fee", "gap-insurance", "msrp", "invoice-price",
+    "destination-charge", "trade-in-tax-credit", "nitrogen-tire-fill",
+    "vin-etching", "paint-protection", "extended-warranty",
+    "capitalized-cost", "early-termination-fee", "reconditioning-fee",
+  ].map(s => `/glossary/${s}`),
+
   // Footer / legal
   "/about",
   "/privacy",
   "/terms",
+  "/legal",
 ];
 
 const PORT = 4173;

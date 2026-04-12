@@ -42,6 +42,19 @@ export const STATIC_ROUTES: string[] = [
   "/dealer-reconditioning-fee",
   "/how-much-should-you-pay-for-a-car",
   "/how-to-compare-car-deals",
+  "/glossary",
+  "/junk-fees-explained",
+  "/car-lease-fees-explained",
+  "/money-factor-explained",
+  "/residual-value-explained",
+  "/legal",
+  "/admin",
+  "/admin/technical",
+  "/admin/business",
+  "/admin/experiments",
+  "/admin/content",
+  "/admin/users",
+  "/admin/seo",
 ];
 
 export const VALID_STATE_SLUGS = new Set([
@@ -116,6 +129,10 @@ export function isKnownRoute(pathname: string): boolean {
 
   const stateMatch = normalized.match(/^\/car-dealer-fees-(.+)$/);
   if (stateMatch && VALID_STATE_SLUGS.has(stateMatch[1])) {
+    return true;
+  }
+
+  if (normalized.startsWith("/glossary/") && normalized.split("/").length === 3) {
     return true;
   }
 
