@@ -154,6 +154,18 @@ export const leaseMathResultSchema = z.object({
 
 export type LeaseMathResult = z.infer<typeof leaseMathResultSchema>;
 
+// Ranked signal — deterministic priority-ordered negotiation signals
+export const rankedSignalSchema = z.object({
+  priority: z.number(),
+  category: z.enum(["legal", "dealer_pattern", "state_norm", "line_item", "info_gap"]),
+  label: z.string(),
+  detail: z.string(),
+  action: z.string(),
+  severity: z.enum(["critical", "warning", "info"]),
+});
+
+export type RankedSignal = z.infer<typeof rankedSignalSchema>;
+
 // Analysis response schema
 export const analysisResponseSchema = z.object({
   dealScore: z.enum(["GREEN", "YELLOW", "RED"]),
@@ -187,6 +199,10 @@ export const analysisResponseSchema = z.object({
   // Lease Math Engine — deterministic post-LLM computations
   // ---------------------------------------------------------------------
   leaseMath: leaseMathResultSchema.nullable().optional(),
+  // ---------------------------------------------------------------------
+  // Ranked Signals — deterministic priority-ordered negotiation signals
+  // ---------------------------------------------------------------------
+  rankedSignals: z.array(rankedSignalSchema).optional(),
 });
 
 export type AnalysisResponse = z.infer<typeof analysisResponseSchema>;
@@ -368,6 +384,11 @@ export const dealFeedback = pgTable(
     rating: boolean("rating").notNull(),
     comment: text("comment"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    // Progressive disclosure outcome fields (all nullable — collected in stage 2)
+    finalPaidAmount: numeric("final_paid_amount"),
+    feesRemoved: boolean("fees_removed"),
+    outcomeStatus: text("outcome_status"), // 'bought_as_is' | 'negotiated_down' | 'walked_away' | 'still_negotiating'
+    followUpCompletedAt: timestamp("follow_up_completed_at", { withTimezone: true }),
   },
   (table) => ({
     listingIdUnique: unique("deal_feedback_listing_id_unique").on(table.listingId),

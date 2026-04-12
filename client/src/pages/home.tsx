@@ -89,8 +89,18 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { apiRequest } from "@/lib/queryClient";
-import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel, MarketContext, DocFeeCapCheck } from "@shared/schema";
+import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel, MarketContext, DocFeeCapCheck, RankedSignal } from "@shared/schema";
 import LeaseMathBlock from "@/components/LeaseMathBlock";
+import FinancialImpactHeroComponent from "@/components/results/FinancialImpactHero";
+import StatutoryCapCalloutComponent from "@/components/results/StatutoryCapCallout";
+import SignalActionCard from "@/components/results/SignalActionCard";
+import MarketIntelligencePanel from "@/components/results/MarketIntelligencePanel";
+import ExpectedNormalRangeCardComponent from "@/components/results/ExpectedNormalRangeCard";
+import DealScoreBadgeComponent from "@/components/results/DealScoreBadge";
+import DetectedFieldsCardComponent from "@/components/results/DetectedFieldsCard";
+import MissingInfoCardComponent from "@/components/results/MissingInfoCard";
+import SuggestedReplyCardComponent from "@/components/results/SuggestedReplyCard";
+import FeedbackWidgetComponent from "@/components/results/FeedbackWidget";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import {
   getActivePass,
@@ -150,6 +160,7 @@ function StripeEmbeddedCheckoutWrapper({
 
 type AnalysisResponseWithExtras = AnalysisResponse & {
   listingId?: string;
+  rankedSignals?: RankedSignal[];
 };
 
 const formSchema = z.object({
@@ -2408,7 +2419,7 @@ export default function Home() {
               <h2 className="text-sm font-medium text-muted-foreground text-center uppercase tracking-wider">Your deal analysis</h2>
 
               {/* 1) Financial impact hero — dollars first, always visible */}
-              <FinancialImpactHero
+              <FinancialImpactHeroComponent
                 overpaymentMin={result.estimatedOverpaymentMin}
                 overpaymentMax={result.estimatedOverpaymentMax}
                 confidence={result.financialImpactConfidence ?? null}
@@ -2420,32 +2431,35 @@ export default function Home() {
                 }
               />
 
-              {/* 1.5) Statutory cap violation — urgent legal callout, always visible */}
-              <StatutoryCapCallout docFeeCapCheck={result.docFeeCapCheck} />
+              {/* 2) Statutory cap violation — urgent legal callout with action */}
+              <StatutoryCapCalloutComponent docFeeCapCheck={result.docFeeCapCheck} />
 
-              {/* 2) Market comparison — one short sentence grounded in state context */}
-              <MarketComparisonBlock
+              {/* 3) Ranked signals — deterministic, action-oriented negotiation moves */}
+              {result.rankedSignals && result.rankedSignals.length > 0 && (
+                <SignalActionCard signals={result.rankedSignals} maxVisible={3} />
+              )}
+
+              {/* 4) Market Intelligence — promoted, central, with confidence badge */}
+              <MarketIntelligencePanel
+                marketContext={result.marketContext}
                 marketComparison={result.marketComparison}
-                marketContext={result.marketContext ?? null}
                 detectedDocFee={
                   (result.detectedFields?.fees ?? [])
                     .find((f) => /doc.?fee|document/i.test(f.name))?.amount ?? null
                 }
+                overallStrength={result.marketContextStrength}
               />
 
-              {/* 3) Biggest issue — the single primary problem (renders only when set) */}
-              <BiggestIssueCard primaryIssue={result.primaryIssue} />
-
-              {/* 4) Expected normal range — plausible fair OTD band */}
-              <ExpectedNormalRangeCard
+              {/* 5) Expected normal range — plausible fair OTD band */}
+              <ExpectedNormalRangeCardComponent
                 normalOtdMin={result.estimatedNormalOtdMin}
                 normalOtdMax={result.estimatedNormalOtdMax}
               />
             </div>
 
-            {/* 5) Existing detailed analysis — verdict badge, flags, negotiation script, etc. */}
+            {/* 6) Deal score verdict badge */}
             <div className="pt-2">
-              <DealScoreBadge
+              <DealScoreBadgeComponent
                 score={result.dealScore}
                 goNoGo={result.goNoGo}
                 confidenceLevel={result.confidenceLevel}
@@ -2454,9 +2468,13 @@ export default function Home() {
               />
             </div>
 
-            {/* 5b) Lease Math — deterministic financial validation (renders only for leases) */}
+            {/* 7) Lease Math — deterministic financial validation (renders only for leases) */}
             <LeaseMathBlock leaseMath={result.leaseMath} />
 
+            {/* 8) Detected fields — extracted pricing data */}
+            <DetectedFieldsCardComponent fields={result.detectedFields} />
+
+            {/* 9) Share actions */}
             <div className="flex items-center justify-center gap-3" data-testid="section-share-actions">
               <Button
                 variant="outline"
@@ -2540,6 +2558,7 @@ export default function Home() {
               </Button>
             </div>
 
+            {/* 10) What this deal likely means */}
             <Card>
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2 text-lg">
@@ -2556,44 +2575,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">How to use this</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex gap-2">
-                    <span className="shrink-0">&bull;</span>
-                    <span>Ask for a full itemized out-the-door price before discussing payments.</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="shrink-0">&bull;</span>
-                    <span>Push back on any add-ons that are not clearly optional.</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="shrink-0">&bull;</span>
-                    <span>If the dealer avoids giving clear answers, treat it as a red flag.</span>
-                  </li>
-                </ul>
-                <p className="text-xs text-muted-foreground pt-2">
-                  Use the full review if you want a ready-to-send reply and a complete breakdown.
-                </p>
-              </CardContent>
-            </Card>
-
-            <DetectedFieldsCard fields={result.detectedFields} />
-
-            {result.marketContext && (
-              <MarketContextCard marketContext={result.marketContext} />
-            )}
-            <p className="text-xs text-muted-foreground" data-testid="text-market-context-disclosure">
-              {result.marketContextStrength === "strong" || result.marketContextStrength === "moderate"
-                ? "This analysis includes local market data."
-                : result.marketContextStrength === "thin"
-                ? "This analysis uses limited local market data."
-                : "This analysis is based on general pricing knowledge (limited local data available)."}
-            </p>
-
+            {/* 11) Email preview / Paywall / Paid content */}
             {unlockTier === "free" && (
               <EmailPreviewForm analysisResult={result} />
             )}
@@ -2619,7 +2601,7 @@ export default function Home() {
               </>
             ) : (
               <>
-                <MissingInfoCard 
+                <MissingInfoCard
                   items={result.missingInfo}
                   confidenceLevel={result.confidenceLevel}
                   verdictLabel={result.verdictLabel}
@@ -2642,8 +2624,9 @@ export default function Home() {
               </>
             )}
 
+            {/* 12) Feedback widget with progressive disclosure */}
             {result.listingId && (
-              <FeedbackWidget listingId={result.listingId} />
+              <FeedbackWidgetComponent listingId={result.listingId} />
             )}
           </div>
         )}

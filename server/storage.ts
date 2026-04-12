@@ -60,10 +60,18 @@ export interface StateAggregateSummaryRow {
   count: number;
 }
 
+export interface FeedbackOutcomeData {
+  finalPaidAmount?: string;
+  feesRemoved?: boolean;
+  outcomeStatus?: string;
+  followUpCompletedAt?: Date;
+}
+
 export interface IStorage {
   saveDealerSubmission(data: InsertDealerSubmission): Promise<{ id: string } | null>;
   getDealerSubmission(id: string): Promise<DealerSubmission | null>;
   createDealFeedback(input: InsertDealFeedback): Promise<void>;
+  updateFeedbackOutcome(listingId: string, data: FeedbackOutcomeData): Promise<void>;
   findByContentHash(hash: string): Promise<DealerSubmission | null>;
   markAsSeed(id: string, opts: { seedBatchId: string }): Promise<void>;
   getStateAggregateSummary(): Promise<StateAggregateSummaryRow[]>;
@@ -80,6 +88,10 @@ export class MemStorage implements IStorage {
 
   async createDealFeedback(_input: InsertDealFeedback): Promise<void> {
     // No-op in memory mode — DATABASE_URL not present
+  }
+
+  async updateFeedbackOutcome(_listingId: string, _data: FeedbackOutcomeData): Promise<void> {
+    // No-op in memory mode
   }
 
   async findByContentHash(_hash: string): Promise<DealerSubmission | null> {
@@ -115,6 +127,19 @@ export class DrizzleStorage implements IStorage {
       .insert(dealFeedback)
       .values(input)
       .onConflictDoNothing();
+  }
+
+  async updateFeedbackOutcome(listingId: string, data: FeedbackOutcomeData): Promise<void> {
+    const updates: Record<string, unknown> = {};
+    if (data.finalPaidAmount !== undefined) updates.finalPaidAmount = data.finalPaidAmount;
+    if (data.feesRemoved !== undefined) updates.feesRemoved = data.feesRemoved;
+    if (data.outcomeStatus !== undefined) updates.outcomeStatus = data.outcomeStatus;
+    if (data.followUpCompletedAt !== undefined) updates.followUpCompletedAt = data.followUpCompletedAt;
+    if (Object.keys(updates).length === 0) return;
+    await db
+      .update(dealFeedback)
+      .set(updates)
+      .where(eq(dealFeedback.listingId, listingId));
   }
 
   async findByContentHash(hash: string): Promise<DealerSubmission | null> {

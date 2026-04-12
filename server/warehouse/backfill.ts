@@ -18,7 +18,7 @@ import {
   coreDealers,
   coreListings,
 } from "../../shared/warehouse.js";
-import { normalizeDealerName, validateStateCode, refreshAllViews } from "./warehouseUtils.js";
+import { normalizeDealerName, validateStateCode, refreshAllViews, normalizeFeeNames } from "./warehouseUtils.js";
 
 // Sentinel city value for unknown dealer rows (state full name)
 const STATE_FULL_NAMES: Record<string, string> = {
@@ -230,7 +230,7 @@ async function main(): Promise<void> {
       const fees = Array.isArray(detectedFields?.fees)
         ? (detectedFields.fees as { name: string; amount: number | null }[])
         : [];
-      const feeNames = Array.from(new Set(fees.map((f) => f.name.toLowerCase().trim())));
+      const feeNames = normalizeFeeNames(fees);
 
       const hasMarketAdj = sub.flagMarketAdjustment;
       const marketAdjustment = fees

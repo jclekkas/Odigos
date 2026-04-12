@@ -8,6 +8,7 @@ import {
   type MarketContextStrength,
 } from "../../shared/schema.js";
 import { applyRuleEngine, checkDocFeeCap } from "../ruleEngine.js";
+import { rankSignals } from "../signalRanker.js";
 import { runLeaseMath } from "../leaseMathEngine.js";
 import { detectStateFromText, getStateFeeData, getAmbiguousCityOptions } from "../stateFeeLookup.js";
 import { trackEvent } from "../events.js";
@@ -20,6 +21,7 @@ import { aiCircuitBreaker, CircuitOpenError } from "../lib/circuitBreaker.js";
 import { logger } from "../logger.js";
 import { AI_PRIMARY_MODEL, AI_FALLBACK_MODEL } from "../config/aiModel.js";
 import { validateDealerContent } from "./contentValidator.js";
+import { normalizeFeeNames } from "../warehouse/warehouseUtils.js";
 
 export type AnalyzeInput = z.infer<typeof analysisRequestSchema>;
 
@@ -257,10 +259,13 @@ When state is unknown: omit all state-specific fee characterizations.`;
 
   const overallStrength = marketContext?.overallStrength ?? "none";
 
-  function buildMarketIntroPhrase(strength: MarketContextStrength): string {
+  function buildMarketIntroPhrase(strength: MarketContextStrength, sampleSize: number): string {
     if (strength === "strong") return "Observed local market data shows";
     if (strength === "moderate") return "Recent local data suggests";
-    if (strength === "thin") return "Early local signal suggests (limited data)";
+    if (strength === "thin") {
+      if (sampleSize <= 1) return "Based on a single prior deal (very early signal)";
+      return "Early local signal suggests (limited data)";
+    }
     return "";
   }
 
@@ -270,7 +275,7 @@ When state is unknown: omit all state-specific fee characterizations.`;
     const hasUsable = mc.stateTotalAnalyses != null || mc.stateAvgDocFee != null || mc.dealerAvgDealScore != null;
     if (hasUsable) {
       const stCode = stateDetection.state!;
-      const introPhrase = buildMarketIntroPhrase(overallStrength);
+      const introPhrase = buildMarketIntroPhrase(overallStrength, mc.stateTotalAnalyses ?? 0);
       const miLines: string[] = [];
       if (mc.stateTotalAnalyses != null && Number.isFinite(mc.stateTotalAnalyses)) {
         const dealWord = mc.stateTotalAnalyses === 1 ? "deal" : "deals";
@@ -288,7 +293,11 @@ When state is unknown: omit all state-specific fee characterizations.`;
         miLines.push(`Users agreed with ${pct}% of past ${mc.feedbackCount} analyses for this dealer. Use this as a confidence-calibration signal: for borderline cases, avoid overstating certainty.`);
       }
       if (miLines.length > 0) {
-        const limitedNote = overallStrength === "thin" ? " Note: data is limited — treat as early signal only, do not overstate confidence." : "";
+        const limitedNote = overallStrength === "thin"
+          ? (mc.stateTotalAnalyses != null && mc.stateTotalAnalyses <= 1)
+            ? " CRITICAL: This is based on a single data point. Do NOT present this as a market norm or pattern. Frame it only as one early data point. Do not overstate confidence."
+            : " Note: data is limited — treat as early signal only, do not overstate confidence."
+          : "";
         marketIntelligenceSection = `
 MARKET_INTELLIGENCE
 ${miLines.join("\n")}
@@ -916,6 +925,15 @@ Respond entirely in Spanish. All text fields in your JSON response — including
 
   const ruleEngineAdjustments = applyRuleEngine(llmResult, llmResult.detectedFields, docFeeCapResult, data.purchaseType, leaseMathResult);
 
+  const rankedSignals = rankSignals({
+    docFeeCapCheck: docFeeCapResult,
+    detectedFields: llmResult.detectedFields,
+    marketContext,
+    ruleEngineResult: ruleEngineAdjustments,
+    leaseMath: leaseMathResult,
+    missingInfo: llmResult.missingInfo ?? [],
+  });
+
   const finalResult: AnalysisResponse = {
     ...llmResult,
     dealScore: ruleEngineAdjustments.dealScore,
@@ -923,6 +941,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     verdictLabel: ruleEngineAdjustments.verdictLabel,
     goNoGo: ruleEngineAdjustments.goNoGo,
     leaseMath: leaseMathResult,
+    rankedSignals,
   };
 
   logger.info("Analysis successful", { source: "analyze", dealScore: finalResult.dealScore, confidence: finalResult.confidenceLevel });
@@ -966,7 +985,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
       tradeInValue: toNum(finalResult.detectedFields.tradeInValue),
       totalFeesAmount: feeAmounts.length > 0 ? String(feeAmounts.reduce((a, b) => a + b, 0)) : null,
       feeCount: fees.length,
-      feeNames: Array.from(new Set(fees.map((f) => f.name.toLowerCase().trim()))),
+      feeNames: normalizeFeeNames(fees),
       flagMarketAdjustment: fees.some((f) => /market.?adjust|markup|adm/i.test(f.name)),
       flagPaymentOnly: finalResult.detectedFields.monthlyPayment !== null && finalResult.detectedFields.salePrice === null && finalResult.detectedFields.outTheDoorPrice === null,
       flagMissingOtd: finalResult.detectedFields.outTheDoorPrice === null,
