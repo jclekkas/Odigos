@@ -7,6 +7,7 @@ import {
   validateFinancialBounds,
   safeSerializePayload,
   getErrorMessage,
+  normalizeDealerName,
 } from "../../server/warehouse/warehouseUtils";
 
 // ─── normalizeSubmissionText ──────────────────────────────────────────────────
@@ -220,6 +221,58 @@ describe("validateFinancialBounds", () => {
     const flags = validateFinancialBounds({ vehiclePrice: -1000 });
     expect(flags).toHaveLength(1);
     expect(flags[0]).toEqual({ field: "vehiclePrice", reason: "below_min", value: -1000, min: 500 });
+  });
+});
+
+// ─── normalizeDealerName ─────────────────────────────────────────────────────
+
+describe("normalizeDealerName", () => {
+  it("lowercases and strips corporate suffixes", () => {
+    expect(normalizeDealerName("ABC Motors LLC")).toBe("abc");
+    expect(normalizeDealerName("XYZ Automotive Inc")).toBe("xyz");
+    expect(normalizeDealerName("Smith Auto Group")).toBe("smith");
+  });
+
+  it("collapses whitespace and trims", () => {
+    expect(normalizeDealerName("  Extra   Spaces  ")).toBe("extra spaces");
+  });
+
+  it("strips possessive 's with straight apostrophe", () => {
+    expect(normalizeDealerName("Bob Smith's Toyota")).toBe(normalizeDealerName("Bob Smith Toyota"));
+  });
+
+  it("strips possessive 's with smart apostrophe (\\u2019)", () => {
+    expect(normalizeDealerName("Bob Smith\u2019s Toyota")).toBe(normalizeDealerName("Bob Smith Toyota"));
+  });
+
+  it("produces same result for possessive and non-possessive variants", () => {
+    const variants = [
+      "Bob Smith Toyota",
+      "Bob Smith's Toyota",
+      "Bob Smith\u2019s Toyota",
+    ];
+    const normalized = variants.map(normalizeDealerName);
+    expect(new Set(normalized).size).toBe(1);
+  });
+
+  it("strips 'of' preposition", () => {
+    expect(normalizeDealerName("Smith Toyota of Springfield")).toBe(
+      normalizeDealerName("Smith Toyota Springfield"),
+    );
+  });
+
+  it("does NOT affect names where 's' is part of the word", () => {
+    // "Smithson" should NOT lose the trailing 'n' — the regex only strips 's after apostrophe
+    const result = normalizeDealerName("Smithson Toyota");
+    expect(result).toContain("smithson");
+  });
+
+  it("removes special characters", () => {
+    expect(normalizeDealerName("A&B Toyota")).toBe("a b toyota");
+  });
+
+  it("handles multiple stripped suffixes", () => {
+    expect(normalizeDealerName("The Smith Dealer Group LLC")).toBe("smith");
   });
 });
 

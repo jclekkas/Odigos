@@ -1,6 +1,72 @@
 import { db } from "../db.js";
 import { sql } from "drizzle-orm";
 import { createHash } from "crypto";
+import type { Fee } from "../../shared/schema.js";
+
+// ---------------------------------------------------------------------------
+// Fee name normalization — canonical mapping
+// ---------------------------------------------------------------------------
+// Maps common fee-name variants to a single canonical label so warehouse
+// aggregates collapse correctly. Order matters — first match wins.
+// ---------------------------------------------------------------------------
+const FEE_CANONICAL_MAP: [RegExp, string][] = [
+  // Doc / processing fees
+  [/doc(umentation|ument|umentary)?\s*fee/i, "doc fee"],
+  [/admin(istrative)?\s*fee/i, "admin fee"],
+  [/processing\s*fee/i, "processing fee"],
+  [/dealer\s*fee/i, "dealer fee"],
+  // Market adjustments
+  [/market\s*(adjust|value\s*adjust)|additional\s*dealer\s*markup|dealer\s*markup|\badm\b|\bmarkup\b/i, "market adjustment"],
+  // Protection / appearance packages
+  [/appearance\s*(package|protection)/i, "appearance package"],
+  [/protection\s*(package|pkg|plan)/i, "protection package"],
+  [/paint\s*protection/i, "paint protection"],
+  [/fabric\s*(protection|guard)/i, "fabric protection"],
+  [/interior\s*(protection|guard)/i, "fabric protection"],
+  [/ceramic\s*(coat|coating)?/i, "ceramic coating"],
+  [/clear\s*coat/i, "clear coat"],
+  [/undercoat(ing)?/i, "undercoating"],
+  // Individual add-ons
+  [/nitrogen|n2\s*(fill|tire)/i, "nitrogen fill"],
+  [/vin\s*etch(ing)?/i, "vin etching"],
+  [/anti[- ]?theft/i, "anti-theft package"],
+  [/window\s*tint(ing)?/i, "window tint"],
+  [/wheel\s*lock/i, "wheel locks"],
+  [/pinstripe|pin\s*stripe/i, "pinstriping"],
+  // Insurance / warranty
+  [/gap\s*(insurance|waiver|coverage)/i, "gap insurance"],
+  [/extended\s*(warranty|service|coverage)|service\s*contract/i, "extended warranty"],
+  // Dealer overhead fees
+  [/dealer\s*prep/i, "dealer prep"],
+  [/pre[- ]?delivery\s*(inspection|service)/i, "pre-delivery inspection"],
+  [/reconditioning\s*fee/i, "reconditioning fee"],
+  [/lot\s*fee/i, "lot fee"],
+  [/delivery\s*fee/i, "delivery fee"],
+  // Dealer add-ons (catch-all for dealer accessories/add-ons)
+  [/dealer\s*(add[- ]?on|accessor)/i, "dealer add-ons"],
+];
+
+/**
+ * Normalize a single fee name to its canonical form.
+ * Returns the first matching canonical label, or the lowercased/trimmed input
+ * if no pattern matches (graceful passthrough).
+ */
+export function normalizeFeeName(raw: string): string {
+  const lower = raw.toLowerCase().trim();
+  if (!lower) return lower;
+  for (const [pattern, canonical] of FEE_CANONICAL_MAP) {
+    if (pattern.test(lower)) return canonical;
+  }
+  return lower;
+}
+
+/**
+ * Normalize an array of Fee objects to canonical fee name strings.
+ * Deduplicates after canonicalization via Set.
+ */
+export function normalizeFeeNames(fees: Fee[]): string[] {
+  return Array.from(new Set(fees.map((f) => normalizeFeeName(f.name))));
+}
 
 // Valid US state codes (plus DC) that are seeded in core.states
 const US_STATE_CODES = new Set([
@@ -22,11 +88,13 @@ export function validateStateCode(code: string | null | undefined): string | nul
 
 /**
  * Normalize a dealer name for deduplication matching.
- * Strips common corporate suffixes, lowercases, and collapses whitespace.
+ * Strips possessives, common corporate suffixes, lowercases, and collapses whitespace.
  */
 export function normalizeDealerName(name: string): string {
   return name
     .toLowerCase()
+    .replace(/['\u2018\u2019]s\b/g, "")     // Strip possessive 's (straight + smart quotes)
+    .replace(/['\u2018\u2019]/g, "")          // Strip remaining apostrophes
     .replace(/\b(llc|inc|corp|corporation|motors|automotive|auto|group|ltd|co|dealership|dealer|sales|of|the)\b/g, "")
     .replace(/[^a-z0-9\s]/g, " ")
     .replace(/\s+/g, " ")

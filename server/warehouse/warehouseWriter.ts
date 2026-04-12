@@ -20,6 +20,7 @@ import {
   validateFinancialBounds,
   safeSerializePayload,
   getErrorMessage,
+  normalizeFeeNames,
 } from "./warehouseUtils.js";
 
 export interface WarehouseWritePayload {
@@ -201,7 +202,7 @@ async function performWarehouseWrite(payload: WarehouseWritePayload): Promise<vo
   const docFeeAmount =
     fees.find((f) => /doc.?fee|document/i.test(f.name))?.amount ?? null;
 
-  const feeNames = Array.from(new Set(fees.map((f) => f.name.toLowerCase().trim())));
+  const feeNames = normalizeFeeNames(fees);
 
   const flagList: string[] = [
     ...(hasMarketAdj ? ["market_adjustment"] : []),

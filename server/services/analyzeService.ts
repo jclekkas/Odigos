@@ -12,6 +12,7 @@ import {
   type Fee,
 } from "../../shared/schema.js";
 import { applyRuleEngine, checkDocFeeCap } from "../ruleEngine.js";
+import { rankSignals } from "../signalRanker.js";
 import { runLeaseMath } from "../leaseMathEngine.js";
 import { detectStateFromText, getStateFeeData, getAmbiguousCityOptions } from "../stateFeeLookup.js";
 import { trackEvent } from "../events.js";
@@ -25,6 +26,7 @@ import { aiCircuitBreaker, CircuitOpenError } from "../lib/circuitBreaker.js";
 import { logger } from "../logger.js";
 import { AI_PRIMARY_MODEL, AI_FALLBACK_MODEL } from "../config/aiModel.js";
 import { validateDealerContent } from "./contentValidator.js";
+import { normalizeFeeNames } from "../warehouse/warehouseUtils.js";
 
 export type AnalyzeInput = z.infer<typeof analysisRequestSchema>;
 
@@ -456,6 +458,7 @@ When MARKET_CONTEXT data is present:
 3. Never invent statistics or sample sizes not provided in MARKET_CONTEXT.
 4. Prefer dealer data over state data over pattern data when available.
 5. Only output market claims if backed by provided data.
+6. CRITICAL: When sample size is 1, do NOT present it as a market norm. Frame it only as one early data point.
 Reference these figures in your summary and reasoning when materially relevant. Use provided figures exactly as written. Do not estimate, round, or invent additional statistics.` : "";
 
   const systemPrompt = `You are an expert car buying advisor helping consumers evaluate car purchase offers. Your job is to analyze dealer quotes, texts, and emails to help buyers understand if they're getting a good deal.
@@ -1077,6 +1080,15 @@ Respond entirely in Spanish. All text fields in your JSON response — including
 
   const ruleEngineAdjustments = applyRuleEngine(llmResult, llmResult.detectedFields, docFeeCapResult, data.purchaseType, leaseMathResult);
 
+  const rankedSignals = rankSignals({
+    docFeeCapCheck: docFeeCapResult,
+    detectedFields: llmResult.detectedFields,
+    marketContext,
+    ruleEngineResult: ruleEngineAdjustments,
+    leaseMath: leaseMathResult,
+    missingInfo: llmResult.missingInfo ?? [],
+  });
+
   const finalResult: AnalysisResponse = {
     ...llmResult,
     dealScore: ruleEngineAdjustments.dealScore,
@@ -1084,6 +1096,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     verdictLabel: ruleEngineAdjustments.verdictLabel,
     goNoGo: ruleEngineAdjustments.goNoGo,
     leaseMath: leaseMathResult,
+    rankedSignals,
   };
 
   logger.info("Analysis successful", { source: "analyze", dealScore: finalResult.dealScore, confidence: finalResult.confidenceLevel });
@@ -1127,7 +1140,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
       tradeInValue: toNum(finalResult.detectedFields.tradeInValue),
       totalFeesAmount: feeAmounts.length > 0 ? String(feeAmounts.reduce((a, b) => a + b, 0)) : null,
       feeCount: fees.length,
-      feeNames: Array.from(new Set(fees.map((f) => f.name.toLowerCase().trim()))),
+      feeNames: normalizeFeeNames(fees),
       flagMarketAdjustment: fees.some((f) => /market.?adjust|markup|adm/i.test(f.name)),
       flagPaymentOnly: finalResult.detectedFields.monthlyPayment !== null && finalResult.detectedFields.salePrice === null && finalResult.detectedFields.outTheDoorPrice === null,
       flagMissingOtd: finalResult.detectedFields.outTheDoorPrice === null,

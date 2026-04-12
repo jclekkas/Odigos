@@ -89,8 +89,18 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { apiRequest } from "@/lib/queryClient";
-import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel, MarketContext, DocFeeCapCheck, MarketSignal, FlaggedItemEvidence, MarketConfidenceTier } from "@shared/schema";
+import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel, MarketContext, DocFeeCapCheck, RankedSignal, MarketSignal, FlaggedItemEvidence, MarketConfidenceTier } from "@shared/schema";
 import LeaseMathBlock from "@/components/LeaseMathBlock";
+import FinancialImpactHeroComponent from "@/components/results/FinancialImpactHero";
+import StatutoryCapCalloutComponent from "@/components/results/StatutoryCapCallout";
+import SignalActionCard from "@/components/results/SignalActionCard";
+import MarketIntelligencePanel from "@/components/results/MarketIntelligencePanel";
+import ExpectedNormalRangeCardComponent from "@/components/results/ExpectedNormalRangeCard";
+import DealScoreBadgeComponent from "@/components/results/DealScoreBadge";
+import DetectedFieldsCardComponent from "@/components/results/DetectedFieldsCard";
+import MissingInfoCardComponent from "@/components/results/MissingInfoCard";
+import SuggestedReplyCardComponent from "@/components/results/SuggestedReplyCard";
+import FeedbackWidgetComponent from "@/components/results/FeedbackWidget";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import {
   getActivePass,
@@ -150,6 +160,7 @@ function StripeEmbeddedCheckoutWrapper({
 
 type AnalysisResponseWithExtras = AnalysisResponse & {
   listingId?: string;
+  rankedSignals?: RankedSignal[];
   marketSignals?: MarketSignal[];
   flaggedItemEvidence?: FlaggedItemEvidence[];
   dealerSeenBefore?: boolean;
@@ -2689,7 +2700,7 @@ export default function Home() {
               <h2 className="text-sm font-medium text-muted-foreground text-center uppercase tracking-wider">Your deal analysis</h2>
 
               {/* 1) Financial impact hero — dollars first, always visible */}
-              <FinancialImpactHero
+              <FinancialImpactHeroComponent
                 overpaymentMin={result.estimatedOverpaymentMin}
                 overpaymentMax={result.estimatedOverpaymentMax}
                 confidence={result.financialImpactConfidence ?? null}
@@ -2701,16 +2712,21 @@ export default function Home() {
                 }
               />
 
-              {/* 1.5) Statutory cap violation — urgent legal callout */}
-              <StatutoryCapCallout docFeeCapCheck={result.docFeeCapCheck} />
+              {/* 1.5) Statutory cap violation — urgent legal callout with action */}
+              <StatutoryCapCalloutComponent docFeeCapCheck={result.docFeeCapCheck} />
 
-              {/* 2) Verdict — moved up from position 6 */}
+              {/* 2) Verdict — moved up for immediate clarity */}
               <DealScoreBadge
                 score={result.dealScore}
                 goNoGo={result.goNoGo}
                 confidenceLevel={result.confidenceLevel}
                 verdictLabel={result.verdictLabel}
               />
+
+              {/* 2.5) Ranked signals — deterministic, action-oriented negotiation moves */}
+              {result.rankedSignals && result.rankedSignals.length > 0 && (
+                <SignalActionCard signals={result.rankedSignals} maxVisible={3} />
+              )}
 
               {/* 3) Biggest problem — the single primary issue */}
               <BiggestIssueCard primaryIssue={result.primaryIssue} />
@@ -2916,8 +2932,9 @@ export default function Home() {
               </Card>
             )}
 
+            {/* 12) Feedback widget with progressive disclosure */}
             {result.listingId && (
-              <FeedbackWidget listingId={result.listingId} />
+              <FeedbackWidgetComponent listingId={result.listingId} />
             )}
           </div>
         )}

@@ -115,6 +115,41 @@ export function registerAnalyzeRoutes(app: Express): void {
     }
   });
 
+  app.patch("/api/feedback/:listingId/outcome", async (req, res) => {
+    try {
+      const outcomeSchema = z.object({
+        finalPaidAmount: z.number().positive().optional(),
+        feesRemoved: z.boolean().optional(),
+        outcomeStatus: z
+          .enum(["bought_as_is", "negotiated_down", "walked_away", "still_negotiating"])
+          .optional(),
+      });
+      const parseResult = outcomeSchema.safeParse(req.body);
+      if (!parseResult.success) {
+        return res.status(400).json({ error: "Invalid request", details: parseResult.error.flatten() });
+      }
+      const { listingId } = req.params;
+      if (!listingId) {
+        return res.status(400).json({ error: "Missing listingId" });
+      }
+      const data = parseResult.data;
+      // At least one outcome field must be provided
+      if (data.finalPaidAmount == null && data.feesRemoved == null && data.outcomeStatus == null) {
+        return res.status(400).json({ error: "At least one outcome field is required" });
+      }
+      await storage.updateFeedbackOutcome(listingId, {
+        finalPaidAmount: data.finalPaidAmount != null ? String(data.finalPaidAmount) : undefined,
+        feesRemoved: data.feesRemoved,
+        outcomeStatus: data.outcomeStatus,
+        followUpCompletedAt: new Date(),
+      });
+      return res.json({ ok: true });
+    } catch (error) {
+      console.error("[feedback] PATCH /api/feedback/:listingId/outcome error:", error);
+      return res.status(500).json({ error: "Failed to save feedback outcome" });
+    }
+  });
+
   app.post("/api/extract-text", async (req, res) => {
     try {
       await runUploadMiddleware(req, res);

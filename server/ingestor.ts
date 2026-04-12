@@ -22,7 +22,7 @@ import { redactPII } from "./piiRedact.js";
 import { zipToStateCode } from "./zipToState.js";
 import type { AnalysisResponse, AnalysisRequest } from "../shared/schema.js";
 import { dealerSubmissions } from "../shared/schema.js";
-import { normalizeSubmissionText, sha256Hex } from "./warehouse/warehouseUtils.js";
+import { normalizeSubmissionText, sha256Hex, normalizeFeeNames } from "./warehouse/warehouseUtils.js";
 import { db } from "./db.js";
 import { eq, isNull } from "drizzle-orm";
 
@@ -97,7 +97,7 @@ export function enqueueSubmission(payload: SubmissionPayload): void {
 
           // Fee intelligence
           feeCount: fees.length,
-          feeNames: Array.from(new Set(fees.map((f) => f.name.toLowerCase().trim()))),
+          feeNames: normalizeFeeNames(fees),
 
           // Tactic flags
           flagMarketAdjustment: fees.some((f) =>

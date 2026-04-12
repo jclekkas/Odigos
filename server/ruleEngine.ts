@@ -1,7 +1,7 @@
 import type { AnalysisResponse, DetectedFields, Fee } from "../shared/schema.js";
 import type { LeaseMathResult } from "./leaseMathEngine.js";
 
-interface RuleEngineResult {
+export interface RuleEngineResult {
   dealScore: "GREEN" | "YELLOW" | "RED";
   confidenceLevel: "HIGH" | "MEDIUM" | "LOW";
   verdictLabel: string;
