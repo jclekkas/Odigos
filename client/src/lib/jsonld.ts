@@ -1,6 +1,5 @@
 import { buildCanonical } from "./seo";
-
-const SITE_URL = "https://odigosauto.com";
+import { CANONICAL_ORIGIN } from "@shared/siteConfig";
 
 export function productSchema() {
   return {
@@ -8,7 +7,7 @@ export function productSchema() {
     "@type": "Product",
     "name": "Odigos Dealer Quote Analyzer",
     "description": "Paste your dealer quote. Odigos shows what's overpriced, what's illegal, and what to say back — with a GO/NO-GO verdict in 60 seconds.",
-    "image": `${SITE_URL}/og-image.png`,
+    "image": `${CANONICAL_ORIGIN}/og-image.png`,
     "brand": {
       "@type": "Brand",
       "name": "Odigos"
@@ -200,7 +199,7 @@ export function breadcrumbListSchema(items: { name: string; path: string }[]) {
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": SITE_URL
+        "item": CANONICAL_ORIGIN
       },
       ...items.map((item, index) => ({
         "@type": "ListItem",

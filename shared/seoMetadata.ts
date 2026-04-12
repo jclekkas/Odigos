@@ -7,7 +7,7 @@
  * The client-side setSeoMeta() calls should match these values.
  */
 
-const CANONICAL_ORIGIN = "https://odigosauto.com";
+import { CANONICAL_ORIGIN } from "./siteConfig";
 
 export interface PageSeoMeta {
   title: string;
