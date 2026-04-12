@@ -131,7 +131,9 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   if (req.hostname && req.hostname.endsWith(".replit.app")) {
     res.setHeader("X-Robots-Tag", "noindex, nofollow");
-    return res.redirect(301, `https://odigosauto.com${req.originalUrl}`);
+    if (process.env.CANONICAL_DOMAIN_ACTIVE === "true") {
+      return res.redirect(301, `https://odigosauto.com${req.originalUrl}`);
+    }
   }
   return next();
 });
