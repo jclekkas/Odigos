@@ -1,6 +1,6 @@
 const CANONICAL_ORIGIN = "https://odigosauto.com";
 const OG_IMAGE = "https://odigosauto.com/og-image.png";
-const OG_IMAGE_ALT = "Odigos — Independent car deal analysis tool";
+const OG_IMAGE_ALT = "Odigos — Independent dealer quote analyzer";
 
 export function buildCanonical(path: string): string {
   const normalized = path.endsWith("/") && path !== "/" ? path.slice(0, -1) : path;

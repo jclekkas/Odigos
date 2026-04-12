@@ -79,7 +79,7 @@ export default function HiddenDealerFees() {
           </p>
           <Link href="/analyze">
             <Button variant="cta" size="sm" data-testid="button-cta-mid-article-hidden-fees">
-              Analyze My Dealer Quote
+              Check This Quote
             </Button>
           </Link>
         </div>

@@ -107,7 +107,7 @@ export default function CarLeaseFeesExplained() {
           </p>
           <Link href="/analyze">
             <Button variant="cta" size="sm" data-testid="button-cta-mid-article-lease-fees">
-              Analyze My Lease Quote
+              Check This Quote
             </Button>
           </Link>
         </div>

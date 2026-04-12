@@ -107,7 +107,7 @@ export default function DealerReconditioningFee() {
           </p>
           <Link href="/analyze">
             <Button variant="cta" size="sm" data-testid="button-cta-mid-article-recon-fee">
-              Analyze My Dealer Quote
+              Check This Quote
             </Button>
           </Link>
         </div>

@@ -84,7 +84,7 @@ export default function ResidualValueExplained() {
           </p>
           <Link href="/analyze">
             <Button variant="cta" size="sm" data-testid="button-cta-mid-article-residual-value">
-              Analyze My Lease Quote
+              Check This Quote
             </Button>
           </Link>
         </div>
