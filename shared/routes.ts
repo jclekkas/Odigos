@@ -55,6 +55,7 @@ export const STATIC_ROUTES: string[] = [
   "/admin/content",
   "/admin/users",
   "/admin/seo",
+  "/admin/prod",
 ];
 
 export const VALID_STATE_SLUGS = new Set([
