@@ -309,6 +309,11 @@ function FinancialImpactHero({
               We need more pricing details to quantify the range.
             </span>
           )}
+          {confidence === "low" && hasRange && (
+            <span className="text-xs text-muted-foreground">
+              This estimate is based on limited comparable data — the range may shift as we see more deals in your area.
+            </span>
+          )}
         </div>
       )}
     </div>
@@ -420,7 +425,7 @@ function BiggestIssueCard({ primaryIssue }: BiggestIssueCardProps) {
   if (!issue) return null;
 
   return (
-    <Card className="border-amber-500/30 bg-amber-500/5" data-testid="biggest-issue-card">
+    <Card className="border-l-4 border-l-amber-500 border-amber-500/30 bg-amber-500/5" data-testid="biggest-issue-card">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wider">
           <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" aria-hidden="true" />
@@ -471,10 +476,9 @@ interface DealScoreBadgeProps {
   goNoGo: "GO" | "NO-GO" | "NEED-MORE-INFO";
   confidenceLevel: ConfidenceLevel;
   verdictLabel: string;
-  missingInfo: MissingInfo[];
 }
 
-function DealScoreBadge({ score, goNoGo, confidenceLevel, verdictLabel, missingInfo }: DealScoreBadgeProps) {
+function DealScoreBadge({ score, goNoGo, confidenceLevel, verdictLabel }: DealScoreBadgeProps) {
   const scoreConfig = {
     GREEN: {
       bg: "bg-emerald-500/5",
@@ -518,7 +522,6 @@ function DealScoreBadge({ score, goNoGo, confidenceLevel, verdictLabel, missingI
   };
 
   const config = scoreConfig[score];
-  const previewIssues = missingInfo.slice(0, 3);
 
   return (
     <div className={`rounded-xl border ${config.border} ${config.bg} p-5 space-y-4`}>
@@ -539,27 +542,6 @@ function DealScoreBadge({ score, goNoGo, confidenceLevel, verdictLabel, missingI
             {verdictSubtext[goNoGo]}
           </p>
         </div>
-      </div>
-
-      <div className="border-t border-border/40 pt-4 space-y-3">
-        {previewIssues.length > 0 && (
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-              Key issues found
-            </p>
-            <div className="space-y-1.5">
-              {previewIssues.map((item, idx) => (
-                <div key={idx} className="flex items-baseline gap-2 text-sm" data-testid={`issue-row-${idx}`}>
-                  <span className="font-medium text-foreground shrink-0">{item.field}:</span>
-                  <span className="text-muted-foreground leading-snug">{item.question}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-        <p className="text-xs text-muted-foreground leading-relaxed">
-          Quotes like this can obscure the real out-the-door price or bury fees that only appear in the final paperwork. Knowing what's missing helps you decide whether to push back or walk away.
-        </p>
       </div>
     </div>
   );
@@ -622,8 +604,16 @@ function DetectedFieldsCard({ fields, flaggedItemEvidence }: { fields: DetectedF
                       </span>
                     </div>
                     {ev && (
-                      <div className="flex items-center gap-2 mt-1" data-testid={`fee-evidence-${idx}`}>
-                        <p className="text-xs text-muted-foreground">{ev.message}</p>
+                      <div className={`flex items-center gap-2 mt-1.5 rounded px-2 py-1 ${
+                        ev.confidenceTier === "high"
+                          ? "bg-red-500/5 border border-red-500/15"
+                          : ev.confidenceTier === "medium"
+                          ? "bg-amber-500/5 border border-amber-500/15"
+                          : ""
+                      }`} data-testid={`fee-evidence-${idx}`}>
+                        <p className={`text-xs leading-relaxed ${
+                          ev.confidenceTier === "low" ? "text-muted-foreground" : "text-foreground/80"
+                        }`}>{ev.message}</p>
                         <ConfidencePill tier={ev.confidenceTier} />
                       </div>
                     )}
@@ -930,6 +920,191 @@ function SuggestedReplyCard({ reply }: { reply: string }) {
   );
 }
 
+interface NegotiationActionCardProps {
+  suggestedReply: string;
+  missingInfo: MissingInfo[];
+  confidenceLevel: ConfidenceLevel;
+  verdictLabel: string;
+  unlockTier: UnlockTier;
+  onCopyQuestions: () => void;
+  onUnlock: (productKey: PassProductKey) => void;
+  isLoading?: boolean;
+  loadingProduct?: PassProductKey | null;
+  stripeConfigured?: boolean;
+}
+
+function NegotiationActionCard({
+  suggestedReply,
+  missingInfo,
+  confidenceLevel,
+  verdictLabel,
+  unlockTier,
+  onCopyQuestions,
+  onUnlock,
+  isLoading,
+  loadingProduct,
+  stripeConfigured,
+}: NegotiationActionCardProps) {
+  const [replyCopied, setReplyCopied] = useState(false);
+  const [questionsCopied, setQuestionsCopied] = useState(false);
+
+  const isProceedVerdict = verdictLabel.includes("PROCEED");
+  const displayItems = isProceedVerdict ? missingInfo.slice(0, 3) : missingInfo;
+
+  const handleCopyReply = () => {
+    navigator.clipboard.writeText(suggestedReply);
+    setReplyCopied(true);
+    setTimeout(() => setReplyCopied(false), 2000);
+  };
+
+  const handleCopyQuestions = () => {
+    const questions = displayItems.map((item) => item.question).join("\n\n");
+    navigator.clipboard.writeText(questions);
+    setQuestionsCopied(true);
+    setTimeout(() => setQuestionsCopied(false), 2000);
+    onCopyQuestions();
+  };
+
+  return (
+    <Card
+      className="border-2 border-primary/30 bg-primary/5"
+      data-testid="negotiation-action-card"
+    >
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <MessageSquare className="w-5 h-5 text-primary" />
+          What to Say Back
+        </CardTitle>
+        <p className="text-sm text-muted-foreground">
+          A ready-to-send message based on the issues we found.
+        </p>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {unlockTier === "free" ? (
+          <>
+            {/* Truncated preview with gradient fade */}
+            <div className="relative overflow-hidden rounded-lg bg-muted/30 p-4">
+              <p className="text-sm leading-relaxed line-clamp-3 text-foreground/70">
+                {suggestedReply}
+              </p>
+              <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-muted/80 to-transparent" />
+            </div>
+            {confidenceLevel === "LOW" && (
+              <p className="text-xs text-muted-foreground">
+                This reply is based on our early analysis — unlock the full version for the most complete response.
+              </p>
+            )}
+            <Button
+              variant="cta"
+              className="w-full"
+              onClick={() => onUnlock("car_buyers_pass")}
+              disabled={isLoading || !stripeConfigured}
+            >
+              {isLoading && loadingProduct === "car_buyers_pass" ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <Lock className="w-4 h-4 mr-2" />
+                  Unlock Your Full Reply
+                </>
+              )}
+            </Button>
+            {displayItems.length > 0 && (
+              <div className="pt-2 border-t border-border/40">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                  We also found {displayItems.length} question{displayItems.length !== 1 ? "s" : ""} to ask
+                </p>
+                <ul className="space-y-1.5">
+                  {displayItems.slice(0, 3).map((item, idx) => (
+                    <li key={idx} className="flex items-baseline gap-2 text-sm">
+                      <span className="font-medium text-foreground shrink-0">{item.field}:</span>
+                      <span className="text-muted-foreground leading-snug">{item.question}</span>
+                    </li>
+                  ))}
+                </ul>
+                {displayItems.length > 3 && (
+                  <p className="text-xs text-muted-foreground mt-1.5">
+                    + {displayItems.length - 3} more in the full review
+                  </p>
+                )}
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            {/* Full reply — paid tier */}
+            <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4">
+              <p className="text-sm whitespace-pre-wrap leading-relaxed">{suggestedReply}</p>
+            </div>
+            <Button
+              variant="default"
+              onClick={handleCopyReply}
+              className="w-full"
+              data-testid="button-copy-reply"
+            >
+              {replyCopied ? (
+                <>
+                  <Check className="w-4 h-4 mr-2" />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4 mr-2" />
+                  Copy Reply
+                </>
+              )}
+            </Button>
+
+            {/* Questions to ask */}
+            {displayItems.length > 0 && confidenceLevel !== "HIGH" && (
+              <div className="pt-3 border-t border-border/40 space-y-3">
+                <p className="text-sm font-semibold">
+                  {isProceedVerdict ? "Confirm These Details" : "Questions to Ask the Dealer"}
+                </p>
+                <ul className="space-y-2">
+                  {displayItems.map((item, idx) => (
+                    <li key={idx} className="flex gap-3">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-bold flex items-center justify-center">
+                        {idx + 1}
+                      </span>
+                      <div>
+                        <p className="text-sm font-medium">{item.field}</p>
+                        <p className="text-sm text-muted-foreground">{item.question}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopyQuestions}
+                  className="w-full"
+                  data-testid="button-copy-questions"
+                >
+                  {questionsCopied ? (
+                    <>
+                      <Check className="w-4 h-4 mr-2" />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4 mr-2" />
+                      Copy Questions
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 function ConfidencePill({ tier }: { tier: MarketConfidenceTier }) {
   const config = {
     low: { label: "Early signal", className: "bg-muted/40 text-muted-foreground border-border/50" },
@@ -976,12 +1151,18 @@ function MarketIntelligenceCard({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
+        {(marketContext.overallStrength === "thin" || marketContext.overallStrength === "none") && (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/30 rounded px-3 py-1.5">
+            <Info className="w-3 h-3 flex-shrink-0" />
+            Based on limited data — treat as early signal
+          </div>
+        )}
         {dealerSeenBefore && dealerPriorQuoteCount != null && dealerPriorQuoteCount >= 1 && (
           <div className="flex items-start gap-2 rounded-lg border border-blue-500/30 bg-blue-500/5 px-3 py-2" data-testid="dealer-seen-banner">
             <Target className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600 dark:text-blue-400" />
             <div className="text-sm">
               <p className="font-medium text-foreground">We've seen this dealer before</p>
-              <p className="text-muted-foreground">
+              <p className={dealerPriorQuoteCount != null && dealerPriorQuoteCount >= 3 ? "text-foreground/90 font-medium" : "text-muted-foreground"}>
                 {dealerPatternSummary ?? `Across ${dealerPriorQuoteCount} prior ${dealerPriorQuoteCount === 1 ? "quote" : "quotes"}.`}
               </p>
             </div>
@@ -992,7 +1173,14 @@ function MarketIntelligenceCard({
           <div className="space-y-2">
             {signals.map((signal, i) => (
               <div key={i} className="flex items-start justify-between gap-2" data-testid={`market-signal-${signal.source}`}>
-                <p className="text-sm text-muted-foreground leading-relaxed flex-1">{signal.message}</p>
+                <div className="flex-1">
+                  <p className="text-sm text-foreground leading-relaxed">{signal.message}</p>
+                  {signal.sampleSize != null && signal.sampleSize > 0 && (
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Based on {signal.sampleSize.toLocaleString()} analyzed {signal.sampleSize === 1 ? "quote" : "quotes"}
+                    </p>
+                  )}
+                </div>
                 <ConfidencePill tier={signal.confidenceTier} />
               </div>
             ))}
@@ -2524,151 +2712,187 @@ export default function Home() {
                 }
               />
 
-              {/* 2) Statutory cap violation — urgent legal callout with action */}
+              {/* 1.5) Statutory cap violation — urgent legal callout with action */}
               <StatutoryCapCalloutComponent docFeeCapCheck={result.docFeeCapCheck} />
 
-              {/* 3) Ranked signals — deterministic, action-oriented negotiation moves */}
-              {result.rankedSignals && result.rankedSignals.length > 0 && (
-                <SignalActionCard signals={result.rankedSignals} maxVisible={3} />
-              )}
-
-              {/* 4) Market Intelligence — promoted, central, with confidence badge */}
-              <MarketIntelligencePanel
-                marketContext={result.marketContext}
-                marketComparison={result.marketComparison}
-                detectedDocFee={
-                  (result.detectedFields?.fees ?? [])
-                    .find((f) => /doc.?fee|document/i.test(f.name))?.amount ?? null
-                }
-                overallStrength={result.marketContextStrength}
-              />
-
-              {/* 5) Expected normal range — plausible fair OTD band */}
-              <ExpectedNormalRangeCardComponent
-                normalOtdMin={result.estimatedNormalOtdMin}
-                normalOtdMax={result.estimatedNormalOtdMax}
-              />
-            </div>
-
-            {/* 6) Deal score verdict badge */}
-            <div className="pt-2">
-              <DealScoreBadgeComponent
+              {/* 2) Verdict — moved up for immediate clarity */}
+              <DealScoreBadge
                 score={result.dealScore}
                 goNoGo={result.goNoGo}
                 confidenceLevel={result.confidenceLevel}
                 verdictLabel={result.verdictLabel}
-                missingInfo={unlockTier === "free" ? result.missingInfo : []}
               />
-            </div>
 
-            {/* 7) Lease Math — deterministic financial validation (renders only for leases) */}
-            <LeaseMathBlock leaseMath={result.leaseMath} />
+              {/* 2.5) Ranked signals — deterministic, action-oriented negotiation moves */}
+              {result.rankedSignals && result.rankedSignals.length > 0 && (
+                <SignalActionCard signals={result.rankedSignals} maxVisible={3} />
+              )}
 
-            {/* 8) Detected fields — extracted pricing data */}
-            <DetectedFieldsCardComponent fields={result.detectedFields} />
+              {/* 3) Biggest problem — the single primary issue */}
+              <BiggestIssueCard primaryIssue={result.primaryIssue} />
 
-            {/* 9) Share actions */}
-            <div className="flex items-center justify-center gap-3" data-testid="section-share-actions">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const topIssues = getTopShareIssues();
-                  const issueLines = topIssues.length > 0
-                    ? topIssues.map((i) => `• ${i}`).join("\n")
-                    : "• No major issues surfaced in this summary";
-                  const text = `Odigos Deal Scorecard\nVerdict: ${result.goNoGo}\n${result.verdictLabel}\n\nIssues flagged:\n${issueLines}\n\nAnalyzed by Odigos — odigosauto.com`;
-                  navigator.clipboard.writeText(text).then(() => {
-                    setSummaryCopied("success");
-                    setTimeout(() => setSummaryCopied("idle"), 2000);
-                    capture("copy_summary", { verdict: result.goNoGo });
-                    trackCopySummary();
-                  }).catch(() => {
-                    setSummaryCopied("failed");
-                    setTimeout(() => setSummaryCopied("idle"), 2000);
-                  });
-                }}
-                data-testid="button-copy-summary"
-              >
-                {summaryCopied === "success" ? (
-                  <>
-                    <Check className="w-4 h-4 mr-2" />
-                    Copied!
-                  </>
-                ) : summaryCopied === "failed" ? (
-                  <>
-                    <Share2 className="w-4 h-4 mr-2" />
-                    Copy failed
-                  </>
-                ) : (
-                  <>
-                    <Share2 className="w-4 h-4 mr-2" />
-                    Copy summary
-                  </>
-                )}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={scorecardDownloading}
-                onClick={() => {
-                  setScorecardDownloading(true);
-                  try {
-                    const dataUrl = drawScorecard({
-                      goNoGo: result.goNoGo,
-                      verdictLabel: result.verdictLabel,
-                      topIssues: getTopShareIssues(),
+              {/* 4) Market Intelligence — moved up from position 12 */}
+              {result.marketContext && (
+                <MarketIntelligenceCard
+                  marketContext={result.marketContext}
+                  marketSignals={result.marketSignals}
+                  dealerSeenBefore={result.dealerSeenBefore}
+                  dealerPriorQuoteCount={result.dealerPriorQuoteCount}
+                  dealerPatternSummary={result.dealerPatternSummary}
+                />
+              )}
+
+              {/* 5) What to say back — THE solution, not a side feature */}
+              <NegotiationActionCard
+                suggestedReply={result.suggestedReply}
+                missingInfo={result.missingInfo}
+                confidenceLevel={result.confidenceLevel}
+                verdictLabel={result.verdictLabel}
+                unlockTier={unlockTier}
+                onCopyQuestions={() => toast({ title: "Questions copied to clipboard" })}
+                onUnlock={(productKey) => handleUnlockPass(productKey)}
+                isLoading={checkoutLoading || isCheckingPayment}
+                loadingProduct={loadingProduct}
+                stripeConfigured={stripeConfigured}
+              />
+
+              {/* 6) Share actions */}
+              <div className="flex items-center justify-center gap-3" data-testid="section-share-actions">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const topIssues = getTopShareIssues();
+                    const issueLines = topIssues.length > 0
+                      ? topIssues.map((i) => `• ${i}`).join("\n")
+                      : "• No major issues surfaced in this summary";
+                    const text = `Odigos Deal Scorecard\nVerdict: ${result.goNoGo}\n${result.verdictLabel}\n\nIssues flagged:\n${issueLines}\n\nAnalyzed by Odigos — odigosauto.com`;
+                    navigator.clipboard.writeText(text).then(() => {
+                      setSummaryCopied("success");
+                      setTimeout(() => setSummaryCopied("idle"), 2000);
+                      capture("copy_summary", { verdict: result.goNoGo });
+                      trackCopySummary();
+                    }).catch(() => {
+                      setSummaryCopied("failed");
+                      setTimeout(() => setSummaryCopied("idle"), 2000);
                     });
-                    const link = document.createElement("a");
-                    link.download = "odigos-deal-scorecard.png";
-                    link.href = dataUrl;
-                    link.click();
-                    capture("scorecard_downloaded", { verdict: result.goNoGo });
-                    trackScorecardDownloaded();
-                  } catch {
-                    toast({
-                      title: "Download failed",
-                      description: "Could not generate the scorecard. Please try again.",
-                      variant: "destructive",
-                    });
-                  } finally {
-                    setScorecardDownloading(false);
-                  }
-                }}
-                data-testid="button-download-scorecard"
-              >
-                {scorecardDownloading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Generating…
-                  </>
-                ) : (
-                  <>
-                    <Download className="w-4 h-4 mr-2" />
-                    Download scorecard
-                  </>
-                )}
-              </Button>
-            </div>
+                  }}
+                  data-testid="button-copy-summary"
+                >
+                  {summaryCopied === "success" ? (
+                    <>
+                      <Check className="w-4 h-4 mr-2" />
+                      Copied!
+                    </>
+                  ) : summaryCopied === "failed" ? (
+                    <>
+                      <Share2 className="w-4 h-4 mr-2" />
+                      Copy failed
+                    </>
+                  ) : (
+                    <>
+                      <Share2 className="w-4 h-4 mr-2" />
+                      Copy summary
+                    </>
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={scorecardDownloading}
+                  onClick={() => {
+                    setScorecardDownloading(true);
+                    try {
+                      const dataUrl = drawScorecard({
+                        goNoGo: result.goNoGo,
+                        verdictLabel: result.verdictLabel,
+                        topIssues: getTopShareIssues(),
+                      });
+                      const link = document.createElement("a");
+                      link.download = "odigos-deal-scorecard.png";
+                      link.href = dataUrl;
+                      link.click();
+                      capture("scorecard_downloaded", { verdict: result.goNoGo });
+                      trackScorecardDownloaded();
+                    } catch {
+                      toast({
+                        title: "Download failed",
+                        description: "Could not generate the scorecard. Please try again.",
+                        variant: "destructive",
+                      });
+                    } finally {
+                      setScorecardDownloading(false);
+                    }
+                  }}
+                  data-testid="button-download-scorecard"
+                >
+                  {scorecardDownloading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Generating…
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-4 h-4 mr-2" />
+                      Download scorecard
+                    </>
+                  )}
+                </Button>
+              </div>
 
-            {/* 10) What this deal likely means */}
-            <Card>
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <FileText className="w-5 h-5 text-muted-foreground" />
-                  What This Deal Likely Means
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="max-w-[750px] mx-auto">
-                  <p className="text-base leading-relaxed text-muted-foreground" data-testid="text-summary">
-                    {result.summary}
+              {/* 7) Supporting details — collapsible */}
+              <details className="group" data-testid="section-supporting-details">
+                <summary className="cursor-pointer text-sm font-medium text-muted-foreground flex items-center gap-2 py-3 select-none">
+                  <ChevronDown className="w-4 h-4 transition-transform group-open:rotate-180" />
+                  Full analysis details
+                </summary>
+                <div className="space-y-6 pt-4">
+                  <MarketComparisonBlock
+                    marketComparison={result.marketComparison}
+                    marketContext={result.marketContext ?? null}
+                    detectedDocFee={
+                      (result.detectedFields?.fees ?? [])
+                        .find((f) => /doc.?fee|document/i.test(f.name))?.amount ?? null
+                    }
+                  />
+
+                  <ExpectedNormalRangeCard
+                    normalOtdMin={result.estimatedNormalOtdMin}
+                    normalOtdMax={result.estimatedNormalOtdMax}
+                  />
+
+                  <LeaseMathBlock leaseMath={result.leaseMath} />
+
+                  <Card>
+                    <CardHeader className="pb-4">
+                      <CardTitle className="flex items-center gap-2 text-lg">
+                        <FileText className="w-5 h-5 text-muted-foreground" />
+                        What This Deal Likely Means
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="max-w-[750px] mx-auto">
+                        <p className="text-base leading-relaxed text-muted-foreground" data-testid="text-summary">
+                          {result.summary}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <DetectedFieldsCard fields={result.detectedFields} flaggedItemEvidence={result.flaggedItemEvidence} />
+
+                  <p className="text-xs text-muted-foreground" data-testid="text-market-context-disclosure">
+                    {result.marketContextStrength === "strong" || result.marketContextStrength === "moderate"
+                      ? "This analysis includes local market data."
+                      : result.marketContextStrength === "thin"
+                      ? "This analysis uses limited local market data."
+                      : "This analysis is based on general pricing knowledge (limited local data available)."}
                   </p>
                 </div>
-              </CardContent>
-            </Card>
+              </details>
+            </div>
 
-            {/* 11) Email preview / Paywall / Paid content */}
+            {/* 8) Email / Paywall */}
             {unlockTier === "free" && (
               <EmailPreviewForm analysisResult={result} />
             )}
@@ -2693,28 +2917,19 @@ export default function Home() {
                 )}
               </>
             ) : (
-              <>
-                <MissingInfoCard
-                  items={result.missingInfo}
-                  confidenceLevel={result.confidenceLevel}
-                  verdictLabel={result.verdictLabel}
-                  onCopy={() => toast({ title: "Questions copied to clipboard" })}
-                />
-                <SuggestedReplyCard reply={result.suggestedReply} />
-                <Card className="bg-muted/20">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Info className="w-4 h-4" />
-                      Analysis Reasoning
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-reasoning">
-                      {result.reasoning}
-                    </p>
-                  </CardContent>
-                </Card>
-              </>
+              <Card className="bg-muted/20">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Info className="w-4 h-4" />
+                    Analysis Reasoning
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-reasoning">
+                    {result.reasoning}
+                  </p>
+                </CardContent>
+              </Card>
             )}
 
             {/* 12) Feedback widget with progressive disclosure */}
