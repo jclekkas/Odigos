@@ -370,6 +370,12 @@ function DashboardInner({ adminKey }: { adminKey: string; clearKey: () => void }
 
   const alertItems = buildAlerts(healthQ.data, metricsQ.data, technicalQ.data, alertsQ.data, funnelQ.data);
   const anyLoading = healthQ.isLoading || metricsQ.isLoading || technicalQ.isLoading || alertsQ.isLoading;
+  const criticalErrors = [
+    metricsQ.isError && "metrics",
+    technicalQ.isError && "technical",
+    alertsQ.isError && "alerts",
+  ].filter(Boolean) as string[];
+  const hasDataFailures = criticalErrors.length > 0;
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-8">
@@ -383,10 +389,43 @@ function DashboardInner({ adminKey }: { adminKey: string; clearKey: () => void }
       </div>
 
       {/* Section 1: Things That Need Your Attention */}
-      {/* PLACEHOLDER_SECTION_1 */}
       <section data-section="attention">
         {anyLoading ? (
           <PanelSkeleton height="h-24" />
+        ) : hasDataFailures ? (
+          <div className="space-y-2">
+            <h2 className="text-lg font-semibold flex items-center gap-2">
+              <XCircle className="h-5 w-5 text-red-500" />
+              Things That Need Your Attention
+            </h2>
+            <div className="flex items-start gap-3 p-3 rounded-lg border border-red-300 bg-red-50 dark:bg-red-950/20 dark:border-red-800">
+              <XCircle className="h-4 w-4 text-red-500 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-red-800 dark:text-red-300">
+                Problem: Could not load data from the server ({criticalErrors.join(", ")}). The API endpoints may be down or your admin key may be incorrect. Try refreshing, or check that the same key works on the{" "}
+                <a href="/admin/metrics" className="underline font-medium">Metrics dashboard</a>.
+              </p>
+            </div>
+            {alertItems.map((a, i) => (
+              <div
+                key={i}
+                className={`flex items-start gap-3 p-3 rounded-lg border ${
+                  a.level === "red"
+                    ? "border-red-300 bg-red-50 dark:bg-red-950/20 dark:border-red-800"
+                    : "border-yellow-300 bg-yellow-50 dark:bg-yellow-950/20 dark:border-yellow-800"
+                }`}
+              >
+                {a.level === "red" ? (
+                  <XCircle className="h-4 w-4 text-red-500 flex-shrink-0 mt-0.5" />
+                ) : (
+                  <AlertTriangle className="h-4 w-4 text-yellow-500 flex-shrink-0 mt-0.5" />
+                )}
+                <p className={`text-sm ${a.level === "red" ? "text-red-800 dark:text-red-300" : "text-yellow-800 dark:text-yellow-300"}`}>
+                  {a.level === "red" ? "Problem: " : "Heads up: "}
+                  {a.message}
+                </p>
+              </div>
+            ))}
+          </div>
         ) : alertItems.length === 0 ? (
           <div className="flex items-center gap-3 p-4 rounded-lg border border-green-300 bg-green-50 dark:bg-green-950/20 dark:border-green-800">
             <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0" />
