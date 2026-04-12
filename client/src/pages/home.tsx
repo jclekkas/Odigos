@@ -33,6 +33,7 @@ import {
   maxUploadBytesFor,
   FileTooLargeError,
   UploadExtractionError,
+  ContentNotRelevantError,
 } from "@/lib/uploadForExtraction";
 import { setSeoMeta } from "@/lib/seo";
 import { howToSchema } from "@/lib/jsonld";
@@ -1330,6 +1331,14 @@ export default function Home() {
           });
         }
       } catch (err) {
+        if (err instanceof ContentNotRelevantError) {
+          const reason = "content_not_relevant";
+          setUploadError(err.message);
+          capture("file_upload_failed", { reason, documentType: err.documentType, input_method: source });
+          trackFileUploadFailed(reason);
+          setImageIntakeStatus("invalid");
+          return;
+        }
         if (err instanceof FileTooLargeError) {
           const reason = "file_too_large";
           setUploadError(`That file is too large to process. Please use a file under ${formatSizeCopy(err.cap)}.`);
@@ -1736,11 +1745,26 @@ export default function Home() {
       const errorMessage = error instanceof Error ? error.message : "unknown_error";
       capture("analysis_failed", { errorMessage });
       trackAnalysisFailed(errorMessage);
-      toast({
-        title: "Analysis Failed",
-        description: error instanceof Error ? error.message : "Something went wrong",
-        variant: "destructive",
-      });
+
+      // The apiRequest helper throws errors with format "STATUS: JSON_BODY".
+      // Parse the body to detect content-relevance rejections and show a
+      // nuanced toast instead of the raw error string.
+      let title = "Analysis Failed";
+      let description: string = error instanceof Error ? error.message : "Something went wrong";
+      try {
+        const bodyMatch = errorMessage.match(/^\d+:\s*(.+)$/s);
+        if (bodyMatch) {
+          const parsed = JSON.parse(bodyMatch[1]);
+          if (parsed.error === "content_not_relevant") {
+            title = "Not a Dealer Quote";
+            description = parsed.message;
+          }
+        }
+      } catch {
+        // Fall through to default message
+      }
+
+      toast({ title, description, variant: "destructive" });
     },
   });
 

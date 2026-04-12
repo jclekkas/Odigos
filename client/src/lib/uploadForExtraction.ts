@@ -55,6 +55,16 @@ export class UploadExtractionError extends Error {
   }
 }
 
+export class ContentNotRelevantError extends Error {
+  constructor(
+    message: string,
+    public readonly documentType?: string,
+  ) {
+    super(message);
+    this.name = "ContentNotRelevantError";
+  }
+}
+
 export interface UploadForExtractionResult {
   text: string;
   /** Populated when client-side compression actually shrunk the file. */
@@ -127,12 +137,21 @@ async function postMultipartExtraction(uploadFile: File): Promise<string> {
     // 413 responses from Vercel's edge come back as HTML, not JSON.
     // Try JSON first, fall back to a status-aware message so the user sees
     // something actionable instead of "Something went wrong".
-    let serverMessage: string | undefined;
+    let serverData: Record<string, unknown> | undefined;
     try {
-      serverMessage = (await response.clone().json()).message;
+      serverData = await response.clone().json();
     } catch {
       // non-JSON body (HTML error page from the platform) — ignore
     }
+    // Surface content-relevance rejections with a dedicated error so the
+    // caller can display a nuanced message instead of a generic failure.
+    if (serverData?.error === "content_not_relevant") {
+      throw new ContentNotRelevantError(
+        (serverData.message as string) ?? "This image doesn't appear to be a dealer document.",
+        serverData.documentType as string | undefined,
+      );
+    }
+    const serverMessage = typeof serverData?.message === "string" ? serverData.message : undefined;
     const isPayloadTooLarge = response.status === 413;
     const reason = isPayloadTooLarge
       ? "payload_too_large"
@@ -180,6 +199,12 @@ async function postBlobExtraction(uploadFile: File): Promise<string> {
   });
   const extractData = await extractResponse.json().catch(() => ({}));
   if (!extractResponse.ok) {
+    if (extractData?.error === "content_not_relevant") {
+      throw new ContentNotRelevantError(
+        (extractData.message as string) ?? "This image doesn't appear to be a dealer document.",
+        extractData.documentType as string | undefined,
+      );
+    }
     const message =
       (extractData && typeof extractData.message === "string" && extractData.message) ||
       "We couldn't process that image. Please try again or paste the text manually.";

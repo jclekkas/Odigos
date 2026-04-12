@@ -6,7 +6,7 @@ import { del } from "@vercel/blob";
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { analysisRequestSchema } from "../../shared/schema.js";
 import { trackEvent } from "../events.js";
-import { extractTextFromFile, extractTextFromUrl } from "../extractText.js";
+import { extractTextFromFile, extractTextFromUrl, IrrelevantContentError } from "../extractText.js";
 import { storage } from "../storage.js";
 import { writeAuditEvent } from "../audit.js";
 import { runAnalysis, AnalyzeServiceError } from "../services/analyzeService.js";
@@ -160,6 +160,19 @@ export function registerAnalyzeRoutes(app: Express): void {
         // PDF-specific errors from extractTextFromFile keep the 422
         // "short text" surface — they are genuinely about the file,
         // not the AI provider.
+        if (err instanceof IrrelevantContentError) {
+          trackEvent("file_processing", {
+            fileSuccess: false,
+            fileFailReason: "content_not_relevant",
+            documentType: err.documentType,
+          });
+          return res.status(422).json({
+            error: "content_not_relevant",
+            message: err.rejectionReason,
+            documentType: err.documentType,
+          });
+        }
+
         const errMessage = err instanceof Error ? err.message : String(err);
         if (
           errMessage === "Could not parse PDF file" ||
@@ -439,6 +452,18 @@ export function registerAnalyzeRoutes(app: Express): void {
       try {
         text = await extractTextFromFile(buffer, contentType);
       } catch (err) {
+        if (err instanceof IrrelevantContentError) {
+          trackEvent("file_processing", {
+            fileSuccess: false,
+            fileFailReason: "content_not_relevant",
+            documentType: err.documentType,
+          });
+          return res.status(422).json({
+            error: "content_not_relevant",
+            message: err.rejectionReason,
+            documentType: err.documentType,
+          });
+        }
         console.error("[extract-text-from-blob] extraction error:", err);
         trackEvent("file_processing", {
           fileSuccess: false,
