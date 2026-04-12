@@ -110,6 +110,14 @@ export const coreDealers = coreSchema.table(
     listingCount: integer("listing_count").notNull().default(0),
     complaintCount: integer("complaint_count").notNull().default(0),
     avgDealScore: numeric("avg_deal_score"),
+    // Running aggregates for market intelligence
+    avgDocFee: numeric("avg_doc_fee"),
+    docFeeSum: numeric("doc_fee_sum"),
+    docFeeCount: integer("doc_fee_count").notNull().default(0),
+    addonTotalSum: numeric("addon_total_sum"),
+    addonTotalCount: integer("addon_total_count").notNull().default(0),
+    listingsWithAddons: integer("listings_with_addons").notNull().default(0),
+    redCount: integer("red_count").notNull().default(0),
   },
   (table) => ({
     stateIdx: index("core_dealers_state_idx").on(table.stateCode),
@@ -229,6 +237,68 @@ export const coreConsumerComplaints = coreSchema.table(
 );
 
 // ---------------------------------------------------------------------------
+// State Market Stats — running aggregates (replaces materialized view for reads)
+// ---------------------------------------------------------------------------
+
+export const coreStateMarketStats = coreSchema.table("state_market_stats", {
+  stateCode: text("state_code").primaryKey().references(() => coreStates.stateCode),
+  listingCount: integer("listing_count").notNull().default(0),
+  dealScoreSum: numeric("deal_score_sum"),
+  avgDealScore: numeric("avg_deal_score"),
+  docFeeSum: numeric("doc_fee_sum"),
+  docFeeCount: integer("doc_fee_count").notNull().default(0),
+  avgDocFee: numeric("avg_doc_fee"),
+  addonTotalSum: numeric("addon_total_sum"),
+  addonTotalCount: integer("addon_total_count").notNull().default(0),
+  listingsWithAddons: integer("listings_with_addons").notNull().default(0),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// ---------------------------------------------------------------------------
+// Line Item Pattern Stats — per-item occurrence and amount tracking
+// ---------------------------------------------------------------------------
+
+export const coreLineItemPatternStats = coreSchema.table(
+  "line_item_pattern_stats",
+  {
+    id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+    stateCode: text("state_code").references(() => coreStates.stateCode),
+    itemNameNormalized: text("item_name_normalized").notNull(),
+    occurrenceCount: integer("occurrence_count").notNull().default(0),
+    amountSum: numeric("amount_sum"),
+    amountCount: integer("amount_count").notNull().default(0),
+    flaggedCount: integer("flagged_count").notNull().default(0),
+    totalListingsInScope: integer("total_listings_in_scope").notNull().default(0),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    stateItemUnique: uniqueIndex("core_lip_state_item_idx").on(table.stateCode, table.itemNameNormalized),
+  }),
+);
+
+// ---------------------------------------------------------------------------
+// Analysis Line Items — per-fee-item rows for each listing
+// ---------------------------------------------------------------------------
+
+export const coreAnalysisLineItems = coreSchema.table(
+  "analysis_line_items",
+  {
+    id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+    listingId: varchar("listing_id", { length: 36 }).references(() => coreListings.id),
+    itemName: text("item_name").notNull(),
+    itemNameNormalized: text("item_name_normalized").notNull(),
+    amount: numeric("amount"),
+    isFlagged: boolean("is_flagged").notNull().default(false),
+    category: text("category"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    listingIdx: index("core_ali_listing_idx").on(table.listingId),
+    itemNameIdx: index("core_ali_item_name_idx").on(table.itemNameNormalized),
+  }),
+);
+
+// ---------------------------------------------------------------------------
 // Drizzle inferred types
 // ---------------------------------------------------------------------------
 
@@ -252,3 +322,12 @@ export type InsertCoreListing = typeof coreListings.$inferInsert;
 
 export type CoreConsumerComplaint = typeof coreConsumerComplaints.$inferSelect;
 export type InsertCoreConsumerComplaint = typeof coreConsumerComplaints.$inferInsert;
+
+export type CoreStateMarketStats = typeof coreStateMarketStats.$inferSelect;
+export type InsertCoreStateMarketStats = typeof coreStateMarketStats.$inferInsert;
+
+export type CoreLineItemPatternStats = typeof coreLineItemPatternStats.$inferSelect;
+export type InsertCoreLineItemPatternStats = typeof coreLineItemPatternStats.$inferInsert;
+
+export type CoreAnalysisLineItem = typeof coreAnalysisLineItems.$inferSelect;
+export type InsertCoreAnalysisLineItem = typeof coreAnalysisLineItems.$inferInsert;
