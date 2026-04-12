@@ -99,7 +99,7 @@ export default function ExampleAnalysis() {
           </p>
           <Button variant="cta" asChild size="lg" className="gap-2" data-testid="button-cta-example-analysis">
             <Link href="/analyze">
-              Analyze My Dealer Quote
+              Check This Quote
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>

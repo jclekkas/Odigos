@@ -129,7 +129,7 @@ export default function DealerDocFeeByState() {
                 Looking up your state? After you check the cap, paste your dealer quote into Odigos to see if they're actually following it.
               </p>
               <Button asChild variant="cta" className="font-semibold">
-                <Link href="/analyze">Check My Dealer Quote</Link>
+                <Link href="/analyze">Check This Quote</Link>
               </Button>
             </div>
 
@@ -285,7 +285,7 @@ export default function DealerDocFeeByState() {
             </p>
             <Link href="/analyze">
               <Button variant="cta" size="lg">
-                Check My Dealer Quote
+                Check This Quote
               </Button>
             </Link>
           </div>

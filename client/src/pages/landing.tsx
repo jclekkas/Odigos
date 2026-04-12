@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Check, CheckCircle2, Lock } from "lucide-react";
+import { ArrowRight, Check, CheckCircle2, Lock, AlertTriangle, DollarSign, Scale, RefreshCw, Database, BookOpen } from "lucide-react";
 import { trackPageView, trackCtaClick } from "@/lib/tracking";
 import { capture } from "@/lib/analytics";
 import SiteHeader from "@/components/SiteHeader";
@@ -15,11 +15,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 
 const PLACEHOLDER_EXAMPLES = [
-  "Hey! We can do $32,245 out-the-door on the Sportage LX AWD. 1.99% for 60 months. Let me know when you can come in.",
-  "Great news! Your monthly payment comes out to $589. We'll go over the details when you get here!",
-  "Hi, the vehicle is $28,995. With taxes, fees, and protection package you're looking at $34,200 OTD.",
-  "We added paint protection and fabric guard that everyone gets — $1,995. APR depends on credit.",
-  "Doc fee is $895. That's standard for every deal we do. The price is firm but I can work on the payment.",
+  "$499 doc fee, $1,495 protection package\u2026",
+  "OTD $32,800 \u2014 breakdown attached",
+  "$399/mo with $3k down\u2026",
+  "Paint protection and nitrogen included \u2014 $1,995",
+  "Doc fee is $895. That\u2019s standard for every deal we do.",
 ];
 
 const HOW_IT_WORKS_STEPS = [
@@ -72,7 +72,7 @@ function HeroSection({
   }, [userEngaged]);
 
   const handleAnalyze = useCallback(() => {
-    trackCtaClick("hero-analyze", "Check Your Deal");
+    trackCtaClick("hero-analyze", "Check This Quote");
     capture("hero_textarea_submitted", { text_length: heroText.length });
     if (heroText.trim()) {
       sessionStorage.setItem("odigos_hero_text", heroText);
@@ -88,14 +88,14 @@ function HeroSection({
             className="text-balance text-3xl font-extrabold tracking-tight sm:text-5xl text-foreground leading-[1.15]"
             data-testid="text-hero-headline"
           >
-            Is your dealer quote fair?
+            Is your dealer quote hiding extra fees?
           </h1>
 
           <p
             className="mt-4 text-lg text-foreground/75 leading-relaxed"
             data-testid="text-hero-subheadline"
           >
-            Paste it below. We'll flag junk fees, missing details, and pricing tricks in about a minute.
+            Paste your quote. We'll show what's overpriced, what's illegal, and what to say back.
           </p>
 
           {/* Textarea card */}
@@ -114,7 +114,7 @@ function HeroSection({
             />
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-3 pt-3 border-t border-border/50">
               <span className="text-xs text-muted-foreground">
-                Free instant preview &middot; No signup
+                Free instant analysis &middot; No signup
               </span>
               <Button
                 variant="cta"
@@ -123,7 +123,7 @@ function HeroSection({
                 onClick={handleAnalyze}
                 data-testid="button-cta-hero"
               >
-                Check Your Deal
+                Check This Quote
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
@@ -214,8 +214,8 @@ export default function Landing() {
 
   useEffect(() => {
     setSeoMeta({
-      title: "Odigos — Dealer Quote Analyzer | Detect Junk Fees & Hidden Charges",
-      description: "Paste your dealer quote. Odigos detects junk fees, hidden charges, and missing details in 60 seconds. Get a GO/NO-GO verdict free, then unlock unlimited scans with a 72-hour or 14-day pass.",
+      title: "Odigos — Dealer Quote Analyzer | Find What's Wrong With Your Quote",
+      description: "Paste your dealer quote. Odigos shows what's overpriced, what's illegal, and what to say back — in 60 seconds. Free instant analysis, then unlimited scans with a 72-hour or 14-day pass.",
       path: "/",
     });
   }, []);
@@ -256,6 +256,81 @@ export default function Landing() {
 
         {/* ── HERO ─────────────────────────────────────────────────────────── */}
         <HeroSection statsData={statsData} statsLoading={statsLoading} statsError={statsError} />
+
+        {/* ── EXAMPLE OUTPUT ────────────────────────────────────────────── */}
+        <section className="py-14 sm:py-16 border-t border-border">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6">
+            <h2 className="text-center text-2xl font-bold tracking-tight sm:text-3xl mb-3" data-testid="text-example-output-heading">
+              What you'll see
+            </h2>
+            <p className="text-center text-sm text-muted-foreground mb-10">
+              Real results from real quotes — not feature descriptions.
+            </p>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="rounded-xl border-2 border-red-500/30 bg-red-500/5 p-5 space-y-2" data-testid="card-example-overpayment">
+                <div className="flex items-center gap-2">
+                  <DollarSign className="w-5 h-5 text-red-600 dark:text-red-400" />
+                  <span className="text-xs font-semibold uppercase tracking-wider text-red-700 dark:text-red-400">Overpayment</span>
+                </div>
+                <p className="text-lg font-bold text-red-700 dark:text-red-300 leading-snug">
+                  You may be overpaying by $1,200&ndash;$2,100
+                </p>
+              </div>
+              <div className="rounded-xl border-2 border-amber-500/30 bg-amber-500/5 p-5 space-y-2" data-testid="card-example-cap">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                  <span className="text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400">State cap exceeded</span>
+                </div>
+                <p className="text-lg font-bold text-amber-700 dark:text-amber-300 leading-snug">
+                  $499 doc fee exceeds California's $85 cap
+                </p>
+              </div>
+              <div className="rounded-xl border-2 border-emerald-500/30 bg-emerald-500/5 p-5 space-y-2" data-testid="card-example-removable">
+                <div className="flex items-center gap-2">
+                  <Scale className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                  <span className="text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Negotiable</span>
+                </div>
+                <p className="text-lg font-bold text-emerald-700 dark:text-emerald-300 leading-snug">
+                  Protection package ($1,495) &mdash; typically removable
+                </p>
+              </div>
+            </div>
+            <p className="text-center mt-6">
+              <Link href="/example-analysis" className="text-sm text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors" data-testid="link-example-analysis-landing">
+                See a full example analysis &rarr;
+              </Link>
+            </p>
+          </div>
+        </section>
+
+        {/* ── HOW WE KNOW ────────────────────────────────────────────────── */}
+        <section className="py-14 sm:py-16 border-t border-border bg-muted/30">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6">
+            <h2 className="text-center text-2xl font-bold tracking-tight sm:text-3xl mb-10" data-testid="text-how-we-know-heading">
+              How we know
+            </h2>
+            <div className="grid gap-6 sm:grid-cols-3 text-center">
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex items-center justify-center h-12 w-12 rounded-full bg-primary/10">
+                  <Database className="w-5 h-5 text-primary" />
+                </div>
+                <p className="text-sm font-medium text-foreground">Based on real dealer quotes submitted by buyers</p>
+              </div>
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex items-center justify-center h-12 w-12 rounded-full bg-primary/10">
+                  <BookOpen className="w-5 h-5 text-primary" />
+                </div>
+                <p className="text-sm font-medium text-foreground">Compared against state laws and market data</p>
+              </div>
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex items-center justify-center h-12 w-12 rounded-full bg-primary/10">
+                  <RefreshCw className="w-5 h-5 text-primary" />
+                </div>
+                <p className="text-sm font-medium text-foreground">Updated continuously</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* ── PRICING ──────────────────────────────────────────────────────── */}
         <section id="pricing" className="py-14 sm:py-16 border-t border-border bg-muted/30">
@@ -421,7 +496,7 @@ export default function Landing() {
         <section className="py-14 border-t border-border bg-muted/30">
           <div className="max-w-2xl mx-auto text-center px-4">
             <h2 className="text-2xl sm:text-3xl font-bold mb-3">
-              Don't sign until you check.
+              Don't sign until you check this quote.
             </h2>
             <p className="text-muted-foreground mb-8">Free. 60 seconds. No signup.</p>
             <Button
@@ -434,11 +509,11 @@ export default function Landing() {
               <Link
                 href="/analyze"
                 onClick={() => {
-                  trackCtaClick("final-cta", "Check Your Deal");
+                  trackCtaClick("final-cta", "Check This Quote");
                   capture("landing_cta_clicked", { location: "final" });
                 }}
               >
-                Check Your Deal
+                Check This Quote
               </Link>
             </Button>
           </div>

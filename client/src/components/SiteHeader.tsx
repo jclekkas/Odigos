@@ -78,8 +78,8 @@ export default function SiteHeader() {
 
         <div className="flex items-center gap-3">
           <Button variant="cta" size="sm" asChild data-testid="button-cta-header">
-            <Link href="/analyze" onClick={() => capture("landing_cta_clicked", { location: "header", cta_text: "Check a Dealer Quote" })}>
-              Check a Dealer Quote
+            <Link href="/analyze" onClick={() => capture("landing_cta_clicked", { location: "header", cta_text: "Check a Quote" })}>
+              Check a Quote
             </Link>
           </Button>
 

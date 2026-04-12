@@ -6,8 +6,8 @@ export function productSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "Product",
-    "name": "Odigos Deal Analysis",
-    "description": "AI-powered car dealer quote analysis. Paste a dealer quote, email, or text and get an instant GO/NO-GO recommendation with hidden fee detection.",
+    "name": "Odigos Dealer Quote Analyzer",
+    "description": "Paste your dealer quote. Odigos shows what's overpriced, what's illegal, and what to say back — with a GO/NO-GO verdict in 60 seconds.",
     "image": `${SITE_URL}/og-image.png`,
     "brand": {
       "@type": "Brand",
@@ -104,7 +104,7 @@ export function howToSchema() {
     "@context": "https://schema.org",
     "@type": "HowTo",
     "name": "How to check your dealer quote",
-    "description": "Use Odigos to analyze a car dealer quote and get an instant GO/NO-GO recommendation before visiting the dealership.",
+    "description": "Use Odigos to check a car dealer quote for overpriced fees, illegal charges, and missing details — and get the exact response to send back.",
     "step": [
       {
         "@type": "HowToStep",
