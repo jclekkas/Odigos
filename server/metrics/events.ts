@@ -31,7 +31,8 @@ export type EventType =
   | "paywall_view"
   | "checkout_initiated"
   | "rate_limit_breach"
-  | "feedback_signal";
+  | "feedback_signal"
+  | "content_validation";
 
 export interface EventMetadata {
   dealScore?: "GREEN" | "YELLOW" | "RED";

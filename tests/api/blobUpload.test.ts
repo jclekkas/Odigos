@@ -44,9 +44,21 @@ vi.mock("../../server/stripeClient", () => ({
   getStripeClient: vi.fn(),
 }));
 
-vi.mock("../../server/extractText", () => ({
-  extractTextFromFile: vi.fn(),
-}));
+vi.mock("../../server/extractText", () => {
+  class IrrelevantContentError extends Error {
+    constructor(
+      public readonly rejectionReason: string,
+      public readonly documentType: string,
+    ) {
+      super(rejectionReason);
+      this.name = "IrrelevantContentError";
+    }
+  }
+  return {
+    extractTextFromFile: vi.fn(),
+    IrrelevantContentError,
+  };
+});
 
 vi.mock("../../server/db", () => ({
   db: {

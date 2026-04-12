@@ -206,6 +206,29 @@ describe("POST /api/analyze", () => {
     expect(res.body.goNoGo).toBe("NO-GO");
   });
 
+  it("returns 422 content_not_relevant for garbage text with no dealer keywords", async () => {
+    // The content validator will find zero keywords and call the LLM
+    // classifier. Mock it to reject the content.
+    (openai.chat.completions.create as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      choices: [{
+        message: {
+          content: JSON.stringify({
+            isRelevant: false,
+            confidence: "high",
+            category: "unrelated_text",
+            rejectionReason: "This text doesn't appear to contain any car dealer pricing, fees, or deal terms.",
+          }),
+        },
+      }],
+    });
+    const res = await request(app)
+      .post("/api/analyze")
+      .send({ dealerText: "My cat is orange and loves tuna. He sleeps on the couch all day long." });
+    expect(res.status).toBe(422);
+    expect(res.body.error).toBe("content_not_relevant");
+    expect(res.body.message).toMatch(/dealer/i);
+  });
+
   it("returns 502 when OpenAI throws (AI error after retries)", async () => {
     (openai.chat.completions.create as ReturnType<typeof vi.fn>).mockRejectedValue(
       new Error("OpenAI unavailable")

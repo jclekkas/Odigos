@@ -19,6 +19,7 @@ import { withJitteredBackoff, isRetriableError } from "../lib/reliability.js";
 import { aiCircuitBreaker, CircuitOpenError } from "../lib/circuitBreaker.js";
 import { logger } from "../logger.js";
 import { AI_PRIMARY_MODEL, AI_FALLBACK_MODEL } from "../config/aiModel.js";
+import { validateDealerContent } from "./contentValidator.js";
 
 export type AnalyzeInput = z.infer<typeof analysisRequestSchema>;
 
@@ -127,6 +128,24 @@ export async function runAnalysis(data: AnalyzeInput): Promise<AnalyzeServiceRes
       message:
         "The AI analysis service is not configured on this deployment. " +
         "Ask the operator to set AI_INTEGRATIONS_OPENAI_API_KEY (or OPENAI_API_KEY) and redeploy.",
+    });
+  }
+
+  // Content relevance gate: reject garbage input before the expensive
+  // analysis call. Uses a free heuristic first, falling back to a cheap
+  // gpt-4o-mini classifier only when zero dealer keywords are found.
+  const validation = await validateDealerContent(data.dealerText);
+  if (!validation.isRelevant) {
+    trackEvent("content_validation", {
+      isRelevant: false,
+      category: validation.category,
+      method: validation.method,
+    }).catch(err => logger.error("content_validation event failed", { source: "tracking", error: String(err) }));
+    throw new AnalyzeServiceError(422, {
+      error: "content_not_relevant",
+      message: validation.rejectionReason
+        ?? "We couldn't find any pricing, fees, or deal terms in this text.",
+      category: validation.category,
     });
   }
 

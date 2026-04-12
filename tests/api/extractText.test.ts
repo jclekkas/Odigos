@@ -71,9 +71,21 @@ vi.mock("../../server/stripeClient", () => ({
   getStripeClient: vi.fn(),
 }));
 
-vi.mock("../../server/extractText", () => ({
-  extractTextFromFile: vi.fn(),
-}));
+vi.mock("../../server/extractText", () => {
+  class IrrelevantContentError extends Error {
+    constructor(
+      public readonly rejectionReason: string,
+      public readonly documentType: string,
+    ) {
+      super(rejectionReason);
+      this.name = "IrrelevantContentError";
+    }
+  }
+  return {
+    extractTextFromFile: vi.fn(),
+    IrrelevantContentError,
+  };
+});
 
 vi.mock("../../server/db", () => ({
   db: {
@@ -88,7 +100,7 @@ vi.mock("../../server/db", () => ({
   },
 }));
 
-import { extractTextFromFile } from "../../server/extractText";
+import { extractTextFromFile, IrrelevantContentError } from "../../server/extractText";
 import { registerRoutes } from "../../server/routes";
 
 let app: express.Express;
@@ -221,6 +233,25 @@ describe("POST /api/extract-text", () => {
       });
     expect(res.status).toBe(422);
     expect(res.body.message).toMatch(/couldn't read/i);
+  });
+
+  it("returns 422 with content_not_relevant when image is not a dealer document", async () => {
+    vi.mocked(extractTextFromFile).mockRejectedValueOnce(
+      new IrrelevantContentError(
+        "This appears to be a photo of a pet, not a dealer document.",
+        "photo_not_document",
+      )
+    );
+    const res = await request(app)
+      .post("/api/extract-text")
+      .attach("file", Buffer.from("fake-cat-photo"), {
+        filename: "cat.jpg",
+        contentType: "image/jpeg",
+      });
+    expect(res.status).toBe(422);
+    expect(res.body.error).toBe("content_not_relevant");
+    expect(res.body.message).toMatch(/pet/i);
+    expect(res.body.documentType).toBe("photo_not_document");
   });
 
   // ─── Error classifier regression guards ─────────────────────────────────
