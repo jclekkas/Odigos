@@ -8,9 +8,9 @@ import { ArrowRight, ShieldCheck, Database, Mail } from "lucide-react";
 export default function About() {
   useEffect(() => {
     setSeoMeta({
-      title: "About Odigos — The Independent Car Deal Guide",
+      title: "About Odigos — Independent Dealer Quote Analyzer",
       description:
-        "Odigos (Greek for 'guide') is an independent tool that analyzes car dealer quotes for hidden fees and overcharges. No dealership affiliations. No referral fees. Just clarity before you sign.",
+        "Odigos (Greek for 'guide') is an independent dealer quote analyzer that flags overpriced fees, illegal charges, and missing details. No dealership affiliations. No referral fees. Just clarity before you sign.",
       path: "/about",
     });
   }, []);
@@ -24,7 +24,7 @@ export default function About() {
         About Odigos
       </h1>
       <p className="text-sm text-muted-foreground mb-10">
-        Independent car deal analysis — no dealership affiliations, no referral fees
+        Independent dealer quote analyzer — no dealership affiliations, no referral fees
       </p>
 
       <div className="space-y-10 text-base leading-relaxed">
@@ -40,7 +40,7 @@ export default function About() {
             What Odigos does
           </h2>
           <p className="text-muted-foreground mb-3">
-            You paste a dealer quote — an email, a text message, a photo of a worksheet — and Odigos tells you what's in it, what's missing, and whether you should proceed. The analysis checks for:
+            You paste a dealer quote — an email, a text message, a photo of a worksheet — and Odigos tells you exactly what's wrong with it, what's illegal, what's overpriced, and what to say back. The analysis checks for:
           </p>
           <ul className="space-y-2 text-muted-foreground list-none">
             <li className="flex items-start gap-2">
@@ -143,7 +143,7 @@ export default function About() {
         <div className="pt-4">
           <Button variant="cta" asChild size="lg" className="gap-2" data-testid="button-cta-about">
             <Link href="/analyze">
-              Check a Dealer Quote
+              Check a Quote
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>

@@ -205,7 +205,7 @@ export default function OutTheDoorPrice() {
         </p>
         <Link href="/analyze">
           <Button variant="cta" data-testid="analyze-my-deal-top">
-            Analyze My Deal
+            Check This Quote
           </Button>
         </Link>
       </div>
@@ -443,7 +443,7 @@ export default function OutTheDoorPrice() {
           </p>
           <Link href="/analyze">
             <Button variant="cta" data-testid="analyze-my-deal-bottom">
-              Analyze My Deal
+              Check This Quote
             </Button>
           </Link>
         </div>

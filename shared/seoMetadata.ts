@@ -17,14 +17,14 @@ export interface PageSeoMeta {
 // Explicit metadata for high-priority pages
 const SEO_MAP: Record<string, PageSeoMeta> = {
   "/": {
-    title: "Odigos — Dealer Quote Analyzer | Detect Junk Fees & Hidden Charges",
+    title: "Odigos — Dealer Quote Analyzer | Find What's Wrong With Your Quote",
     description:
-      "Paste your dealer quote. Odigos detects junk fees, hidden charges, and missing details in 60 seconds. Get a GO/NO-GO verdict free, then unlock unlimited scans with a 72-hour or 14-day pass.",
+      "Paste your dealer quote. Odigos shows what's overpriced, what's illegal, and what to say back — in 60 seconds. Free instant analysis, then unlimited scans with a 72-hour or 14-day pass.",
   },
   "/analyze": {
-    title: "Analyze Your Car Deal | Odigos",
+    title: "Check Your Dealer Quote | Odigos",
     description:
-      "Paste dealer texts, emails, or quotes into Odigos. Get an instant GO/NO-GO recommendation with hidden fee detection and suggested questions for the dealer.",
+      "Paste your dealer quote. Odigos shows what's overpriced, what's illegal, and what to say back. Free instant analysis with GO/NO-GO verdict.",
   },
 
   // ── Top 10 GSC pages (updated SEO copy) ──────────────────────
@@ -81,9 +81,9 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
 
   // ── Other content pages ──────────────────────────────────────
   "/about": {
-    title: "About Odigos — The Independent Car Deal Guide",
+    title: "About Odigos — Independent Dealer Quote Analyzer",
     description:
-      "Odigos (Greek for 'guide') is an independent tool that analyzes car dealer quotes for hidden fees and overcharges. No dealership affiliations. No referral fees. Just clarity before you sign.",
+      "Odigos (Greek for 'guide') is an independent dealer quote analyzer that flags overpriced fees, illegal charges, and missing details. No dealership affiliations. No referral fees. Just clarity before you sign.",
   },
   "/privacy": {
     title: "Privacy Policy | Odigos",

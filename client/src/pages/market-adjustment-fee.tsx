@@ -96,7 +96,7 @@ export default function MarketAdjustmentFee() {
               </p>
               <Link href="/analyze">
                 <Button variant="cta" size="sm" data-testid="button-cta-mid-article-market-adjustment">
-                  Analyze My Dealer Quote
+                  Check This Quote
                 </Button>
               </Link>
             </div>

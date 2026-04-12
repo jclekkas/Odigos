@@ -132,7 +132,7 @@ export default function HowOdigosWorks() {
         <div className="pt-4">
           <Button variant="cta" asChild size="lg" className="gap-2" data-testid="button-cta-how-it-works">
             <Link href="/analyze">
-              Check a Dealer Quote
+              Check a Quote
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>

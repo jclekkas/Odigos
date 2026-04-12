@@ -89,7 +89,7 @@ export default function AreDealerFeesNegotiable() {
           </p>
           <Link href="/analyze">
             <Button variant="cta" size="sm" data-testid="button-cta-mid-article-fees-negotiable">
-              Analyze My Dealer Quote
+              Check This Quote
             </Button>
           </Link>
         </div>

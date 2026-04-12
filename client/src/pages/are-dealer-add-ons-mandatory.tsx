@@ -143,7 +143,7 @@ export default function AreDealerAddOnsMandatory() {
               </p>
               <Link href="/analyze">
                 <Button variant="cta" size="sm" data-testid="button-cta-mid-article-are-mandatory">
-                  Analyze My Dealer Quote
+                  Check This Quote
                 </Button>
               </Link>
             </div>
