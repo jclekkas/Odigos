@@ -119,7 +119,7 @@ export default function OutTheDoorPriceVsMsrp() {
           </p>
           <Link href="/analyze">
             <button className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors" data-testid="button-cta-mid-article">
-              Analyze My Dealer Quote
+              Check This Quote
             </button>
           </Link>
         </div>

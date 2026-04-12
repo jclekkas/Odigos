@@ -104,7 +104,7 @@ export default function MoneyFactorExplained() {
           </p>
           <Link href="/analyze">
             <Button variant="cta" size="sm" data-testid="button-cta-mid-article-money-factor">
-              Analyze My Lease Quote
+              Check This Quote
             </Button>
           </Link>
         </div>

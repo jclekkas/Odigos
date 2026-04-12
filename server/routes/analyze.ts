@@ -88,13 +88,26 @@ export function registerAnalyzeRoutes(app: Express): void {
         listingId: z.string().min(1),
         rating: z.boolean(),
         comment: z.string().trim().max(500).optional().transform((v) => (v === "" ? undefined : v)),
+        // Enhanced feedback fields
+        userPaidAmountFinal: z.number().positive().optional(),
+        docFeeRemoved: z.boolean().optional(),
+        addOnsRemoved: z.array(z.string()).optional(),
+        overpaymentEstimateFeltAccurate: z.boolean().optional(),
       });
       const parseResult = feedbackSchema.safeParse(req.body);
       if (!parseResult.success) {
         return res.status(400).json({ error: "Invalid request", details: parseResult.error.flatten() });
       }
-      const { listingId, rating, comment } = parseResult.data;
-      await storage.createDealFeedback({ listingId, rating, comment: comment ?? null });
+      const { listingId, rating, comment, userPaidAmountFinal, docFeeRemoved, addOnsRemoved, overpaymentEstimateFeltAccurate } = parseResult.data;
+      await storage.createDealFeedback({
+        listingId,
+        rating,
+        comment: comment ?? null,
+        userPaidAmountFinal: userPaidAmountFinal != null ? String(userPaidAmountFinal) : null,
+        docFeeRemoved: docFeeRemoved ?? null,
+        addOnsRemoved: addOnsRemoved ?? null,
+        overpaymentEstimateFeltAccurate: overpaymentEstimateFeltAccurate ?? null,
+      });
       return res.json({ ok: true });
     } catch (error) {
       console.error("[feedback] POST /api/feedback error:", error);

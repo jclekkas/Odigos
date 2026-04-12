@@ -104,6 +104,15 @@ export async function setupWarehouseViews(): Promise<void> {
       ON core.dealers (dealer_name_normalized, city, state_code)
   `);
 
+  // New market intelligence columns on core.dealers (idempotent)
+  await db.execute(sql`ALTER TABLE core.dealers ADD COLUMN IF NOT EXISTS avg_doc_fee numeric`);
+  await db.execute(sql`ALTER TABLE core.dealers ADD COLUMN IF NOT EXISTS doc_fee_sum numeric`);
+  await db.execute(sql`ALTER TABLE core.dealers ADD COLUMN IF NOT EXISTS doc_fee_count integer NOT NULL DEFAULT 0`);
+  await db.execute(sql`ALTER TABLE core.dealers ADD COLUMN IF NOT EXISTS addon_total_sum numeric`);
+  await db.execute(sql`ALTER TABLE core.dealers ADD COLUMN IF NOT EXISTS addon_total_count integer NOT NULL DEFAULT 0`);
+  await db.execute(sql`ALTER TABLE core.dealers ADD COLUMN IF NOT EXISTS listings_with_addons integer NOT NULL DEFAULT 0`);
+  await db.execute(sql`ALTER TABLE core.dealers ADD COLUMN IF NOT EXISTS red_count integer NOT NULL DEFAULT 0`);
+
   // core.listings → core.dealers, core.states
   await db.execute(sql`
     CREATE TABLE IF NOT EXISTS core.listings (
@@ -181,6 +190,88 @@ export async function setupWarehouseViews(): Promise<void> {
   `);
   await db.execute(sql`CREATE INDEX IF NOT EXISTS core_complaints_state_idx ON core.consumer_complaints (state_code, complaint_date)`);
   await db.execute(sql`CREATE INDEX IF NOT EXISTS core_complaints_dealer_idx ON core.consumer_complaints (dealer_id)`);
+
+  // ── 3a. Market intelligence tables ──────────────────────────────────────────
+
+  // core.state_market_stats — running aggregates (replaces materialized view for reads)
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS core.state_market_stats (
+      state_code text PRIMARY KEY REFERENCES core.states(state_code),
+      listing_count integer NOT NULL DEFAULT 0,
+      deal_score_sum numeric,
+      avg_deal_score numeric,
+      doc_fee_sum numeric,
+      doc_fee_count integer NOT NULL DEFAULT 0,
+      avg_doc_fee numeric,
+      addon_total_sum numeric,
+      addon_total_count integer NOT NULL DEFAULT 0,
+      listings_with_addons integer NOT NULL DEFAULT 0,
+      updated_at timestamp DEFAULT now() NOT NULL
+    )
+  `);
+
+  // core.line_item_pattern_stats — per-item occurrence and amount tracking
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS core.line_item_pattern_stats (
+      id varchar(36) PRIMARY KEY DEFAULT gen_random_uuid(),
+      state_code text REFERENCES core.states(state_code),
+      item_name_normalized text NOT NULL,
+      occurrence_count integer NOT NULL DEFAULT 0,
+      amount_sum numeric,
+      amount_count integer NOT NULL DEFAULT 0,
+      flagged_count integer NOT NULL DEFAULT 0,
+      total_listings_in_scope integer NOT NULL DEFAULT 0,
+      updated_at timestamp DEFAULT now() NOT NULL
+    )
+  `);
+  await db.execute(sql`
+    CREATE UNIQUE INDEX IF NOT EXISTS core_lip_state_item_idx
+      ON core.line_item_pattern_stats (state_code, item_name_normalized)
+  `);
+
+  // core.analysis_line_items — per-fee-item rows for each listing
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS core.analysis_line_items (
+      id varchar(36) PRIMARY KEY DEFAULT gen_random_uuid(),
+      listing_id varchar(36) REFERENCES core.listings(id),
+      item_name text NOT NULL,
+      item_name_normalized text NOT NULL,
+      amount numeric,
+      is_flagged boolean NOT NULL DEFAULT false,
+      category text,
+      created_at timestamp DEFAULT now() NOT NULL
+    )
+  `);
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS core_ali_listing_idx ON core.analysis_line_items (listing_id)`);
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS core_ali_item_name_idx ON core.analysis_line_items (item_name_normalized)`);
+
+  // Enhanced feedback columns on deal_feedback (idempotent)
+  await db.execute(sql`ALTER TABLE public.deal_feedback ADD COLUMN IF NOT EXISTS user_paid_amount_final numeric`);
+  await db.execute(sql`ALTER TABLE public.deal_feedback ADD COLUMN IF NOT EXISTS doc_fee_removed boolean`);
+  await db.execute(sql`ALTER TABLE public.deal_feedback ADD COLUMN IF NOT EXISTS add_ons_removed text[]`);
+  await db.execute(sql`ALTER TABLE public.deal_feedback ADD COLUMN IF NOT EXISTS overpayment_estimate_felt_accurate boolean`);
+
+  // One-time backfill: populate core.state_market_stats from existing core.listings
+  await db.execute(sql`
+    INSERT INTO core.state_market_stats (state_code, listing_count, deal_score_sum, avg_deal_score,
+      doc_fee_sum, doc_fee_count, avg_doc_fee, addon_total_sum, addon_total_count, listings_with_addons, updated_at)
+    SELECT
+      l.state_code,
+      COUNT(*),
+      SUM(l.deal_score),
+      AVG(l.deal_score),
+      SUM(l.doc_fee),
+      COUNT(l.doc_fee),
+      AVG(l.doc_fee),
+      SUM(l.addon_total),
+      COUNT(l.addon_total),
+      COUNT(*) FILTER (WHERE l.addon_total IS NOT NULL AND l.addon_total > 0),
+      NOW()
+    FROM core.listings l
+    WHERE l.state_code IS NOT NULL
+    GROUP BY l.state_code
+    ON CONFLICT (state_code) DO NOTHING
+  `);
 
   // ── 3b. New columns for public.dealer_submissions (content hash dedup) ───────
   await db.execute(sql`ALTER TABLE public.dealer_submissions ADD COLUMN IF NOT EXISTS content_hash text`);

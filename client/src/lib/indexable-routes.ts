@@ -98,14 +98,22 @@ export const INDEXABLE_ROUTES: string[] = [
   "/about",
   "/privacy",
   "/terms",
+  "/glossary",
+  "/junk-fees-explained",
+  "/car-lease-fees-explained",
+  "/money-factor-explained",
+  "/residual-value-explained",
 ];
 
 export const EXCLUDED_ROUTES: string[] = [
   "/guides",
+  "/admin",
   "/admin/metrics",
   "/admin/technical",
   "/admin/business",
   "/admin/experiments",
   "/admin/content",
   "/admin/users",
+  "/admin/seo",
+  "/legal",
 ];

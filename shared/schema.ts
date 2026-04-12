@@ -18,6 +18,10 @@ export const analysisRequestSchema = z.object({
 export const marketContextStrengthSchema = z.enum(["none", "thin", "moderate", "strong"]);
 export type MarketContextStrength = z.infer<typeof marketContextStrengthSchema>;
 
+// Confidence tiers for market intelligence (surfaced to users)
+export const marketConfidenceTierSchema = z.enum(["low", "medium", "high"]);
+export type MarketConfidenceTier = z.infer<typeof marketConfidenceTierSchema>;
+
 // Market context returned with analysis results (all keys always present, null for missing values)
 export const marketContextSchema = z.object({
   stateCode: z.string().nullable(),
@@ -36,9 +40,37 @@ export const marketContextSchema = z.object({
   feedbackSampleSize: z.number().optional(),
   feedbackStrength: marketContextStrengthSchema.optional(),
   overallStrength: marketContextStrengthSchema.optional(),
+  // Extended market intelligence fields
+  stateP25DocFee: z.number().nullable().optional(),
+  stateP75DocFee: z.number().nullable().optional(),
+  stateAvgAddOnTotal: z.number().nullable().optional(),
+  statePercentWithAddOns: z.number().nullable().optional(),
+  stateConfidenceTier: marketConfidenceTierSchema.nullable().optional(),
+  dealerAvgDocFee: z.number().nullable().optional(),
+  dealerPercentFlaggedRed: z.number().nullable().optional(),
+  dealerConfidenceTier: marketConfidenceTierSchema.nullable().optional(),
 });
 
 export type MarketContext = z.infer<typeof marketContextSchema>;
+
+// Market signal — structured evidence surfaced to users
+export const marketSignalSchema = z.object({
+  source: z.enum(["dealer", "state", "pattern", "legal"]),
+  message: z.string(),
+  confidenceTier: marketConfidenceTierSchema,
+  sampleSize: z.number().nullable(),
+});
+
+export type MarketSignal = z.infer<typeof marketSignalSchema>;
+
+// Flagged item evidence — data-backed reasoning for flagged fees
+export const flaggedItemEvidenceSchema = z.object({
+  itemLabel: z.string(),
+  message: z.string(),
+  confidenceTier: marketConfidenceTierSchema,
+});
+
+export type FlaggedItemEvidence = z.infer<typeof flaggedItemEvidenceSchema>;
 
 export type AnalysisRequest = z.infer<typeof analysisRequestSchema>;
 
@@ -203,6 +235,14 @@ export const analysisResponseSchema = z.object({
   // Ranked Signals — deterministic priority-ordered negotiation signals
   // ---------------------------------------------------------------------
   rankedSignals: z.array(rankedSignalSchema).optional(),
+  // ---------------------------------------------------------------------
+  // Market Intelligence — data moat signals computed deterministically
+  // ---------------------------------------------------------------------
+  marketSignals: z.array(marketSignalSchema).optional(),
+  flaggedItemEvidence: z.array(flaggedItemEvidenceSchema).optional(),
+  dealerSeenBefore: z.boolean().optional(),
+  dealerPriorQuoteCount: z.number().nullable().optional(),
+  dealerPatternSummary: z.string().nullable().optional(),
 });
 
 export type AnalysisResponse = z.infer<typeof analysisResponseSchema>;
@@ -384,6 +424,11 @@ export const dealFeedback = pgTable(
     rating: boolean("rating").notNull(),
     comment: text("comment"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    // Enhanced feedback fields (all optional)
+    userPaidAmountFinal: numeric("user_paid_amount_final"),
+    docFeeRemoved: boolean("doc_fee_removed"),
+    addOnsRemoved: text("add_ons_removed").array(),
+    overpaymentEstimateFeltAccurate: boolean("overpayment_estimate_felt_accurate"),
     // Progressive disclosure outcome fields (all nullable — collected in stage 2)
     finalPaidAmount: numeric("final_paid_amount"),
     feesRemoved: boolean("fees_removed"),

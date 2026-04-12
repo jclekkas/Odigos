@@ -6,6 +6,10 @@ import {
   type AnalysisResponse,
   type MarketContext,
   type MarketContextStrength,
+  type MarketConfidenceTier,
+  type MarketSignal,
+  type FlaggedItemEvidence,
+  type Fee,
 } from "../../shared/schema.js";
 import { applyRuleEngine, checkDocFeeCap } from "../ruleEngine.js";
 import { rankSignals } from "../signalRanker.js";
@@ -15,7 +19,8 @@ import { trackEvent } from "../events.js";
 import { openai, isOpenAIConfigured, OpenAIConfigurationError, parseOpenAIError, type ParsedOpenAIError } from "../openaiClient.js";
 import { enqueueSubmission } from "../ingestor.js";
 import { storage } from "../storage.js";
-import { getMarketContext, getDealerStats } from "../marketContext.js";
+import { getMarketContext, getDealerStats, getLineItemStats, getConfidenceTier, type LineItemStat } from "../marketContext.js";
+import { normalizeLineItemName } from "../warehouse/warehouseUtils.js";
 import { withJitteredBackoff, isRetriableError } from "../lib/reliability.js";
 import { aiCircuitBreaker, CircuitOpenError } from "../lib/circuitBreaker.js";
 import { logger } from "../logger.js";
@@ -88,6 +93,177 @@ export function buildMarketContextSummary(
     return `Based on local data (${sampleSize} similar ${sourceLabel} in ${state})`;
   }
   return `Based on limited local data (${sampleSize} similar ${sampleSize === 1 ? sourceLabel.replace(/s$/, "") : sourceLabel} in ${state})`;
+}
+
+function confidenceTierLabel(tier: MarketConfidenceTier): string {
+  if (tier === "high") return "strong signal";
+  if (tier === "medium") return "moderate signal";
+  return "early signal";
+}
+
+/**
+ * Build structured MARKET_CONTEXT block for the LLM prompt.
+ */
+export function buildMarketContextBlock(
+  mc: MarketContext | null,
+  lineItemStats: Map<string, LineItemStat>,
+  stateCode: string | null,
+): string {
+  if (!mc && lineItemStats.size === 0) return "";
+  const lines: string[] = ["MARKET_CONTEXT (structured data — use in analysis):"];
+
+  if (mc && stateCode) {
+    const stateTier = mc.stateConfidenceTier ?? "low";
+    const stateN = mc.stateTotalAnalyses ?? 0;
+    const stateLines: string[] = [];
+    if (mc.stateAvgDocFee != null) stateLines.push(`avg_doc_fee: $${Math.round(mc.stateAvgDocFee)}`);
+    if (mc.stateAvgAddOnTotal != null) stateLines.push(`avg_addon_total: $${Math.round(mc.stateAvgAddOnTotal)}`);
+    if (mc.statePercentWithAddOns != null) stateLines.push(`pct_with_addons: ${Math.round(mc.statePercentWithAddOns)}%`);
+    if (stateLines.length > 0) {
+      lines.push(`  STATE (${stateCode}, n=${stateN}, confidence: ${stateTier}):`);
+      stateLines.forEach(l => lines.push(`    ${l}`));
+    }
+
+    if (mc.dealerAnalysisCount != null && mc.dealerAnalysisCount >= 1) {
+      const dealerTier = mc.dealerConfidenceTier ?? "low";
+      const dealerLines: string[] = [];
+      if (mc.dealerAvgDocFee != null) dealerLines.push(`avg_doc_fee: $${Math.round(mc.dealerAvgDocFee)}`);
+      if (mc.dealerAvgDealScore != null) dealerLines.push(`avg_deal_score: ${mc.dealerAvgDealScore}`);
+      if (mc.dealerPercentFlaggedRed != null) dealerLines.push(`pct_flagged_red: ${Math.round(mc.dealerPercentFlaggedRed)}%`);
+      lines.push(`  DEALER (n=${mc.dealerAnalysisCount}, confidence: ${dealerTier}):`);
+      dealerLines.forEach(l => lines.push(`    ${l}`));
+    }
+  }
+
+  if (lineItemStats.size > 0 && stateCode) {
+    const itemLines: string[] = [];
+    for (const [name, stat] of lineItemStats) {
+      const parts: string[] = [];
+      if (stat.avgAmount != null) parts.push(`avg $${Math.round(stat.avgAmount)}`);
+      parts.push(`seen ${stat.occurrenceCount} times`);
+      if (stat.confidenceTier) parts.push(`confidence: ${stat.confidenceTier}`);
+      itemLines.push(`    "${name}": ${parts.join(", ")} (n=${stat.sampleSize})`);
+    }
+    if (itemLines.length > 0) {
+      lines.push(`  LINE_ITEMS (${stateCode} patterns):`);
+      lines.push(...itemLines);
+    }
+  }
+
+  if (lines.length <= 1) return "";
+  return "\n" + lines.join("\n");
+}
+
+/**
+ * Build up to 3 market signals deterministically from database facts.
+ * These are NOT LLM-generated — they come from aggregate data.
+ */
+export function buildMarketSignals(
+  mc: MarketContext | null,
+  lineItemStats: Map<string, LineItemStat>,
+  docFeeAmount: number | null,
+  docFeeCapViolated: boolean,
+): MarketSignal[] {
+  const signals: MarketSignal[] = [];
+
+  // Legal signal (highest priority)
+  if (docFeeCapViolated) {
+    signals.push({
+      source: "legal",
+      message: "Doc fee exceeds the legal state cap.",
+      confidenceTier: "high",
+      sampleSize: null,
+    });
+  }
+
+  if (!mc) return signals;
+
+  // Dealer signal
+  if (mc.dealerAnalysisCount != null && mc.dealerAnalysisCount >= 1 && mc.dealerConfidenceTier) {
+    const parts: string[] = [`This dealer has appeared in ${mc.dealerAnalysisCount} prior ${mc.dealerAnalysisCount === 1 ? "quote" : "quotes"}.`];
+    if (mc.dealerAvgDocFee != null) parts.push(`Average doc fee was $${Math.round(mc.dealerAvgDocFee)}.`);
+    signals.push({
+      source: "dealer",
+      message: parts.join(" "),
+      confidenceTier: mc.dealerConfidenceTier,
+      sampleSize: mc.dealerAnalysisCount,
+    });
+  }
+
+  // State signal
+  if (mc.stateAvgDocFee != null && mc.stateConfidenceTier && docFeeAmount != null) {
+    const delta = docFeeAmount - mc.stateAvgDocFee;
+    const direction = delta >= 0 ? "above" : "below";
+    const stateLabel = mc.stateCode ?? "this state";
+    signals.push({
+      source: "state",
+      message: `Your doc fee is $${Math.abs(Math.round(delta))} ${direction} the ${stateLabel} average of $${Math.round(mc.stateAvgDocFee)}.`,
+      confidenceTier: mc.stateConfidenceTier,
+      sampleSize: mc.stateTotalAnalyses,
+    });
+  } else if (mc.stateAvgDocFee != null && mc.stateConfidenceTier) {
+    const stateLabel = mc.stateCode ?? "this state";
+    signals.push({
+      source: "state",
+      message: `In ${stateLabel}, doc fees typically average $${Math.round(mc.stateAvgDocFee)}.`,
+      confidenceTier: mc.stateConfidenceTier,
+      sampleSize: mc.stateTotalAnalyses,
+    });
+  }
+
+  // Line item pattern signal (pick the most impactful one)
+  if (lineItemStats.size > 0) {
+    let bestStat: LineItemStat | null = null;
+    for (const stat of lineItemStats.values()) {
+      if (!bestStat || stat.occurrenceCount > bestStat.occurrenceCount) {
+        bestStat = stat;
+      }
+    }
+    if (bestStat && bestStat.confidenceTier) {
+      const parts: string[] = [`"${bestStat.itemNameNormalized}" appears in ${bestStat.occurrenceCount} analyzed quotes.`];
+      if (bestStat.avgAmount != null) parts.push(`Average amount: $${Math.round(bestStat.avgAmount)}.`);
+      signals.push({
+        source: "pattern",
+        message: parts.join(" "),
+        confidenceTier: bestStat.confidenceTier,
+        sampleSize: bestStat.sampleSize,
+      });
+    }
+  }
+
+  return signals.slice(0, 3);
+}
+
+/**
+ * Build flagged item evidence by cross-referencing detected fees against pattern stats.
+ */
+export function buildFlaggedItemEvidence(
+  fees: Fee[],
+  lineItemStats: Map<string, LineItemStat>,
+): FlaggedItemEvidence[] {
+  const evidence: FlaggedItemEvidence[] = [];
+  if (lineItemStats.size === 0) return evidence;
+
+  for (const fee of fees) {
+    const isFlagged = /protection|nitrogen|etch|ceramic|fabric|undercoat|pinstripe|market.?adjust|markup|dealer.?prep|anti.?theft/i.test(fee.name);
+    if (!isFlagged) continue;
+
+    const normalized = normalizeLineItemName(fee.name);
+    const stat = lineItemStats.get(normalized);
+    if (!stat || !stat.confidenceTier) continue;
+
+    const parts: string[] = [`Seen in ${stat.occurrenceCount} other quotes.`];
+    if (stat.avgAmount != null) parts.push(`Average: $${Math.round(stat.avgAmount)}.`);
+    if (stat.flaggedPercent != null && stat.flaggedPercent > 30) parts.push("Often disputed.");
+
+    evidence.push({
+      itemLabel: fee.name,
+      message: parts.join(" "),
+      confidenceTier: stat.confidenceTier,
+    });
+  }
+
+  return evidence;
 }
 
 export interface AnalyzeServiceResult {
@@ -225,6 +401,7 @@ When state is unknown: omit all state-specific fee characterizations.`;
   }
 
   let marketContext: MarketContext | null = null;
+  let lineItemStats = new Map<string, LineItemStat>();
   if (process.env.DATABASE_URL && stateDetection.state) {
     try {
       marketContext = await getMarketContext({
@@ -235,6 +412,16 @@ When state is unknown: omit all state-specific fee characterizations.`;
     } catch (ctxErr) {
       logger.error("getMarketContext pre-fetch failed (non-fatal)", { source: "analyze", error: String(ctxErr) });
       marketContext = null;
+    }
+
+    // Pre-extract fee names for line-item pattern lookup
+    try {
+      const feePatterns = data.dealerText.match(/(?:doc(?:ument(?:ation)?)?\s*fee|protection|nitrogen|etch|ceramic|fabric|dealer\s*prep|anti.?theft|gap|warranty|market\s*adjust)/gi);
+      if (feePatterns && feePatterns.length > 0) {
+        lineItemStats = await getLineItemStats(stateDetection.state, feePatterns);
+      }
+    } catch (lipErr) {
+      logger.error("getLineItemStats pre-fetch failed (non-fatal)", { source: "analyze", error: String(lipErr) });
     }
   }
 
@@ -259,52 +446,20 @@ When state is unknown: omit all state-specific fee characterizations.`;
 
   const overallStrength = marketContext?.overallStrength ?? "none";
 
-  function buildMarketIntroPhrase(strength: MarketContextStrength, sampleSize: number): string {
-    if (strength === "strong") return "Observed local market data shows";
-    if (strength === "moderate") return "Recent local data suggests";
-    if (strength === "thin") {
-      if (sampleSize <= 1) return "Based on a single prior deal (very early signal)";
-      return "Early local signal suggests (limited data)";
-    }
-    return "";
-  }
-
-  let marketIntelligenceSection = "";
-  if (marketContext && overallStrength !== "none") {
-    const mc = marketContext;
-    const hasUsable = mc.stateTotalAnalyses != null || mc.stateAvgDocFee != null || mc.dealerAvgDealScore != null;
-    if (hasUsable) {
-      const stCode = stateDetection.state!;
-      const introPhrase = buildMarketIntroPhrase(overallStrength, mc.stateTotalAnalyses ?? 0);
-      const miLines: string[] = [];
-      if (mc.stateTotalAnalyses != null && Number.isFinite(mc.stateTotalAnalyses)) {
-        const dealWord = mc.stateTotalAnalyses === 1 ? "deal" : "deals";
-        miLines.push(`${introPhrase}: In ${stCode}, we have analyzed ${mc.stateTotalAnalyses} ${dealWord}`);
-      }
-      if (mc.stateAvgDocFee != null && Number.isFinite(mc.stateAvgDocFee)) {
-        miLines.push(`Average doc fee in ${stCode} is $${Math.round(mc.stateAvgDocFee)}`);
-      }
-      if (mc.dealerAvgDealScore != null && mc.dealerAnalysisCount != null && Number.isFinite(mc.dealerAvgDealScore)) {
-        const quoteWord = mc.dealerAnalysisCount === 1 ? "quote" : "quotes";
-        miLines.push(`This dealer's average deal score is ${mc.dealerAvgDealScore} across ${mc.dealerAnalysisCount} analyzed ${quoteWord}`);
-      }
-      if (mc.feedbackCount != null && mc.feedbackCount >= 1 && mc.feedbackAgreementPct != null && Number.isFinite(mc.feedbackAgreementPct)) {
-        const pct = Math.round(mc.feedbackAgreementPct * 100);
-        miLines.push(`Users agreed with ${pct}% of past ${mc.feedbackCount} analyses for this dealer. Use this as a confidence-calibration signal: for borderline cases, avoid overstating certainty.`);
-      }
-      if (miLines.length > 0) {
-        const limitedNote = overallStrength === "thin"
-          ? (mc.stateTotalAnalyses != null && mc.stateTotalAnalyses <= 1)
-            ? " CRITICAL: This is based on a single data point. Do NOT present this as a market norm or pattern. Frame it only as one early data point. Do not overstate confidence."
-            : " Note: data is limited — treat as early signal only, do not overstate confidence."
-          : "";
-        marketIntelligenceSection = `
-MARKET_INTELLIGENCE
-${miLines.join("\n")}
-Reference these figures in your summary and reasoning when they are materially relevant to evaluating the deal. Do not force their use when they do not meaningfully help. Use the provided figures exactly as written. Do not estimate, round, or invent additional statistics.${limitedNote}`;
-      }
-    }
-  }
+  // Build structured MARKET_CONTEXT block for prompt (replaces old MARKET_INTELLIGENCE)
+  const marketContextBlock = buildMarketContextBlock(marketContext, lineItemStats, stateDetection.state ?? null);
+  const marketIntelligenceSection = marketContextBlock ? `${marketContextBlock}
+When MARKET_CONTEXT data is present:
+1. Use legal facts (STATE_FEE_REFERENCE) as highest-trust evidence.
+2. Use dealer and state observations even if small sample size, but label confidence:
+   - low confidence = "early signal" (use hedging language)
+   - medium confidence = "moderate signal"
+   - high confidence = "strong signal" (use definitive language)
+3. Never invent statistics or sample sizes not provided in MARKET_CONTEXT.
+4. Prefer dealer data over state data over pattern data when available.
+5. Only output market claims if backed by provided data.
+6. CRITICAL: When sample size is 1, do NOT present it as a market norm. Frame it only as one early data point.
+Reference these figures in your summary and reasoning when materially relevant. Use provided figures exactly as written. Do not estimate, round, or invent additional statistics.` : "";
 
   const systemPrompt = `You are an expert car buying advisor helping consumers evaluate car purchase offers. Your job is to analyze dealer quotes, texts, and emails to help buyers understand if they're getting a good deal.
 ${stateFeeSection}
@@ -1054,6 +1209,41 @@ Respond entirely in Spanish. All text fields in your JSON response — including
 
   const marketContextSummary = buildMarketContextSummary(finalOverallStrength, marketContext, stateDetection.state ?? null);
 
+  // Re-fetch line item stats with LLM-detected fees for better coverage
+  const detectedFees = finalResult.detectedFields.fees ?? [];
+  if (process.env.DATABASE_URL && stateDetection.state && detectedFees.length > 0) {
+    try {
+      const feeNames = detectedFees.map(f => f.name);
+      const freshStats = await getLineItemStats(stateDetection.state, feeNames);
+      // Merge with pre-LLM stats
+      for (const [key, val] of freshStats) {
+        if (!lineItemStats.has(key)) lineItemStats.set(key, val);
+      }
+    } catch {
+      // non-fatal
+    }
+  }
+
+  // Build deterministic market signals and flagged item evidence
+  const postDocFeeEntry = detectedFees.find((f) => /doc.?fee|document/i.test(f.name));
+  const postDocFeeValue = postDocFeeEntry?.amount ?? null;
+  const marketSignals = buildMarketSignals(marketContext, lineItemStats, postDocFeeValue, docFeeCapResult?.violated ?? false);
+  const flaggedItemEvidence = buildFlaggedItemEvidence(detectedFees, lineItemStats);
+
+  // Dealer intelligence
+  const dealerSeenBefore = (marketContext?.dealerAnalysisCount ?? 0) >= 1;
+  const dealerPriorQuoteCount = marketContext?.dealerAnalysisCount ?? null;
+  let dealerPatternSummary: string | null = null;
+  if (dealerSeenBefore && marketContext) {
+    const parts: string[] = [];
+    parts.push(`Seen ${marketContext.dealerAnalysisCount} time${marketContext.dealerAnalysisCount === 1 ? "" : "s"} before.`);
+    if (marketContext.dealerAvgDocFee != null) parts.push(`Avg doc fee $${Math.round(marketContext.dealerAvgDocFee)}.`);
+    if (marketContext.dealerPercentFlaggedRed != null && marketContext.dealerPercentFlaggedRed > 0) {
+      parts.push(`${Math.round(marketContext.dealerPercentFlaggedRed)}% of past quotes flagged RED.`);
+    }
+    dealerPatternSummary = parts.join(" ");
+  }
+
   const payload: Record<string, unknown> = { ...finalResult };
   if (listingId) payload.listingId = listingId;
   if (marketContext !== null) payload.marketContext = marketContext;
@@ -1061,6 +1251,12 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   payload.marketContextStrength = finalOverallStrength;
   if (marketContextSummary) payload.marketContextSummary = marketContextSummary;
   payload.docFeeCapCheck = docFeeCapResult ?? null;
+  // Market intelligence payload
+  payload.marketSignals = marketSignals;
+  payload.flaggedItemEvidence = flaggedItemEvidence;
+  payload.dealerSeenBefore = dealerSeenBefore;
+  payload.dealerPriorQuoteCount = dealerPriorQuoteCount;
+  payload.dealerPatternSummary = dealerPatternSummary;
 
   trackEvent("submission_score", {
     dealScore: finalResult.dealScore,
@@ -1068,6 +1264,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     sessionId: data.sessionId,
     marketContextUsed,
     marketContextStrength: finalOverallStrength,
+    marketSignalCount: marketSignals.length,
   }).catch(err => logger.error("submission_score event failed", { source: "tracking", error: String(err) }));
 
   enqueueSubmission({ request: data, result: finalResult, preSavedListingId: listingId });

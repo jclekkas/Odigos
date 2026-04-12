@@ -89,7 +89,7 @@ export default function DealerPrepFee() {
           </p>
           <Link href="/analyze">
             <Button variant="cta" size="sm" data-testid="button-cta-mid-article-dealer-prep-fee">
-              Analyze My Dealer Quote
+              Check This Quote
             </Button>
           </Link>
         </div>
