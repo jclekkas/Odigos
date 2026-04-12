@@ -68,16 +68,25 @@ describe("getMarketContext — state-only lookup (no dealer)", () => {
     expect(mockExecute).not.toHaveBeenCalled();
   });
 
-  it("returns null when state row is missing", async () => {
+  it("returns context with empty data when state row is missing from both tables", async () => {
+    // state_market_stats returns empty
+    mockExecute.mockResolvedValueOnce({ rows: [] } as never);
+    // state_stats fallback returns empty
     mockExecute.mockResolvedValueOnce({ rows: [] } as never);
     const result = await getMarketContext({ state: "CA", dealerName: null, docFee: null });
-    expect(result).toBeNull();
+    expect(result).not.toBeNull();
+    expect(result!.stateCode).toBe("CA");
+    expect(result!.stateTotalAnalyses).toBe(0);
+    expect(result!.stateStrength).toBe("none");
   });
 
-  it("returns null when state has 0 analyses", async () => {
+  it("returns context with zero-sample data when state has 0 analyses", async () => {
     mockExecute.mockResolvedValueOnce(stateRow(0) as never);
     const result = await getMarketContext({ state: "CA", dealerName: null, docFee: null });
-    expect(result).toBeNull();
+    expect(result).not.toBeNull();
+    expect(result!.stateCode).toBe("CA");
+    expect(result!.stateTotalAnalyses).toBe(0);
+    expect(result!.stateStrength).toBe("none");
   });
 
   it("returns state context with 'thin' strength when stateTotalAnalyses is 1", async () => {

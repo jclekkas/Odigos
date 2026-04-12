@@ -89,7 +89,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { apiRequest } from "@/lib/queryClient";
-import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel, MarketContext, DocFeeCapCheck } from "@shared/schema";
+import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel, MarketContext, DocFeeCapCheck, MarketSignal, FlaggedItemEvidence, MarketConfidenceTier } from "@shared/schema";
 import LeaseMathBlock from "@/components/LeaseMathBlock";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import {
@@ -150,6 +150,11 @@ function StripeEmbeddedCheckoutWrapper({
 
 type AnalysisResponseWithExtras = AnalysisResponse & {
   listingId?: string;
+  marketSignals?: MarketSignal[];
+  flaggedItemEvidence?: FlaggedItemEvidence[];
+  dealerSeenBefore?: boolean;
+  dealerPriorQuoteCount?: number;
+  dealerPatternSummary?: string | null;
 };
 
 const formSchema = z.object({
@@ -549,7 +554,13 @@ function DealScoreBadge({ score, goNoGo, confidenceLevel, verdictLabel, missingI
   );
 }
 
-function DetectedFieldsCard({ fields }: { fields: DetectedFields }) {
+function DetectedFieldsCard({ fields, flaggedItemEvidence }: { fields: DetectedFields; flaggedItemEvidence?: FlaggedItemEvidence[] }) {
+  const evidenceMap = new Map<string, FlaggedItemEvidence>();
+  if (flaggedItemEvidence) {
+    for (const ev of flaggedItemEvidence) {
+      evidenceMap.set(ev.itemLabel.toLowerCase().trim(), ev);
+    }
+  }
   const items = [
     { label: "Sale Price", value: fields.salePrice, format: formatCurrency },
     { label: "MSRP", value: fields.msrp, format: formatCurrency },
@@ -589,14 +600,25 @@ function DetectedFieldsCard({ fields }: { fields: DetectedFields }) {
               Itemized Fees
             </h4>
             <div className="space-y-2">
-              {fields.fees.map((fee, idx) => (
-                <div key={idx} className="flex justify-between items-center py-2 bg-muted/30 rounded-md px-3">
-                  <span className="text-sm">{fee.name}</span>
-                  <span className="text-sm font-mono font-medium">
-                    {fee.amount != null ? formatCurrency(fee.amount) : "Amount unclear"}
-                  </span>
-                </div>
-              ))}
+              {fields.fees.map((fee, idx) => {
+                const ev = evidenceMap.get(fee.name.toLowerCase().trim());
+                return (
+                  <div key={idx} className="py-2 bg-muted/30 rounded-md px-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">{fee.name}</span>
+                      <span className="text-sm font-mono font-medium">
+                        {fee.amount != null ? formatCurrency(fee.amount) : "Amount unclear"}
+                      </span>
+                    </div>
+                    {ev && (
+                      <div className="flex items-center gap-2 mt-1" data-testid={`fee-evidence-${idx}`}>
+                        <p className="text-xs text-muted-foreground">{ev.message}</p>
+                        <ConfidencePill tier={ev.confidenceTier} />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -897,70 +919,88 @@ function SuggestedReplyCard({ reply }: { reply: string }) {
   );
 }
 
-function MarketContextCard({ marketContext }: { marketContext: MarketContext }) {
-  const fmt = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+function ConfidencePill({ tier }: { tier: MarketConfidenceTier }) {
+  const config = {
+    low: { label: "Early signal", className: "bg-muted/40 text-muted-foreground border-border/50" },
+    medium: { label: "Moderate signal", className: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30" },
+    high: { label: "Strong signal", className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30" },
+  };
+  const c = config[tier];
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border ${c.className}`} data-testid={`confidence-pill-${tier}`}>
+      {c.label}
+    </span>
+  );
+}
+
+function MarketIntelligenceCard({
+  marketContext,
+  marketSignals,
+  dealerSeenBefore,
+  dealerPriorQuoteCount,
+  dealerPatternSummary,
+}: {
+  marketContext: MarketContext;
+  marketSignals?: MarketSignal[];
+  dealerSeenBefore?: boolean;
+  dealerPriorQuoteCount?: number;
+  dealerPatternSummary?: string | null;
+}) {
+  const signals = marketSignals ?? [];
   const state = marketContext.stateCode ?? "your state";
 
-  const narratives: { testId: string; text: string }[] = [];
+  // Also keep legacy narratives as fallback
+  const hasSignals = signals.length > 0;
+  const hasLegacyData = (marketContext.stateTotalAnalyses != null && marketContext.stateTotalAnalyses > 0) ||
+    (marketContext.dealerAnalysisCount != null && marketContext.dealerAnalysisCount > 0);
 
-  if (
-    marketContext.docFeeVsStateAvg != null &&
-    Number.isFinite(marketContext.docFeeVsStateAvg) &&
-    marketContext.stateTotalAnalyses != null
-  ) {
-    const delta = marketContext.docFeeVsStateAvg;
-    const absDelta = fmt.format(Math.abs(delta));
-    const direction = delta >= 0 ? "above" : "below";
-    const dealWord = marketContext.stateTotalAnalyses === 1 ? "deal" : "deals";
-    narratives.push({
-      testId: "market-context-doc-fee-delta",
-      text: `Doc fee is ${absDelta} ${direction} the ${state} average across ${marketContext.stateTotalAnalyses.toLocaleString()} analyzed ${dealWord}.`,
-    });
-  } else if (
-    marketContext.stateAvgDocFee != null &&
-    Number.isFinite(marketContext.stateAvgDocFee) &&
-    marketContext.stateTotalAnalyses != null
-  ) {
-    const dealWord = marketContext.stateTotalAnalyses === 1 ? "deal" : "deals";
-    narratives.push({
-      testId: "market-context-state-avg-doc-fee",
-      text: `Average doc fee in ${state} is ${fmt.format(marketContext.stateAvgDocFee)} across ${marketContext.stateTotalAnalyses.toLocaleString()} analyzed ${dealWord}.`,
-    });
-  } else if (marketContext.stateTotalAnalyses != null) {
-    const dealWord = marketContext.stateTotalAnalyses === 1 ? "deal" : "deals";
-    narratives.push({
-      testId: "market-context-state-analyses",
-      text: `We have analyzed ${marketContext.stateTotalAnalyses.toLocaleString()} ${dealWord} in ${state}.`,
-    });
-  }
-
-  if (
-    marketContext.dealerAvgDealScore != null &&
-    Number.isFinite(marketContext.dealerAvgDealScore) &&
-    marketContext.dealerAnalysisCount != null
-  ) {
-    const quoteWord = marketContext.dealerAnalysisCount === 1 ? "quote" : "quotes";
-    narratives.push({
-      testId: "market-context-dealer-score",
-      text: `This dealer's average deal score is ${marketContext.dealerAvgDealScore.toFixed(1)} across ${marketContext.dealerAnalysisCount} analyzed ${quoteWord}.`,
-    });
-  }
-
-  if (narratives.length === 0) return null;
+  if (!hasSignals && !hasLegacyData) return null;
 
   return (
-    <Card className="bg-muted/20 border-border/40" data-testid="market-context-card">
+    <Card className="bg-muted/20 border-border/40" data-testid="market-intelligence-card">
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-          How This Compares
+        <CardTitle className="flex items-center gap-2 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+          <TrendingUp className="w-4 h-4" />
+          Market Intelligence
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-2">
-        {narratives.map((line) => (
-          <p key={line.testId} className="text-sm text-muted-foreground leading-relaxed" data-testid={line.testId}>
-            {line.text}
-          </p>
-        ))}
+      <CardContent className="space-y-3">
+        {dealerSeenBefore && dealerPriorQuoteCount != null && dealerPriorQuoteCount >= 1 && (
+          <div className="flex items-start gap-2 rounded-lg border border-blue-500/30 bg-blue-500/5 px-3 py-2" data-testid="dealer-seen-banner">
+            <Target className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600 dark:text-blue-400" />
+            <div className="text-sm">
+              <p className="font-medium text-foreground">We've seen this dealer before</p>
+              <p className="text-muted-foreground">
+                {dealerPatternSummary ?? `Across ${dealerPriorQuoteCount} prior ${dealerPriorQuoteCount === 1 ? "quote" : "quotes"}.`}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {hasSignals ? (
+          <div className="space-y-2">
+            {signals.map((signal, i) => (
+              <div key={i} className="flex items-start justify-between gap-2" data-testid={`market-signal-${signal.source}`}>
+                <p className="text-sm text-muted-foreground leading-relaxed flex-1">{signal.message}</p>
+                <ConfidencePill tier={signal.confidenceTier} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {marketContext.stateAvgDocFee != null && marketContext.stateTotalAnalyses != null && (
+              <p className="text-sm text-muted-foreground leading-relaxed" data-testid="market-context-state-avg-doc-fee">
+                Average doc fee in {state} is ${Math.round(marketContext.stateAvgDocFee)} across {marketContext.stateTotalAnalyses.toLocaleString()} analyzed {marketContext.stateTotalAnalyses === 1 ? "deal" : "deals"}.
+              </p>
+            )}
+            {marketContext.dealerAvgDealScore != null && marketContext.dealerAnalysisCount != null && (
+              <p className="text-sm text-muted-foreground leading-relaxed" data-testid="market-context-dealer-score">
+                This dealer's average deal score is {marketContext.dealerAvgDealScore.toFixed(1)} across {marketContext.dealerAnalysisCount} analyzed {marketContext.dealerAnalysisCount === 1 ? "quote" : "quotes"}.
+              </p>
+            )}
+          </div>
+        )}
+
         <p className="text-xs text-muted-foreground leading-relaxed">
           Doc fee limits and other dealer fees vary by state. See our{" "}
           <Link href="/car-dealer-fees-by-state" className="underline underline-offset-2 hover:text-foreground transition-colors" data-testid="link-fees-by-state-context">
@@ -973,12 +1013,21 @@ function MarketContextCard({ marketContext }: { marketContext: MarketContext }) 
   );
 }
 
+/** @deprecated Use MarketIntelligenceCard instead */
+function MarketContextCard({ marketContext }: { marketContext: MarketContext }) {
+  return <MarketIntelligenceCard marketContext={marketContext} />;
+}
+
 type FeedbackStatus = "idle" | "submitting" | "submitted" | "error";
 
 function FeedbackWidget({ listingId }: { listingId: string }) {
   const [rating, setRating] = useState<boolean | null>(null);
   const [comment, setComment] = useState("");
   const [status, setStatus] = useState<FeedbackStatus>("idle");
+  // Enhanced feedback fields
+  const [paidAmount, setPaidAmount] = useState("");
+  const [docFeeRemoved, setDocFeeRemoved] = useState<boolean | null>(null);
+  const [overpaymentAccurate, setOverpaymentAccurate] = useState<boolean | null>(null);
 
   const handleSubmit = async () => {
     if (rating === null) return;
@@ -987,6 +1036,10 @@ function FeedbackWidget({ listingId }: { listingId: string }) {
       const body: Record<string, unknown> = { listingId, rating };
       const trimmed = comment.trim();
       if (trimmed) body.comment = trimmed;
+      const parsedAmount = parseFloat(paidAmount);
+      if (Number.isFinite(parsedAmount) && parsedAmount > 0) body.userPaidAmountFinal = parsedAmount;
+      if (docFeeRemoved !== null) body.docFeeRemoved = docFeeRemoved;
+      if (overpaymentAccurate !== null) body.overpaymentEstimateFeltAccurate = overpaymentAccurate;
       const res = await apiRequest("POST", "/api/feedback", body);
       if (!res.ok) throw new Error("server error");
       setStatus("submitted");
@@ -999,11 +1052,11 @@ function FeedbackWidget({ listingId }: { listingId: string }) {
 
   return (
     <div className="border border-border/40 rounded-xl p-4 space-y-3 bg-muted/10" data-testid="feedback-widget">
-      <p className="text-sm font-medium text-foreground">Was this analysis helpful?</p>
+      <p className="text-sm font-medium text-foreground">Was this analysis accurate?</p>
 
       {status === "submitted" ? (
         <p className="text-sm text-muted-foreground" data-testid="feedback-confirmation">
-          Thanks for the feedback!
+          Thanks for the feedback! Your input helps improve future analyses.
         </p>
       ) : (
         <>
@@ -1037,6 +1090,46 @@ function FeedbackWidget({ listingId }: { listingId: string }) {
               No
             </button>
           </div>
+
+          {rating !== null && (
+            <div className="space-y-3 pt-2 border-t border-border/30" data-testid="feedback-followup">
+              <div>
+                <label className="text-xs text-muted-foreground block mb-1">What did you end up paying? (optional)</label>
+                <Input
+                  type="number"
+                  placeholder="e.g. 38500"
+                  value={paidAmount}
+                  onChange={(e) => setPaidAmount(e.target.value)}
+                  disabled={disabled}
+                  className="h-8 text-sm"
+                  data-testid="feedback-paid-amount"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground block mb-1">Were you able to remove the doc fee?</label>
+                <div className="flex gap-2">
+                  <button type="button" disabled={disabled} onClick={() => setDocFeeRemoved(true)}
+                    className={`px-3 py-1 rounded text-xs border transition-colors ${docFeeRemoved === true ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-700 dark:text-emerald-400" : "border-border/50 text-muted-foreground hover:bg-muted/40"} disabled:opacity-50`}
+                    data-testid="feedback-doc-fee-yes">Yes</button>
+                  <button type="button" disabled={disabled} onClick={() => setDocFeeRemoved(false)}
+                    className={`px-3 py-1 rounded text-xs border transition-colors ${docFeeRemoved === false ? "bg-red-500/15 border-red-500/40 text-red-700 dark:text-red-400" : "border-border/50 text-muted-foreground hover:bg-muted/40"} disabled:opacity-50`}
+                    data-testid="feedback-doc-fee-no">No</button>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground block mb-1">Was the overpayment estimate accurate?</label>
+                <div className="flex gap-2">
+                  <button type="button" disabled={disabled} onClick={() => setOverpaymentAccurate(true)}
+                    className={`px-3 py-1 rounded text-xs border transition-colors ${overpaymentAccurate === true ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-700 dark:text-emerald-400" : "border-border/50 text-muted-foreground hover:bg-muted/40"} disabled:opacity-50`}
+                    data-testid="feedback-overpayment-yes">Yes</button>
+                  <button type="button" disabled={disabled} onClick={() => setOverpaymentAccurate(false)}
+                    className={`px-3 py-1 rounded text-xs border transition-colors ${overpaymentAccurate === false ? "bg-red-500/15 border-red-500/40 text-red-700 dark:text-red-400" : "border-border/50 text-muted-foreground hover:bg-muted/40"} disabled:opacity-50`}
+                    data-testid="feedback-overpayment-no">No</button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value.slice(0, 500))}
@@ -2581,10 +2674,16 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <DetectedFieldsCard fields={result.detectedFields} />
+            <DetectedFieldsCard fields={result.detectedFields} flaggedItemEvidence={result.flaggedItemEvidence} />
 
             {result.marketContext && (
-              <MarketContextCard marketContext={result.marketContext} />
+              <MarketIntelligenceCard
+                marketContext={result.marketContext}
+                marketSignals={result.marketSignals}
+                dealerSeenBefore={result.dealerSeenBefore}
+                dealerPriorQuoteCount={result.dealerPriorQuoteCount}
+                dealerPatternSummary={result.dealerPatternSummary}
+              />
             )}
             <p className="text-xs text-muted-foreground" data-testid="text-market-context-disclosure">
               {result.marketContextStrength === "strong" || result.marketContextStrength === "moderate"

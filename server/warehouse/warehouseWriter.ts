@@ -9,9 +9,11 @@ import { db } from "../db.js";
 import { sql, eq, and } from "drizzle-orm";
 import type { AnalysisResponse, AnalysisRequest, DetectedFields } from "../../shared/schema.js";
 import { failedWarehouseWrites, detectedFieldsSchema } from "../../shared/schema.js";
-import { rawUserAnalyses, coreDealers, coreListings } from "../../shared/warehouse.js";
+import { rawUserAnalyses, coreDealers, coreListings, coreAnalysisLineItems } from "../../shared/warehouse.js";
 import {
   normalizeDealerName,
+  normalizeLineItemName,
+  categorizeLineItem,
   validateStateCode,
   delay,
   getBackoffMs,
@@ -308,6 +310,127 @@ async function performWarehouseWrite(payload: WarehouseWritePayload): Promise<vo
   // the increment to keep replay side effects fully idempotent.
   if (newListingInserted) {
     await incrementDealerListingCount(dealerId);
+
+    // ── Market intelligence aggregate updates (non-fatal) ──────────────────
+    try {
+      const insertedListingId = insertedListings[0]?.id;
+
+      // (1) Write core.analysis_line_items — one row per fee
+      if (insertedListingId) {
+        for (const fee of fees) {
+          const normalized = normalizeLineItemName(fee.name);
+          const category = categorizeLineItem(normalized);
+          const isFlagged = /protection|nitrogen|etch|ceramic|fabric|undercoat|pinstripe|market.?adjust|markup|dealer.?prep|anti.?theft/i.test(fee.name);
+          await db.insert(coreAnalysisLineItems).values({
+            listingId: insertedListingId,
+            itemName: fee.name,
+            itemNameNormalized: normalized,
+            amount: fee.amount != null ? String(fee.amount) : null,
+            isFlagged,
+            category,
+          }).onConflictDoNothing();
+        }
+      }
+
+      // (2) Update core.dealers running aggregates
+      if (docFeeAmount != null) {
+        await db.execute(sql`
+          UPDATE core.dealers SET
+            doc_fee_sum = COALESCE(doc_fee_sum::numeric, 0) + ${String(docFeeAmount)},
+            doc_fee_count = doc_fee_count + 1,
+            avg_doc_fee = (COALESCE(doc_fee_sum::numeric, 0) + ${String(docFeeAmount)}) / (doc_fee_count + 1)
+          WHERE id = ${dealerId}
+        `);
+      }
+      if (addonTotal > 0) {
+        await db.execute(sql`
+          UPDATE core.dealers SET
+            addon_total_sum = COALESCE(addon_total_sum::numeric, 0) + ${String(addonTotal)},
+            addon_total_count = addon_total_count + 1,
+            listings_with_addons = listings_with_addons + 1
+          WHERE id = ${dealerId}
+        `);
+      }
+      if (dealScoreNum != null && dealScoreNum <= 25) {
+        await db.execute(sql`
+          UPDATE core.dealers SET red_count = red_count + 1 WHERE id = ${dealerId}
+        `);
+      }
+
+      // (3) Upsert core.state_market_stats
+      if (validState) {
+        await db.execute(sql`
+          INSERT INTO core.state_market_stats (state_code, listing_count, deal_score_sum, avg_deal_score,
+            doc_fee_sum, doc_fee_count, avg_doc_fee,
+            addon_total_sum, addon_total_count, listings_with_addons, updated_at)
+          VALUES (${validState}, 1,
+            ${dealScoreNum != null ? String(dealScoreNum) : null},
+            ${dealScoreNum != null ? String(dealScoreNum) : null},
+            ${docFeeAmount != null ? String(docFeeAmount) : "0"},
+            ${docFeeAmount != null ? 1 : 0},
+            ${docFeeAmount != null ? String(docFeeAmount) : null},
+            ${addonTotal > 0 ? String(addonTotal) : "0"},
+            ${addonTotal > 0 ? 1 : 0},
+            ${addonTotal > 0 ? 1 : 0},
+            NOW())
+          ON CONFLICT (state_code) DO UPDATE SET
+            listing_count = core.state_market_stats.listing_count + 1,
+            deal_score_sum = CASE WHEN ${dealScoreNum}::integer IS NOT NULL
+              THEN COALESCE(core.state_market_stats.deal_score_sum::numeric, 0) + ${dealScoreNum != null ? String(dealScoreNum) : "0"}
+              ELSE core.state_market_stats.deal_score_sum END,
+            avg_deal_score = CASE WHEN ${dealScoreNum}::integer IS NOT NULL
+              THEN (COALESCE(core.state_market_stats.deal_score_sum::numeric, 0) + ${dealScoreNum != null ? String(dealScoreNum) : "0"})
+                   / (core.state_market_stats.listing_count + 1)
+              ELSE core.state_market_stats.avg_deal_score END,
+            doc_fee_sum = CASE WHEN ${docFeeAmount != null ? String(docFeeAmount) : null}::numeric IS NOT NULL
+              THEN COALESCE(core.state_market_stats.doc_fee_sum::numeric, 0) + ${docFeeAmount != null ? String(docFeeAmount) : "0"}
+              ELSE core.state_market_stats.doc_fee_sum END,
+            doc_fee_count = CASE WHEN ${docFeeAmount != null ? String(docFeeAmount) : null}::numeric IS NOT NULL
+              THEN core.state_market_stats.doc_fee_count + 1
+              ELSE core.state_market_stats.doc_fee_count END,
+            avg_doc_fee = CASE WHEN ${docFeeAmount != null ? String(docFeeAmount) : null}::numeric IS NOT NULL
+              THEN (COALESCE(core.state_market_stats.doc_fee_sum::numeric, 0) + ${docFeeAmount != null ? String(docFeeAmount) : "0"})
+                   / (core.state_market_stats.doc_fee_count + 1)
+              ELSE core.state_market_stats.avg_doc_fee END,
+            addon_total_sum = CASE WHEN ${addonTotal > 0 ? String(addonTotal) : null}::numeric IS NOT NULL
+              THEN COALESCE(core.state_market_stats.addon_total_sum::numeric, 0) + ${addonTotal > 0 ? String(addonTotal) : "0"}
+              ELSE core.state_market_stats.addon_total_sum END,
+            addon_total_count = CASE WHEN ${addonTotal > 0 ? String(addonTotal) : null}::numeric IS NOT NULL
+              THEN core.state_market_stats.addon_total_count + 1
+              ELSE core.state_market_stats.addon_total_count END,
+            listings_with_addons = CASE WHEN ${addonTotal > 0}
+              THEN core.state_market_stats.listings_with_addons + 1
+              ELSE core.state_market_stats.listings_with_addons END,
+            updated_at = NOW()
+        `);
+      }
+
+      // (4) Upsert core.line_item_pattern_stats for each fee
+      if (validState) {
+        const isRedDeal = dealScoreNum != null && dealScoreNum <= 25;
+        for (const fee of fees) {
+          const normalized = normalizeLineItemName(fee.name);
+          await db.execute(sql`
+            INSERT INTO core.line_item_pattern_stats (state_code, item_name_normalized,
+              occurrence_count, amount_sum, amount_count, flagged_count, total_listings_in_scope, updated_at)
+            VALUES (${validState}, ${normalized}, 1,
+              ${fee.amount != null ? String(fee.amount) : "0"},
+              ${fee.amount != null ? 1 : 0},
+              ${isRedDeal ? 1 : 0}, 1, NOW())
+            ON CONFLICT ON CONSTRAINT core_lip_state_item_idx DO UPDATE SET
+              occurrence_count = core.line_item_pattern_stats.occurrence_count + 1,
+              amount_sum = COALESCE(core.line_item_pattern_stats.amount_sum::numeric, 0) + ${fee.amount != null ? String(fee.amount) : "0"},
+              amount_count = core.line_item_pattern_stats.amount_count + ${fee.amount != null ? 1 : 0},
+              flagged_count = core.line_item_pattern_stats.flagged_count + ${isRedDeal ? 1 : 0},
+              total_listings_in_scope = core.line_item_pattern_stats.total_listings_in_scope + 1,
+              updated_at = NOW()
+          `);
+        }
+      }
+    } catch (aggErr) {
+      // Aggregate updates are non-fatal — never block the warehouse write
+      console.warn(`[warehouse] Aggregate update failed for ${dealerSubmissionId} (non-fatal):`, getErrorMessage(aggErr));
+    }
   }
 
   console.log(

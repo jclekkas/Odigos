@@ -49,8 +49,8 @@
  */
 import { db } from "./db.js";
 import { sql } from "drizzle-orm";
-import type { MarketContext, MarketContextStrength } from "../shared/schema.js";
-import { normalizeDealerName } from "./warehouse/warehouseUtils.js";
+import type { MarketContext, MarketContextStrength, MarketConfidenceTier } from "../shared/schema.js";
+import { normalizeDealerName, normalizeLineItemName } from "./warehouse/warehouseUtils.js";
 
 const DOC_FEE_DELTA_MAX = 2000;
 
@@ -59,6 +59,94 @@ export function getStrength(sampleSize: number): MarketContextStrength {
   if (sampleSize <= 2) return "thin";
   if (sampleSize <= 9) return "moderate";
   return "strong";
+}
+
+/**
+ * Confidence tier for user-facing market intelligence labels.
+ * These NEVER gate usage — only affect labeling.
+ */
+export function getConfidenceTier(
+  sampleSize: number,
+  entityType: "dealer" | "state" | "lineItem",
+): MarketConfidenceTier | null {
+  if (sampleSize < 1) return null;
+  const thresholds = {
+    dealer:   { low: 1, medium: 5, high: 15 },
+    state:    { low: 3, medium: 15, high: 50 },
+    lineItem: { low: 2, medium: 5, high: 15 },
+  };
+  const t = thresholds[entityType];
+  if (sampleSize >= t.high) return "high";
+  if (sampleSize >= t.medium) return "medium";
+  if (sampleSize >= t.low) return "low";
+  return null;
+}
+
+export interface LineItemStat {
+  itemNameNormalized: string;
+  occurrenceCount: number;
+  avgAmount: number | null;
+  flaggedPercent: number | null;
+  sampleSize: number;
+  confidenceTier: MarketConfidenceTier | null;
+}
+
+/**
+ * Fetch line-item pattern stats for a given state.
+ * Returns a map keyed by normalized item name.
+ */
+export async function getLineItemStats(
+  stateCode: string,
+  itemNames: string[],
+): Promise<Map<string, LineItemStat>> {
+  const result = new Map<string, LineItemStat>();
+  if (!stateCode || itemNames.length === 0) return result;
+
+  const timeoutPromise = new Promise<Map<string, LineItemStat>>((resolve) =>
+    setTimeout(() => resolve(result), 200),
+  );
+
+  const workPromise = (async () => {
+    const normalizedNames = itemNames.map(normalizeLineItemName);
+    const rows = await db.execute<{
+      item_name_normalized: string;
+      occurrence_count: string;
+      amount_sum: string | null;
+      amount_count: string;
+      flagged_count: string;
+      total_listings_in_scope: string;
+    }>(
+      sql`
+        SELECT item_name_normalized, occurrence_count, amount_sum, amount_count,
+               flagged_count, total_listings_in_scope
+        FROM core.line_item_pattern_stats
+        WHERE state_code = ${stateCode}
+          AND item_name_normalized = ANY(${normalizedNames})
+      `,
+    );
+    for (const row of rows.rows ?? []) {
+      const count = Number(row.occurrence_count);
+      const amountCount = Number(row.amount_count);
+      const flaggedCount = Number(row.flagged_count);
+      const totalScope = Number(row.total_listings_in_scope);
+      result.set(row.item_name_normalized, {
+        itemNameNormalized: row.item_name_normalized,
+        occurrenceCount: count,
+        avgAmount: amountCount > 0 && row.amount_sum != null ? Number(row.amount_sum) / amountCount : null,
+        flaggedPercent: totalScope > 0 ? (flaggedCount / totalScope) * 100 : null,
+        sampleSize: count,
+        confidenceTier: getConfidenceTier(count, "lineItem"),
+      });
+    }
+    return result;
+  })();
+
+  try {
+    return await Promise.race([workPromise, timeoutPromise]);
+  } catch (err) {
+    console.error("[marketContext] getLineItemStats failed (non-fatal):", err);
+    return result;
+  }
 }
 
 export async function getDealerStats({
@@ -120,34 +208,66 @@ export async function getMarketContext({
   );
 
   const workPromise = (async (): Promise<MarketContext | null> => {
-    const stateResult = await db.execute<{
+    // Try the real-time state_market_stats table first, fallback to materialized view
+    let stateSampleSize = 0;
+    let stateAvgDealScore: number | null = null;
+    let stateAvgDocFee: number | null = null;
+    let stateAvgAddOnTotal: number | null = null;
+    let statePercentWithAddOns: number | null = null;
+
+    const smsResult = await db.execute<{
       listing_count: string;
       avg_deal_score: string | null;
       avg_doc_fee: string | null;
+      doc_fee_count: string;
+      addon_total_sum: string | null;
+      addon_total_count: string;
+      listings_with_addons: string;
     }>(
       sql`
-        SELECT listing_count, avg_deal_score, avg_doc_fee
-        FROM core.state_stats
+        SELECT listing_count, avg_deal_score, avg_doc_fee, doc_fee_count,
+               addon_total_sum, addon_total_count, listings_with_addons
+        FROM core.state_market_stats
         WHERE state_code = ${state}
         LIMIT 1
       `,
     );
-
-    const stateRow = stateResult.rows?.[0];
-    const stateSampleSize = stateRow ? Number(stateRow.listing_count) : 0;
-
-    if (stateSampleSize < 1) {
-      return null;
+    const smsRow = smsResult.rows?.[0];
+    if (smsRow) {
+      stateSampleSize = Number(smsRow.listing_count);
+      stateAvgDealScore = smsRow.avg_deal_score != null ? Number(smsRow.avg_deal_score) : null;
+      stateAvgDocFee = smsRow.avg_doc_fee != null ? Number(smsRow.avg_doc_fee) : null;
+      const addonCount = Number(smsRow.addon_total_count);
+      if (addonCount > 0 && smsRow.addon_total_sum != null) {
+        stateAvgAddOnTotal = Number(smsRow.addon_total_sum) / addonCount;
+      }
+      if (stateSampleSize > 0) {
+        statePercentWithAddOns = (Number(smsRow.listings_with_addons) / stateSampleSize) * 100;
+      }
+    } else {
+      // Fallback to materialized view
+      const stateResult = await db.execute<{
+        listing_count: string;
+        avg_deal_score: string | null;
+        avg_doc_fee: string | null;
+      }>(
+        sql`
+          SELECT listing_count, avg_deal_score, avg_doc_fee
+          FROM core.state_stats
+          WHERE state_code = ${state}
+          LIMIT 1
+        `,
+      );
+      const stateRow = stateResult.rows?.[0];
+      if (stateRow) {
+        stateSampleSize = Number(stateRow.listing_count);
+        stateAvgDealScore = stateRow.avg_deal_score != null ? Number(stateRow.avg_deal_score) : null;
+        stateAvgDocFee = stateRow.avg_doc_fee != null ? Number(stateRow.avg_doc_fee) : null;
+      }
     }
 
     const stateStrength = getStrength(stateSampleSize);
-
-    const stateAvgDealScore = stateRow?.avg_deal_score != null
-      ? Number(stateRow.avg_deal_score)
-      : null;
-    const stateAvgDocFee = stateRow?.avg_doc_fee != null
-      ? Number(stateRow.avg_doc_fee)
-      : null;
+    const stateConfidenceTier = getConfidenceTier(stateSampleSize, "state");
 
     let docFeeVsStateAvg: number | null = null;
     if (docFee != null && stateAvgDocFee != null) {
@@ -165,15 +285,22 @@ export async function getMarketContext({
     let feedbackSampleSize = 0;
     let feedbackStrength: MarketContextStrength = "none";
 
+    let dealerAvgDocFee: number | null = null;
+    let dealerPercentFlaggedRed: number | null = null;
+    let dealerConfidenceTier: MarketConfidenceTier | null = null;
+
     if (dealerName) {
       const normalized = normalizeDealerName(dealerName);
       const dealerResult = await db.execute<{
         listing_count: string;
         avg_deal_score: string | null;
+        avg_doc_fee: string | null;
+        doc_fee_count: string;
+        red_count: string;
         id: string;
       }>(
         sql`
-          SELECT id, listing_count, avg_deal_score
+          SELECT id, listing_count, avg_deal_score, avg_doc_fee, doc_fee_count, red_count
           FROM core.dealers
           WHERE dealer_name_normalized = ${normalized}
             AND state_code = ${state}
@@ -188,10 +315,14 @@ export async function getMarketContext({
         const count = Number(dealerRow.listing_count);
         dealerSampleSize = count;
         dealerStrength = getStrength(count);
+        dealerConfidenceTier = getConfidenceTier(count, "dealer");
 
         if (count >= 1) {
           dealerAnalysisCount = count;
           dealerAvgDealScore = dealerRow.avg_deal_score != null ? Number(dealerRow.avg_deal_score) : null;
+          dealerAvgDocFee = dealerRow.avg_doc_fee != null ? Number(dealerRow.avg_doc_fee) : null;
+          const redCount = Number(dealerRow.red_count);
+          dealerPercentFlaggedRed = count > 0 ? (redCount / count) * 100 : null;
 
           // Fetch feedback stats from the dealer_feedback_stats view (best-effort).
           try {
@@ -248,6 +379,15 @@ export async function getMarketContext({
       feedbackSampleSize,
       feedbackStrength,
       overallStrength,
+      // Extended market intelligence fields
+      stateP25DocFee: null, // Approximated in future iteration
+      stateP75DocFee: null, // Approximated in future iteration
+      stateAvgAddOnTotal: stateAvgAddOnTotal != null && Number.isFinite(stateAvgAddOnTotal) ? Math.round(stateAvgAddOnTotal) : null,
+      statePercentWithAddOns: statePercentWithAddOns != null && Number.isFinite(statePercentWithAddOns) ? Math.round(statePercentWithAddOns) : null,
+      stateConfidenceTier,
+      dealerAvgDocFee: dealerAvgDocFee != null && Number.isFinite(dealerAvgDocFee) ? Math.round(dealerAvgDocFee) : null,
+      dealerPercentFlaggedRed: dealerPercentFlaggedRed != null && Number.isFinite(dealerPercentFlaggedRed) ? Math.round(dealerPercentFlaggedRed) : null,
+      dealerConfidenceTier,
     };
   })();
 

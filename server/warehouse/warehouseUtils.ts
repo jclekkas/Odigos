@@ -79,6 +79,40 @@ export function getBackoffMs(attempt: number): number {
   return 300;
 }
 
+/**
+ * Normalize a fee/line-item name for pattern matching and deduplication.
+ * Maps common synonyms, lowercases, strips noise words, collapses whitespace.
+ */
+export function normalizeLineItemName(name: string): string {
+  let n = name.toLowerCase().trim();
+  // Map common synonyms to canonical names
+  n = n.replace(/\bdocument(?:ation)?\s*fee\b/g, "doc fee");
+  n = n.replace(/\bdealer\s*(?:prep|preparation)\b/g, "dealer prep");
+  n = n.replace(/\bvin\s*etch(?:ing)?\b/g, "vin etch");
+  n = n.replace(/\bfabric\s*(?:guard|protection)\b/g, "fabric protection");
+  n = n.replace(/\bpaint\s*(?:guard|protection|sealant)\b/g, "paint protection");
+  n = n.replace(/\bnitrogen\s*(?:fill|tire)s?\b/g, "nitrogen fill");
+  n = n.replace(/\b(?:anti[- ]?theft|lo[- ]?jack)\b/g, "anti-theft");
+  n = n.replace(/\bmarket\s*adjust(?:ment)?\b/g, "market adjustment");
+  n = n.replace(/\b(?:addendum|adm)\b/g, "market adjustment");
+  // Strip noise
+  n = n.replace(/[^a-z0-9\s-]/g, " ");
+  n = n.replace(/\s+/g, " ").trim();
+  return n;
+}
+
+/**
+ * Categorize a normalized line item name into a bucket.
+ */
+export function categorizeLineItem(normalizedName: string): string {
+  if (/doc fee/.test(normalizedName)) return "doc_fee";
+  if (/market adjustment/.test(normalizedName)) return "market_adjustment";
+  if (/(?:sales|state|county|city)\s*tax/.test(normalizedName)) return "tax";
+  if (/(?:title|registration|license|plate|tag|emission|smog)/.test(normalizedName)) return "government";
+  if (/(?:protection|nitrogen|etch|ceramic|fabric|undercoat|pinstripe|dealer prep|anti-theft|gap|warranty|maintenance)/.test(normalizedName)) return "addon";
+  return "other";
+}
+
 // ---------------------------------------------------------------------------
 // Financial sanity validation
 // ---------------------------------------------------------------------------
