@@ -13,9 +13,18 @@ import {
   FileText,
   Users,
   KeyRound,
+  LayoutDashboard,
 } from "lucide-react";
 
 const DASHBOARDS = [
+  {
+    href: "/admin/prod",
+    label: "Command Center",
+    icon: LayoutDashboard,
+    description: "Plain-English overview of business health, revenue, and issues.",
+    color: "text-indigo-600 dark:text-indigo-400",
+    bg: "bg-indigo-500/10",
+  },
   {
     href: "/admin/metrics",
     label: "Metrics",

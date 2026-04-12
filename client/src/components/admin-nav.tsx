@@ -9,11 +9,13 @@ import {
   FileText,
   Users,
   LayoutGrid,
+  LayoutDashboard,
   KeyRound,
   LogOut,
 } from "lucide-react";
 
 const NAV_LINKS = [
+  { href: "/admin/prod", label: "Command Center", icon: LayoutDashboard },
   { href: "/admin/metrics", label: "Metrics", icon: BarChart3 },
   { href: "/admin/business", label: "Business", icon: Briefcase },
   { href: "/admin/technical", label: "Technical", icon: Server },
