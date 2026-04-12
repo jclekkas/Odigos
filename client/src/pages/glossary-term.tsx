@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link, useParams, Redirect } from "wouter";
 import { Helmet } from "react-helmet-async";
-import { setSeoMeta } from "@/lib/seo";
+import { setSeoMeta, buildCanonical } from "@/lib/seo";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 import { glossaryTerms } from "@/data/glossary-terms";
@@ -32,11 +32,11 @@ export default function GlossaryTerm() {
           "@type": "DefinedTerm",
           "name": term.term,
           "description": term.shortDefinition,
-          "url": `https://odigosauto.com/glossary/${term.slug}`,
+          "url": buildCanonical(`/glossary/${term.slug}`),
           "inDefinedTermSet": {
             "@type": "DefinedTermSet",
             "name": "Car Buying Glossary",
-            "url": "https://odigosauto.com/glossary",
+            "url": buildCanonical("/glossary"),
           },
         })}</script>
       </Helmet>

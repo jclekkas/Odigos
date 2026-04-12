@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { Helmet } from "react-helmet-async";
-import { setSeoMeta } from "@/lib/seo";
+import { setSeoMeta, buildCanonical } from "@/lib/seo";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 import { glossaryTerms } from "@/data/glossary-terms";
@@ -23,12 +23,12 @@ export default function Glossary() {
           "@type": "DefinedTermSet",
           "name": "Car Buying Glossary",
           "description": "Plain-English definitions of dealer fees, lease terms, and pricing jargon.",
-          "url": "https://odigosauto.com/glossary",
+          "url": buildCanonical("/glossary"),
           "hasDefinedTerm": glossaryTerms.map((t) => ({
             "@type": "DefinedTerm",
             "name": t.term,
             "description": t.shortDefinition,
-            "url": `https://odigosauto.com/glossary/${t.slug}`,
+            "url": buildCanonical(`/glossary/${t.slug}`),
           })),
         })}</script>
       </Helmet>
