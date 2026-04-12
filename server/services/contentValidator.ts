@@ -136,37 +136,33 @@ export async function validateDealerContent(text: string): Promise<ContentValida
   }
 
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), CLASSIFIER_TIMEOUT_MS);
+    const llmPromise = openai.chat.completions.create({
+      model: AI_FALLBACK_MODEL,
+      messages: [
+        { role: "system", content: CLASSIFICATION_PROMPT },
+        { role: "user", content: trimmed.slice(0, 2000) },
+      ],
+      max_tokens: CLASSIFIER_MAX_TOKENS,
+      response_format: { type: "json_object" },
+      temperature: 0,
+    });
 
-    try {
-      const response = await openai.chat.completions.create(
-        {
-          model: AI_FALLBACK_MODEL,
-          messages: [
-            { role: "system", content: CLASSIFICATION_PROMPT },
-            { role: "user", content: trimmed.slice(0, 2000) },
-          ],
-          max_tokens: CLASSIFIER_MAX_TOKENS,
-          response_format: { type: "json_object" },
-          temperature: 0,
-        },
-        { signal: controller.signal },
-      );
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("Classifier timeout")), CLASSIFIER_TIMEOUT_MS),
+    );
 
-      const raw = response.choices[0]?.message?.content ?? "";
-      const parsed = JSON.parse(raw);
+    const response = await Promise.race([llmPromise, timeoutPromise]);
 
-      return {
-        isRelevant: typeof parsed.isRelevant === "boolean" ? parsed.isRelevant : true,
-        confidence: ["high", "medium", "low"].includes(parsed.confidence) ? parsed.confidence : "low",
-        category: typeof parsed.category === "string" ? parsed.category : "dealer_quote",
-        rejectionReason: typeof parsed.rejectionReason === "string" ? parsed.rejectionReason : null,
-        method: "llm",
-      };
-    } finally {
-      clearTimeout(timeout);
-    }
+    const raw = response.choices[0]?.message?.content ?? "";
+    const parsed = JSON.parse(raw);
+
+    return {
+      isRelevant: typeof parsed.isRelevant === "boolean" ? parsed.isRelevant : true,
+      confidence: ["high", "medium", "low"].includes(parsed.confidence) ? parsed.confidence : "low",
+      category: typeof parsed.category === "string" ? parsed.category : "dealer_quote",
+      rejectionReason: typeof parsed.rejectionReason === "string" ? parsed.rejectionReason : null,
+      method: "llm" as const,
+    };
   } catch (err) {
     // Fail open — never block a potentially valid submission due to
     // classifier unavailability.
