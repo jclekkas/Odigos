@@ -9,6 +9,14 @@
       "includeFiles": "dist/public/**"
     }
   },
+  "redirects": [
+    {
+      "source": "/:path(.*)",
+      "has": [{ "type": "host", "value": "www.odigosauto.com" }],
+      "destination": "https://odigosauto.com/:path",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/api" }
   ]
