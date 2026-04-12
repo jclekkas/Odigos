@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Check, CheckCircle2, Lock, Quote } from "lucide-react";
+import { ArrowRight, Check, CheckCircle2, Lock } from "lucide-react";
 import { trackPageView, trackCtaClick } from "@/lib/tracking";
 import { capture } from "@/lib/analytics";
 import SiteHeader from "@/components/SiteHeader";
@@ -256,54 +256,6 @@ export default function Landing() {
 
         {/* ── HERO ─────────────────────────────────────────────────────────── */}
         <HeroSection statsData={statsData} statsLoading={statsLoading} statsError={statsError} />
-
-        {/* ── SOCIAL PROOF ─────────────────────────────────────────────────── */}
-        <section className="py-14 sm:py-16" data-testid="section-testimonials">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl text-center mb-12">
-              Buyers who checked first
-            </h2>
-            <div className="grid gap-6 sm:grid-cols-3">
-              {[
-                {
-                  quote: "Saved me $2,400 in hidden dealer add-ons. The suggested reply got them to remove the nitrogen tire fee and fabric protection.",
-                  name: "Sarah M.",
-                  location: "Texas",
-                  saved: "$2,400",
-                },
-                {
-                  quote: "I was about to sign a deal with a $895 doc fee in California where the cap is $85. Odigos caught it instantly.",
-                  name: "James K.",
-                  location: "California",
-                  saved: "$810",
-                },
-                {
-                  quote: "I collected quotes from five different dealers over 10 days. The Car Buyer's Pass paid for itself on the second analysis — and I ran every single quote through it. Caught a hidden $1,400 add-on at the dealer I was about to sign with.",
-                  name: "Michelle R.",
-                  location: "Florida",
-                  saved: "$1,400 across 5 dealers",
-                },
-              ].map((t) => (
-                <Card key={t.name} className="relative">
-                  <CardContent className="pt-6">
-                    <Quote className="h-5 w-5 text-muted-foreground/30 mb-3" />
-                    <p className="text-sm text-foreground/80 leading-relaxed mb-4">
-                      &ldquo;{t.quote}&rdquo;
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        {t.name}, {t.location}
-                      </p>
-                      <span className="text-xs font-semibold text-green-600 dark:text-green-400">
-                        {t.saved}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* ── PRICING ──────────────────────────────────────────────────────── */}
         <section id="pricing" className="py-14 sm:py-16 border-t border-border bg-muted/30">
