@@ -101,7 +101,9 @@ describe("robots.txt", () => {
   it("does not contain odigos.replit.app in sitemap reference (server-side check)", () => {
     const serverRoute = readFileSync(resolve(ROOT, "server/routes/reference.ts"), "utf-8");
     expect(serverRoute).not.toContain("odigos.replit.app");
-    expect(serverRoute).toContain("odigosauto.com");
+    expect(serverRoute).toContain("CANONICAL_ORIGIN");
+    const siteConfig = readFileSync(resolve(ROOT, "shared/siteConfig.ts"), "utf-8");
+    expect(siteConfig).toContain("odigosauto.com");
   });
 });
 
@@ -216,7 +218,9 @@ describe("seo.ts canonical domain", () => {
 
   it("uses odigosauto.com as canonical origin", () => {
     const content = readFileSync(resolve(ROOT, "client/src/lib/seo.ts"), "utf-8");
-    expect(content).toContain("https://odigosauto.com");
+    expect(content).toContain("CANONICAL_ORIGIN");
+    const siteConfig = readFileSync(resolve(ROOT, "shared/siteConfig.ts"), "utf-8");
+    expect(siteConfig).toContain("https://odigosauto.com");
   });
 
   it("cleanup function does not remove canonical tag", () => {

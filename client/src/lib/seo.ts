@@ -1,5 +1,4 @@
-const CANONICAL_ORIGIN = "https://odigosauto.com";
-const OG_IMAGE = "https://odigosauto.com/og-image.png";
+import { CANONICAL_ORIGIN, OG_IMAGE } from "@shared/siteConfig";
 const OG_IMAGE_ALT = "Odigos — Dealer Quote Analyzer";
 
 export function buildCanonical(path: string): string {

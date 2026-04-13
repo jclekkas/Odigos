@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { getStateFeeData } from "../stateFeeLookup.js";
+import { CANONICAL_ORIGIN } from "../../shared/siteConfig.js";
 
 export function registerReferenceRoutes(app: Express): void {
   app.get("/api/state-fee/:state", (req, res) => {
@@ -21,7 +22,6 @@ export function registerReferenceRoutes(app: Express): void {
   });
 
   app.get("/robots.txt", (_req, res) => {
-    const CANONICAL_ORIGIN = "https://odigosauto.com";
     res.type("text/plain");
     res.send(`User-agent: *\nAllow: /\nSitemap: ${CANONICAL_ORIGIN}/sitemap.xml`);
   });
