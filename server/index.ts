@@ -354,6 +354,17 @@ app.get("/api/health", (_req, res) => {
       configured: isOpenAIConfigured(),
       model: AI_PRIMARY_MODEL,
       fallbackModel: AI_FALLBACK_MODEL,
+      baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL
+        ? "(custom: Replit AI Integrations)"
+        : process.env.OPENAI_BASE_URL
+          ? "(custom)"
+          : "(default: api.openai.com)",
+      apiKeySource: process.env.AI_INTEGRATIONS_OPENAI_API_KEY
+        ? "AI_INTEGRATIONS_OPENAI_API_KEY"
+        : process.env.OPENAI_API_KEY
+          ? "OPENAI_API_KEY"
+          : "none",
+      apiKeySuffix: (process.env.AI_INTEGRATIONS_OPENAI_API_KEY ?? process.env.OPENAI_API_KEY)?.slice(-4) ?? null,
     },
   });
 });
@@ -565,7 +576,12 @@ export async function initialize(): Promise<void> {
       DATABASE_URL: Boolean(process.env.DATABASE_URL),
       AI_INTEGRATIONS_OPENAI_API_KEY: Boolean(process.env.AI_INTEGRATIONS_OPENAI_API_KEY),
       OPENAI_API_KEY: Boolean(process.env.OPENAI_API_KEY),
-      AI_INTEGRATIONS_OPENAI_BASE_URL: Boolean(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL),
+      AI_BASE_URL_ROUTING: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL
+        ? "replit-gateway"
+        : process.env.OPENAI_BASE_URL
+          ? "custom"
+          : "direct-openai",
+      OPENAI_API_KEY_SUFFIX: (process.env.AI_INTEGRATIONS_OPENAI_API_KEY ?? process.env.OPENAI_API_KEY)?.slice(-4) ?? null,
       AI_INTEGRATIONS_OPENAI_MODEL: process.env.AI_INTEGRATIONS_OPENAI_MODEL ?? null,
       AI_INTEGRATIONS_OPENAI_FALLBACK_MODEL: process.env.AI_INTEGRATIONS_OPENAI_FALLBACK_MODEL ?? null,
       REDIS_URL: Boolean(process.env.REDIS_URL),
