@@ -1,3 +1,5 @@
+import { GLOSSARY_SLUGS } from "./glossaryTermSeo.js";
+
 export const STATIC_ROUTES: string[] = [
   "/",
   "/analyze",
@@ -131,8 +133,9 @@ export function isKnownRoute(pathname: string): boolean {
     return true;
   }
 
-  if (normalized.startsWith("/glossary/") && normalized.split("/").length === 3) {
-    return true;
+  if (normalized.startsWith("/glossary/")) {
+    const slug = normalized.slice("/glossary/".length);
+    return GLOSSARY_SLUGS.has(slug);
   }
 
   return false;

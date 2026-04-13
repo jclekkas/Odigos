@@ -1,3 +1,5 @@
+import { GLOSSARY_SEO_BY_SLUG } from "@shared/glossaryTermSeo";
+
 export interface GlossaryTerm {
   slug: string;
   term: string;
@@ -6,6 +8,12 @@ export interface GlossaryTerm {
   relatedPages: { label: string; path: string }[];
   seoTitle: string;
   seoDescription: string;
+}
+
+function seo(slug: string): { seoTitle: string; seoDescription: string } {
+  const entry = GLOSSARY_SEO_BY_SLUG.get(slug);
+  if (!entry) throw new Error(`Missing shared SEO data for glossary slug: ${slug}`);
+  return { seoTitle: entry.seoTitle, seoDescription: entry.seoDescription };
 }
 
 export const glossaryTerms: GlossaryTerm[] = [
@@ -19,8 +27,7 @@ export const glossaryTerms: GlossaryTerm[] = [
       { label: "Hidden Dealer Fees", path: "/hidden-dealer-fees" },
       { label: "Dealer Add-Ons Explained", path: "/dealer-add-ons-explained" },
     ],
-    seoTitle: "What Is a Junk Fee? Car Dealer Junk Fees Explained | Odigos",
-    seoDescription: "A junk fee is a hidden or surprise charge that provides little value. Learn how to spot and fight back against dealer junk fees.",
+    ...seo("junk-fee"),
   },
   {
     slug: "doc-fee",
@@ -32,8 +39,7 @@ export const glossaryTerms: GlossaryTerm[] = [
       { label: "Doc Fee by State", path: "/dealer-doc-fee-by-state" },
       { label: "Doc Fee Too High?", path: "/doc-fee-too-high" },
     ],
-    seoTitle: "What Is a Doc Fee? Dealer Documentation Fee Explained | Odigos",
-    seoDescription: "A doc fee is a dealer-set paperwork charge, not a government fee. Learn what it covers, state caps, and typical ranges.",
+    ...seo("doc-fee"),
   },
   {
     slug: "out-the-door-price",
@@ -45,8 +51,7 @@ export const glossaryTerms: GlossaryTerm[] = [
       { label: "What Does OTD Include?", path: "/what-does-out-the-door-price-include" },
       { label: "OTD Calculator", path: "/out-the-door-price" },
     ],
-    seoTitle: "What Is Out-the-Door Price? OTD Price Explained | Odigos",
-    seoDescription: "Out-the-door price (OTD) is the total you pay including all taxes and fees. Learn what it includes and why it matters.",
+    ...seo("out-the-door-price"),
   },
   {
     slug: "market-adjustment",
@@ -57,8 +62,7 @@ export const glossaryTerms: GlossaryTerm[] = [
       { label: "Market Adjustment Fee Guide", path: "/market-adjustment-fee" },
       { label: "Dealer Pricing Tactics", path: "/dealer-pricing-tactics" },
     ],
-    seoTitle: "What Is a Market Adjustment? Dealer ADM Explained | Odigos",
-    seoDescription: "A market adjustment is a dealer markup above MSRP. Learn what it is, why dealers charge it, and how to avoid it.",
+    ...seo("market-adjustment"),
   },
   {
     slug: "money-factor",
@@ -66,8 +70,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     shortDefinition: "The interest rate on a car lease, expressed as a small decimal. Multiply by 2,400 to convert to an equivalent APR.",
     fullDefinition: "The money factor is how leasing companies express the interest rate on a lease. It's shown as a small decimal like 0.00125. To convert to a comparable APR, multiply by 2,400 (e.g., 0.00125 x 2,400 = 3.0% APR). A lower money factor means less interest cost. Money factors are set by the leasing company (often the manufacturer's captive finance arm) and can sometimes be reduced with a higher security deposit or by qualifying for promotional rates. Always ask for the money factor — many dealers avoid disclosing it.",
     relatedPages: [],
-    seoTitle: "What Is a Money Factor? Lease Interest Rate Explained | Odigos",
-    seoDescription: "The money factor is the interest rate on a car lease. Multiply by 2,400 to get the APR equivalent. Learn how it works.",
+    ...seo("money-factor"),
   },
   {
     slug: "residual-value",
@@ -75,8 +78,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     shortDefinition: "The predicted value of a leased vehicle at the end of the lease term. It determines your monthly payment and buyout price.",
     fullDefinition: "Residual value is the estimated worth of the vehicle when your lease ends. It is set by the leasing company (not the dealer) and expressed as a percentage of MSRP (e.g., 55% residual on a $40,000 car = $22,000). A higher residual value means lower monthly payments because you're financing less depreciation. Residual value also determines your lease-end purchase option price. Residual values are typically not negotiable but vary by model, trim, and lease term.",
     relatedPages: [],
-    seoTitle: "What Is Residual Value? Car Lease Residual Explained | Odigos",
-    seoDescription: "Residual value is the predicted value of a leased car at lease end. Learn how it affects your monthly payment and buyout price.",
+    ...seo("residual-value"),
   },
   {
     slug: "acquisition-fee",
@@ -84,8 +86,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     shortDefinition: "A one-time fee charged by the leasing company to initiate a lease. Typically $595–$995, sometimes rolled into the monthly payment.",
     fullDefinition: "An acquisition fee (also called a bank fee or lease inception fee) is charged by the leasing company to cover the costs of arranging the lease. It typically ranges from $595 to $995 depending on the manufacturer. Unlike dealer fees, the acquisition fee goes to the leasing company, not the dealer. It can be paid upfront or rolled into the monthly payment. The fee is generally not negotiable but should always be disclosed.",
     relatedPages: [],
-    seoTitle: "What Is an Acquisition Fee? Lease Inception Fee Explained | Odigos",
-    seoDescription: "An acquisition fee is a one-time lease initiation charge from the leasing company. Learn typical amounts and what to expect.",
+    ...seo("acquisition-fee"),
   },
   {
     slug: "disposition-fee",
@@ -93,8 +94,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     shortDefinition: "A fee charged at the end of a lease if you return the vehicle instead of buying it. Typically $300–$500.",
     fullDefinition: "A disposition fee is charged by the leasing company when you return a vehicle at lease end. It covers the cost of inspecting, reconditioning, and remarketing the returned vehicle. Typical amounts are $300–$500. The fee is waived if you purchase the vehicle at lease end or lease another vehicle from the same manufacturer. It should be disclosed in the lease agreement upfront.",
     relatedPages: [],
-    seoTitle: "What Is a Disposition Fee? Lease-End Fee Explained | Odigos",
-    seoDescription: "A disposition fee is charged when you return a leased car. Typically $300-$500, waived if you buy or re-lease. Learn more.",
+    ...seo("disposition-fee"),
   },
   {
     slug: "dealer-prep-fee",
@@ -105,8 +105,7 @@ export const glossaryTerms: GlossaryTerm[] = [
       { label: "Dealer Prep Fee Guide", path: "/dealer-prep-fee" },
       { label: "Hidden & Junk Dealer Fees", path: "/hidden-dealer-fees" },
     ],
-    seoTitle: "What Is a Dealer Prep Fee? Pre-Delivery Fee Explained | Odigos",
-    seoDescription: "A dealer prep fee is a charge for cleaning and inspecting a car before delivery. Learn why it's often considered a junk fee.",
+    ...seo("dealer-prep-fee"),
   },
   {
     slug: "gap-insurance",
@@ -116,8 +115,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     relatedPages: [
       { label: "Dealer Add-Ons Explained", path: "/dealer-add-ons-explained" },
     ],
-    seoTitle: "What Is GAP Insurance? Guaranteed Asset Protection Explained | Odigos",
-    seoDescription: "GAP insurance covers the difference between what you owe and what your car is worth. Learn when it's needed and where to buy it.",
+    ...seo("gap-insurance"),
   },
   {
     slug: "msrp",
@@ -128,8 +126,7 @@ export const glossaryTerms: GlossaryTerm[] = [
       { label: "OTD vs MSRP", path: "/out-the-door-price-vs-msrp" },
       { label: "Market Adjustment Fee", path: "/market-adjustment-fee" },
     ],
-    seoTitle: "What Is MSRP? Manufacturer's Suggested Retail Price Explained | Odigos",
-    seoDescription: "MSRP is the manufacturer's suggested retail price — the sticker price on a new car. Learn how it differs from what you actually pay.",
+    ...seo("msrp"),
   },
   {
     slug: "invoice-price",
@@ -139,8 +136,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     relatedPages: [
       { label: "What Is a Fair Price?", path: "/how-much-should-you-pay-for-a-car" },
     ],
-    seoTitle: "What Is Invoice Price? Dealer Cost Explained | Odigos",
-    seoDescription: "Invoice price is what the dealer pays the manufacturer for a car. Learn how to use it to negotiate a better deal.",
+    ...seo("invoice-price"),
   },
   {
     slug: "destination-charge",
@@ -150,8 +146,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     relatedPages: [
       { label: "Car Dealer Fees Explained", path: "/car-dealer-fees-explained" },
     ],
-    seoTitle: "What Is a Destination Charge? Car Delivery Fee Explained | Odigos",
-    seoDescription: "A destination charge is a manufacturer-set shipping fee, typically $1,000-$2,000. Learn why it's non-negotiable and how it differs from dealer fees.",
+    ...seo("destination-charge"),
   },
   {
     slug: "trade-in-tax-credit",
@@ -161,8 +156,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     relatedPages: [
       { label: "Car Dealer Fees by State", path: "/car-dealer-fees-by-state" },
     ],
-    seoTitle: "What Is a Trade-In Tax Credit? Sales Tax Savings Explained | Odigos",
-    seoDescription: "Most states let you pay sales tax only on the difference after a trade-in. Learn which states offer this credit and how much you can save.",
+    ...seo("trade-in-tax-credit"),
   },
   {
     slug: "nitrogen-tire-fill",
@@ -173,8 +167,7 @@ export const glossaryTerms: GlossaryTerm[] = [
       { label: "Hidden & Junk Dealer Fees", path: "/hidden-dealer-fees" },
       { label: "Dealer Add-Ons List", path: "/dealer-add-ons-list" },
     ],
-    seoTitle: "Is Nitrogen Tire Fill Worth It? Dealer Add-On Explained | Odigos",
-    seoDescription: "Nitrogen tire fill costs $50-$300 at dealers but provides negligible benefit. Learn why it's a common junk fee and how to decline it.",
+    ...seo("nitrogen-tire-fill"),
   },
   {
     slug: "vin-etching",
@@ -185,8 +178,7 @@ export const glossaryTerms: GlossaryTerm[] = [
       { label: "Hidden & Junk Dealer Fees", path: "/hidden-dealer-fees" },
       { label: "Hidden Dealer Fees", path: "/hidden-dealer-fees" },
     ],
-    seoTitle: "Is VIN Etching Worth It? Dealer Add-On Explained | Odigos",
-    seoDescription: "VIN etching costs $100-$400 at dealers but DIY kits are $20-$30. Learn why it's a junk fee and how to decline it.",
+    ...seo("vin-etching"),
   },
   {
     slug: "paint-protection",
@@ -197,8 +189,7 @@ export const glossaryTerms: GlossaryTerm[] = [
       { label: "Hidden & Junk Dealer Fees", path: "/hidden-dealer-fees" },
       { label: "Are Dealer Add-Ons Mandatory?", path: "/are-dealer-add-ons-mandatory" },
     ],
-    seoTitle: "Is Dealer Paint Protection Worth It? Ceramic Coating Explained | Odigos",
-    seoDescription: "Dealer paint protection is typically a low-quality spray-on marked up significantly. Learn when ceramic coating is worth it and where to get it.",
+    ...seo("paint-protection"),
   },
   {
     slug: "extended-warranty",
@@ -209,8 +200,7 @@ export const glossaryTerms: GlossaryTerm[] = [
       { label: "Dealer Add-Ons Explained", path: "/dealer-add-ons-explained" },
       { label: "Are Dealer Add-Ons Negotiable?", path: "/are-dealer-add-ons-negotiable" },
     ],
-    seoTitle: "Is a Dealer Extended Warranty Worth It? Service Contract Explained | Odigos",
-    seoDescription: "Extended warranties are often overpriced at dealers. Learn what they cover, when they're worth it, and how to get a better price.",
+    ...seo("extended-warranty"),
   },
   {
     slug: "capitalized-cost",
@@ -221,8 +211,7 @@ export const glossaryTerms: GlossaryTerm[] = [
       { label: "Money Factor Explained", path: "/money-factor-explained" },
       { label: "Car Lease Fees Explained", path: "/car-lease-fees-explained" },
     ],
-    seoTitle: "What Is Capitalized Cost? Lease Cap Cost Explained | Odigos",
-    seoDescription: "Capitalized cost is the negotiated vehicle price in a lease. Learn how it affects your payment and how to negotiate it down.",
+    ...seo("capitalized-cost"),
   },
   {
     slug: "early-termination-fee",
@@ -232,8 +221,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     relatedPages: [
       { label: "Car Lease Fees Explained", path: "/car-lease-fees-explained" },
     ],
-    seoTitle: "What Is a Lease Early Termination Fee? Penalties Explained | Odigos",
-    seoDescription: "Ending a lease early can cost thousands. Learn what early termination fees include and cheaper alternatives like lease transfers.",
+    ...seo("early-termination-fee"),
   },
   {
     slug: "reconditioning-fee",
@@ -244,7 +232,6 @@ export const glossaryTerms: GlossaryTerm[] = [
       { label: "Dealer Reconditioning Fee Guide", path: "/dealer-reconditioning-fee" },
       { label: "Hidden & Junk Dealer Fees", path: "/hidden-dealer-fees" },
     ],
-    seoTitle: "What Is a Reconditioning Fee? Used Car Dealer Fee Explained | Odigos",
-    seoDescription: "A reconditioning fee covers prep work on used cars. Learn when it's legitimate, when it's inflated, and how to push back.",
+    ...seo("reconditioning-fee"),
   },
 ];
