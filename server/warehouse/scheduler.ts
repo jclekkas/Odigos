@@ -134,7 +134,10 @@ export function startDailyScheduler(): void {
 
   if (restoreVerifyTimer) return;
 
-  if (process.env.RESTORE_VERIFY_DB_URL && process.env.BACKUP_S3_BUCKET) {
+  const hasVerifyDb = Boolean(process.env.RESTORE_VERIFY_DB_URL);
+  const hasS3Bucket = Boolean(process.env.BACKUP_S3_BUCKET);
+
+  if (hasVerifyDb && hasS3Bucket) {
     console.log("[scheduler] Daily restore verification scheduled (every 24h).");
 
     restoreVerifyTimer = setInterval(() => {
@@ -144,6 +147,11 @@ export function startDailyScheduler(): void {
     if (restoreVerifyTimer && typeof restoreVerifyTimer === "object" && "unref" in restoreVerifyTimer) {
       restoreVerifyTimer.unref();
     }
+  } else {
+    const missing: string[] = [];
+    if (!hasVerifyDb) missing.push("RESTORE_VERIFY_DB_URL");
+    if (!hasS3Bucket) missing.push("BACKUP_S3_BUCKET");
+    console.log(`[scheduler] Restore verification SKIPPED — missing env: ${missing.join(", ")}`);
   }
 }
 

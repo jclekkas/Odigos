@@ -4,10 +4,11 @@
  * Usage:
  *   tsx scripts/restore.ts                                          # download latest from S3, restore to TARGET_DB_URL
  *   tsx scripts/restore.ts backups/backup-2026-03-29T10-30-00.dump  # restore a local file
- *   tsx scripts/restore.ts --i-know-this-is-production              # allow restore when NODE_ENV=production
+ *   tsx scripts/restore.ts --i-know-this-is-production              # allow restore when target looks like production
  *
  * Environment variables:
  *   TARGET_DB_URL          — connection string for the restore target (required)
+ *   DATABASE_URL           — production connection string (used to detect prod target)
  *   BACKUP_S3_BUCKET       — S3 bucket name (required when no local file arg)
  *   BACKUP_S3_REGION       — AWS region (default: us-east-1)
  *   BACKUP_S3_PREFIX       — key prefix inside bucket (default: odigos-backups)
@@ -27,24 +28,40 @@ const args = process.argv.slice(2);
 const forceProduction = args.includes("--i-know-this-is-production");
 const localFileArg = args.find((a) => !a.startsWith("--"));
 
-// ── Production safety gate ──────────────────────────────────────────────────
-
-const nodeEnv = (process.env.NODE_ENV || "production").toLowerCase();
-if (nodeEnv === "production" && !forceProduction) {
-  console.error(
-    "[restore] ERROR: NODE_ENV is \"production\".\n" +
-    "  Restoring into a production database requires the --i-know-this-is-production flag.\n" +
-    "  Example: tsx scripts/restore.ts --i-know-this-is-production",
-  );
-  process.exit(1);
-}
-
 // ── Resolve target DB ───────────────────────────────────────────────────────
 
 const targetDbUrl = process.env.TARGET_DB_URL;
 if (!targetDbUrl) {
   console.error("[restore] ERROR: TARGET_DB_URL environment variable is not set.");
   process.exit(1);
+}
+
+// ── Production safety gate ──────────────────────────────────────────────────
+// Two checks: (1) NODE_ENV === production, (2) TARGET_DB_URL matches DATABASE_URL.
+// Either condition triggers the gate. NODE_ENV can be misconfigured, but a
+// matching DATABASE_URL is a stronger signal that this is the production DB.
+
+const nodeEnv = (process.env.NODE_ENV || "production").toLowerCase();
+const productionDbUrl = process.env.DATABASE_URL;
+const targetMatchesProd = productionDbUrl && targetDbUrl === productionDbUrl;
+
+if ((nodeEnv === "production" || targetMatchesProd) && !forceProduction) {
+  const reasons: string[] = [];
+  if (nodeEnv === "production") reasons.push("NODE_ENV is \"production\"");
+  if (targetMatchesProd) reasons.push("TARGET_DB_URL matches DATABASE_URL (production)");
+
+  console.error(
+    `[restore] ERROR: ${reasons.join(" and ")}.\n` +
+    "  Restoring into a production database requires the --i-know-this-is-production flag.\n" +
+    "  Example: tsx scripts/restore.ts --i-know-this-is-production",
+  );
+  process.exit(1);
+}
+
+if (targetMatchesProd && forceProduction) {
+  console.warn(
+    "[restore] WARNING: TARGET_DB_URL matches DATABASE_URL — you are restoring into the PRODUCTION database.",
+  );
 }
 
 // ── S3 download helper ──────────────────────────────────────────────────────
@@ -115,6 +132,7 @@ async function downloadFromS3(key: string): Promise<string> {
 
 export interface RestoreResult {
   backupFile: string;
+  backupKey: string | null;
   source: "local" | "s3";
   durationMs: number;
 }
@@ -122,7 +140,6 @@ export interface RestoreResult {
 export async function runRestore(opts?: {
   localFile?: string;
   targetUrl?: string;
-  forceProduction?: boolean;
 }): Promise<RestoreResult> {
   const dbUrl = opts?.targetUrl ?? targetDbUrl!;
   const fileArg = opts?.localFile ?? localFileArg;
@@ -131,6 +148,7 @@ export async function runRestore(opts?: {
   let dumpPath: string;
   let source: "local" | "s3";
   let isTempFile = false;
+  let s3Key: string | null = null;
 
   if (fileArg) {
     // ── Local file path provided ──────────────────────────────────────────
@@ -145,7 +163,8 @@ export async function runRestore(opts?: {
     // ── Download latest from S3 ───────────────────────────────────────────
     console.log("[restore] No local file specified — downloading latest from S3…");
     const latest = await getLatestS3Backup();
-    console.log(`[restore] Latest backup: ${latest.key} (${latest.lastModified.toISOString()})`);
+    s3Key = latest.key;
+    console.log(`[restore] Latest backup: s3://${process.env.BACKUP_S3_BUCKET}/${latest.key} (${latest.lastModified.toISOString()})`);
 
     dumpPath = await downloadFromS3(latest.key);
     source = "s3";
@@ -165,13 +184,17 @@ export async function runRestore(opts?: {
     );
   } catch (err) {
     // pg_restore exits non-zero on warnings (e.g., "table does not exist" during --clean).
-    // Check if it's a genuine fatal error by looking at the exit code.
+    // In the manual restore path, exit code 1 is treated as a warning because the
+    // operator can inspect the output and verify the result. Exit code >1 is fatal.
     const execErr = err as { status?: number };
-    // pg_restore exit code 1 = warnings only (non-fatal), >1 = real failure
     if (execErr.status && execErr.status > 1) {
       throw new Error(`pg_restore failed with exit code ${execErr.status}`);
     }
-    console.warn("[restore] pg_restore completed with warnings (exit code 1) — this is usually OK.");
+    console.warn(
+      "[restore] pg_restore completed with warnings (exit code 1).\n" +
+      "  This typically means --clean tried to drop objects that don't exist yet.\n" +
+      "  Verify restored data manually if this is unexpected.",
+    );
   }
 
   const durationMs = Date.now() - startMs;
@@ -186,9 +209,10 @@ export async function runRestore(opts?: {
     }
   }
 
-  console.log(`[restore] Restore complete. Duration: ${(durationMs / 1000).toFixed(1)}s  Source: ${source}  File: ${path.basename(dumpPath)}`);
+  const keyInfo = s3Key ? `  S3 key: ${s3Key}` : "";
+  console.log(`[restore] Restore complete. Duration: ${(durationMs / 1000).toFixed(1)}s  Source: ${source}  File: ${path.basename(dumpPath)}${keyInfo}`);
 
-  return { backupFile: path.basename(dumpPath), source, durationMs };
+  return { backupFile: path.basename(dumpPath), backupKey: s3Key, source, durationMs };
 }
 
 // ── CLI entrypoint ──────────────────────────────────────────────────────────

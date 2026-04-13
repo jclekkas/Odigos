@@ -18,10 +18,12 @@ Backups are PostgreSQL custom-format dumps created daily by `server/jobs/backup.
 | Variable | Purpose | Required for |
 |---|---|---|
 | `TARGET_DB_URL` | Connection string for the restore target database | Manual restore |
+| `DATABASE_URL` | Production connection string (also used for prod-target detection) | Production safety gate |
 | `BACKUP_S3_BUCKET` | S3 bucket name | S3 download/upload |
 | `BACKUP_S3_REGION` | AWS region | S3 operations |
 | `BACKUP_S3_PREFIX` | Key prefix inside bucket | S3 operations |
-| `RESTORE_VERIFY_DB_URL` | Throwaway DB for automated verification | Scheduled verification |
+| `RESTORE_VERIFY_DB_URL` | Persistent scratch DB for automated verification | Scheduled verification |
+| `RESTORE_VERIFY_MAX_AGE_HOURS` | Max allowed age of latest listing (default: 48) | Recency check |
 | `AWS_ACCESS_KEY_ID` | AWS credentials | S3 operations |
 | `AWS_SECRET_ACCESS_KEY` | AWS credentials | S3 operations |
 
@@ -30,26 +32,36 @@ Backups are PostgreSQL custom-format dumps created daily by `server/jobs/backup.
 ### From S3 (latest backup)
 
 ```bash
-TARGET_DB_URL="postgresql://user:pass@host:5432/dbname" \
-BACKUP_S3_BUCKET="your-bucket" \
+TARGET_DB_URL="postgresql://user:pass@host:5432/mydb" \
+BACKUP_S3_BUCKET="my-backup-bucket" \
+BACKUP_S3_PREFIX="odigos-backups" \
+BACKUP_S3_REGION="us-east-1" \
+NODE_ENV=staging \
   tsx scripts/restore.ts
 ```
 
 ### From a local file
 
 ```bash
-TARGET_DB_URL="postgresql://user:pass@host:5432/dbname" \
+TARGET_DB_URL="postgresql://user:pass@host:5432/mydb" \
+NODE_ENV=staging \
   tsx scripts/restore.ts backups/backup-2026-04-13T10-30-00.dump
 ```
 
 ### Production Restore
 
-Production restores require an explicit safety flag:
+Production restores are blocked by two independent safety checks:
+
+1. `NODE_ENV === "production"`
+2. `TARGET_DB_URL === DATABASE_URL` (target matches the known production DB)
+
+Either condition triggers the gate. Both require `--i-know-this-is-production`:
 
 ```bash
 NODE_ENV=production \
 TARGET_DB_URL="$DATABASE_URL" \
-BACKUP_S3_BUCKET="your-bucket" \
+DATABASE_URL="$DATABASE_URL" \
+BACKUP_S3_BUCKET="my-backup-bucket" \
   tsx scripts/restore.ts --i-know-this-is-production
 ```
 
@@ -62,20 +74,50 @@ BACKUP_S3_BUCKET="your-bucket" \
 5. Verify critical tables have expected row counts
 6. Restart the application server
 
+### pg_restore exit code behavior
+
+| Context | Exit code 0 | Exit code 1 | Exit code > 1 |
+|---|---|---|---|
+| **Manual restore** (`scripts/restore.ts`) | Success | Warning logged, operator verifies | Fatal error |
+| **Automated verification** (`restoreVerification.ts`) | Success | **Failure** — alert fired | **Failure** — alert fired |
+
+Exit code 1 is treated as a **failure** in the automated verification path because it can include missing extensions, failed schema objects, or permission errors that leave the database in an incomplete state. Operators running manual restores can inspect the warnings and make their own judgment.
+
 ## Automated Verification
 
-A daily scheduled job (`server/jobs/restoreVerification.ts`) automatically:
+A daily scheduled job (`server/jobs/restoreVerification.ts`) validates backups end-to-end:
 
 1. Downloads the latest backup from S3
-2. Restores it into the database specified by `RESTORE_VERIFY_DB_URL`
-3. Runs sanity queries (row counts > 0) against:
+2. Restores it into the database at `RESTORE_VERIFY_DB_URL`
+3. Runs sanity queries — all must return > 0 rows:
    - `raw.user_analyses`
    - `core.dealers`
    - `core.listings`
    - `core.analysis_line_items`
-4. Fires a `backup_restore_failed` alert on any failure
+4. Checks data recency — latest `core.listings.analyzed_at` must be within `RESTORE_VERIFY_MAX_AGE_HOURS` (default: 48h)
+5. Fires a `backup_restore_failed` alert on any failure (with 4-hour cooldown)
 
-This runs only when both `RESTORE_VERIFY_DB_URL` and `BACKUP_S3_BUCKET` are configured.
+### Verification database lifecycle
+
+The verification database is a **persistent scratch database** that you provision once. It is NOT created or dropped by the job — `pg_restore --clean` overwrites its contents on each run.
+
+**Setup (one-time):**
+
+```bash
+createdb -h host -U user odigos_verify
+```
+
+Then set `RESTORE_VERIFY_DB_URL=postgresql://user:pass@host:5432/odigos_verify`.
+
+The scheduler only activates verification when **both** `RESTORE_VERIFY_DB_URL` and `BACKUP_S3_BUCKET` are set. If either is missing, startup logs will say:
+
+```
+[scheduler] Restore verification SKIPPED — missing env: RESTORE_VERIFY_DB_URL
+```
+
+### Overlap protection
+
+If a verification run is still in progress when the next scheduler tick fires, the new run is skipped with a log message. This prevents resource contention during slow S3 downloads or large restores.
 
 ## Estimated Recovery Times
 
@@ -86,7 +128,7 @@ This runs only when both `RESTORE_VERIFY_DB_URL` and `BACKUP_S3_BUCKET` are conf
 | Application restart | 30 seconds - 2 minutes |
 | **Total RTO** | **~5-20 minutes** |
 
-These are placeholder estimates. Actual times depend on database size and infrastructure.
+These are placeholder estimates. Actual times depend on database size and infrastructure. The automated verification job logs exact durations for each run — use those to calibrate.
 
 ## Common Failure Modes
 
@@ -113,12 +155,25 @@ These are placeholder estimates. Actual times depend on database size and infras
 
 ### pg_restore exit code 1 (warnings)
 
-**Symptom:** `pg_restore` exits with code 1 but data appears restored
+**Symptom:** `pg_restore` exits with code 1, automated verification fails
 
-**Explanation:** Exit code 1 means non-fatal warnings (e.g., `DROP TABLE` on a table that doesn't exist during `--clean`). This is normal for first restores or schema mismatches. The restore script treats exit code 1 as a warning, not a failure.
+**Explanation:** Exit code 1 means non-fatal warnings (e.g., `DROP TABLE` on a table that doesn't exist during `--clean`). This is normal for first restores into an empty database. The automated verification treats this as a failure to avoid masking real issues. If you see this consistently:
+
+1. Run a manual restore and inspect stderr
+2. If the warnings are only `DROP ... does not exist` from `--clean`, the data is fine
+3. If the warnings include `ERROR` lines about missing extensions, types, or permissions, those are real problems
 
 ### Empty backup file
 
 **Symptom:** `pg_dump produced an empty file` or download succeeds but file is 0 bytes
 
 **Fix:** Check that `DATABASE_URL` points to a valid, running database. Verify disk space on the backup host. Check S3 for the most recent non-zero backup.
+
+### Stale backup (recency check failure)
+
+**Symptom:** `Recency check failed: latest listing is Xh old, exceeds 48h threshold`
+
+**Fix:** This means the backup contains data but no recent activity. Possible causes:
+- Backup job ran but captured an old snapshot
+- No user submissions in the last 48 hours (may be normal for low-traffic periods)
+- Adjust `RESTORE_VERIFY_MAX_AGE_HOURS` if 48h is too aggressive for your traffic

@@ -3,17 +3,29 @@
  *
  * Validates disaster recovery readiness by:
  *   1. Downloading the latest S3 backup
- *   2. Restoring it into a throwaway verification database
+ *   2. Restoring it into a persistent throwaway verification database
  *   3. Running sanity queries against the restored data
+ *   4. Checking data recency against a concrete threshold
+ *
+ * The verification database (RESTORE_VERIFY_DB_URL) is a persistent scratch DB
+ * that gets overwritten on each run via pg_restore --clean. It is NOT
+ * created or dropped by this job — provision it once and leave it.
+ *
+ * pg_restore ANY non-zero exit code (including exit code 1) is treated as a
+ * failure in the automated path. Exit code 1 can mask real issues (e.g.,
+ * missing extensions, failed schema objects) that would leave the restored
+ * database in an incomplete state. Operators running manual restores via
+ * scripts/restore.ts can make their own judgment about warnings.
  *
  * Fires an alert via the existing alert system on any failure.
  * Logs success silently (no alert on success).
  *
  * Environment variables:
- *   RESTORE_VERIFY_DB_URL  — connection string for the throwaway verification DB (required)
- *   BACKUP_S3_BUCKET       — S3 bucket (required)
- *   BACKUP_S3_REGION       — AWS region (default: us-east-1)
- *   BACKUP_S3_PREFIX       — key prefix (default: odigos-backups)
+ *   RESTORE_VERIFY_DB_URL          — connection string for the throwaway verification DB (required)
+ *   BACKUP_S3_BUCKET               — S3 bucket (required)
+ *   BACKUP_S3_REGION               — AWS region (default: us-east-1)
+ *   BACKUP_S3_PREFIX               — key prefix (default: odigos-backups)
+ *   RESTORE_VERIFY_MAX_AGE_HOURS   — fail if latest listing is older than this (default: 48)
  */
 
 import { execSync } from "child_process";
@@ -25,14 +37,22 @@ import pg from "pg";
 export interface VerificationResult {
   success: boolean;
   backupFile: string | null;
+  backupKey: string | null;
   restoreDurationMs: number;
   validationDurationMs: number;
   counts: Record<string, number>;
+  latestListingAge: number | null;
   error: string | null;
   failedStep: "download" | "restore" | "query" | null;
 }
 
-// ── S3 helpers (duplicated from restore.ts to avoid import issues with CLI module) ──
+// ── Overlap guard ───────────────────────────────────────────────────────────
+// Prevents concurrent runs if the scheduler ticks while a prior run is still
+// in progress (e.g., slow S3 download or large restore).
+
+let _running = false;
+
+// ── S3 helpers ──────────────────────────────────────────────────────────────
 
 async function getLatestBackupKey(): Promise<{ key: string; lastModified: Date }> {
   const { S3Client, ListObjectsV2Command } = await import("@aws-sdk/client-s3");
@@ -85,6 +105,12 @@ async function downloadBackup(key: string): Promise<string> {
   return localPath;
 }
 
+function cleanupTempFile(filePath: string | null): void {
+  if (!filePath) return;
+  try { fs.unlinkSync(filePath); } catch { /* best-effort */ }
+  try { fs.rmdirSync(path.dirname(filePath)); } catch { /* best-effort */ }
+}
+
 // ── Validation queries ──────────────────────────────────────────────────────
 
 const VALIDATION_QUERIES: Array<{ label: string; query: string }> = [
@@ -97,15 +123,36 @@ const VALIDATION_QUERIES: Array<{ label: string; query: string }> = [
 // ── Main verification function ──────────────────────────────────────────────
 
 export async function runRestoreVerification(): Promise<VerificationResult> {
+  if (_running) {
+    console.warn("[restore-verify] Skipping — previous run still in progress.");
+    return {
+      success: true,
+      backupFile: null,
+      backupKey: null,
+      restoreDurationMs: 0,
+      validationDurationMs: 0,
+      counts: {},
+      latestListingAge: null,
+      error: null,
+      failedStep: null,
+    };
+  }
+
+  _running = true;
+
   const verifyDbUrl = process.env.RESTORE_VERIFY_DB_URL;
   if (!verifyDbUrl) {
+    _running = false;
     throw new Error(
       "RESTORE_VERIFY_DB_URL is not set — cannot run restore verification.\n" +
-      "Set this to a throwaway database connection string.",
+      "Set this to a persistent throwaway database connection string.",
     );
   }
 
+  const maxAgeHours = parseInt(process.env.RESTORE_VERIFY_MAX_AGE_HOURS || "48", 10);
+
   let backupFile: string | null = null;
+  let backupKey: string | null = null;
   let dumpPath: string | null = null;
   const restoreStart = Date.now();
   let restoreDurationMs = 0;
@@ -115,7 +162,6 @@ export async function runRestoreVerification(): Promise<VerificationResult> {
     // ── Step 1: Download ──────────────────────────────────────────────────
     console.log("[restore-verify] Downloading latest backup from S3…");
 
-    let backupKey: string;
     try {
       const latest = await getLatestBackupKey();
       backupKey = latest.key;
@@ -125,10 +171,12 @@ export async function runRestoreVerification(): Promise<VerificationResult> {
       return {
         success: false,
         backupFile: null,
+        backupKey: null,
         restoreDurationMs: 0,
         validationDurationMs: 0,
         counts: {},
-        error: `S3 download failed: ${err instanceof Error ? err.message : String(err)}`,
+        latestListingAge: null,
+        error: `S3 list failed: ${err instanceof Error ? err.message : String(err)}`,
         failedStep: "download",
       };
     }
@@ -140,41 +188,49 @@ export async function runRestoreVerification(): Promise<VerificationResult> {
       return {
         success: false,
         backupFile,
+        backupKey,
         restoreDurationMs: 0,
         validationDurationMs: 0,
         counts: {},
+        latestListingAge: null,
         error: `S3 download failed: ${err instanceof Error ? err.message : String(err)}`,
         failedStep: "download",
       };
     }
 
-    // ── Step 2: Restore ───────────────────────────────────────────────────
+    // ── Step 2: Restore (strict — ANY non-zero exit code is a failure) ────
     console.log("[restore-verify] Running pg_restore into verification database…");
 
     try {
+      // Capture stderr so we can include it in failure messages
       execSync(
         `pg_restore --clean --if-exists --no-owner --dbname="${verifyDbUrl}" "${dumpPath}"`,
-        { stdio: "inherit" },
+        { stdio: ["pipe", "pipe", "pipe"], encoding: "utf-8" },
       );
     } catch (err) {
-      const execErr = err as { status?: number };
-      // Exit code 1 = warnings only (non-fatal), >1 = real failure
-      if (execErr.status && execErr.status > 1) {
-        return {
-          success: false,
-          backupFile,
-          restoreDurationMs: Date.now() - restoreStart,
-          validationDurationMs: 0,
-          counts: {},
-          error: `pg_restore failed with exit code ${execErr.status}`,
-          failedStep: "restore",
-        };
-      }
-      console.warn("[restore-verify] pg_restore completed with warnings (exit code 1).");
+      const execErr = err as { status?: number; stderr?: string };
+      const exitCode = execErr.status ?? -1;
+      const stderr = (execErr.stderr ?? "").trim();
+      const stderrSnippet = stderr.length > 500 ? stderr.slice(0, 500) + "…" : stderr;
+
+      // In the automated verification path, ANY non-zero exit code is a failure.
+      // Exit code 1 ("warnings") can include missing extensions, failed object
+      // restores, or permission errors that leave the DB in an incomplete state.
+      return {
+        success: false,
+        backupFile,
+        backupKey,
+        restoreDurationMs: Date.now() - restoreStart,
+        validationDurationMs: 0,
+        counts: {},
+        latestListingAge: null,
+        error: `pg_restore exited with code ${exitCode}. stderr: ${stderrSnippet || "(empty)"}`,
+        failedStep: "restore",
+      };
     }
 
     restoreDurationMs = Date.now() - restoreStart;
-    console.log(`[restore-verify] Restore complete (${(restoreDurationMs / 1000).toFixed(1)}s)`);
+    console.log(`[restore-verify] Restore complete — exit code 0 (${(restoreDurationMs / 1000).toFixed(1)}s)`);
 
     // ── Step 3: Validation queries ────────────────────────────────────────
     console.log("[restore-verify] Running validation queries…");
@@ -187,6 +243,7 @@ export async function runRestoreVerification(): Promise<VerificationResult> {
     });
 
     const counts: Record<string, number> = {};
+    let latestListingAge: number | null = null;
 
     try {
       for (const { label, query } of VALIDATION_QUERIES) {
@@ -199,9 +256,11 @@ export async function runRestoreVerification(): Promise<VerificationResult> {
           return {
             success: false,
             backupFile,
+            backupKey,
             restoreDurationMs,
             validationDurationMs: Date.now() - validationStart,
             counts,
+            latestListingAge: null,
             error: `Validation failed: ${label} has 0 rows — backup may be empty or corrupt`,
             failedStep: "query",
           };
@@ -210,18 +269,44 @@ export async function runRestoreVerification(): Promise<VerificationResult> {
         console.log(`[restore-verify]   ${label}: ${count} rows`);
       }
 
-      // Optional: check latest timestamp recency
-      try {
-        const recencyResult = await pool.query(
-          "SELECT MAX(analyzed_at) AS latest FROM core.listings",
-        );
-        const latest = recencyResult.rows[0]?.latest;
-        if (latest) {
-          const ageHours = (Date.now() - new Date(latest).getTime()) / (1000 * 60 * 60);
-          console.log(`[restore-verify]   Latest listing: ${new Date(latest).toISOString()} (${ageHours.toFixed(1)}h ago)`);
+      // ── Recency check with concrete threshold ─────────────────────────
+      const recencyResult = await pool.query(
+        "SELECT MAX(analyzed_at) AS latest FROM core.listings",
+      );
+      const latestTimestamp = recencyResult.rows[0]?.latest;
+
+      if (latestTimestamp) {
+        const ageHours = (Date.now() - new Date(latestTimestamp).getTime()) / (1000 * 60 * 60);
+        latestListingAge = ageHours;
+        console.log(`[restore-verify]   Latest listing: ${new Date(latestTimestamp).toISOString()} (${ageHours.toFixed(1)}h ago, threshold: ${maxAgeHours}h)`);
+
+        if (ageHours > maxAgeHours) {
+          await pool.end();
+          return {
+            success: false,
+            backupFile,
+            backupKey,
+            restoreDurationMs,
+            validationDurationMs: Date.now() - validationStart,
+            counts,
+            latestListingAge: ageHours,
+            error: `Recency check failed: latest listing is ${ageHours.toFixed(1)}h old, exceeds ${maxAgeHours}h threshold — backup may be stale`,
+            failedStep: "query",
+          };
         }
-      } catch {
-        // Recency check is optional — don't fail on it
+      } else {
+        await pool.end();
+        return {
+          success: false,
+          backupFile,
+          backupKey,
+          restoreDurationMs,
+          validationDurationMs: Date.now() - validationStart,
+          counts,
+          latestListingAge: null,
+          error: "Recency check failed: no analyzed_at timestamps found in core.listings",
+          failedStep: "query",
+        };
       }
 
       await pool.end();
@@ -230,9 +315,11 @@ export async function runRestoreVerification(): Promise<VerificationResult> {
       return {
         success: false,
         backupFile,
+        backupKey,
         restoreDurationMs,
         validationDurationMs: Date.now() - validationStart,
         counts,
+        latestListingAge,
         error: `Validation query failed: ${err instanceof Error ? err.message : String(err)}`,
         failedStep: "query",
       };
@@ -249,21 +336,16 @@ export async function runRestoreVerification(): Promise<VerificationResult> {
     return {
       success: true,
       backupFile,
+      backupKey,
       restoreDurationMs,
       validationDurationMs,
       counts,
+      latestListingAge,
       error: null,
       failedStep: null,
     };
   } finally {
-    // Clean up temp file
-    if (dumpPath) {
-      try {
-        fs.unlinkSync(dumpPath);
-        fs.rmdirSync(path.dirname(dumpPath));
-      } catch {
-        // best-effort
-      }
-    }
+    cleanupTempFile(dumpPath);
+    _running = false;
   }
 }

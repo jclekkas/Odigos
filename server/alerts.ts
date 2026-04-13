@@ -386,12 +386,28 @@ export async function getAlertsStatus(): Promise<{
  * Fire an ad-hoc alert outside the metric-based system.
  * Used by operational jobs (e.g., restore verification) that detect failures
  * and need to alert immediately rather than waiting for a scheduled check.
+ *
+ * Participates in the same cooldown/dedupe system as metric-based alerts to
+ * prevent spamming operators during repeated failures. Default cooldown is
+ * 4 hours (configurable via cooldownMs).
  */
 export async function fireAdHocAlert(opts: {
   id: string;
   name: string;
   description: string;
+  cooldownMs?: number;
 }): Promise<void> {
+  const cooldownMs = opts.cooldownMs ?? 4 * 60 * 60 * 1000; // 4 hours default
+
+  // Check cooldown before sending
+  const state = await loadAlertsState();
+  const now = Date.now();
+  const lastFired = state.lastFiredAt[opts.id];
+  if (lastFired && now - new Date(lastFired).getTime() < cooldownMs) {
+    console.log(`[alerts] Ad-hoc alert "${opts.id}" suppressed — still in cooldown (last fired: ${lastFired})`);
+    return;
+  }
+
   const rule: AlertRule = {
     id: opts.id,
     name: opts.name,
@@ -399,10 +415,16 @@ export async function fireAdHocAlert(opts: {
     metric: "_adhoc",
     comparator: "gt",
     threshold: 0,
-    cooldownMs: 0,
+    cooldownMs,
   };
+
   console.log(`[alerts] Ad-hoc alert fired: "${opts.id}" — ${opts.name}`);
   await sendAlert(rule, 1);
+
+  // Record in state so subsequent calls within cooldown are suppressed
+  state.lastFiredAt[opts.id] = new Date().toISOString();
+  state.recentFired.push({ ruleId: opts.id, firedAt: new Date().toISOString(), value: 1 });
+  await saveAlertsState(state);
 }
 
 export function startAlertScheduler(intervalMs?: number): void {
