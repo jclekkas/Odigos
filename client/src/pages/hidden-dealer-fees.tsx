@@ -37,10 +37,10 @@ export default function HiddenDealerFees() {
 
         <div className="rounded-lg border border-blue-600/20 bg-blue-600/5 p-5 mb-8">
           <p className="text-base font-semibold text-foreground mb-2">
-            See any of these fees in your quote? Paste it here — Odigos identifies exactly how much you'd overpay and gives you the words to push back.
+            Paste your quote — see exactly how much you're overpaying and what to say back.
           </p>
           <Button asChild variant="cta" className="font-semibold">
-            <Link href="/analyze">Find Out What You'd Overpay</Link>
+            <Link href="/analyze">Check My Quote</Link>
           </Button>
         </div>
 
