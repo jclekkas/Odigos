@@ -167,6 +167,7 @@ async function initRateLimiters(): Promise<void> {
         enableOfflineQueue: false,
         lazyConnect: true,
         maxRetriesPerRequest: 0,
+        connectTimeout: 5000,
       });
       const suppressError = () => { /* suppress default ioredis error output during probe */ };
       redisClient.on("error", suppressError);
@@ -334,7 +335,7 @@ app.use((req, res, next) => {
 // Always-available diagnostic endpoint. Registered synchronously at module
 // load (before initialize() runs) so that operators can still reach
 // /api/health and read initState even when initialization failed.
-app.get("/api/health", (_req, res) => {
+app.get("/api/health", async (_req, res) => {
   const uptimeSeconds = process.uptime();
   const mem = process.memoryUsage();
   const heapUsedMb = Math.round((mem.heapUsed / 1024 / 1024) * 10) / 10;
@@ -342,6 +343,23 @@ app.get("/api/health", (_req, res) => {
   const rssMb = Math.round((mem.rss / 1024 / 1024) * 10) / 10;
   const memoryStatus = rssMb > 1536 ? "degraded" : "ok";
   const status = initState.error ? "degraded" : memoryStatus;
+
+  // Quick DB connectivity probe (2s timeout). Non-blocking — failure is
+  // reported as { connected: false } without crashing the health endpoint.
+  let dbConnected = false;
+  if (process.env.DATABASE_URL) {
+    try {
+      const probe = db.execute(sql`SELECT 1`);
+      const timeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("timeout")), 2000),
+      );
+      await Promise.race([probe, timeout]);
+      dbConnected = true;
+    } catch (_) {
+      // leave dbConnected = false
+    }
+  }
+
   res.json({
     status,
     uptimeSeconds: Math.round(uptimeSeconds),
@@ -350,6 +368,10 @@ app.get("/api/health", (_req, res) => {
     initError: initState.error
       ? String((initState.error as Error)?.message ?? initState.error)
       : null,
+    db: {
+      configured: Boolean(process.env.DATABASE_URL),
+      connected: dbConnected,
+    },
     ai: {
       configured: isOpenAIConfigured(),
       model: AI_PRIMARY_MODEL,
@@ -566,6 +588,11 @@ async function ensureAppSchema(): Promise<void> {
 }
 
 // ── Async initialization (shared by Vercel serverless + standalone) ─────────
+//
+// The init order matters for Vercel: routes + static serving must be registered
+// FIRST so the function can handle requests even if the DB is slow/unreachable.
+// Schema bootstrap is nice-to-have at cold start — the tables are created
+// idempotently, so a missed bootstrap just means it runs on the next cold start.
 export async function initialize(): Promise<void> {
   try {
     // Structured log of which critical env vars are present. Boolean-only
@@ -592,9 +619,7 @@ export async function initialize(): Promise<void> {
 
     await initRateLimiters();
 
-    await ensureWarehouseSchema();
-    await ensureAppSchema();
-
+    // ── Critical path: routes + static (must complete for function to work) ──
     await registerRoutes(app);
 
     if (sentryEnabled) {
@@ -615,6 +640,34 @@ export async function initialize(): Promise<void> {
     // In development, Vite dev server is set up in the standalone block below.
     if (process.env.NODE_ENV === "production") {
       serveStatic(app);
+    }
+
+    // ── Non-critical path: DB schema bootstrap ──────────────────────────────
+    // On Vercel, run schema bootstrap with a hard timeout so a slow/unreachable
+    // database can't eat into the 30s function budget. On standalone (Replit /
+    // local), await it normally since there's no timeout pressure.
+    const schemaBootstrap = async () => {
+      await ensureWarehouseSchema();
+      await ensureAppSchema();
+    };
+
+    if (process.env.VERCEL) {
+      const SCHEMA_TIMEOUT_MS = 8_000;
+      const timeout = new Promise<"timeout">((resolve) =>
+        setTimeout(() => resolve("timeout"), SCHEMA_TIMEOUT_MS),
+      );
+      const result = await Promise.race([
+        schemaBootstrap().then(() => "ok" as const),
+        timeout,
+      ]);
+      if (result === "timeout") {
+        logger.error("schema bootstrap timed out on Vercel", {
+          timeoutMs: SCHEMA_TIMEOUT_MS,
+          note: "Routes are registered — app is functional. Schema will retry on next cold start.",
+        });
+      }
+    } else {
+      await schemaBootstrap();
     }
 
     initState.done = true;
