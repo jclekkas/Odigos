@@ -35,14 +35,15 @@ Both passes unlock identical features. One-time purchase, no subscriptions.
 
 | Layer | Technologies |
 |-------|-------------|
-| Frontend | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, Wouter, TanStack React Query |
+| Frontend | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, Wouter, TanStack React Query, Framer Motion |
 | Backend | Express.js, TypeScript, Zod |
 | Database | PostgreSQL 16, Drizzle ORM |
 | AI | OpenAI API |
 | Payments | Stripe |
+| File Storage | Vercel Blob |
 | Analytics | PostHog, Sentry |
 | Testing | Vitest, Playwright |
-| Deployment | Replit (autoscale) |
+| Deployment | Vercel |
 
 ## Project Structure
 
@@ -68,9 +69,15 @@ docs/            Documentation
 | Variable | Description |
 |----------|-------------|
 | `DATABASE_URL` | PostgreSQL connection string |
+| `OPENAI_API_KEY` | OpenAI API key (powers AI analysis) |
 | `STRIPE_SECRET_KEY` | Stripe secret key |
 | `STRIPE_PRICE_ID_49` | Stripe price ID for Car Buyer's Pass |
+| `SESSION_SECRET` | Session management secret |
 | `SENTRY_DSN` | Sentry error tracking DSN |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob token for file uploads |
+| `VITE_POSTHOG_KEY` | PostHog project API key |
+| `VITE_POSTHOG_HOST` | PostHog ingest host |
+| `VITE_SITE_URL` | Canonical site URL |
 | `NODE_ENV` | `development` or `production` |
 
 ### Install and Run
@@ -97,7 +104,10 @@ The dev server starts on port 5000.
 | `npm run test:api` | API tests only |
 | `npm run test:components` | Component tests only |
 | `npm run test:e2e` | Playwright end-to-end tests |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run test:coverage` | Run tests with coverage report |
 | `npm run db:push` | Apply database migrations |
+| `npm run seed:forum` | Seed forum quotes |
 
 ## Testing
 
@@ -114,9 +124,11 @@ npm run test:e2e          # Run end-to-end tests
 npm run test:coverage     # Generate coverage report
 ```
 
+A scheduled smoke test runs every 6 hours against production (`smoke.yml`).
+
 ## Deployment
 
-Odigos is deployed on Replit with autoscale. Pushing to `main` triggers automatic deployment via GitHub Actions.
+Odigos is deployed on Vercel at [odigosauto.com](https://odigosauto.com). Pushes to `main` trigger a production deployment. Pull requests receive automatic Vercel preview deployments.
 
 ### CI Pipeline
 
@@ -125,9 +137,11 @@ Every push and pull request runs:
 1. **Install** — `npm ci`
 2. **Lint** — ESLint
 3. **Typecheck** — TypeScript strict mode
-4. **Test** — Vitest (unit, API, component)
+4. **Test** — Vitest (unit, API, component) with coverage
 5. **Build** — Full production bundle
-6. **E2E** — Playwright tests with PostgreSQL service container
+6. **E2E** — Playwright tests with PostgreSQL service container (runs after steps 1–5 pass)
+
+A scheduled smoke test runs every 6 hours against production.
 
 Branch protection on `main` requires all status checks to pass and one approving review.
 
