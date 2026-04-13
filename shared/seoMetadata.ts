@@ -7,6 +7,8 @@
  * The client-side setSeoMeta() calls should match these values.
  */
 
+import { GLOSSARY_SEO_BY_SLUG } from "./glossaryTermSeo.js";
+
 const CANONICAL_ORIGIN = "https://odigosauto.com";
 
 export interface PageSeoMeta {
@@ -325,6 +327,19 @@ export function getSeoMeta(
       description: `${name} dealer doc fee rules, sales tax, and registration costs for 2026. See what's legally allowed and check any ${name} dealer quote for junk fees.`,
       canonical: `${CANONICAL_ORIGIN}${normalized}`,
     };
+  }
+
+  // Dynamic glossary term fallback
+  const glossaryMatch = normalized.match(/^\/glossary\/(.+)$/);
+  if (glossaryMatch) {
+    const termSeo = GLOSSARY_SEO_BY_SLUG.get(glossaryMatch[1]);
+    if (termSeo) {
+      return {
+        title: termSeo.seoTitle,
+        description: termSeo.seoDescription,
+        canonical: `${CANONICAL_ORIGIN}${normalized}`,
+      };
+    }
   }
 
   return null;
