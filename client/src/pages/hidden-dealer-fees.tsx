@@ -29,15 +29,18 @@ export default function HiddenDealerFees() {
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
         <p className="text-lg text-muted-foreground">
-          The price a dealer advertises is rarely the price you pay. Between the sticker and the signed contract, buyers routinely encounter fees that weren't mentioned upfront — charges that range from reasonable to entirely fabricated. Some are revealed in the finance office. Others are buried in the fine print of a buyer's order.{" "}<SourceCitation sources={ARTICLE_SOURCES["car-dealer-fees-explained"].sources} lastVerified={ARTICLE_SOURCES["car-dealer-fees-explained"].lastVerified} />
+          The price a dealer advertises is rarely the price you pay. Between the sticker and the signed contract, buyers routinely encounter fees that weren't mentioned upfront — charges that range from reasonable to entirely fabricated. Some are revealed in the finance office. Others are buried in the fine print of a buyer's order. Most buyers miss 2–3 of these on their first quote.{" "}<SourceCitation sources={ARTICLE_SOURCES["car-dealer-fees-explained"].sources} lastVerified={ARTICLE_SOURCES["car-dealer-fees-explained"].lastVerified} />
+        </p>
+        <p className="text-muted-foreground">
+          Some of these fees exceed legal caps in certain states — and several are explicitly targeted by the FTC's 2024 CARS Rule. Knowing what to look for is the difference between overpaying and walking out with a fair deal.
         </p>
 
         <div className="rounded-lg border border-blue-600/20 bg-blue-600/5 p-5 mb-8">
           <p className="text-base font-semibold text-foreground mb-2">
-            See any of these fees in your quote? Paste it here — Odigos flags every hidden charge and tells you what to push back on.
+            See any of these fees in your quote? Paste it here — Odigos identifies exactly how much you'd overpay and gives you the words to push back.
           </p>
           <Button asChild variant="cta" className="font-semibold">
-            <Link href="/analyze">Check My Quote</Link>
+            <Link href="/analyze">Find Out What You'd Overpay</Link>
           </Button>
         </div>
 
@@ -102,13 +105,13 @@ export default function HiddenDealerFees() {
         </p>
 
         <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
-          <p className="text-sm font-semibold text-foreground mb-2">Seeing unfamiliar charges in your quote?</p>
+          <p className="text-sm font-semibold text-foreground mb-2">Not sure which of these are on your quote?</p>
           <p className="text-sm text-muted-foreground mb-3">
-            Paste your dealer quote into Odigos. We'll flag every fee, identify which are government charges vs. dealer add-ons, and show you the real out-the-door total.
+            Paste your dealer quote into Odigos. We'll calculate exactly how much you'd overpay, separate government charges from dealer markups, and give you the real out-the-door total.
           </p>
           <Link href="/analyze">
             <Button variant="cta" size="sm" data-testid="button-cta-mid-article-hidden-fees">
-              Check This Quote
+              See What I'd Overpay
             </Button>
           </Link>
         </div>
@@ -182,7 +185,7 @@ export default function HiddenDealerFees() {
           <li><strong>Identify each line item</strong> and ask whether it's a government fee, a dealer fee, or an optional add-on.</li>
           <li><strong>Decline optional add-ons</strong> — you are not legally required to purchase dealer-installed accessories, protection packages, or services.</li>
           <li><strong>Know your state's doc fee cap</strong> — if the dealer's doc fee exceeds your state's legal limit, that's a violation. Check the <Link href="/car-dealer-fees-by-state" className="underline text-foreground">fees by state</Link> page.</li>
-          <li><strong>Get a second opinion</strong> — <Link href="/analyze" className="underline text-foreground">paste your dealer quote into Odigos</Link> and we'll flag every junk fee, tell you what's missing, and give you the exact words to say back.</li>
+          <li><strong>Get a second opinion</strong> — <Link href="/analyze" className="underline text-foreground">paste your dealer quote into Odigos</Link> and we'll show you exactly how much you'd overpay, identify every junk fee by name, and give you the exact words to say back.</li>
         </ol>
 
         <h2 className="text-2xl font-semibold text-foreground">The FTC and Junk Fees in 2026</h2>
