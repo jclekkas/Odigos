@@ -100,8 +100,8 @@ vi.mock("../../server/db", () => ({
   },
 }));
 
-import { extractTextFromFile, IrrelevantContentError } from "../../server/extractText";
-import { registerRoutes } from "../../server/routes";
+import { extractTextFromFile, IrrelevantContentError } from "../../server/extractText.js";
+import { registerRoutes } from "../../server/routes.js";
 
 let app: express.Express;
 let server: ReturnType<typeof createServer>;

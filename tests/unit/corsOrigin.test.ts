@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
-import { isAllowedCorsOrigin } from "../../server/corsOrigin";
+import { isAllowedCorsOrigin } from "../../server/corsOrigin.js";
 
 // ─── CORS origin allowlist regression guard ──────────────────────────────────
 //

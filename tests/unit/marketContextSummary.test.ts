@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildMarketContextSummary } from "../../server/services/analyzeService";
+import { buildMarketContextSummary } from "../../server/services/analyzeService.js";
 import type { MarketContext } from "@shared/schema";
 
 function makeMarketContext(overrides: Partial<MarketContext> = {}): MarketContext {

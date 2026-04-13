@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "fs";
 import { resolve } from "path";
-import { buildCanonical } from "../../client/src/lib/seo";
-import { INDEXABLE_ROUTES, EXCLUDED_ROUTES } from "../../client/src/lib/indexable-routes";
+import { buildCanonical } from "../../client/src/lib/seo.js";
+import { INDEXABLE_ROUTES, EXCLUDED_ROUTES } from "../../client/src/lib/indexable-routes.js";
 
 const ROOT = resolve(import.meta.dirname, "../..");
 
@@ -175,7 +175,7 @@ describe("jsonld.ts domain usage", () => {
 
 describe("faqPageSchema URL field", () => {
   it("includes url and mainEntityOfPage when url is provided", async () => {
-    const { faqPageSchema } = await import("../../client/src/lib/jsonld");
+    const { faqPageSchema } = await import("../../client/src/lib/jsonld.js");
     const schema = faqPageSchema({
       questions: [{ question: "Q?", answer: "A." }],
       url: "https://odigosauto.com/car-dealer-fees-florida",
@@ -188,7 +188,7 @@ describe("faqPageSchema URL field", () => {
   });
 
   it("omits url and mainEntityOfPage when url is not provided", async () => {
-    const { faqPageSchema } = await import("../../client/src/lib/jsonld");
+    const { faqPageSchema } = await import("../../client/src/lib/jsonld.js");
     const schema = faqPageSchema({
       questions: [{ question: "Q?", answer: "A." }],
     });
@@ -197,8 +197,8 @@ describe("faqPageSchema URL field", () => {
   });
 
   it("url does not contain odigos.replit.app", async () => {
-    const { faqPageSchema } = await import("../../client/src/lib/jsonld");
-    const { buildCanonical } = await import("../../client/src/lib/seo");
+    const { faqPageSchema } = await import("../../client/src/lib/jsonld.js");
+    const { buildCanonical } = await import("../../client/src/lib/seo.js");
     const schema = faqPageSchema({
       questions: [{ question: "Q?", answer: "A." }],
       url: buildCanonical("/car-dealer-fees-illinois"),

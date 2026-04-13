@@ -507,14 +507,14 @@ export async function performWarehouseWriteById(
   submissionId: string,
   _dlqPayload: Record<string, unknown>,
 ): Promise<void> {
-  const { storage } = await import("../storage");
+  const { storage } = await import("../storage.js");
   const submission = await storage.getDealerSubmission(submissionId);
   if (!submission) {
     throw new Error(`DLQ replay: submission ${submissionId} not found in dealer_submissions`);
   }
 
-  const { zipToStateCode } = await import("../zipToState");
-  const { normalizeSubmissionText, sha256Hex } = await import("./warehouseUtils");
+  const { zipToStateCode } = await import("../zipToState.js");
+  const { normalizeSubmissionText, sha256Hex } = await import("./warehouseUtils.js");
 
   // Reconstruct a minimal WarehouseWritePayload from the stored submission row
   const stateCode = submission.stateCode ?? zipToStateCode("");

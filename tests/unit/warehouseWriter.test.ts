@@ -18,16 +18,16 @@ vi.mock("../../server/db", () => {
 
 // Mock delay to skip real wait times in tests
 vi.mock("../../server/warehouse/warehouseUtils", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../../server/warehouse/warehouseUtils")>();
+  const actual = await importOriginal<typeof import("../../server/warehouse/warehouseUtils.js")>();
   return {
     ...actual,
     delay: vi.fn().mockResolvedValue(undefined),
   };
 });
 
-import { writeSubmissionToWarehouse } from "../../server/warehouse/warehouseWriter";
-import { db } from "../../server/db";
-import type { AnalysisRequest, AnalysisResponse } from "../../shared/schema";
+import { writeSubmissionToWarehouse } from "../../server/warehouse/warehouseWriter.js";
+import { db } from "../../server/db.js";
+import type { AnalysisRequest, AnalysisResponse } from "../../shared/schema.js";
 
 // ─── Typed mock helpers ───────────────────────────────────────────────────────
 
@@ -440,7 +440,7 @@ describe("writeSubmissionToWarehouse — vehicle fields", () => {
 
 describe("ruleEngine doc-fee cap — unchanged behavior", () => {
   it("checkDocFeeCap still returns violation when fee exceeds state cap", async () => {
-    const { checkDocFeeCap } = await import("../../server/ruleEngine");
+    const { checkDocFeeCap } = await import("../../server/ruleEngine.js");
     const CA_STATE = { docFeeCap: true, docFeeCapAmount: 85, name: "California", abbreviation: "CA", statuteCitation: "CA Vehicle Code § 11713.1(i)" };
     const fees = [{ name: "documentation fee", amount: 200 }];
     const result = checkDocFeeCap(fees, CA_STATE);
@@ -450,7 +450,7 @@ describe("ruleEngine doc-fee cap — unchanged behavior", () => {
   });
 
   it("checkDocFeeCap returns null when state has no doc fee cap", async () => {
-    const { checkDocFeeCap } = await import("../../server/ruleEngine");
+    const { checkDocFeeCap } = await import("../../server/ruleEngine.js");
     const NO_CAP_STATE = { docFeeCap: false, docFeeCapAmount: null, name: "Alabama", abbreviation: "AL", statuteCitation: null };
     const fees = [{ name: "doc fee", amount: 999 }];
     expect(checkDocFeeCap(fees, NO_CAP_STATE)).toBeNull();

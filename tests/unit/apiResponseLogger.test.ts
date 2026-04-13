@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildApiLogLine } from "../../server/index";
+import { buildApiLogLine } from "../../server/index.js";
 
 describe("API response logger log-line construction", () => {
   it("successful response includes only method, path, status, duration", () => {

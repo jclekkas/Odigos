@@ -91,9 +91,9 @@ vi.mock("../../server/db", () => ({
   },
 }));
 
-import { openai } from "../../server/openaiClient";
-import { registerRoutes } from "../../server/routes";
-import { aiCircuitBreaker } from "../../server/lib/circuitBreaker";
+import { openai } from "../../server/openaiClient.js";
+import { registerRoutes } from "../../server/routes.js";
+import { aiCircuitBreaker } from "../../server/lib/circuitBreaker.js";
 
 const VALID_LLM_RESPONSE = {
   dealScore: "GREEN",

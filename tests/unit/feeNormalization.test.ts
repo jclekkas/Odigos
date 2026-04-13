@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { normalizeFeeName, normalizeFeeNames } from "../../server/warehouse/warehouseUtils";
+import { normalizeFeeName, normalizeFeeNames } from "../../server/warehouse/warehouseUtils.js";
 
 // ─── normalizeFeeName ────────────────────────────────────────────────────────
 

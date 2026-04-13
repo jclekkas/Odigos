@@ -6,8 +6,8 @@ vi.mock("../../server/db", () => ({
   },
 }));
 
-import { db } from "../../server/db";
-import { getMarketContext, getDealerStats, getStrength } from "../../server/marketContext";
+import { db } from "../../server/db.js";
+import { getMarketContext, getDealerStats, getStrength } from "../../server/marketContext.js";
 
 const mockExecute = vi.mocked(db.execute);
 

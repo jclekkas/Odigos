@@ -6,10 +6,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Router } from "wouter";
 import { memoryLocation } from "wouter/memory-location";
 import { HelmetProvider } from "react-helmet-async";
-import DealerDocFee from "../../client/src/pages/dealer-doc-fee";
-import HowMuchShouldYouPayForACar from "../../client/src/pages/how-much-should-you-pay-for-a-car";
-import CalculateOutTheDoorPrice from "../../client/src/pages/calculate-out-the-door-price";
-import CarDealerFeesState from "../../client/src/pages/car-dealer-fees-state";
+import DealerDocFee from "../../client/src/pages/dealer-doc-fee.js";
+import HowMuchShouldYouPayForACar from "../../client/src/pages/how-much-should-you-pay-for-a-car.js";
+import CalculateOutTheDoorPrice from "../../client/src/pages/calculate-out-the-door-price.js";
+import CarDealerFeesState from "../../client/src/pages/car-dealer-fees-state.js";
 
 vi.stubEnv("NODE_ENV", "test");
 
@@ -80,7 +80,7 @@ function getOgUrl(): string | null {
 
 describe("SeoHead architectural contract", () => {
   it("SeoHead component does not contain a canonical link element", async () => {
-    const { default: SeoHead } = await import("../../client/src/components/SeoHead");
+    const { default: SeoHead } = await import("../../client/src/components/SeoHead.js");
     const result = render(
       <HelmetProvider>
         <Router>
@@ -119,8 +119,8 @@ describe("/dealer-doc-fee canonical", () => {
   });
 
   it("JSON-LD articleSchema url matches canonical for /dealer-doc-fee", async () => {
-    const { buildCanonical } = await import("../../client/src/lib/seo");
-    const { articleSchema } = await import("../../client/src/lib/jsonld");
+    const { buildCanonical } = await import("../../client/src/lib/seo.js");
+    const { articleSchema } = await import("../../client/src/lib/jsonld.js");
     const path = "/dealer-doc-fee";
     const schema = articleSchema({ title: "t", description: "d", path });
     expect(schema.url).toBe(buildCanonical(path));
@@ -154,8 +154,8 @@ describe("/how-much-should-you-pay-for-a-car canonical", () => {
   });
 
   it("JSON-LD articleSchema url matches canonical for /how-much-should-you-pay-for-a-car", async () => {
-    const { buildCanonical } = await import("../../client/src/lib/seo");
-    const { articleSchema } = await import("../../client/src/lib/jsonld");
+    const { buildCanonical } = await import("../../client/src/lib/seo.js");
+    const { articleSchema } = await import("../../client/src/lib/jsonld.js");
     const path = "/how-much-should-you-pay-for-a-car";
     const schema = articleSchema({ title: "t", description: "d", path });
     expect(schema.url).toBe(buildCanonical(path));
@@ -189,8 +189,8 @@ describe("/calculate-out-the-door-price canonical", () => {
   });
 
   it("JSON-LD articleSchema url matches canonical for /calculate-out-the-door-price", async () => {
-    const { buildCanonical } = await import("../../client/src/lib/seo");
-    const { articleSchema } = await import("../../client/src/lib/jsonld");
+    const { buildCanonical } = await import("../../client/src/lib/seo.js");
+    const { articleSchema } = await import("../../client/src/lib/jsonld.js");
     const path = "/calculate-out-the-door-price";
     const schema = articleSchema({ title: "t", description: "d", path });
     expect(schema.url).toBe(buildCanonical(path));
@@ -206,7 +206,7 @@ describe("/calculate-out-the-door-price canonical", () => {
 
 describe("State page canonical — /car-dealer-fees-ohio", () => {
   it("setSeoMeta produces correct single canonical", async () => {
-    const { setSeoMeta } = await import("../../client/src/lib/seo");
+    const { setSeoMeta } = await import("../../client/src/lib/seo.js");
     document.head.innerHTML = "";
     setSeoMeta({
       title: "Car Dealer Fees in Ohio: What You'll Actually Pay | Odigos",
@@ -219,7 +219,7 @@ describe("State page canonical — /car-dealer-fees-ohio", () => {
   });
 
   it("og:url matches canonical", async () => {
-    const { setSeoMeta } = await import("../../client/src/lib/seo");
+    const { setSeoMeta } = await import("../../client/src/lib/seo.js");
     document.head.innerHTML = "";
     setSeoMeta({
       title: "Car Dealer Fees in Ohio: What You'll Actually Pay | Odigos",
@@ -231,15 +231,15 @@ describe("State page canonical — /car-dealer-fees-ohio", () => {
   });
 
   it("canonical does not contain odigos.replit.app", async () => {
-    const { setSeoMeta } = await import("../../client/src/lib/seo");
+    const { setSeoMeta } = await import("../../client/src/lib/seo.js");
     document.head.innerHTML = "";
     setSeoMeta({ title: "t", description: "d", path: "/car-dealer-fees-ohio" });
     expect(getCanonicalLinks()[0].getAttribute("href")).not.toContain("odigos.replit.app");
   });
 
   it("JSON-LD URL matches canonical when rendered via articleSchema", async () => {
-    const { buildCanonical } = await import("../../client/src/lib/seo");
-    const { articleSchema } = await import("../../client/src/lib/jsonld");
+    const { buildCanonical } = await import("../../client/src/lib/seo.js");
+    const { articleSchema } = await import("../../client/src/lib/jsonld.js");
     const path = "/car-dealer-fees-ohio";
     const schema = articleSchema({ title: "Ohio Fees", description: "d", path });
     expect(schema.url).toBe(buildCanonical(path));
@@ -249,7 +249,7 @@ describe("State page canonical — /car-dealer-fees-ohio", () => {
 
 describe("State page canonical — /car-dealer-fees-florida", () => {
   it("setSeoMeta produces correct single canonical", async () => {
-    const { setSeoMeta } = await import("../../client/src/lib/seo");
+    const { setSeoMeta } = await import("../../client/src/lib/seo.js");
     document.head.innerHTML = "";
     setSeoMeta({ title: "t", description: "d", path: "/car-dealer-fees-florida" });
     const canonicals = Array.from(document.querySelectorAll('link[rel="canonical"]')) as HTMLLinkElement[];
@@ -258,7 +258,7 @@ describe("State page canonical — /car-dealer-fees-florida", () => {
   });
 
   it("og:url matches canonical", async () => {
-    const { setSeoMeta } = await import("../../client/src/lib/seo");
+    const { setSeoMeta } = await import("../../client/src/lib/seo.js");
     document.head.innerHTML = "";
     setSeoMeta({ title: "t", description: "d", path: "/car-dealer-fees-florida" });
     const canonical = (document.querySelector('link[rel="canonical"]') as HTMLLinkElement).getAttribute("href");
@@ -268,7 +268,7 @@ describe("State page canonical — /car-dealer-fees-florida", () => {
 
 describe("State page canonical — /car-dealer-fees-new-york", () => {
   it("setSeoMeta produces correct single canonical", async () => {
-    const { setSeoMeta } = await import("../../client/src/lib/seo");
+    const { setSeoMeta } = await import("../../client/src/lib/seo.js");
     document.head.innerHTML = "";
     setSeoMeta({ title: "t", description: "d", path: "/car-dealer-fees-new-york" });
     const canonicals = Array.from(document.querySelectorAll('link[rel="canonical"]')) as HTMLLinkElement[];
@@ -277,7 +277,7 @@ describe("State page canonical — /car-dealer-fees-new-york", () => {
   });
 
   it("og:url matches canonical", async () => {
-    const { setSeoMeta } = await import("../../client/src/lib/seo");
+    const { setSeoMeta } = await import("../../client/src/lib/seo.js");
     document.head.innerHTML = "";
     setSeoMeta({ title: "t", description: "d", path: "/car-dealer-fees-new-york" });
     const canonical = (document.querySelector('link[rel="canonical"]') as HTMLLinkElement).getAttribute("href");
@@ -343,8 +343,8 @@ describe("State page full render — /car-dealer-fees-new-york", () => {
 
 describe("State page faqPageSchema URL matches canonical", () => {
   it("faqPageSchema URL matches buildCanonical for /car-dealer-fees-florida", async () => {
-    const { buildCanonical } = await import("../../client/src/lib/seo");
-    const { faqPageSchema } = await import("../../client/src/lib/jsonld");
+    const { buildCanonical } = await import("../../client/src/lib/seo.js");
+    const { faqPageSchema } = await import("../../client/src/lib/jsonld.js");
     const path = "/car-dealer-fees-florida";
     const url = buildCanonical(path);
     const schema = faqPageSchema({ questions: [{ question: "Q?", answer: "A." }], url });
@@ -353,8 +353,8 @@ describe("State page faqPageSchema URL matches canonical", () => {
   });
 
   it("faqPageSchema URL matches buildCanonical for /car-dealer-fees-illinois", async () => {
-    const { buildCanonical } = await import("../../client/src/lib/seo");
-    const { faqPageSchema } = await import("../../client/src/lib/jsonld");
+    const { buildCanonical } = await import("../../client/src/lib/seo.js");
+    const { faqPageSchema } = await import("../../client/src/lib/jsonld.js");
     const path = "/car-dealer-fees-illinois";
     const url = buildCanonical(path);
     const schema = faqPageSchema({ questions: [{ question: "Q?", answer: "A." }], url });
@@ -402,7 +402,7 @@ describe("SPA navigation canonical stability", () => {
   });
 
   it("canonical does not duplicate when setSeoMeta is called twice", async () => {
-    const { setSeoMeta } = await import("../../client/src/lib/seo");
+    const { setSeoMeta } = await import("../../client/src/lib/seo.js");
     document.head.innerHTML = "";
     setSeoMeta({ title: "Page 1", description: "desc 1", path: "/dealer-doc-fee" });
     setSeoMeta({ title: "Page 2", description: "desc 2", path: "/how-much-should-you-pay-for-a-car" });

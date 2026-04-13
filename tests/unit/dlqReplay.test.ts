@@ -21,9 +21,9 @@ vi.mock("../../server/warehouse/warehouseWriter", () => ({
   performWarehouseWriteById: vi.fn(),
 }));
 
-import { db } from "../../server/db";
-import { performWarehouseWriteById } from "../../server/warehouse/warehouseWriter";
-import { runDlqReplay } from "../../server/warehouse/dlqReplay";
+import { db } from "../../server/db.js";
+import { performWarehouseWriteById } from "../../server/warehouse/warehouseWriter.js";
+import { runDlqReplay } from "../../server/warehouse/dlqReplay.js";
 
 const mockSelect = db.select as ReturnType<typeof vi.fn>;
 const mockUpdate = db.update as ReturnType<typeof vi.fn>;

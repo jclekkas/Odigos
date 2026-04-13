@@ -34,7 +34,7 @@ vi.mock("../../server/db", () => ({
   },
 }));
 
-import { registerRoutes } from "../../server/routes";
+import { registerRoutes } from "../../server/routes.js";
 
 let app: express.Express;
 let server: ReturnType<typeof createServer>;

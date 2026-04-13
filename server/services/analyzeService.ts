@@ -1109,9 +1109,9 @@ Respond entirely in Spanish. All text fields in your JSON response — including
 
   let listingId: string | null = null;
   try {
-    const { zipToStateCode } = await import("../zipToState");
-    const { redactPII } = await import("../piiRedact");
-    const { normalizeSubmissionText, sha256Hex } = await import("../warehouse/warehouseUtils");
+    const { zipToStateCode } = await import("../zipToState.js");
+    const { redactPII } = await import("../piiRedact.js");
+    const { normalizeSubmissionText, sha256Hex } = await import("../warehouse/warehouseUtils.js");
     const stateCode = zipToStateCode(data.zipCode);
     const fees = finalResult.detectedFields.fees ?? [];
     const feeAmounts = fees.map((f) => f.amount).filter((a): a is number => a !== null);
@@ -1183,7 +1183,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
           marketContext.dealerAvgDealScore = dealerStats.dealerAvgDealScore;
           // Keep strength fields consistent after post-LLM enrichment.
           const enrichedDealerCount = dealerStats.dealerAnalysisCount ?? 0;
-          const { getStrength: computeStrength } = await import("../marketContext");
+          const { getStrength: computeStrength } = await import("../marketContext.js");
           marketContext.dealerSampleSize = enrichedDealerCount;
           marketContext.dealerStrength = computeStrength(enrichedDealerCount);
           const strengthRankEnriched: Record<MarketContextStrength, number> = { none: 0, thin: 1, moderate: 2, strong: 3 };

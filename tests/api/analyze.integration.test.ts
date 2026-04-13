@@ -58,7 +58,7 @@ vi.mock("../../server/db", () => ({
   },
 }));
 
-import { registerRoutes } from "../../server/routes";
+import { registerRoutes } from "../../server/routes.js";
 
 const CLEAR_QUOTE =
   "2024 Toyota Camry LE. " +

@@ -12,10 +12,10 @@ vi.mock("../../server/jobs/backup", () => ({
   runBackup: vi.fn().mockReturnValue({ filePath: "/tmp/backup.dump", sizeBytes: 1024 }),
 }));
 
-import { startDailyScheduler, stopDailyScheduler } from "../../server/warehouse/scheduler";
-import { refreshAllViews } from "../../server/warehouse/warehouseUtils";
-import { runPiiCleanup } from "../../server/jobs/piiCleanup";
-import { runBackup } from "../../server/jobs/backup";
+import { startDailyScheduler, stopDailyScheduler } from "../../server/warehouse/scheduler.js";
+import { refreshAllViews } from "../../server/warehouse/warehouseUtils.js";
+import { runPiiCleanup } from "../../server/jobs/piiCleanup.js";
+import { runBackup } from "../../server/jobs/backup.js";
 
 describe("Daily scheduler", () => {
   beforeEach(() => {

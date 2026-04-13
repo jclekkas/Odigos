@@ -16,8 +16,8 @@ vi.mock("@sentry/node", () => ({
   withScope: vi.fn((fn: (s: unknown) => void) => fn({ setTag: vi.fn() })),
 }));
 
-import { withJitteredBackoff, isRetriableError } from "../../server/lib/reliability";
-import { CircuitBreaker, CircuitOpenError } from "../../server/lib/circuitBreaker";
+import { withJitteredBackoff, isRetriableError } from "../../server/lib/reliability.js";
+import { CircuitBreaker, CircuitOpenError } from "../../server/lib/circuitBreaker.js";
 
 describe("AI retry: isRetriableError classification", () => {
   it("classifies 503 as retriable", () => {

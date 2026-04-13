@@ -4,7 +4,7 @@ import {
   analysisResponseSchema,
   feeSchema,
   detectedFieldsSchema,
-} from "../../shared/schema";
+} from "../../shared/schema.js";
 
 const validDetectedFields = {
   salePrice: 30000,
