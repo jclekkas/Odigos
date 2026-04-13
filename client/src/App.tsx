@@ -5,6 +5,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { useWebVitals } from "@/hooks/use-web-vitals";
 import Landing from "@/pages/landing";
 import Analyze from "@/pages/home";
@@ -206,14 +207,16 @@ export function ErrorFallback({ resetError }: ErrorFallbackProps) {
 function App() {
   return (
     <Sentry.ErrorBoundary fallback={({ resetError }) => <ErrorFallback resetError={resetError} />}>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <VitalsTracker />
-          <Router />
-          <CookieConsentBanner />
-        </TooltipProvider>
-      </QueryClientProvider>
+      <ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            <VitalsTracker />
+            <Router />
+            <CookieConsentBanner />
+          </TooltipProvider>
+        </QueryClientProvider>
+      </ThemeProvider>
     </Sentry.ErrorBoundary>
   );
 }
