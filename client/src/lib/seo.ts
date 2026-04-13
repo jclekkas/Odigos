@@ -1,5 +1,5 @@
 import { CANONICAL_ORIGIN, OG_IMAGE } from "@shared/siteConfig";
-const OG_IMAGE_ALT = "Odigos — Independent dealer quote analyzer";
+const OG_IMAGE_ALT = "Odigos — Dealer Quote Analyzer";
 
 export function buildCanonical(path: string): string {
   const normalized = path.endsWith("/") && path !== "/" ? path.slice(0, -1) : path;
