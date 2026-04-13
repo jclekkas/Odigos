@@ -20,56 +20,56 @@ function parseRange(req: Request): DateRange {
 export function registerBIRoutes(app: Express): void {
   app.get("/api/admin/bi/funnel", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
-    try { const { getBIFunnel } = await import("../bi"); res.json(await getBIFunnel(parseRange(req))); }
+    try { const { getBIFunnel } = await import("../bi.js"); res.json(await getBIFunnel(parseRange(req))); }
     catch (e: unknown) { console.error("[bi] funnel error:", getErrorMessage(e)); res.status(500).json({ error: "Internal server error" }); }
   });
 
   app.get("/api/admin/bi/attribution", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
-    try { const { getBIPageAttribution } = await import("../bi"); res.json(await getBIPageAttribution(parseRange(req))); }
+    try { const { getBIPageAttribution } = await import("../bi.js"); res.json(await getBIPageAttribution(parseRange(req))); }
     catch (e: unknown) { console.error("[bi] attribution error:", getErrorMessage(e)); res.status(500).json({ error: "Internal server error" }); }
   });
 
   app.get("/api/admin/bi/behavior", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
-    try { const { getBIUserBehavior } = await import("../bi"); res.json(await getBIUserBehavior(parseRange(req))); }
+    try { const { getBIUserBehavior } = await import("../bi.js"); res.json(await getBIUserBehavior(parseRange(req))); }
     catch (e: unknown) { console.error("[bi] behavior error:", getErrorMessage(e)); res.status(500).json({ error: "Internal server error" }); }
   });
 
   app.get("/api/admin/bi/deal-outcome", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
-    try { const { getBIDealOutcome } = await import("../bi"); res.setHeader("Cache-Control", "private, max-age=120"); res.json(await getBIDealOutcome(parseRange(req))); }
+    try { const { getBIDealOutcome } = await import("../bi.js"); res.setHeader("Cache-Control", "private, max-age=120"); res.json(await getBIDealOutcome(parseRange(req))); }
     catch (e: unknown) { console.error("[bi] deal-outcome error:", getErrorMessage(e)); res.status(500).json({ error: "Internal server error" }); }
   });
 
   app.get("/api/admin/bi/geographic", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
-    try { const { getBIGeographic } = await import("../bi"); res.setHeader("Cache-Control", "private, max-age=120"); res.json(await getBIGeographic(parseRange(req))); }
+    try { const { getBIGeographic } = await import("../bi.js"); res.setHeader("Cache-Control", "private, max-age=120"); res.json(await getBIGeographic(parseRange(req))); }
     catch (e: unknown) { console.error("[bi] geographic error:", getErrorMessage(e)); res.status(500).json({ error: "Internal server error" }); }
   });
 
   app.get("/api/admin/bi/acquisition", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
-    try { const { getBIAcquisition } = await import("../bi"); res.json(await getBIAcquisition(parseRange(req))); }
+    try { const { getBIAcquisition } = await import("../bi.js"); res.json(await getBIAcquisition(parseRange(req))); }
     catch (e: unknown) { console.error("[bi] acquisition error:", getErrorMessage(e)); res.status(500).json({ error: "Internal server error" }); }
   });
 
   app.get("/api/admin/bi/revenue", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
-    try { const { getBIRevenue } = await import("../bi"); res.json(await getBIRevenue(parseRange(req))); }
+    try { const { getBIRevenue } = await import("../bi.js"); res.json(await getBIRevenue(parseRange(req))); }
     catch (e: unknown) { console.error("[bi] revenue error:", getErrorMessage(e)); res.status(500).json({ error: "Internal server error" }); }
   });
 
   app.get("/api/admin/bi/fallout", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
-    try { const { getBIFallout } = await import("../bi"); res.json(await getBIFallout(parseRange(req))); }
+    try { const { getBIFallout } = await import("../bi.js"); res.json(await getBIFallout(parseRange(req))); }
     catch (e: unknown) { console.error("[bi] fallout error:", getErrorMessage(e)); res.status(500).json({ error: "Internal server error" }); }
   });
 
   app.get("/api/admin/bi/subscription", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
     try {
-      const { getBISubscriptionHealth } = await import("../bi");
+      const { getBISubscriptionHealth } = await import("../bi.js");
       const health = await getBISubscriptionHealth(parseRange(req));
 
       let stripeFailedPayments: number | null = null;
@@ -142,7 +142,7 @@ export function registerBIRoutes(app: Express): void {
   app.get("/api/admin/users/search", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
     try {
-      const { lookupUserSessions } = await import("../bi");
+      const { lookupUserSessions } = await import("../bi.js");
       const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
       const limit = Math.min(parseInt(typeof req.query.limit === "string" ? req.query.limit : "50", 10) || 50, 100);
 
@@ -177,7 +177,7 @@ export function registerBIRoutes(app: Express): void {
 
   app.get("/api/admin/content", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
-    try { const { getBIContentMetrics } = await import("../bi"); res.json(await getBIContentMetrics(parseRange(req))); }
+    try { const { getBIContentMetrics } = await import("../bi.js"); res.json(await getBIContentMetrics(parseRange(req))); }
     catch (e: unknown) { console.error("[bi] content error:", getErrorMessage(e)); res.status(500).json({ error: "Internal server error" }); }
   });
 
@@ -191,7 +191,7 @@ export function registerBIRoutes(app: Express): void {
           topDealers: [],
         });
       }
-      const { db } = await import("../db");
+      const { db } = await import("../db.js");
       const { sql } = await import("drizzle-orm");
 
       const overallResult = await db.execute<{ agreement_rate: string | null }>(sql`
@@ -279,7 +279,7 @@ export function registerBIRoutes(app: Express): void {
       if (!process.env.DATABASE_URL) {
         return res.json({ real_analyzed_deals: 0, user_submissions: 0, total_dataset_size: 0, unique_dealers: 0, new_last_24h: 0, last_updated_at: null });
       }
-      const { db } = await import("../db");
+      const { db } = await import("../db.js");
       const { sql } = await import("drizzle-orm");
 
       let viewRow: Record<string, unknown> | null = null;
@@ -318,7 +318,7 @@ export function registerBIRoutes(app: Express): void {
   app.get("/api/stats/count", async (_req, res) => {
     try {
       if (!process.env.DATABASE_URL) return res.json({ count: 0, type: "none" });
-      const { db } = await import("../db");
+      const { db } = await import("../db.js");
       const { sql } = await import("drizzle-orm");
       let count = 0, type: "real_deals" | "none" = "none";
       try {
@@ -339,7 +339,7 @@ export function registerBIRoutes(app: Express): void {
     if (!requireAdminKey(req, res)) return;
     try {
       if (!process.env.DATABASE_URL) return res.json([]);
-      const { db } = await import("../db");
+      const { db } = await import("../db.js");
       const { sql } = await import("drizzle-orm");
       const rows = await db.execute(sql`SELECT * FROM core.national_stats LIMIT 1`);
       res.json(rows.rows?.[0] ?? {});
@@ -353,7 +353,7 @@ export function registerBIRoutes(app: Express): void {
     if (!requireAdminKey(req, res)) return;
     try {
       if (!process.env.DATABASE_URL) return res.json(null);
-      const { db } = await import("../db");
+      const { db } = await import("../db.js");
       const { sql } = await import("drizzle-orm");
       const code = (req.params.stateCode ?? "").toUpperCase().slice(0, 2);
       if (!code) return res.status(400).json({ error: "Invalid state code" });
