@@ -229,3 +229,48 @@ describe("seo.ts canonical domain", () => {
     expect(returnBlock).not.toContain("canonical.remove()");
   });
 });
+
+// ─── ESM import extensions ──────────────────────────────────────────────────
+// Node.js ESM requires explicit .js extensions on relative imports. Vercel's
+// @vercel/node runtime relies on this — a missing extension crashes the
+// serverless function at cold start even though local esbuild bundling hides
+// the problem. This test catches that class of bug before it reaches prod.
+
+import { readdirSync, statSync } from "fs";
+import { join } from "path";
+
+function collectTsFiles(dir: string): string[] {
+  const results: string[] = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory() && entry.name !== "node_modules") {
+      results.push(...collectTsFiles(full));
+    } else if (entry.isFile() && entry.name.endsWith(".ts") && !entry.name.endsWith(".test.ts")) {
+      results.push(full);
+    }
+  }
+  return results;
+}
+
+describe("ESM import extensions", () => {
+  // Matches actual import/export statements with relative paths missing .js.
+  // Skips: type-only imports (erased at compile time), .json imports, comments.
+  const BAD_IMPORT = /^\s*(?:import|export)\s(?!type\b).*from\s+["'](\.\.?\/[^"']*?)(?<!\.js|\.json)["']/;
+
+  const dirs = [resolve(ROOT, "server"), resolve(ROOT, "shared")];
+  const files = dirs.flatMap((d) => (statSync(d).isDirectory() ? collectTsFiles(d) : []));
+
+  it("all server/shared relative imports use .js extensions", () => {
+    const violations: string[] = [];
+    for (const file of files) {
+      const lines = readFileSync(file, "utf-8").split("\n");
+      for (let i = 0; i < lines.length; i++) {
+        if (BAD_IMPORT.test(lines[i])) {
+          const rel = file.replace(ROOT + "/", "");
+          violations.push(`${rel}:${i + 1}: ${lines[i].trim()}`);
+        }
+      }
+    }
+    expect(violations, `Relative imports missing .js extension:\n${violations.join("\n")}`).toHaveLength(0);
+  });
+});
