@@ -6,7 +6,7 @@
 # Usage:
 #   scripts/check-ai-health.sh <base-url>
 #   scripts/check-ai-health.sh https://odigosauto.com
-#   scripts/check-ai-health.sh http://localhost:5000
+#   scripts/check-ai-health.sh http://localhost:3000
 #
 # Exits 0 if the deployment reports ai.configured == true, 1 otherwise.
 # Prints the resolved primary/fallback model names and a one-shot /api/analyze
@@ -47,10 +47,9 @@ if [[ "$AI_CONFIGURED" != "true" ]]; then
 
 ✗ ai.configured is false — the deployment has no OpenAI API key set.
 
-  Fix: set AI_INTEGRATIONS_OPENAI_API_KEY (or OPENAI_API_KEY) on the
-  Vercel project and redeploy:
+  Fix: set OPENAI_API_KEY on the Vercel project and redeploy:
 
-    vercel env add AI_INTEGRATIONS_OPENAI_API_KEY production
+    vercel env add OPENAI_API_KEY production
     vercel --prod
 
 EOF

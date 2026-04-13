@@ -9,7 +9,7 @@
  *   which is broadly available on standard OpenAI plans.
  */
 export const AI_PRIMARY_MODEL =
-  process.env.AI_INTEGRATIONS_OPENAI_MODEL ?? "gpt-4o";
+  process.env.OPENAI_MODEL ?? "gpt-4o";
 
 export const AI_FALLBACK_MODEL =
-  process.env.AI_INTEGRATIONS_OPENAI_FALLBACK_MODEL ?? "gpt-4o-mini";
+  process.env.OPENAI_FALLBACK_MODEL ?? "gpt-4o-mini";

@@ -90,7 +90,7 @@ The `/out-the-door-price` page is the **primary SEO acquisition page**, not just
 
 - **Frontend**: React 18 + TypeScript, Vite, Tailwind CSS, shadcn/ui, Wouter, TanStack React Query
 - **Backend**: Express.js + TypeScript, Zod validation
-- **AI**: OpenAI-compatible API via Replit AI Integrations (no user API key needed)
+- **AI**: OpenAI API (OPENAI_API_KEY env var)
 - **Payments**: Stripe (user's own keys via STRIPE_SECRET_KEY, STRIPE_PRICE_ID_49)
 - **Database**: PostgreSQL (Drizzle ORM) — metrics tracking, optional persistence
 - **Analytics**: Custom metrics system tracking submissions, scores, payments, revenue, conversion rates, engagement funnel

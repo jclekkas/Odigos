@@ -129,16 +129,6 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  if (req.hostname && req.hostname.endsWith(".replit.app")) {
-    res.setHeader("X-Robots-Tag", "noindex, nofollow");
-    if (process.env.CANONICAL_DOMAIN_ACTIVE === "true") {
-      return res.redirect(301, `https://odigosauto.com${req.originalUrl}`);
-    }
-  }
-  return next();
-});
-
-app.use((req, res, next) => {
   if (req.path === "/api/stripe-webhook" || req.path === "/api/health") {
     return next();
   }
@@ -148,7 +138,7 @@ app.use((req, res, next) => {
   return next();
 });
 
-// ── Proxy trust (required for rate limiter to work behind Replit/CF reverse proxy) ───
+// ── Proxy trust (required for rate limiter to work behind Vercel reverse proxy) ───
 app.set("trust proxy", 1);
 
 // ── Rate limiting ─────────────────────────────────────────────────────────────
@@ -354,17 +344,9 @@ app.get("/api/health", (_req, res) => {
       configured: isOpenAIConfigured(),
       model: AI_PRIMARY_MODEL,
       fallbackModel: AI_FALLBACK_MODEL,
-      baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL
-        ? "(custom: Replit AI Integrations)"
-        : process.env.OPENAI_BASE_URL
-          ? "(custom)"
-          : "(default: api.openai.com)",
-      apiKeySource: process.env.AI_INTEGRATIONS_OPENAI_API_KEY
-        ? "AI_INTEGRATIONS_OPENAI_API_KEY"
-        : process.env.OPENAI_API_KEY
-          ? "OPENAI_API_KEY"
-          : "none",
-      apiKeySuffix: (process.env.AI_INTEGRATIONS_OPENAI_API_KEY ?? process.env.OPENAI_API_KEY)?.slice(-4) ?? null,
+      baseURL: process.env.OPENAI_BASE_URL ? "(custom)" : "(default: api.openai.com)",
+      apiKeySource: process.env.OPENAI_API_KEY ? "OPENAI_API_KEY" : "none",
+      apiKeySuffix: process.env.OPENAI_API_KEY?.slice(-4) ?? null,
     },
   });
 });
@@ -574,16 +556,11 @@ export async function initialize(): Promise<void> {
     // common root cause.
     logger.info("startup env presence", {
       DATABASE_URL: Boolean(process.env.DATABASE_URL),
-      AI_INTEGRATIONS_OPENAI_API_KEY: Boolean(process.env.AI_INTEGRATIONS_OPENAI_API_KEY),
       OPENAI_API_KEY: Boolean(process.env.OPENAI_API_KEY),
-      AI_BASE_URL_ROUTING: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL
-        ? "replit-gateway"
-        : process.env.OPENAI_BASE_URL
-          ? "custom"
-          : "direct-openai",
-      OPENAI_API_KEY_SUFFIX: (process.env.AI_INTEGRATIONS_OPENAI_API_KEY ?? process.env.OPENAI_API_KEY)?.slice(-4) ?? null,
-      AI_INTEGRATIONS_OPENAI_MODEL: process.env.AI_INTEGRATIONS_OPENAI_MODEL ?? null,
-      AI_INTEGRATIONS_OPENAI_FALLBACK_MODEL: process.env.AI_INTEGRATIONS_OPENAI_FALLBACK_MODEL ?? null,
+      OPENAI_BASE_URL: Boolean(process.env.OPENAI_BASE_URL),
+      OPENAI_API_KEY_SUFFIX: process.env.OPENAI_API_KEY?.slice(-4) ?? null,
+      OPENAI_MODEL: process.env.OPENAI_MODEL ?? null,
+      OPENAI_FALLBACK_MODEL: process.env.OPENAI_FALLBACK_MODEL ?? null,
       REDIS_URL: Boolean(process.env.REDIS_URL),
       SENTRY_DSN: Boolean(process.env.SENTRY_DSN),
       NODE_ENV: process.env.NODE_ENV ?? null,
@@ -630,7 +607,7 @@ export async function initialize(): Promise<void> {
 
 export { app };
 
-// ── Standalone server (Replit / local dev — skipped on Vercel) ──────────────
+// ── Standalone server (local dev — skipped on Vercel) ────────────────────────
 if (!process.env.VERCEL) {
   (async () => {
     await initialize();
@@ -644,7 +621,7 @@ if (!process.env.VERCEL) {
       await setupVite(httpServer, app);
     }
 
-    const port = parseInt(process.env.PORT || "5000", 10);
+    const port = parseInt(process.env.PORT || "3000", 10);
     httpServer.listen(
       {
         port,

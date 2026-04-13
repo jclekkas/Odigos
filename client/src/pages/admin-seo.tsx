@@ -314,7 +314,7 @@ function SetupCard() {
             Go to <strong>search.google.com/search-console</strong>, open your property, then "Settings → Users and permissions → Add user". Paste the service account email and give it <strong>"Full"</strong> permission.
           </li>
           <li>
-            Open the downloaded JSON file, copy its entire contents, and paste it into a Replit secret called <strong><code>GOOGLE_SERVICE_ACCOUNT_JSON</code></strong>.
+            Open the downloaded JSON file, copy its entire contents, and paste it into an environment variable called <strong><code>GOOGLE_SERVICE_ACCOUNT_JSON</code></strong>.
           </li>
           <li>Restart the server — this page will then show your real data.</li>
         </ol>

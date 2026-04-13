@@ -330,7 +330,7 @@ describe("POST /api/analyze", () => {
       .send({ dealerText: "OTD $30,000 from a Texas dealer." });
     expect(res.status).toBe(503);
     expect(res.body.error).toBe("AI service not configured");
-    expect(res.body.message).toMatch(/AI_INTEGRATIONS_OPENAI_API_KEY/);
+    expect(res.body.message).toMatch(/OPENAI_API_KEY/);
     // Must NOT have called the AI — pre-flight short-circuits before the retry loop.
     expect(openai.chat.completions.create).not.toHaveBeenCalled();
   });

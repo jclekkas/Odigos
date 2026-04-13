@@ -42,7 +42,7 @@ Both passes unlock identical features. One-time purchase, no subscriptions.
 | Payments | Stripe |
 | Analytics | PostHog, Sentry |
 | Testing | Vitest, Playwright |
-| Deployment | Replit (autoscale) |
+| Deployment | Vercel |
 
 ## Project Structure
 
@@ -81,7 +81,7 @@ npm run db:push
 npm run dev
 ```
 
-The dev server starts on port 5000.
+The dev server starts on port 3000.
 
 ## Scripts
 
@@ -116,7 +116,7 @@ npm run test:coverage     # Generate coverage report
 
 ## Deployment
 
-Odigos is deployed on Replit with autoscale. Pushing to `main` triggers automatic deployment via GitHub Actions.
+Odigos is deployed on Vercel. Pushing to `main` triggers automatic deployment.
 
 ### CI Pipeline
 

@@ -29,7 +29,7 @@ npx vitest run --project components
 npx vitest
 ```
 
-### E2E tests (Playwright, requires the dev server running on port 5000)
+### E2E tests (Playwright, requires the dev server running on port 3000)
 
 ```bash
 npx playwright test
@@ -79,7 +79,7 @@ tests/
 - **Rule engine tested independently**: `ruleEngine.test.ts` exercises the scoring logic directly without touching the HTTP layer.
 - **State fee lookup tested at two levels**: Unit tests exercise `getStateFeeData()` directly; API tests hit the `/api/state-fee/:state` endpoint end-to-end.
 - **Component tests use `// @vitest-environment jsdom`** docblocks (Vitest v4) and wrap components in `HelmetProvider`, `QueryClientProvider`, and `Router`.
-- **E2E tests use `page.route()`** to intercept `/api/analyze`, `/api/stripe-status`, and `/api/stats` — the real dev server runs on port 5000 and no real LLM calls are made.
+- **E2E tests use `page.route()`** to intercept `/api/analyze`, `/api/stripe-status`, and `/api/stats` — the real dev server runs on port 3000 and no real LLM calls are made.
 - **`beforeEach` mock resets** (`vi.mocked(fn).mockReset()`) prevent `mockResolvedValueOnce` queue buildup across tests.
 
 ## Vitest Configuration
@@ -96,7 +96,7 @@ The `components` project includes `@vitejs/plugin-react` for JSX transformation 
 
 ## Playwright Configuration
 
-`playwright.config.ts` runs Chromium headless against `http://localhost:5000`. The dev server must be running before executing `npx playwright test`. All external API routes are intercepted via `page.route()`.
+`playwright.config.ts` runs Chromium headless against `http://localhost:3000`. The dev server must be running before executing `npx playwright test`. All external API routes are intercepted via `page.route()`.
 
 ---
 
@@ -137,4 +137,4 @@ The workflow sets these non-sensitive build-time env vars directly in the workfl
 
 ### Why E2E is excluded from required CI
 
-Playwright E2E tests are not run in the required CI pipeline because they require a fully running dev server on port 5000, browser installation (Chromium), and the prerender step in `script/build.ts` uses a Nix-specific Chromium binary unavailable on GitHub-hosted runners. These factors make E2E slow, environment-dependent, and prone to flakiness in every-PR CI. E2E can be added as a separate optional or scheduled workflow when needed.
+Playwright E2E tests are not run in the required CI pipeline because they require a fully running dev server on port 3000, browser installation (Chromium), and the prerender step in `script/build.ts` uses a Nix-specific Chromium binary unavailable on GitHub-hosted runners. These factors make E2E slow, environment-dependent, and prone to flakiness in every-PR CI. E2E can be added as a separate optional or scheduled workflow when needed.

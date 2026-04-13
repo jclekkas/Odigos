@@ -7,8 +7,7 @@
  * Run manually from the shell:
  *   E2E=true npx vitest run tests/api/analyze.integration.test.ts
  *
- * The `test:integration` workflow in the Replit UI runs this file WITHOUT
- * E2E=true so it is safe to trigger from the Project button — all tests skip,
+ * Running this file WITHOUT E2E=true causes all tests to skip,
  * no OpenAI calls are made. Set E2E=true in the shell when you want a real
  * live-call verification.
  *

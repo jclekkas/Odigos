@@ -11,10 +11,6 @@ export function isAllowedCorsOrigin(origin: string | undefined): boolean {
 
   if (/^http:\/\/localhost(:\d+)?$/.test(origin)) return true;
 
-  if (process.env.NODE_ENV !== "production" && /\.replit\.dev$/.test(origin)) {
-    return true;
-  }
-
   // Vercel preview deployments.
   if (/\.vercel\.app$/.test(origin)) return true;
 

@@ -52,18 +52,6 @@ describe("isAllowedCorsOrigin", () => {
     });
   });
 
-  describe("Replit dev domains", () => {
-    it("allows *.replit.dev when NODE_ENV is not production", () => {
-      vi.stubEnv("NODE_ENV", "development");
-      expect(isAllowedCorsOrigin("https://abc-123.replit.dev")).toBe(true);
-    });
-
-    it("blocks *.replit.dev in production", () => {
-      vi.stubEnv("NODE_ENV", "production");
-      expect(isAllowedCorsOrigin("https://abc-123.replit.dev")).toBe(false);
-    });
-  });
-
   describe("disallowed origins", () => {
     it("blocks unrelated origins", () => {
       expect(isAllowedCorsOrigin("https://evil.com")).toBe(false);

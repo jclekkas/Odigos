@@ -19,7 +19,6 @@ import { CircuitOpenError } from "../lib/circuitBreaker.js";
 import { AI_PRIMARY_MODEL } from "../config/aiModel.js";
 import { logger } from "../logger.js";
 
-// OpenAI base URL configured via AI_INTEGRATIONS_OPENAI_BASE_URL env var
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 const ALLOWED_MIME_TYPES = ["image/png", "image/jpeg", "image/webp", "application/pdf"] as const;
@@ -189,7 +188,7 @@ export function registerAnalyzeRoutes(app: Express): void {
           error: "AI service not configured",
           message:
             "The AI analysis service is not configured on this deployment. " +
-            "Ask the operator to set AI_INTEGRATIONS_OPENAI_API_KEY (or OPENAI_API_KEY) and redeploy.",
+            "Ask the operator to set OPENAI_API_KEY and redeploy.",
         });
       }
 
@@ -251,7 +250,7 @@ export function registerAnalyzeRoutes(app: Express): void {
             error: "AI service not configured",
             message:
               "The AI analysis service is not configured on this deployment. " +
-              "Ask the operator to set AI_INTEGRATIONS_OPENAI_API_KEY (or OPENAI_API_KEY) and redeploy.",
+              "Ask the operator to set OPENAI_API_KEY and redeploy.",
           });
         }
         if (parsed.status === 401 || parsed.status === 403) {

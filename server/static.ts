@@ -38,7 +38,7 @@ function discoverPrerenderedRoutes(distPath: string): Set<string> {
 export function serveStatic(app: Express) {
   // On Vercel serverless, __dirname points to the function bundle directory,
   // not the build output. Use process.cwd() which maps to /var/task/ where
-  // includeFiles are placed. On Replit/local, __dirname is dist/ so both work.
+  // includeFiles are placed. Locally, __dirname is dist/ so both work.
   const distPath = process.env.VERCEL
     ? path.resolve(process.cwd(), "dist", "public")
     : path.resolve(__dirname, "public");

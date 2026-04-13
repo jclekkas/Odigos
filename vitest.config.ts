@@ -35,7 +35,7 @@ export default defineConfig({
           env: {
             NODE_ENV: "test",
             DATABASE_URL: "postgresql://test:test@localhost:5432/test",
-            AI_INTEGRATIONS_OPENAI_API_KEY: "sk-test-dummy-key-for-vitest",
+            OPENAI_API_KEY: "sk-test-dummy-key-for-vitest",
           },
         },
       },
@@ -53,7 +53,7 @@ export default defineConfig({
           env: {
             NODE_ENV: "test",
             DATABASE_URL: "postgresql://test:test@localhost:5432/test",
-            AI_INTEGRATIONS_OPENAI_API_KEY: "sk-test-dummy-key-for-vitest",
+            OPENAI_API_KEY: "sk-test-dummy-key-for-vitest",
           },
         },
       },

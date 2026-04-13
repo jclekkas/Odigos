@@ -86,14 +86,10 @@ export default function Privacy() {
                 <li className="flex gap-2">
                   <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground flex-shrink-0" />
                   <span>
-                    <strong className="text-foreground">Neon / Replit</strong>
+                    <strong className="text-foreground">Neon</strong>
                     {" — structured data is stored in a hosted PostgreSQL database. See "}
                     <a href="https://neon.tech/privacy-policy" target="_blank" rel="noopener noreferrer" className="underline text-foreground">
                       Neon's privacy policy
-                    </a>
-                    {" and "}
-                    <a href="https://replit.com/privacy" target="_blank" rel="noopener noreferrer" className="underline text-foreground">
-                      Replit's privacy policy
                     </a>.
                   </span>
                 </li>

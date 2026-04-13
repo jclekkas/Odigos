@@ -305,7 +305,7 @@ export async function runAnalysis(data: AnalyzeInput): Promise<AnalyzeServiceRes
       error: "AI service not configured",
       message:
         "The AI analysis service is not configured on this deployment. " +
-        "Ask the operator to set AI_INTEGRATIONS_OPENAI_API_KEY (or OPENAI_API_KEY) and redeploy.",
+        "Ask the operator to set OPENAI_API_KEY and redeploy.",
     });
   }
 
@@ -744,7 +744,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
         error: "AI service not configured",
         message:
           "The AI analysis service is not configured on this deployment. " +
-          "Ask the operator to set AI_INTEGRATIONS_OPENAI_API_KEY (or OPENAI_API_KEY) and redeploy.",
+          "Ask the operator to set OPENAI_API_KEY and redeploy.",
       });
     }
     // Surface auth failures from the AI provider distinctly so the operator
@@ -850,7 +850,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
           message:
             `AI model unavailable — the API key does not have access to either ` +
             `the primary model (${AI_PRIMARY_MODEL}) or the fallback (${AI_FALLBACK_MODEL}). ` +
-            "Ask the operator to enable model access or set AI_INTEGRATIONS_OPENAI_MODEL " +
+            "Ask the operator to enable model access or set OPENAI_MODEL " +
             "to a model the key can use.",
           code: fallbackParsed.code ?? parsed.code,
           requestId: fallbackParsed.requestId ?? parsed.requestId,

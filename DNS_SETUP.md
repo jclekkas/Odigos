@@ -10,12 +10,11 @@ verify these settings are correct before re-deploying.
 
 | Type | Name | Value | Notes |
 |------|------|-------|-------|
-| A or CNAME | `@` (root) | Replit deployment host | See Replit dashboard → Deployments → Custom Domain |
-| CNAME | `www` | `odigosauto.com` | Optional — redirect www → apex at registrar or Replit |
+| CNAME | `@` (root) | `cname.vercel-dns.com` | See Vercel dashboard → Settings → Domains |
+| CNAME | `www` | `cname.vercel-dns.com` | Vercel handles www → apex redirect |
 
-The exact IP or CNAME target is shown in the Replit Deployments panel under
-**Custom Domain**. Copy it from there; do not hard-code an IP that could
-change.
+Check the Vercel project dashboard under **Settings → Domains** for the
+current expected values.
 
 ---
 
@@ -27,13 +26,13 @@ Many registrars (GoDaddy, Namecheap, Google Domains / Squarespace, etc.)
 offer a "Redirect" or "URL Forwarding" option alongside DNS records. If one
 of these rules is active on `odigosauto.com`, the registrar will issue a
 `301 Moved Permanently` to whatever target URL was configured — completely
-bypassing the Replit deployment.
+bypassing the Vercel deployment.
 
 Symptoms of an active registrar redirect:
 - The domain opens a different website (e.g. CarEdge, a parking page, etc.)
 - `curl -I https://odigosauto.com` returns `HTTP/1.1 301` with a
   `Location:` pointing to an external domain
-- The Replit deployment health check passes but the live domain does not
+- The Vercel deployment health check passes but the live domain does not
 
 **To fix:** log into your registrar, find the "Redirects" or "Forwarding"
 section, and delete any rules for `odigosauto.com` or `www.odigosauto.com`.

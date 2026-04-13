@@ -1,33 +1,5 @@
 import { getMetricsSummary, getTechnicalSummary, getPaymentCountLastNHours } from "./metrics.js";
 
-const REPLIT_DB_URL: string | undefined = undefined; // Removed Replit KV — in-memory state on Vercel
-
-async function kvGet(key: string): Promise<string | null> {
-  if (!REPLIT_DB_URL) return null;
-  try {
-    const res = await fetch(`${REPLIT_DB_URL}/${encodeURIComponent(key)}`);
-    if (res.status === 404) return null;
-    return await res.text();
-  } catch {
-    return null;
-  }
-}
-
-async function kvSet(key: string, value: string): Promise<void> {
-  if (!REPLIT_DB_URL) return;
-  try {
-    await fetch(REPLIT_DB_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-    });
-  } catch (error) {
-    console.error("[alerts] KV set failed:", error);
-  }
-}
-
-const ALERTS_STATE_KEY = "odigos_alerts_state_v1";
-
 let _inMemoryState: AlertsState | null = null;
 
 export type Comparator = "lt" | "gt" | "eq";
@@ -140,29 +112,12 @@ function getActiveRules(): AlertRule[] {
 }
 
 async function loadAlertsState(): Promise<AlertsState> {
-  if (!REPLIT_DB_URL) {
-    if (!_inMemoryState) _inMemoryState = { lastFiredAt: {}, recentFired: [] };
-    return _inMemoryState;
-  }
-  try {
-    const data = await kvGet(ALERTS_STATE_KEY);
-    if (data) {
-      const parsed: AlertsState = JSON.parse(data);
-      _inMemoryState = parsed;
-      return parsed;
-    }
-  } catch {
-  }
-  if (_inMemoryState) return _inMemoryState;
-  return { lastFiredAt: {}, recentFired: [] };
+  if (!_inMemoryState) _inMemoryState = { lastFiredAt: {}, recentFired: [] };
+  return _inMemoryState;
 }
 
 async function saveAlertsState(state: AlertsState): Promise<void> {
-  const trimmed = state.recentFired.slice(-100);
-  const next: AlertsState = { ...state, recentFired: trimmed };
-  _inMemoryState = next;
-  if (!REPLIT_DB_URL) return;
-  await kvSet(ALERTS_STATE_KEY, JSON.stringify(next));
+  _inMemoryState = { ...state, recentFired: state.recentFired.slice(-100) };
 }
 
 async function resolveMetricValue(metric: string): Promise<number | null> {

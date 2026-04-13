@@ -15,20 +15,12 @@ export class OpenAIConfigurationError extends Error {
   }
 }
 
-/**
- * Resolves the OpenAI API key, preferring the Replit-style
- * AI_INTEGRATIONS_OPENAI_API_KEY var (for backwards compatibility with
- * existing deployments) and falling back to the standard OPENAI_API_KEY
- * var used by most OpenAI tooling. This prevents a very common deployment
- * footgun where operators set OPENAI_API_KEY and see a 503 "not configured"
- * error because the code only looked at the Replit-prefixed name.
- */
 function resolveApiKey(): string | undefined {
-  return process.env.AI_INTEGRATIONS_OPENAI_API_KEY ?? process.env.OPENAI_API_KEY;
+  return process.env.OPENAI_API_KEY;
 }
 
 function resolveBaseUrl(): string | undefined {
-  return process.env.AI_INTEGRATIONS_OPENAI_BASE_URL ?? process.env.OPENAI_BASE_URL;
+  return process.env.OPENAI_BASE_URL;
 }
 
 // Lazy-init so the module can be imported even if the API key env var
@@ -44,7 +36,7 @@ function getRawClient(): OpenAI {
   if (!apiKey) {
     throw new OpenAIConfigurationError(
       "OpenAI API key is not set — AI analysis is unavailable. " +
-      "Set AI_INTEGRATIONS_OPENAI_API_KEY (or OPENAI_API_KEY) on the Vercel project and redeploy.",
+      "Set OPENAI_API_KEY on the Vercel project and redeploy.",
     );
   }
   _rawClient = new OpenAI({
