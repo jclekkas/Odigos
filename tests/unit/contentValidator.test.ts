@@ -16,11 +16,11 @@ vi.mock("../../server/db", () => ({
   pool: { end: vi.fn() },
 }));
 
-import { openai, isOpenAIConfigured } from "../../server/openaiClient";
+import { openai, isOpenAIConfigured } from "../../server/openaiClient.js";
 import {
   heuristicDealerCheck,
   validateDealerContent,
-} from "../../server/services/contentValidator";
+} from "../../server/services/contentValidator.js";
 
 beforeEach(() => {
   (openai.chat.completions.create as ReturnType<typeof vi.fn>).mockReset();

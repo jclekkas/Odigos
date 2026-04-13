@@ -40,7 +40,7 @@ afterEach(() => {
 });
 
 async function loadPass() {
-  return await import("../../client/src/lib/pass");
+  return await import("../../client/src/lib/pass.js");
 }
 
 const STORAGE_KEY = "odigos_pass";

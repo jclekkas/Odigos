@@ -6,8 +6,8 @@ import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Router } from "wouter";
 import { HelmetProvider } from "react-helmet-async";
-import Home from "../../client/src/pages/home";
-import { getQueryFn } from "../../client/src/lib/queryClient";
+import Home from "../../client/src/pages/home.js";
+import { getQueryFn } from "../../client/src/lib/queryClient.js";
 
 vi.stubEnv("NODE_ENV", "test");
 

@@ -75,8 +75,8 @@ vi.mock("../../server/db", () => ({
 
 import { del } from "@vercel/blob";
 import { handleUpload } from "@vercel/blob/client";
-import { extractTextFromFile } from "../../server/extractText";
-import { registerRoutes } from "../../server/routes";
+import { extractTextFromFile } from "../../server/extractText.js";
+import { registerRoutes } from "../../server/routes.js";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 

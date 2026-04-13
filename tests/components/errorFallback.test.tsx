@@ -17,8 +17,8 @@ vi.mock("../../client/src/lib/queryClient", () => ({
 }));
 
 import React from "react";
-import { queryClient } from "../../client/src/lib/queryClient";
-import { ErrorFallback } from "../../client/src/App";
+import { queryClient } from "../../client/src/lib/queryClient.js";
+import { ErrorFallback } from "../../client/src/App.js";
 
 describe("ErrorFallback", () => {
   beforeEach(() => {

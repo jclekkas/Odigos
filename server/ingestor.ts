@@ -189,7 +189,7 @@ export function enqueueSubmission(payload: SubmissionPayload): void {
       // Retry logic and DLQ are handled inside writeSubmissionToWarehouse.
       if (process.env.DATABASE_URL && submissionId) {
         const { writeSubmissionToWarehouse } = await import(
-          "./warehouse/warehouseWriter"
+          "./warehouse/warehouseWriter.js"
         );
         await writeSubmissionToWarehouse({
           dealerSubmissionId: submissionId,

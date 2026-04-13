@@ -22,7 +22,7 @@ vi.mock("../../server/marketContext", () => ({
   getDealerStats: vi.fn().mockResolvedValue(null),
 }));
 
-import { sanitizeDealerText } from "../../server/services/analyzeService";
+import { sanitizeDealerText } from "../../server/services/analyzeService.js";
 
 describe("sanitizeDealerText", () => {
   it("preserves normal dealer quote text", () => {

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { applyRuleEngine, checkDocFeeCap } from "../../server/ruleEngine";
-import type { AnalysisResponse, DetectedFields, Fee } from "../../shared/schema";
+import { applyRuleEngine, checkDocFeeCap } from "../../server/ruleEngine.js";
+import type { AnalysisResponse, DetectedFields, Fee } from "../../shared/schema.js";
 
 const makeFields = (overrides: Partial<DetectedFields> = {}): DetectedFields => ({
   salePrice: null,

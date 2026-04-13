@@ -575,7 +575,7 @@ export interface PiiExpiryStatus {
 }
 
 export async function getPiiExpiryStatus(): Promise<PiiExpiryStatus> {
-  const { db } = await import("../db");
+  const { db } = await import("../db.js");
   const { sql } = await import("drizzle-orm");
   try {
     const result = await db.execute(sql`

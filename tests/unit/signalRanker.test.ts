@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { rankSignals, type SignalRankerContext, type RankedSignal } from "../../server/signalRanker";
+import { rankSignals, type SignalRankerContext, type RankedSignal } from "../../server/signalRanker.js";
 
 // ---------------------------------------------------------------------------
 // Helpers to build minimal context objects

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { detectStateFromText, getStateFeeData } from "../../server/stateFeeLookup";
+import { detectStateFromText, getStateFeeData } from "../../server/stateFeeLookup.js";
 
 // ─── getStateFeeData ──────────────────────────────────────────────────────────
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { compressImageFile, ImageCompressionError } from "../../client/src/lib/compressImage";
+import { compressImageFile, ImageCompressionError } from "../../client/src/lib/compressImage.js";
 
 // These tests run in the node unit project (no jsdom). That means the full
 // canvas path (createImageBitmap / OffscreenCanvas / toBlob) is exercised

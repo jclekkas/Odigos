@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { extractTextFromUrl } from "../../server/extractText";
+import { extractTextFromUrl } from "../../server/extractText.js";
 
 describe("extractTextFromUrl — URL validation", () => {
   it("rejects invalid URL format", async () => {

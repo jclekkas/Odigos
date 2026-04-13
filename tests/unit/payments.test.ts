@@ -41,9 +41,9 @@ vi.mock("../../server/db", () => ({
 import express from "express";
 import { createServer } from "http";
 import request from "supertest";
-import { registerPaymentRoutes } from "../../server/routes/payments";
-import { trackEvent } from "../../server/events";
-import { writeAuditEvent } from "../../server/audit";
+import { registerPaymentRoutes } from "../../server/routes/payments.js";
+import { trackEvent } from "../../server/events.js";
+import { writeAuditEvent } from "../../server/audit.js";
 
 const mockTrackEvent = trackEvent as ReturnType<typeof vi.fn>;
 const mockWriteAuditEvent = writeAuditEvent as ReturnType<typeof vi.fn>;

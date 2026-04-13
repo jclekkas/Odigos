@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { redactPII } from "../../server/piiRedact";
+import { redactPII } from "../../server/piiRedact.js";
 
 describe("redactPII", () => {
   // ── Email ──────────────────────────────────────────────────────────────────

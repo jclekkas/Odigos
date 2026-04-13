@@ -5,7 +5,7 @@ vi.mock("@sentry/node", () => ({
   captureException: vi.fn(),
 }));
 
-import { CircuitBreaker, CircuitOpenError } from "../../server/lib/circuitBreaker";
+import { CircuitBreaker, CircuitOpenError } from "../../server/lib/circuitBreaker.js";
 
 function makeBreaker(opts?: ConstructorParameters<typeof CircuitBreaker>[1]) {
   return new CircuitBreaker("test", {

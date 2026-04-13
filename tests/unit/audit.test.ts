@@ -20,8 +20,8 @@ import {
   hashRequestContext,
   redactAuditMeta,
   writeAuditEvent,
-} from "../../server/audit";
-import { insertAuditLog } from "../../server/storage";
+} from "../../server/audit.js";
+import { insertAuditLog } from "../../server/storage.js";
 
 const mockInsertAuditLog = insertAuditLog as ReturnType<typeof vi.fn>;
 

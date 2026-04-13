@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { glossaryTerms } from "../../client/src/data/glossary-terms";
+import { glossaryTerms } from "../../client/src/data/glossary-terms.js";
 
 describe("glossaryTerms data integrity", () => {
   it("has at least 10 terms", () => {

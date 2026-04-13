@@ -6,8 +6,8 @@ vi.mock("../../server/db", () => ({
   },
 }));
 
-import { db } from "../../server/db";
-import { runPiiCleanup, PII_RETENTION_DAYS } from "../../server/jobs/piiCleanup";
+import { db } from "../../server/db.js";
+import { runPiiCleanup, PII_RETENTION_DAYS } from "../../server/jobs/piiCleanup.js";
 
 const mockExecute = db.execute as ReturnType<typeof vi.fn>;
 

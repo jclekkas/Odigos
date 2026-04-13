@@ -8,7 +8,7 @@ import {
   safeSerializePayload,
   getErrorMessage,
   normalizeDealerName,
-} from "../../server/warehouse/warehouseUtils";
+} from "../../server/warehouse/warehouseUtils.js";
 
 // ─── normalizeSubmissionText ──────────────────────────────────────────────────
 

@@ -6,10 +6,10 @@ import {
   checkResidualReasonableness,
   benchmarkAcquisitionFee,
   runLeaseMath,
-} from "../../server/leaseMathEngine";
-import { lookupBrand } from "../../server/leaseBrandData";
-import { applyRuleEngine } from "../../server/ruleEngine";
-import type { DetectedFields, AnalysisResponse } from "../../shared/schema";
+} from "../../server/leaseMathEngine.js";
+import { lookupBrand } from "../../server/leaseBrandData.js";
+import { applyRuleEngine } from "../../server/ruleEngine.js";
+import type { DetectedFields, AnalysisResponse } from "../../shared/schema.js";
 
 // ---------------------------------------------------------------------------
 // Helper

@@ -5,7 +5,7 @@ import { render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Router } from "wouter";
 import { HelmetProvider } from "react-helmet-async";
-import Landing from "../../client/src/pages/landing";
+import Landing from "../../client/src/pages/landing.js";
 
 vi.stubEnv("NODE_ENV", "test");
 

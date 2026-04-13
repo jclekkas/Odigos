@@ -262,7 +262,7 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 
-/** @deprecated Use `logger` from "./logger" instead. */
+/** @deprecated Use `logger` from "./logger.js" instead. */
 export function log(message: string, source = "express") {
   logger.info(message, { source });
 }

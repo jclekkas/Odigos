@@ -5,7 +5,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Router } from "wouter";
 import { HelmetProvider } from "react-helmet-async";
-import About from "../../client/src/pages/about";
+import About from "../../client/src/pages/about.js";
 
 vi.stubEnv("NODE_ENV", "test");
 

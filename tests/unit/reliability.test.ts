@@ -3,7 +3,7 @@ import {
   isRetriableError,
   withJitteredBackoff,
   jitteredBackoffMs,
-} from "../../server/lib/reliability";
+} from "../../server/lib/reliability.js";
 
 // ─── isRetriableError ────────────────────────────────────────────────────────
 
