@@ -14,7 +14,7 @@
  *
  * Usage:
  *   npx tsx scripts/smoke-test.ts                  # tests https://odigosauto.com
- *   BASE_URL=http://localhost:5000 npx tsx scripts/smoke-test.ts
+ *   BASE_URL=http://localhost:3000 npx tsx scripts/smoke-test.ts
  *
  * Exit: 0 = all passed, 1 = one or more failures.
  */
