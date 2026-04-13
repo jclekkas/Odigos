@@ -595,12 +595,6 @@ export async function initialize(): Promise<void> {
       }
     });
 
-    // In production, serve static assets and inject SEO metadata.
-    // In development, Vite dev server is set up in the standalone block below.
-    if (process.env.NODE_ENV === "production") {
-      serveStatic(app);
-    }
-
     initState.done = true;
   } catch (err) {
     initState.error = err;
@@ -608,7 +602,13 @@ export async function initialize(): Promise<void> {
       error: String(err),
       stack: (err as Error)?.stack,
     });
-    throw err;
+  }
+
+  // Always serve static assets in production, even if backend init (DB,
+  // Redis, etc.) failed. This ensures the React SPA renders on Vercel
+  // preview deployments where env vars may be missing.
+  if (process.env.NODE_ENV === "production") {
+    serveStatic(app);
   }
 }
 
