@@ -10,7 +10,7 @@
  *
  * Run with: npm run warehouse:backfill
  */
-import { db } from "../db.js";
+import { db, getEnvironmentLabel } from "../db.js";
 import { sql } from "drizzle-orm";
 import { dealerSubmissions } from "../../shared/schema.js";
 import {
@@ -109,6 +109,17 @@ function toStr(val: unknown): string | null {
 }
 
 async function main(): Promise<void> {
+  const env = getEnvironmentLabel();
+  console.log(`[backfill] Environment: ${env}`);
+
+  if (env === "production" && !process.argv.includes("--i-know-this-is-production")) {
+    console.error(
+      "ERROR: Refusing to run backfill against production database.\n" +
+      "  If you really mean to do this, add the --i-know-this-is-production flag.",
+    );
+    process.exit(1);
+  }
+
   console.log("[backfill] Starting dealer_submissions backfill…");
 
   // Load all dealer_submissions

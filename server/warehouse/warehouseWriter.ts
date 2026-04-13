@@ -36,6 +36,10 @@ function toStr(val: number | null | undefined): string | null {
   return val.toFixed(2);
 }
 
+// Transaction-aware database handle type — covers both the root db and a transaction context.
+// We pick the query methods both share; PgTransaction lacks `$client` so we can't use `typeof db` directly.
+type DbHandle = Pick<typeof db, "select" | "insert" | "update" | "delete" | "execute">;
+
 /**
  * Upsert a dealer row. Returns the dealer ID without touching listing_count.
  * The caller is responsible for incrementing the counter only when a new
@@ -43,8 +47,11 @@ function toStr(val: number | null | undefined): string | null {
  *
  * state_code must be a valid seeded US code or null to avoid FK violation
  * on core.states.
+ *
+ * Accepts a `dbh` handle so it can participate in the caller's transaction.
  */
 async function getOrCreateDealerRow(
+  dbh: DbHandle,
   dealerName: string,
   city: string,
   validStateCode: string | null,
@@ -56,7 +63,7 @@ async function getOrCreateDealerRow(
     ? sql`state_code = ${validStateCode}`
     : sql`state_code IS NULL`;
 
-  const existing = await db
+  const existing = await dbh
     .select({ id: coreDealers.id })
     .from(coreDealers)
     .where(sql`dealer_name_normalized = ${normalized} AND ${stateWhere} AND city = ${city}`)
@@ -64,7 +71,7 @@ async function getOrCreateDealerRow(
 
   if (existing.length > 0) return existing[0].id;
 
-  const inserted = await db
+  const inserted = await dbh
     .insert(coreDealers)
     .values({
       dealerName,
@@ -79,7 +86,7 @@ async function getOrCreateDealerRow(
   if (inserted.length > 0) return inserted[0].id;
 
   // Race condition fallback
-  const refetch = await db
+  const refetch = await dbh
     .select({ id: coreDealers.id })
     .from(coreDealers)
     .where(sql`dealer_name_normalized = ${normalized} AND ${stateWhere} AND city = ${city}`)
@@ -121,40 +128,14 @@ async function performWarehouseWrite(payload: WarehouseWritePayload): Promise<vo
   // Validate state to prevent FK violations
   const validState = validateStateCode(stateCode);
 
-  // ── (a) raw.user_analyses — idempotent via dealer_submission_id ────────────
-  // ON CONFLICT DO NOTHING ensures replaying the same DLQ row doesn't create
-  // a duplicate raw.user_analyses record.
-  await db.insert(rawUserAnalyses).values({
-    dealerSubmissionId,
-    stateCode: validState,
-    vehicleMake: finalResult.detectedFields.vehicle_make ?? null,
-    vehicleModel: finalResult.detectedFields.vehicle_model ?? null,
-    vehicleYear: finalResult.detectedFields.vehicle_year ?? null,
-    analysisResult: finalResult.detectedFields,
-    dealScore:
-      finalResult.dealScore === "GREEN" ? 75
-      : finalResult.dealScore === "YELLOW" ? 50
-      : finalResult.dealScore === "RED" ? 25
-      : null,
-    verdict: finalResult.goNoGo,
-    flags: [
-      ...(fees.some((f) => /market.?adjust|markup|adm/i.test(f.name)) ? ["market_adjustment"] : []),
-      ...(finalResult.detectedFields.outTheDoorPrice === null ? ["missing_otd"] : []),
-      ...(fees.some((f) => /protection|nitrogen|etch|ceramic|fabric|undercoat|pinstripe/i.test(f.name)) ? ["vague_fees"] : []),
-    ],
-    ingestionSource: "user_submitted",
-    retentionExpiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-  }).onConflictDoNothing();
+  // ── Pure data preparation (no DB access) ──────────────────────────────────
 
-  // ── (b) core.dealers ───────────────────────────────────────────────────────
-  // Try to extract dealer-identifying text from the analysis result.
   const detectedFieldsRaw = finalResult.detectedFields as Record<string, unknown>;
   const extractedDealerName: string | null =
     (detectedFieldsRaw?.dealerName as string | undefined) ??
     (detectedFieldsRaw?.dealership as string | undefined) ??
     null;
 
-  // Simple heuristic on request.dealerText
   let textDealerName: string | null = null;
   if (!extractedDealerName && data.dealerText) {
     const atMatch = data.dealerText.match(
@@ -176,17 +157,11 @@ async function performWarehouseWrite(payload: WarehouseWritePayload): Promise<vo
     }
   }
 
-  // Resolve sentinel details — dealer name includes raw code for human readability
-  // but stateCode stored in DB is always null when state is unknown
   const rawStateCode = stateCode ?? "XX";
   const sentinelCity = STATE_FULL_NAMES[rawStateCode] ?? rawStateCode;
-
   const resolvedDealerName = extractedDealerName ?? textDealerName ?? `Unknown Dealer - ${rawStateCode}`;
   const dealerCity = (extractedDealerName || textDealerName) ? (validState ?? rawStateCode) : sentinelCity;
 
-  const dealerId = await getOrCreateDealerRow(resolvedDealerName, dealerCity, validState);
-
-  // ── (c) core.listings ─────────────────────────────────────────────────────
   const hasMarketAdj = fees.some((f) => /market.?adjust|markup|adm/i.test(f.name));
   const marketAdjustment = fees
     .filter((f) => /market.?adjust|markup|adm/i.test(f.name))
@@ -232,7 +207,6 @@ async function performWarehouseWrite(payload: WarehouseWritePayload): Promise<vo
   );
   const feeAmountsForValidation = fees.map((f) => f.amount).filter((a): a is number => a !== null);
 
-  // ── Financial sanity validation ────────────────────────────────────────────
   const sanityFlags = validateFinancialBounds({
     vehiclePrice: finalResult.detectedFields.salePrice,
     tradeInValue: finalResult.detectedFields.tradeInValue,
@@ -241,106 +215,137 @@ async function performWarehouseWrite(payload: WarehouseWritePayload): Promise<vo
     totalFees: feeAmountsForValidation.length > 0 ? totalFeesAmount : null,
   });
 
-  // ── Content dedup: look for an existing non-duplicate listing with same hash ─
-  let isDuplicate = false;
-  let duplicateOfListingId: string | null = null;
+  // ══════════════════════════════════════════════════════════════════════════
+  // TRANSACTIONAL CORE WRITES — all-or-nothing to prevent orphaned rows.
+  // raw.user_analyses + core.dealers + core.listings + core.analysis_line_items
+  // are committed atomically. If any fails, everything rolls back.
+  // ══════════════════════════════════════════════════════════════════════════
 
-  if (contentHash) {
-    const existing = await db
-      .select({ id: coreListings.id })
-      .from(coreListings)
-      .where(
-        and(
-          eq(coreListings.contentHash, contentHash),
-          eq(coreListings.isDuplicate, false),
-        ),
-      )
-      .limit(1);
+  const txResult = await db.transaction(async (tx) => {
+    // ── (a) raw.user_analyses — idempotent via dealer_submission_id ──────
+    await tx.insert(rawUserAnalyses).values({
+      dealerSubmissionId,
+      stateCode: validState,
+      vehicleMake: finalResult.detectedFields.vehicle_make ?? null,
+      vehicleModel: finalResult.detectedFields.vehicle_model ?? null,
+      vehicleYear: finalResult.detectedFields.vehicle_year ?? null,
+      analysisResult: finalResult.detectedFields,
+      dealScore: dealScoreNum,
+      verdict: finalResult.goNoGo,
+      flags: [
+        ...(fees.some((f) => /market.?adjust|markup|adm/i.test(f.name)) ? ["market_adjustment"] : []),
+        ...(finalResult.detectedFields.outTheDoorPrice === null ? ["missing_otd"] : []),
+        ...(fees.some((f) => /protection|nitrogen|etch|ceramic|fabric|undercoat|pinstripe/i.test(f.name)) ? ["vague_fees"] : []),
+      ],
+      ingestionSource: "user_submitted",
+      retentionExpiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+    }).onConflictDoNothing();
 
-    if (existing.length > 0) {
-      isDuplicate = true;
-      duplicateOfListingId = existing[0].id;
-    }
-  }
+    // ── (b) core.dealers — upsert within transaction ────────────────────
+    const dealerId = await getOrCreateDealerRow(tx, resolvedDealerName, dealerCity, validState);
 
-  const now = new Date();
-  // Idempotent insert: if a listing for this submission already exists (on DLQ
-  // replay or duplicate request), ON CONFLICT DO NOTHING returns an empty array.
-  // We only increment the dealer listing_count when a genuinely new row is inserted.
-  const insertedListings = await db.insert(coreListings).values({
-    dealerId,
-    dealerSubmissionId,
-    ingestionSource: "user_submitted",
-    isFullyProcessed: true,
-    countsTowardRealDeals: true,
-    analysisVersion: 1,
-    isDuplicate,
-    duplicateOfListingId,
-    isTestData: false,
-    hasPipelineError: false,
-    contentHash: contentHash ?? null,
-    sanityFlags,
-    vehicleMake: finalResult.detectedFields.vehicle_make ?? null,
-    vehicleModel: finalResult.detectedFields.vehicle_model ?? null,
-    vehicleYear: finalResult.detectedFields.vehicle_year ?? null,
-    listedPrice: toStr(finalResult.detectedFields.salePrice),
-    otdPrice,
-    monthlyPayment: toStr(finalResult.detectedFields.monthlyPayment),
-    aprValue: toStr(finalResult.detectedFields.apr),
-    loanTermMonths: finalResult.detectedFields.termMonths ?? null,
-    downPayment: toStr(finalResult.detectedFields.downPayment),
-    docFee: docFeeAmount !== null ? String(docFeeAmount) : null,
-    docFeeOverStateCap: null,
-    marketAdjustment: hasMarketAdj && marketAdjustment > 0 ? String(marketAdjustment) : null,
-    addonTotal: addonTotal > 0 ? String(addonTotal) : null,
-    feeNames,
-    flagCount: flagList.length,
-    dealScore: dealScoreNum,
-    verdict: finalResult.goNoGo,
-    flags: flagList,
-    feeToPrice,
-    stateCode: validState,
-    listingDate: now.toISOString().slice(0, 10),
-    analyzedAt: now,
-  }).onConflictDoNothing().returning({ id: coreListings.id });
+    // ── (c) Content dedup check ─────────────────────────────────────────
+    let isDuplicate = false;
+    let duplicateOfListingId: string | null = null;
 
-  const newListingInserted = insertedListings.length > 0;
+    if (contentHash) {
+      const existing = await tx
+        .select({ id: coreListings.id })
+        .from(coreListings)
+        .where(
+          and(
+            eq(coreListings.contentHash, contentHash),
+            eq(coreListings.isDuplicate, false),
+          ),
+        )
+        .limit(1);
 
-  // Only increment the dealer aggregate counter when a truly new listing row was
-  // inserted. On DLQ replay the listing already exists (conflict), so we skip
-  // the increment to keep replay side effects fully idempotent.
-  if (newListingInserted) {
-    await incrementDealerListingCount(dealerId);
-
-    // ── Market intelligence aggregate updates (non-fatal) ──────────────────
-    try {
-      const insertedListingId = insertedListings[0]?.id;
-
-      // (1) Write core.analysis_line_items — one row per fee
-      if (insertedListingId) {
-        for (const fee of fees) {
-          const normalized = normalizeLineItemName(fee.name);
-          const category = categorizeLineItem(normalized);
-          const isFlagged = /protection|nitrogen|etch|ceramic|fabric|undercoat|pinstripe|market.?adjust|markup|dealer.?prep|anti.?theft/i.test(fee.name);
-          await db.insert(coreAnalysisLineItems).values({
-            listingId: insertedListingId,
-            itemName: fee.name,
-            itemNameNormalized: normalized,
-            amount: fee.amount != null ? String(fee.amount) : null,
-            isFlagged,
-            category,
-          }).onConflictDoNothing();
-        }
+      if (existing.length > 0) {
+        isDuplicate = true;
+        duplicateOfListingId = existing[0].id;
       }
+    }
 
-      // (2) Update core.dealers running aggregates
+    // ── (d) core.listings ───────────────────────────────────────────────
+    const now = new Date();
+    const insertedListings = await tx.insert(coreListings).values({
+      dealerId,
+      dealerSubmissionId,
+      ingestionSource: "user_submitted",
+      isFullyProcessed: true,
+      countsTowardRealDeals: true,
+      analysisVersion: 1,
+      isDuplicate,
+      duplicateOfListingId,
+      isTestData: false,
+      hasPipelineError: false,
+      contentHash: contentHash ?? null,
+      sanityFlags,
+      vehicleMake: finalResult.detectedFields.vehicle_make ?? null,
+      vehicleModel: finalResult.detectedFields.vehicle_model ?? null,
+      vehicleYear: finalResult.detectedFields.vehicle_year ?? null,
+      listedPrice: toStr(finalResult.detectedFields.salePrice),
+      otdPrice,
+      monthlyPayment: toStr(finalResult.detectedFields.monthlyPayment),
+      aprValue: toStr(finalResult.detectedFields.apr),
+      loanTermMonths: finalResult.detectedFields.termMonths ?? null,
+      downPayment: toStr(finalResult.detectedFields.downPayment),
+      docFee: docFeeAmount !== null ? String(docFeeAmount) : null,
+      docFeeOverStateCap: null,
+      marketAdjustment: hasMarketAdj && marketAdjustment > 0 ? String(marketAdjustment) : null,
+      addonTotal: addonTotal > 0 ? String(addonTotal) : null,
+      feeNames,
+      flagCount: flagList.length,
+      dealScore: dealScoreNum,
+      verdict: finalResult.goNoGo,
+      flags: flagList,
+      feeToPrice,
+      stateCode: validState,
+      listingDate: now.toISOString().slice(0, 10),
+      analyzedAt: now,
+    }).onConflictDoNothing().returning({ id: coreListings.id });
+
+    const newListingInserted = insertedListings.length > 0;
+    const insertedListingId = insertedListings[0]?.id ?? null;
+
+    // ── (e) core.analysis_line_items — within transaction ───────────────
+    if (newListingInserted && insertedListingId) {
+      for (const fee of fees) {
+        const normalized = normalizeLineItemName(fee.name);
+        const category = categorizeLineItem(normalized);
+        const isFlagged = /protection|nitrogen|etch|ceramic|fabric|undercoat|pinstripe|market.?adjust|markup|dealer.?prep|anti.?theft/i.test(fee.name);
+        await tx.insert(coreAnalysisLineItems).values({
+          listingId: insertedListingId,
+          itemName: fee.name,
+          itemNameNormalized: normalized,
+          amount: fee.amount != null ? String(fee.amount) : null,
+          isFlagged,
+          category,
+        }).onConflictDoNothing();
+      }
+    }
+
+    return { dealerId, newListingInserted, isDuplicate };
+  });
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // NON-TRANSACTIONAL AGGREGATE UPDATES — these are non-fatal and idempotent.
+  // They run outside the transaction so a failure here doesn't roll back the
+  // core data. Aggregates can always be recomputed from source rows.
+  // ══════════════════════════════════════════════════════════════════════════
+
+  if (txResult.newListingInserted) {
+    await incrementDealerListingCount(txResult.dealerId);
+
+    try {
+      // (1) Update core.dealers running aggregates
       if (docFeeAmount != null) {
         await db.execute(sql`
           UPDATE core.dealers SET
             doc_fee_sum = COALESCE(doc_fee_sum::numeric, 0) + ${String(docFeeAmount)},
             doc_fee_count = doc_fee_count + 1,
             avg_doc_fee = (COALESCE(doc_fee_sum::numeric, 0) + ${String(docFeeAmount)}) / (doc_fee_count + 1)
-          WHERE id = ${dealerId}
+          WHERE id = ${txResult.dealerId}
         `);
       }
       if (addonTotal > 0) {
@@ -349,16 +354,16 @@ async function performWarehouseWrite(payload: WarehouseWritePayload): Promise<vo
             addon_total_sum = COALESCE(addon_total_sum::numeric, 0) + ${String(addonTotal)},
             addon_total_count = addon_total_count + 1,
             listings_with_addons = listings_with_addons + 1
-          WHERE id = ${dealerId}
+          WHERE id = ${txResult.dealerId}
         `);
       }
       if (dealScoreNum != null && dealScoreNum <= 25) {
         await db.execute(sql`
-          UPDATE core.dealers SET red_count = red_count + 1 WHERE id = ${dealerId}
+          UPDATE core.dealers SET red_count = red_count + 1 WHERE id = ${txResult.dealerId}
         `);
       }
 
-      // (3) Upsert core.state_market_stats
+      // (2) Upsert core.state_market_stats
       if (validState) {
         await db.execute(sql`
           INSERT INTO core.state_market_stats (state_code, listing_count, deal_score_sum, avg_deal_score,
@@ -406,7 +411,7 @@ async function performWarehouseWrite(payload: WarehouseWritePayload): Promise<vo
         `);
       }
 
-      // (4) Upsert core.line_item_pattern_stats for each fee
+      // (3) Upsert core.line_item_pattern_stats for each fee
       if (validState) {
         const isRedDeal = dealScoreNum != null && dealScoreNum <= 25;
         for (const fee of fees) {
@@ -435,7 +440,7 @@ async function performWarehouseWrite(payload: WarehouseWritePayload): Promise<vo
   }
 
   console.log(
-    `[warehouse] Wrote submission ${dealerSubmissionId} to warehouse (state=${validState ?? "unknown"}, score=${finalResult.dealScore}, duplicate=${isDuplicate}, newListing=${newListingInserted})`,
+    `[warehouse] Wrote submission ${dealerSubmissionId} to warehouse (state=${validState ?? "unknown"}, score=${finalResult.dealScore}, duplicate=${txResult.isDuplicate}, newListing=${txResult.newListingInserted})`,
   );
 }
 

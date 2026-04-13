@@ -7,7 +7,7 @@
  *
  * Run with: npm run warehouse:seed
  */
-import { db } from "../db.js";
+import { db, getEnvironmentLabel } from "../db.js";
 import { sql } from "drizzle-orm";
 import { coreDealers, coreListings, coreStates } from "../../shared/warehouse.js";
 import { normalizeDealerName, refreshAllViews } from "./warehouseUtils.js";
@@ -166,6 +166,17 @@ function buildDealerCatalogue(): {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
+  const env = getEnvironmentLabel();
+  console.log(`[seed] Environment: ${env}`);
+
+  if (env === "production" && !process.argv.includes("--i-know-this-is-production")) {
+    console.error(
+      "ERROR: Refusing to seed synthetic data into production database.\n" +
+      "  If you really mean to do this, add the --i-know-this-is-production flag.",
+    );
+    process.exit(1);
+  }
+
   console.log("[seed] Starting seed data generation…");
 
   // Verify states are seeded

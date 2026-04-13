@@ -1,4 +1,7 @@
 import { getMetricsSummary, getTechnicalSummary, getPaymentCountLastNHours } from "./metrics.js";
+import { db } from "./db.js";
+import { failedWarehouseWrites } from "../shared/schema.js";
+import { sql } from "drizzle-orm";
 
 const REPLIT_DB_URL: string | undefined = undefined; // Removed Replit KV — in-memory state on Vercel
 
@@ -108,6 +111,24 @@ function buildDefaultRules(): AlertRule[] {
       threshold: 0,
       cooldownMs: envInt("ALERT_NO_PAYMENTS_COOLDOWN_MIN", 240) * 60 * 1000,
     },
+    {
+      id: "dlq_backlog_high",
+      name: "DLQ Backlog High",
+      description: `Fires when there are more than ${envInt("ALERT_DLQ_THRESHOLD", 10)} pending warehouse write failures in the DLQ`,
+      metric: "dlqPendingCount",
+      comparator: "gt",
+      threshold: envInt("ALERT_DLQ_THRESHOLD", 10),
+      cooldownMs: envInt("ALERT_DLQ_COOLDOWN_MIN", 60) * 60 * 1000,
+    },
+    {
+      id: "dlq_dead_letters",
+      name: "DLQ Dead Letters Detected",
+      description: `Fires when any warehouse write failures have exceeded max retries and been marked dead`,
+      metric: "dlqDeadCount",
+      comparator: "gt",
+      threshold: 0,
+      cooldownMs: envInt("ALERT_DLQ_DEAD_COOLDOWN_MIN", 240) * 60 * 1000,
+    },
   ];
 
   const extraJson = process.env.ALERT_EXTRA_RULES;
@@ -181,6 +202,20 @@ async function resolveMetricValue(metric: string): Promise<number | null> {
     if (metric === "paymentsLast24h") {
       const lookbackHours = envInt("ALERT_NO_PAYMENTS_LOOKBACK_HOURS", 24);
       return await getPaymentCountLastNHours(lookbackHours);
+    }
+
+    if (metric === "dlqPendingCount") {
+      const result = await db.execute(
+        sql`SELECT COUNT(*)::integer AS cnt FROM failed_warehouse_writes WHERE status = 'pending'`,
+      );
+      return (result.rows[0] as { cnt: number })?.cnt ?? 0;
+    }
+
+    if (metric === "dlqDeadCount") {
+      const result = await db.execute(
+        sql`SELECT COUNT(*)::integer AS cnt FROM failed_warehouse_writes WHERE status = 'dead'`,
+      );
+      return (result.rows[0] as { cnt: number })?.cnt ?? 0;
     }
   } catch (err) {
     console.error(`[alerts] Failed to resolve metric "${metric}":`, err);

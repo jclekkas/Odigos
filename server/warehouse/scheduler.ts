@@ -32,8 +32,10 @@ async function runDailyPiiCleanup(): Promise<void> {
 async function runDailyBackup(): Promise<void> {
   try {
     console.log("[scheduler] Running daily database backup…");
-    const result = runBackup();
-    console.log(`[scheduler] Daily backup complete. File: ${result.filePath}  Size: ${result.sizeBytes} bytes`);
+    const result = await runBackup();
+    const remoteInfo = result.remotePath ? ` Remote: ${result.remotePath}` : "";
+    const cleanupInfo = result.cleanedUpCount > 0 ? ` Cleaned up: ${result.cleanedUpCount} old backup(s)` : "";
+    console.log(`[scheduler] Daily backup complete. File: ${result.filePath}  Size: ${result.sizeBytes} bytes${remoteInfo}${cleanupInfo}`);
   } catch (err) {
     console.error("[scheduler] Daily backup failed:", err);
   }
