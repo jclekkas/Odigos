@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { setSeoMeta } from "@/lib/seo";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import FadeIn from "@/components/FadeIn";
 
 export default function Terms() {
   useEffect(() => {
@@ -17,6 +18,7 @@ export default function Terms() {
       <SiteHeader />
 
       <main className="py-12 md:py-20 px-6">
+        <FadeIn>
         <article className="max-w-2xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 leading-tight">
             Terms of Service
@@ -159,6 +161,7 @@ export default function Terms() {
 
           </div>
         </article>
+        </FadeIn>
       </main>
 
       <SiteFooter />

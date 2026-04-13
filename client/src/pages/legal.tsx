@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { setSeoMeta } from "@/lib/seo";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import FadeIn from "@/components/FadeIn";
 
 export default function Legal() {
   useEffect(() => {
@@ -18,6 +19,7 @@ export default function Legal() {
       <SiteHeader />
 
       <main className="py-12 md:py-20 px-6">
+        <FadeIn>
         <article className="max-w-2xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 leading-tight">
             Legal & Compliance
@@ -141,6 +143,7 @@ export default function Legal() {
 
           </div>
         </article>
+        </FadeIn>
       </main>
 
       <SiteFooter />
