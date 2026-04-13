@@ -45,7 +45,6 @@ export const STATIC_ROUTES: string[] = [
   "/how-much-should-you-pay-for-a-car",
   "/how-to-compare-car-deals",
   "/glossary",
-  "/junk-fees-explained",
   "/car-lease-fees-explained",
   "/money-factor-explained",
   "/residual-value-explained",

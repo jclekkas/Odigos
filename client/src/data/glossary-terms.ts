@@ -23,7 +23,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     shortDefinition: "A hidden or surprise charge that provides little or no real value to the buyer, was not clearly disclosed, or duplicates costs already included in the deal.",
     fullDefinition: "The FTC defines junk fees as 'hidden or surprise fees that were not clearly disclosed.' In car buying, junk fees include charges like nitrogen tire fills, VIN etching, dealer prep fees, paint protection, fabric guard, and anti-theft packages. These are typically pre-installed or added without the buyer's explicit consent, then presented as non-negotiable. Under the FTC's CARS Rule (2024), dealers are prohibited from charging for add-ons that provide no benefit to the consumer.",
     relatedPages: [
-      { label: "Junk Fees Explained", path: "/junk-fees-explained" },
+      { label: "Hidden & Junk Dealer Fees", path: "/hidden-dealer-fees" },
       { label: "Hidden Dealer Fees", path: "/hidden-dealer-fees" },
       { label: "Dealer Add-Ons Explained", path: "/dealer-add-ons-explained" },
     ],
@@ -103,7 +103,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     fullDefinition: "A dealer prep fee (also called pre-delivery inspection fee or PDI) is a charge for preparing the vehicle for sale — washing, detailing, removing protective wrapping, and conducting a basic inspection. This work is a standard cost of operating a dealership, not an extra service for the buyer. Fees typically range from $200 to $500. Most consumer advocates consider this a junk fee since the work benefits the dealer's ability to sell the vehicle, not the buyer specifically.",
     relatedPages: [
       { label: "Dealer Prep Fee Guide", path: "/dealer-prep-fee" },
-      { label: "Junk Fees Explained", path: "/junk-fees-explained" },
+      { label: "Hidden & Junk Dealer Fees", path: "/hidden-dealer-fees" },
     ],
     ...seo("dealer-prep-fee"),
   },
@@ -164,7 +164,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     shortDefinition: "A dealer add-on that fills tires with nitrogen instead of air. Costs $50-$300 at dealers but provides negligible benefit for passenger vehicles.",
     fullDefinition: "Nitrogen tire fill replaces regular air in tires with nitrogen gas. Dealers claim it maintains tire pressure longer and improves fuel economy. While nitrogen does lose pressure slightly slower than air, the real-world benefit for passenger vehicles is negligible — checking tire pressure monthly with regular air achieves the same result. Nitrogen is available free at many tire shops. At $50-$300, this is one of the most universally recognized junk fees in the car industry.",
     relatedPages: [
-      { label: "Junk Fees Explained", path: "/junk-fees-explained" },
+      { label: "Hidden & Junk Dealer Fees", path: "/hidden-dealer-fees" },
       { label: "Dealer Add-Ons List", path: "/dealer-add-ons-list" },
     ],
     ...seo("nitrogen-tire-fill"),
@@ -175,7 +175,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     shortDefinition: "A dealer add-on where the vehicle identification number is etched onto windows as a theft deterrent. DIY kits cost $20-$30; dealers charge $100-$400.",
     fullDefinition: "VIN etching involves permanently marking the Vehicle Identification Number onto a car's windows. It serves as a theft deterrent because it makes it harder to sell stolen windows or disguise a stolen vehicle. While the concept has some merit, the dealer markup is extreme — professional DIY kits cost $20-$30, while dealers charge $100-$400. Dealers often present VIN etching as already installed or mandatory, making it difficult to decline. It is always optional.",
     relatedPages: [
-      { label: "Junk Fees Explained", path: "/junk-fees-explained" },
+      { label: "Hidden & Junk Dealer Fees", path: "/hidden-dealer-fees" },
       { label: "Hidden Dealer Fees", path: "/hidden-dealer-fees" },
     ],
     ...seo("vin-etching"),
@@ -186,7 +186,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     shortDefinition: "A sealant or coating applied to the vehicle's exterior. Dealer versions are typically low-quality spray-ons marked up significantly over independent shops.",
     fullDefinition: "Paint protection products range from simple spray-on sealants ($200-$500 at dealers) to professional ceramic coatings ($300-$1,500+). Dealer-applied versions are almost always low-quality, quick-apply products that provide minimal lasting protection compared to professional ceramic coatings applied by detailing specialists. If you want paint protection, get it done independently after purchase — you'll get better quality at a lower price. Dealers often bundle paint protection into 'appearance packages' to make the markup less obvious.",
     relatedPages: [
-      { label: "Junk Fees Explained", path: "/junk-fees-explained" },
+      { label: "Hidden & Junk Dealer Fees", path: "/hidden-dealer-fees" },
       { label: "Are Dealer Add-Ons Mandatory?", path: "/are-dealer-add-ons-mandatory" },
     ],
     ...seo("paint-protection"),
@@ -230,7 +230,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     fullDefinition: "A reconditioning fee covers the work a dealer does to prepare a used vehicle for retail sale — detailing, minor mechanical repairs, replacing worn parts, and safety inspection. When backed by real work (new tires, brake pads, paint touch-up), it can be legitimate. However, many dealers inflate reconditioning fees as a profit line, especially when the vehicle required minimal work. Fees above $500-$800 should be questioned — ask for an itemized list of what was done. If the dealer can't provide specifics, it may be a junk fee disguised as legitimate service.",
     relatedPages: [
       { label: "Dealer Reconditioning Fee Guide", path: "/dealer-reconditioning-fee" },
-      { label: "Junk Fees Explained", path: "/junk-fees-explained" },
+      { label: "Hidden & Junk Dealer Fees", path: "/hidden-dealer-fees" },
     ],
     ...seo("reconditioning-fee"),
   },

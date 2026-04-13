@@ -86,6 +86,10 @@ export function serveStatic(app: Express) {
       return res.redirect(301, "/why-dealers-wont-give-out-the-door-price");
     }
 
+    if (rawPath === "/junk-fees-explained") {
+      return res.redirect(301, "/hidden-dealer-fees");
+    }
+
     // Normalize trailing slash
     const normalized =
       rawPath.length > 1 && rawPath.endsWith("/")

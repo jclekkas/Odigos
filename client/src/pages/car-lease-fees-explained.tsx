@@ -169,7 +169,7 @@ export default function CarLeaseFeesExplained() {
         <ul className="space-y-2 text-muted-foreground">
           <li className="flex items-start gap-2">
             <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-            <span><strong className="text-foreground">Documentation fee (doc fee):</strong> The dealer's paperwork charge, identical to what you'd pay on a purchase. See our <Link href="/junk-fees-explained" className="underline text-foreground">junk fees guide</Link> for context.</span>
+            <span><strong className="text-foreground">Documentation fee (doc fee):</strong> The dealer's paperwork charge, identical to what you'd pay on a purchase. See our <Link href="/hidden-dealer-fees" className="underline text-foreground">hidden and junk fees guide</Link> for context.</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-muted-foreground mt-1.5 shrink-0">•</span>

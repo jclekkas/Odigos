@@ -142,66 +142,7 @@ export default function DealerWontGiveOtdPrice() {
 
             <h2 className="text-2xl font-semibold text-foreground">Why Dealers Avoid Giving OTD Prices</h2>
             <p className="text-muted-foreground">
-              There are four common reasons.
-            </p>
-
-            <h3 className="text-lg font-semibold text-foreground">1. They Want You In the Showroom</h3>
-            <p className="text-muted-foreground">
-              It's easier to negotiate in person. Once you're sitting at a desk:
-            </p>
-            <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
-              <li>Time pressure increases</li>
-              <li>Emotional commitment rises</li>
-              <li>Trade-in conversations begin</li>
-              <li>Financing gets layered in</li>
-            </ul>
-            <p className="text-muted-foreground">
-              Refusing to give OTD pricing forces you to come in.
-            </p>
-
-            <h3 className="text-lg font-semibold text-foreground">2. They Want to Separate the Numbers</h3>
-            <p className="text-muted-foreground">
-              Dealers often break pricing into pieces:
-            </p>
-            <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
-              <li>"Sale price"</li>
-              <li>"Monthly payment"</li>
-              <li>"Estimated fees"</li>
-            </ul>
-            <p className="text-muted-foreground">
-              If you only see parts, you can't compare deals properly.
-            </p>
-            <p className="text-muted-foreground">
-              OTD pricing removes ambiguity. That's why some avoid it.
-            </p>
-
-            <h3 className="text-lg font-semibold text-foreground">3. They Plan to Add Fees Later</h3>
-            <p className="text-muted-foreground">
-              Common surprise fees include:
-            </p>
-            <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
-              <li>Protection packages</li>
-              <li>Nitrogen tires</li>
-              <li>VIN etching</li>
-              <li>"Market adjustments"</li>
-              <li>High doc fees</li>
-            </ul>
-            <p className="text-muted-foreground">
-              Without OTD pricing in writing, these get introduced later. Understanding the full <Link href="/dealer-add-ons-list" className="underline text-foreground">dealer add-ons list</Link> before you visit gives you a clear benchmark for what's been pre-installed and what it should actually cost.
-            </p>
-
-            <h3 className="text-lg font-semibold text-foreground">4. They Want Flexibility to Adjust Based on You</h3>
-            <p className="text-muted-foreground">
-              Sometimes pricing changes based on:
-            </p>
-            <ul className="list-disc pl-6 space-y-1 mb-4 text-muted-foreground">
-              <li>Whether you finance with them</li>
-              <li>Your credit profile</li>
-              <li>Whether you mention competing quotes</li>
-              <li>How serious you seem</li>
-            </ul>
-            <p className="text-muted-foreground">
-              OTD pricing limits that flexibility.
+              Withholding OTD pricing gives dealers four structural advantages: it gets you into the showroom where commitment bias kicks in, it lets them break pricing into pieces so you can't compare totals, it creates room to introduce fees at signing, and it preserves flexibility to adjust the deal based on how you negotiate. Each of these advantages disappears the moment you have a written, itemized OTD number. For the full economics behind this behavior, see <Link href="/why-dealers-wont-give-out-the-door-price" className="underline text-foreground">why dealers resist OTD pricing</Link>.
             </p>
 
             <h2 className="text-2xl font-semibold text-foreground">Is It Legal for a Dealer to Refuse?</h2>
@@ -379,6 +320,10 @@ export default function DealerWontGiveOtdPrice() {
                 </div>
               ))}
             </div>
+
+            <p className="text-muted-foreground">
+              Want to understand the dealer's side? Read <Link href="/why-dealers-wont-give-out-the-door-price" className="underline text-foreground">why dealers resist OTD pricing</Link> — the revenue model, showroom psychology, and per-buyer pricing flexibility that make withholding OTD quotes rational from their perspective.
+            </p>
 
             <p className="text-muted-foreground">
               Back to <Link href="/dealer-pricing-tactics" className="underline text-foreground" data-testid="link-back-hub">all dealer pricing tactics</Link>.

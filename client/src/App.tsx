@@ -48,7 +48,7 @@ import AreDealerAddOnsNegotiable from "@/pages/are-dealer-add-ons-negotiable";
 import HowToRemoveDealerAddOns from "@/pages/how-to-remove-dealer-add-ons";
 import AreDealerAddOnsRequiredByLaw from "@/pages/are-dealer-add-ons-required-by-law";
 import DealerAddOnsExplained from "@/pages/dealer-add-ons-explained";
-import JunkFeesExplained from "@/pages/junk-fees-explained";
+
 import Glossary from "@/pages/glossary";
 import GlossaryTerm from "@/pages/glossary-term";
 import CarLeaseFeesExplained from "@/pages/car-lease-fees-explained";
@@ -123,7 +123,7 @@ function Router() {
       <Route path="/how-to-remove-dealer-add-ons" component={HowToRemoveDealerAddOns} />
       <Route path="/are-dealer-add-ons-required-by-law" component={AreDealerAddOnsRequiredByLaw} />
       <Route path="/dealer-add-ons-explained" component={DealerAddOnsExplained} />
-      <Route path="/junk-fees-explained" component={JunkFeesExplained} />
+
       <Route path="/glossary" component={Glossary} />
       <Route path="/glossary/:slug" component={GlossaryTerm} />
       <Route path="/car-lease-fees-explained" component={CarLeaseFeesExplained} />
