@@ -46,7 +46,7 @@ jobs:
       # connection is attempted.
       #
       # Playwright E2E tests are intentionally excluded from required CI:
-      #   - They require a fully running dev server on port 5000.
+      #   - They require a fully running dev server on port 3000.
       #   - Playwright browser installation adds significant runtime to every PR.
       #   - All external API calls are intercepted via page.route(), but server
       #     startup and Chromium setup still make E2E slow and flaky in CI.
@@ -135,7 +135,7 @@ jobs:
         run: npm start &
 
       - name: Wait for server to be ready
-        run: curl --retry 20 --retry-connrefused --retry-delay 3 --fail http://localhost:5000/api/health
+        run: curl --retry 20 --retry-connrefused --retry-delay 3 --fail http://localhost:3000/api/health
 
       - name: Run Playwright E2E tests
         run: npx playwright test
