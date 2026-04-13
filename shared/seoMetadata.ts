@@ -8,7 +8,7 @@
  */
 
 import { GLOSSARY_SEO_BY_SLUG } from "./glossaryTermSeo.js";
-import { CANONICAL_ORIGIN } from "./siteConfig";
+import { CANONICAL_ORIGIN } from "./siteConfig.js";
 
 export interface PageSeoMeta {
   title: string;
