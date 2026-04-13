@@ -4,13 +4,18 @@
  * enqueueSubmission() fires after the HTTP response has already been sent,
  * so the user is never blocked by storage writes.
  *
- * To swap setImmediate for a real job queue (Bull, BullMQ, Temporal, etc.)
- * in the future, replace only the body of this function — no route changes needed.
+ * Uses a simple in-process concurrency limiter (Semaphore) to prevent
+ * database pool exhaustion when many submissions arrive at once.
+ * The semaphore limits concurrent warehouse writes and caps queue depth
+ * to prevent unbounded memory growth.
+ *
+ * To swap for a real job queue (Bull, BullMQ, Temporal, etc.) in the future,
+ * replace only the body of this function — no route changes needed.
  *
  * ⚠️  SINGLE-INSTANCE LIMITATION
- * The internal queue implemented here uses setImmediate — it is in-process /
- * memory-backed. All pending submissions live in the Node.js event loop of a
- * single process. There is no cross-instance coordination.
+ * The internal queue implemented here uses an in-process semaphore —
+ * it is memory-backed. All pending submissions live in the Node.js event
+ * loop of a single process. There is no cross-instance coordination.
  * If the process crashes, any queued-but-not-yet-written submissions are lost.
  * Running multiple server replicas does not distribute or share the queue —
  * each replica independently writes its own submissions.
@@ -26,6 +31,41 @@ import { normalizeSubmissionText, sha256Hex, normalizeFeeNames } from "./warehou
 import { db } from "./db.js";
 import { eq, isNull } from "drizzle-orm";
 
+// ── Concurrency limiter ─────────────────────────────────────────────────────
+
+const MAX_CONCURRENT = parseInt(process.env.WAREHOUSE_WRITE_CONCURRENCY || "5", 10);
+const MAX_QUEUE_DEPTH = parseInt(process.env.WAREHOUSE_QUEUE_MAX_DEPTH || "1000", 10);
+
+let _activeCount = 0;
+let _queueDepth = 0;
+const _waitQueue: Array<() => void> = [];
+
+function semaphoreAcquire(): Promise<void> {
+  if (_activeCount < MAX_CONCURRENT) {
+    _activeCount++;
+    return Promise.resolve();
+  }
+  return new Promise((resolve) => {
+    _waitQueue.push(() => {
+      _activeCount++;
+      resolve();
+    });
+  });
+}
+
+function semaphoreRelease(): void {
+  _activeCount--;
+  const next = _waitQueue.shift();
+  if (next) next();
+}
+
+/** Expose queue stats for health checks / monitoring. */
+export function getIngestionQueueStats(): { active: number; queued: number; maxConcurrent: number; maxDepth: number } {
+  return { active: _activeCount, queued: _queueDepth, maxConcurrent: MAX_CONCURRENT, maxDepth: MAX_QUEUE_DEPTH };
+}
+
+// ── Submission payload ──────────────────────────────────────────────────────
+
 export interface SubmissionPayload {
   request: AnalysisRequest;
   result: AnalysisResponse;
@@ -35,9 +75,21 @@ export interface SubmissionPayload {
 }
 
 export function enqueueSubmission(payload: SubmissionPayload): void {
+  // Check queue depth before enqueuing to prevent unbounded memory growth
+  if (_queueDepth >= MAX_QUEUE_DEPTH) {
+    console.error(
+      `[submission-ingestor] Queue depth limit reached (${MAX_QUEUE_DEPTH}). Dropping submission. ` +
+      `Consider increasing WAREHOUSE_QUEUE_MAX_DEPTH or switching to a durable queue.`,
+    );
+    return;
+  }
+
+  _queueDepth++;
+
   // Non-blocking: setImmediate fires after the current event loop tick,
   // well after res.json() has completed.
   setImmediate(async () => {
+    await semaphoreAcquire();
     try {
       const { request: data, result: finalResult, preSavedListingId } = payload;
 
@@ -150,6 +202,9 @@ export function enqueueSubmission(payload: SubmissionPayload): void {
     } catch (err) {
       console.error("[submission-ingestor] non-blocking write failed:", err);
       // Never rethrows — user already has their result
+    } finally {
+      _queueDepth--;
+      semaphoreRelease();
     }
   });
 }

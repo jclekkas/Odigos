@@ -4,13 +4,17 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 // NOTE: vi.mock is hoisted to the top of the file so we cannot reference
 // variables defined with `const` here. Use vi.fn() inline.
 
-vi.mock("../../server/db", () => ({
-  db: {
+vi.mock("../../server/db", () => {
+  const mockDb = {
     insert: vi.fn(),
     select: vi.fn(),
     execute: vi.fn(),
-  },
-}));
+    // transaction() calls the callback with the same mock so inner
+    // inserts/selects are captured by the same spies.
+    transaction: vi.fn(async (cb: (tx: typeof mockDb) => Promise<unknown>) => cb(mockDb)),
+  };
+  return { db: mockDb };
+});
 
 // Mock delay to skip real wait times in tests
 vi.mock("../../server/warehouse/warehouseUtils", async (importOriginal) => {

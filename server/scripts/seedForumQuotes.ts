@@ -33,7 +33,7 @@ import { fileURLToPath } from "node:url";
 
 import { runAnalysis, type AnalyzeInput } from "../services/analyzeService.js";
 import { storage } from "../storage.js";
-import { db } from "../db.js";
+import { db, getEnvironmentLabel } from "../db.js";
 import { sql } from "drizzle-orm";
 import { normalizeSubmissionText, sha256Hex, refreshAllViews } from "../warehouse/warehouseUtils.js";
 
@@ -291,6 +291,17 @@ function loadFixtures(path: string): unknown[] {
 
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
+  const env = getEnvironmentLabel();
+
+  console.log(`[seed:forum] Environment: ${env}`);
+
+  if (args.mode === "commit" && env === "production" && !process.argv.includes("--i-know-this-is-production")) {
+    console.error(
+      "ERROR: Refusing to commit seed data to production database.\n" +
+      "  If you really mean to do this, add the --i-know-this-is-production flag.",
+    );
+    process.exit(1);
+  }
 
   if (args.mode === "commit" && !args.batchId) {
     console.error("ERROR: --commit requires --batch-id <id>");

@@ -210,7 +210,7 @@ export const coreListings = coreSchema.table(
     ),
     ingestionSourceCheck: check(
       "listings_ingestion_source_check",
-      sql`${table.ingestionSource} IN ('user_submitted', 'seed', 'internal_backfill')`,
+      sql`${table.ingestionSource} IN ('user_submitted', 'seed', 'internal_backfill', 'forum_scrape', 'external_api')`,
     ),
   }),
 );
