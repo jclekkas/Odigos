@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { capture } from "@/lib/analytics";
 import { Menu, X } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
 
 function useScrollToHash() {
   const [location, navigate] = useLocation();
@@ -77,6 +78,7 @@ export default function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           <Button variant="cta" size="sm" asChild data-testid="button-cta-header">
             <Link href="/analyze" onClick={() => capture("landing_cta_clicked", { location: "header", cta_text: "Check a Quote" })}>
               Check a Quote

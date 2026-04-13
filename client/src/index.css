@@ -57,6 +57,9 @@
   --shadow-2xl: 0px 2px 0px 0px hsl(217 91% 35% / 0.00);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
+  --cta: 221 83% 53%;
+  --cta-hover: 224 76% 48%;
+  --cta-foreground: 0 0% 100%;
 
 /* Fallback for older browsers */
   --sidebar-primary-border: hsl(var(--sidebar-primary));
@@ -93,6 +96,9 @@
   --opaque-button-border-intensity: 9;
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
+  --cta: 217 91% 60%;
+  --cta-hover: 217 91% 55%;
+  --cta-foreground: 0 0% 100%;
   --background: 220 20% 8%;
   --foreground: 0 0% 95%;
   --border: 220 14% 18%;
