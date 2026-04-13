@@ -382,6 +382,29 @@ export async function getAlertsStatus(): Promise<{
   };
 }
 
+/**
+ * Fire an ad-hoc alert outside the metric-based system.
+ * Used by operational jobs (e.g., restore verification) that detect failures
+ * and need to alert immediately rather than waiting for a scheduled check.
+ */
+export async function fireAdHocAlert(opts: {
+  id: string;
+  name: string;
+  description: string;
+}): Promise<void> {
+  const rule: AlertRule = {
+    id: opts.id,
+    name: opts.name,
+    description: opts.description,
+    metric: "_adhoc",
+    comparator: "gt",
+    threshold: 0,
+    cooldownMs: 0,
+  };
+  console.log(`[alerts] Ad-hoc alert fired: "${opts.id}" — ${opts.name}`);
+  await sendAlert(rule, 1);
+}
+
 export function startAlertScheduler(intervalMs?: number): void {
   const resolvedMs = intervalMs ?? envInt("ALERT_CHECK_INTERVAL_MIN", 30) * 60 * 1000;
   console.log(`[alerts] Scheduler started — checking every ${resolvedMs / 60000} minutes`);

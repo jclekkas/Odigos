@@ -1,6 +1,8 @@
 import { refreshAllViews } from "./warehouseUtils.js";
 import { runPiiCleanup } from "../jobs/piiCleanup.js";
 import { runBackup } from "../jobs/backup.js";
+import { runRestoreVerification } from "../jobs/restoreVerification.js";
+import { fireAdHocAlert } from "../alerts.js";
 
 const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
 const STARTUP_DELAY_MS = 30_000;
@@ -8,6 +10,7 @@ const STARTUP_DELAY_MS = 30_000;
 let viewTimer: ReturnType<typeof setInterval> | null = null;
 let piiTimer: ReturnType<typeof setInterval> | null = null;
 let backupTimer: ReturnType<typeof setInterval> | null = null;
+let restoreVerifyTimer: ReturnType<typeof setInterval> | null = null;
 
 async function runDailyRefresh(): Promise<void> {
   try {
@@ -38,6 +41,48 @@ async function runDailyBackup(): Promise<void> {
     console.log(`[scheduler] Daily backup complete. File: ${result.filePath}  Size: ${result.sizeBytes} bytes${remoteInfo}${cleanupInfo}`);
   } catch (err) {
     console.error("[scheduler] Daily backup failed:", err);
+  }
+}
+
+async function runDailyRestoreVerification(): Promise<void> {
+  // Only run if the verification DB is configured
+  if (!process.env.RESTORE_VERIFY_DB_URL || !process.env.BACKUP_S3_BUCKET) {
+    return;
+  }
+
+  try {
+    console.log("[scheduler] Running daily restore verification…");
+    const result = await runRestoreVerification();
+
+    if (!result.success) {
+      console.error(`[scheduler] Restore verification FAILED at step "${result.failedStep}": ${result.error}`);
+      await fireAdHocAlert({
+        id: "backup_restore_failed",
+        name: "Backup Restore Verification Failed",
+        description:
+          `Restore verification failed at step: ${result.failedStep}\n` +
+          `Backup file: ${result.backupFile ?? "unknown"}\n` +
+          `Error: ${result.error}`,
+      });
+    } else {
+      console.log(
+        `[scheduler] Restore verification passed. ` +
+        `File: ${result.backupFile}  ` +
+        `Restore: ${(result.restoreDurationMs / 1000).toFixed(1)}s  ` +
+        `Validation: ${(result.validationDurationMs / 1000).toFixed(1)}s`,
+      );
+    }
+  } catch (err) {
+    console.error("[scheduler] Restore verification failed:", err);
+    try {
+      await fireAdHocAlert({
+        id: "backup_restore_failed",
+        name: "Backup Restore Verification Failed",
+        description: `Restore verification crashed: ${err instanceof Error ? err.message : String(err)}`,
+      });
+    } catch {
+      // Don't let alert failure mask the original error
+    }
   }
 }
 
@@ -86,11 +131,26 @@ export function startDailyScheduler(): void {
   if (backupTimer && typeof backupTimer === "object" && "unref" in backupTimer) {
     backupTimer.unref();
   }
+
+  if (restoreVerifyTimer) return;
+
+  if (process.env.RESTORE_VERIFY_DB_URL && process.env.BACKUP_S3_BUCKET) {
+    console.log("[scheduler] Daily restore verification scheduled (every 24h).");
+
+    restoreVerifyTimer = setInterval(() => {
+      runDailyRestoreVerification();
+    }, TWENTY_FOUR_HOURS);
+
+    if (restoreVerifyTimer && typeof restoreVerifyTimer === "object" && "unref" in restoreVerifyTimer) {
+      restoreVerifyTimer.unref();
+    }
+  }
 }
 
 export function stopDailyScheduler(): void {
   if (viewTimer) { clearInterval(viewTimer); viewTimer = null; }
   if (piiTimer) { clearInterval(piiTimer); piiTimer = null; }
   if (backupTimer) { clearInterval(backupTimer); backupTimer = null; }
+  if (restoreVerifyTimer) { clearInterval(restoreVerifyTimer); restoreVerifyTimer = null; }
   console.log("[scheduler] Daily schedulers stopped.");
 }
