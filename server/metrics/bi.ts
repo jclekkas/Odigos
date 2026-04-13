@@ -333,7 +333,7 @@ export async function getBIDealOutcome(range: DateRange): Promise<BIDealOutcome>
   let topTacticFlags: Array<{ tactic: string; count: number }> = [];
 
   if (process.env.DATABASE_URL) {
-    const { db } = await import("../db");
+    const { db } = await import("../db.js");
     const { dealerSubmissions } = await import("@shared/schema");
     const { gte, and, eq } = await import("drizzle-orm");
 
@@ -425,7 +425,7 @@ export async function getBIGeographic(range: DateRange): Promise<BIGeographic> {
   const statePayments: Record<string, number> = {};
 
   if (process.env.DATABASE_URL) {
-    const { db } = await import("../db");
+    const { db } = await import("../db.js");
     const { dealerSubmissions } = await import("@shared/schema");
     const { gte, and, eq } = await import("drizzle-orm");
 
