@@ -12,19 +12,19 @@ import { ARTICLE_SOURCES } from "@/data/articleSources";
 export default function CarDealerFeesExplained() {
   useEffect(() => {
     setSeoMeta({
-      title: "Common Car Dealer Fees Explained | Odigos",
-      description: "When you buy a car, the sale price is only part of what you pay. Learn which dealer fees are required, which are optional, and how to protect yourself before signing.",
+      title: "Car Dealer Fees: Which to Accept, Which to Challenge (2026) | Odigos",
+      description: "Not every dealer fee is legitimate. Learn which charges are required by law, which are pure dealer profit, and which you should challenge before signing.",
       path: "/car-dealer-fees-explained",
     });
   }, []);
 
   return (
-    <ArticleLayout title="Common Car Dealer Fees Explained: What You Should (and Shouldn't) Pay">
+    <ArticleLayout title="Car Dealer Fees: What to Accept vs. What to Question">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Common Car Dealer Fees Explained | Odigos", description: "When you buy a car, the sale price is only part of what you pay. Learn which dealer fees are required, which are optional, and how to protect yourself before signing.", path: "/car-dealer-fees-explained" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Car Dealer Fees: Which to Accept, Which to Challenge (2026) | Odigos", description: "Not every dealer fee is legitimate. Learn which charges are required by law, which are pure dealer profit, and which you should challenge before signing.", path: "/car-dealer-fees-explained" }))}</script>
       </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-fees-headline">
-            Common Car Dealer Fees Explained: What You Should (and Shouldn't) Pay
+            Car Dealer Fees: What to Accept vs. What to Question
           </h1>
           
           <p className="text-lg text-muted-foreground mb-6">
@@ -56,10 +56,10 @@ export default function CarDealerFeesExplained() {
             </li>
           </ul>
 
-          <h2 className="text-2xl font-semibold text-foreground">Fees that are often negotiable or optional</h2>
+          <h2 className="text-2xl font-semibold text-foreground">Fees you should challenge or decline</h2>
 
           <p className="text-muted-foreground mb-4">
-            Many line items on a dealer's worksheet are add-ons, not requirements. According to <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds</a>, buyers can often push back on these charges — or decline them entirely.
+            Many line items on a dealer's worksheet are add-ons, not requirements. According to <a href="https://www.edmunds.com/car-buying/what-fees-should-you-pay-at-a-car-dealership.html" target="_blank" rel="noopener" className="underline text-foreground">Edmunds</a>, buyers can push back on these charges — or decline them entirely. If you see any of these on your quote, question them.
           </p>
 
           <ul className="space-y-2 mb-6 text-muted-foreground">
@@ -95,10 +95,22 @@ export default function CarDealerFeesExplained() {
             The simplest defense is requesting the full <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> in writing before you visit the dealership. An itemized OTD quote shows every dollar — taxes, fees, and add-ons — and makes it straightforward to spot optional charges and negotiate them out before you're sitting in the finance office.
           </p>
 
-          <p className="text-muted-foreground mb-8">
+          <p className="text-muted-foreground mb-6">
             If a dealer won't provide an itemized breakdown, that's worth treating as a signal. Transparent pricing shouldn't be hard to get.
           </p>
-          
+
+          <div className="rounded-lg border border-amber-600/20 bg-amber-600/5 p-5 mb-6">
+            <p className="text-base font-semibold text-foreground mb-2">
+              Think you're being overcharged?
+            </p>
+            <p className="text-sm text-muted-foreground mb-3">
+              See the full list of <Link href="/hidden-dealer-fees" className="underline text-foreground">hidden and junk dealer fees</Link> — with markup ranges, FTC guidance, and what to say to the dealer.
+            </p>
+          </div>
+
+          <p className="text-sm text-muted-foreground mb-8">
+            For a quick-reference table of every fee with typical ranges, see the <Link href="/car-dealer-fees-list" className="underline text-foreground">car dealer fees list</Link>.
+          </p>
 
           <ArticleCta />
 

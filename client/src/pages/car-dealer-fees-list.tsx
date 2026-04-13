@@ -18,8 +18,8 @@ export default function CarDealerFeesList() {
 
   useEffect(() => {
     setSeoMeta({
-      title: "Car Dealer Fees List: Common Dealer Charges and What They Mean | Odigos",
-      description: "A complete list of common car dealer fees — from doc fees to market adjustments. Learn which charges are normal, which are negotiable, and how to compare dealers correctly.",
+      title: "Every Car Dealer Fee Listed: Ranges, Markups, and What to Question | Odigos",
+      description: "Every dealer fee you'll see on a car quote — with typical ranges, markup indicators, and verdicts on which to accept vs. question. Compare dealers the right way.",
       path: "/car-dealer-fees-list",
     });
   }, []);
@@ -42,12 +42,12 @@ export default function CarDealerFeesList() {
   };
 
   return (
-    <ArticleLayout title="Car Dealer Fees List: Common Charges Explained">
+    <ArticleLayout title="Car Dealer Fees List: Every Charge, Range, and Verdict">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Car Dealer Fees List: Common Dealer Charges and What They Mean | Odigos", description: "A complete list of common car dealer fees — from doc fees to market adjustments. Learn which charges are normal, which are negotiable, and how to compare dealers correctly.", path: "/car-dealer-fees-list" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Every Car Dealer Fee Listed: Ranges, Markups, and What to Question | Odigos", description: "Every dealer fee you'll see on a car quote — with typical ranges, markup indicators, and verdicts on which to accept vs. question. Compare dealers the right way.", path: "/car-dealer-fees-list" }))}</script>
       </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-fees-list-headline">
-            Car Dealer Fees List: Common Charges Explained
+            Car Dealer Fees List: Every Charge, Range, and Verdict
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
@@ -199,6 +199,19 @@ export default function CarDealerFeesList() {
 
             <p className="text-muted-foreground">
               This works because it sets the expectation that you want full transparency — before you're sitting in the finance office where pressure tactics are common.
+            </p>
+
+            <div className="rounded-lg border border-amber-600/20 bg-amber-600/5 p-5 mb-6 mt-8">
+              <p className="text-base font-semibold text-foreground mb-2">
+                Spotted something suspicious on your quote?
+              </p>
+              <p className="text-sm text-muted-foreground mb-3">
+                See which fees are <Link href="/hidden-dealer-fees" className="underline text-foreground">hidden markups and junk fees</Link> — with FTC guidance, dealer cost estimates, and what to say to push back.
+              </p>
+            </div>
+
+            <p className="text-sm text-muted-foreground mb-4">
+              For the full breakdown of which fees are required vs. optional, see <Link href="/car-dealer-fees-explained" className="underline text-foreground">car dealer fees explained</Link>.
             </p>
           </div>
 

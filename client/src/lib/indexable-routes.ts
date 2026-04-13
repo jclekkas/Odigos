@@ -99,7 +99,6 @@ export const INDEXABLE_ROUTES: string[] = [
   "/privacy",
   "/terms",
   "/glossary",
-  "/junk-fees-explained",
   "/car-lease-fees-explained",
   "/money-factor-explained",
   "/residual-value-explained",

@@ -106,14 +106,14 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
       "See exactly what an Odigos dealer quote analysis looks like on a real example — including flagged issues, verdict, and a copy-paste reply to send back to the dealer.",
   },
   "/car-dealer-fees-explained": {
-    title: "Common Car Dealer Fees Explained | Odigos",
+    title: "Car Dealer Fees: Which to Accept, Which to Challenge (2026) | Odigos",
     description:
-      "When you buy a car, the sale price is only part of what you pay. Learn which dealer fees are required, which are optional, and how to protect yourself before signing.",
+      "Not every dealer fee is legitimate. Learn which charges are required by law, which are pure dealer profit, and which you should challenge before signing.",
   },
   "/car-dealer-fees-list": {
-    title: "Car Dealer Fees List: Common Dealer Charges and What They Mean | Odigos",
+    title: "Every Car Dealer Fee Listed: Ranges, Markups, and What to Question | Odigos",
     description:
-      "A complete list of common car dealer fees — from doc fees to market adjustments. Learn which charges are normal, which are negotiable, and how to compare dealers correctly.",
+      "Every dealer fee you'll see on a car quote — with typical ranges, markup indicators, and verdicts on which to accept vs. question. Compare dealers the right way.",
   },
   "/car-dealer-fees-by-state": {
     title: "Car Dealer Fees by State (2026): Caps, Limits, and What Dealers Can Charge You",
@@ -186,9 +186,9 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
       "Some dealer fees are fixed by law; others are dealer profit items. Learn which are negotiable, how to push back, and the OTD strategy that works.",
   },
   "/hidden-dealer-fees": {
-    title: "Hidden Dealer Fees: What to Watch for on Any Quote | Odigos",
+    title: "Hidden & Junk Dealer Fees: Charges That Don't Belong on Your Quote | Odigos",
     description:
-      "Market adjustment, prep fees, VIN etching, and more — hidden dealer fees add hundreds to a car purchase. Learn what each one is and what you can do.",
+      "Market adjustments, prep fees, VIN etching, and more — hidden and junk dealer fees add hundreds to a car purchase. Spot every charge that doesn't belong and learn how to fight back.",
   },
   "/doc-fee-too-high": {
     title: "Dealer Doc Fee Too High? What You Can Actually Do | Odigos",
@@ -241,19 +241,14 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
       "A $33,500 car becomes $37,947 after taxes, fees, and add-ons. Three real OTD scenarios with exact dollar amounts on every line so you know what to expect.",
   },
   "/why-dealers-wont-give-out-the-door-price": {
-    title: "Why Dealers Won't Give Out-the-Door Price (and What to Do) | Odigos",
+    title: "Why Dealers Resist OTD Pricing: The Incentive Structure | Odigos",
     description:
-      "Dealers resist OTD pricing because it removes structural advantages. Here's the incentive structure behind the refusal, what to say, and what to do when they dodge.",
+      "Dealers resist OTD pricing because it removes structural advantages. Here's the incentive structure behind the refusal — revenue model, showroom psychology, and per-buyer flexibility.",
   },
   "/glossary": {
     title: "Car Buying Glossary: Dealer Fees & Lease Terms Explained | Odigos",
     description:
       "Plain-English definitions of dealer fees, lease terms, and pricing jargon. Understand every line item on your car deal.",
-  },
-  "/junk-fees-explained": {
-    title: "Car Dealer Junk Fees: The Complete 2026 Guide | Odigos",
-    description:
-      "Junk fees are hidden or surprise charges that provide little value to the buyer. Learn the 15+ most common dealer junk fees, which are legal, and how to fight back.",
   },
   "/money-factor-explained": {
     title: "Money Factor Explained: The Hidden Interest Rate in Car Leases | Odigos",
