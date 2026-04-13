@@ -10,14 +10,14 @@
  * to prevent unbounded memory growth.
  *
  * To swap for a real job queue (Bull, BullMQ, Temporal, etc.) in the future,
- * replace only the body of this function — no route changes needed.
+ * replace only the body of this function â no route changes needed.
  *
- * ⚠️  SINGLE-INSTANCE LIMITATION
- * The internal queue implemented here uses an in-process semaphore —
+ * â ï¸  SINGLE-INSTANCE LIMITATION
+ * The internal queue implemented here uses an in-process semaphore â
  * it is memory-backed. All pending submissions live in the Node.js event
  * loop of a single process. There is no cross-instance coordination.
  * If the process crashes, any queued-but-not-yet-written submissions are lost.
- * Running multiple server replicas does not distribute or share the queue —
+ * Running multiple server replicas does not distribute or share the queue â
  * each replica independently writes its own submissions.
  * Redis, BullMQ, or a similar durable queue is required for reliability and
  * cross-instance coordination when scaling beyond one process.
@@ -31,7 +31,7 @@ import { normalizeSubmissionText, sha256Hex, normalizeFeeNames } from "./warehou
 import { db } from "./db.js";
 import { eq, isNull } from "drizzle-orm";
 
-// ── Concurrency limiter ─────────────────────────────────────────────────────
+// ââ Concurrency limiter âââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 const MAX_CONCURRENT = parseInt(process.env.WAREHOUSE_WRITE_CONCURRENCY || "5", 10);
 const MAX_QUEUE_DEPTH = parseInt(process.env.WAREHOUSE_QUEUE_MAX_DEPTH || "1000", 10);
@@ -64,7 +64,7 @@ export function getIngestionQueueStats(): { active: number; queued: number; maxC
   return { active: _activeCount, queued: _queueDepth, maxConcurrent: MAX_CONCURRENT, maxDepth: MAX_QUEUE_DEPTH };
 }
 
-// ── Submission payload ──────────────────────────────────────────────────────
+// ââ Submission payload ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 export interface SubmissionPayload {
   request: AnalysisRequest;
@@ -115,7 +115,7 @@ export function enqueueSubmission(payload: SubmissionPayload): void {
           .map((f) => f.amount)
           .filter((a): a is number => a !== null);
 
-        // Numeric values are passed as strings — Drizzle's numeric() type maps to
+        // Numeric values are passed as strings â Drizzle's numeric() type maps to
         // PostgreSQL NUMERIC which preserves precision; JS strings avoid float drift.
         const toNum = (n: number | null | undefined): string | null =>
           n != null ? String(n) : null;
@@ -185,11 +185,11 @@ export function enqueueSubmission(payload: SubmissionPayload): void {
         submissionId = submission?.id ?? null;
       }
 
-      // ── Warehouse write path ────────────────────────────────────────────────
+      // ââ Warehouse write path ââââââââââââââââââââââââââââââââââââââââââââââââ
       // Retry logic and DLQ are handled inside writeSubmissionToWarehouse.
       if (process.env.DATABASE_URL && submissionId) {
         const { writeSubmissionToWarehouse } = await import(
-          "./warehouse/warehouseWriter"
+          "./warehouse/warehouseWriter.js"
         );
         await writeSubmissionToWarehouse({
           dealerSubmissionId: submissionId,
@@ -201,7 +201,7 @@ export function enqueueSubmission(payload: SubmissionPayload): void {
       }
     } catch (err) {
       console.error("[submission-ingestor] non-blocking write failed:", err);
-      // Never rethrows — user already has their result
+      // Never rethrows â user already has their result
     } finally {
       _queueDepth--;
       semaphoreRelease();
