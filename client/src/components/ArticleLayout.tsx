@@ -1,6 +1,7 @@
 import { Link, useLocation } from "wouter";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import FadeIn from "@/components/FadeIn";
 import { breadcrumbListSchema } from "@/lib/jsonld";
 
 interface ArticleLayoutProps {
@@ -23,7 +24,7 @@ export default function ArticleLayout({ children, title, showBreadcrumbs = true 
           ]))}
         </script>
       )}
-      <main className="py-10 md:py-16 px-6">
+      <main className="py-12 md:py-20 px-6">
         <div className="max-w-[700px] mx-auto">
           {showBreadcrumbs && title && (
             <nav className="text-sm text-muted-foreground mb-6" aria-label="Breadcrumb" data-testid="nav-breadcrumbs">
@@ -34,9 +35,11 @@ export default function ArticleLayout({ children, title, showBreadcrumbs = true 
               <span className="text-foreground/70">{title}</span>
             </nav>
           )}
-          <article>
-            {children}
-          </article>
+          <FadeIn>
+            <article>
+              {children}
+            </article>
+          </FadeIn>
         </div>
       </main>
       <SiteFooter />

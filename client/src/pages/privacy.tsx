@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { setSeoMeta } from "@/lib/seo";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import FadeIn from "@/components/FadeIn";
 
 export default function Privacy() {
   useEffect(() => {
@@ -17,6 +18,7 @@ export default function Privacy() {
       <SiteHeader />
 
       <main className="py-12 md:py-20 px-6">
+        <FadeIn>
         <article className="max-w-2xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 leading-tight">
             Privacy Policy
@@ -167,6 +169,7 @@ export default function Privacy() {
 
           </div>
         </article>
+        </FadeIn>
       </main>
 
       <SiteFooter />

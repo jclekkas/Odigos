@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
-import { motion, useInView } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -10,43 +9,11 @@ import { ArrowRight, Check, CheckCircle2, Lock, AlertTriangle, DollarSign, Scale
 import { trackPageView, trackCtaClick } from "@/lib/tracking";
 import { capture } from "@/lib/analytics";
 import SiteHeader from "@/components/SiteHeader";
+import FadeIn from "@/components/FadeIn";
 import { setSeoMeta } from "@/lib/seo";
 import { productSchema } from "@/lib/jsonld";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
-
-/* ── Animation helper ──────────────────────────────────────────────────────── */
-
-const hasIntersectionObserver = typeof window !== "undefined" && "IntersectionObserver" in window;
-
-function FadeIn({
-  children,
-  className,
-  delay = 0,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
-}) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-60px" });
-
-  if (!hasIntersectionObserver) {
-    return <div className={className}>{children}</div>;
-  }
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-      transition={{ duration: 0.45, delay, ease: "easeOut" }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
 
 /* ── Constants ─────────────────────────────────────────────────────────────── */
 
