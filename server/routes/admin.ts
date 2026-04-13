@@ -31,7 +31,7 @@ export function registerAdminRoutes(app: Express): void {
   app.get("/api/metrics", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
     try {
-      const { getMetricsSummary } = await import("../analytics");
+      const { getMetricsSummary } = await import("../analytics.js");
       const summary = await getMetricsSummary();
       res.json(summary);
     } catch (error: unknown) {
@@ -43,7 +43,7 @@ export function registerAdminRoutes(app: Express): void {
   app.get("/api/alerts", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
     try {
-      const { getAlertsStatus } = await import("../alerts");
+      const { getAlertsStatus } = await import("../alerts.js");
       const status = await getAlertsStatus();
       res.json(status);
     } catch (error: unknown) {
@@ -55,7 +55,7 @@ export function registerAdminRoutes(app: Express): void {
   app.get("/api/technical", async (req, res) => {
     if (!requireAdminKey(req, res)) return;
     try {
-      const { getTechnicalSummary, getPiiExpiryStatus } = await import("../analytics");
+      const { getTechnicalSummary, getPiiExpiryStatus } = await import("../analytics.js");
       const [summary, piiRetention] = await Promise.all([getTechnicalSummary(), getPiiExpiryStatus()]);
       res.json({ ...summary, piiRetention });
     } catch (error: unknown) {
