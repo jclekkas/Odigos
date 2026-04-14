@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Router } from "wouter";
 import { memoryLocation } from "wouter/memory-location";
 import { HelmetProvider } from "react-helmet-async";
+import { ThemeProvider } from "../../client/src/components/ThemeProvider.js";
 import DealerDocFee from "../../client/src/pages/dealer-doc-fee.js";
 import HowMuchShouldYouPayForACar from "../../client/src/pages/how-much-should-you-pay-for-a-car.js";
 import CalculateOutTheDoorPrice from "../../client/src/pages/calculate-out-the-door-price.js";
@@ -32,26 +33,30 @@ function makeQueryClient() {
 
 function renderPage(Page: React.ComponentType) {
   return render(
-    <HelmetProvider>
-      <QueryClientProvider client={makeQueryClient()}>
-        <Router>
-          <Page />
-        </Router>
-      </QueryClientProvider>
-    </HelmetProvider>
+    <ThemeProvider>
+      <HelmetProvider>
+        <QueryClientProvider client={makeQueryClient()}>
+          <Router>
+            <Page />
+          </Router>
+        </QueryClientProvider>
+      </HelmetProvider>
+    </ThemeProvider>
   );
 }
 
 function renderPageAtPath(Page: React.ComponentType, path: string) {
   const { hook } = memoryLocation({ path, static: true });
   return render(
-    <HelmetProvider>
-      <QueryClientProvider client={makeQueryClient()}>
-        <Router hook={hook}>
-          <Page />
-        </Router>
-      </QueryClientProvider>
-    </HelmetProvider>
+    <ThemeProvider>
+      <HelmetProvider>
+        <QueryClientProvider client={makeQueryClient()}>
+          <Router hook={hook}>
+            <Page />
+          </Router>
+        </QueryClientProvider>
+      </HelmetProvider>
+    </ThemeProvider>
   );
 }
 
