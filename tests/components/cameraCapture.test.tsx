@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Router } from "wouter";
 import { HelmetProvider } from "react-helmet-async";
+import { ThemeProvider } from "../../client/src/components/ThemeProvider.js";
 import Home from "../../client/src/pages/home.js";
 import { getQueryFn } from "../../client/src/lib/queryClient.js";
 
@@ -26,13 +27,15 @@ function makeQueryClient() {
 
 function renderHome(queryClient = makeQueryClient()) {
   return render(
-    <HelmetProvider>
-      <QueryClientProvider client={queryClient}>
-        <Router>
-          <Home />
-        </Router>
-      </QueryClientProvider>
-    </HelmetProvider>
+    <ThemeProvider>
+      <HelmetProvider>
+        <QueryClientProvider client={queryClient}>
+          <Router>
+            <Home />
+          </Router>
+        </QueryClientProvider>
+      </HelmetProvider>
+    </ThemeProvider>
   );
 }
 
