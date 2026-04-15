@@ -13,6 +13,23 @@ const ready = initialize().catch((err) => {
 });
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
-  await ready;
-  return app(req, res);
+  try {
+    await ready;
+    return app(req, res);
+  } catch (err) {
+    // Last-line defense against FUNCTION_INVOCATION_FAILED: if anything in the
+    // initialization await or the synchronous Express dispatch throws, return a
+    // structured 500 instead of letting Vercel report a generic crash. Express
+    // handles its own async errors via the registered error middleware; this
+    // catch only fires for truly exceptional failures (e.g. import-time state
+    // corruption), so it should never mask normal request-handling errors.
+    console.error("[handler] uncaught error during request dispatch:", err);
+    if (!res.headersSent) {
+      res.statusCode = 500;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({ error: "Internal Server Error", message: "Function dispatch failed; see /api/health for init state." }));
+    } else {
+      try { res.end(); } catch { /* ignore */ }
+    }
+  }
 }

@@ -638,8 +638,20 @@ export async function initialize(): Promise<void> {
 
     // In production, serve static assets and inject SEO metadata.
     // In development, Vite dev server is set up in the standalone block below.
+    // Wrapped in its own try/catch so a missing build directory (e.g. a Vercel
+    // preview where `npm run build` partially failed, or includeFiles dropped
+    // the bundle) doesn't abort the rest of initialize() — /api/* routes are
+    // already registered, /api/health remains usable for diagnosis, and the
+    // schema bootstrap below still gets a chance to run.
     if (process.env.NODE_ENV === "production") {
-      serveStatic(app);
+      try {
+        serveStatic(app);
+      } catch (err) {
+        logger.error("serveStatic failed (continuing without static assets)", {
+          error: String(err),
+          stack: (err as Error)?.stack,
+        });
+      }
     }
 
     // ── Non-critical path: DB schema bootstrap ──────────────────────────────
