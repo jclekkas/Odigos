@@ -138,6 +138,16 @@ app.use((req, res, next) => {
   return next();
 });
 
+// Admin pages share the SPA shell title and have no useful public content.
+// Keep them out of Google's index so they don't dilute the site's quality
+// signals as duplicate homepage clones.
+app.use((req, res, next) => {
+  if (req.path === "/admin" || req.path.startsWith("/admin/")) {
+    res.setHeader("X-Robots-Tag", "noindex, nofollow");
+  }
+  return next();
+});
+
 app.use((req, res, next) => {
   if (req.path === "/api/stripe-webhook" || req.path === "/api/health") {
     return next();

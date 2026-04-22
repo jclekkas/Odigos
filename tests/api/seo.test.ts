@@ -76,38 +76,9 @@ describe("GET /robots.txt", () => {
   });
 });
 
-// ─── sitemap.xml runtime checks ───────────────────────────────────────────────
-
-describe("GET /sitemap.xml", () => {
-  it("responds with 200 and application/xml content-type", async () => {
-    const res = await request(app).get("/sitemap.xml");
-    expect(res.status).toBe(200);
-    expect(res.headers["content-type"]).toMatch(/xml/);
-  });
-
-  it("does not contain odigos.replit.app", async () => {
-    const res = await request(app).get("/sitemap.xml");
-    expect(res.text).not.toContain("odigos.replit.app");
-  });
-
-  it("contains /calculate-out-the-door-price", async () => {
-    const res = await request(app).get("/sitemap.xml");
-    expect(res.text).toContain("odigosauto.com/calculate-out-the-door-price");
-  });
-
-  it("contains /why-dealers-wont-give-out-the-door-price", async () => {
-    const res = await request(app).get("/sitemap.xml");
-    expect(res.text).toContain("odigosauto.com/why-dealers-wont-give-out-the-door-price");
-  });
-
-  it("does not contain /admin routes", async () => {
-    const res = await request(app).get("/sitemap.xml");
-    expect(res.text).not.toContain("/admin/");
-  });
-
-  it("does not contain /guides redirect route", async () => {
-    const res = await request(app).get("/sitemap.xml");
-    const lines = res.text.split("\n").filter((l) => l.includes("/guides"));
-    expect(lines.length).toBe(0);
-  });
-});
+// /sitemap.xml is a static file served from client/public/sitemap.xml
+// (copied to dist/public/sitemap.xml by Vite, then served by Vercel's CDN
+// or Express's static middleware in local prod). It is no longer handled
+// by registerRoutes, so there is nothing Express-side to exercise here.
+// Content assertions live in tests/unit/seo.test.ts which reads the file
+// directly from disk.
