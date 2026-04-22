@@ -97,13 +97,20 @@ describe("sitemap.xml content", () => {
 
 // ─── robots.txt ───────────────────────────────────────────────────────────────
 
-describe("robots.txt", () => {
-  it("does not contain odigos.replit.app in sitemap reference (server-side check)", () => {
-    const serverRoute = readFileSync(resolve(ROOT, "server/routes/reference.ts"), "utf-8");
-    expect(serverRoute).not.toContain("odigos.replit.app");
-    expect(serverRoute).toContain("CANONICAL_ORIGIN");
-    const siteConfig = readFileSync(resolve(ROOT, "shared/siteConfig.ts"), "utf-8");
-    expect(siteConfig).toContain("odigosauto.com");
+describe("robots.txt content", () => {
+  const robots = readFileSync(resolve(ROOT, "client/public/robots.txt"), "utf-8");
+
+  it("allows all user agents", () => {
+    expect(robots).toContain("User-agent: *");
+    expect(robots).toContain("Allow: /");
+  });
+
+  it("points sitemap at the canonical apex domain", () => {
+    expect(robots).toContain("Sitemap: https://odigosauto.com/sitemap.xml");
+  });
+
+  it("does not reference the staging domain", () => {
+    expect(robots).not.toContain("odigos.replit.app");
   });
 });
 

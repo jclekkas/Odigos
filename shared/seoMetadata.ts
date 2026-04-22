@@ -96,6 +96,11 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
     description:
       "Terms of Service for Odigos — independent dealer quote analysis. Read about acceptable use, disclaimers, and limitations of liability.",
   },
+  "/legal": {
+    title: "Legal & Compliance | Odigos",
+    description:
+      "Plain-language summary of Odigos terms, privacy practices, data retention, and your rights under CCPA and GDPR.",
+  },
   "/how-odigos-works": {
     title: "How Odigos Works | Dealer Quote Analysis",
     description:
