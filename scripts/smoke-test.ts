@@ -250,6 +250,75 @@ async function run(): Promise<void> {
 
   await checkEndpoint("/out-the-door-price");
 
+  // Canonical uniqueness regression guard. A silent bug that returns the same
+  // canonical (or no canonical at all) for every URL — e.g. Vercel's CDN
+  // serving the SPA shell directly, or injectSeoMeta() early-returning on
+  // unmapped routes — is exactly what folded the site into a single duplicate
+  // of the homepage in April 2026. This check catches that shape directly:
+  // each representative route must emit a self-referencing canonical that
+  // matches its pathname, and no two routes may share one.
+  {
+    const label = "canonical tags are unique and self-referencing";
+    const routes = [
+      "/",
+      "/analyze",
+      "/out-the-door-price",
+      "/car-dealer-fees-by-state",
+      "/car-dealer-fees-california",
+      "/car-dealer-fees-texas",
+      "/dealer-doc-fee",
+      "/glossary",
+      "/about",
+      "/legal",
+    ];
+    const canonicalRegex = /<link\s+rel="canonical"\s+href="([^"]+)"/i;
+    const seen = new Map<string, string>();
+    const problems: string[] = [];
+
+    for (const route of routes) {
+      const url = `${BASE_URL}${route}`;
+      let body: string;
+      try {
+        const res = await fetchWithTimeout(url, {
+          redirect: "follow",
+          headers: { "User-Agent": "OdigosAutoSmokeTest/1.0" },
+        });
+        if (res.status !== 200) {
+          problems.push(`${route}: expected 200, got ${res.status}`);
+          continue;
+        }
+        body = await res.text();
+      } catch (err: unknown) {
+        problems.push(`${route}: fetch failed — ${errorMessage(err)}`);
+        continue;
+      }
+
+      const match = body.match(canonicalRegex);
+      if (!match) {
+        problems.push(`${route}: missing <link rel="canonical">`);
+        continue;
+      }
+      const canonical = match[1];
+      const expected = `https://odigosauto.com${route === "/" ? "/" : route}`;
+      if (canonical !== expected && canonical !== expected.replace(/\/$/, "")) {
+        problems.push(`${route}: canonical is "${canonical}", expected "${expected}"`);
+      }
+
+      const owner = seen.get(canonical);
+      if (owner && owner !== route) {
+        problems.push(`${route}: shares canonical "${canonical}" with ${owner}`);
+      } else {
+        seen.set(canonical, route);
+      }
+    }
+
+    if (problems.length > 0) {
+      fail(label, problems.join("; "));
+    } else {
+      pass(label);
+    }
+  }
+
   // POST /api/analyze — minimal payload; any non-5xx response is acceptable.
   {
     const label = "POST /api/analyze → not 5xx";

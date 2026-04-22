@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://odigosauto.com/sitemap.xml

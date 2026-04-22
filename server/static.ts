@@ -58,7 +58,7 @@ export function serveStatic(app: Express) {
       return res.redirect(301, "/#pricing");
     }
 
-    if (rawPath === "/dealer-tactics") {
+    if (rawPath === "/dealer-tactics" || rawPath === "/guides") {
       return res.redirect(301, "/dealer-pricing-tactics");
     }
 
