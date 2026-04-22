@@ -206,7 +206,10 @@ async function getGoogleAccessToken(serviceAccountJson: string): Promise<string>
 
 function parseSitemapUrls(): string[] {
   try {
-    const sitemapPath = path.resolve("sitemap.xml");
+    // Build output; included in the Vercel function bundle via
+    // vercel.json's includeFiles. In local dev, run `npm run build` once so
+    // this file exists. On Replit prod, the build step produces it.
+    const sitemapPath = path.resolve("dist/public/sitemap.xml");
     const xml = fs.readFileSync(sitemapPath, "utf8");
     const parser = new XMLParser();
     const result = parser.parse(xml);

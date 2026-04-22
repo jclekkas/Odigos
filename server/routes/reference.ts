@@ -16,10 +16,10 @@ export function registerReferenceRoutes(app: Express): void {
   // so that it remains available even when initialize() fails. Do not add it
   // here — Express would just shadow this registration with the synchronous one.
 
-  app.get("/sitemap.xml", (_req, res) => {
-    res.type("application/xml");
-    res.sendFile("sitemap.xml", { root: "." });
-  });
+  // /sitemap.xml is a static file at client/public/sitemap.xml. Vite copies it
+  // into dist/public/sitemap.xml at build time; Vercel then serves it straight
+  // from the CDN and Express's express.static serves it in local/Replit prod.
+  // No dynamic route needed.
 
   app.get("/robots.txt", (_req, res) => {
     res.type("text/plain");

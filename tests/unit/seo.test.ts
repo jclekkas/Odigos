@@ -34,7 +34,7 @@ describe("buildCanonical", () => {
 // ─── sitemap.xml ──────────────────────────────────────────────────────────────
 
 function getSitemapLocs(): string[] {
-  const content = readFileSync(resolve(ROOT, "sitemap.xml"), "utf-8");
+  const content = readFileSync(resolve(ROOT, "client/public/sitemap.xml"), "utf-8");
   const matches = [...content.matchAll(/<loc>(.*?)<\/loc>/g)];
   return matches.map((m) => m[1]);
 }
