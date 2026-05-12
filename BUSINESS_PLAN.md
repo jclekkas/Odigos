@@ -1,4 +1,4 @@
-# Odigos — Business Overview
+# Odigos — Business Plan
 
 ## Product
 
@@ -6,7 +6,7 @@ Odigos is a consumer protection tool for car buyers negotiating with dealerships
 
 Users either:
 - paste dealer text, or
-- upload a screenshot, photo, email, or PDF of a dealer quote
+- upload a screenshot, photo, or PDF of a dealer quote
 
 Odigos extracts the text and analyzes the quote in seconds.
 
@@ -24,12 +24,13 @@ The product is intentionally narrow: it provides a fast second opinion on a spec
 Odigos uses a free → paid unlock model.
 
 Free
-- GO / NO-GO verdict
+- GO / NO-GO verdict and color-coded score (GREEN / YELLOW / RED)
 - high-level issue summary
+- a partial preview of the missing-information checklist and dealer reply (full versions gated behind a pass)
 
 Purpose:
 Give the user an immediate answer to the question:
-"Does this deal look safe or suspicious?"
+"Does this deal look safe or suspicious?" — and a clear taste of what the paid analysis adds.
 
 Paid (two-tier time-windowed passes, one-time)
 
@@ -53,6 +54,8 @@ Help the buyer respond to multiple dealers and correct the deal across the
 full shopping cycle, not just a single quote.
 
 This model mirrors how buyers actually shop: car purchases are episodic but **non-atomic** — most buyers solicit quotes from multiple dealers across a weekend or a couple of weeks before committing. A time-windowed pass aligns the purchase to the *shopping cycle*, not the *individual quote*. The 72-hour Weekend Warrior tier captures decisive weekend shoppers; the 14-day Car Buyer's Pass captures the more deliberate multi-week comparison shopper. Both avoid the friction of subscriptions because the window is intentionally short — you buy a pass for *this car purchase*, not forever.
+
+On price differential: the $20 gap between the two tiers is deliberately small. The 14-day pass is the default and what we expect most buyers to choose; the 72-hour pass exists to convert decisive shoppers who would otherwise bounce on price anchoring rather than to maximize ARPU. We accept some cannibalization in exchange for a lower-friction entry SKU.
 
 ## The Core Problem
 
@@ -124,21 +127,34 @@ Secondary discovery sources include:
 
 However, SEO is a slow, compounding channel, and early traction depends on search indexing and ranking improvements over time.
 
+If organic compounding underperforms, two fallback channels are available without breaking the unit economics:
+- **B2B2C partnerships** — credit unions, employer benefits platforms, and auto-loan refinance products that want a free consumer-protection feature to offer their members. These channels deliver high-intent users at near-zero CAC in exchange for co-branding or a revenue share.
+- **Community and creator placement** — personal-finance creators and subreddits whose audiences match the buyer profile. Lower-volume than SEO but cheaper to test in weeks rather than quarters.
+
+Paid acquisition is constrained by the one-time LTV described in *Economics* and is treated as a last resort.
+
 ## Competitive Landscape
 
-Odigos competes less with traditional car-pricing tools and more with informal advice channels.
+Odigos is positioned at a different point in the buying funnel than most existing car-pricing products. Competition splits into three groups:
+
+**Pre-quote pricing tools** — TrueCar, Edmunds TMV, CarGurus Deal Rating, Kelley Blue Book.
+These help buyers form an expectation *before* contacting a dealer. They do not analyze the dealer's actual quote, do not flag specific tactics in a specific message, and several have dealer-paid distribution that creates a perceived conflict of interest. Odigos is post-quote: it activates after the dealer has responded.
+
+**Negotiation services and coaching** — CarEdge, YAA (Your Auto Advocate), independent car-buying consultants.
+These offer human advice or concierge negotiation, typically $50–$500+ per engagement, with turnaround measured in hours or days. Odigos is faster (seconds), cheaper ($29–$49), and unattended.
+
+**Informal advice channels** — Reddit (r/askcarsales, r/cars), forums, friends with car experience, the dealer's own assurances.
+Free and widely used, but slow, inconsistent, and biased.
 
 | Alternative | What Users Do | Limitations |
 |---|---|---|
+| TrueCar / Edmunds / KBB | Look up expected pricing | Pre-quote only; doesn't read the dealer's message |
+| CarEdge / YAA / coaches | Pay a human to advise or negotiate | $50–$500+, slow, scheduling friction |
 | Reddit / forums | Post their deal and wait for feedback | slow, inconsistent advice |
 | Friends or family | Ask someone with car experience | limited expertise |
 | Dealer assurances | Trust the salesperson | conflict of interest |
-| DIY research | Read articles and guess | requires interpretation |
 
-Odigos automates what many buyers already do:
-asking someone to sanity-check a quote.
-
-The difference is speed and structure.
+Odigos's wedge is the post-quote moment: a buyer who already has a specific dealer message and needs a fast, independent read on it. Pricing tools occupy the pre-quote moment; coaching services occupy the high-touch moment. The middle — fast, structured, AI-driven analysis of a real quote — is where Odigos lives.
 
 ## The Impact of LLMs (ChatGPT, Claude, etc.)
 
@@ -158,47 +174,17 @@ In many cases, users will try ChatGPT first.
 
 However, general LLMs have limitations for this use case.
 
-1. Prompting skill requirement
-ChatGPT requires users to know what questions to ask.
-Many buyers do not know what elements of a quote matter or what signals to request.
-Odigos provides a structured analysis without prompting.
+**1. Prompting skill requirement.** ChatGPT requires users to know what questions to ask. Many buyers do not know what elements of a quote matter or what signals to request. Odigos provides a structured analysis without prompting.
 
-2. Structured output
-Odigos returns a consistent format:
-- verdict
-- detected issues
-- missing information
-- negotiation response
+**2. Structured output.** Odigos returns a consistent format — verdict, detected issues, missing information, negotiation response. ChatGPT responses are less standardized and may vary significantly depending on the prompt.
 
-ChatGPT responses are less standardized and may vary significantly depending on the prompt.
+**3. Domain-specific logic.** Odigos can embed dealership-specific pricing patterns, fee terminology detection, known negotiation tactics, and benchmark comparisons. A general LLM is not optimized for this specific domain.
 
-3. Domain-specific logic
-Odigos can embed:
-- dealership-specific pricing patterns
-- fee terminology detection
-- known negotiation tactics
-- future benchmark comparisons
+**4. Reduced friction.** Odigos supports file uploads (screenshots, photos, PDFs, dealer worksheets) and a paste box pre-tuned for dealer messages, removing the need to copy text or format prompts.
 
-A general LLM is not optimized for this specific domain.
+**5. Data accumulation.** Each analysis contributes anonymized pricing signals to Odigos' internal dataset. Over time this dataset can reveal patterns such as typical dealer documentation fees by state, frequency of add-ons, and how often quotes omit out-the-door pricing. General LLMs do not accumulate user-specific industry datasets in the same way.
 
-4. Reduced friction
-Odigos supports file uploads, allowing users to submit:
-- screenshots
-- photos
-- PDFs
-- dealer worksheets
-
-This removes the need to copy text or format prompts.
-
-5. Data accumulation
-Each analysis contributes anonymized pricing signals to Odigos' internal dataset.
-Over time this dataset can reveal patterns such as:
-- typical dealer documentation fees by state
-- frequency of add-ons
-- how often quotes omit out-the-door pricing
-
-These insights can improve analysis quality and support data-driven content.
-General LLMs do not accumulate user-specific industry datasets in the same way.
+We are clear-eyed that points 1–4 are positioning advantages, not durable moats — a general-purpose LLM product could close each gap in a release cycle. The durable defensibility, if it materializes, is point 5 combined with brand and SEO authority in the post-quote moment.
 
 ### Net effect of LLMs
 
@@ -214,15 +200,17 @@ Odigos uses a simple transaction model.
 Price: $29 (72-hour Weekend Warrior Pass) or $49 (14-day Car Buyer's Pass). Customers buy one pass per car-shopping cycle and run unlimited scans inside the window.
 
 Typical costs per transaction:
-- AI analysis: ~$0.02–$0.10
-- payment processing: ~3%
+- AI analysis: ~$0.02–$0.10 (vision input on photo/PDF uploads is the high end)
+- payment processing: Stripe at 2.9% + $0.30 per transaction
 
-Estimated gross margin: ~90–95%
+Estimated gross margin per pass: ~92–95% (≈$27 contribution on a $29 pass; ≈$46 on a $49 pass).
 
 The model avoids:
 - subscription friction
 - human support overhead
 - fulfillment costs
+
+**Lifetime value.** A car purchase is episodic — most buyers transact once every 5–7 years — so per-buyer LTV is approximately one pass (≈$40–$45 contribution) absent referral, gifting, or adjacent-product expansion. This bounds allowable CAC: organic search and referral traffic must remain the dominant acquisition channels for the unit economics to compound. Paid acquisition is viable only at low single-digit dollar CAC, which constrains channel choice but is consistent with the high-intent search wedge described below.
 
 Revenue scales primarily with traffic and conversion rate.
 
@@ -267,16 +255,39 @@ a fast second opinion on a dealer quote.
 
 ## Current State
 
-The product is live.
+The product is live at [odigosauto.com](https://odigosauto.com).
 
 Core components include:
-- paste + upload quote analysis
-- AI-driven review engine
-- Stripe payment integration
-- PII-redacted submission storage
-- SEO content targeting buyer intent queries
+- paste + upload quote analysis (paste, image upload, PDF, camera)
+- AI-driven review engine (OpenAI GPT-4o with GPT-4o-mini fallback)
+- Stripe payment integration with two pass tiers
+- PII-redacted submission storage with 90-day retention
+- SEO content targeting buyer intent queries (130+ indexed pages, all 50 states)
 
 The immediate milestone is validating that organic search traffic converts into paid analyses.
+
+## Traction
+
+<!-- TODO: replace placeholders with your real numbers before sending. -->
+*Reporting period: [START DATE] – [END DATE]*
+
+- **Submissions (free analyses started):** [N]
+- **Paid pass purchases:** [N] (Weekend Warrior: [N], Car Buyer's Pass: [N])
+- **Free → paid conversion rate:** [X]%
+- **Revenue to date:** $[N]
+- **Organic sessions (last 30 days):** [N], up [X]% MoM
+- **Top-ranking SEO pages:** [page 1] (#[rank] for "[query]"), [page 2] (#[rank] for "[query]"), [page 3] (#[rank] for "[query]")
+- **Repeat-pattern signal in dataset:** [one-sentence example, e.g. "67% of TX-state submissions show doc fees above the $150 statutory cap"]
+
+[Optional: one chart or sparkline — submissions / week or organic sessions / week.]
+
+## Team
+
+<!-- TODO: replace with real bios. One paragraph per person is plenty. -->
+
+**[Founder name], [role]** — [one-sentence credential: prior company, relevant domain experience, technical or commercial background]. [One sentence on why this person, this problem: personal car-buying experience, prior work in consumer protection / fintech / marketplaces, etc.]
+
+[If solo: a one-line note on advisors or planned hires. If multiple founders: repeat the block above per person.]
 
 ## Near-Term Milestones
 
@@ -287,3 +298,23 @@ Key validation metrics over the next year include:
 - early evidence of repeat pricing patterns in submissions
 
 These signals determine whether the product has strong product-market fit.
+
+## The Ask
+
+<!-- TODO: fill in round details. Remove this section entirely if this is an intro meeting rather than a fundraising conversation. -->
+
+**Stage:** [pre-seed / seed]
+**Raising:** $[amount] on a [SAFE / priced round] at a [post-money cap / valuation] of $[amount]
+**Lead status:** [seeking lead / lead committed at $X / party round]
+
+**Use of funds (next [12 / 18] months):**
+- [X]% — content and SEO production (writers, programmatic state pages, link building)
+- [X]% — engineering and AI cost (model usage, vision-input support, dataset tooling)
+- [X]% — founder runway
+- [X]% — B2B2C partnership development (credit unions, employer benefits)
+
+**Milestones the round buys:**
+- [target: monthly organic sessions]
+- [target: monthly paid conversions and revenue run-rate]
+- [target: signed partnership pilot or first B2B distribution deal]
+- [target: dataset milestone — e.g. "10,000 analyzed quotes, first state-level fee benchmark report published"]
