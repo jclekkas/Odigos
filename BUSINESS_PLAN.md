@@ -255,16 +255,39 @@ a fast second opinion on a dealer quote.
 
 ## Current State
 
-The product is live.
+The product is live at [odigosauto.com](https://odigosauto.com).
 
 Core components include:
-- paste + upload quote analysis
-- AI-driven review engine
-- Stripe payment integration
-- PII-redacted submission storage
-- SEO content targeting buyer intent queries
+- paste + upload quote analysis (paste, image upload, PDF, camera)
+- AI-driven review engine (OpenAI GPT-4o with GPT-4o-mini fallback)
+- Stripe payment integration with two pass tiers
+- PII-redacted submission storage with 90-day retention
+- SEO content targeting buyer intent queries (130+ indexed pages, all 50 states)
 
 The immediate milestone is validating that organic search traffic converts into paid analyses.
+
+## Traction
+
+<!-- TODO: replace placeholders with your real numbers before sending. -->
+*Reporting period: [START DATE] – [END DATE]*
+
+- **Submissions (free analyses started):** [N]
+- **Paid pass purchases:** [N] (Weekend Warrior: [N], Car Buyer's Pass: [N])
+- **Free → paid conversion rate:** [X]%
+- **Revenue to date:** $[N]
+- **Organic sessions (last 30 days):** [N], up [X]% MoM
+- **Top-ranking SEO pages:** [page 1] (#[rank] for "[query]"), [page 2] (#[rank] for "[query]"), [page 3] (#[rank] for "[query]")
+- **Repeat-pattern signal in dataset:** [one-sentence example, e.g. "67% of TX-state submissions show doc fees above the $150 statutory cap"]
+
+[Optional: one chart or sparkline — submissions / week or organic sessions / week.]
+
+## Team
+
+<!-- TODO: replace with real bios. One paragraph per person is plenty. -->
+
+**[Founder name], [role]** — [one-sentence credential: prior company, relevant domain experience, technical or commercial background]. [One sentence on why this person, this problem: personal car-buying experience, prior work in consumer protection / fintech / marketplaces, etc.]
+
+[If solo: a one-line note on advisors or planned hires. If multiple founders: repeat the block above per person.]
 
 ## Near-Term Milestones
 
@@ -275,3 +298,23 @@ Key validation metrics over the next year include:
 - early evidence of repeat pricing patterns in submissions
 
 These signals determine whether the product has strong product-market fit.
+
+## The Ask
+
+<!-- TODO: fill in round details. Remove this section entirely if this is an intro meeting rather than a fundraising conversation. -->
+
+**Stage:** [pre-seed / seed]
+**Raising:** $[amount] on a [SAFE / priced round] at a [post-money cap / valuation] of $[amount]
+**Lead status:** [seeking lead / lead committed at $X / party round]
+
+**Use of funds (next [12 / 18] months):**
+- [X]% — content and SEO production (writers, programmatic state pages, link building)
+- [X]% — engineering and AI cost (model usage, vision-input support, dataset tooling)
+- [X]% — founder runway
+- [X]% — B2B2C partnership development (credit unions, employer benefits)
+
+**Milestones the round buys:**
+- [target: monthly organic sessions]
+- [target: monthly paid conversions and revenue run-rate]
+- [target: signed partnership pilot or first B2B distribution deal]
+- [target: dataset milestone — e.g. "10,000 analyzed quotes, first state-level fee benchmark report published"]
