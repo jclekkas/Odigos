@@ -2,11 +2,8 @@
 
 ## Deployment target: Vercel
 
-Production target is **Vercel**. A migration from Replit is in progress and the repo still contains Replit-era files. Treat these as historical and do not base diagnoses on them:
+Production target is **Vercel**. The Replit-era config has been removed from the repo. A few migration-window remnants remain in code — treat them as historical:
 
-- `.replit`, `replit.md` — old dev-container config
-- `DNS_SETUP.md` — describes the old Replit DNS setup; outdated
-- `.github/workflows/deploy.yml` — Replit deploy webhook
 - `process.env.VERCEL` branches in `server/static.ts` — dual-mode code from the migration window
 
 If you find yourself diagnosing a Replit-specific problem, stop and ask — it's likely irrelevant.

@@ -42,7 +42,7 @@ Both passes unlock identical features. One-time purchase, no subscriptions.
 | Payments | Stripe |
 | Analytics | PostHog, Sentry |
 | Testing | Vitest, Playwright |
-| Deployment | Replit (autoscale) |
+| Deployment | Vercel (serverless) |
 
 ## Project Structure
 
@@ -116,7 +116,9 @@ npm run test:coverage     # Generate coverage report
 
 ## Deployment
 
-Odigos is deployed on Replit with autoscale. Pushing to `main` triggers automatic deployment via GitHub Actions.
+Odigos is deployed on Vercel. The production entry point is `api/index.ts`, which boots the Express app from `server/index.ts`. `vercel.json` rewrites all requests to `/api` unless intercepted by the CDN for static assets. Pushes to `main` trigger an automatic production deploy; pull requests get a Vercel preview deploy via `.github/workflows/vercel-preview.yml`.
+
+Canonical production origin: `https://odigosauto.com` (apex, non-www).
 
 ### CI Pipeline
 
@@ -130,6 +132,8 @@ Every push and pull request runs:
 6. **E2E** — Playwright tests with PostgreSQL service container
 
 Branch protection on `main` requires all status checks to pass and one approving review.
+
+A production smoke test (`scripts/smoke-test.ts`) runs on a 6-hour cron via `.github/workflows/smoke.yml`.
 
 ## Security
 
