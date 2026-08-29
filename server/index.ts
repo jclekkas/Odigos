@@ -256,10 +256,33 @@ async function initRateLimiters(): Promise<void> {
     },
   });
 
+  // Outbound email is expensive to abuse and cheap to trigger, so it gets a
+  // far tighter bucket than the general /api/ limit.
+  const emailPreviewLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    max: 5,
+    standardHeaders: true,
+    legacyHeaders: false,
+    ...storeOption,
+    handler: async (req, res) => {
+      await writeAuditEvent(req, "rate_limit_breach", "failure", {
+        route: req.originalUrl,
+        method: req.method,
+        rateLimitBucket: "email_preview",
+        statusCode: 429,
+      });
+      res.status(429).json({
+        error: "Too many requests",
+        message: "You've sent several emails already. Please try again later.",
+      });
+    },
+  });
+
   app.use("/api/", generalLimiter);
   app.use("/api/analyze", analyzeLimiter);
   app.use("/api/blob/upload-token", blobUploadLimiter);
   app.use("/api/extract-text-from-blob", blobUploadLimiter);
+  app.use("/api/email-preview", emailPreviewLimiter);
 }
 
 app.use(
@@ -345,7 +368,40 @@ app.use((req, res, next) => {
 // Always-available diagnostic endpoint. Registered synchronously at module
 // load (before initialize() runs) so that operators can still reach
 // /api/health and read initState even when initialization failed.
-app.get("/api/health", async (_req, res) => {
+//
+// Because it is registered before initRateLimiters() adds the /api/ limiter,
+// it needs its own bucket — otherwise it is the one unmetered route on the
+// service, and it runs a database probe on every call.
+/**
+ * Non-responding admin key check, used to decide how much detail /api/health
+ * returns. Unlike requireAdminKey() in routes/admin.ts this never writes to
+ * the response — an anonymous caller gets the lean body, not a 401.
+ */
+function hasValidAdminKey(req: Request): boolean {
+  const configuredKey = process.env.ADMIN_KEY;
+  if (!configuredKey) return false;
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) return false;
+  try {
+    const a = Buffer.from(configuredKey);
+    const b = Buffer.from(authHeader.slice("Bearer ".length));
+    return a.length === b.length && crypto.timingSafeEqual(a, b);
+  } catch {
+    return false;
+  }
+}
+
+const healthLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (_req, res) => {
+    res.status(429).json({ error: "Too many requests" });
+  },
+});
+
+app.get("/api/health", healthLimiter, async (req, res) => {
   const uptimeSeconds = process.uptime();
   const mem = process.memoryUsage();
   const heapUsedMb = Math.round((mem.heapUsed / 1024 / 1024) * 10) / 10;
@@ -370,11 +426,24 @@ app.get("/api/health", async (_req, res) => {
     }
   }
 
-  res.json({
+  // Public shape: enough for uptime monitoring and the smoke test, and
+  // nothing that helps someone map the deployment. The diagnostic detail
+  // (init errors, AI routing, key provenance) moved behind the admin key —
+  // it used to include the last four characters of the live OpenAI key.
+  const publicBody = {
     status,
     uptimeSeconds: Math.round(uptimeSeconds),
     memory: { heapUsedMb, heapTotalMb, rssMb },
     initialized: initState.done,
+    db: { connected: dbConnected },
+  };
+
+  if (!hasValidAdminKey(req)) {
+    return res.json(publicBody);
+  }
+
+  return res.json({
+    ...publicBody,
     initError: initState.error
       ? String((initState.error as Error)?.message ?? initState.error)
       : null,
@@ -396,7 +465,6 @@ app.get("/api/health", async (_req, res) => {
         : process.env.OPENAI_API_KEY
           ? "OPENAI_API_KEY"
           : "none",
-      apiKeySuffix: (process.env.AI_INTEGRATIONS_OPENAI_API_KEY ?? process.env.OPENAI_API_KEY)?.slice(-4) ?? null,
     },
   });
 });
@@ -618,11 +686,11 @@ export async function initialize(): Promise<void> {
         : process.env.OPENAI_BASE_URL
           ? "custom"
           : "direct-openai",
-      OPENAI_API_KEY_SUFFIX: (process.env.AI_INTEGRATIONS_OPENAI_API_KEY ?? process.env.OPENAI_API_KEY)?.slice(-4) ?? null,
       AI_INTEGRATIONS_OPENAI_MODEL: process.env.AI_INTEGRATIONS_OPENAI_MODEL ?? null,
       AI_INTEGRATIONS_OPENAI_FALLBACK_MODEL: process.env.AI_INTEGRATIONS_OPENAI_FALLBACK_MODEL ?? null,
       REDIS_URL: Boolean(process.env.REDIS_URL),
       SENTRY_DSN: Boolean(process.env.SENTRY_DSN),
+      EMAIL_TOKEN_SIGNING: Boolean(process.env.EMAIL_TOKEN_SECRET || process.env.SESSION_SECRET),
       NODE_ENV: process.env.NODE_ENV ?? null,
       VERCEL: Boolean(process.env.VERCEL),
     });
