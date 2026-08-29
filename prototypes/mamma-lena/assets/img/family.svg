@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1400" width="1100" height="1400" role="img" aria-label="Lena, Carlo, Giovanni and Carmine">
+<defs>
+<linearGradient id="bgfamily" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#4A2C1C"/><stop offset="1" stop-color="#160F0B"/></linearGradient>
+<radialGradient id="glowfamily" cx="0.32" cy="0.24" r="0.85"><stop offset="0" stop-color="#E8A15C" stop-opacity="0.55"/><stop offset="0.55" stop-color="#E8A15C" stop-opacity="0.14"/><stop offset="1" stop-color="#E8A15C" stop-opacity="0"/></radialGradient>
+<radialGradient id="vigfamily" cx="0.5" cy="0.48" r="0.78"><stop offset="0.45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.55"/></radialGradient>
+<filter id="softfamily62" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="62"/></filter><filter id="softfamily70" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="70"/></filter><filter id="softfamily76" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="76"/></filter>
+<filter id="grainfamily" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="23" result="n"/><feColorMatrix in="n" type="saturate" values="0"/></filter>
+</defs>
+<rect width="1100" height="1400" fill="url(#bgfamily)"/>
+<ellipse cx="550" cy="588" rx="264" ry="308" fill="#FFFFFF" opacity="0.11" filter="url(#softfamily62)"/><ellipse cx="550" cy="1204" rx="440" ry="336" fill="#000000" opacity="0.34" filter="url(#softfamily76)"/><ellipse cx="308" cy="280" rx="220" ry="224" fill="#FFD9A0" opacity="0.2" filter="url(#softfamily70)"/>
+<rect width="1100" height="1400" fill="url(#glowfamily)"/>
+<rect width="1100" height="1400" fill="url(#vigfamily)"/>
+<rect width="1100" height="1400" filter="url(#grainfamily)" opacity="0.16" style="mix-blend-mode:overlay"/>
+<g text-anchor="middle" fill="#F3EADA" font-family="Georgia,'Times New Roman',serif"><line x1="330" y1="571" x2="770" y2="571" stroke="#F3EADA" stroke-opacity="0.3" stroke-width="1"/><text x="550" y="640" font-family="Helvetica,Arial,sans-serif" font-size="28" letter-spacing="11.8" opacity="0.6">FAMILY PORTRAIT</text><text x="550" y="747" font-size="63" font-style="italic" opacity="0.88">Lena, Carlo, Giovanni and Carmine</text><line x1="330" y1="820" x2="770" y2="820" stroke="#F3EADA" stroke-opacity="0.3" stroke-width="1"/></g>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1250" width="1000" height="1250" role="img" aria-label="Tiramisù della casa">
+<defs>
+<linearGradient id="bgdishtiramisu" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#2E2A26"/><stop offset="1" stop-color="#100E0C"/></linearGradient>
+<radialGradient id="glowdishtiramisu" cx="0.32" cy="0.24" r="0.85"><stop offset="0" stop-color="#D8B27A" stop-opacity="0.55"/><stop offset="0.55" stop-color="#D8B27A" stop-opacity="0.14"/><stop offset="1" stop-color="#D8B27A" stop-opacity="0"/></radialGradient>
+<radialGradient id="vigdishtiramisu" cx="0.5" cy="0.48" r="0.78"><stop offset="0.45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.55"/></radialGradient>
+<filter id="softdishtiramisu38" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="38"/></filter><filter id="softdishtiramisu46" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="46"/></filter><filter id="softdishtiramisu60" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="60"/></filter>
+<filter id="graindishtiramisu" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="19" result="n"/><feColorMatrix in="n" type="saturate" values="0"/></filter>
+</defs>
+<rect width="1000" height="1250" fill="url(#bgdishtiramisu)"/>
+<ellipse cx="500" cy="713" rx="306" ry="300" fill="#000000" opacity="0.3" filter="url(#softdishtiramisu60)"/><ellipse cx="500" cy="675" rx="300" ry="285" fill="#FFFFFF" opacity="0.1" filter="url(#softdishtiramisu46)"/><ellipse cx="500" cy="662" rx="186" ry="173" fill="#FFFFFF" opacity="0.09" filter="url(#softdishtiramisu38)"/>
+<rect width="1000" height="1250" fill="url(#glowdishtiramisu)"/>
+<rect width="1000" height="1250" fill="url(#vigdishtiramisu)"/>
+<rect width="1000" height="1250" filter="url(#graindishtiramisu)" opacity="0.16" style="mix-blend-mode:overlay"/>
+<g text-anchor="middle" fill="#F3EADA" font-family="Georgia,'Times New Roman',serif"><line x1="300" y1="506" x2="700" y2="506" stroke="#F3EADA" stroke-opacity="0.3" stroke-width="1"/><text x="500" y="570" font-family="Helvetica,Arial,sans-serif" font-size="26" letter-spacing="10.9" opacity="0.6">DISH PHOTOGRAPH</text><text x="500" y="668" font-size="58" font-style="italic" opacity="0.88">Tiramisù della casa</text><line x1="300" y1="735" x2="700" y2="735" stroke="#F3EADA" stroke-opacity="0.3" stroke-width="1"/></g>
+</svg>

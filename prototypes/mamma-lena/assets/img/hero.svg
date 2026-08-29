@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1200" width="1800" height="1200" role="img" aria-label="The dining room at Mamma Lena">
+<defs>
+<linearGradient id="bghero" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#4A2C1C"/><stop offset="1" stop-color="#160F0B"/></linearGradient>
+<radialGradient id="glowhero" cx="0.32" cy="0.24" r="0.85"><stop offset="0" stop-color="#E8A15C" stop-opacity="0.55"/><stop offset="0.55" stop-color="#E8A15C" stop-opacity="0.14"/><stop offset="1" stop-color="#E8A15C" stop-opacity="0"/></radialGradient>
+<radialGradient id="vighero" cx="0.5" cy="0.48" r="0.78"><stop offset="0.45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.55"/></radialGradient>
+<filter id="softhero60" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="60"/></filter><filter id="softhero66" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="66"/></filter><filter id="softhero70" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="70"/></filter><filter id="softhero80" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="80"/></filter>
+<filter id="grainhero" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="4" result="n"/><feColorMatrix in="n" type="saturate" values="0"/></filter>
+</defs>
+<rect width="1800" height="1200" fill="url(#bghero)"/>
+<ellipse cx="396" cy="360" rx="288" ry="168" fill="#FFD9A0" opacity="0.3" filter="url(#softhero70)"/><ellipse cx="1224" cy="432" rx="198" ry="120" fill="#FFD9A0" opacity="0.22" filter="url(#softhero66)"/><ellipse cx="900" cy="1032" rx="1116" ry="240" fill="#000000" opacity="0.4" filter="url(#softhero80)"/><ellipse cx="900" cy="840" rx="792" ry="120" fill="#FFFFFF" opacity="0.07" filter="url(#softhero60)"/>
+<rect width="1800" height="1200" fill="url(#glowhero)"/>
+<rect width="1800" height="1200" fill="url(#vighero)"/>
+<rect width="1800" height="1200" filter="url(#grainhero)" opacity="0.16" style="mix-blend-mode:overlay"/>
+
+</svg>
