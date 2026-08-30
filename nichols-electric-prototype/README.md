@@ -46,7 +46,25 @@ phone: {
 }
 ```
 
-### 2. Photography
+### 2. Logo (already done — but read this)
+
+The real Nichols Electric logo is in place: the serif **NE** monogram in the header and
+the full monogram + "NICHOLS ⚡ ELECTRIC" lockup in the footer. It was extracted from the
+supplied invoice PDF, cleaned up, and given a transparent background:
+
+```
+assets/img/logo-mark.png         dark monogram   — header, light backgrounds
+assets/img/logo-mark-light.png   light monogram  — dark backgrounds
+assets/img/logo-full.png         dark lockup     — full logo with wordmark
+assets/img/logo-full-light.png   light lockup    — used in the footer
+assets/img/favicon.png           monogram on navy — browser tab icon
+```
+
+The invoice embeds the logo at only 121 × 109 pixels, so these are cleaned upscales.
+They hold up at the sizes used here, but ask the owner for the original vector file
+before using the logo any larger.
+
+### 3. Photography
 
 All images are **clearly labeled placeholders** — abstract tiles with a "Placeholder"
 badge. Nothing pretends to be a photo of Nichols' work, and no stock photography or
@@ -76,7 +94,7 @@ robots.txt              blocks indexing of the prototype
 assets/css/styles.css   full stylesheet, design tokens at the top
 assets/js/config.js     phone + gallery — the only file an owner needs to edit
 assets/js/main.js       menu, lightbox, form validation, reveal animations
-assets/img/             placeholder imagery (SVG, generated locally)
+assets/img/             logo assets (from the invoice) + placeholder project imagery
 ASSUMPTIONS.md          what must be confirmed before this could go live
 ```
 
@@ -98,8 +116,9 @@ question (see `ASSUMPTIONS.md`).
 
 - Warm off-white paper (`#F6F3EE`), charcoal ink, deep navy structure, one workwear
   accent (`#C2570F`). Squared corners, hairline rules, no gradients or lightning bolts.
-- Type: Archivo (headings) + Inter (body), loaded from Google Fonts with a system-font
-  fallback stack.
+- Type: Archivo (headings) + Inter (body) + Playfair Display (the brand wordmark beside
+  the logo, chosen to sit with the logo's serif letterforms), loaded from Google Fonts
+  with system-font fallbacks.
 - Mobile: sticky bottom Call / Get Estimate bar, 44px+ tap targets everywhere, 16px
   form inputs (no iOS zoom), no horizontal overflow at 390px.
 - Accessibility: skip link, semantic landmarks and heading order, labeled form fields

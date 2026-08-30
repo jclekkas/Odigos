@@ -25,8 +25,9 @@ project photographs should be reviewed and pulled in.
 | --- | --- | --- |
 | Business name | Nichols Electric LLC | Brief |
 | Address | 1669 Valley Burg Road, Luray, VA 22835 | Brief (stated as verified) |
-| Email | nicholselectric@centurylink.net | Brief (stated as existing address) |
+| Email | nicholselectric@centurylink.net | Brief; also printed on a company invoice |
 | Phone | `[PRIMARY PHONE]` placeholder | **Not chosen** — see item 1 below |
+| Logo | Extracted from a Nichols Electric invoice PDF | Authentic artwork — see item 21 below |
 | Services | Repairs/troubleshooting, service upgrades, generators, remodels, custom homes & new construction, commercial & industrial | Brief, drawn from existing site capabilities |
 | Photography | Labeled placeholders only | Real project photos not accessible |
 
@@ -34,11 +35,13 @@ project photographs should be reviewed and pulled in.
 
 Nothing below is answered in the prototype. Each one is a real gap.
 
-1. **Which existing phone number is the primary customer-facing number?** The current
-   site publishes more than one. The prototype deliberately shows `[PRIMARY PHONE]`
-   everywhere rather than picking one. A directory listing shows (540) 743-5028 for
-   this business, but that has **not** been confirmed as the preferred number and is
-   not used in the site. Set it once in `assets/js/config.js` after confirmation.
+1. **Which existing phone number is the primary customer-facing number?** Still open,
+   and the evidence now points two ways:
+   - **(540) 843-3882** — printed on a Nichols Electric customer invoice.
+   - **(540) 743-5028** — listed in business directories.
+   The current website publishes more than one number as well. The prototype therefore
+   shows `[PRIMARY PHONE]` everywhere rather than picking one. Set the confirmed number
+   once in `assets/js/config.js` and every phone reference plus one-tap dialing updates.
 2. **Which phone number accepts text messages?** No SMS option is offered anywhere.
 3. **Exact service territory / towns served?** The prototype says only "Based in
    Luray… contact us to confirm availability." No radius, county list or town list.
@@ -72,7 +75,17 @@ Nothing below is answered in the prototype. Each one is a real gap.
     profile was confirmed as active and owner-controlled.
 20. **Which email address should receive estimate requests?** The form is a mock and
     submits nowhere. A real endpoint (Netlify Forms, or an email handler) and a
-    destination inbox are needed.
+    destination inbox are needed. `nicholselectric@centurylink.net` appears on the
+    invoice, but it may not be where web leads should land.
+21. **Is there a high-resolution or vector version of the logo?** The logo used here was
+    lifted from the supplied invoice PDF, where it is embedded at only 121 × 109 pixels.
+    It has been cleaned up, given a transparent background and a light variant for dark
+    backgrounds, and it holds up at the sizes used (44px header mark, 172px footer
+    lockup). An original vector file (AI/EPS/SVG) or a large PNG should be requested
+    before any larger use — signage, print, or a full-width hero lockup.
+22. **Which company name styling is correct?** The invoice reads "Nichols Electric, LLC"
+    (with a comma); the site uses "Nichols Electric LLC" and the short form "Nichols
+    Electric." Worth confirming which the owner prefers.
 
 ## Other decisions worth flagging
 
@@ -89,3 +102,6 @@ Nothing below is answered in the prototype. Each one is a real gap.
   transmitted or stored.
 - **Structured data.** The JSON-LD block intentionally omits `telephone` until the
   number is confirmed.
+- **Invoice contents.** The sample invoice supplied for the logo also contained a
+  customer's name, address and a job price. None of it appears in the prototype, and
+  none of it should be used on a public site.

@@ -10,10 +10,16 @@ window.SITE = {
      so this prototype does NOT pick one. It ships the placeholder token and
      leaves the Call buttons pointed at the contact section.
 
+     Two different numbers have turned up so far:
+       (540) 843-3882  — printed on a Nichols Electric customer invoice
+       (540) 743-5028  — listed in business directories
+     Neither has been confirmed as THE number new customers should call, so
+     the site ships the placeholder.
+
      To make every Call button a real one-tap dial:
        1. set confirmed: true
-       2. set display  to the customer-facing number, e.g. "(540) 743-5028"
-       3. set tel      to the same number in E.164, e.g. "+15407435028"
+       2. set display  to the customer-facing number, e.g. "(540) 843-3882"
+       3. set tel      to the same number in E.164, e.g. "+15408433882"
      (See ASSUMPTIONS.md, item 1.)                                            */
   phone: {
     confirmed: false,
