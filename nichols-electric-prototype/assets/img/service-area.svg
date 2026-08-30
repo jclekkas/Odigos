@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 620" width="800" height="620" role="img" aria-label="Stylized map showing Luray, Virginia">
+  <defs>
+    <pattern id="mg" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#F6F3EE" stroke-opacity=".055" stroke-width="1"/>
+    </pattern>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#C2570F" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#C2570F" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="800" height="620" fill="#1B2735"/>
+  <rect width="800" height="620" fill="url(#mg)"/>
+
+  <g stroke="#F6F3EE" stroke-opacity=".13" stroke-width="1.6" fill="none">
+    <path d="M-20 110 C 180 76, 300 176, 480 136 S 760 96, 830 146"/>
+    <path d="M-20 168 C 190 134, 310 234, 490 194 S 770 154, 830 204"/>
+    <path d="M-20 402 C 160 382, 340 472, 540 432 S 770 402, 830 452"/>
+    <path d="M-20 462 C 170 442, 350 532, 550 492 S 780 462, 830 512"/>
+    <path d="M-20 556 C 220 536, 360 616, 560 586 S 780 556, 830 596"/>
+  </g>
+
+  <path d="M-20 236 C 200 206, 340 306, 540 266 S 780 236, 830 286 L 830 392 C 780 342, 540 372, 340 412 S 200 346, -20 376 Z"
+        fill="#F6F3EE" fill-opacity=".035"/>
+
+  <g stroke="#F6F3EE" stroke-opacity=".3" stroke-width="2.6" fill="none" stroke-linecap="round">
+    <path d="M104 -20 C 220 170, 300 330, 396 640"/>
+    <path d="M770 60 C 610 190, 500 262, 300 340"/>
+    <path d="M30 468 C 220 420, 340 372, 660 322"/>
+  </g>
+
+  <circle cx="400" cy="310" r="120" fill="url(#glow)"/>
+  <circle cx="400" cy="310" r="46" fill="none" stroke="#C2570F" stroke-opacity=".5" stroke-width="1.5"/>
+  <circle cx="400" cy="310" r="26" fill="none" stroke="#C2570F" stroke-opacity=".8" stroke-width="1.5"/>
+  <circle cx="400" cy="310" r="10" fill="#C2570F"/>
+  <circle cx="400" cy="310" r="3.4" fill="#FFFFFF"/>
+
+  <g stroke="#C2570F" stroke-opacity=".6" stroke-width="1.5">
+    <line x1="400" y1="240" x2="400" y2="256"/>
+    <line x1="400" y1="364" x2="400" y2="380"/>
+    <line x1="330" y1="310" x2="346" y2="310"/>
+    <line x1="454" y1="310" x2="470" y2="310"/>
+  </g>
+
+  <g font-family="Archivo, Helvetica Neue, Arial, sans-serif" text-anchor="middle">
+    <text x="400" y="432" font-size="30" font-weight="700" fill="#F6F3EE" letter-spacing="2.4">LURAY, VIRGINIA</text>
+    <text x="400" y="464" font-size="16" font-weight="500" fill="#F6F3EE" fill-opacity=".55" letter-spacing="1.2">Page County • Shenandoah Valley</text>
+  </g>
+</svg>

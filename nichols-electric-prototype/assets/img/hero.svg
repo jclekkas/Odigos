@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1400" width="1200" height="1400" role="img" aria-label="Placeholder hero image">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1B2735"/><stop offset="1" stop-color="#2E3B49"/>
+    </linearGradient>
+    <pattern id="hg" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#F5F2EE" stroke-opacity=".07" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="1400" fill="url(#sky)"/>
+  <rect width="1200" height="1400" fill="url(#hg)"/>
+  <path d="M0 980 L180 880 L330 960 L520 820 L700 940 L860 860 L1030 950 L1200 870 L1200 1400 L0 1400 Z" fill="#16202C" fill-opacity=".85"/>
+  <path d="M0 1080 L200 1010 L400 1090 L620 990 L820 1080 L1010 1020 L1200 1090 L1200 1400 L0 1400 Z" fill="#111A24" fill-opacity=".9"/>
+  <g stroke="#F5F2EE" stroke-opacity=".18" stroke-width="3" fill="none">
+    <path d="M120 1400 L120 700"/><path d="M120 740 L60 780 M120 740 L180 780"/>
+    <path d="M900 1400 L900 760"/><path d="M900 800 L840 840 M900 800 L960 840"/>
+    <path d="M120 745 C 400 860, 620 860, 900 805"/>
+    <path d="M120 790 C 400 905, 620 905, 900 850"/>
+  </g>
+  <rect x="0" y="0" width="1200" height="10" fill="#C2570F"/>
+  <g font-family="Archivo, Helvetica Neue, Arial, sans-serif" text-anchor="middle" fill="#F5F2EE">
+    <text x="600" y="600" font-size="34" font-weight="600" fill-opacity=".85">Replace with a Nichols Electric project photo</text>
+    <text x="600" y="645" font-size="20" font-weight="600" fill-opacity=".5" letter-spacing="4">PLACEHOLDER</text>
+  </g>
+</svg>

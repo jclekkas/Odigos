@@ -75,6 +75,8 @@ export default [
       "*.config.ts",
       "*.config.mjs",
       "script/**",
+      // Standalone static prototype — not part of the app build.
+      "nichols-electric-prototype/**",
     ],
   },
   // Server & shared code: missing .js is an ERROR (blocks CI).

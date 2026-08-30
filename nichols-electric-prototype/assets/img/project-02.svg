@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" width="900" height="1200" role="img" aria-label="Nichols project photo — placeholder image">
+  <defs>
+    <pattern id="ppe31tt" width="28" height="28" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="28" stroke="#F5F2EE" stroke-opacity=".09" stroke-width="6"/>
+    </pattern>
+    <linearGradient id="gpe31tt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".07"/>
+      <stop offset="1" stop-color="#000000" stop-opacity=".22"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="1200" fill="#2C3A48"/>
+  <rect width="900" height="1200" fill="url(#ppe31tt)"/>
+  <rect width="900" height="1200" fill="url(#gpe31tt)"/>
+  <rect x="0" y="0" width="900" height="6" fill="#C2570F"/>
+  <g font-family="Archivo, Helvetica Neue, Arial, sans-serif" text-anchor="middle">
+    <text x="450" y="592.5" font-size="50" font-weight="600" fill="#F5F2EE" fill-opacity=".92" letter-spacing="1">Nichols project photo</text>
+    
+  </g>
+</svg>

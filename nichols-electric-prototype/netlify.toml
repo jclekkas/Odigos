@@ -1,0 +1,21 @@
+# Netlify configuration for the Nichols Electric prototype.
+# Drag-and-drop deploys ignore build settings; this file matters for Git deploys
+# and supplies the headers either way.
+
+[build]
+  publish = "."
+  command = ""
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    # Prototype only — keep it out of search results.
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"

@@ -1,0 +1,5 @@
+# This is an unofficial design prototype for Nichols Electric LLC.
+# It is intentionally kept out of search results so it cannot compete with or
+# duplicate the company's live website.
+User-agent: *
+Disallow: /

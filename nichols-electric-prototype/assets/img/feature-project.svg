@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" role="img" aria-label="New construction / custom home wiring — placeholder image">
+  <defs>
+    <pattern id="pu80zyg" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#F5F2EE" stroke-opacity=".10" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="gu80zyg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".07"/>
+      <stop offset="1" stop-color="#000000" stop-opacity=".22"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="900" fill="#22303F"/>
+  <rect width="1200" height="900" fill="url(#pu80zyg)"/>
+  <rect width="1200" height="900" fill="url(#gu80zyg)"/>
+  <rect x="0" y="0" width="1200" height="6" fill="#C2570F"/>
+  <g font-family="Archivo, Helvetica Neue, Arial, sans-serif" text-anchor="middle">
+    <text x="600" y="442.5" font-size="50" font-weight="600" fill="#F5F2EE" fill-opacity=".92" letter-spacing="1">New construction / custom home wiring</text>
+    <text x="600" y="512.5" font-size="30" font-weight="600" fill="#F5F2EE" fill-opacity=".55" letter-spacing="6.6">PLACEHOLDER</text>
+  </g>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="6" fill="#1B2735"/>
+  <rect x="8" y="46" width="48" height="6" fill="#C2570F"/>
+  <g font-family="Archivo, Helvetica Neue, Arial, sans-serif" font-size="30" font-weight="700" fill="#F5F2EE" text-anchor="middle">
+    <text x="32" y="38">NE</text>
+  </g>
+</svg>
