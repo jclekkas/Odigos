@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Construction sequence — animation harness</title>
+<script>document.documentElement.className = "js";</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif&amp;family=Inter:wght@400;500&amp;display=swap">
+<link rel="stylesheet" href="assets/css/site.css">
+<style>
+  /* Harness chrome only. None of this ships on the site. */
+  body { padding: 0; }
+  .harness { display: grid; grid-template-rows: auto 1fr; height: 100svh; }
+  .harness-bar {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 18px 26px;
+    padding: 16px clamp(18px, 4vw, 40px);
+    border-bottom: 1px solid var(--brand-mist);
+  }
+  .harness-bar .eyebrow { margin-right: auto; }
+  .harness-bar button {
+    font: inherit; font-size: var(--fs-eyebrow); letter-spacing: .16em; text-transform: uppercase;
+    background: none; border: 0; border-bottom: 1px solid var(--brand-mist);
+    padding: 0 0 5px; cursor: pointer; color: var(--brand-muted);
+  }
+  .harness-bar button:hover { color: var(--brand-bronze); border-bottom-color: var(--brand-bronze); }
+  .harness-bar label { font-size: var(--fs-eyebrow); letter-spacing: .16em; text-transform: uppercase; color: var(--brand-muted); display: flex; align-items: center; gap: 12px; }
+  .harness-bar input[type=range] { width: clamp(160px, 30vw, 340px); accent-color: var(--brand-bronze); }
+  .harness-stage { position: relative; }
+  .harness-stage .constr { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .harness-note { padding: 14px clamp(18px, 4vw, 40px) 20px; }
+</style>
+</head>
+<body>
+<div class="harness">
+  <div class="harness-bar">
+    <p class="eyebrow">Construction sequence &middot; 5.2s &middot; harness</p>
+    <button type="button" id="replay">Replay</button>
+    <button type="button" id="finish">Hold final frame</button>
+    <label for="scrub">Scrub <input type="range" id="scrub" min="0" max="5200" step="20" value="5200"></label>
+    <span class="eyebrow" id="tRead" style="color:var(--brand-ink)">t = 5.20s</span>
+  </div>
+  <div class="harness-stage">
+            <svg class="constr" viewBox="0 0 2100 1122" preserveAspectRatio="xMidYMid meet"
+         role="img" aria-labelledby="constrTitle constrDesc" focusable="false">
+        <title id="constrTitle">A house drawn from empty lot to finished residence</title>
+        <desc id="constrDesc">An architectural line drawing builds itself in sequence: the site and survey stakes, then footings and slab, then timber framing and roof rafters, then wall and roof planes, then glazing, and finally trees, planting and a warm light inside two windows of a low, wide modern house.</desc>
+        <defs>
+          <linearGradient id="glassGrad" x1="0.1" y1="0" x2="0.4" y2="1">
+            <stop offset="0" stop-color="var(--glass-1)"/>
+            <stop offset="0.58" stop-color="var(--glass-2)"/>
+            <stop offset="1" stop-color="var(--glass-1)"/>
+          </linearGradient>
+          <linearGradient id="glowGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="var(--glow-1)" stop-opacity="0.06"/>
+            <stop offset="0.5" stop-color="var(--glow-1)" stop-opacity="0.42"/>
+            <stop offset="1" stop-color="var(--glow-2)" stop-opacity="0.9"/>
+          </linearGradient>
+          <linearGradient id="sheenGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/>
+            <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0.55"/>
+            <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+          </linearGradient>
+          <radialGradient id="shadowGrad" cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0" stop-color="var(--brand-ink)" stop-opacity="0.16"/>
+            <stop offset="0.55" stop-color="var(--brand-ink)" stop-opacity="0.06"/>
+            <stop offset="1" stop-color="var(--brand-ink)" stop-opacity="0"/>
+          </radialGradient>
+          <clipPath id="clipLot"><rect class="a-clip-x t-lot" x="40" y="600" width="1220" height="230"/></clipPath>
+          <clipPath id="clipWalls"><rect class="a-clip-walls t-walls" x="80" y="230" width="1000" height="480"/></clipPath>
+          <clipPath id="clipRoofs"><rect class="a-clip-roofs t-roofs" x="80" y="230" width="1000" height="264"/></clipPath>
+          <clipPath id="clipGlass"><rect x="505" y="285" width="375" height="390"/></clipPath>
+        </defs>
+  
+        <!-- 0.0-0.6s  the lot -->
+        <path class="c-line a-draw t-terrain" pathLength="100" d="M 10 712 C 240 700 420 711 690 702 C 940 694 1200 693 1520 700 C 1780 705 1960 706 2094 704"/>
+        <g clip-path="url(#clipLot)">
+          <path class="c-line c-dash" d="M 60 792 L 1120 772 L 1040 652 L 168 658 Z"/>
+          <g class="lot-stakes">
+            <path class="c-line c-line--fine a-fade t-stake" d="M 60 792 V 754 M 50 760 L 72 756"/>
+            <path class="c-line c-line--fine a-fade t-stake" d="M 1120 772 V 734 M 1110 740 L 1132 736"/>
+            <path class="c-line c-line--fine a-fade t-stake" d="M 1040 652 V 620 M 1031 626 L 1050 623"/>
+            <path class="c-line c-line--fine a-fade t-stake" d="M 168 658 V 626 M 159 632 L 178 629"/>
+          </g>
+        </g>
+  
+        <!-- ground shadow: late in the timeline, early in the stack -->
+        <ellipse class="c-shadow a-fade t-shadow" cx="580" cy="710" rx="520" ry="30"/>
+  
+        <!-- 0.6-1.4s  foundation -->
+        <path class="c-line a-draw t-footing" pathLength="100" d="M 120 700 L 900 700 L 1000 668 L 220 668 Z"/>
+        <path class="c-plane-2 a-rise t-slab" d="M 120 700 L 900 700 L 1000 668 L 220 668 Z"/>
+  
+        <!-- 1.4-2.6s  framing -->
+        <g class="framing">
+          <path class="c-line a-draw t-plate-a" pathLength="100" d="M 120 470 H 480"/>
+          <path class="c-line a-draw t-plate-b" pathLength="100" d="M 480 268 H 900"/>
+          <path class="c-line c-line--fine a-draw t-ridge m-drop" pathLength="100" d="M 900 268 L 1000 288 M 580 288 H 1000 M 220 490 H 470"/>
+          <g class="frame-studs">
+            <line class="c-line a-rise t-stud" x1="120" y1="700" x2="120" y2="470"/>
+            <line class="c-line a-rise t-stud m-drop" x1="180" y1="700" x2="180" y2="470"/>
+            <line class="c-line a-rise t-stud" x1="240" y1="700" x2="240" y2="470"/>
+            <line class="c-line a-rise t-stud m-drop" x1="300" y1="700" x2="300" y2="470"/>
+            <line class="c-line a-rise t-stud" x1="360" y1="700" x2="360" y2="470"/>
+            <line class="c-line a-rise t-stud m-drop" x1="420" y1="700" x2="420" y2="470"/>
+            <line class="c-line a-rise t-stud" x1="480" y1="700" x2="480" y2="268"/>
+            <line class="c-line a-rise t-stud m-drop" x1="540" y1="700" x2="540" y2="268"/>
+            <line class="c-line a-rise t-stud" x1="600" y1="700" x2="600" y2="268"/>
+            <line class="c-line a-rise t-stud m-drop" x1="660" y1="700" x2="660" y2="268"/>
+            <line class="c-line a-rise t-stud" x1="720" y1="700" x2="720" y2="268"/>
+            <line class="c-line a-rise t-stud m-drop" x1="780" y1="700" x2="780" y2="268"/>
+            <line class="c-line a-rise t-stud" x1="840" y1="700" x2="840" y2="268"/>
+            <line class="c-line a-rise t-stud" x1="900" y1="700" x2="900" y2="268"/>
+          </g>
+          <g class="frame-posts m-drop">
+            <line class="c-line a-rise a-rise--sill t-post-a" x1="950" y1="684" x2="950" y2="278"/>
+            <line class="c-line a-rise a-rise--sill t-post-b" x1="1000" y1="668" x2="1000" y2="288"/>
+          </g>
+          <g class="frame-trusses">
+            <path class="c-line a-draw t-truss" pathLength="100" d="M 480 268 L 580 288"/>
+            <path class="c-line a-draw t-truss m-drop" pathLength="100" d="M 585 268 L 685 288"/>
+            <path class="c-line a-draw t-truss" pathLength="100" d="M 690 268 L 790 288"/>
+            <path class="c-line a-draw t-truss m-drop" pathLength="100" d="M 795 268 L 895 288"/>
+            <path class="c-line a-draw t-truss" pathLength="100" d="M 900 268 L 1000 288"/>
+            <path class="c-line a-draw t-truss" pathLength="100" d="M 120 470 L 220 490"/>
+            <path class="c-line a-draw t-truss m-drop" pathLength="100" d="M 240 470 L 340 490"/>
+            <path class="c-line a-draw t-truss" pathLength="100" d="M 360 470 L 460 490"/>
+          </g>
+        </g>
+  
+        <!-- a mature tree behind the house: drawn before the enclosure so the roof occludes it -->
+        <g class="t-tree-back a-rise">
+          <path class="c-trunk" d="M 548 452 V 268"/>
+          <path class="c-foliage" d="M 452 250 C 440 206 480 170 536 176 C 596 182 632 212 636 252 C 640 292 606 318 556 314 C 500 310 464 292 452 250 Z"/>
+        </g>
+  
+        <!-- 2.6-3.4s  enclosure: planes wash in over the frame, which stays faintly visible -->
+        <g class="enclosure">
+          <g clip-path="url(#clipWalls)">
+            <path class="c-plane"          d="M 480 268 H 900 V 700 H 480 Z"/>
+            <path class="c-plane-3 m-drop" d="M 900 268 L 1000 288 L 1000 668 L 900 700 Z"/>
+            <path class="c-plane"          d="M 120 470 H 480 V 700 H 120 Z"/>
+          </g>
+          <g clip-path="url(#clipRoofs)">
+            <path class="c-plane-2"        d="M 430 240 H 960 V 268 H 430 Z"/>
+            <path class="c-plane-3 m-drop" d="M 960 240 L 1060 260 L 1060 288 L 960 268 Z"/>
+            <path class="c-plane-2"        d="M 90 442 H 520 V 470 H 90 Z"/>
+          </g>
+        </g>
+        <!-- the crisp silhouette, drawn back over the planes -->
+        <path class="c-line a-draw t-eaves" pathLength="100" d="M 430 240 H 960 M 430 268 H 960 M 430 240 V 268 M 90 442 H 520 M 90 470 H 520 M 90 442 V 470 M 520 442 V 470 M 120 470 V 700 M 480 268 V 442 M 900 268 V 700"/>
+        <path class="c-line a-draw t-eaves m-drop" pathLength="100" d="M 960 240 L 1060 260 M 960 268 L 1060 288 M 1060 260 V 288 M 900 268 L 1000 288 M 1000 288 V 668 M 900 700 L 1000 668"/>
+  
+        <!-- 3.4-4.2s  glazing -->
+        <g class="glazing">
+          <path class="c-glass a-fade t-glass" d="M 505 292 H 875 V 336 H 505 Z"/>
+          <path class="c-glass a-fade t-glass" d="M 505 356 H 594 V 668 H 505 Z"/>
+          <path class="c-glass a-fade t-glass" d="M 598 356 H 687 V 668 H 598 Z"/>
+          <path class="c-glass a-fade t-glass" d="M 691 356 H 780 V 668 H 691 Z"/>
+          <path class="c-glass a-fade t-glass" d="M 784 356 H 875 V 668 H 784 Z"/>
+          <path class="c-glass a-fade t-glass" d="M 152 500 H 226 V 700 H 152 Z"/>
+          <path class="c-glass a-fade t-glass" d="M 264 520 H 452 V 660 H 264 Z"/>
+          <path class="c-glass a-fade t-glass m-drop" d="M 922 310 L 985 322 L 985 630 L 922 650 Z"/>
+        </g>
+        <path class="c-line c-line--fine a-draw t-eaves" pathLength="100" d="M 505 292 H 875 M 505 336 H 875 M 505 356 H 875 M 505 668 H 875 M 596 356 V 668 M 689 356 V 668 M 782 356 V 668 M 152 500 V 700 M 226 500 V 700 M 152 500 H 226 M 264 520 H 452 M 264 660 H 452 M 264 520 V 660 M 452 520 V 660 M 216 590 V 622"/>
+  
+        <!-- 4.2-5.2s  settling -->
+        <g class="glow">
+          <path class="c-glow a-fade t-glow" d="M 691 356 H 780 V 668 H 691 Z"/>
+          <path class="c-glow a-fade t-glow" d="M 264 520 H 452 V 660 H 264 Z"/>
+        </g>
+        <g clip-path="url(#clipGlass)">
+          <path class="c-sheen" d="M 340 250 L 470 250 L 400 710 L 270 710 Z"/>
+        </g>
+        <g class="planting">
+          <g class="t-tree a-rise">
+            <path class="c-trunk" d="M 74 708 V 632"/>
+            <path class="c-foliage" d="M 74 206 C 119 302 123 486 101 642 L 47 642 C 25 486 29 302 74 206 Z"/>
+          </g>
+          <g class="t-tree a-rise">
+            <path class="c-trunk" d="M 980 704 V 648"/>
+            <path class="c-foliage" d="M 907 610 C 891 572 916 524 966 518 C 1017 512 1058 541 1060 580 C 1062 617 1035 657 987 661 C 944 665 919 646 907 610 Z"/>
+          </g>
+        </g>
+        <g class="shrubs">
+          <path class="c-foliage c-foliage--low a-rise t-shrub" d="M 222 700 C 239 646 296 646 314 700 Z"/>
+          <path class="c-foliage c-foliage--low a-rise t-shrub" d="M 323 700 C 335 664 376 664 389 700 Z"/>
+          <path class="c-foliage c-foliage--low a-rise t-shrub" d="M 400 700 C 419 638 484 638 504 700 Z"/>
+          <path class="c-foliage c-foliage--low a-rise t-shrub" d="M 676 700 C 689 660 734 660 748 700 Z"/>
+          <path class="c-foliage c-foliage--low a-rise t-shrub" d="M 764 700 C 782 642 841 642 860 700 Z"/>
+          <path class="c-foliage c-foliage--low a-rise t-shrub" d="M 843 700 C 854 668 889 668 901 700 Z"/>
+        </g>
+    </svg>
+  </div>
+</div>
+<p class="harness-note fine">
+  Static state is the finished house. Animation is scoped to <code>.constr.is-armed</code>, a class
+  only JavaScript adds &mdash; so with scripting off, or under <code>prefers-reduced-motion: reduce</code>,
+  the drawing renders complete with no motion. Scrubbing uses the Web Animations API and exists only
+  in this harness.
+</p>
+<script>
+(function () {
+  var svg = document.querySelector('.constr');
+  var scrub = document.getElementById('scrub');
+  var read = document.getElementById('tRead');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  function arm() {
+    svg.classList.remove('is-armed');
+    void svg.getBoundingClientRect();
+    if (!reduce.matches) svg.classList.add('is-armed');
+    scrub.value = scrub.max;
+    read.textContent = 't = 5.20s';
+  }
+  function anims() {
+    return svg.getAnimations ? svg.getAnimations({ subtree: true }) : [];
+  }
+  document.getElementById('replay').addEventListener('click', arm);
+  document.getElementById('finish').addEventListener('click', function () {
+    arm(); anims().forEach(function (a) { a.currentTime = 5200; a.pause(); });
+  });
+  scrub.addEventListener('input', function () {
+    var t = Number(scrub.value);
+    read.textContent = 't = ' + (t / 1000).toFixed(2) + 's';
+    anims().forEach(function (a) { a.pause(); a.currentTime = t; });
+  });
+  arm();
+}());
+</script>
+</body>
+</html>
