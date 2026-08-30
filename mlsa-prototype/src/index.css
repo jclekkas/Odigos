@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /*
+   * Focus is never removed, only replaced. A single high-contrast ring is used
+   * everywhere so keyboard users learn one visual language for "you are here".
+   */
+  :focus-visible {
+    outline: 3px solid #0F5560;
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  /* Elements on a dark ground need a light ring to stay visible. */
+  .on-dark :focus-visible {
+    outline-color: #FAF7F2;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+    /* Prevent the mobile drawer / search overlay from letting the page bleed. */
+    overflow-x: hidden;
+  }
+
+  /* Headings inherit their size from the component that uses them; this only
+     guarantees a sane default if one is ever rendered unstyled. */
+  h1, h2, h3, h4 {
+    @apply font-semibold text-balance;
+  }
+
+  /* Respect the user's motion preference. No transition, transform or smooth
+     scroll survives this block — motion is a preference, not a decoration. */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Visually hidden but available to screen readers. */
+  .sr-only-focusable:not(:focus):not(:focus-within) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /*
+   * Every interactive control routes through one of these. The min-height of
+   * 44px is the WCAG 2.2 target-size floor, kept even when the label is short.
+   */
+  .btn {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-card
+           px-5 py-2.5 text-base font-semibold leading-tight
+           transition-colors duration-150;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary text-white hover:bg-primary-hover;
+  }
+
+  .btn-secondary {
+    @apply btn border-2 border-primary bg-transparent text-primary
+           hover:bg-primary-tint;
+  }
+
+  .btn-quiet {
+    @apply btn border border-line-strong bg-surface text-ink-soft
+           hover:border-ink-muted hover:text-ink;
+  }
+
+  /* Secondary action on the deep-primary band. */
+  .btn-on-dark {
+    @apply btn border-2 border-white/60 bg-transparent text-white
+           hover:bg-white/10;
+  }
+
+  .link-inline {
+    @apply font-medium text-primary underline decoration-primary/40
+           underline-offset-[3px] hover:decoration-primary;
+  }
+
+  .shell {
+    @apply mx-auto w-full max-w-shell px-4 sm:px-6 lg:px-8;
+  }
+
+  .prose-measure {
+    @apply max-w-measure text-fluid-lead leading-relaxed text-ink-soft;
+  }
+
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.13em] text-ink-muted;
+  }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+}

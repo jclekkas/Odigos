@@ -1,0 +1,8 @@
+node_modules
+dist
+.DS_Store
+*.local
+*.tsbuildinfo
+
+# Build artifacts packaged for delivery are committed deliberately;
+# see README for how to regenerate them.
