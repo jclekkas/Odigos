@@ -9,6 +9,7 @@ import { trackEvent } from "../events.js";
 import { extractTextFromFile, extractTextFromUrl, IrrelevantContentError } from "../extractText.js";
 import { storage } from "../storage.js";
 import { writeAuditEvent } from "../audit.js";
+import { signEmailPayload } from "../emailPreviewToken.js";
 import { runAnalysis, AnalyzeServiceError } from "../services/analyzeService.js";
 import {
   isOpenAIConfigured,
@@ -49,7 +50,19 @@ export function registerAnalyzeRoutes(app: Express): void {
     }
     try {
       const result = await runAnalysis(parseResult.data);
-      res.json(result.payload);
+      // Sign the fields the "email me this" feature is allowed to send, so the
+      // email route can prove the content came from here rather than from a
+      // caller who made it up. Null when no signing secret is configured —
+      // the client then simply hides the email option.
+      const emailToken = signEmailPayload({
+        goNoGo: result.payload.goNoGo,
+        verdictLabel: result.payload.verdictLabel,
+        confidenceLevel: result.payload.confidenceLevel,
+        missingInfo: result.payload.missingInfo,
+        detectedFields: result.payload.detectedFields,
+        summary: result.payload.summary,
+      });
+      res.json(emailToken ? { ...result.payload, emailToken } : result.payload);
       writeAuditEvent(req, "analyze", "success", {
         route: req.originalUrl, method: req.method, statusCode: 200,
         submissionId: result.listingId ?? null, stateCode: result.stateCode ?? null,

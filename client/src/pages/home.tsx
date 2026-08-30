@@ -166,6 +166,8 @@ type AnalysisResponseWithExtras = AnalysisResponse & {
   dealerSeenBefore?: boolean;
   dealerPriorQuoteCount?: number;
   dealerPatternSummary?: string | null;
+  /** Server-signed carrier for the "email me this" feature. */
+  emailToken?: string;
 };
 
 const formSchema = z.object({
@@ -1374,16 +1376,11 @@ function EmailPreviewForm({ analysisResult }: { analysisResult: AnalysisResponse
   const emailMutation = useMutation({
     mutationFn: async () => {
       try {
+        // The email body is carried inside the server-signed emailToken, so
+        // there is nothing for the client to send but the recipient.
         const response = await apiRequest("POST", "/api/email-preview", {
           email,
-          analysisResult: {
-            goNoGo: analysisResult.goNoGo,
-            verdictLabel: analysisResult.verdictLabel,
-            confidenceLevel: analysisResult.confidenceLevel,
-            missingInfo: analysisResult.missingInfo.slice(0, 3),
-            detectedFields: analysisResult.detectedFields,
-            summary: analysisResult.summary,
-          },
+          emailToken: analysisResult.emailToken,
         });
         return response.json();
       } catch (err) {
@@ -2893,7 +2890,7 @@ export default function Home() {
             </div>
 
             {/* 8) Email / Paywall */}
-            {unlockTier === "free" && (
+            {unlockTier === "free" && result.emailToken && (
               <EmailPreviewForm analysisResult={result} />
             )}
 

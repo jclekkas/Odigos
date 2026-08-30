@@ -67,6 +67,153 @@ describe("extractTextFromUrl — SSRF protection", () => {
   it("rejects IPv6 loopback", async () => {
     await expect(extractTextFromUrl("http://[::1]/listing")).rejects.toThrow("Internal URLs");
   });
+
+  // ── Gaps found in the original denylist ────────────────────────────────────
+  // It checked hostname prefixes only, so the cloud metadata endpoint, the
+  // rest of the loopback range, alternative IP encodings and most IPv6 forms
+  // all walked straight through.
+
+  it("rejects the cloud metadata endpoint", async () => {
+    await expect(extractTextFromUrl("http://169.254.169.254/latest/meta-data/")).rejects.toThrow(
+      "Internal URLs",
+    );
+  });
+
+  it("rejects link-local addresses generally", async () => {
+    await expect(extractTextFromUrl("http://169.254.1.1/")).rejects.toThrow("Internal URLs");
+  });
+
+  it("rejects loopback addresses other than 127.0.0.1", async () => {
+    await expect(extractTextFromUrl("http://127.0.0.2/listing")).rejects.toThrow("Internal URLs");
+    await expect(extractTextFromUrl("http://127.1.2.3/listing")).rejects.toThrow("Internal URLs");
+  });
+
+  it("rejects carrier-grade NAT space", async () => {
+    await expect(extractTextFromUrl("http://100.64.0.1/listing")).rejects.toThrow("Internal URLs");
+  });
+
+  it("rejects decimal-encoded loopback", async () => {
+    await expect(extractTextFromUrl("http://2130706433/listing")).rejects.toThrow("Internal URLs");
+  });
+
+  it("rejects hex-encoded loopback", async () => {
+    await expect(extractTextFromUrl("http://0x7f000001/listing")).rejects.toThrow("Internal URLs");
+  });
+
+  it("rejects IPv4-mapped IPv6 loopback", async () => {
+    await expect(extractTextFromUrl("http://[::ffff:127.0.0.1]/listing")).rejects.toThrow(
+      "Internal URLs",
+    );
+  });
+
+  it("rejects IPv6 unique-local and link-local addresses", async () => {
+    await expect(extractTextFromUrl("http://[fd00::1]/listing")).rejects.toThrow("Internal URLs");
+    await expect(extractTextFromUrl("http://[fe80::1]/listing")).rejects.toThrow("Internal URLs");
+  });
+
+  it("rejects credentials embedded in the URL", async () => {
+    await expect(extractTextFromUrl("http://user:pass@example.com/listing")).rejects.toThrow(
+      "Internal URLs",
+    );
+  });
+
+  it("rejects a .localhost hostname", async () => {
+    await expect(extractTextFromUrl("http://api.localhost/listing")).rejects.toThrow(
+      "Internal URLs",
+    );
+  });
+
+  it("still allows a public address", async () => {
+    // 93.184.216.34 is a public IP literal, so no DNS is involved.
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: { get: () => null },
+        text: () => Promise.resolve("<html><main>Price $20,000 OTD</main></html>"),
+      }),
+    );
+    await expect(extractTextFromUrl("http://93.184.216.34/listing")).resolves.toContain(
+      "$20,000",
+    );
+    vi.unstubAllGlobals();
+  });
+});
+
+describe("extractTextFromUrl — redirect handling", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  function redirectThen(location: string, finalHtml = "<main>ok $1</main>") {
+    let call = 0;
+    return vi.fn().mockImplementation(() => {
+      call += 1;
+      if (call === 1) {
+        return Promise.resolve({
+          ok: false,
+          status: 302,
+          headers: { get: (n: string) => (n.toLowerCase() === "location" ? location : null) },
+          text: () => Promise.resolve(""),
+        });
+      }
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        headers: { get: () => null },
+        text: () => Promise.resolve(finalHtml),
+      });
+    });
+  }
+
+  // This is the bypass that made the denylist above decorative: the original
+  // code passed redirect:"follow" to fetch, so only the FIRST url was ever
+  // checked. Any external page could bounce the server to an internal address
+  // and the body came back to the caller.
+  it("re-checks the destination when a page redirects to the metadata endpoint", async () => {
+    vi.stubGlobal("fetch", redirectThen("http://169.254.169.254/latest/meta-data/"));
+    await expect(extractTextFromUrl("https://93.184.216.34/listing")).rejects.toThrow(
+      "Internal URLs",
+    );
+  });
+
+  it("re-checks the destination when a page redirects to localhost", async () => {
+    vi.stubGlobal("fetch", redirectThen("http://127.0.0.1:5000/admin"));
+    await expect(extractTextFromUrl("https://93.184.216.34/listing")).rejects.toThrow(
+      "Internal URLs",
+    );
+  });
+
+  it("blocks a relative redirect that lands on a blocked scheme", async () => {
+    vi.stubGlobal("fetch", redirectThen("file:///etc/passwd"));
+    await expect(extractTextFromUrl("https://93.184.216.34/listing")).rejects.toThrow(
+      "Only HTTP and HTTPS",
+    );
+  });
+
+  it("follows a redirect to another public address", async () => {
+    vi.stubGlobal("fetch", redirectThen("http://93.184.216.35/moved", "<main>Deal $9,000</main>"));
+    await expect(extractTextFromUrl("https://93.184.216.34/listing")).resolves.toContain("$9,000");
+  });
+
+  it("gives up after too many redirects", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 302,
+        headers: {
+          get: (n: string) =>
+            n.toLowerCase() === "location" ? "http://93.184.216.34/loop" : null,
+        },
+        text: () => Promise.resolve(""),
+      }),
+    );
+    await expect(extractTextFromUrl("https://93.184.216.34/listing")).rejects.toThrow(
+      "Too many redirects",
+    );
+  });
 });
 
 describe("extractTextFromUrl — successful extraction", () => {
