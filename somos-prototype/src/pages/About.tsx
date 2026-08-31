@@ -54,7 +54,7 @@ export default function About() {
         ]}
       />
 
-      <Section tone="cream">
+      <Section tone="white" curve>
         <Container>
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
             <Reveal>
@@ -88,7 +88,7 @@ export default function About() {
         </Container>
       </Section>
 
-      <Section tone="sand">
+      <Section tone="sun" curve>
         <Container>
           <Reveal>
             <SectionHeading
@@ -99,7 +99,7 @@ export default function About() {
           <div className="mt-12 grid gap-8 sm:grid-cols-2">
             {VALUES.map((value, i) => (
               <Reveal key={value.t} delay={i * 70}>
-                <div className="h-full rounded-card bg-white p-8">
+                <div className="h-full rounded-card bg-white p-8 shadow-soft">
                   <h3 className="font-display text-[1.35rem]">{value.t}</h3>
                   <p className="mt-3 leading-relaxed text-ink-muted">{value.d}</p>
                 </div>
@@ -110,7 +110,7 @@ export default function About() {
       </Section>
 
       {/* Reserved for verified biography and professional photography. */}
-      <Section tone="white">
+      <Section tone="white" curve>
         <Container>
           <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
             <Reveal>
@@ -143,7 +143,7 @@ export default function About() {
         </Container>
       </Section>
 
-      <Section tone="cream">
+      <Section tone="sage" curve>
         <Container>
           <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
             <Reveal>

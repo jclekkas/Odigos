@@ -86,7 +86,7 @@ export default function Admissions() {
         </Container>
       </section>
 
-      <Section tone="cream" spacing="tight">
+      <Section tone="white" spacing="tight" curve>
         <Container>
           <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
             <div>
@@ -142,7 +142,7 @@ export default function Admissions() {
         </Container>
       </Section>
 
-      <Section tone="sand">
+      <Section tone="sky" curve>
         <Container>
           <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
             <Reveal>

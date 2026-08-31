@@ -14,7 +14,9 @@ export function Container({
 type SectionProps = {
   id?: string;
   as?: ElementType;
-  tone?: 'cream' | 'white' | 'sand' | 'sage' | 'sky' | 'sun';
+  tone?: 'cream' | 'white' | 'sand' | 'sage' | 'sky' | 'sun' | 'blossom';
+  /** Soft rounded shoulder where this section meets the one above it. */
+  curve?: boolean;
   spacing?: 'default' | 'tight' | 'loose';
   className?: string;
   children: ReactNode;
@@ -27,6 +29,7 @@ const TONE: Record<NonNullable<SectionProps['tone']>, string> = {
   sage: 'bg-sage-50 text-ink',
   sky: 'bg-sky-50 text-ink',
   sun: 'bg-ochre-50 text-ink',
+  blossom: 'bg-blossom-50 text-ink',
 };
 
 const SPACING: Record<NonNullable<SectionProps['spacing']>, string> = {
@@ -40,11 +43,20 @@ export function Section({
   as: Tag = 'section',
   tone = 'cream',
   spacing = 'default',
+  curve = false,
   className,
   children,
 }: SectionProps) {
   return (
-    <Tag id={id} className={cn(TONE[tone], SPACING[spacing], className)}>
+    <Tag
+      id={id}
+      className={cn(
+        TONE[tone],
+        SPACING[spacing],
+        curve && 'relative rounded-t-[2rem] sm:rounded-t-[3.5rem]',
+        className
+      )}
+    >
       {children}
     </Tag>
   );

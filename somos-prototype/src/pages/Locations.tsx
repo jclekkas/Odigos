@@ -40,7 +40,7 @@ export default function LocationsPage() {
         ]}
       />
 
-      <Section tone="cream">
+      <Section tone="sage" curve>
         <Container>
           <h2 className="sr-only">Our schools</h2>
           <div className="grid gap-8 lg:grid-cols-2">
@@ -53,7 +53,7 @@ export default function LocationsPage() {
         </Container>
       </Section>
 
-      <Section tone="sand" spacing="tight">
+      <Section tone="white" spacing="tight" curve>
         <Container>
           <Reveal>
             <SectionHeading

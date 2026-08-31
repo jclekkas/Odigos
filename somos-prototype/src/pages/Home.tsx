@@ -105,7 +105,7 @@ export default function Home() {
                   className="shadow-lift lg:aspect-[1/1]"
                   imgClassName="scale-[1.01]"
                 />
-                <div className="absolute -bottom-6 left-5 hidden max-w-[15rem] rounded-card border border-ink/10 bg-cream-50 p-5 shadow-soft sm:block lg:-left-8">
+                <div className="absolute -bottom-8 -left-2 hidden max-w-[15rem] rounded-card border border-ink/10 bg-white p-5 shadow-lift sm:block lg:-left-12">
                   <p className="font-display text-[1.06rem] leading-snug">
                     “Ayúdame a hacerlo por mí mismo.”
                   </p>
@@ -122,7 +122,7 @@ export default function Home() {
       <TrustStrip />
 
       {/* ------------------------------------------------------------ intro */}
-      <Section tone="cream" spacing="default">
+      <Section tone="white" spacing="default" curve>
         <Container>
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
             <Reveal className="relative order-2 lg:order-1">
@@ -174,7 +174,7 @@ export default function Home() {
       </Section>
 
       {/* -------------------------------------------------------- bilingual */}
-      <Section tone="sand">
+      <Section tone="sky" curve>
         <Container>
           <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_1fr] lg:gap-20">
             <Reveal>
@@ -218,7 +218,7 @@ export default function Home() {
       </Section>
 
       {/* ------------------------------------------------------- montessori */}
-      <Section tone="cream">
+      <Section tone="sun" curve>
         <Container>
           <Reveal>
             <div className="grid gap-8 lg:grid-cols-[1fr_1.1fr] lg:items-end">
@@ -270,7 +270,7 @@ export default function Home() {
       </Section>
 
       {/* ---------------------------------------------------------- programs */}
-      <Section tone="white">
+      <Section tone="white" curve>
         <Container>
           <Reveal>
             <SectionHeading
@@ -293,7 +293,7 @@ export default function Home() {
       </Section>
 
       {/* --------------------------------------------------------- locations */}
-      <Section tone="sage" id="locations">
+      <Section tone="sage" id="locations" curve>
         <Container>
           <Reveal>
             <SectionHeading
@@ -313,7 +313,7 @@ export default function Home() {
       </Section>
 
       {/* ------------------------------------------------------ testimonials */}
-      <Section tone="sky">
+      <Section tone="blossom" curve>
         <Container>
           <Reveal>
             <SectionHeading eyebrow="Families" title="Trusted by Somos families." align="center" />
@@ -329,7 +329,7 @@ export default function Home() {
       </Section>
 
       {/* --------------------------------------------------- a day at somos */}
-      <Section tone="white">
+      <Section tone="white" curve>
         <Container>
           <Reveal>
             <div className="grid gap-8 lg:grid-cols-[1fr_1fr] lg:items-end">

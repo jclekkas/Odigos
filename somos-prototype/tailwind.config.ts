@@ -7,7 +7,7 @@ export default {
       colors: {
         cream: {
           50: '#FFFDF8',
-          100: '#FFF8EC',
+          100: '#FFF4DF',
           200: '#FDF0DE',
           300: '#F7E4CB',
         },
@@ -22,8 +22,8 @@ export default {
         },
         // Primary accent — a bright, warm coral rather than a burnt clay.
         clay: {
-          50: '#FFF1EB',
-          100: '#FFE1D5',
+          50: '#FFEDE4',
+          100: '#FFDCCB',
           200: '#FFC3AC',
           400: '#EC6136',
           500: '#DC5329',
@@ -33,8 +33,8 @@ export default {
         },
         // Fresh leaf green (kept under the `sage` name used across the site).
         sage: {
-          50: '#EFF8EC',
-          100: '#DCF0D6',
+          50: '#E6F7E0',
+          100: '#D2EFCA',
           300: '#A6D89D',
           500: '#6DBB66',
           600: '#4E9C4B',
@@ -43,31 +43,31 @@ export default {
         },
         // Sunshine.
         ochre: {
-          50: '#FFFAE8',
-          100: '#FFF2CD',
+          50: '#FFF6D9',
+          100: '#FFEBBB',
           300: '#FFDC7C',
           500: '#F5B92E',
           700: '#8A6209',
         },
         // Sky.
         sky: {
-          50: '#EDF7FC',
-          100: '#D6ECF6',
+          50: '#E2F2FB',
+          100: '#CBE8F5',
           300: '#96D0E8',
           500: '#45A8D2',
           700: '#1D6787',
         },
         // Blossom.
         blossom: {
-          50: '#FEEFF4',
-          100: '#FBDCE6',
+          50: '#FDEAF1',
+          100: '#FAD3E1',
           300: '#F2AAC2',
           700: '#A03C5C',
         },
       },
       fontFamily: {
         display: ['"Fraunces Variable"', 'Fraunces', 'Georgia', 'Cambria', 'serif'],
-        sans: ['"Figtree Variable"', 'Figtree', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        sans: ['"Nunito Variable"', 'Nunito', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
       },
       fontSize: {
         'display-xl': ['clamp(2.55rem, 5.1vw, 4.05rem)', { lineHeight: '1.02', letterSpacing: '-0.025em' }],
@@ -81,7 +81,8 @@ export default {
         prose: '68ch',
       },
       borderRadius: {
-        card: '1.15rem',
+        card: '1.6rem',
+        blob: '2.5rem',
         pill: '999px',
       },
       boxShadow: {

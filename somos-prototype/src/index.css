@@ -1,5 +1,5 @@
 @import '@fontsource-variable/fraunces/index.css';
-@import '@fontsource-variable/figtree/index.css';
+@import '@fontsource-variable/nunito/index.css';
 
 @tailwind base;
 @tailwind components;
@@ -24,7 +24,7 @@
 
   body {
     @apply bg-cream-50 text-ink font-sans antialiased;
-    font-variation-settings: 'wght' 400;
+    font-variation-settings: 'wght' 450;
     overflow-x: hidden;
   }
 
@@ -33,7 +33,7 @@
   h3,
   h4 {
     @apply font-display text-ink;
-    font-variation-settings: 'SOFT' 20, 'WONK' 1, 'opsz' 40;
+    font-variation-settings: 'SOFT' 100, 'WONK' 1, 'opsz' 22, 'wght' 600;
     text-wrap: balance;
   }
 

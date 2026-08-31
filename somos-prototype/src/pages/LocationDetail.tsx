@@ -103,7 +103,7 @@ export default function LocationDetail() {
       </section>
 
       {/* ------------------------------------------------------------ welcome */}
-      <Section tone="cream">
+      <Section tone="white" curve>
         <Container>
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
             <Reveal>
@@ -137,7 +137,7 @@ export default function LocationDetail() {
       </Section>
 
       {/* ----------------------------------------------------------- programs */}
-      <Section tone="white">
+      <Section tone="sun" curve>
         <Container>
           <Reveal>
             <SectionHeading
@@ -149,7 +149,7 @@ export default function LocationDetail() {
           <div className="mt-10 grid gap-7 md:grid-cols-3">
             {offered.map((program, i) => (
               <Reveal key={program.slug} delay={i * 80}>
-                <div className="flex h-full flex-col rounded-card border border-ink/10 bg-cream-50 p-7">
+                <div className="flex h-full flex-col rounded-card border border-ink/10 bg-white p-7">
                   <p className="text-[0.8rem] font-semibold uppercase tracking-[0.13em] text-sage-700">
                     {program.ages}
                   </p>
@@ -168,7 +168,7 @@ export default function LocationDetail() {
       </Section>
 
       {/* ------------------------------------------------------------ gallery */}
-      <Section tone="sand">
+      <Section tone="sky" curve>
         <Container>
           <Reveal>
             <SectionHeading
@@ -188,7 +188,7 @@ export default function LocationDetail() {
       </Section>
 
       {/* --------------------------------------------------------- philosophy */}
-      <Section tone="cream">
+      <Section tone="white" curve>
         <Container>
           <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
             <Reveal>
@@ -210,7 +210,7 @@ export default function LocationDetail() {
             <Reveal delay={80}>
               <ul className="grid gap-6 sm:grid-cols-2">
                 {montessoriPillars.map((pillar) => (
-                  <li key={pillar.name} className="rounded-card bg-white p-6">
+                  <li key={pillar.name} className="rounded-card bg-cream-100 p-6">
                     <h3 className="font-semibold text-ink">{pillar.name}</h3>
                     <p className="mt-2 text-[0.93rem] leading-relaxed text-ink-muted">
                       {pillar.body}
@@ -224,7 +224,7 @@ export default function LocationDetail() {
       </Section>
 
       {/* -------------------------------------------------------- testimonial */}
-      <Section tone="white" spacing="tight">
+      <Section tone="blossom" spacing="tight" curve>
         <Container>
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16">
             <Reveal>
@@ -241,7 +241,7 @@ export default function LocationDetail() {
       </Section>
 
       {/* --------------------------------------------------- admissions + map */}
-      <Section tone="cream">
+      <Section tone="white" curve>
         <Container>
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
             <Reveal>

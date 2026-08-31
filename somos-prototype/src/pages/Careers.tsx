@@ -34,7 +34,7 @@ export default function Careers() {
         ]}
       />
 
-      <Section tone="cream">
+      <Section tone="white" curve>
         <Container>
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
             <Reveal>
@@ -70,7 +70,7 @@ export default function Careers() {
         </Container>
       </Section>
 
-      <Section tone="sand" spacing="tight">
+      <Section tone="sun" spacing="tight" curve>
         <Container>
           <div className="rounded-card border border-ink/10 bg-white p-8 sm:p-12">
             <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">

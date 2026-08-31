@@ -10,6 +10,8 @@ import { programs, montessoriPillars } from '@/data/programs';
 import { cn } from '@/lib/cn';
 import { PILLAR_ACCENTS } from '@/lib/accents';
 
+const SUPPORTING_TONES = ['sage', 'blossom', 'sun', 'sky', 'sage'] as const;
+
 const SUPPORTING = [
   {
     id: 'bilingual',
@@ -100,7 +102,7 @@ export default function Programs() {
       />
 
       {/* -------------------------------------------------------- progression */}
-      <Section tone="cream" spacing="tight">
+      <Section tone="sky" spacing="tight" curve>
         <Container>
           <Reveal>
             <SectionHeading
@@ -141,7 +143,7 @@ export default function Programs() {
 
       {/* ------------------------------------------------------- core programs */}
       {programs.slice(0, 2).map((program, index) => (
-        <Section key={program.slug} id={program.slug} tone={index % 2 === 0 ? 'white' : 'sand'}>
+        <Section key={program.slug} id={program.slug} tone={index % 2 === 0 ? 'white' : 'sun'} curve>
           <Container>
             <div
               className={cn(
@@ -185,7 +187,7 @@ export default function Programs() {
       ))}
 
       {/* -------------------------------------------------- five learning areas */}
-      <Section tone="cream">
+      <Section tone="white" curve>
         <Container>
           <Reveal>
             <SectionHeading
@@ -219,7 +221,7 @@ export default function Programs() {
 
       {/* ---------------------------------------------------------- supporting */}
       {SUPPORTING.map((block, i) => (
-        <Section key={block.id} id={block.id} tone={i % 2 === 0 ? 'white' : 'sand'} spacing="tight">
+        <Section key={block.id} id={block.id} tone={SUPPORTING_TONES[i % SUPPORTING_TONES.length]} spacing="tight" curve>
           <Container>
             <div
               className={cn(
@@ -245,7 +247,7 @@ export default function Programs() {
       ))}
 
       {/* -------------------------------------------------------------- notes */}
-      <Section tone="cream" spacing="tight">
+      <Section tone="cream" spacing="tight" curve>
         <Container>
           <div className="grid gap-8 rounded-card border border-ink/10 bg-white p-8 sm:p-10 lg:grid-cols-3">
             <div>

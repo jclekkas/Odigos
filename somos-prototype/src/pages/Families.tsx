@@ -65,7 +65,7 @@ export default function Families() {
         ]}
       />
 
-      <Section tone="cream">
+      <Section tone="white" curve>
         <Container>
           <Reveal>
             <SectionHeading
@@ -92,7 +92,7 @@ export default function Families() {
         </Container>
       </Section>
 
-      <Section tone="sand">
+      <Section tone="sky" curve>
         <Container>
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
             <Reveal>
@@ -115,7 +115,7 @@ export default function Families() {
         </Container>
       </Section>
 
-      <Section tone="cream">
+      <Section tone="white" curve>
         <Container>
           <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
             <Reveal>

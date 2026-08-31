@@ -12,6 +12,8 @@ import { generalFaqs } from '@/data/content';
 import { PILLAR_ACCENTS } from '@/lib/accents';
 import { cn } from '@/lib/cn';
 
+const PRINCIPLE_TONES = ['white', 'sage', 'white', 'blossom'] as const;
+
 const PRINCIPLES = [
   {
     id: 'prepared',
@@ -87,7 +89,7 @@ export default function Approach() {
         ]}
       />
 
-      <Section tone="cream" spacing="tight">
+      <Section tone="sun" spacing="tight" curve>
         <Container>
           <Reveal>
             <SectionHeading
@@ -123,7 +125,7 @@ export default function Approach() {
       </Section>
 
       {PRINCIPLES.map((block, i) => (
-        <Section key={block.id} id={block.id} tone={i % 2 === 0 ? 'white' : 'sand'}>
+        <Section key={block.id} id={block.id} tone={PRINCIPLE_TONES[i % PRINCIPLE_TONES.length]} curve>
           <Container>
             <div
               className={cn(
@@ -148,7 +150,7 @@ export default function Approach() {
         </Section>
       ))}
 
-      <Section tone="sky">
+      <Section tone="sky" curve>
         <Container>
           <Reveal>
             <SectionHeading
@@ -172,7 +174,7 @@ export default function Approach() {
         </Container>
       </Section>
 
-      <Section tone="cream">
+      <Section tone="white" curve>
         <Container>
           <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
             <Reveal>

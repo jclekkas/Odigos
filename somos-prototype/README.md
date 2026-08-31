@@ -97,14 +97,16 @@ in place. Content is present in the HTML for visitors without JavaScript.
 
 ## Palette
 
-Warm cream backgrounds with five accent hues — coral, sunshine, leaf, sky and
-blossom — rotated across peer elements (the five learning areas, the trust
-strip, programme cards, location cards) so the site reads cheerful without
-becoming childish. Accent tokens live in `tailwind.config.ts`; the rotation is
-`src/lib/accents.ts`.
+Five accent hues — coral, sunshine, leaf, sky and blossom — used two ways:
+rotated across peer elements (the five learning areas, the trust strip,
+programme cards, location cards), and as full-width section washes so the page
+moves through colour as you scroll. Sections meet each other on a soft rounded
+shoulder (`<Section curve>`) rather than a hard edge. Accent tokens live in
+`tailwind.config.ts`; the rotation is `src/lib/accents.ts`.
 
 ## Stack
 
-React 18, TypeScript, Vite 5, Tailwind CSS 3, React Router 6. Fonts (Fraunces
-and Figtree) are self-hosted via `@fontsource-variable`, so the site loads no
-third-party resources at runtime.
+React 18, TypeScript, Vite 5, Tailwind CSS 3, React Router 6. Fonts — Fraunces
+for headings (with its soft axis turned up) and Nunito for everything else —
+are self-hosted via `@fontsource-variable`, so the site loads no third-party
+resources at runtime.
