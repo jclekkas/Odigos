@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1750" width="1400" height="1750" role="presentation">
+  <defs>
+    <linearGradient id="sky" x1="0.1" y1="0" x2="0.6" y2="1">
+      <stop offset="0%" stop-color="#F5EFEC"/>
+      <stop offset="100%" stop-color="#C3B4B7"/>
+    </linearGradient>
+    <linearGradient id="shaft" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="vig" cx="50%" cy="42%" r="76%">
+      <stop offset="52%" stop-color="#2B2622" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#2B2622" stop-opacity="0.26"/>
+    </radialGradient>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+  </defs>
+  <rect width="1400" height="1750" fill="url(#sky)"/>
+  
+  <path d="M0 1545.9 H 1400 V 1750 H 0 Z" fill="#9A8791" opacity="0.9"/>
+  <path d="M727.3 1584 V 462.1 A 261.2 261.2 0 0 1 1249.8 462.1 V 1584 Z" fill="#C3B4B7"/>
+  <path d="M821.4 1584 V 462.1 A 167.2 167.2 0 0 1 1155.7 462.1 V 1584 Z" fill="#E4DBD9" opacity="0.9"/>
+  <circle cx="907.4" cy="1278.3" r="73.1" fill="#5E4E58" opacity="0.35"/>
+  <polygon points="79.4,0 438.3,0 651.1,1750 292.2,1750" fill="url(#shaft)" opacity="0.55"/>
+  <rect width="1400" height="1750" fill="url(#vig)"/>
+  <rect width="1400" height="1750" filter="url(#grain)" opacity="0.2" style="mix-blend-mode:multiply"/>
+</svg>

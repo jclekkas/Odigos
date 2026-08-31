@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1750" width="1400" height="1750" role="presentation">
+  <defs>
+    <linearGradient id="sky" x1="0.1" y1="0" x2="0.6" y2="1">
+      <stop offset="0%" stop-color="#F2F6EE"/>
+      <stop offset="100%" stop-color="#B9CBAE"/>
+    </linearGradient>
+    <linearGradient id="shaft" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="vig" cx="50%" cy="42%" r="76%">
+      <stop offset="52%" stop-color="#2B2622" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#2B2622" stop-opacity="0.26"/>
+    </radialGradient>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+  </defs>
+  <rect width="1400" height="1750" fill="url(#sky)"/>
+  
+  <circle cx="769.8" cy="719" r="694.4" fill="#4B6046" opacity="0.55"/>
+  <circle cx="769.8" cy="719" r="520.8" fill="#87A17C" opacity="0.67"/>
+  <circle cx="769.8" cy="719" r="347.2" fill="#B9CBAE" opacity="0.79"/>
+  <circle cx="769.8" cy="719" r="173.6" fill="#DFE8D8" opacity="0.91"/>
+  <path d="M0 1299.1 C 420 1124.1, 980 1439.1, 1400 1229.1 L 1400 1750 L 0 1750 Z" fill="#87A17C" opacity="0.88"/>
+  <polygon points="567.5,0 899.3,0 1066.2,1750 734.4,1750" fill="url(#shaft)" opacity="0.55"/>
+  <rect width="1400" height="1750" fill="url(#vig)"/>
+  <rect width="1400" height="1750" filter="url(#grain)" opacity="0.2" style="mix-blend-mode:multiply"/>
+</svg>

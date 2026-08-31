@@ -1,0 +1,113 @@
+@import '@fontsource-variable/fraunces/index.css';
+@import '@fontsource-variable/figtree/index.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --header-h: 4.5rem;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply bg-cream-50 text-ink font-sans antialiased;
+    font-variation-settings: 'wght' 400;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display text-ink;
+    font-variation-settings: 'SOFT' 20, 'WONK' 1, 'opsz' 40;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* A single, unmistakable focus treatment across the whole site. */
+  :focus-visible {
+    outline: 3px solid theme('colors.clay.600');
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: theme('colors.ochre.300');
+    color: theme('colors.ink.DEFAULT');
+  }
+}
+
+@layer components {
+  .container-somos {
+    @apply mx-auto w-full max-w-[80rem] px-5 sm:px-8 lg:px-12;
+  }
+
+  .eyebrow {
+    @apply text-eyebrow font-semibold uppercase tracking-[0.16em] text-clay-700;
+  }
+
+  .lede {
+    @apply text-lede text-ink-muted;
+  }
+
+  .rule {
+    @apply h-px w-full bg-ink/10;
+  }
+
+  /* Scroll-reveal: hidden by default, unhidden by IntersectionObserver.
+     Kept visible for no-JS visitors and for reduced-motion users. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  .reveal.is-in {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.7s theme('transitionTimingFunction.somos'),
+      transform 0.7s theme('transitionTimingFunction.somos');
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal,
+    .reveal.is-in {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+}
+
+@layer utilities {
+  .text-shadow-hero {
+    text-shadow: 0 1px 30px rgba(30, 22, 16, 0.35);
+  }
+
+  .grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    background-image: radial-gradient(circle at 1px 1px, rgba(43, 38, 34, 0.18) 1px, transparent 0);
+    background-size: 4px 4px;
+  }
+}
