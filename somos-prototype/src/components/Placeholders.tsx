@@ -27,7 +27,7 @@ export function MapPlaceholder({ location }: { location: Location }) {
           className="absolute inset-x-0 top-[62%] h-10 bg-cream-100/70"
         />
         <div className="relative flex flex-col items-center px-6 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-coral-600 text-cream-50 shadow-soft">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-grass-600 text-white shadow-soft">
             <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" />
               <circle cx="12" cy="10" r="2.6" />

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { footerNav, legalNav, site } from '@/data/site';
 import { locations } from '@/data/locations';
-import { LogoMark } from '@/components/Logo';
+import { LogoBadge } from '@/components/Logo';
 
 export function Footer() {
   const year = 2026;
@@ -17,29 +17,21 @@ export function Footer() {
       <div className="container-somos py-16 sm:py-20">
         <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr_1.4fr]">
           <div>
-            <div className="flex items-center gap-3">
-              <LogoMark className="h-10 w-10" />
-              <span
-                className="font-display text-[1.5rem] text-ink"
-                style={{ fontVariationSettings: "'wght' 600, 'SOFT' 40, 'opsz' 20" }}
-              >
-                somos
-              </span>
-            </div>
+            <LogoBadge className="h-32 w-32" />
             <p className="mt-5 max-w-sm text-[0.97rem] leading-relaxed text-ink-muted">
               A bilingual Montessori early-learning community for children ages 2–5,
               helping young children become independent, curious and kind.
             </p>
             <a
               href={`mailto:${site.email}`}
-              className="mt-6 inline-flex min-h-[44px] items-center text-[0.97rem] font-semibold text-coral-700 underline decoration-coral-200 underline-offset-4 transition-colors hover:decoration-coral-600"
+              className="mt-6 inline-flex min-h-[44px] items-center text-[0.97rem] font-semibold text-grass-700 underline decoration-grass-200 underline-offset-4 transition-colors hover:decoration-grass-600"
             >
               {site.email}
             </a>
           </div>
 
           <nav aria-label="Footer">
-            <h2 className="text-eyebrow font-semibold uppercase tracking-[0.16em] text-coral-700">
+            <h2 className="text-eyebrow font-extrabold uppercase tracking-[0.14em] text-grass-700">
               Explore
             </h2>
             <ul className="mt-5 space-y-1">
@@ -47,7 +39,7 @@ export function Footer() {
                 <li key={item.href}>
                   <Link
                     to={item.href}
-                    className="inline-flex min-h-[40px] items-center text-[0.97rem] text-ink-muted transition-colors hover:text-coral-700"
+                    className="inline-flex min-h-[40px] items-center text-[0.97rem] text-ink-muted transition-colors hover:text-grass-700"
                   >
                     {item.label}
                   </Link>
@@ -57,7 +49,7 @@ export function Footer() {
           </nav>
 
           <div>
-            <h2 className="text-eyebrow font-semibold uppercase tracking-[0.16em] text-coral-700">
+            <h2 className="text-eyebrow font-extrabold uppercase tracking-[0.14em] text-grass-700">
               Our Schools
             </h2>
             <div className="mt-5 grid gap-8 sm:grid-cols-2">
@@ -76,7 +68,7 @@ export function Footer() {
                   </address>
                   <a
                     href={`tel:${loc.phone.replace(/\D/g, '')}`}
-                    className="mt-2 inline-flex min-h-[40px] items-center text-[0.94rem] font-semibold text-coral-700 underline decoration-coral-200 underline-offset-4 hover:decoration-coral-600"
+                    className="mt-2 inline-flex min-h-[40px] items-center text-[0.94rem] font-semibold text-grass-700 underline decoration-grass-200 underline-offset-4 hover:decoration-grass-600"
                   >
                     {loc.phone}
                   </a>

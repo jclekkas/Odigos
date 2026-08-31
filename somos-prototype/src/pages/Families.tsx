@@ -78,7 +78,7 @@ export default function Families() {
             {DAY.map((item, i) => (
               <Reveal as="li" key={item.t} delay={i * 60}>
                 <div className="grid gap-2 border-b border-ink/10 py-7 sm:grid-cols-[9rem_1fr] sm:gap-8">
-                  <span className="text-[0.8rem] font-bold uppercase tracking-[0.14em] text-coral-700 sm:pt-1">
+                  <span className="text-[0.8rem] font-extrabold uppercase tracking-[0.14em] text-grass-700 sm:pt-1">
                     {item.time}
                   </span>
                   <div>
@@ -126,7 +126,7 @@ export default function Families() {
                     <p className="font-semibold">{loc.city}</p>
                     <a
                       href={`tel:${loc.phone.replace(/\D/g, '')}`}
-                      className="mt-1 inline-flex min-h-[44px] items-center text-coral-700 underline-offset-4 hover:underline"
+                      className="mt-1 inline-flex min-h-[44px] items-center text-grass-700 underline-offset-4 hover:underline"
                     >
                       {loc.phone}
                     </a>

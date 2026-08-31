@@ -39,14 +39,14 @@ export default function Home() {
               <p className="eyebrow">Bilingual • Montessori • Ages 2–5</p>
               <h1 className="mt-5 text-display-xl">
                 Growing{' '}
-                <span className="relative whitespace-nowrap text-coral-600">
+                <span className="relative whitespace-nowrap text-grass-600">
                   curious
                   <Squiggle className="text-sun-400" />
                 </span>
                 ,{' '}
-                <span className="relative whitespace-nowrap text-sky-600">
+                <span className="relative whitespace-nowrap text-sky-500">
                   confident
-                  <Squiggle className="text-grass-300" />
+                  <Squiggle className="text-berry-300" />
                 </span>{' '}
                 children — together.
               </h1>
@@ -98,7 +98,7 @@ export default function Home() {
                 />
 
                 <div className="absolute -bottom-10 -left-4 hidden max-w-[16rem] rounded-card border-2 border-sun-300 bg-white p-5 shadow-lift sm:block lg:-left-16">
-                  <p className="font-display text-[1.1rem] font-bold leading-snug text-coral-700">
+                  <p className="font-display text-[1.1rem] font-bold leading-snug text-grass-700">
                     “¡Ayúdame a hacerlo por mí mismo!”
                   </p>
                   <p className="mt-1.5 text-[0.85rem] leading-snug text-ink-muted">

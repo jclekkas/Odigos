@@ -77,7 +77,7 @@ export default function LocationDetail() {
               </address>
               <a
                 href={`tel:${tel}`}
-                className="mt-2 inline-flex min-h-[44px] items-center font-semibold text-coral-700 underline-offset-4 hover:underline"
+                className="mt-2 inline-flex min-h-[44px] items-center font-semibold text-grass-700 underline-offset-4 hover:underline"
               >
                 {location.phone}
               </a>
@@ -150,7 +150,7 @@ export default function LocationDetail() {
             {offered.map((program, i) => (
               <Reveal key={program.slug} delay={i * 80}>
                 <div className="flex h-full flex-col rounded-card border border-ink/10 bg-white p-7">
-                  <p className="text-[0.8rem] font-semibold uppercase tracking-[0.13em] text-grass-600">
+                  <p className="text-[0.8rem] font-semibold uppercase tracking-[0.13em] text-grass-700">
                     {program.ages}
                   </p>
                   <h3 className="mt-2 font-display text-[1.4rem]">{program.name}</h3>
@@ -270,7 +270,7 @@ export default function LocationDetail() {
                   },
                 ].map((step, i) => (
                   <li key={step.t} className="flex gap-5">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-coral-600 font-display text-[0.95rem] font-semibold text-cream-50">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-grass-600 font-display text-[0.95rem] font-semibold text-cream-50">
                       {i + 1}
                     </span>
                     <span>

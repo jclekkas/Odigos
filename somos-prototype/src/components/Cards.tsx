@@ -85,7 +85,7 @@ export function LocationCard({
         </address>
         <a
           href={`tel:${location.phone.replace(/\D/g, '')}`}
-          className="mt-2 inline-flex min-h-[44px] items-center font-semibold text-coral-700 underline-offset-4 hover:underline"
+          className="mt-2 inline-flex min-h-[44px] items-center font-semibold text-grass-700 underline-offset-4 hover:underline"
         >
           {location.phone}
         </a>

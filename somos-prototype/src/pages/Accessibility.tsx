@@ -37,7 +37,7 @@ export default function Accessibility() {
               <li key={item} className="flex gap-3 text-[0.96rem] leading-relaxed text-ink-muted">
                 <span
                   aria-hidden="true"
-                  className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-coral-600"
+                  className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-grass-500"
                 />
                 {item}
               </li>
@@ -53,7 +53,7 @@ export default function Accessibility() {
               Email{' '}
               <a
                 href={`mailto:${site.email}`}
-                className="font-semibold text-coral-700 underline underline-offset-4"
+                className="font-semibold text-grass-700 underline underline-offset-4"
               >
                 {site.email}
               </a>{' '}

@@ -57,7 +57,7 @@ export default function Careers() {
                   'Work that compounds over years',
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-3 text-[0.96rem] text-ink-muted">
-                    <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-coral-600" />
+                    <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-grass-500" />
                     {item}
                   </li>
                 ))}
@@ -100,7 +100,7 @@ export default function Careers() {
                       <p className="font-semibold">{loc.city}</p>
                       <a
                         href={`tel:${loc.phone.replace(/\D/g, '')}`}
-                        className="inline-flex min-h-[40px] items-center text-[0.95rem] text-coral-700 underline-offset-4 hover:underline"
+                        className="inline-flex min-h-[40px] items-center text-[0.95rem] text-grass-700 underline-offset-4 hover:underline"
                       >
                         {loc.phone}
                       </a>

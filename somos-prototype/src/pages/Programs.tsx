@@ -127,7 +127,7 @@ export default function Programs() {
                   {i < 2 ? (
                     <span
                       aria-hidden="true"
-                      className="absolute -right-3 top-1/2 hidden h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full bg-coral-600 text-cream-50 md:flex"
+                      className="absolute -right-3 top-1/2 hidden h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full bg-grass-600 text-white md:flex"
                     >
                       <svg viewBox="0 0 20 20" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M5 10h9M10.5 6l4 4-4 4" />
@@ -173,7 +173,7 @@ export default function Programs() {
                   ))}
                 </dl>
                 {program.day ? (
-                  <p className="mt-8 border-l-2 border-coral-500 pl-5 text-[0.96rem] leading-relaxed text-ink-muted">
+                  <p className="mt-8 border-l-2 border-grass-500 pl-5 text-[0.96rem] leading-relaxed text-ink-muted">
                     {program.day}
                   </p>
                 ) : null}

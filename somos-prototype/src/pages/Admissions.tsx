@@ -112,7 +112,7 @@ export default function Admissions() {
                     </address>
                     <a
                       href={`tel:${loc.phone.replace(/\D/g, '')}`}
-                      className="mt-3 inline-flex min-h-[44px] items-center font-semibold text-coral-700 underline-offset-4 hover:underline"
+                      className="mt-3 inline-flex min-h-[44px] items-center font-semibold text-grass-700 underline-offset-4 hover:underline"
                     >
                       {loc.phone}
                     </a>
@@ -122,7 +122,7 @@ export default function Admissions() {
                   <h3 className="font-semibold">Email either school</h3>
                   <a
                     href={`mailto:${site.email}`}
-                    className="mt-2 inline-flex min-h-[44px] items-center font-semibold text-coral-700 underline-offset-4 hover:underline"
+                    className="mt-2 inline-flex min-h-[44px] items-center font-semibold text-grass-700 underline-offset-4 hover:underline"
                   >
                     {site.email}
                   </a>

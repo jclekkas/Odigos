@@ -6,14 +6,14 @@ type Variant = 'primary' | 'secondary' | 'sunny' | 'quiet' | 'onDark' | 'onDarkG
 type Size = 'sm' | 'md' | 'lg';
 
 const BASE =
-  'inline-flex items-center justify-center gap-2 rounded-pill font-display font-bold tracking-[-0.01em] transition-[background-color,color,border-color,transform,box-shadow] duration-200 ease-bounce hover:-translate-y-0.5 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60';
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-pill font-display font-bold tracking-[-0.01em] transition-[background-color,color,border-color,transform,box-shadow] duration-200 ease-bounce hover:-translate-y-0.5 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60';
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-coral-600 text-white shadow-pop hover:bg-coral-700',
+  primary: 'bg-grass-600 text-white shadow-pop hover:bg-grass-700',
   secondary:
     'border-2 border-ink/15 bg-white text-ink shadow-soft hover:border-ink/30 hover:bg-cream-50',
   sunny: 'bg-sun-400 text-ink shadow-[0_4px_0_0_rgba(143,101,10,0.3)] hover:bg-sun-300',
-  quiet: 'text-coral-700 underline decoration-2 decoration-coral-200 underline-offset-4 hover:decoration-coral-500 px-0',
+  quiet: 'text-grass-700 underline decoration-2 decoration-grass-200 underline-offset-4 hover:decoration-grass-500 px-0',
   onDark: 'bg-white text-ink shadow-soft hover:bg-cream-50',
   onDarkGhost: 'border-2 border-white/70 text-white hover:border-white hover:bg-white/15',
 };

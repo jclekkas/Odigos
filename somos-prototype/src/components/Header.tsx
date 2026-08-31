@@ -72,7 +72,7 @@ export function Header() {
                         cn(
                           'relative inline-flex min-h-[40px] items-center rounded-pill px-3.5 text-[0.94rem] font-medium transition-colors duration-200',
                           isActive
-                            ? 'text-coral-700'
+                            ? 'text-grass-700'
                             : 'text-ink-muted hover:text-ink'
                         )
                       }
@@ -83,7 +83,7 @@ export function Header() {
                           <span
                             aria-hidden="true"
                             className={cn(
-                              'absolute inset-x-3.5 -bottom-0.5 h-[2px] rounded-full bg-coral-600 transition-transform duration-300 ease-somos',
+                              'absolute inset-x-3.5 -bottom-0.5 h-[2px] rounded-full bg-grass-600 transition-transform duration-300 ease-somos',
                               isActive ? 'scale-x-100' : 'scale-x-0'
                             )}
                           />
@@ -183,7 +183,7 @@ export function Header() {
                 </p>
                 <a
                   href={`tel:${loc.phone.replace(/\D/g, '')}`}
-                  className="mt-3 inline-flex min-h-[44px] items-center font-semibold text-coral-700 underline-offset-4 hover:underline"
+                  className="mt-3 inline-flex min-h-[44px] items-center font-semibold text-grass-700 underline-offset-4 hover:underline"
                 >
                   {loc.phone}
                 </a>
