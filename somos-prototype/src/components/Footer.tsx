@@ -17,7 +17,7 @@ export function Footer() {
       <div className="container-somos py-16 sm:py-20">
         <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr_1.4fr]">
           <div>
-            <LogoBadge className="h-32 w-32" />
+            <LogoBadge className="h-36 w-36" />
             <p className="mt-5 max-w-sm text-[0.97rem] leading-relaxed text-ink-muted">
               A bilingual Montessori early-learning community for children ages 2–5,
               helping young children become independent, curious and kind.

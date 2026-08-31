@@ -97,12 +97,15 @@ in place. Content is present in the HTML for visitors without JavaScript.
 
 ## Brand, palette and type
 
-**The logo on the site is a recreation.** Somos supplied the mark as a raster
-image, so it is redrawn as SVG in `src/components/Logo.tsx` — the circular
-badge with arced wordmarks, and a simplified heart for the header. It matches
-the colours, structure and wordmark but is not the official file. Get the
-original vector before launch; `public/brand/README.md` has the swap
-instructions.
+**The logo is a file, not code.** The site loads it from
+`public/brand/somos-logo.svg` (badge) and `public/brand/somos-mark.svg`
+(heart), so dropping in the official artwork is a file replacement with no
+component changes.
+
+**The files in place now are a stand-in.** They were drawn to match the
+supplied logo so the prototype is complete, but they are not Somos's artwork —
+overwrite them with the real vector before this goes anywhere.
+`public/brand/README.md` has the details.
 
 The palette is sampled from that artwork:
 

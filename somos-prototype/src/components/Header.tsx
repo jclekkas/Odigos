@@ -57,10 +57,10 @@ export function Header() {
           <div
             className={cn(
               'flex items-center justify-between gap-6 transition-[height] duration-300 ease-somos',
-              scrolled ? 'h-[68px]' : 'h-[84px]'
+              scrolled ? 'h-[76px]' : 'h-[92px]'
             )}
           >
-            <Logo />
+            <Logo className="h-[60px] shrink-0 sm:h-[68px]" />
 
             <nav aria-label="Primary" className="hidden lg:block">
               <ul className="flex items-center gap-1">
@@ -138,7 +138,7 @@ export function Header() {
         id="mobile-menu"
         aria-label="Mobile"
         hidden={!open}
-        className="fixed inset-0 z-40 overflow-y-auto bg-cream-50 pt-[84px] lg:hidden"
+        className="fixed inset-0 z-40 overflow-y-auto bg-cream-50 pt-[92px] lg:hidden"
       >
         <div className="container-somos pb-16 pt-6">
           <ul className="space-y-2.5">
