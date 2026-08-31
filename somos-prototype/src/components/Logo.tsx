@@ -27,14 +27,18 @@ export function LogoMark({ className }: { className?: string }) {
 export function LogoBadge({
   className,
   plate = false,
+  decorative = false,
 }: {
   className?: string;
   plate?: boolean;
+  /** For placements where the name is already announced nearby. */
+  decorative?: boolean;
 }) {
   const img = (
     <img
       src="/brand/somos-logo.svg"
-      alt="Somos Early Learning"
+      alt={decorative ? '' : 'Somos Early Learning'}
+      aria-hidden={decorative || undefined}
       className={cn('h-full w-full', plate && 'p-2')}
     />
   );
@@ -45,21 +49,36 @@ export function LogoBadge({
   );
 }
 
-/** Header lockup — the badge alone; it already carries the school's name. */
-export function Logo({ className, onClick }: { className?: string; onClick?: () => void }) {
+/**
+ * Header lockup — the badge alone; it already carries the school's name. It
+ * sits on a white coin so the artwork keeps the white ground it is drawn for,
+ * and so it reads as a seal rather than a small picture in the corner.
+ */
+export function Logo({
+  className,
+  coinClassName,
+  onClick,
+}: {
+  className?: string;
+  coinClassName?: string;
+  onClick?: () => void;
+}) {
   return (
     <Link
       to="/"
       onClick={onClick}
-      className={cn('group inline-flex items-center', className)}
+      className={cn('group inline-flex shrink-0 items-center', className)}
       aria-label="Somos Early Learning — home"
     >
-      {/* The link carries the accessible name, so the image stays decorative. */}
-      <img
-        src="/brand/somos-logo.svg"
-        alt=""
-        className="h-full w-auto transition-transform duration-300 ease-bounce group-hover:-rotate-3"
-      />
+      <span
+        className={cn(
+          'grid place-items-center rounded-full bg-white shadow-soft ring-1 ring-ink/[0.06] transition-[height,width,transform] duration-300 ease-somos group-hover:-rotate-3',
+          coinClassName
+        )}
+      >
+        {/* The link carries the accessible name, so the image stays decorative. */}
+        <img src="/brand/somos-logo.svg" alt="" className="h-[86%] w-[86%]" />
+      </span>
     </Link>
   );
 }

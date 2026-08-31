@@ -13,6 +13,7 @@ import { testimonials, dayMoments, generalFaqs } from '@/data/content';
 import { locations } from '@/data/locations';
 import { PILLAR_ACCENTS } from '@/lib/accents';
 import { Squiggle, Star, Dots } from '@/components/Doodles';
+import { LogoBadge } from '@/components/Logo';
 import { cn } from '@/lib/cn';
 
 export default function Home() {
@@ -106,9 +107,14 @@ export default function Home() {
                   </p>
                 </div>
 
-                <Star
-                  className="absolute -right-3 -top-6 h-12 w-12 text-berry-300 lg:-right-6 lg:h-16 lg:w-16"
+                {/* A seal on the photograph. Hidden on phones, where the
+                    header badge is already the first thing you see. */}
+                <LogoBadge
+                  plate
+                  decorative
+                  className="absolute -right-4 -top-8 hidden h-28 w-28 shadow-lift sm:block lg:-right-10 lg:-top-10 lg:h-[8.5rem] lg:w-[8.5rem]"
                 />
+                <Star className="absolute -left-5 top-1/3 hidden h-10 w-10 text-berry-300 lg:block" />
                 <Dots
                   className="absolute -bottom-6 right-4 hidden h-12 w-24 text-sky-300 lg:block"
                   rows={3}
