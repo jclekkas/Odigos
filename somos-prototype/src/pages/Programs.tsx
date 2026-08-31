@@ -8,6 +8,7 @@ import { Reveal } from '@/components/Reveal';
 import { CTASection } from '@/components/CTASection';
 import { programs, montessoriPillars } from '@/data/programs';
 import { cn } from '@/lib/cn';
+import { PILLAR_ACCENTS } from '@/lib/accents';
 
 const SUPPORTING = [
   {
@@ -196,8 +197,13 @@ export default function Programs() {
           <div className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-x-6">
             {montessoriPillars.map((pillar, i) => (
               <Reveal key={pillar.name} delay={i * 70}>
-                <div className="border-t-2 border-clay-200 pt-5">
-                  <span className="font-display text-[0.95rem] font-semibold text-clay-600">
+                <div className={cn('border-t-[3px] pt-5', PILLAR_ACCENTS[i % PILLAR_ACCENTS.length].border)}>
+                  <span
+                    className={cn(
+                      'font-display text-[0.95rem] font-semibold',
+                      PILLAR_ACCENTS[i % PILLAR_ACCENTS.length].text
+                    )}
+                  >
                     0{i + 1}
                   </span>
                   <h3 className="mt-1 text-[1.1rem] font-semibold tracking-[-0.01em]">

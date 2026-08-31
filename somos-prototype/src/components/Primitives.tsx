@@ -14,7 +14,7 @@ export function Container({
 type SectionProps = {
   id?: string;
   as?: ElementType;
-  tone?: 'cream' | 'white' | 'sand' | 'forest' | 'sage';
+  tone?: 'cream' | 'white' | 'sand' | 'sage' | 'sky' | 'sun';
   spacing?: 'default' | 'tight' | 'loose';
   className?: string;
   children: ReactNode;
@@ -25,7 +25,8 @@ const TONE: Record<NonNullable<SectionProps['tone']>, string> = {
   white: 'bg-white text-ink',
   sand: 'bg-cream-100 text-ink',
   sage: 'bg-sage-50 text-ink',
-  forest: 'bg-forest-800 text-cream-100',
+  sky: 'bg-sky-50 text-ink',
+  sun: 'bg-ochre-50 text-ink',
 };
 
 const SPACING: Record<NonNullable<SectionProps['spacing']>, string> = {

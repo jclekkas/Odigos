@@ -75,6 +75,8 @@ See `public/photos/README.md`. Every image is one entry in
 - **The founder's story on `/about` is intentionally empty**, with a brief for
   what Somos needs to supply. No biography was invented.
 - **The photography is generated placeholder art**, not photographs of children.
+  Each plate is a bright, abstract composition in one of the brand's accent
+  hues, so colour and layout can be judged before the shoot.
 
 ## Content rules followed
 
@@ -92,6 +94,14 @@ Targets WCAG 2.2 AA. axe-core reports zero violations across all 12 routes at
 focus, semantic headings (one `h1` per page), labelled form fields, text-based
 error messages, 44px+ touch targets and `prefers-reduced-motion` support are all
 in place. Content is present in the HTML for visitors without JavaScript.
+
+## Palette
+
+Warm cream backgrounds with five accent hues — coral, sunshine, leaf, sky and
+blossom — rotated across peer elements (the five learning areas, the trust
+strip, programme cards, location cards) so the site reads cheerful without
+becoming childish. Accent tokens live in `tailwind.config.ts`; the rotation is
+`src/lib/accents.ts`.
 
 ## Stack
 

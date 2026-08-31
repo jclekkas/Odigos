@@ -9,6 +9,7 @@ import { FAQAccordion } from '@/components/FAQAccordion';
 import { CTASection } from '@/components/CTASection';
 import { montessoriPillars } from '@/data/programs';
 import { generalFaqs } from '@/data/content';
+import { PILLAR_ACCENTS } from '@/lib/accents';
 import { cn } from '@/lib/cn';
 
 const PRINCIPLES = [
@@ -147,22 +148,21 @@ export default function Approach() {
         </Section>
       ))}
 
-      <Section tone="forest">
+      <Section tone="sky">
         <Container>
           <Reveal>
             <SectionHeading
               eyebrow="The five areas"
               title="What is on the shelves"
               lede="Every Somos classroom is organised the same way, so the room itself becomes predictable enough for a child to take risks inside it."
-              onDark
             />
           </Reveal>
           <div className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-x-6">
             {montessoriPillars.map((pillar, i) => (
               <Reveal key={pillar.name} delay={i * 70}>
-                <div className="border-t-2 border-ochre-500/60 pt-5">
-                  <h3 className="text-[1.1rem] font-semibold text-cream-50">{pillar.name}</h3>
-                  <p className="mt-3 text-[0.94rem] leading-relaxed text-cream-100/75">
+                <div className={cn('border-t-[3px] pt-5', PILLAR_ACCENTS[i % PILLAR_ACCENTS.length].border)}>
+                  <h3 className="text-[1.1rem] font-semibold text-ink">{pillar.name}</h3>
+                  <p className="mt-3 text-[0.94rem] leading-relaxed text-ink-muted">
                     {pillar.body}
                   </p>
                 </div>

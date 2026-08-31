@@ -1,16 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1867" width="1400" height="1867" role="presentation">
   <defs>
     <linearGradient id="sky" x1="0.1" y1="0" x2="0.6" y2="1">
-      <stop offset="0%" stop-color="#FBEDE5"/>
-      <stop offset="100%" stop-color="#DFA381"/>
+      <stop offset="0%" stop-color="#FFF6F9"/>
+      <stop offset="100%" stop-color="#F3AAC2"/>
     </linearGradient>
     <linearGradient id="shaft" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.5"/>
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.42"/>
       <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
     </linearGradient>
-    <radialGradient id="vig" cx="50%" cy="42%" r="76%">
-      <stop offset="52%" stop-color="#2B2622" stop-opacity="0"/>
-      <stop offset="100%" stop-color="#2B2622" stop-opacity="0.26"/>
+    <radialGradient id="bloom" cx="24%" cy="16%" r="82%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.38"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
     </radialGradient>
     <filter id="grain" x="0" y="0" width="100%" height="100%">
       <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
@@ -19,12 +19,12 @@
   </defs>
   <rect width="1400" height="1867" fill="url(#sky)"/>
   
-  <circle cx="268.5" cy="449.7" r="196.4" fill="#F2D3C0" opacity="0.85"/>
-  <circle cx="268.5" cy="449.7" r="373.2" fill="#F2D3C0" opacity="0.3"/>
-  <path d="M0 1088.5 C 392 939.8, 868 1192.6, 1400 1014.1 L 1400 1867 L 0 1867 Z" fill="#C4623F" opacity="0.85"/>
-  <path d="M0 1331.2 C 392 1143.8, 868 1462.4, 1400 1237.5 L 1400 1867 L 0 1867 Z" fill="#DFA381" opacity="0.9"/>
-  <path d="M0 1573.9 C 392 1387.1, 868 1704.7, 1400 1480.5 L 1400 1867 L 0 1867 Z" fill="#7E3A22" opacity="0.9"/>
-  <polygon points="393,0 655.7,0 927.3,1867 664.6,1867" fill="url(#shaft)" opacity="0.55"/>
-  <rect width="1400" height="1867" fill="url(#vig)"/>
-  <rect width="1400" height="1867" filter="url(#grain)" opacity="0.2" style="mix-blend-mode:multiply"/>
+  <circle cx="268.5" cy="449.7" r="196.4" fill="#FDE7EE" opacity="0.85"/>
+  <circle cx="268.5" cy="449.7" r="373.2" fill="#FDE7EE" opacity="0.3"/>
+  <path d="M0 1088.5 C 392 939.8, 868 1192.6, 1400 1014.1 L 1400 1867 L 0 1867 Z" fill="#F3AAC2" opacity="0.85"/>
+  <path d="M0 1331.2 C 392 1143.8, 868 1462.4, 1400 1237.5 L 1400 1867 L 0 1867 Z" fill="#F9CBDA" opacity="0.9"/>
+  <path d="M0 1573.9 C 392 1387.1, 868 1704.7, 1400 1480.5 L 1400 1867 L 0 1867 Z" fill="#E888A6" opacity="0.9"/>
+  <polygon points="393,0 655.7,0 927.3,1867 664.6,1867" fill="url(#shaft)" opacity="0.45"/>
+  <rect width="1400" height="1867" fill="url(#bloom)"/>
+  <rect width="1400" height="1867" filter="url(#grain)" opacity="0.11" style="mix-blend-mode:multiply"/>
 </svg>

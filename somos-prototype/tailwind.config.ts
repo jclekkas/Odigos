@@ -6,49 +6,63 @@ export default {
     extend: {
       colors: {
         cream: {
-          50: '#FDFBF7',
-          100: '#F8F3EA',
-          200: '#F0E8DA',
-          300: '#E3D7C4',
+          50: '#FFFDF8',
+          100: '#FFF8EC',
+          200: '#FDF0DE',
+          300: '#F7E4CB',
         },
         sand: {
-          400: '#D3C3AA',
-          500: '#B9A588',
+          400: '#E7D3B4',
+          500: '#CDB894',
         },
         ink: {
-          DEFAULT: '#2B2622',
-          muted: '#655C52',
+          DEFAULT: '#2E2A25',
+          muted: '#61574D',
           soft: '#75695C',
         },
+        // Primary accent — a bright, warm coral rather than a burnt clay.
         clay: {
-          50: '#FBF0EB',
-          100: '#F5E1D7',
-          200: '#E9C3B1',
-          400: '#CE7550',
-          500: '#C4623F',
-          600: '#B75733',
-          700: '#95462A',
-          800: '#6F3520',
+          50: '#FFF1EB',
+          100: '#FFE1D5',
+          200: '#FFC3AC',
+          400: '#EC6136',
+          500: '#DC5329',
+          600: '#CB4A26',
+          700: '#A63A1C',
+          800: '#7C2B14',
         },
+        // Fresh leaf green (kept under the `sage` name used across the site).
         sage: {
-          50: '#F1F4EF',
-          100: '#E1E8DD',
-          300: '#B4C3AC',
-          500: '#82977A',
-          600: '#6B8063',
-          700: '#54664E',
-          800: '#3E4E3F',
+          50: '#EFF8EC',
+          100: '#DCF0D6',
+          300: '#A6D89D',
+          500: '#6DBB66',
+          600: '#4E9C4B',
+          700: '#3B7A3F',
+          800: '#2F6234',
         },
+        // Sunshine.
         ochre: {
-          100: '#FAEDD1',
-          300: '#EFD08F',
-          500: '#D9A441',
-          700: '#A2751F',
+          50: '#FFFAE8',
+          100: '#FFF2CD',
+          300: '#FFDC7C',
+          500: '#F5B92E',
+          700: '#8A6209',
         },
-        forest: {
-          700: '#334436',
-          800: '#26332A',
-          900: '#1B2620',
+        // Sky.
+        sky: {
+          50: '#EDF7FC',
+          100: '#D6ECF6',
+          300: '#96D0E8',
+          500: '#45A8D2',
+          700: '#1D6787',
+        },
+        // Blossom.
+        blossom: {
+          50: '#FEEFF4',
+          100: '#FBDCE6',
+          300: '#F2AAC2',
+          700: '#A03C5C',
         },
       },
       fontFamily: {
@@ -71,8 +85,8 @@ export default {
         pill: '999px',
       },
       boxShadow: {
-        soft: '0 1px 2px rgba(43,38,34,0.04), 0 12px 32px -18px rgba(43,38,34,0.28)',
-        lift: '0 2px 4px rgba(43,38,34,0.05), 0 26px 50px -24px rgba(43,38,34,0.36)',
+        soft: '0 1px 2px rgba(76,58,38,0.04), 0 12px 30px -18px rgba(76,58,38,0.22)',
+        lift: '0 2px 4px rgba(76,58,38,0.05), 0 26px 48px -26px rgba(76,58,38,0.3)',
       },
       transitionTimingFunction: {
         somos: 'cubic-bezier(0.22, 0.61, 0.36, 1)',

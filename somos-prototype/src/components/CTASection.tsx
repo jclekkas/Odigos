@@ -23,32 +23,40 @@ export function CTASection({
   photo?: string;
 }) {
   return (
-    <section className="relative overflow-hidden bg-forest-800 text-cream-100">
-      <div className="absolute inset-0 opacity-25" aria-hidden="true">
-        <Photo id={photo} fill rounded="rounded-none" altOverride="" />
-      </div>
+    <section className="relative overflow-hidden bg-gradient-to-br from-ochre-100 via-cream-100 to-clay-50">
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-r from-forest-900 via-forest-800/95 to-forest-800/70"
+        className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-ochre-300/40 blur-2xl"
       />
-      <Container className="relative py-24 sm:py-28 lg:py-32">
-        <Reveal className="max-w-2xl">
-          <SectionHeading
-            eyebrow={eyebrow}
-            title={title}
-            lede={body}
-            onDark
-            size="lg"
-          />
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <Button to={primaryTo} variant="onDark" size="lg" withArrow>
-              {primaryLabel}
-            </Button>
-            <Button to={secondaryTo} variant="onDarkGhost" size="lg">
-              {secondaryLabel}
-            </Button>
-          </div>
-        </Reveal>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -bottom-28 right-1/3 h-80 w-80 rounded-full bg-sage-100/70 blur-2xl"
+      />
+
+      <Container className="relative py-20 sm:py-24 lg:py-28">
+        <div className="grid items-center gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:gap-16">
+          <Reveal>
+            <SectionHeading eyebrow={eyebrow} title={title} lede={body} size="lg" />
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+              <Button to={primaryTo} size="lg" withArrow>
+                {primaryLabel}
+              </Button>
+              <Button to={secondaryTo} variant="secondary" size="lg">
+                {secondaryLabel}
+              </Button>
+            </div>
+          </Reveal>
+
+          <Reveal delay={90} className="hidden lg:block">
+            <div className="relative">
+              <div
+                aria-hidden="true"
+                className="absolute -inset-3 -rotate-2 rounded-[1.6rem] bg-white/70"
+              />
+              <Photo id={photo} ratio="4/3" className="relative shadow-lift" />
+            </div>
+          </Reveal>
+        </div>
       </Container>
     </section>
   );

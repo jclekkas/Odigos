@@ -1,16 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1050" width="1400" height="1050" role="presentation">
   <defs>
     <linearGradient id="sky" x1="0.1" y1="0" x2="0.6" y2="1">
-      <stop offset="0%" stop-color="#FBF1E5"/>
-      <stop offset="100%" stop-color="#DEBE9C"/>
+      <stop offset="0%" stop-color="#FFF8F1"/>
+      <stop offset="100%" stop-color="#FFBC98"/>
     </linearGradient>
     <linearGradient id="shaft" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.5"/>
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.42"/>
       <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
     </linearGradient>
-    <radialGradient id="vig" cx="50%" cy="42%" r="76%">
-      <stop offset="52%" stop-color="#2B2622" stop-opacity="0"/>
-      <stop offset="100%" stop-color="#2B2622" stop-opacity="0.26"/>
+    <radialGradient id="bloom" cx="24%" cy="16%" r="82%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.38"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
     </radialGradient>
     <filter id="grain" x="0" y="0" width="100%" height="100%">
       <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
@@ -19,12 +19,12 @@
   </defs>
   <rect width="1400" height="1050" fill="url(#sky)"/>
   
-  <circle cx="878.8" cy="681.8" r="566.2" fill="#7E5942" opacity="0.55"/>
-  <circle cx="878.8" cy="681.8" r="424.7" fill="#BC9068" opacity="0.67"/>
-  <circle cx="878.8" cy="681.8" r="283.1" fill="#DEBE9C" opacity="0.79"/>
-  <circle cx="878.8" cy="681.8" r="141.6" fill="#F0DEC8" opacity="0.91"/>
-  <path d="M0 851.3 C 420 746.3, 980 935.3, 1400 809.3 L 1400 1050 L 0 1050 Z" fill="#BC9068" opacity="0.88"/>
-  <polygon points="755.3,0 1143.8,0 1337.7,1050 949.2,1050" fill="url(#shaft)" opacity="0.55"/>
-  <rect width="1400" height="1050" fill="url(#vig)"/>
-  <rect width="1400" height="1050" filter="url(#grain)" opacity="0.2" style="mix-blend-mode:multiply"/>
+  <circle cx="878.8" cy="681.8" r="566.2" fill="#F79868" opacity="0.55"/>
+  <circle cx="878.8" cy="681.8" r="424.7" fill="#FFBC98" opacity="0.67"/>
+  <circle cx="878.8" cy="681.8" r="283.1" fill="#FFD8BF" opacity="0.79"/>
+  <circle cx="878.8" cy="681.8" r="141.6" fill="#FFEDDF" opacity="0.91"/>
+  <path d="M0 851.3 C 420 746.3, 980 935.3, 1400 809.3 L 1400 1050 L 0 1050 Z" fill="#FFBC98" opacity="0.9"/>
+  <polygon points="755.3,0 1143.8,0 1337.7,1050 949.2,1050" fill="url(#shaft)" opacity="0.45"/>
+  <rect width="1400" height="1050" fill="url(#bloom)"/>
+  <rect width="1400" height="1050" filter="url(#grain)" opacity="0.11" style="mix-blend-mode:multiply"/>
 </svg>

@@ -11,6 +11,8 @@ import { CTASection } from '@/components/CTASection';
 import { programs, montessoriPillars } from '@/data/programs';
 import { testimonials, dayMoments, generalFaqs } from '@/data/content';
 import { locations } from '@/data/locations';
+import { PILLAR_ACCENTS } from '@/lib/accents';
+import { cn } from '@/lib/cn';
 
 export default function Home() {
   return (
@@ -26,14 +28,36 @@ export default function Home() {
       <section className="relative overflow-hidden bg-cream-50">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -right-40 -top-52 h-[34rem] w-[34rem] rounded-full bg-ochre-100/60 blur-3xl"
+          className="pointer-events-none absolute -right-32 -top-48 h-[34rem] w-[34rem] rounded-full bg-ochre-100 blur-3xl"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -left-40 top-40 h-[26rem] w-[26rem] rounded-full bg-sky-50 blur-3xl"
         />
         <Container className="relative pb-16 pt-8 sm:pt-12 lg:pb-24 lg:pt-16">
           <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,47%)_minmax(0,53%)] lg:gap-16">
             <div className="order-2 lg:order-1">
               <Eyebrow>Bilingual • Montessori • Ages 2–5</Eyebrow>
               <h1 className="mt-5 text-display-xl">
-                Growing curious, confident children — together.
+                Growing curious,{' '}
+                <span className="relative whitespace-nowrap">
+                  confident
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 240 14"
+                    preserveAspectRatio="none"
+                    className="absolute -bottom-[0.04em] left-0 h-[0.3em] w-full text-ochre-300"
+                  >
+                    <path
+                      d="M2 9.5C48 4 108 2.5 168 5c26 1 50 3 70 5.5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </span>{' '}
+                children — together.
               </h1>
               <p className="lede mt-6 max-w-xl">
                 Somos Early Learning combines Montessori education, bilingual learning
@@ -218,8 +242,18 @@ export default function Home() {
           <ol className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:mt-14 lg:grid-cols-5 lg:gap-x-6">
             {montessoriPillars.map((pillar, i) => (
               <Reveal as="li" key={pillar.name} delay={i * 70}>
-                <div className="flex items-baseline gap-3 border-t-2 border-clay-200 pt-5">
-                  <span className="font-display text-[0.95rem] font-semibold text-clay-600">
+                <div
+                  className={cn(
+                    'flex items-baseline gap-3 border-t-[3px] pt-5',
+                    PILLAR_ACCENTS[i % PILLAR_ACCENTS.length].border
+                  )}
+                >
+                  <span
+                    className={cn(
+                      'font-display text-[0.95rem] font-semibold',
+                      PILLAR_ACCENTS[i % PILLAR_ACCENTS.length].text
+                    )}
+                  >
                     0{i + 1}
                   </span>
                   <h3 className="text-[1.12rem] font-semibold tracking-[-0.01em] text-ink">
@@ -248,7 +282,7 @@ export default function Home() {
           <div className="mt-12 grid gap-7 md:grid-cols-2 lg:grid-cols-3">
             {programs.map((program, i) => (
               <Reveal key={program.slug} delay={i * 90}>
-                <ProgramCard program={program} />
+                <ProgramCard program={program} accentIndex={i} />
               </Reveal>
             ))}
           </div>
@@ -271,7 +305,7 @@ export default function Home() {
           <div className="mt-12 grid gap-8 lg:grid-cols-2">
             {locations.map((loc, i) => (
               <Reveal key={loc.slug} delay={i * 90}>
-                <LocationCard location={loc} />
+                <LocationCard location={loc} accentIndex={i + 2} />
               </Reveal>
             ))}
           </div>
@@ -279,7 +313,7 @@ export default function Home() {
       </Section>
 
       {/* ------------------------------------------------------ testimonials */}
-      <Section tone="cream">
+      <Section tone="sky">
         <Container>
           <Reveal>
             <SectionHeading eyebrow="Families" title="Trusted by Somos families." align="center" />
@@ -331,7 +365,7 @@ export default function Home() {
       </Section>
 
       {/* ------------------------------------------------------------ pre-k */}
-      <section className="border-y border-ochre-300/50 bg-ochre-100/60">
+      <section className="border-y border-ochre-300/60 bg-ochre-100">
         <Container className="py-12 sm:py-14">
           <div className="flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-2xl">
@@ -342,7 +376,7 @@ export default function Home() {
                 so contact your preferred school to find out what applies to your family.
               </p>
             </div>
-            <Button to="/admissions" variant="secondary" size="lg" className="shrink-0 border-ink/25 bg-cream-50" withArrow>
+            <Button to="/admissions" variant="secondary" size="lg" className="shrink-0 border-ink/20 bg-white" withArrow>
               Learn About Enrollment
             </Button>
           </div>

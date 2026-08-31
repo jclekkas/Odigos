@@ -1,55 +1,455 @@
 {
   "note": "Single source of truth for every photograph on the site. Resolution order per slot: `file` (a real photo placed in /public/photos) -> `remote` (a hosted URL) -> a generated art-directed plate at /photos/plate-<id>.svg. Replace slots one at a time; nothing else in the codebase needs to change.",
   "photos": [
-    { "id": "home-hero", "subject": "Wide classroom moment: children absorbed in Montessori work, natural light", "alt": "Children working with Montessori materials in a bright, calm classroom", "ratio": "16/10", "tone": "sunlit", "file": null, "remote": "" },
-    { "id": "home-intro", "subject": "Child pouring water at a practical-life station", "alt": "A young child carefully pouring water at a practical life station", "ratio": "4/5", "tone": "warm", "file": null, "remote": "" },
-    { "id": "home-intro-detail", "subject": "Close crop of small hands on wooden materials", "alt": "A child's hands arranging wooden Montessori materials", "ratio": "1/1", "tone": "clay", "file": null, "remote": "" },
-    { "id": "home-bilingual", "subject": "Teacher in conversation with two children, animated and warm", "alt": "A teacher in conversation with two children during a small-group activity", "ratio": "4/3", "tone": "sage", "file": null, "remote": "" },
-    { "id": "home-bilingual-detail", "subject": "Children singing together during circle time", "alt": "Children singing together during a group circle", "ratio": "1/1", "tone": "ochre", "file": null, "remote": "" },
-    { "id": "home-montessori", "subject": "Shelf of Montessori materials, softly lit", "alt": "A low shelf of Montessori learning materials arranged in order", "ratio": "3/2", "tone": "warm", "file": null, "remote": "" },
-    { "id": "program-pre-primary", "subject": "Two-year-old carrying a tray with concentration", "alt": "A toddler carefully carrying a wooden tray across the classroom", "ratio": "4/3", "tone": "clay", "file": null, "remote": "" },
-    { "id": "program-primary", "subject": "Four-year-old working with the golden bead material", "alt": "A preschooler working independently with a hands-on math material", "ratio": "4/3", "tone": "sage", "file": null, "remote": "" },
-    { "id": "program-enrichment", "subject": "Children painting at an easel; movement and art", "alt": "Children painting side by side at a classroom easel", "ratio": "4/3", "tone": "ochre", "file": null, "remote": "" },
-    { "id": "loc-germantown", "subject": "Germantown campus exterior or entryway", "alt": "The entrance to Somos Early Learning in Germantown, Maryland", "ratio": "3/2", "tone": "sage", "file": null, "remote": "" },
-    { "id": "loc-ellicott-city", "subject": "Ellicott City campus exterior or entryway", "alt": "The entrance to Somos Early Learning in Ellicott City, Maryland", "ratio": "3/2", "tone": "dusk", "file": null, "remote": "" },
-    { "id": "day-explore", "subject": "Child outdoors examining a leaf", "alt": "A child crouching outdoors to look closely at a leaf", "ratio": "3/4", "tone": "sage", "file": null, "remote": "" },
-    { "id": "day-create", "subject": "Hands in paint or clay at the art table", "alt": "A child's hands working with paint at the art table", "ratio": "3/4", "tone": "clay", "file": null, "remote": "" },
-    { "id": "day-connect", "subject": "Two children sharing a book on a rug", "alt": "Two children sitting together on a rug, sharing a picture book", "ratio": "3/4", "tone": "ochre", "file": null, "remote": "" },
-    { "id": "day-grow", "subject": "Child buttoning a coat independently", "alt": "A child fastening their own coat before going outside", "ratio": "3/4", "tone": "warm", "file": null, "remote": "" },
-    { "id": "home-tour", "subject": "Teacher greeting a family at the classroom door", "alt": "A teacher welcoming a family at the classroom door", "ratio": "16/9", "tone": "sunlit", "file": null, "remote": "" },
-    { "id": "locations-hero", "subject": "Warm establishing shot of a Somos classroom", "alt": "A calm, sunlit Somos classroom ready for the day", "ratio": "21/9", "tone": "sunlit", "file": null, "remote": "" },
-    { "id": "germantown-hero", "subject": "Germantown classroom, wide and welcoming", "alt": "A wide view of the Somos Germantown classroom", "ratio": "21/9", "tone": "sage", "file": null, "remote": "" },
-    { "id": "germantown-welcome", "subject": "Germantown teacher working one-to-one with a child", "alt": "A Germantown teacher working one-to-one with a child", "ratio": "4/3", "tone": "warm", "file": null, "remote": "" },
-    { "id": "germantown-gallery-1", "subject": "Germantown practical life area", "alt": "The practical life area of the Germantown classroom", "ratio": "4/5", "tone": "clay", "file": null, "remote": "" },
-    { "id": "germantown-gallery-2", "subject": "Germantown reading corner", "alt": "A quiet reading corner in the Germantown classroom", "ratio": "4/5", "tone": "sage", "file": null, "remote": "" },
-    { "id": "germantown-gallery-3", "subject": "Germantown outdoor play space", "alt": "The outdoor play space at the Germantown school", "ratio": "4/5", "tone": "ochre", "file": null, "remote": "" },
-    { "id": "germantown-gallery-4", "subject": "Germantown art and language shelves", "alt": "Art and language shelves in the Germantown classroom", "ratio": "4/5", "tone": "dusk", "file": null, "remote": "" },
-    { "id": "ellicott-city-hero", "subject": "Ellicott City classroom, wide and welcoming", "alt": "A wide view of the Somos Ellicott City classroom", "ratio": "21/9", "tone": "dusk", "file": null, "remote": "" },
-    { "id": "ellicott-city-welcome", "subject": "Ellicott City small-group lesson", "alt": "A small-group lesson underway at the Ellicott City school", "ratio": "4/3", "tone": "ochre", "file": null, "remote": "" },
-    { "id": "ellicott-city-gallery-1", "subject": "Ellicott City sensorial materials", "alt": "Sensorial materials on a shelf in the Ellicott City classroom", "ratio": "4/5", "tone": "sage", "file": null, "remote": "" },
-    { "id": "ellicott-city-gallery-2", "subject": "Ellicott City snack preparation", "alt": "Children preparing their own snack at the Ellicott City school", "ratio": "4/5", "tone": "warm", "file": null, "remote": "" },
-    { "id": "ellicott-city-gallery-3", "subject": "Ellicott City outdoor learning", "alt": "Children learning outdoors at the Ellicott City school", "ratio": "4/5", "tone": "clay", "file": null, "remote": "" },
-    { "id": "ellicott-city-gallery-4", "subject": "Ellicott City music and movement", "alt": "Music and movement time at the Ellicott City school", "ratio": "4/5", "tone": "dusk", "file": null, "remote": "" },
-    { "id": "programs-hero", "subject": "Children of mixed ages working across a classroom", "alt": "Children of different ages working across a Montessori classroom", "ratio": "21/9", "tone": "warm", "file": null, "remote": "" },
-    { "id": "programs-pre-primary", "subject": "Toddler classroom in use", "alt": "A toddler classroom with children moving between activities", "ratio": "3/2", "tone": "clay", "file": null, "remote": "" },
-    { "id": "programs-primary", "subject": "Primary classroom with children choosing work", "alt": "Children in the primary classroom choosing their own work", "ratio": "3/2", "tone": "sage", "file": null, "remote": "" },
-    { "id": "programs-bilingual", "subject": "Spanish language moment: labels, songs, conversation", "alt": "A teacher and children using Spanish together during an activity", "ratio": "3/2", "tone": "ochre", "file": null, "remote": "" },
-    { "id": "programs-enrichment", "subject": "Yoga or movement session", "alt": "Children stretching together during a movement session", "ratio": "3/2", "tone": "dusk", "file": null, "remote": "" },
-    { "id": "programs-extended", "subject": "Calm after-care activity", "alt": "Children reading and drawing quietly during after-school care", "ratio": "3/2", "tone": "warm", "file": null, "remote": "" },
-    { "id": "programs-summer", "subject": "Summer water and nature play", "alt": "Children playing outdoors with water during summer programming", "ratio": "3/2", "tone": "sunlit", "file": null, "remote": "" },
-    { "id": "admissions-hero", "subject": "Family touring a classroom with a director", "alt": "A family walking through a classroom during a school tour", "ratio": "21/9", "tone": "sunlit", "file": null, "remote": "" },
-    { "id": "admissions-side", "subject": "Parent and child at the classroom door", "alt": "A parent and child pausing at the classroom door", "ratio": "4/5", "tone": "clay", "file": null, "remote": "" },
-    { "id": "about-hero", "subject": "Community moment: families and teachers together", "alt": "Families and teachers together at a school community event", "ratio": "21/9", "tone": "ochre", "file": null, "remote": "" },
-    { "id": "about-story", "subject": "Quiet classroom detail that feels like the school's character", "alt": "A quiet corner of a Somos classroom", "ratio": "4/3", "tone": "warm", "file": null, "remote": "" },
-    { "id": "about-founder", "subject": "Portrait of the founder — to be replaced with verified photography", "alt": "Portrait placeholder for the Somos founder", "ratio": "4/5", "tone": "sage", "file": null, "remote": "" },
-    { "id": "about-community", "subject": "Diverse families gathered outdoors", "alt": "Families gathered outdoors at a Somos community morning", "ratio": "16/9", "tone": "sunlit", "file": null, "remote": "" },
-    { "id": "approach-hero", "subject": "Child deeply concentrated on a single work", "alt": "A child concentrating deeply on a single piece of work", "ratio": "21/9", "tone": "sage", "file": null, "remote": "" },
-    { "id": "approach-prepared", "subject": "The prepared environment: ordered, low shelves, real tools", "alt": "Low shelves and real tools arranged within a child's reach", "ratio": "4/3", "tone": "warm", "file": null, "remote": "" },
-    { "id": "approach-guide", "subject": "Teacher observing rather than intervening", "alt": "A teacher observing quietly as a child works", "ratio": "4/3", "tone": "dusk", "file": null, "remote": "" },
-    { "id": "approach-community", "subject": "Older child helping a younger child", "alt": "An older child helping a younger classmate with an activity", "ratio": "4/3", "tone": "clay", "file": null, "remote": "" },
-    { "id": "families-hero", "subject": "Morning drop-off, warm and unhurried", "alt": "A warm, unhurried morning drop-off at school", "ratio": "21/9", "tone": "warm", "file": null, "remote": "" },
-    { "id": "families-day", "subject": "Lunch or rest time in the classroom", "alt": "Children sitting together for lunch in the classroom", "ratio": "16/9", "tone": "ochre", "file": null, "remote": "" },
-    { "id": "careers-hero", "subject": "Teacher smiling with a small group", "alt": "A teacher working with a small group of children", "ratio": "21/9", "tone": "clay", "file": null, "remote": "" },
-    { "id": "careers-team", "subject": "Teachers collaborating outside of class time", "alt": "Two teachers planning together in a classroom", "ratio": "4/3", "tone": "sage", "file": null, "remote": "" }
+    {
+      "id": "home-hero",
+      "subject": "Wide classroom moment: children absorbed in Montessori work, natural light",
+      "alt": "Children working with Montessori materials in a bright, calm classroom",
+      "ratio": "16/10",
+      "tone": "sunlit",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "home-intro",
+      "subject": "Child pouring water at a practical-life station",
+      "alt": "A young child carefully pouring water at a practical life station",
+      "ratio": "4/5",
+      "tone": "sage",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "home-intro-detail",
+      "subject": "Close crop of small hands on wooden materials",
+      "alt": "A child's hands arranging wooden Montessori materials",
+      "ratio": "1/1",
+      "tone": "clay",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "home-bilingual",
+      "subject": "Teacher in conversation with two children, animated and warm",
+      "alt": "A teacher in conversation with two children during a small-group activity",
+      "ratio": "4/3",
+      "tone": "sky",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "home-bilingual-detail",
+      "subject": "Children singing together during circle time",
+      "alt": "Children singing together during a group circle",
+      "ratio": "1/1",
+      "tone": "ochre",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "home-montessori",
+      "subject": "Shelf of Montessori materials, softly lit",
+      "alt": "A low shelf of Montessori learning materials arranged in order",
+      "ratio": "3/2",
+      "tone": "warm",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "program-pre-primary",
+      "subject": "Two-year-old carrying a tray with concentration",
+      "alt": "A toddler carefully carrying a wooden tray across the classroom",
+      "ratio": "4/3",
+      "tone": "blossom",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "program-primary",
+      "subject": "Four-year-old working with the golden bead material",
+      "alt": "A preschooler working independently with a hands-on math material",
+      "ratio": "4/3",
+      "tone": "sage",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "program-enrichment",
+      "subject": "Children painting at an easel; movement and art",
+      "alt": "Children painting side by side at a classroom easel",
+      "ratio": "4/3",
+      "tone": "ochre",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "loc-germantown",
+      "subject": "Germantown campus exterior or entryway",
+      "alt": "The entrance to Somos Early Learning in Germantown, Maryland",
+      "ratio": "3/2",
+      "tone": "sage",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "loc-ellicott-city",
+      "subject": "Ellicott City campus exterior or entryway",
+      "alt": "The entrance to Somos Early Learning in Ellicott City, Maryland",
+      "ratio": "3/2",
+      "tone": "sky",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "day-explore",
+      "subject": "Child outdoors examining a leaf",
+      "alt": "A child crouching outdoors to look closely at a leaf",
+      "ratio": "3/4",
+      "tone": "sage",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "day-create",
+      "subject": "Hands in paint or clay at the art table",
+      "alt": "A child's hands working with paint at the art table",
+      "ratio": "3/4",
+      "tone": "blossom",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "day-connect",
+      "subject": "Two children sharing a book on a rug",
+      "alt": "Two children sitting together on a rug, sharing a picture book",
+      "ratio": "3/4",
+      "tone": "sky",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "day-grow",
+      "subject": "Child buttoning a coat independently",
+      "alt": "A child fastening their own coat before going outside",
+      "ratio": "3/4",
+      "tone": "sunlit",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "home-tour",
+      "subject": "Teacher greeting a family at the classroom door",
+      "alt": "A teacher welcoming a family at the classroom door",
+      "ratio": "16/9",
+      "tone": "sky",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "locations-hero",
+      "subject": "Warm establishing shot of a Somos classroom",
+      "alt": "A calm, sunlit Somos classroom ready for the day",
+      "ratio": "21/9",
+      "tone": "sky",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "germantown-hero",
+      "subject": "Germantown classroom, wide and welcoming",
+      "alt": "A wide view of the Somos Germantown classroom",
+      "ratio": "21/9",
+      "tone": "sage",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "germantown-welcome",
+      "subject": "Germantown teacher working one-to-one with a child",
+      "alt": "A Germantown teacher working one-to-one with a child",
+      "ratio": "4/3",
+      "tone": "sunlit",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "germantown-gallery-1",
+      "subject": "Germantown practical life area",
+      "alt": "The practical life area of the Germantown classroom",
+      "ratio": "4/5",
+      "tone": "clay",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "germantown-gallery-2",
+      "subject": "Germantown reading corner",
+      "alt": "A quiet reading corner in the Germantown classroom",
+      "ratio": "4/5",
+      "tone": "sky",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "germantown-gallery-3",
+      "subject": "Germantown outdoor play space",
+      "alt": "The outdoor play space at the Germantown school",
+      "ratio": "4/5",
+      "tone": "ochre",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "germantown-gallery-4",
+      "subject": "Germantown art and language shelves",
+      "alt": "Art and language shelves in the Germantown classroom",
+      "ratio": "4/5",
+      "tone": "blossom",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "ellicott-city-hero",
+      "subject": "Ellicott City classroom, wide and welcoming",
+      "alt": "A wide view of the Somos Ellicott City classroom",
+      "ratio": "21/9",
+      "tone": "sky",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "ellicott-city-welcome",
+      "subject": "Ellicott City small-group lesson",
+      "alt": "A small-group lesson underway at the Ellicott City school",
+      "ratio": "4/3",
+      "tone": "ochre",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "ellicott-city-gallery-1",
+      "subject": "Ellicott City sensorial materials",
+      "alt": "Sensorial materials on a shelf in the Ellicott City classroom",
+      "ratio": "4/5",
+      "tone": "sage",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "ellicott-city-gallery-2",
+      "subject": "Ellicott City snack preparation",
+      "alt": "Children preparing their own snack at the Ellicott City school",
+      "ratio": "4/5",
+      "tone": "blossom",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "ellicott-city-gallery-3",
+      "subject": "Ellicott City outdoor learning",
+      "alt": "Children learning outdoors at the Ellicott City school",
+      "ratio": "4/5",
+      "tone": "sunlit",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "ellicott-city-gallery-4",
+      "subject": "Ellicott City music and movement",
+      "alt": "Music and movement time at the Ellicott City school",
+      "ratio": "4/5",
+      "tone": "clay",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "programs-hero",
+      "subject": "Children of mixed ages working across a classroom",
+      "alt": "Children of different ages working across a Montessori classroom",
+      "ratio": "21/9",
+      "tone": "ochre",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "programs-pre-primary",
+      "subject": "Toddler classroom in use",
+      "alt": "A toddler classroom with children moving between activities",
+      "ratio": "3/2",
+      "tone": "blossom",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "programs-primary",
+      "subject": "Primary classroom with children choosing work",
+      "alt": "Children in the primary classroom choosing their own work",
+      "ratio": "3/2",
+      "tone": "sage",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "programs-bilingual",
+      "subject": "Spanish language moment: labels, songs, conversation",
+      "alt": "A teacher and children using Spanish together during an activity",
+      "ratio": "3/2",
+      "tone": "sky",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "programs-enrichment",
+      "subject": "Yoga or movement session",
+      "alt": "Children stretching together during a movement session",
+      "ratio": "3/2",
+      "tone": "clay",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "programs-extended",
+      "subject": "Calm after-care activity",
+      "alt": "Children reading and drawing quietly during after-school care",
+      "ratio": "3/2",
+      "tone": "warm",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "programs-summer",
+      "subject": "Summer water and nature play",
+      "alt": "Children playing outdoors with water during summer programming",
+      "ratio": "3/2",
+      "tone": "sunlit",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "admissions-hero",
+      "subject": "Family touring a classroom with a director",
+      "alt": "A family walking through a classroom during a school tour",
+      "ratio": "21/9",
+      "tone": "sunlit",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "admissions-side",
+      "subject": "Parent and child at the classroom door",
+      "alt": "A parent and child pausing at the classroom door",
+      "ratio": "4/5",
+      "tone": "sky",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "about-hero",
+      "subject": "Community moment: families and teachers together",
+      "alt": "Families and teachers together at a school community event",
+      "ratio": "21/9",
+      "tone": "blossom",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "about-story",
+      "subject": "Quiet classroom detail that feels like the school's character",
+      "alt": "A quiet corner of a Somos classroom",
+      "ratio": "4/3",
+      "tone": "warm",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "about-founder",
+      "subject": "Portrait of the founder — to be replaced with verified photography",
+      "alt": "Portrait placeholder for the Somos founder",
+      "ratio": "4/5",
+      "tone": "sage",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "about-community",
+      "subject": "Diverse families gathered outdoors",
+      "alt": "Families gathered outdoors at a Somos community morning",
+      "ratio": "16/9",
+      "tone": "sunlit",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "approach-hero",
+      "subject": "Child deeply concentrated on a single work",
+      "alt": "A child concentrating deeply on a single piece of work",
+      "ratio": "21/9",
+      "tone": "sky",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "approach-prepared",
+      "subject": "The prepared environment: ordered, low shelves, real tools",
+      "alt": "Low shelves and real tools arranged within a child's reach",
+      "ratio": "4/3",
+      "tone": "ochre",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "approach-guide",
+      "subject": "Teacher observing rather than intervening",
+      "alt": "A teacher observing quietly as a child works",
+      "ratio": "4/3",
+      "tone": "sage",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "approach-community",
+      "subject": "Older child helping a younger child",
+      "alt": "An older child helping a younger classmate with an activity",
+      "ratio": "4/3",
+      "tone": "clay",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "families-hero",
+      "subject": "Morning drop-off, warm and unhurried",
+      "alt": "A warm, unhurried morning drop-off at school",
+      "ratio": "21/9",
+      "tone": "sunlit",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "families-day",
+      "subject": "Lunch or rest time in the classroom",
+      "alt": "Children sitting together for lunch in the classroom",
+      "ratio": "16/9",
+      "tone": "sky",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "careers-hero",
+      "subject": "Teacher smiling with a small group",
+      "alt": "A teacher working with a small group of children",
+      "ratio": "21/9",
+      "tone": "ochre",
+      "file": null,
+      "remote": ""
+    },
+    {
+      "id": "careers-team",
+      "subject": "Teachers collaborating outside of class time",
+      "alt": "Two teachers planning together in a classroom",
+      "ratio": "4/3",
+      "tone": "sage",
+      "file": null,
+      "remote": ""
+    }
   ]
 }

@@ -16,9 +16,9 @@ type Props = {
 
 const OVERLAY: Record<NonNullable<Props['overlay']>, string> = {
   none: '',
-  soft: 'bg-gradient-to-tr from-forest-900/35 via-forest-900/10 to-transparent',
-  strong: 'bg-gradient-to-tr from-forest-900/65 via-forest-900/35 to-forest-900/10',
-  bottom: 'bg-gradient-to-t from-forest-900/70 via-forest-900/15 to-transparent',
+  soft: 'bg-gradient-to-tr from-ink/15 via-ink/5 to-transparent',
+  strong: 'bg-gradient-to-tr from-ink/45 via-ink/20 to-transparent',
+  bottom: 'bg-gradient-to-t from-ink/45 via-ink/10 to-transparent',
 };
 
 /**

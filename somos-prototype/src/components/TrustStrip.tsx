@@ -1,4 +1,6 @@
 import { trustPoints } from '@/data/programs';
+import { PILLAR_ACCENTS } from '@/lib/accents';
+import { cn } from '@/lib/cn';
 
 const ICONS: Record<string, JSX.Element> = {
   'Bilingual English + Spanish': (
@@ -40,24 +42,30 @@ const ICONS: Record<string, JSX.Element> = {
 
 export function TrustStrip() {
   return (
-    <section aria-label="What Somos offers" className="border-y border-ink/10 bg-cream-100">
+    <section aria-label="What Somos offers" className="border-y border-ink/[0.07] bg-cream-100">
       <div className="container-somos">
         <ul className="grid grid-cols-2 gap-x-6 gap-y-7 py-9 md:grid-cols-3 lg:grid-cols-5 lg:gap-x-4">
-          {trustPoints.map((point) => (
+          {trustPoints.map((point, i) => {
+            const accent = PILLAR_ACCENTS[i % PILLAR_ACCENTS.length];
+            return (
             <li key={point.label} className="flex items-start gap-3">
-              <svg
-                viewBox="0 0 24 24"
+              <span
                 aria-hidden="true"
-                className="mt-0.5 h-6 w-6 shrink-0 text-clay-600"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+                className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-full', accent.bg, accent.text)}
               >
-                {ICONS[point.label]}
-              </svg>
-              <span className="min-w-0">
+                <svg
+                  viewBox="0 0 24 24"
+                  className="h-[1.35rem] w-[1.35rem]"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  {ICONS[point.label]}
+                </svg>
+              </span>
+              <span className="min-w-0 pt-1">
                 <span className="block text-[0.95rem] font-semibold leading-snug text-ink">
                   {point.label}
                 </span>
@@ -66,7 +74,8 @@ export function TrustStrip() {
                 </span>
               </span>
             </li>
-          ))}
+            );
+          })}
         </ul>
       </div>
     </section>

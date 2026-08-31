@@ -18,14 +18,16 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const outDir = join(root, 'public', 'photos');
 const manifest = JSON.parse(readFileSync(join(root, 'src/data/media.manifest.json'), 'utf8'));
 
-/** Five tonal steps per palette, lightest to darkest. */
+/** Five tonal steps per palette, lightest first. Deliberately kept in the
+ *  bright half of each hue so the plates read sunny rather than heavy. */
 const TONES = {
-  sunlit: ['#FDF3E1', '#F6DFB8', '#E9BE85', '#CE9159', '#8E5C34'],
-  warm: ['#FBF1E5', '#F0DEC8', '#DEBE9C', '#BC9068', '#7E5942'],
-  clay: ['#FBEDE5', '#F2D3C0', '#DFA381', '#C4623F', '#7E3A22'],
-  sage: ['#F2F6EE', '#DFE8D8', '#B9CBAE', '#87A17C', '#4B6046'],
-  ochre: ['#FDF5E2', '#F6E4BA', '#E9C67F', '#CB9B37', '#89661C'],
-  dusk: ['#F5EFEC', '#E4DBD9', '#C3B4B7', '#9A8791', '#5E4E58'],
+  sunlit: ['#FFFCEF', '#FFF3D2', '#FFE49F', '#FFCA69', '#F4AC38'],
+  warm: ['#FFF8F1', '#FFEDDF', '#FFD8BF', '#FFBC98', '#F79868'],
+  clay: ['#FFF4EF', '#FFE4D8', '#FFC6B1', '#FF9F80', '#F07954'],
+  sage: ['#F5FCF2', '#E4F6DE', '#C3E9BA', '#9AD790', '#6DBD68'],
+  ochre: ['#FFFDEC', '#FFF8CD', '#FFEE9B', '#FFDC5C', '#F2C231'],
+  sky: ['#F4FBFE', '#E0F2FA', '#BAE2F1', '#8CCBE5', '#5AAFD4'],
+  blossom: ['#FFF6F9', '#FDE7EE', '#F9CBDA', '#F3AAC2', '#E888A6'],
 };
 
 function hash(str) {
@@ -77,10 +79,10 @@ function arch(w, h, c, pick) {
   const inset = aw * 0.18;
   const ground = h * pick(0.78, 0.9);
   return `
-  <path d="M0 ${r(ground)} H ${w} V ${h} H 0 Z" fill="${c[3]}" opacity="0.9"/>
+  <path d="M0 ${r(ground)} H ${w} V ${h} H 0 Z" fill="${c[3]}" opacity="0.92"/>
   <path d="M${r(x)} ${r(y + ah)} V ${r(y + rad)} A ${r(rad)} ${r(rad)} 0 0 1 ${r(x + aw)} ${r(y + rad)} V ${r(y + ah)} Z" fill="${c[2]}"/>
   <path d="M${r(x + inset)} ${r(y + ah)} V ${r(y + rad)} A ${r(rad - inset)} ${r(rad - inset)} 0 0 1 ${r(x + aw - inset)} ${r(y + rad)} V ${r(y + ah)} Z" fill="${c[1]}" opacity="0.9"/>
-  <circle cx="${r(x + aw * pick(0.3, 0.7))}" cy="${r(y + ah * pick(0.55, 0.78))}" r="${r(aw * 0.14)}" fill="${c[4]}" opacity="0.35"/>`;
+  <circle cx="${r(x + aw * pick(0.3, 0.7))}" cy="${r(y + ah * pick(0.55, 0.78))}" r="${r(aw * 0.14)}" fill="${c[4]}" opacity="0.45"/>`;
 }
 
 /** Concentric arcs — growth rings, ripples, a child's circle. */
@@ -94,7 +96,7 @@ function orbit(w, h, c, pick) {
   const ribbon = h * pick(0.68, 0.84);
   return `
   ${rings}
-  <path d="M0 ${r(ribbon)} C ${r(w * 0.3)} ${r(ribbon - h * 0.1)}, ${r(w * 0.7)} ${r(ribbon + h * 0.08)}, ${w} ${r(ribbon - h * 0.04)} L ${w} ${h} L 0 ${h} Z" fill="${c[3]}" opacity="0.88"/>`;
+  <path d="M0 ${r(ribbon)} C ${r(w * 0.3)} ${r(ribbon - h * 0.1)}, ${r(w * 0.7)} ${r(ribbon + h * 0.08)}, ${w} ${r(ribbon - h * 0.04)} L ${w} ${h} L 0 ${h} Z" fill="${c[3]}" opacity="0.9"/>`;
 }
 
 const COMPOSITIONS = [landscape, arch, orbit];
@@ -116,15 +118,15 @@ function plate({ id, ratio, tone }) {
   <defs>
     <linearGradient id="sky" x1="0.1" y1="0" x2="0.6" y2="1">
       <stop offset="0%" stop-color="${c[0]}"/>
-      <stop offset="100%" stop-color="${c[2]}"/>
+      <stop offset="100%" stop-color="${c[3]}"/>
     </linearGradient>
     <linearGradient id="shaft" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.5"/>
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.42"/>
       <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
     </linearGradient>
-    <radialGradient id="vig" cx="50%" cy="42%" r="76%">
-      <stop offset="52%" stop-color="#2B2622" stop-opacity="0"/>
-      <stop offset="100%" stop-color="#2B2622" stop-opacity="0.26"/>
+    <radialGradient id="bloom" cx="24%" cy="16%" r="82%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.38"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
     </radialGradient>
     <filter id="grain" x="0" y="0" width="100%" height="100%">
       <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
@@ -133,9 +135,9 @@ function plate({ id, ratio, tone }) {
   </defs>
   <rect width="${w}" height="${h}" fill="url(#sky)"/>
   ${compose(w, h, c, pick)}
-  <polygon points="${r(shaftX)},0 ${r(shaftX + shaftW)},0 ${r(shaftX + shaftW + skew)},${h} ${r(shaftX + skew)},${h}" fill="url(#shaft)" opacity="0.55"/>
-  <rect width="${w}" height="${h}" fill="url(#vig)"/>
-  <rect width="${w}" height="${h}" filter="url(#grain)" opacity="0.2" style="mix-blend-mode:multiply"/>
+  <polygon points="${r(shaftX)},0 ${r(shaftX + shaftW)},0 ${r(shaftX + shaftW + skew)},${h} ${r(shaftX + skew)},${h}" fill="url(#shaft)" opacity="0.45"/>
+  <rect width="${w}" height="${h}" fill="url(#bloom)"/>
+  <rect width="${w}" height="${h}" filter="url(#grain)" opacity="0.11" style="mix-blend-mode:multiply"/>
 </svg>
 `;
 }

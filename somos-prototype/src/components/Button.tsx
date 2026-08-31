@@ -14,7 +14,7 @@ const VARIANTS: Record<Variant, string> = {
   secondary:
     'border border-ink/20 bg-transparent text-ink hover:border-ink/45 hover:bg-ink/[0.04]',
   quiet: 'text-clay-700 underline-offset-4 hover:underline px-0',
-  onDark: 'bg-cream-50 text-forest-900 hover:bg-white shadow-soft',
+  onDark: 'bg-cream-50 text-ink hover:bg-white shadow-soft',
   onDarkGhost:
     'border border-cream-100/40 text-cream-50 hover:border-cream-100/80 hover:bg-cream-50/10',
 };
