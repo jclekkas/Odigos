@@ -2,11 +2,12 @@ import { Button } from '@/components/Button';
 import { Container, SectionHeading } from '@/components/Primitives';
 import { Photo } from '@/components/Photo';
 import { Reveal } from '@/components/Reveal';
+import { Sun, Dots, Wave } from '@/components/Doodles';
 
 export function CTASection({
-  eyebrow = 'Visit us',
+  eyebrow = 'Come and visit',
   title = 'The best way to understand Somos is to experience it.',
-  body = 'Meet the teachers, explore the classroom and see how a Somos day actually feels for your child.',
+  body = 'Meet the teachers, explore the classroom and see how a Somos day actually feels for your child. Visits are relaxed, unhurried and free.',
   primaryLabel = 'Schedule a Tour',
   primaryTo = '/admissions',
   secondaryLabel = 'Explore Our Locations',
@@ -23,17 +24,11 @@ export function CTASection({
   photo?: string;
 }) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-ochre-100 via-cream-100 to-clay-50">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-ochre-300/40 blur-2xl"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-28 right-1/3 h-80 w-80 rounded-full bg-sage-100/70 blur-2xl"
-      />
+    <section className="relative overflow-hidden bg-sun-200 pt-20 sm:pt-24 lg:pt-28">
+      <Sun className="absolute -left-10 -top-10 h-40 w-40 text-sun-300" />
+      <Dots className="absolute right-10 top-14 hidden h-16 w-32 text-coral-300 lg:block" rows={4} cols={8} />
 
-      <Container className="relative py-20 sm:py-24 lg:py-28">
+      <Container className="relative pb-24 sm:pb-28">
         <div className="grid items-center gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:gap-16">
           <Reveal>
             <SectionHeading eyebrow={eyebrow} title={title} lede={body} size="lg" />
@@ -51,13 +46,15 @@ export function CTASection({
             <div className="relative">
               <div
                 aria-hidden="true"
-                className="absolute -inset-3 -rotate-2 rounded-[1.6rem] bg-white/70"
+                className="absolute -inset-4 rotate-[3deg] rounded-blob bg-white/80"
               />
-              <Photo id={photo} ratio="4/3" className="relative shadow-lift" />
+              <Photo id={photo} ratio="4/3" rounded="rounded-blob" className="relative shadow-lift" />
             </div>
           </Reveal>
         </div>
       </Container>
+
+      <Wave className="absolute inset-x-0 bottom-0 text-cream-100" />
     </section>
   );
 }

@@ -42,34 +42,37 @@ const ICONS: Record<string, JSX.Element> = {
 
 export function TrustStrip() {
   return (
-    <section aria-label="What Somos offers" className="border-y border-ink/[0.07] bg-cream-100">
+    <section aria-label="What Somos offers" className="bg-white">
       <div className="container-somos">
-        <ul className="grid grid-cols-2 gap-x-6 gap-y-7 py-9 md:grid-cols-3 lg:grid-cols-5 lg:gap-x-4">
+        <ul className="grid grid-cols-2 gap-4 py-10 md:grid-cols-3 lg:grid-cols-5">
           {trustPoints.map((point, i) => {
             const accent = PILLAR_ACCENTS[i % PILLAR_ACCENTS.length];
             return (
-            <li key={point.label} className="flex items-start gap-3">
+            <li
+              key={point.label}
+              className={cn('flex flex-col gap-3 rounded-card p-5', accent.bg)}
+            >
               <span
                 aria-hidden="true"
-                className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-full', accent.bg, accent.text)}
+                className={cn('flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white', accent.text)}
               >
                 <svg
                   viewBox="0 0 24 24"
                   className="h-[1.35rem] w-[1.35rem]"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="1.6"
+                  strokeWidth="1.9"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
                   {ICONS[point.label]}
                 </svg>
               </span>
-              <span className="min-w-0 pt-1">
-                <span className="block text-[0.95rem] font-semibold leading-snug text-ink">
+              <span className="min-w-0">
+                <span className="block font-display text-[0.98rem] font-bold leading-snug text-ink">
                   {point.label}
                 </span>
-                <span className="mt-0.5 block text-[0.83rem] leading-snug text-ink-soft">
+                <span className="mt-1 block text-[0.85rem] font-medium leading-snug text-ink-muted">
                   {point.detail}
                 </span>
               </span>

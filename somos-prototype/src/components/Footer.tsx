@@ -8,11 +8,11 @@ export function Footer() {
   return (
     <footer className="bg-cream-100 text-ink">
       <div aria-hidden="true" className="flex h-1.5">
-        <span className="flex-1 bg-clay-500" />
-        <span className="flex-1 bg-ochre-500" />
-        <span className="flex-1 bg-sage-500" />
+        <span className="flex-1 bg-coral-500" />
+        <span className="flex-1 bg-sun-500" />
+        <span className="flex-1 bg-grass-500" />
         <span className="flex-1 bg-sky-500" />
-        <span className="flex-1 bg-blossom-300" />
+        <span className="flex-1 bg-berry-300" />
       </div>
       <div className="container-somos py-16 sm:py-20">
         <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr_1.4fr]">
@@ -32,14 +32,14 @@ export function Footer() {
             </p>
             <a
               href={`mailto:${site.email}`}
-              className="mt-6 inline-flex min-h-[44px] items-center text-[0.97rem] font-semibold text-clay-700 underline decoration-clay-200 underline-offset-4 transition-colors hover:decoration-clay-600"
+              className="mt-6 inline-flex min-h-[44px] items-center text-[0.97rem] font-semibold text-coral-700 underline decoration-coral-200 underline-offset-4 transition-colors hover:decoration-coral-600"
             >
               {site.email}
             </a>
           </div>
 
           <nav aria-label="Footer">
-            <h2 className="text-eyebrow font-semibold uppercase tracking-[0.16em] text-clay-700">
+            <h2 className="text-eyebrow font-semibold uppercase tracking-[0.16em] text-coral-700">
               Explore
             </h2>
             <ul className="mt-5 space-y-1">
@@ -47,7 +47,7 @@ export function Footer() {
                 <li key={item.href}>
                   <Link
                     to={item.href}
-                    className="inline-flex min-h-[40px] items-center text-[0.97rem] text-ink-muted transition-colors hover:text-clay-700"
+                    className="inline-flex min-h-[40px] items-center text-[0.97rem] text-ink-muted transition-colors hover:text-coral-700"
                   >
                     {item.label}
                   </Link>
@@ -57,7 +57,7 @@ export function Footer() {
           </nav>
 
           <div>
-            <h2 className="text-eyebrow font-semibold uppercase tracking-[0.16em] text-clay-700">
+            <h2 className="text-eyebrow font-semibold uppercase tracking-[0.16em] text-coral-700">
               Our Schools
             </h2>
             <div className="mt-5 grid gap-8 sm:grid-cols-2">
@@ -76,7 +76,7 @@ export function Footer() {
                   </address>
                   <a
                     href={`tel:${loc.phone.replace(/\D/g, '')}`}
-                    className="mt-2 inline-flex min-h-[40px] items-center text-[0.94rem] font-semibold text-clay-700 underline decoration-clay-200 underline-offset-4 hover:decoration-clay-600"
+                    className="mt-2 inline-flex min-h-[40px] items-center text-[0.94rem] font-semibold text-coral-700 underline decoration-coral-200 underline-offset-4 hover:decoration-coral-600"
                   >
                     {loc.phone}
                   </a>

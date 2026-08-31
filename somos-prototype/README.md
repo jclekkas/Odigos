@@ -95,14 +95,26 @@ focus, semantic headings (one `h1` per page), labelled form fields, text-based
 error messages, 44px+ touch targets and `prefers-reduced-motion` support are all
 in place. Content is present in the HTML for visitors without JavaScript.
 
-## Palette
+## Palette and type
 
-Five accent hues — coral, sunshine, leaf, sky and blossom — used two ways:
-rotated across peer elements (the five learning areas, the trust strip,
-programme cards, location cards), and as full-width section washes so the page
-moves through colour as you scroll. Sections meet each other on a soft rounded
-shoulder (`<Section curve>`) rather than a hard edge. Accent tokens live in
-`tailwind.config.ts`; the rotation is `src/lib/accents.ts`.
+One primary — a bright tomato coral (`coral-600`) that carries every primary
+action — plus three playful companions (sunshine, sky, grass) and a raspberry
+accent, over a soft cream neutral and deep warm ink for text.
+
+The five accents rotate across peer elements (learning areas, trust strip,
+programme cards, location cards, testimonials) via `src/lib/accents.ts`, and
+run full-width as section washes so the page moves through colour as you
+scroll. Two bands go fully saturated — the bilingual moment and the closing
+tour CTA — to keep the page from settling into pastel. Sections meet on a soft
+rounded shoulder (`<Section curve>`), and the CTA hands off to the footer over
+a wave.
+
+Only `accent.chip` is safe to put text on: each pairing is picked to clear
+4.5:1, which is why the yellow chip takes ink where the rest take white.
+
+Type is Outfit (rounded geometric) for headings and Nunito (humanist, rounded)
+for everything else. `src/components/Doodles.tsx` holds the drawn marks — an
+underline squiggle, dots, a sun, a star, an arch, a wave — used sparingly.
 
 ## Stack
 

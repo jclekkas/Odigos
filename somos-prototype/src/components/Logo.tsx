@@ -8,20 +8,20 @@ import { cn } from '@/lib/cn';
 export function LogoMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 40 40" className={className} aria-hidden="true" fill="none">
-      <circle cx="20" cy="20" r="19" className="fill-clay-600" />
+      <circle cx="20" cy="20" r="19" className="fill-coral-600" />
       <path
         d="M20 31c0-6.2 3.6-10.6 9-12.2"
         stroke="currentColor"
         strokeWidth="2.4"
         strokeLinecap="round"
-        className="text-ochre-300"
+        className="text-sun-300"
       />
       <path
         d="M20 31c0-6.2-3.6-10.6-9-12.2"
         stroke="currentColor"
         strokeWidth="2.4"
         strokeLinecap="round"
-        className="text-sage-300"
+        className="text-grass-300"
       />
       <path
         d="M20 31V12"

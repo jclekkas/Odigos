@@ -10,7 +10,7 @@ import { programs, montessoriPillars } from '@/data/programs';
 import { cn } from '@/lib/cn';
 import { PILLAR_ACCENTS } from '@/lib/accents';
 
-const SUPPORTING_TONES = ['sage', 'blossom', 'sun', 'sky', 'sage'] as const;
+const SUPPORTING_TONES = ['grass', 'berry', 'sun', 'sky', 'grass'] as const;
 
 const SUPPORTING = [
   {
@@ -119,7 +119,7 @@ export default function Programs() {
                 { age: 'Ages 5+', t: 'On to school', d: 'Children leave able to concentrate, manage themselves and join a new classroom with confidence.' },
               ].map((step, i) => (
                 <li key={step.t} className="relative rounded-card border border-ink/10 bg-white p-7">
-                  <span className="text-[0.78rem] font-bold uppercase tracking-[0.15em] text-sage-700">
+                  <span className="text-[0.78rem] font-bold uppercase tracking-[0.15em] text-grass-600">
                     {step.age}
                   </span>
                   <h3 className="mt-2 font-display text-[1.45rem]">{step.t}</h3>
@@ -127,7 +127,7 @@ export default function Programs() {
                   {i < 2 ? (
                     <span
                       aria-hidden="true"
-                      className="absolute -right-3 top-1/2 hidden h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full bg-clay-600 text-cream-50 md:flex"
+                      className="absolute -right-3 top-1/2 hidden h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full bg-coral-600 text-cream-50 md:flex"
                     >
                       <svg viewBox="0 0 20 20" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M5 10h9M10.5 6l4 4-4 4" />
@@ -173,7 +173,7 @@ export default function Programs() {
                   ))}
                 </dl>
                 {program.day ? (
-                  <p className="mt-8 border-l-2 border-clay-500 pl-5 text-[0.96rem] leading-relaxed text-ink-muted">
+                  <p className="mt-8 border-l-2 border-coral-500 pl-5 text-[0.96rem] leading-relaxed text-ink-muted">
                     {program.day}
                   </p>
                 ) : null}
@@ -199,19 +199,19 @@ export default function Programs() {
           <div className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-x-6">
             {montessoriPillars.map((pillar, i) => (
               <Reveal key={pillar.name} delay={i * 70}>
-                <div className={cn('border-t-[3px] pt-5', PILLAR_ACCENTS[i % PILLAR_ACCENTS.length].border)}>
+                <div className="h-full rounded-card bg-cream-50 p-6">
                   <span
                     className={cn(
-                      'font-display text-[0.95rem] font-semibold',
-                      PILLAR_ACCENTS[i % PILLAR_ACCENTS.length].text
+                      'flex h-10 w-10 items-center justify-center rounded-full font-display text-[0.9rem] font-extrabold',
+                      PILLAR_ACCENTS[i % PILLAR_ACCENTS.length].chip
                     )}
                   >
                     0{i + 1}
                   </span>
-                  <h3 className="mt-1 text-[1.1rem] font-semibold tracking-[-0.01em]">
+                  <h3 className="mt-4 font-display text-[1.12rem] font-bold tracking-[-0.01em]">
                     {pillar.name}
                   </h3>
-                  <p className="mt-3 text-[0.94rem] leading-relaxed text-ink-muted">{pillar.body}</p>
+                  <p className="mt-2 text-[0.94rem] leading-relaxed text-ink-muted">{pillar.body}</p>
                 </div>
               </Reveal>
             ))}

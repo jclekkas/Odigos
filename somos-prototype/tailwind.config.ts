@@ -5,102 +5,103 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Warm neutral base — soft cream and white, never beige-on-beige.
         cream: {
-          50: '#FFFDF8',
-          100: '#FFF4DF',
-          200: '#FDF0DE',
-          300: '#F7E4CB',
-        },
-        sand: {
-          400: '#E7D3B4',
-          500: '#CDB894',
+          50: '#FFFCF5',
+          100: '#FFF7E8',
+          200: '#FFEFD6',
+          300: '#FCE3BC',
         },
         ink: {
-          DEFAULT: '#2E2A25',
-          muted: '#61574D',
-          soft: '#75695C',
+          DEFAULT: '#2C2320',
+          muted: '#5C5049',
+          soft: '#786A61',
         },
-        // Primary accent — a bright, warm coral rather than a burnt clay.
-        clay: {
-          50: '#FFEDE4',
-          100: '#FFDCCB',
-          200: '#FFC3AC',
-          400: '#EC6136',
-          500: '#DC5329',
-          600: '#CB4A26',
-          700: '#A63A1C',
-          800: '#7C2B14',
-        },
-        // Fresh leaf green (kept under the `sage` name used across the site).
-        sage: {
-          50: '#E6F7E0',
-          100: '#D2EFCA',
-          300: '#A6D89D',
-          500: '#6DBB66',
-          600: '#4E9C4B',
-          700: '#3B7A3F',
-          800: '#2F6234',
+        // PRIMARY — a bright tomato coral. Saturated, never terracotta.
+        coral: {
+          50: '#FFF1ED',
+          100: '#FFDED4',
+          200: '#FFBBA6',
+          300: '#FF9576',
+          400: '#FF7350',
+          500: '#EE5233',
+          600: '#D33E26',
+          700: '#B03220',
+          800: '#85261A',
         },
         // Sunshine.
-        ochre: {
-          50: '#FFF6D9',
-          100: '#FFEBBB',
-          300: '#FFDC7C',
-          500: '#F5B92E',
-          700: '#8A6209',
+        sun: {
+          50: '#FFFAE3',
+          100: '#FFF3C4',
+          200: '#FFE68A',
+          300: '#FFD955',
+          400: '#FFC531',
+          500: '#F2AE12',
+          600: '#C08808',
+          700: '#8F650A',
         },
-        // Sky.
+        // Cheerful sky.
         sky: {
-          50: '#E2F2FB',
-          100: '#CBE8F5',
-          300: '#96D0E8',
-          500: '#45A8D2',
-          700: '#1D6787',
+          50: '#EAF7FD',
+          100: '#CFEBFA',
+          200: '#9BD7F3',
+          300: '#66C0E9',
+          400: '#3BA9E0',
+          500: '#1E8CC4',
+          600: '#16719F',
+          700: '#12587B',
         },
-        // Blossom.
-        blossom: {
-          50: '#FDEAF1',
-          100: '#FAD3E1',
-          300: '#F2AAC2',
-          700: '#A03C5C',
+        // Fresh grass.
+        grass: {
+          50: '#EDFAED',
+          100: '#D4F2D6',
+          200: '#A6E2A9',
+          300: '#77CE7D',
+          400: '#4CB963',
+          500: '#35994C',
+          600: '#287A3D',
+          700: '#1F5F31',
+        },
+        // Playful raspberry.
+        berry: {
+          50: '#FFEFF5',
+          100: '#FFD8E5',
+          200: '#FFAEC9',
+          300: '#FA85AC',
+          400: '#F05C90',
+          500: '#DB3E74',
+          600: '#B92C5C',
+          700: '#932246',
         },
       },
       fontFamily: {
-        display: ['"Fraunces Variable"', 'Fraunces', 'Georgia', 'Cambria', 'serif'],
-        sans: ['"Nunito Variable"', 'Nunito', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        display: ['"Outfit Variable"', 'Outfit', 'ui-rounded', 'system-ui', 'sans-serif'],
+        sans: ['"Nunito Variable"', 'Nunito', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
       },
       fontSize: {
-        'display-xl': ['clamp(2.55rem, 5.1vw, 4.05rem)', { lineHeight: '1.02', letterSpacing: '-0.025em' }],
-        'display-lg': ['clamp(2.15rem, 4.1vw, 3.3rem)', { lineHeight: '1.06', letterSpacing: '-0.022em' }],
-        'display-md': ['clamp(1.85rem, 3.4vw, 2.65rem)', { lineHeight: '1.12', letterSpacing: '-0.018em' }],
-        'display-sm': ['clamp(1.45rem, 2.2vw, 1.85rem)', { lineHeight: '1.2', letterSpacing: '-0.012em' }],
-        eyebrow: ['0.75rem', { lineHeight: '1.1', letterSpacing: '0.16em' }],
-        lede: ['clamp(1.06rem, 1.25vw, 1.24rem)', { lineHeight: '1.62' }],
+        'display-xl': ['clamp(2.7rem, 5.4vw, 4.3rem)', { lineHeight: '1.02', letterSpacing: '-0.03em' }],
+        'display-lg': ['clamp(2.25rem, 4.3vw, 3.4rem)', { lineHeight: '1.05', letterSpacing: '-0.028em' }],
+        'display-md': ['clamp(1.9rem, 3.4vw, 2.7rem)', { lineHeight: '1.1', letterSpacing: '-0.024em' }],
+        'display-sm': ['clamp(1.5rem, 2.2vw, 1.95rem)', { lineHeight: '1.18', letterSpacing: '-0.018em' }],
+        eyebrow: ['0.78rem', { lineHeight: '1.1', letterSpacing: '0.1em' }],
+        lede: ['clamp(1.08rem, 1.25vw, 1.26rem)', { lineHeight: '1.6' }],
       },
       maxWidth: {
-        prose: '68ch',
+        prose: '66ch',
       },
       borderRadius: {
-        card: '1.6rem',
-        blob: '2.5rem',
+        card: '1.75rem',
+        blob: '2.75rem',
         pill: '999px',
       },
       boxShadow: {
-        soft: '0 1px 2px rgba(76,58,38,0.04), 0 12px 30px -18px rgba(76,58,38,0.22)',
-        lift: '0 2px 4px rgba(76,58,38,0.05), 0 26px 48px -26px rgba(76,58,38,0.3)',
+        soft: '0 2px 4px rgba(74,45,30,0.05), 0 14px 30px -18px rgba(74,45,30,0.25)',
+        lift: '0 3px 6px rgba(74,45,30,0.06), 0 28px 50px -26px rgba(74,45,30,0.35)',
+        pop: '0 4px 0 0 rgba(133,38,26,0.28)',
       },
       transitionTimingFunction: {
         somos: 'cubic-bezier(0.22, 0.61, 0.36, 1)',
-      },
-      keyframes: {
-        'fade-up': {
-          from: { opacity: '0', transform: 'translateY(14px)' },
-          to: { opacity: '1', transform: 'none' },
-        },
-        'accordion-down': {
-          from: { height: '0' },
-          to: { height: 'var(--acc-h)' },
-        },
+        bounce: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
       },
     },
   },

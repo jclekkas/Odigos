@@ -143,7 +143,7 @@ export default function About() {
         </Container>
       </Section>
 
-      <Section tone="sage" curve>
+      <Section tone="grass" curve>
         <Container>
           <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
             <Reveal>

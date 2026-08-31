@@ -36,7 +36,7 @@ export default function Privacy() {
               deleted, email{' '}
               <a
                 href={`mailto:${site.email}`}
-                className="font-semibold text-clay-700 underline underline-offset-4"
+                className="font-semibold text-coral-700 underline underline-offset-4"
               >
                 {site.email}
               </a>

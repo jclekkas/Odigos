@@ -40,7 +40,7 @@ export default function LocationsPage() {
         ]}
       />
 
-      <Section tone="sage" curve>
+      <Section tone="grass" curve>
         <Container>
           <h2 className="sr-only">Our schools</h2>
           <div className="grid gap-8 lg:grid-cols-2">
@@ -69,7 +69,7 @@ export default function LocationsPage() {
               { t: 'Extended care', d: 'Before- and after-school care at both locations.' },
               { t: 'Availability', d: 'Openings vary by classroom — ask the school directly.' },
             ].map((item) => (
-              <div key={item.t} className="border-t-[3px] border-ochre-500 pt-5">
+              <div key={item.t} className="border-t-[3px] border-sun-500 pt-5">
                 <dt className="font-semibold text-ink">{item.t}</dt>
                 <dd className="mt-2 text-[0.95rem] leading-relaxed text-ink-muted">{item.d}</dd>
               </div>

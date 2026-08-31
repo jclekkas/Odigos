@@ -31,7 +31,7 @@ export function FAQAccordion({ items, className }: { items: readonly Faq[]; clas
                   aria-hidden="true"
                   className={cn(
                     'mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-ink/15 transition-[transform,background-color,border-color] duration-300 ease-somos',
-                    isOpen && 'rotate-45 border-clay-600 bg-clay-600 text-white'
+                    isOpen && 'rotate-45 border-coral-600 bg-coral-600 text-white'
                   )}
                 >
                   <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round">

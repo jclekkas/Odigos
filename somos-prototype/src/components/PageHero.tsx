@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { Container } from '@/components/Primitives';
 import { Photo } from '@/components/Photo';
+import { Dots } from '@/components/Doodles';
 
 export function PageHero({
   eyebrow,
@@ -21,8 +22,12 @@ export function PageHero({
   aside?: ReactNode;
 }) {
   return (
-    <section className="bg-cream-50">
-      <Container className="pt-8 sm:pt-12">
+    <section className="relative overflow-hidden bg-cream-50">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <div className="absolute -right-28 -top-36 h-[26rem] w-[26rem] rounded-full bg-sun-100" />
+        <div className="absolute -left-36 top-24 h-[22rem] w-[22rem] rounded-full bg-sky-50" />
+      </div>
+      <Container className="relative pt-8 sm:pt-12">
         {breadcrumbs?.length ? (
           <nav aria-label="Breadcrumb" className="mb-6">
             <ol className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.85rem] text-ink-soft">
@@ -56,8 +61,15 @@ export function PageHero({
         </div>
       </Container>
 
-      <Container className="mt-12 sm:mt-14">
-        <Photo id={photo} ratio="21/9" priority className="shadow-soft" />
+      <Container className="relative mt-12 sm:mt-14">
+        <div className="relative">
+          <div
+            aria-hidden="true"
+            className="absolute -inset-3 rotate-[-1deg] rounded-blob bg-white"
+          />
+          <Photo id={photo} ratio="21/9" priority rounded="rounded-blob" className="relative shadow-lift" />
+          <Dots className="absolute -bottom-5 left-8 hidden h-12 w-24 text-sun-300 lg:block" rows={3} cols={6} />
+        </div>
         {aside ? <div className="mt-8">{aside}</div> : null}
       </Container>
     </section>

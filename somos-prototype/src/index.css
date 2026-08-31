@@ -1,4 +1,4 @@
-@import '@fontsource-variable/fraunces/index.css';
+@import '@fontsource-variable/outfit/index.css';
 @import '@fontsource-variable/nunito/index.css';
 
 @tailwind base;
@@ -33,7 +33,7 @@
   h3,
   h4 {
     @apply font-display text-ink;
-    font-variation-settings: 'SOFT' 100, 'WONK' 1, 'opsz' 22, 'wght' 600;
+    font-weight: 700;
     text-wrap: balance;
   }
 
@@ -43,13 +43,13 @@
 
   /* A single, unmistakable focus treatment across the whole site. */
   :focus-visible {
-    outline: 3px solid theme('colors.clay.600');
+    outline: 3px solid theme('colors.coral.600');
     outline-offset: 3px;
     border-radius: 4px;
   }
 
   ::selection {
-    background: theme('colors.ochre.300');
+    background: theme('colors.sun.300');
     color: theme('colors.ink.DEFAULT');
   }
 }
@@ -60,7 +60,7 @@
   }
 
   .eyebrow {
-    @apply text-eyebrow font-semibold uppercase tracking-[0.16em] text-clay-700;
+    @apply inline-flex items-center rounded-pill bg-coral-100 px-3.5 py-1.5 text-eyebrow font-extrabold uppercase tracking-[0.1em] text-coral-700;
   }
 
   .lede {

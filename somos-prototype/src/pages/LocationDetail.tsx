@@ -77,7 +77,7 @@ export default function LocationDetail() {
               </address>
               <a
                 href={`tel:${tel}`}
-                className="mt-2 inline-flex min-h-[44px] items-center font-semibold text-clay-700 underline-offset-4 hover:underline"
+                className="mt-2 inline-flex min-h-[44px] items-center font-semibold text-coral-700 underline-offset-4 hover:underline"
               >
                 {location.phone}
               </a>
@@ -126,7 +126,7 @@ export default function LocationDetail() {
           <div className="mt-16 grid gap-8 md:grid-cols-3">
             {location.highlights.map((item, i) => (
               <Reveal key={item.title} delay={i * 80}>
-                <div className="h-full border-t-2 border-clay-200 pt-6">
+                <div className="h-full border-t-2 border-coral-200 pt-6">
                   <h3 className="text-[1.16rem] font-semibold tracking-[-0.01em]">{item.title}</h3>
                   <p className="mt-3 text-[0.96rem] leading-relaxed text-ink-muted">{item.body}</p>
                 </div>
@@ -137,7 +137,7 @@ export default function LocationDetail() {
       </Section>
 
       {/* ----------------------------------------------------------- programs */}
-      <Section tone="sun" curve>
+      <Section tone="sunBold" curve>
         <Container>
           <Reveal>
             <SectionHeading
@@ -150,7 +150,7 @@ export default function LocationDetail() {
             {offered.map((program, i) => (
               <Reveal key={program.slug} delay={i * 80}>
                 <div className="flex h-full flex-col rounded-card border border-ink/10 bg-white p-7">
-                  <p className="text-[0.8rem] font-semibold uppercase tracking-[0.13em] text-sage-700">
+                  <p className="text-[0.8rem] font-semibold uppercase tracking-[0.13em] text-grass-600">
                     {program.ages}
                   </p>
                   <h3 className="mt-2 font-display text-[1.4rem]">{program.name}</h3>
@@ -224,7 +224,7 @@ export default function LocationDetail() {
       </Section>
 
       {/* -------------------------------------------------------- testimonial */}
-      <Section tone="blossom" spacing="tight" curve>
+      <Section tone="berry" spacing="tight" curve>
         <Container>
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16">
             <Reveal>
@@ -270,7 +270,7 @@ export default function LocationDetail() {
                   },
                 ].map((step, i) => (
                   <li key={step.t} className="flex gap-5">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-clay-600 font-display text-[0.95rem] font-semibold text-cream-50">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-coral-600 font-display text-[0.95rem] font-semibold text-cream-50">
                       {i + 1}
                     </span>
                     <span>

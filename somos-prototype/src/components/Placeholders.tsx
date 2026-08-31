@@ -11,7 +11,7 @@ export function MapPlaceholder({ location }: { location: Location }) {
   return (
     <div className="overflow-hidden rounded-card border border-ink/10 bg-cream-100">
       <div
-        className="relative grid min-h-[280px] place-items-center bg-sage-50"
+        className="relative grid min-h-[280px] place-items-center bg-grass-50"
         style={{
           backgroundImage:
             'linear-gradient(rgba(84,102,78,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(84,102,78,0.10) 1px, transparent 1px)',
@@ -27,7 +27,7 @@ export function MapPlaceholder({ location }: { location: Location }) {
           className="absolute inset-x-0 top-[62%] h-10 bg-cream-100/70"
         />
         <div className="relative flex flex-col items-center px-6 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-clay-600 text-cream-50 shadow-soft">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-coral-600 text-cream-50 shadow-soft">
             <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" />
               <circle cx="12" cy="10" r="2.6" />
@@ -56,7 +56,7 @@ export function ReviewsPlaceholder({ city }: { city: string }) {
   return (
     <div className="rounded-card border border-dashed border-ink/20 bg-cream-100 p-7">
       <div className="flex items-center gap-3">
-        <span aria-hidden="true" className="flex gap-1 text-ochre-500">
+        <span aria-hidden="true" className="flex gap-1 text-sun-500">
           {Array.from({ length: 5 }).map((_, i) => (
             <svg key={i} viewBox="0 0 20 20" className="h-4 w-4" fill="currentColor">
               <path d="M10 1.6l2.5 5.1 5.6.8-4 3.9 1 5.6L10 14.4 4.9 17l1-5.6-4-3.9 5.6-.8L10 1.6Z" />

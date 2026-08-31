@@ -12,7 +12,7 @@ import { generalFaqs } from '@/data/content';
 import { PILLAR_ACCENTS } from '@/lib/accents';
 import { cn } from '@/lib/cn';
 
-const PRINCIPLE_TONES = ['white', 'sage', 'white', 'blossom'] as const;
+const PRINCIPLE_TONES = ['white', 'grass', 'white', 'berry'] as const;
 
 const PRINCIPLES = [
   {
@@ -114,7 +114,7 @@ export default function Approach() {
               },
             ].map((item, i) => (
               <Reveal key={item.t} delay={i * 80}>
-                <div className="h-full border-t-2 border-clay-200 pt-6">
+                <div className="h-full border-t-2 border-coral-200 pt-6">
                   <h3 className="text-[1.16rem] font-semibold tracking-[-0.01em]">{item.t}</h3>
                   <p className="mt-3 text-[0.96rem] leading-relaxed text-ink-muted">{item.d}</p>
                 </div>
@@ -150,7 +150,7 @@ export default function Approach() {
         </Section>
       ))}
 
-      <Section tone="sky" curve>
+      <Section tone="skyBold" curve>
         <Container>
           <Reveal>
             <SectionHeading
@@ -162,8 +162,16 @@ export default function Approach() {
           <div className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-x-6">
             {montessoriPillars.map((pillar, i) => (
               <Reveal key={pillar.name} delay={i * 70}>
-                <div className={cn('border-t-[3px] pt-5', PILLAR_ACCENTS[i % PILLAR_ACCENTS.length].border)}>
-                  <h3 className="text-[1.1rem] font-semibold text-ink">{pillar.name}</h3>
+                <div className="h-full rounded-card bg-white p-6">
+                  <span
+                    className={cn(
+                      'mb-4 flex h-9 w-9 items-center justify-center rounded-full font-display text-[0.85rem] font-extrabold',
+                      PILLAR_ACCENTS[i % PILLAR_ACCENTS.length].chip
+                    )}
+                  >
+                    0{i + 1}
+                  </span>
+                  <h3 className="font-display text-[1.12rem] font-bold text-ink">{pillar.name}</h3>
                   <p className="mt-3 text-[0.94rem] leading-relaxed text-ink-muted">
                     {pillar.body}
                   </p>

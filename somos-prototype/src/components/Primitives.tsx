@@ -14,7 +14,7 @@ export function Container({
 type SectionProps = {
   id?: string;
   as?: ElementType;
-  tone?: 'cream' | 'white' | 'sand' | 'sage' | 'sky' | 'sun' | 'blossom';
+  tone?: 'cream' | 'white' | 'grass' | 'sky' | 'sun' | 'berry' | 'skyBold' | 'sunBold';
   /** Soft rounded shoulder where this section meets the one above it. */
   curve?: boolean;
   spacing?: 'default' | 'tight' | 'loose';
@@ -25,11 +25,12 @@ type SectionProps = {
 const TONE: Record<NonNullable<SectionProps['tone']>, string> = {
   cream: 'bg-cream-50 text-ink',
   white: 'bg-white text-ink',
-  sand: 'bg-cream-100 text-ink',
-  sage: 'bg-sage-50 text-ink',
+  grass: 'bg-grass-50 text-ink',
   sky: 'bg-sky-50 text-ink',
-  sun: 'bg-ochre-50 text-ink',
-  blossom: 'bg-blossom-50 text-ink',
+  sun: 'bg-sun-50 text-ink',
+  berry: 'bg-berry-50 text-ink',
+  skyBold: 'bg-sky-300 text-ink',
+  sunBold: 'bg-sun-300 text-ink',
 };
 
 const SPACING: Record<NonNullable<SectionProps['spacing']>, string> = {
@@ -64,7 +65,7 @@ export function Section({
 
 export function Eyebrow({ children, onDark }: { children: ReactNode; onDark?: boolean }) {
   return (
-    <p className={cn('eyebrow', onDark && 'text-ochre-300')}>{children}</p>
+    <p className={cn('eyebrow', onDark && 'bg-white/25 text-white')}>{children}</p>
   );
 }
 

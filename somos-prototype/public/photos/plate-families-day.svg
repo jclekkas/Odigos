@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 788" width="1400" height="788" role="presentation">
   <defs>
     <linearGradient id="sky" x1="0.1" y1="0" x2="0.5" y2="1">
-      <stop offset="0%" stop-color="#F2FAFE"/>
-      <stop offset="100%" stop-color="#B6E2F2"/>
+      <stop offset="0%" stop-color="#E6F5FD"/>
+      <stop offset="100%" stop-color="#C6E8F8"/>
     </linearGradient>
     <filter id="grain" x="0" y="0" width="100%" height="100%">
       <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
@@ -11,18 +11,19 @@
   </defs>
   <rect width="1400" height="788" fill="url(#sky)"/>
   
-  <circle cx="1182.6" cy="200.1" r="70.9" fill="#FFEB93" opacity="0.9"/>
-  <circle cx="303.2" cy="116.1" r="13.1" fill="#FFDA53" opacity="0.5"/>
-  <circle cx="1125.6" cy="366.8" r="11.7" fill="#54B0D6" opacity="0.5"/>
-  <circle cx="929.1" cy="229.3" r="18.1" fill="#FFDA53" opacity="0.5"/>
-  <circle cx="171" cy="223.8" r="21.8" fill="#54B0D6" opacity="0.5"/>
-  <circle cx="542.4" cy="335.2" r="13.6" fill="#FFDA53" opacity="0.5"/>
-  <rect x="210.6" y="395.6" width="22.1" height="214.7" rx="11" fill="#54B0D6" opacity="0.55"/>
-  <circle cx="221.6" cy="395.6" r="108.2" fill="#54B0D6" opacity="0.9"/>
-  <rect x="624.6" y="443.2" width="22.1" height="167.1" rx="11" fill="#54B0D6" opacity="0.55"/>
-  <circle cx="635.6" cy="443.2" r="110.4" fill="#FFDA53" opacity="0.9"/>
-  <rect x="1133" y="447.2" width="22.1" height="163.1" rx="11" fill="#54B0D6" opacity="0.55"/>
-  <circle cx="1144" cy="447.2" r="97.1" fill="#54B0D6" opacity="0.9"/>
-  <path d="M0 610.3 C 490 570.9, 980 641.8, 1400 594.5 L 1400 788 L 0 788 Z" fill="#87CCE7"/>
-  <rect width="1400" height="788" filter="url(#grain)" opacity="0.07" style="mix-blend-mode:multiply"/>
+  <circle cx="1182.6" cy="200.1" r="78.8" fill="#77CE7D"/>
+  <circle cx="303.2" cy="116.1" r="13.1" fill="#4CB963" opacity="0.85"/>
+  <circle cx="1125.6" cy="366.8" r="11.7" fill="#FF7350" opacity="0.85"/>
+  <circle cx="929.1" cy="229.3" r="18.1" fill="#3BA9E0" opacity="0.85"/>
+  <circle cx="171" cy="223.8" r="21.8" fill="#4CB963" opacity="0.85"/>
+  <circle cx="542.4" cy="335.2" r="13.6" fill="#FF7350" opacity="0.85"/>
+  <circle cx="652.8" cy="325.2" r="15" fill="#3BA9E0" opacity="0.85"/>
+  <rect x="210.6" y="395.6" width="22.1" height="214.7" rx="11" fill="#3BA9E0" opacity="0.55"/>
+  <circle cx="221.6" cy="395.6" r="108.2" fill="#3BA9E0" opacity="0.9"/>
+  <rect x="624.6" y="443.2" width="22.1" height="167.1" rx="11" fill="#3BA9E0" opacity="0.55"/>
+  <circle cx="635.6" cy="443.2" r="110.4" fill="#4CB963" opacity="0.9"/>
+  <rect x="1133" y="447.2" width="22.1" height="163.1" rx="11" fill="#3BA9E0" opacity="0.55"/>
+  <circle cx="1144" cy="447.2" r="97.1" fill="#FF7350" opacity="0.9"/>
+  <path d="M0 610.3 C 490 570.9, 980 641.8, 1400 594.5 L 1400 788 L 0 788 Z" fill="#66C0E9"/>
+  <rect width="1400" height="788" filter="url(#grain)" opacity="0.05" style="mix-blend-mode:multiply"/>
 </svg>

@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1867" width="1400" height="1867" role="presentation">
   <defs>
     <linearGradient id="sky" x1="0.1" y1="0" x2="0.5" y2="1">
-      <stop offset="0%" stop-color="#FFFBEA"/>
-      <stop offset="100%" stop-color="#FFE096"/>
+      <stop offset="0%" stop-color="#FFF6D6"/>
+      <stop offset="100%" stop-color="#FFE9A6"/>
     </linearGradient>
     <filter id="grain" x="0" y="0" width="100%" height="100%">
       <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
@@ -11,16 +11,17 @@
   </defs>
   <rect width="1400" height="1867" fill="url(#sky)"/>
   
-  <circle cx="542.2" cy="246.7" r="33.9" fill="#87CCE7" opacity="0.5"/>
-  <circle cx="223.6" cy="780" r="33.2" fill="#F5AC33" opacity="0.5"/>
-  <circle cx="151.3" cy="892.9" r="20.2" fill="#87CCE7" opacity="0.5"/>
-  <circle cx="572.3" cy="825.4" r="30.6" fill="#F5AC33" opacity="0.5"/>
-  <circle cx="425.7" cy="740.2" r="21.9" fill="#87CCE7" opacity="0.5"/>
-  <circle cx="369.4" cy="597.6" r="25.8" fill="#F5AC33" opacity="0.5"/>
-  <circle cx="635.1" cy="943.3" r="88.1" fill="#B6E2F2"/>
-  <rect x="370.7" y="1339.8" width="558" height="176.2" rx="56.4" fill="#F5AC33"/>
-  <rect x="423.6" y="1178.2" width="425.9" height="161.5" rx="51.7" fill="#87CCE7"/>
-  <rect x="494.1" y="1031.4" width="279" height="146.9" rx="47" fill="#FFC65E"/>
-  <path d="M0 1516 H 1400 V 1867 H 0 Z" fill="#FFE096"/>
-  <rect width="1400" height="1867" filter="url(#grain)" opacity="0.07" style="mix-blend-mode:multiply"/>
+  <circle cx="542.2" cy="246.7" r="33.9" fill="#EE5233" opacity="0.85"/>
+  <circle cx="223.6" cy="780" r="33.2" fill="#66C0E9" opacity="0.85"/>
+  <circle cx="151.3" cy="892.9" r="20.2" fill="#F2AE12" opacity="0.85"/>
+  <circle cx="572.3" cy="825.4" r="30.6" fill="#EE5233" opacity="0.85"/>
+  <circle cx="425.7" cy="740.2" r="21.9" fill="#66C0E9" opacity="0.85"/>
+  <circle cx="369.4" cy="597.6" r="25.8" fill="#F2AE12" opacity="0.85"/>
+  <circle cx="284.2" cy="990.7" r="26" fill="#EE5233" opacity="0.85"/>
+  <circle cx="635.1" cy="943.3" r="88.1" fill="#FF7350"/>
+  <rect x="370.7" y="1339.8" width="558" height="176.2" rx="56.4" fill="#F2AE12"/>
+  <rect x="423.6" y="1178.2" width="425.9" height="161.5" rx="51.7" fill="#EE5233"/>
+  <rect x="494.1" y="1031.4" width="279" height="146.9" rx="47" fill="#66C0E9"/>
+  <path d="M0 1516 H 1400 V 1867 H 0 Z" fill="#FFD955"/>
+  <rect width="1400" height="1867" filter="url(#grain)" opacity="0.05" style="mix-blend-mode:multiply"/>
 </svg>

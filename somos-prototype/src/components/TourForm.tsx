@@ -53,7 +53,7 @@ const selectStyle: React.CSSProperties = {
 };
 
 const fieldClass =
-  'w-full min-h-[52px] rounded-[0.85rem] border border-ink/15 bg-white px-4 text-[1rem] text-ink placeholder:text-ink-soft transition-colors duration-200 hover:border-ink/25 focus:border-clay-600 focus:outline-none focus:ring-2 focus:ring-clay-600/25';
+  'w-full min-h-[54px] rounded-[1rem] border-2 border-ink/12 bg-white px-4 text-[1rem] text-ink placeholder:text-ink-soft transition-colors duration-200 hover:border-ink/25 focus:border-coral-500 focus:outline-none focus:ring-4 focus:ring-coral-500/20';
 
 function Label({ htmlFor, children, optional }: { htmlFor: string; children: string; optional?: boolean }) {
   return (
@@ -131,9 +131,9 @@ export function TourForm() {
       <div
         ref={successRef}
         tabIndex={-1}
-        className="rounded-card border border-sage-300 bg-sage-50 p-9 sm:p-12"
+        className="rounded-card border-2 border-grass-200 bg-grass-50 p-9 shadow-soft sm:p-12"
       >
-        <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-sage-600 text-cream-50">
+        <span className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-grass-600 text-white">
           <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="m5 12.5 4.5 4.5L19 7.5" />
           </svg>
@@ -155,7 +155,7 @@ export function TourForm() {
               {loc.city} at{' '}
               <a
                 href={`tel:${loc.phone.replace(/\D/g, '')}`}
-                className="font-semibold text-clay-700 underline underline-offset-4"
+                className="font-semibold text-coral-700 underline underline-offset-4"
               >
                 {loc.phone}
               </a>
@@ -169,7 +169,7 @@ export function TourForm() {
             setValues(EMPTY);
             setSubmitted(false);
           }}
-          className="mt-7 min-h-[44px] font-semibold text-clay-700 underline underline-offset-4"
+          className="mt-7 min-h-[44px] font-semibold text-coral-700 underline underline-offset-4"
         >
           Request another tour
         </button>
@@ -181,7 +181,7 @@ export function TourForm() {
     <form
       onSubmit={onSubmit}
       noValidate
-      className="rounded-card border border-ink/10 bg-cream-100 p-6 sm:p-9"
+      className="rounded-card border-2 border-sun-200 bg-white p-6 shadow-soft sm:p-9"
     >
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="sm:col-span-2">
@@ -190,14 +190,14 @@ export function TourForm() {
             id="tf-name"
             name="name"
             autoComplete="name"
-            className={cn(fieldClass, errors.name && 'border-clay-600')}
+            className={cn(fieldClass, errors.name && 'border-coral-600')}
             value={values.name}
             onChange={(e) => set('name', e.target.value)}
             aria-invalid={Boolean(errors.name)}
             aria-describedby={errors.name ? 'tf-name-error' : undefined}
           />
           {errors.name ? (
-            <p id="tf-name-error" className="mt-2 text-[0.87rem] font-medium text-clay-700">
+            <p id="tf-name-error" className="mt-2 text-[0.87rem] font-medium text-coral-700">
               {errors.name}
             </p>
           ) : null}
@@ -211,14 +211,14 @@ export function TourForm() {
             type="email"
             inputMode="email"
             autoComplete="email"
-            className={cn(fieldClass, errors.email && 'border-clay-600')}
+            className={cn(fieldClass, errors.email && 'border-coral-600')}
             value={values.email}
             onChange={(e) => set('email', e.target.value)}
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? 'tf-email-error' : undefined}
           />
           {errors.email ? (
-            <p id="tf-email-error" className="mt-2 text-[0.87rem] font-medium text-clay-700">
+            <p id="tf-email-error" className="mt-2 text-[0.87rem] font-medium text-coral-700">
               {errors.email}
             </p>
           ) : null}
@@ -234,14 +234,14 @@ export function TourForm() {
             type="tel"
             inputMode="tel"
             autoComplete="tel"
-            className={cn(fieldClass, errors.phone && 'border-clay-600')}
+            className={cn(fieldClass, errors.phone && 'border-coral-600')}
             value={values.phone}
             onChange={(e) => set('phone', e.target.value)}
             aria-invalid={Boolean(errors.phone)}
             aria-describedby={errors.phone ? 'tf-phone-error' : undefined}
           />
           {errors.phone ? (
-            <p id="tf-phone-error" className="mt-2 text-[0.87rem] font-medium text-clay-700">
+            <p id="tf-phone-error" className="mt-2 text-[0.87rem] font-medium text-coral-700">
               {errors.phone}
             </p>
           ) : null}
@@ -252,7 +252,7 @@ export function TourForm() {
           <select
             id="tf-location"
             name="location"
-            className={cn(fieldClass, 'appearance-none pr-10', errors.location && 'border-clay-600')}
+            className={cn(fieldClass, 'appearance-none pr-10', errors.location && 'border-coral-600')}
             style={selectStyle}
             value={values.location}
             onChange={(e) => set('location', e.target.value)}
@@ -268,7 +268,7 @@ export function TourForm() {
             <option value="unsure">Not sure yet</option>
           </select>
           {errors.location ? (
-            <p id="tf-location-error" className="mt-2 text-[0.87rem] font-medium text-clay-700">
+            <p id="tf-location-error" className="mt-2 text-[0.87rem] font-medium text-coral-700">
               {errors.location}
             </p>
           ) : null}
@@ -298,7 +298,7 @@ export function TourForm() {
           <select
             id="tf-timeframe"
             name="timeframe"
-            className={cn(fieldClass, 'appearance-none pr-10', errors.timeframe && 'border-clay-600')}
+            className={cn(fieldClass, 'appearance-none pr-10', errors.timeframe && 'border-coral-600')}
             style={selectStyle}
             value={values.timeframe}
             onChange={(e) => set('timeframe', e.target.value)}
@@ -313,7 +313,7 @@ export function TourForm() {
             ))}
           </select>
           {errors.timeframe ? (
-            <p id="tf-timeframe-error" className="mt-2 text-[0.87rem] font-medium text-clay-700">
+            <p id="tf-timeframe-error" className="mt-2 text-[0.87rem] font-medium text-coral-700">
               {errors.timeframe}
             </p>
           ) : null}
@@ -332,10 +332,10 @@ export function TourForm() {
               <label
                 key={opt.value}
                 className={cn(
-                  'inline-flex min-h-[48px] cursor-pointer items-center gap-2.5 rounded-pill border px-5 transition-colors duration-200',
+                  'inline-flex min-h-[50px] cursor-pointer items-center gap-2.5 rounded-pill border-2 px-5 font-semibold transition-colors duration-200',
                   values.contactMethod === opt.value
-                    ? 'border-clay-600 bg-clay-50 text-ink'
-                    : 'border-ink/15 bg-white text-ink-muted hover:border-ink/30'
+                    ? 'border-coral-500 bg-coral-50 text-ink'
+                    : 'border-ink/12 bg-white text-ink-muted hover:border-ink/25'
                 )}
               >
                 <input
@@ -344,7 +344,7 @@ export function TourForm() {
                   value={opt.value}
                   checked={values.contactMethod === opt.value}
                   onChange={(e) => set('contactMethod', e.target.value)}
-                  className="h-4 w-4 accent-clay-600"
+                  className="h-4 w-4 accent-coral-600"
                 />
                 <span className="text-[0.95rem] font-medium">{opt.label}</span>
               </label>

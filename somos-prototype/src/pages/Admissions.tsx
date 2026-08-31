@@ -68,7 +68,7 @@ export default function Admissions() {
                   <li key={item} className="flex items-center gap-3 text-[0.96rem] text-ink-muted">
                     <span
                       aria-hidden="true"
-                      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-sage-100 text-sage-700"
+                      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-grass-100 text-grass-600"
                     >
                       <svg viewBox="0 0 16 16" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                         <path d="m3.5 8.4 3 3 6-6.8" />
@@ -86,7 +86,7 @@ export default function Admissions() {
         </Container>
       </section>
 
-      <Section tone="white" spacing="tight" curve>
+      <Section tone="sun" spacing="tight" curve>
         <Container>
           <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
             <div>
@@ -112,7 +112,7 @@ export default function Admissions() {
                     </address>
                     <a
                       href={`tel:${loc.phone.replace(/\D/g, '')}`}
-                      className="mt-3 inline-flex min-h-[44px] items-center font-semibold text-clay-700 underline-offset-4 hover:underline"
+                      className="mt-3 inline-flex min-h-[44px] items-center font-semibold text-coral-700 underline-offset-4 hover:underline"
                     >
                       {loc.phone}
                     </a>
@@ -122,14 +122,14 @@ export default function Admissions() {
                   <h3 className="font-semibold">Email either school</h3>
                   <a
                     href={`mailto:${site.email}`}
-                    className="mt-2 inline-flex min-h-[44px] items-center font-semibold text-clay-700 underline-offset-4 hover:underline"
+                    className="mt-2 inline-flex min-h-[44px] items-center font-semibold text-coral-700 underline-offset-4 hover:underline"
                   >
                     {site.email}
                   </a>
                 </div>
               </div>
 
-              <div className="mt-8 rounded-card border border-ochre-300/60 bg-ochre-100/50 p-6">
+              <div className="mt-8 rounded-card border border-sun-300/60 bg-sun-100/50 p-6">
                 <h3 className="font-semibold text-ink">Tuition &amp; availability</h3>
                 <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-muted">
                   Tuition varies by age, schedule, program and location. Ask on your tour,

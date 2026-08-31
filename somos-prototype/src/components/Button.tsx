@@ -2,27 +2,26 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/cn';
 
-type Variant = 'primary' | 'secondary' | 'quiet' | 'onDark' | 'onDarkGhost';
+type Variant = 'primary' | 'secondary' | 'sunny' | 'quiet' | 'onDark' | 'onDarkGhost';
 type Size = 'sm' | 'md' | 'lg';
 
 const BASE =
-  'inline-flex items-center justify-center gap-2 rounded-pill font-semibold tracking-[-0.005em] transition-[background-color,color,border-color,transform,box-shadow] duration-200 ease-somos active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60';
+  'inline-flex items-center justify-center gap-2 rounded-pill font-display font-bold tracking-[-0.01em] transition-[background-color,color,border-color,transform,box-shadow] duration-200 ease-bounce hover:-translate-y-0.5 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60';
 
 const VARIANTS: Record<Variant, string> = {
-  primary:
-    'bg-clay-600 text-white shadow-soft hover:bg-clay-700 hover:shadow-lift',
+  primary: 'bg-coral-600 text-white shadow-pop hover:bg-coral-700',
   secondary:
-    'border border-ink/20 bg-transparent text-ink hover:border-ink/45 hover:bg-ink/[0.04]',
-  quiet: 'text-clay-700 underline-offset-4 hover:underline px-0',
-  onDark: 'bg-cream-50 text-ink hover:bg-white shadow-soft',
-  onDarkGhost:
-    'border border-cream-100/40 text-cream-50 hover:border-cream-100/80 hover:bg-cream-50/10',
+    'border-2 border-ink/15 bg-white text-ink shadow-soft hover:border-ink/30 hover:bg-cream-50',
+  sunny: 'bg-sun-400 text-ink shadow-[0_4px_0_0_rgba(143,101,10,0.3)] hover:bg-sun-300',
+  quiet: 'text-coral-700 underline decoration-2 decoration-coral-200 underline-offset-4 hover:decoration-coral-500 px-0',
+  onDark: 'bg-white text-ink shadow-soft hover:bg-cream-50',
+  onDarkGhost: 'border-2 border-white/70 text-white hover:border-white hover:bg-white/15',
 };
 
 const SIZES: Record<Size, string> = {
-  sm: 'min-h-[40px] px-4 text-[0.9rem]',
-  md: 'min-h-[48px] px-6 text-[0.98rem]',
-  lg: 'min-h-[54px] px-7 text-[1.02rem]',
+  sm: 'min-h-[44px] px-5 text-[0.92rem]',
+  md: 'min-h-[52px] px-7 text-[1rem]',
+  lg: 'min-h-[60px] px-8 text-[1.08rem]',
 };
 
 type Common = {

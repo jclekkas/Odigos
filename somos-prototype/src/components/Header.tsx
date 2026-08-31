@@ -6,6 +6,7 @@ import { Button } from '@/components/Button';
 import { Logo } from '@/components/Logo';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { cn } from '@/lib/cn';
+import { PILLAR_ACCENTS } from '@/lib/accents';
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -71,7 +72,7 @@ export function Header() {
                         cn(
                           'relative inline-flex min-h-[40px] items-center rounded-pill px-3.5 text-[0.94rem] font-medium transition-colors duration-200',
                           isActive
-                            ? 'text-clay-700'
+                            ? 'text-coral-700'
                             : 'text-ink-muted hover:text-ink'
                         )
                       }
@@ -82,7 +83,7 @@ export function Header() {
                           <span
                             aria-hidden="true"
                             className={cn(
-                              'absolute inset-x-3.5 -bottom-0.5 h-[2px] rounded-full bg-clay-600 transition-transform duration-300 ease-somos',
+                              'absolute inset-x-3.5 -bottom-0.5 h-[2px] rounded-full bg-coral-600 transition-transform duration-300 ease-somos',
                               isActive ? 'scale-x-100' : 'scale-x-0'
                             )}
                           />
@@ -140,20 +141,31 @@ export function Header() {
         className="fixed inset-0 z-40 overflow-y-auto bg-cream-50 pt-[84px] lg:hidden"
       >
         <div className="container-somos pb-16 pt-6">
-          <ul className="divide-y divide-ink/10 border-y border-ink/10">
-              {primaryNav.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    to={item.href}
-                    className="flex min-h-[60px] items-center justify-between py-4 font-display text-[1.45rem] text-ink"
-                  >
-                    {item.label}
-                    <svg viewBox="0 0 20 20" className="h-4 w-4 text-clay-600" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M4 10h11M11 5.5 15.5 10 11 14.5" />
-                    </svg>
-                  </Link>
-                </li>
-              ))}
+          <ul className="space-y-2.5">
+              {primaryNav.map((item, i) => {
+                const accent = PILLAR_ACCENTS[i % PILLAR_ACCENTS.length];
+                return (
+                  <li key={item.href}>
+                    <Link
+                      to={item.href}
+                      className={cn(
+                        'flex min-h-[64px] items-center justify-between rounded-card px-5 font-display text-[1.35rem] font-bold text-ink',
+                        accent.bg
+                      )}
+                    >
+                      {item.label}
+                      <span
+                        aria-hidden="true"
+                        className={cn('flex h-8 w-8 items-center justify-center rounded-full', accent.chip)}
+                      >
+                        <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M4 10h11M11 5.5 15.5 10 11 14.5" />
+                        </svg>
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
           </ul>
 
           <Button to="/admissions" size="lg" className="mt-8 w-full" withArrow>
@@ -162,7 +174,7 @@ export function Header() {
 
           <div className="mt-10 grid gap-4 sm:grid-cols-2">
             {locations.map((loc) => (
-              <div key={loc.slug} className="rounded-card border border-ink/10 bg-white p-5">
+              <div key={loc.slug} className="rounded-card border-2 border-ink/[0.07] bg-white p-5">
                 <p className="font-display text-lg">{loc.city}</p>
                 <p className="mt-1 text-sm text-ink-muted">
                   {loc.street}
@@ -171,7 +183,7 @@ export function Header() {
                 </p>
                 <a
                   href={`tel:${loc.phone.replace(/\D/g, '')}`}
-                  className="mt-3 inline-flex min-h-[44px] items-center font-semibold text-clay-700 underline-offset-4 hover:underline"
+                  className="mt-3 inline-flex min-h-[44px] items-center font-semibold text-coral-700 underline-offset-4 hover:underline"
                 >
                   {loc.phone}
                 </a>
