@@ -68,3 +68,12 @@ describe("Landing page rendering", () => {
     expect(cta.tagName).toMatch(/^(BUTTON|A)$/i);
   });
 });
+
+
+it("offers full analysis free with no paid-pass links", async () => {
+  renderLanding();
+  expect(await screen.findByText("The full review. Free.")).toBeInTheDocument();
+  expect(screen.queryByTestId("card-pricing-weekend")).not.toBeInTheDocument();
+  expect(screen.queryByTestId("card-pricing-car-buyer")).not.toBeInTheDocument();
+  expect(document.querySelector('a[href*="?pass="]')).toBeNull();
+});

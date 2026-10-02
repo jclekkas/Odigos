@@ -241,3 +241,31 @@ describe("Statutory cap callout", () => {
     expect(screen.queryByTestId("statutory-cap-callout")).not.toBeInTheDocument();
   });
 });
+
+
+describe("Free full analysis", () => {
+  it("shows the complete reply and reasoning without a paid pass", async () => {
+    localStorage.clear();
+    localStorage.setItem("odigos_upload_consent", "accepted");
+    const user = userEvent.setup();
+    setupFetchMock();
+    renderHome();
+    await user.type(await screen.findByTestId("input-dealer-text"), "OTD $35,000 with doc fee $199");
+    await user.click(await screen.findByTestId("button-analyze"));
+    expect(await screen.findByTestId("button-copy-reply")).toBeInTheDocument();
+    expect(screen.getByTestId("text-reasoning")).toHaveTextContent(VALID_ANALYSIS.reasoning);
+    expect(screen.queryByTestId("card-paywall-car-buyer")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("card-paywall-weekend")).not.toBeInTheDocument();
+  });
+
+  it("does not launch checkout from an old paid-pass link", async () => {
+    window.history.replaceState({}, "", "/analyze?pass=car_buyers_pass");
+    localStorage.clear();
+    localStorage.setItem("odigos_upload_consent", "accepted");
+    setupFetchMock();
+    renderHome();
+    await screen.findByTestId("input-dealer-text");
+    expect(vi.mocked(fetch).mock.calls.some(([url]) => String(url).includes("/api/checkout"))).toBe(false);
+    window.history.replaceState({}, "", "/analyze");
+  });
+});

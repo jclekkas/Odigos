@@ -20,7 +20,7 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
   "/": {
     title: "Odigos — Dealer Quote Analyzer | Find What's Wrong With Your Quote",
     description:
-      "Paste your dealer quote. Odigos shows what's overpriced, what's illegal, and what to say back — in 60 seconds. Free instant analysis, then unlimited scans with a 72-hour or 14-day pass.",
+      "Paste your dealer quote. Odigos shows what's overpriced, what's illegal, and what to say back — in 60 seconds. Full analysis is free. No pass or payment required.",
   },
   "/analyze": {
     title: "Check Your Dealer Quote | Odigos",

@@ -1490,7 +1490,8 @@ function EmailPreviewForm({ analysisResult }: { analysisResult: AnalysisResponse
 }
 
 function getStoredTier(): UnlockTier {
-  return getActivePass() ? "active" : "free";
+  // Full analysis is free for everyone, including visitors without a stored pass.
+  return "active";
 }
 
 const ALLOWED_UPLOAD_TYPES = ["image/png", "image/jpeg", "image/webp", "application/pdf"];
@@ -1871,83 +1872,8 @@ export default function Home() {
     }
   }, [result]);
 
-  const handleUnlockPass = async (productKey: PassProductKey) => {
-    setCheckoutLoading(true);
-    setLoadingProduct(productKey);
-    trackCheckoutInitiated(productKey);
-    capture("checkout_initiated", { selected_pass: productKey });
-
-    try {
-      tagFlow("checkout", "/api/checkout");
-      const response = await apiRequest("POST", "/api/checkout", {
-        product: productKey,
-        sessionId: getSessionId(),
-      });
-      const data = await response.json();
-
-      if (data.error === "PAYMENTS_NOT_CONFIGURED") {
-        capture("checkout_failed", { reason: "payments_not_configured" });
-        trackCheckoutFailed("payments_not_configured");
-        toast({
-          title: "Payments Not Configured",
-          description: "Please check STRIPE_SECRET_KEY and price IDs.",
-          variant: "destructive",
-        });
-        setCheckoutLoading(false);
-        setLoadingProduct(null);
-        return;
-      }
-
-      // Try embedded checkout if Stripe JS is available and we got a clientSecret
-      if (data.clientSecret && getStripePromise()) {
-        setCheckoutClientSecret(data.clientSecret);
-        setCheckoutLoading(false);
-        setLoadingProduct(null);
-        return;
-      }
-
-      // Fallback: redirect to Stripe-hosted checkout if url is returned (legacy)
-      if (data.url) {
-        window.location.href = data.url;
-      } else if (data.clientSecret) {
-        // Stripe JS not available but server returned embedded mode response;
-        // inform user to retry or fall back
-        throw new Error("Stripe JS is not loaded. Please refresh and try again.");
-      } else {
-        throw new Error("No checkout session returned");
-      }
-    } catch (error) {
-      const reason = error instanceof Error && error.message ? error.message : "unknown_error";
-      capture("checkout_failed", { reason });
-      trackCheckoutFailed(reason);
-      toast({
-        title: "Checkout Error",
-        description: "Could not start checkout. Please try again.",
-        variant: "destructive",
-      });
-      setCheckoutLoading(false);
-      setLoadingProduct(null);
-    }
-  };
-
-  // Auto-open checkout if landing-page CTA passed `?pass=weekend_warrior`
-  // or `?pass=car_buyers_pass` and the user doesn't already have a pass.
-  const passQueryHandledRef = useRef(false);
-  useEffect(() => {
-    if (passQueryHandledRef.current) return;
-    const params = new URLSearchParams(window.location.search);
-    const passParam = params.get("pass");
-    if (!passParam) return;
-    if (passParam !== "weekend_warrior" && passParam !== "car_buyers_pass") return;
-    if (getActivePass()) return; // already has an active pass — don't re-checkout
-    passQueryHandledRef.current = true;
-    // Strip the param so a refresh doesn't re-trigger
-    const url = new URL(window.location.href);
-    url.searchParams.delete("pass");
-    window.history.replaceState({}, "", url.pathname + (url.search ? url.search : "") + url.hash);
-    handleUnlockPass(passParam);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Old pass links must never start checkout now that analysis is free.
+  const handleUnlockPass = (_productKey: PassProductKey) => { setUnlockTier("active"); };
 
   const formatIssueLabel = useCallback((field: string): string => {
     const ISSUE_LABELS: Record<string, string> = {
@@ -2118,7 +2044,7 @@ export default function Home() {
             <li>GO / NO-GO verdict with confidence level</li>
             <li>Deal score out of 100</li>
             <li>Pricing terms found in the quote</li>
-            <li>Top issues detected (full list in paid review)</li>
+            <li>Every detected issue, full dealer reply, and analysis reasoning</li>
           </ul>
         </div>
 
@@ -2680,22 +2606,9 @@ export default function Home() {
 
         {result && (
           <div ref={resultsRef} className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {activePass && (
-              <div
-                className="flex items-start gap-2 rounded-md border border-green-500/30 bg-green-500/5 px-3 py-2 text-sm"
-                data-testid="banner-active-pass"
-              >
-                <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-500" />
-                <div className="leading-snug">
-                  <p className="font-medium text-foreground">
-                    {PASS_PRODUCTS[activePass.productKey].label} active — {formatRemaining(activePass)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    You can run unlimited analyses during this time.
-                  </p>
-                </div>
-              </div>
-            )}
+            <p className="text-sm text-center text-muted-foreground" data-testid="banner-free-access">
+              Full analysis is free. No pass or payment required.
+            </p>
             <div className="border-t border-border/50 pt-8 space-y-6">
               <h2 className="text-sm font-medium text-muted-foreground text-center uppercase tracking-wider">Your deal analysis</h2>
 
@@ -2893,9 +2806,7 @@ export default function Home() {
             </div>
 
             {/* 8) Email / Paywall */}
-            {unlockTier === "free" && (
-              <EmailPreviewForm analysisResult={result} />
-            )}
+            <EmailPreviewForm analysisResult={result} />
 
             {unlockTier === "free" ? (
               <>

@@ -76,7 +76,7 @@ export default function HowOdigosWorks() {
             <h2 className="text-xl font-semibold text-foreground">You receive a verdict and guidance</h2>
           </div>
           <p className="text-muted-foreground ml-10 mb-4">
-            The free preview gives you:
+            Your free analysis gives you:
           </p>
           <ul className="space-y-2 ml-10 mb-4">
             <li className="flex items-center gap-3">
@@ -93,7 +93,7 @@ export default function HowOdigosWorks() {
             </li>
           </ul>
           <p className="text-muted-foreground ml-10 mb-2">
-            Unlock the full review with a pass &mdash; $29 for 72 hours (Weekend Warrior) or $49 for 14 days (Car Buyer's Pass) of unlimited scans. Both add:
+            Also included for free, with no pass or payment required:
           </p>
           <ul className="space-y-2 ml-10">
             <li className="flex items-center gap-3">

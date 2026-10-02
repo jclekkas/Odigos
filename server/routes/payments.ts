@@ -5,160 +5,17 @@ import { trackEvent } from "../events.js";
 import { writeAuditEvent } from "../audit.js";
 
 export function registerPaymentRoutes(app: Express): void {
-  app.get("/api/stripe-status", async (_req, res) => {
-    try {
-      const configured = await isStripeConfigured();
-      res.json({ configured });
-    } catch {
-      res.json({ configured: false });
-    }
+  app.get("/api/stripe-status", (_req, res) => {
+    res.json({ configured: false, freeAccess: true });
   });
 
-  app.post("/api/checkout", async (req, res) => {
-    try {
-      const { product, sessionId } = req.body;
-
-      // Accepted product keys:
-      //   - "weekend_warrior" → 72-hour pass at $29
-      //   - "car_buyers_pass" → 14-day pass at $49
-      //   - "deal_clarity"    → legacy alias for car_buyers_pass (one deploy cycle)
-      //   - "negotiation_pack" → legacy $79 tier (kept on backend for in-flight checkouts)
-      if (!product || !["weekend_warrior", "car_buyers_pass", "deal_clarity", "negotiation_pack"].includes(product)) {
-        return res.status(400).json({ error: "INVALID_PRODUCT" });
-      }
-
-      const secretKey = process.env.STRIPE_SECRET_KEY;
-      if (!secretKey) {
-        return res.status(400).json({ error: "PAYMENTS_NOT_CONFIGURED" });
-      }
-
-      // Normalise legacy alias before pricing
-      const normalisedProduct = product === "deal_clarity" ? "car_buyers_pass" : product;
-
-      let priceId: string | undefined;
-      let passProduct: "weekend_warrior" | "car_buyers_pass" | null = null;
-      let durationHours: number | null = null;
-
-      if (normalisedProduct === "weekend_warrior") {
-        priceId = process.env.STRIPE_PRICE_ID_29;
-        passProduct = "weekend_warrior";
-        durationHours = 72;
-        if (!priceId) return res.status(400).json({ error: "PAYMENTS_NOT_CONFIGURED" });
-      } else if (normalisedProduct === "car_buyers_pass") {
-        priceId = process.env.STRIPE_PRICE_ID_49;
-        passProduct = "car_buyers_pass";
-        durationHours = 14 * 24;
-        if (!priceId) return res.status(400).json({ error: "PAYMENTS_NOT_CONFIGURED" });
-      } else {
-        // legacy negotiation_pack
-        priceId = process.env.STRIPE_PRICE_ID_79;
-        if (!priceId) return res.status(400).json({ error: "PAYMENTS_NOT_CONFIGURED" });
-      }
-
-      const stripe = await getStripeClient();
-      const baseUrl = process.env.VITE_SITE_URL
-        ? process.env.VITE_SITE_URL.replace(/\/$/, "")
-        : "https://odigosauto.com";
-
-      const metadata: Record<string, string> = {
-        product: normalisedProduct,
-        sessionId: sessionId ?? "",
-      };
-      if (passProduct) metadata.passProduct = passProduct;
-      if (durationHours !== null) metadata.durationHours = String(durationHours);
-
-      const session = await stripe.checkout.sessions.create({
-        mode: "payment",
-        ui_mode: "embedded",
-        line_items: [{ price: priceId, quantity: 1 }],
-        return_url: `${baseUrl}/analyze?session_id={CHECKOUT_SESSION_ID}&product=${normalisedProduct}`,
-        metadata,
-      });
-
-      trackEvent("checkout_started", {
-        stripeSessionId: session.id,
-        sessionId,
-        selected_pass: passProduct ?? undefined,
-      });
-      res.json({ clientSecret: session.client_secret });
-    } catch (error) {
-      console.error("Checkout error:", error);
-      Sentry.withScope((scope) => {
-        scope.setTag("feature", "checkout");
-        scope.setTag("route", "/api/checkout");
-        scope.setTag("error_type", error instanceof Error ? error.constructor.name : "unknown");
-        Sentry.captureException(error);
-      });
-      res.status(500).json({ error: "CHECKOUT_FAILED" });
-    }
-  });
-
-  app.post("/api/create-checkout-session", async (req, res) => {
-    try {
-      const configured = await isStripeConfigured();
-      if (!configured) return res.status(503).json({ error: "Payments not configured" });
-
-      const { analysisId, tier, sessionId } = req.body;
-      if (!analysisId) return res.status(400).json({ error: "Missing analysisId" });
-
-      // Tier "29" → Weekend Warrior Pass, "49" → Car Buyer's Pass, "79" → legacy
-      const selectedTier: "29" | "49" | "79" =
-        tier === "29" ? "29" : tier === "49" ? "49" : "79";
-      const stripe = await getStripeClient();
-      const baseUrl = process.env.VITE_SITE_URL
-        ? process.env.VITE_SITE_URL.replace(/\/$/, "")
-        : "https://odigosauto.com";
-
-      // Price IDs must be pre-configured in Stripe Dashboard — never create at request time
-      // (dynamic creation causes race conditions and duplicate products)
-      const priceId =
-        selectedTier === "29"
-          ? process.env.STRIPE_PRICE_ID_29
-          : selectedTier === "49"
-            ? process.env.STRIPE_PRICE_ID_49
-            : (process.env.STRIPE_PRICE_ID_79 || process.env.STRIPE_PRICE_ID);
-
-      if (!priceId) {
-        console.error(`[checkout] Missing STRIPE_PRICE_ID_${selectedTier} environment variable`);
-        return res.status(503).json({ error: "Payments not configured" });
-      }
-
-      let passProduct: "weekend_warrior" | "car_buyers_pass" | null = null;
-      let durationHours: number | null = null;
-      if (selectedTier === "29") {
-        passProduct = "weekend_warrior";
-        durationHours = 72;
-      } else if (selectedTier === "49") {
-        passProduct = "car_buyers_pass";
-        durationHours = 14 * 24;
-      }
-
-      const metadata: Record<string, string> = {
-        tier: selectedTier,
-        sessionId: sessionId ?? "",
-      };
-      if (passProduct) metadata.passProduct = passProduct;
-      if (durationHours !== null) metadata.durationHours = String(durationHours);
-
-      const session = await stripe.checkout.sessions.create({
-        mode: "payment",
-        ui_mode: "embedded",
-        line_items: [{ price: priceId, quantity: 1 }],
-        return_url: `${baseUrl}/analyze?session_id={CHECKOUT_SESSION_ID}&analysisId=${analysisId}`,
-        metadata,
-      });
-
-      trackEvent("checkout_started", {
-        tier: selectedTier,
-        stripeSessionId: session.id,
-        sessionId,
-        selected_pass: passProduct ?? undefined,
-      });
-      res.json({ clientSecret: session.client_secret });
-    } catch (error) {
-      console.error("Checkout session error:", error);
-      res.status(500).json({ error: "Failed to create checkout session" });
-    }
+  // Reject stale clients and direct checkout requests without creating a charge.
+  // Keep verification and webhooks below for payments already in flight.
+  app.post(["/api/checkout", "/api/create-checkout-session"], (_req, res) => {
+    res.status(410).json({
+      error: "PAYMENTS_DISABLED",
+      message: "Odigos is free. No pass or payment is required.",
+    });
   });
 
   app.get("/api/verify-session", async (req, res) => {

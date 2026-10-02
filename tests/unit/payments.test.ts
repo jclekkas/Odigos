@@ -150,115 +150,20 @@ describe("POST /api/stripe-webhook", () => {
 
 // ─── POST /api/checkout ──────────────────────────────────────────────────────
 
-describe("POST /api/checkout", () => {
-  it("returns 400 for an invalid product", async () => {
-    const res = await request(app)
-      .post("/api/checkout")
-      .send({ product: "invalid_product" });
-
-    expect(res.status).toBe(400);
-    expect(res.body.error).toBe("INVALID_PRODUCT");
+describe("Free access checkout protection", () => {
+  it.each(["/api/checkout", "/api/create-checkout-session"])("rejects new payments at %s even when Stripe is configured", async (url) => {
+    process.env.STRIPE_SECRET_KEY = "sk_test_configured";
+    const res = await request(app).post(url).send({ product: "car_buyers_pass", analysisId: "123", tier: "49" });
+    expect(res.status).toBe(410);
+    expect(res.body.error).toBe("PAYMENTS_DISABLED");
+    expect(mockSessionsCreate).not.toHaveBeenCalled();
   });
 
-  it("accepts the new car_buyers_pass product key", async () => {
-    process.env.STRIPE_SECRET_KEY = "sk_test_xxx";
-    process.env.STRIPE_PRICE_ID_49 = "price_test_49";
-    mockSessionsCreate.mockResolvedValue({
-      id: "cs_test_999",
-      client_secret: "cs_secret_999",
-    });
-
-    const res = await request(app)
-      .post("/api/checkout")
-      .send({ product: "car_buyers_pass", sessionId: "sess-x" });
-
-    expect(res.status).toBe(200);
-    expect(res.body.clientSecret).toBe("cs_secret_999");
-    // Verify metadata included passProduct + durationHours
-    const createArgs = mockSessionsCreate.mock.calls[0][0];
-    expect(createArgs.metadata).toMatchObject({
-      passProduct: "car_buyers_pass",
-      durationHours: "336",
-      product: "car_buyers_pass",
-    });
-  });
-
-  it("accepts the new weekend_warrior product key with $29 price", async () => {
-    process.env.STRIPE_SECRET_KEY = "sk_test_xxx";
-    process.env.STRIPE_PRICE_ID_29 = "price_test_29";
-    mockSessionsCreate.mockResolvedValue({
-      id: "cs_test_888",
-      client_secret: "cs_secret_888",
-    });
-
-    const res = await request(app)
-      .post("/api/checkout")
-      .send({ product: "weekend_warrior", sessionId: "sess-y" });
-
-    expect(res.status).toBe(200);
-    const createArgs = mockSessionsCreate.mock.calls[0][0];
-    expect(createArgs.line_items[0].price).toBe("price_test_29");
-    expect(createArgs.metadata).toMatchObject({
-      passProduct: "weekend_warrior",
-      durationHours: "72",
-    });
-  });
-
-  it("treats legacy deal_clarity as alias for car_buyers_pass", async () => {
-    process.env.STRIPE_SECRET_KEY = "sk_test_xxx";
-    process.env.STRIPE_PRICE_ID_49 = "price_test_49";
-    mockSessionsCreate.mockResolvedValue({
-      id: "cs_test_777",
-      client_secret: "cs_secret_777",
-    });
-
-    const res = await request(app)
-      .post("/api/checkout")
-      .send({ product: "deal_clarity" });
-
-    expect(res.status).toBe(200);
-    const createArgs = mockSessionsCreate.mock.calls[0][0];
-    expect(createArgs.metadata.passProduct).toBe("car_buyers_pass");
-    expect(createArgs.metadata.product).toBe("car_buyers_pass");
-  });
-
-  it("returns 400 when STRIPE_SECRET_KEY is missing", async () => {
-    delete process.env.STRIPE_SECRET_KEY;
-
-    const res = await request(app)
-      .post("/api/checkout")
-      .send({ product: "car_buyers_pass" });
-
-    expect(res.status).toBe(400);
-    expect(res.body.error).toBe("PAYMENTS_NOT_CONFIGURED");
-  });
-
-  it("returns 400 when STRIPE_PRICE_ID_49 is missing for car_buyers_pass", async () => {
-    process.env.STRIPE_SECRET_KEY = "sk_test_xxx";
-    delete process.env.STRIPE_PRICE_ID_49;
-
-    const res = await request(app)
-      .post("/api/checkout")
-      .send({ product: "car_buyers_pass" });
-
-    expect(res.status).toBe(400);
-    expect(res.body.error).toBe("PAYMENTS_NOT_CONFIGURED");
-  });
-
-  it("returns 400 when STRIPE_PRICE_ID_29 is missing for weekend_warrior", async () => {
-    process.env.STRIPE_SECRET_KEY = "sk_test_xxx";
-    delete process.env.STRIPE_PRICE_ID_29;
-
-    const res = await request(app)
-      .post("/api/checkout")
-      .send({ product: "weekend_warrior" });
-
-    expect(res.status).toBe(400);
-    expect(res.body.error).toBe("PAYMENTS_NOT_CONFIGURED");
+  it("advertises free access without enabling checkout", async () => {
+    const res = await request(app).get("/api/stripe-status");
+    expect(res.body).toEqual({ configured: false, freeAccess: true });
   });
 });
-
-// ─── GET /api/verify-session ─────────────────────────────────────────────────
 
 describe("GET /api/verify-session", () => {
   it("returns paid + tier + passProduct for a paid legacy $79 session", async () => {
