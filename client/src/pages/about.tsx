@@ -84,10 +84,10 @@ export default function About() {
             How it works
           </h2>
           <p className="text-muted-foreground mb-2">
-            The free preview gives you a GO / NO-GO verdict, a deal score, and the pricing terms found in the quote.
+            The analysis is free. You get a GO / NO-GO verdict, a deal score, every red flag the rules find, a checklist of missing information, and a copy-paste reply you can send to the dealer.
           </p>
           <p className="text-muted-foreground mb-2">
-            The full review unlocks with a pass &mdash; Weekend Warrior ($29, 72 hours) or Car Buyer's Pass ($49, 14 days) of unlimited scans &mdash; and adds a complete breakdown of red flags, a checklist of missing information, and a copy-paste reply you can send directly to the dealer.
+            No pass, payment, or subscription is required.
           </p>
           <p className="text-muted-foreground">
             Your submission is not shared with any dealership. PII-redacted text is deleted within 90 days.
@@ -109,10 +109,10 @@ export default function About() {
                 The data behind the tool
               </h2>
               <p className="text-sm text-muted-foreground mb-2">
-                Every state-specific claim on this site — doc fee caps, sales tax rates, trade-in credit rules — comes from a verified reference dataset covering all 50 states and Washington D.C. The data is sourced from state DMVs, departments of revenue, legislative records, and consumer protection offices. It's reviewed quarterly and cross-referenced against multiple sources.
+                State doc-fee caps and tax rates used by the analyzer come from a published rule file covering all 50 states and Washington, D.C. Each state is marked verified, partial, or still needing a source. Where a citation is missing, treat the figure as unverified and confirm it with your state before you rely on it.
               </p>
               <p className="text-sm text-muted-foreground">
-                We don't use LLM training data for state-specific fee claims. The analyzer and the content pages pull from the same verified dataset.
+                The analyzer does not invent a state's doc-fee cap from model memory. It reads the published rule file. Long-form state guides are written separately and can lag that file.
               </p>
             </div>
           </div>

@@ -1,1 +1,2 @@
-// SOURCE: copied from server/state_fee_reference.json — keep in sync manually until a build step automates this
+// Narrative state guides live in ./stateFees.ts.
+// Caps, tax rates, and the analyzer's rule file live in /data/state_fees.json.

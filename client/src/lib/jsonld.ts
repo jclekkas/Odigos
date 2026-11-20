@@ -84,7 +84,7 @@ export function howToSchema() {
         "@type": "HowToStep",
         "position": 4,
         "name": "Send a reply to the dealer",
-        "text": "Unlock the full review with a pass (Weekend Warrior or Car Buyer's Pass) to get a copy-paste reply you can send directly to the dealer requesting the missing information or pushing back on fees."
+        "text": "Copy the reply Odigos drafts and send it to the dealer. The full analysis, including the reply, is free. No pass or payment is required."
       }
     ]
   };

@@ -9,7 +9,7 @@ import { itemListSchema } from "@/lib/jsonld";
 import ArticleLayout from "@/components/ArticleLayout";
 import ArticleCta from "@/components/ArticleCta";
 import SourceCitation from "@/components/SourceCitation";
-import stateFeeData from "@/data/state_fee_reference.json";
+import stateFeeData from "@dataset/state_fees.json";
 import { STATE_FEES } from "@/data/stateFees";
 
 interface StateEntry {

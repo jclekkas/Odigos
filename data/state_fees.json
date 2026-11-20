@@ -1,4 +1,8 @@
 {
+  "schema_version": "1.0.0",
+  "last_reviewed": "2026-11-20",
+  "dataset_version": "1.3.0",
+  "description": "U.S. state vehicle purchase fee rules used by the Odigos quote analyzer. Numeric values are unchanged from the previous server/state_fee_reference.json (internal version 1.3.0, lastUpdated 2026-04-05) so analyzer results stay the same. Citations were fetched on 2026-11-20 and are included only where the fetched page states the value. source_status needs_source means no citation was verified for this export.",
   "_metadata": {
     "version": "1.3.0",
     "lastUpdated": "2026-04-05",
@@ -43,7 +47,27 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: CarEdge state guide + AL Revenue dept rate table",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "partial",
+      "citations": [
+        {
+          "url": "https://www.revenue.alabama.gov/sales-use/state-sales-use-tax-rates/",
+          "title": "Alabama Department of Revenue, state sales and use tax rates",
+          "retrieved": "2026-11-20",
+          "supports": "Fetched rate table lists the general state sales and use tax rate as 4%. That matches stateSalesTaxRate 0.04. The page does not state a doc-fee cap or a typical doc-fee range."
+        }
+      ],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "AK": {
       "name": "Alaska",
@@ -69,7 +93,28 @@
       "lastVerified": "2026-03",
       "confidence": "low",
       "verificationMethod": "Alaska AG press release (Dec 2025 Lithia Motors) + no direct fee regulation research. Unusual market.",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "partial",
+      "citations": [
+        {
+          "url": "https://law.alaska.gov/press/releases/2025/122925-LithiaMotors.html",
+          "title": "Alaska Department of Law press release (December 29, 2025)",
+          "retrieved": "2026-11-20",
+          "supports": "Fetched release says the Lithia settlement requires a civil penalty of $300,000 and that Alaska law requires a dealer to include dealer fees such as document fees in the advertised price. It does not state a doc-fee dollar cap, a typical range, or a sales-tax rate."
+        }
+      ],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "AZ": {
       "name": "Arizona",
@@ -95,7 +140,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: CarEdge + AZ DOR Transaction Privilege Tax table",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "AR": {
       "name": "Arkansas",
@@ -121,7 +180,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: CarEdge + AR DFA tax rate page. Cap amount needs statute verification.",
-      "statuteCitation": "A.C.A. § 23-112-402"
+      "statuteCitation": "A.C.A. \u00a7 23-112-402",
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "CA": {
       "name": "California",
@@ -148,7 +221,21 @@
       "lastVerified": "2026-03",
       "confidence": "high",
       "verificationMethod": "Primary: CA DMV fee schedule + SB 791 veto coverage (Oct 2025)",
-      "statuteCitation": "CA Vehicle Code § 11713.1(i)"
+      "statuteCitation": "CA Vehicle Code \u00a7 11713.1(i)",
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "CO": {
       "name": "Colorado",
@@ -174,7 +261,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: CarEdge + CO tax.colorado.gov. No cap claim needs verification.",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "CT": {
       "name": "Connecticut",
@@ -199,7 +300,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: CT DMV calculator. No-cap status verified via pending bill research (HB 06544 not enacted).",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "DE": {
       "name": "Delaware",
@@ -226,7 +341,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: Delaware DMV news release (Oct 2025 fee increase). HB 295 cap pending.",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "FL": {
       "name": "Florida",
@@ -252,7 +381,27 @@
       "lastVerified": "2026-03",
       "confidence": "high",
       "verificationMethod": "Primary: Florida Revenue statutes + etags.com dealer analysis",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "partial",
+      "citations": [
+        {
+          "url": "https://floridarevenue.com/taxes/taxesfees/Pages/sales_tax.aspx",
+          "title": "Florida Department of Revenue, sales tax",
+          "retrieved": "2026-11-20",
+          "supports": "Fetched page says the general state sales tax rate is 6%. That matches stateSalesTaxRate 0.06. The page does not say whether dealer documentation fees are capped."
+        }
+      ],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "GA": {
       "name": "Georgia",
@@ -279,7 +428,27 @@
       "lastVerified": "2026-03",
       "confidence": "high",
       "verificationMethod": "Primary: Georgia DOR TAVT FAQ + AG consumer guidance",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "verified",
+      "citations": [
+        {
+          "url": "https://consumered.georgia.gov/ask-ed/2019-10-30/what-maximum-amount-car-dealer-can-charge-doc-fees",
+          "title": "Georgia Attorney General, Consumer Ed",
+          "retrieved": "2026-11-20",
+          "supports": "Fetched page says Georgia does not regulate how much a car dealer can charge in dealer fees, also called document or processing fees. That matches docFeeCap false. The page does not state a typical dollar range or a sales-tax rate."
+        }
+      ],
+      "unverified_fields": [
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "HI": {
       "name": "Hawaii",
@@ -306,7 +475,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: CarEdge + Hawaii GET rate page. Trade-in credit status needs verification.",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "ID": {
       "name": "Idaho",
@@ -333,7 +516,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: CarEdge + Idaho tax guide. Trade-in credit status corrected to true per IDAPA.",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "IL": {
       "name": "Illinois",
@@ -370,7 +567,21 @@
       "lastVerified": "2026-03",
       "confidence": "high",
       "verificationMethod": "Primary: Illinois Automobile Dealers Assoc. + ILSOS fee schedule",
-      "statuteCitation": "815 ILCS 306/1"
+      "statuteCitation": "815 ILCS 306/1",
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "IN": {
       "name": "Indiana",
@@ -406,7 +617,27 @@
       "lastVerified": "2026-03",
       "confidence": "high",
       "verificationMethod": "Primary: Indiana SOS Auto Dealer Services Division guidance PDF",
-      "statuteCitation": "IC 9-23-3-7"
+      "statuteCitation": "IC 9-23-3-7",
+      "source_status": "partial",
+      "citations": [
+        {
+          "url": "https://www.in.gov/sos/dealer/files/Doc-Fees-in-2025.pdf",
+          "title": "Indiana Secretary of State, Auto Dealer Services Division memo (July 1, 2025)",
+          "retrieved": "2026-11-20",
+          "supports": "Fetched memo says the division will not take enforcement action on documentation preparation fees at or below $251.05 as of July 1, 2025, and it cites IC 9-32-13-7(b). The dataset stores 251 and cites IC 9-23-3-7, so the dollar amount and the statute string are not an exact match."
+        }
+      ],
+      "unverified_fields": [
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "IA": {
       "name": "Iowa",
@@ -432,8 +663,27 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: Iowa Code §322.19A. Cap amount $180 from statute text.",
-      "statuteCitation": "Iowa Code § 322.19A"
+      "verificationMethod": "Secondary: Iowa Code \u00a7322.19A. Cap amount $180 from statute text.",
+      "statuteCitation": "Iowa Code \u00a7 322.19A",
+      "source_status": "verified",
+      "citations": [
+        {
+          "url": "https://www.legis.iowa.gov/docs/code/322.19A.pdf",
+          "title": "Iowa Code \u00a7 322.19A (2026 PDF)",
+          "retrieved": "2026-11-20",
+          "supports": "The Iowa Legislature PDF says a motor vehicle dealer may charge a documentary fee not to exceed one hundred eighty dollars. That matches docFeeCap true and docFeeCapAmount 180."
+        }
+      ],
+      "unverified_fields": [
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "KS": {
       "name": "Kansas",
@@ -460,7 +710,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: CarEdge + KS Revenue pub1526. No-cap claim needs verification.",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "KY": {
       "name": "Kentucky",
@@ -487,7 +751,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: CarEdge + KY Revenue Motor Vehicle Usage Tax page",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "LA": {
       "name": "Louisiana",
@@ -522,7 +800,21 @@
       "lastVerified": "2026-03",
       "confidence": "high",
       "verificationMethod": "Primary: HB 476 enrolled text + LA RS 6:969.18",
-      "statuteCitation": "RS 6:969.18"
+      "statuteCitation": "RS 6:969.18",
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "ME": {
       "name": "Maine",
@@ -548,8 +840,22 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: Maine statute §953-A + Revenue tax rate page",
-      "statuteCitation": null
+      "verificationMethod": "Secondary: Maine statute \u00a7953-A + Revenue tax rate page",
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "MD": {
       "name": "Maryland",
@@ -574,7 +880,26 @@
       "lastVerified": "2026-03",
       "confidence": "high",
       "verificationMethod": "Primary: SB 362 enrolled text + MVA Bulletin",
-      "statuteCitation": "Md. Code, Transp. § 15-311.1"
+      "statuteCitation": "Md. Code, Transp. \u00a7 15-311.1",
+      "source_status": "verified",
+      "citations": [
+        {
+          "url": "https://mgaleg.maryland.gov/mgawebsite/Laws/StatuteText?article=gtr&section=15-311.1&enactments=false",
+          "title": "Md. Code, Transportation \u00a7 15-311.1",
+          "retrieved": "2026-11-20",
+          "supports": "Fetched statute text sets the dealer processing-charge ceiling at $800 on and after July 1, 2024. That matches docFeeCap true and docFeeCapAmount 800."
+        }
+      ],
+      "unverified_fields": [
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "MA": {
       "name": "Massachusetts",
@@ -600,7 +925,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: Mass Directive 14-1 (title prep only). General doc fee no-cap claim needs verification.",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "MI": {
       "name": "Michigan",
@@ -636,7 +975,21 @@
       "lastVerified": "2026-03",
       "confidence": "high",
       "verificationMethod": "Primary: Michigan DIFS Bulletin 2025-03-CF",
-      "statuteCitation": "DIFS Bulletin 2025-03-CF"
+      "statuteCitation": "DIFS Bulletin 2025-03-CF",
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "MN": {
       "name": "Minnesota",
@@ -654,14 +1007,33 @@
       "tradeInTaxCredit": true,
       "titleFee": 34,
       "registrationFee": "1.575% of MSRP + $11.25 universal fees",
-      "specialNotes": "MAJOR CHANGE: Cap increased from ~$125 to $350 effective July 1, 2025. Or 10% of sale value for vehicles ≤$3,499, whichever is less.",
+      "specialNotes": "MAJOR CHANGE: Cap increased from ~$125 to $350 effective July 1, 2025. Or 10% of sale value for vehicles \u2264$3,499, whichever is less.",
       "sources": [
         "https://mada.org/doc-fee-increase/"
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
       "verificationMethod": "Primary: MADA official announcement + statute",
-      "statuteCitation": "Minn. Stat. § 168.27 Subd. 11a"
+      "statuteCitation": "Minn. Stat. \u00a7 168.27 Subd. 11a",
+      "source_status": "verified",
+      "citations": [
+        {
+          "url": "https://www.revisor.mn.gov/statutes/cite/168.27",
+          "title": "Minn. Stat. \u00a7 168.27, subd. 31",
+          "retrieved": "2026-11-20",
+          "supports": "Fetched statute text says that for sales or leases made on or after July 1, 2025, the maximum documentary fee is the lesser of $350 or ten percent of the value of the sale or lease. The dataset stores the $350 dollar ceiling. The stored statuteCitation names subdivision 11a; the $350 figure on this page is in subdivision 31."
+        }
+      ],
+      "unverified_fields": [
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "MS": {
       "name": "Mississippi",
@@ -685,8 +1057,22 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: MMVC Regulation 8. District-based cap system is unusual — needs human review.",
-      "statuteCitation": null
+      "verificationMethod": "Secondary: MMVC Regulation 8. District-based cap system is unusual \u2014 needs human review.",
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "MO": {
       "name": "Missouri",
@@ -720,8 +1106,28 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: RSMo §301.558 + 12 CSR 10-26.231",
-      "statuteCitation": "Mo. Rev. Stat. § 301.560"
+      "verificationMethod": "Primary: RSMo \u00a7301.558 + 12 CSR 10-26.231",
+      "statuteCitation": "Mo. Rev. Stat. \u00a7 301.560",
+      "source_status": "partial",
+      "citations": [
+        {
+          "url": "https://revisor.mo.gov/main/OneSection.aspx?section=301.558",
+          "title": "RSMo \u00a7 301.558",
+          "retrieved": "2026-11-20",
+          "supports": "Fetched section says a dealer may impose an administrative fee of five hundred dollars or less and that the maximum shall be increased annually by the Consumer Price Index. The dataset cites section 301.560 and stores a current cap of 500. This page does not confirm that the CPI-adjusted cap is still exactly $500."
+        }
+      ],
+      "unverified_fields": [
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "MT": {
       "name": "Montana",
@@ -737,7 +1143,7 @@
       "maxCombinedTaxRate": 0,
       "vehicleTaxNotes": "NO sales tax on vehicles.",
       "tradeInTaxCredit": false,
-      "tradeInTaxCreditNotes": "N/A — no sales tax",
+      "tradeInTaxCreditNotes": "N/A \u2014 no sales tax",
       "titleFee": 12,
       "registrationFee": "$217 (0-4 years) or $130 (5-10 years) + county option ~$10",
       "specialNotes": "One of five states with no sales tax on vehicles (along with AK, DE, NH, OR).",
@@ -748,7 +1154,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: CarEdge. No sales tax is well-established.",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "NE": {
       "name": "Nebraska",
@@ -774,7 +1194,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: NE DMV registration fees page + CarEdge",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "NV": {
       "name": "Nevada",
@@ -800,7 +1234,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: CarEdge + NV DMV fee schedule. No-cap claim needs verification.",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "NH": {
       "name": "New Hampshire",
@@ -817,7 +1265,7 @@
       "maxCombinedTaxRate": 0,
       "vehicleTaxNotes": "NO sales tax.",
       "tradeInTaxCredit": false,
-      "tradeInTaxCreditNotes": "N/A — no sales tax",
+      "tradeInTaxCreditNotes": "N/A \u2014 no sales tax",
       "titleFee": 37,
       "registrationFee": "$18-$15 per $1,000 of vehicle value",
       "specialNotes": "Two-part fee structure: (1) $27 state doc fee (capped by statute), (2) Dealer admin fee (uncapped, must be itemized). Total fees average $459. Title fee increased to $37 effective Jan 1, 2026.",
@@ -828,7 +1276,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: NH Banking Dept FAQ for $27 cap. Uncapped admin fee avg from CarEdge.",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "NJ": {
       "name": "New Jersey",
@@ -853,7 +1315,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: NJ MVC fee schedule. No-cap claim needs verification.",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "NM": {
       "name": "New Mexico",
@@ -871,14 +1347,28 @@
       "tradeInTaxCredit": true,
       "titleFee": 20,
       "registrationFee": "$27-$62/year by weight/age",
-      "specialNotes": "New Mexico uses both a Motor Vehicle Excise Tax and a Gross Receipts Tax — verify which applies to your transaction.",
+      "specialNotes": "New Mexico uses both a Motor Vehicle Excise Tax and a Gross Receipts Tax \u2014 verify which applies to your transaction.",
       "sources": [
         "https://www.mvd.newmexico.gov/vehicles/vehicle-registration/"
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: NM MVD + dual tax structure (excise + GRT) is complex.",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "NY": {
       "name": "New York",
@@ -902,8 +1392,22 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: 15 NYCRR §78.19 + NYIADA confirmation",
-      "statuteCitation": "NY DMV Reg. 78.17"
+      "verificationMethod": "Primary: 15 NYCRR \u00a778.19 + NYIADA confirmation",
+      "statuteCitation": "NY DMV Reg. 78.17",
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "NC": {
       "name": "North Carolina",
@@ -929,7 +1433,21 @@
       "lastVerified": "2026-03",
       "confidence": "high",
       "verificationMethod": "Primary: NCDOT Highway Use Tax page",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "ND": {
       "name": "North Dakota",
@@ -955,7 +1473,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: ND DOT + CarEdge. Low-population state, limited data.",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "OH": {
       "name": "Ohio",
@@ -980,8 +1512,22 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: Ohio Revised Code §4517.261, bmv.ohio.gov",
-      "statuteCitation": "ORC § 4517.261"
+      "verificationMethod": "Primary: Ohio Revised Code \u00a74517.261, bmv.ohio.gov",
+      "statuteCitation": "ORC \u00a7 4517.261",
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "OK": {
       "name": "Oklahoma",
@@ -1007,7 +1553,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: Oklahoma.gov fee schedule + CarEdge",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "OR": {
       "name": "Oregon",
@@ -1023,7 +1583,7 @@
       "maxCombinedTaxRate": 0.005,
       "vehicleTaxNotes": "NO sales tax. 0.5% Vehicle Privilege Tax on new vehicles only. HB 3991 proposes increase to 2.25% (pending referendum).",
       "tradeInTaxCredit": false,
-      "tradeInTaxCreditNotes": "N/A — no sales tax. Privilege tax applies to gross sale price.",
+      "tradeInTaxCreditNotes": "N/A \u2014 no sales tax. Privilege tax applies to gross sale price.",
       "titleFee": 77,
       "registrationFee": "$43 (2-year); +$60 increase for EV/40+ MPG vehicles effective Jan 1, 2026",
       "specialNotes": "$250 with integrator / $200 without integrator. Title fee is sliding scale $77-$192 based on MPG.",
@@ -1032,8 +1592,27 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Primary: ORS §822.043 confirmed $250/$200 cap. Rate: $250 with integrator.",
-      "statuteCitation": "ORS § 822.043"
+      "verificationMethod": "Primary: ORS \u00a7822.043 confirmed $250/$200 cap. Rate: $250 with integrator.",
+      "statuteCitation": "ORS \u00a7 822.043",
+      "source_status": "partial",
+      "citations": [
+        {
+          "url": "https://oregon.public.law/statutes/ors_822.043",
+          "title": "ORS 822.043",
+          "retrieved": "2026-11-20",
+          "supports": "Fetched statute text says the document processing fee shall not exceed $250 if the dealer uses an integrator, or $200 if the dealer does not. The dataset stores one cap, $250, which is only the integrator ceiling."
+        }
+      ],
+      "unverified_fields": [
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "PA": {
       "name": "Pennsylvania",
@@ -1068,7 +1647,21 @@
       "lastVerified": "2026-03",
       "confidence": "high",
       "verificationMethod": "Primary: Pennsylvania Bulletin Vol.55 Issue 1 (Jan 13, 2026)",
-      "statuteCitation": "37 Pa. Code § 301.4"
+      "statuteCitation": "37 Pa. Code \u00a7 301.4",
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "RI": {
       "name": "Rhode Island",
@@ -1094,7 +1687,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: 280-RICR-30-20-1.6 confirmed via LII/Cornell. $400 cap for vehicles $10K+.",
-      "statuteCitation": "R.I. Gen. Laws § 31-5.2-3"
+      "statuteCitation": "R.I. Gen. Laws \u00a7 31-5.2-3",
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "SC": {
       "name": "South Carolina",
@@ -1120,7 +1727,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: SC Consumer Affairs + DOR local tax tables",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "SD": {
       "name": "South Dakota",
@@ -1145,7 +1766,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: SD DOR fee schedule + CarEdge",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "TN": {
       "name": "Tennessee",
@@ -1170,7 +1805,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: TN Revenue title/registration page. High combined rates confirmed.",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "TX": {
       "name": "Texas",
@@ -1194,8 +1843,22 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: Texas Administrative Code §84.205, OCCC rule adoption document",
-      "statuteCitation": "Tex. Occ. Code § 2301.258"
+      "verificationMethod": "Primary: Texas Administrative Code \u00a784.205, OCCC rule adoption document",
+      "statuteCitation": "Tex. Occ. Code \u00a7 2301.258",
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "UT": {
       "name": "Utah",
@@ -1221,7 +1884,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: Utah DMV registration fees + state tax commission rates",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "VT": {
       "name": "Vermont",
@@ -1247,7 +1924,27 @@
       "lastVerified": "2026-03",
       "confidence": "high",
       "verificationMethod": "Primary: Vermont DMV fee schedule + registration page",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "partial",
+      "citations": [
+        {
+          "url": "https://dmv.vermont.gov/faq/are-dealer-documentation-fees-taxable",
+          "title": "Vermont DMV, are dealer documentation fees taxable?",
+          "retrieved": "2026-11-20",
+          "supports": "Fetched FAQ says a documentation fee is included in the vehicle purchase price and is subject to purchase and use tax, and it states that the Vermont tax is 6% in its example of tax collected by another state. That matches stateSalesTaxRate 0.06. The page does not state a doc-fee cap or a typical range."
+        }
+      ],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "VA": {
       "name": "Virginia",
@@ -1274,7 +1971,21 @@
       "lastVerified": "2026-03",
       "confidence": "high",
       "verificationMethod": "Primary: Virginia DMV fee calculator + tax.virginia.gov",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "WA": {
       "name": "Washington",
@@ -1301,7 +2012,26 @@
       "lastVerified": "2026-03",
       "confidence": "high",
       "verificationMethod": "Primary: Washington DOR industry guide (dor.wa.gov)",
-      "statuteCitation": "RCW 46.70.180"
+      "statuteCitation": "RCW 46.70.180",
+      "source_status": "verified",
+      "citations": [
+        {
+          "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=46.70.180",
+          "title": "RCW 46.70.180",
+          "retrieved": "2026-11-20",
+          "supports": "Fetched text says a dealer must disclose that a documentary service fee in an amount up to $200 may be added. That matches docFeeCap true and docFeeCapAmount 200."
+        }
+      ],
+      "unverified_fields": [
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "WV": {
       "name": "West Virginia",
@@ -1337,7 +2067,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: WVADA News confirmed $575 cap (July 2024). Statute 17A-6A-8A. Needs primary verification.",
-      "statuteCitation": "WV Code § 17A-6A-8A"
+      "statuteCitation": "WV Code \u00a7 17A-6A-8A",
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "WI": {
       "name": "Wisconsin",
@@ -1363,7 +2107,27 @@
       "lastVerified": "2026-03",
       "confidence": "high",
       "verificationMethod": "Primary: Wisconsin DOT fee schedule + DOR rate tables",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "partial",
+      "citations": [
+        {
+          "url": "https://www.revenue.wi.gov/Pages/FAQS/pcs-taxrates.aspx",
+          "title": "Wisconsin Department of Revenue, sales tax rate",
+          "retrieved": "2026-11-20",
+          "supports": "Fetched guidance says the Wisconsin sales tax is a 5% tax. That matches stateSalesTaxRate 0.05. The page does not address dealer documentation fees. The fetched copy says it reflects laws enacted as of January 16, 2026."
+        }
+      ],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "WY": {
       "name": "Wyoming",
@@ -1388,7 +2152,21 @@
       "lastVerified": "2026-03",
       "confidence": "medium",
       "verificationMethod": "Secondary: Wyoming license plate org + Avalara rates",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     },
     "DC": {
       "name": "District of Columbia",
@@ -1414,206 +2192,21 @@
       "lastVerified": "2026-03",
       "confidence": "high",
       "verificationMethod": "Primary: DC DMV fee estimator + DC tax handbook",
-      "statuteCitation": null
+      "statuteCitation": null,
+      "source_status": "needs_source",
+      "citations": [],
+      "unverified_fields": [
+        "docFeeCap",
+        "docFeeCapAmount",
+        "docFeeTypicalRange",
+        "docFeeAverage",
+        "stateSalesTaxRate",
+        "maxCombinedTaxRate",
+        "tradeInTaxCredit",
+        "titleFee",
+        "registrationFee"
+      ],
+      "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only."
     }
-  },
-  "_summary": {
-    "statesWithDocFeeCap": [
-      {
-        "state": "AR",
-        "cap": 129,
-        "notes": "Called 'service and handling'"
-      },
-      {
-        "state": "CA",
-        "cap": 85,
-        "notes": "$85 DMV partners / $70 others"
-      },
-      {
-        "state": "IA",
-        "cap": 180
-      },
-      {
-        "state": "IL",
-        "cap": 378,
-        "notes": "CPI-adjusted annually from $300 base (2020). 2026 amount: $377.63"
-      },
-      {
-        "state": "IN",
-        "cap": 251,
-        "notes": "CPI-adjusted; effective July 1, 2025"
-      },
-      {
-        "state": "LA",
-        "cap": 425,
-        "notes": "CPI-adjusted annually starting Jan 1, 2026"
-      },
-      {
-        "state": "MD",
-        "cap": 800,
-        "notes": "Increased from ~$500 via SB 362 effective July 1, 2024"
-      },
-      {
-        "state": "MI",
-        "cap": 280,
-        "notes": "$280 OR 5% of vehicle price, whichever is less"
-      },
-      {
-        "state": "MN",
-        "cap": 350,
-        "notes": "Increased from ~$125 effective July 1, 2025"
-      },
-      {
-        "state": "MO",
-        "cap": 500,
-        "notes": "CPI-adjusted; effective Aug 17, 2025"
-      },
-      {
-        "state": "NY",
-        "cap": 175,
-        "notes": "Set Aug 18, 2021"
-      },
-      {
-        "state": "OH",
-        "cap": 387,
-        "notes": "$387 OR 10% of cash price, whichever is lower"
-      },
-      {
-        "state": "OR",
-        "cap": 250,
-        "notes": "$250 with integrator / $200 without"
-      },
-      {
-        "state": "PA",
-        "cap": 490,
-        "notes": "$490 electronic / $409 non-electronic; CPI-adjusted"
-      },
-      {
-        "state": "RI",
-        "cap": 400,
-        "notes": "Applies to vehicles $10K+. Prohibited on vehicles under $10K."
-      },
-      {
-        "state": "TX",
-        "cap": 225,
-        "notes": "Raised from ~$150 effective July 11, 2024"
-      },
-      {
-        "state": "WA",
-        "cap": 200,
-        "notes": "Effective July 1, 2022"
-      },
-      {
-        "state": "WV",
-        "cap": 575,
-        "notes": "Set by Dealer Advisory Board July 1, 2024. CPI-adjusted starting July 1, 2025."
-      }
-    ],
-    "statesWithNoSalesTax": [
-      "AK",
-      "DE",
-      "MT",
-      "NH",
-      "OR"
-    ],
-    "statesWithNoTradeInCredit": [
-      "CA",
-      "HI",
-      "VA"
-    ],
-    "highestCombinedTaxRates": [
-      {
-        "state": "LA",
-        "rate": 0.135
-      },
-      {
-        "state": "AZ",
-        "rate": 0.112
-      },
-      {
-        "state": "AL",
-        "rate": 0.11
-      },
-      {
-        "state": "AR",
-        "rate": 0.115
-      },
-      {
-        "state": "WA",
-        "rate": 0.106
-      },
-      {
-        "state": "TN",
-        "rate": 0.0975
-      },
-      {
-        "state": "KS",
-        "rate": 0.106
-      },
-      {
-        "state": "IL",
-        "rate": 0.1025
-      },
-      {
-        "state": "MO",
-        "rate": 0.101
-      }
-    ],
-    "confidenceCounts": {
-      "high": 20,
-      "medium": 30,
-      "low": 1
-    },
-    "needsHumanVerification": [
-      "AR",
-      "IA",
-      "OR",
-      "RI",
-      "WV"
-    ],
-    "cpiIndexedStates": [
-      {
-        "state": "IL",
-        "currentAmount": 378,
-        "frequency": "annual",
-        "nextExpectedDate": "2027-01-01"
-      },
-      {
-        "state": "IN",
-        "currentAmount": 251,
-        "frequency": "annual",
-        "nextExpectedDate": "2026-07-01"
-      },
-      {
-        "state": "LA",
-        "currentAmount": 425,
-        "frequency": "annual",
-        "nextExpectedDate": "2027-01-01"
-      },
-      {
-        "state": "MI",
-        "currentAmount": 280,
-        "frequency": "biennial",
-        "nextExpectedDate": "2027-01-01"
-      },
-      {
-        "state": "MO",
-        "currentAmount": 500,
-        "frequency": "annual",
-        "nextExpectedDate": "2026-08-17"
-      },
-      {
-        "state": "PA",
-        "currentAmount": 490,
-        "frequency": "annual",
-        "nextExpectedDate": "2027-01-01"
-      },
-      {
-        "state": "WV",
-        "currentAmount": 575,
-        "frequency": "annual",
-        "nextExpectedDate": "2025-07-01"
-      }
-    ]
   }
 }

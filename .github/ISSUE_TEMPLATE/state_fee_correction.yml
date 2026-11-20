@@ -1,0 +1,45 @@
+name: State dataset correction
+description: A doc-fee cap, tax rate, or title fee in data/state_fees.json looks wrong.
+title: "State fees: "
+labels: []
+body:
+  - type: input
+    id: state
+    attributes:
+      label: State
+      placeholder: OH
+    validations:
+      required: true
+  - type: input
+    id: field
+    attributes:
+      label: Field
+      description: For example docFeeCapAmount or stateSalesTaxRate.
+    validations:
+      required: true
+  - type: input
+    id: current
+    attributes:
+      label: Value in the dataset now
+    validations:
+      required: true
+  - type: input
+    id: proposed
+    attributes:
+      label: Value the source supports
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source URL
+      description: Statute, adopted regulation, DMV, revenue department, or state attorney general. A blog or dealer page is not enough for a cap or a tax rate.
+    validations:
+      required: true
+  - type: textarea
+    id: quote
+    attributes:
+      label: Sentence from that page that states the value
+      description: Include the date you opened the page.
+    validations:
+      required: true
