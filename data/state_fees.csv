@@ -1,51 +1,51 @@
 code,name,doc_fee_cap,doc_fee_cap_amount,doc_fee_typical_low,doc_fee_typical_high,doc_fee_average,state_sales_tax_rate,max_combined_tax_rate,trade_in_tax_credit,title_fee,registration_fee,statute_citation,source_status,citation_urls
-AL,Alabama,false,,400,700,489,0.04,0.11,true,15,~$23 state + county fees,,partial,https://www.revenue.alabama.gov/sales-use/state-sales-use-tax-rates/
+AL,Alabama,false,,400,700,489,0.02,0.11,true,15,~$23 state + county fees,,partial,https://www.revenue.alabama.gov/sales-use/state-sales-use-tax-rates/
 AK,Alaska,false,,0,500,,0,0.095,false,15,~$100 for 2-year period,,partial,https://law.alaska.gov/press/releases/2025/122925-LithiaMotors.html
 AZ,Arizona,false,,400,600,495,0.056,0.112,true,4,$8 base + Vehicle License Tax based on value,,needs_source,
 AR,Arkansas,true,129,129,129,129,0.065,0.115,true,10,$17-$30 based on weight,A.C.A. § 23-112-402,needs_source,
-CA,California,true,85,70,85,85,0.0725,0.1075,false,15,$62 base + value-based fees,CA Vehicle Code § 11713.1(i),needs_source,
+CA,California,true,85,70,85,85,0.0725,0.1075,false,15,$62 base + value-based fees,Cal. Veh. Code § 4456.5,verified,https://california.public.law/codes/vehicle_code_section_4456.5 https://cdtfa.ca.gov/taxes-and-fees/sales-use-tax-rates.htm
 CO,Colorado,false,,400,700,595,0.029,0.08,true,7,"Varies by weight, age, and value",,needs_source,
-CT,Connecticut,false,,300,600,450,0.0635,0.0775,true,25,$120 for 3-year + various surcharges (~$71 additional),,needs_source,
+CT,Connecticut,false,,300,600,450,0.0635,0.0775,true,25,$120 for 3-year + various surcharges (~$71 additional),,partial,https://portal.ct.gov/drs/sales-tax/tax-information
 DE,Delaware,false,,300,600,,0,0.0525,true,35,$40/year,,needs_source,
 FL,Florida,false,,500,1000,670,0.06,0.075,true,76,$225 initial; $46-$120 annual renewal,,partial,https://floridarevenue.com/taxes/taxesfees/Pages/sales_tax.aspx
-GA,Georgia,false,,400,700,502,0.04,0.09,true,18,Included in TAVT,,verified,https://consumered.georgia.gov/ask-ed/2019-10-30/what-maximum-amount-car-dealer-can-charge-doc-fees
+GA,Georgia,false,,400,700,502,0.07,0.09,true,18,Included in TAVT,,verified,https://consumered.georgia.gov/ask-ed/2019-10-30/what-maximum-amount-car-dealer-can-charge-doc-fees https://dor.georgia.gov/motor-vehicles/vehicle-registration-license-plates/vehicle-taxes-title-ad-valorem-tax-tavt-and
 HI,Hawaii,false,,150,350,250,0.04,0.045,false,10,$46 state + county weight tax ($100-$300 typical),,needs_source,
 ID,Idaho,false,,200,400,265,0.06,0.09,true,14,Varies by weight and value,,needs_source,
 IL,Illinois,true,378,378,378,378,0.0625,0.1025,true,165,$151/year; +$100 annual EV fee,815 ILCS 306/1,needs_source,
-IN,Indiana,true,251,251,251,251,0.07,0.07,true,15,$21.35 + $15 infrastructure fee,IC 9-23-3-7,partial,https://www.in.gov/sos/dealer/files/Doc-Fees-in-2025.pdf
-IA,Iowa,true,180,180,180,180,0.05,0.06,true,35,Variable by weight and list price,Iowa Code § 322.19A,verified,https://www.legis.iowa.gov/docs/code/322.19A.pdf
+IN,Indiana,true,251.05,251,251,251,0.07,0.07,true,15,$21.35 + $15 infrastructure fee,"IC 9-32-13-7(b), as applied by the Secretary of State",partial,https://www.in.gov/sos/dealer/files/Doc-Fees-in-2025.pdf
+IA,Iowa,true,180,180,180,180,0.06,0.06,true,35,Variable by weight and list price,Iowa Code § 322.19A,verified,https://www.legis.iowa.gov/docs/code/322.19A.pdf https://revenue.iowa.gov/taxes/tax-guidance/sales-use-excise-tax/sales-use-tax-guide
 KS,Kansas,false,,200,400,300,0.065,0.106,true,21,$42.50-$52.25,,needs_source,
 KY,Kentucky,false,,300,600,450,0.06,0.06,true,9,$21/year,,needs_source,
-LA,Louisiana,true,425,300,425,400,0.05,0.135,true,69,"0.1% of vehicle value (min $20, 2-year)",RS 6:969.18,needs_source,
+LA,Louisiana,true,436,300,425,400,0.05,0.135,true,69,"0.1% of vehicle value (min $20, 2-year)",RS 6:969.18,verified,https://www.lmvc.la.gov/wp-content/uploads/2026/01/Bulletin-2026-001-Maximum-Documentary-Fee-for-2026-Calendar-Year.pdf https://www.revenue.la.gov/tax-education-and-faqs/faqs/sales-tax-reform/what-is-the-state-sales-tax-rate
 ME,Maine,false,,300,600,499,0.055,0.055,true,33,$35 base (2-year),,needs_source,
-MD,Maryland,true,800,300,800,500,0.065,0.065,true,200,$120.50-$191.50/year by weight + $40/year EMS surcharge,"Md. Code, Transp. § 15-311.1",verified,https://mgaleg.maryland.gov/mgawebsite/Laws/StatuteText?article=gtr&section=15-311.1&enactments=false
+MD,Maryland,true,800,300,800,500,0.065,0.065,true,200,$120.50-$191.50/year by weight + $40/year EMS surcharge,"Md. Code, Transp. § 15-311.1",partial,https://mgaleg.maryland.gov/mgawebsite/Laws/StatuteText?article=gtr&section=15-311.1&enactments=false
 MA,Massachusetts,false,,300,500,400,0.0625,0.0625,true,75,$60 (2-year),,needs_source,
 MI,Michigan,true,280,200,280,260,0.06,0.06,true,15,$15 (1-year) or $29 (2-year) base + percentage of MSRP,DIFS Bulletin 2025-03-CF,needs_source,
-MN,Minnesota,true,350,125,350,300,0.06875,0.07375,true,34,1.575% of MSRP + $11.25 universal fees,Minn. Stat. § 168.27 Subd. 11a,verified,https://www.revisor.mn.gov/statutes/cite/168.27
+MN,Minnesota,true,350,125,350,300,0.06875,0.07375,true,34,1.575% of MSRP + $11.25 universal fees,Minn. Stat. § 168.27 Subd. 11a,partial,https://www.revisor.mn.gov/statutes/cite/168.27
 MS,Mississippi,false,,300,550,425,0.05,0.0525,true,9,$14 first-time or $12.75 renewal + ~$15 county tax,,needs_source,
-MO,Missouri,true,500,300,500,400,0.04225,0.101,true,15,$18.25-$51.25/year by horsepower + $9 processing,Mo. Rev. Stat. § 301.560,partial,https://revisor.mo.gov/main/OneSection.aspx?section=301.558
+MO,Missouri,true,620.79,300,500,400,0.04225,0.101,true,15,$18.25-$51.25/year by horsepower + $9 processing,Mo. Rev. Stat. § 301.558,partial,https://dor.mo.gov/motor-vehicle/dealers-lienholders/
 MT,Montana,false,,200,400,299,0,0,false,12,$217 (0-4 years) or $130 (5-10 years) + county option ~$10,,needs_source,
 NE,Nebraska,false,,200,400,280,0.055,0.075,true,18,$68 base + statutory fees (~$20.50 additional),,needs_source,
-NV,Nevada,false,,400,700,499,0.046,0.0824,true,28,$33 base + value-based fees (35% of MSRP formula),,needs_source,
+NV,Nevada,false,,400,700,499,0.0685,0.0824,true,28,$33 base + value-based fees (35% of MSRP formula),,partial,https://tax.nv.gov/news-publications/sales-use-tax-publications/
 NH,New Hampshire,false,,300,500,459,0,0,false,37,"$18-$15 per $1,000 of vehicle value",,needs_source,
 NJ,New Jersey,false,,200,900,500,0.06625,0.08625,true,60,Varies by type/weight; ZEV fee $260 (2026),,needs_source,
 NM,New Mexico,false,,200,400,300,0.04,0.0944,true,20,$27-$62/year by weight/age,,needs_source,
 NY,New York,true,175,175,175,175,0.04,0.08875,true,50,$26-$56.50 state weight fee + $25 plate fee + county tax,NY DMV Reg. 78.17,needs_source,
 NC,North Carolina,false,,500,800,550,0.03,0.03,true,56,"$46.25/year (effective July 1, 2024)",,needs_source,
-ND,North Dakota,false,,100,250,175,0.05,0.05,true,5,Varies by year registered + vehicle weight,,needs_source,
-OH,Ohio,true,387,200,387,350,0.0575,0.0825,true,18,"Varies by type; service fee increased $5 to $8 effective Jan 1, 2026",ORC § 4517.261,needs_source,
-OK,Oklahoma,false,,200,400,299,0.045,0.045,true,11,$96 (1st-4th year); decreases by age,,needs_source,
-OR,Oregon,true,250,150,250,200,0,0.005,false,77,"$43 (2-year); +$60 increase for EV/40+ MPG vehicles effective Jan 1, 2026",ORS § 822.043,partial,https://oregon.public.law/statutes/ors_822.043
-PA,Pennsylvania,true,490,300,490,420,0.06,0.08,true,72,$200-$300 varies by weight,37 Pa. Code § 301.4,needs_source,
-RI,Rhode Island,true,400,200,400,300,0.07,0.07,true,23,$30-$50/year,R.I. Gen. Laws § 31-5.2-3,needs_source,
-SC,South Carolina,false,,300,600,350,0.06,0.09,true,19,$30-$100/year varies by type,,needs_source,
-SD,South Dakota,false,,75,200,115,0.042,0.062,true,12,Varies by weight + 4% excise tax,,needs_source,
+ND,North Dakota,false,,100,250,175,0.05,0.05,true,5,Varies by year registered + vehicle weight,,partial,https://www.tax.nd.gov/sales-and-use-tax
+OH,Ohio,true,398,200,387,350,0.0575,0.0825,true,18,"Varies by type; service fee increased $5 to $8 effective Jan 1, 2026",ORC § 4517.261,partial,https://autodealers.ohio.gov/resources-for-dealers/resources/documentary-service-charge
+OK,Oklahoma,false,,200,400,299,0.045,0.045,true,11,$96 (1st-4th year); decreases by age,,partial,https://oklahoma.gov/tax/businesses/sales-use-tax.html
+OR,Oregon,true,250,150,250,200,0,0.005,false,77,"$43 (2-year); +$60 increase for EV/40+ MPG vehicles effective Jan 1, 2026",ORS § 822.043,verified,https://oregon.public.law/statutes/ors_822.043 https://www.oregon.gov/dor/programs/businesses/pages/sales-tax.aspx
+PA,Pennsylvania,true,490,300,490,420,0.06,0.08,true,72,$200-$300 varies by weight,63 P.S. § 818.327,partial,https://www.pa.gov/content/dam/copapwp-pagov/en/dos/department-and-offices/bpoa/vehicle/Annual%20Fee.pdf
+RI,Rhode Island,true,400,200,400,300,0.07,0.07,true,23,$30-$50/year,280-RICR-30-20-1.6(N),partial,https://rules.sos.ri.gov/regulations/part/280-30-20-1
+SC,South Carolina,false,,300,600,350,0.06,0.09,true,19,$30-$100/year varies by type,,partial,https://dor.sc.gov/sales-use-tax-index/sales-tax
+SD,South Dakota,false,,75,200,115,0.042,0.062,true,12,Varies by weight + 4% excise tax,,partial,https://dor.sd.gov/businesses/taxes/sales-use-tax/
 TN,Tennessee,false,,300,600,450,0.07,0.0975,true,14,$14.50-$36 base + county wheel tax ($0-$55),,needs_source,
-TX,Texas,true,225,150,225,200,0.0625,0.0825,true,30,Varies by weight; EV $400 first-time + $200/year,Tex. Occ. Code § 2301.258,needs_source,
+TX,Texas,false,,150,225,200,0.0625,0.0825,true,30,Varies by weight; EV $400 first-time + $200/year,Tex. Fin. Code § 348.006,partial,https://statutes.capitol.texas.gov/Docs/FI/htm/FI.348.htm https://occc.texas.gov/wp-content/uploads/2025/11/b16-5-mvsf-doc-fee-filing-instructions-7-2-24_0.pdf
 UT,Utah,false,,149,400,300,0.047,0.087,true,,"~$1,541 average for new vehicle (includes all fees); weight-based",,needs_source,
 VT,Vermont,false,,150,300,210,0.06,0.07,true,35,"$76/year or $140/2-year + $2 Clean Air + EV fees ($89 BEV, $44.50 PHEV)",,partial,https://dmv.vermont.gov/faq/are-dealer-documentation-fees-taxable
 VA,Virginia,false,,500,800,650,0.0415,0.07,false,15,"$30.75/year (0-4,000 lbs); $35.75 (4,001-6,500 lbs); $131.88 annual EV fee",,needs_source,
-WA,Washington,true,200,150,200,200,0.065,0.106,true,7,$43.25 base + weight/location adjustments,RCW 46.70.180,verified,https://app.leg.wa.gov/RCW/default.aspx?cite=46.70.180
+WA,Washington,true,200,150,200,200,0.065,0.106,true,7,$43.25 base + weight/location adjustments,RCW 46.70.180,partial,https://app.leg.wa.gov/RCW/default.aspx?cite=46.70.180
 WV,West Virginia,true,575,300,575,499,0.06,0.07,true,,Varies; includes annual wheel tax,WV Code § 17A-6A-8A,needs_source,
 WI,Wisconsin,false,,295,500,400,0.05,0.079,true,215,$85/year; +$175 EV surcharge; +$75 hybrid surcharge,,partial,https://www.revenue.wi.gov/Pages/FAQS/pcs-taxrates.aspx
 WY,Wyoming,false,,200,400,300,0.04,0.09,true,,$30 state + county fee (3% of factory price x depreciation rate),,needs_source,

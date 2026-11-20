@@ -8,7 +8,7 @@ This is not legal advice. Caps, tax rates, and title fees change. A value with `
 
 | Field | Meaning |
 | --- | --- |
-| `schema_version` | Shape of this file. Current version is `1.0.0`. |
+| `schema_version` | Shape of this file. Current version is `1.1.0`. |
 | `last_reviewed` | Date of the last pass that checked citations (`YYYY-MM-DD`). |
 | `dataset_version` | Version string inherited from the previous internal file. |
 | `states` | One object per US state and the District of Columbia, keyed by postal abbreviation. |
