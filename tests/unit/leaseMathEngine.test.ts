@@ -81,6 +81,21 @@ describe("detectRateMarkup", () => {
     expect(result!.markupAPR).toBeCloseTo(0, 1);
   });
 
+  it("charges rate markup on the cap cost after the down payment", () => {
+    const honda = lookupBrand("Honda")!;
+    const fields = makeFields({
+      moneyFactor: 0.00180,
+      salePrice: 31000,
+      residualValue: 17600,
+      downPayment: 10000,
+      termMonths: 36,
+    });
+    const result = detectRateMarkup(fields, honda);
+    // (21000 + 17600) * 0.00110 * 36 = 1528.56, rounded to 1529.
+    // Using the pre-down-payment price would have been about $1,925.
+    expect(result!.totalMarkupDollars).toBe(1529);
+  });
+
   it("detects dealer markup above buy rate", () => {
     const honda = lookupBrand("Honda")!;
     const fields = makeFields({
