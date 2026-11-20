@@ -126,19 +126,26 @@ export function detectRateMarkup(
 ): RateMarkupResult | null {
   if (!isNum(fields.moneyFactor) || fields.moneyFactor <= 0) return null;
 
-  const capCost = fields.salePrice ?? fields.msrp;
-  if (!isNum(capCost) || capCost <= 0) return null;
+  const basePrice = fields.salePrice ?? fields.msrp;
+  if (!isNum(basePrice) || basePrice <= 0) return null;
 
   const residual = resolveResidualValue(fields);
   if (!isNum(residual) || residual <= 0) return null;
 
   const termMonths = fields.termMonths ?? 36;
+  const totalFees = sumFees(fields);
+  const downPayment = isNum(fields.downPayment) ? fields.downPayment : 0;
+  const rebates = isNum(fields.rebates) ? fields.rebates : 0;
+  const tradeIn = isNum(fields.tradeInValue) ? fields.tradeInValue : 0;
+  // Rent is charged on the adjusted cap cost, not the sticker.
+  const adjustedCapCost = basePrice + totalFees - downPayment - rebates - tradeIn;
+  if (!Number.isFinite(adjustedCapCost) || adjustedCapCost <= 0) return null;
 
   const dealerAPR = fields.moneyFactor * 2400;
   const buyRateAPR = brandInfo.buyRateMF * 2400;
   const markupAPR = dealerAPR - buyRateAPR;
 
-  const markupPerMonth = (capCost + residual) * (fields.moneyFactor - brandInfo.buyRateMF);
+  const markupPerMonth = (adjustedCapCost + residual) * (fields.moneyFactor - brandInfo.buyRateMF);
   const totalMarkupDollars = markupPerMonth * termMonths;
 
   return {

@@ -1,0 +1,33 @@
+name: Rules audit
+
+# Off unless someone runs it by hand. No schedule, no API keys, no paid services.
+on:
+  workflow_dispatch:
+    inputs:
+      max_age_months:
+        description: Flag a state row last reviewed more than this many months ago
+        default: "6"
+        required: true
+
+jobs:
+  audit:
+    name: Golden quotes and stale state rows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Deterministic golden quotes and rule tests
+        run: npx vitest run tests/unit/goldenQuotes.test.ts tests/unit/ruleEngine.test.ts tests/unit/leaseMathEngine.test.ts tests/unit/stateFeesDataset.test.ts tests/unit/stateFeeLookup.test.ts
+
+      - name: Flag stale state rows
+        run: npx tsx scripts/check-state-review-age.ts --months=${{ inputs.max_age_months }}

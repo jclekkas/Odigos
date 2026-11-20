@@ -58,11 +58,11 @@ describe("GET /api/state-fee/:state", () => {
     expect(res.body.docFeeCapAmount).toBe(85);
   });
 
-  it("returns fee data for Texas (TX) with doc fee cap", async () => {
+  it("returns fee data for Texas (TX) with no hard doc fee cap", async () => {
     const res = await request(app).get("/api/state-fee/TX");
     expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty("docFeeCap", true);
-    expect(res.body.docFeeCapAmount).toBe(225);
+    expect(res.body).toHaveProperty("docFeeCap", false);
+    expect(res.body.docFeeCapAmount).toBeNull();
   });
 
   it("returns fee data for Alabama (AL) — no doc fee cap", async () => {

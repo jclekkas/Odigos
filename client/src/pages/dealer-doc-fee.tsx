@@ -11,7 +11,7 @@ import { ARTICLE_SOURCES } from "@/data/articleSources";
 const faqItems = [
   {
     question: "Which states cap dealer documentation fees?",
-    answer: "A number of states impose a legal cap. California caps doc fees at around $85. New York's limit is $175. Texas raised its cap to $225 in July 2024. Arkansas caps 'service and handling fees' at $129. Ohio caps fees at $387 or 10% of the cash price, whichever is lower. Oregon's cap is $250 (or $200 without an integrator system). States with no cap include Florida, Georgia, Colorado, and Illinois — where dealers can charge whatever they choose.",
+    answer: "A number of states impose a legal cap. California caps the document processing charge at $85 for a DMV partner and $70 otherwise. New York's limit is $175. Arkansas caps service and handling fees at $129. Ohio's 2026 ceiling is $398 or 10% of the cash price, whichever is lower. Oregon's cap is $250 with an integrator and $200 without one. Texas does not set a hard cap. A fee of $225 or less is presumed reasonable without an OCCC filing. Georgia does not cap the fee. Illinois has a CPI-adjusted cap, but this audit did not confirm the current dollar amount on a state page.",
   },
   {
     question: "Is the doc fee required by law or government?",
@@ -126,7 +126,7 @@ export default function DealerDocFee() {
             <ul className="space-y-2 mb-8 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                <span><strong className="text-foreground">Caps (examples):</strong> <Link href="/car-dealer-fees-california" className="underline text-foreground">California</Link> ($85), <Link href="/car-dealer-fees-new-york" className="underline text-foreground">New York</Link> ($175), Washington ($200), <Link href="/car-dealer-fees-texas" className="underline text-foreground">Texas</Link> ($225 as of July 2024), Maryland ($800 as of July 2024).</span>
+                <span><strong className="text-foreground">Caps (examples):</strong> <Link href="/car-dealer-fees-california" className="underline text-foreground">California</Link> ($85 or $70), <Link href="/car-dealer-fees-new-york" className="underline text-foreground">New York</Link> ($175), Washington ($200), Maryland ($800 as of July 2024). <Link href="/car-dealer-fees-texas" className="underline text-foreground">Texas</Link> has no hard cap.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
