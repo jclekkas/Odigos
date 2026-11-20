@@ -189,7 +189,7 @@ export function registerAnalyzeRoutes(app: Express): void {
           error: "AI service not configured",
           message:
             "The AI analysis service is not configured on this deployment. " +
-            "Ask the operator to set AI_INTEGRATIONS_OPENAI_API_KEY (or OPENAI_API_KEY) and redeploy.",
+            "Ask the operator to set OPENAI_API_KEY (AI_INTEGRATIONS_OPENAI_API_KEY is also accepted) and redeploy.",
         });
       }
 
@@ -251,7 +251,7 @@ export function registerAnalyzeRoutes(app: Express): void {
             error: "AI service not configured",
             message:
               "The AI analysis service is not configured on this deployment. " +
-              "Ask the operator to set AI_INTEGRATIONS_OPENAI_API_KEY (or OPENAI_API_KEY) and redeploy.",
+              "Ask the operator to set OPENAI_API_KEY (AI_INTEGRATIONS_OPENAI_API_KEY is also accepted) and redeploy.",
           });
         }
         if (parsed.status === 401 || parsed.status === 403) {

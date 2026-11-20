@@ -13,7 +13,7 @@ import { db } from "./db.js";
 import { writeAuditEvent } from "./audit.js";
 import { logger } from "./logger.js";
 import { isAllowedCorsOrigin } from "./corsOrigin.js";
-import { isOpenAIConfigured } from "./openaiClient.js";
+import { getOpenAIRuntimeConfig, isOpenAIConfigured } from "./openaiClient.js";
 import { AI_PRIMARY_MODEL, AI_FALLBACK_MODEL } from "./config/aiModel.js";
 import { createServer } from "http";
 import { sql } from "drizzle-orm";
@@ -386,17 +386,11 @@ app.get("/api/health", async (_req, res) => {
       configured: isOpenAIConfigured(),
       model: AI_PRIMARY_MODEL,
       fallbackModel: AI_FALLBACK_MODEL,
-      baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL
-        ? "(custom: Replit AI Integrations)"
-        : process.env.OPENAI_BASE_URL
-          ? "(custom)"
-          : "(default: api.openai.com)",
-      apiKeySource: process.env.AI_INTEGRATIONS_OPENAI_API_KEY
-        ? "AI_INTEGRATIONS_OPENAI_API_KEY"
-        : process.env.OPENAI_API_KEY
-          ? "OPENAI_API_KEY"
-          : "none",
-      apiKeySuffix: (process.env.AI_INTEGRATIONS_OPENAI_API_KEY ?? process.env.OPENAI_API_KEY)?.slice(-4) ?? null,
+      baseURL: getOpenAIRuntimeConfig().baseURLSource === "default"
+        ? "(default: api.openai.com)"
+        : "(custom)",
+      apiKeySource: getOpenAIRuntimeConfig().keySource,
+      apiKeySuffix: getOpenAIRuntimeConfig().keySuffix,
     },
   });
 });
@@ -613,12 +607,12 @@ export async function initialize(): Promise<void> {
       DATABASE_URL: Boolean(process.env.DATABASE_URL),
       AI_INTEGRATIONS_OPENAI_API_KEY: Boolean(process.env.AI_INTEGRATIONS_OPENAI_API_KEY),
       OPENAI_API_KEY: Boolean(process.env.OPENAI_API_KEY),
-      AI_BASE_URL_ROUTING: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL
-        ? "replit-gateway"
-        : process.env.OPENAI_BASE_URL
-          ? "custom"
-          : "direct-openai",
-      OPENAI_API_KEY_SUFFIX: (process.env.AI_INTEGRATIONS_OPENAI_API_KEY ?? process.env.OPENAI_API_KEY)?.slice(-4) ?? null,
+      AI_BASE_URL_ROUTING: getOpenAIRuntimeConfig().baseURLSource === "default"
+        ? "direct-openai"
+        : "custom",
+      OPENAI_API_KEY_SUFFIX: getOpenAIRuntimeConfig().keySuffix,
+      OPENAI_MODEL: process.env.OPENAI_MODEL ?? null,
+      OPENAI_FALLBACK_MODEL: process.env.OPENAI_FALLBACK_MODEL ?? null,
       AI_INTEGRATIONS_OPENAI_MODEL: process.env.AI_INTEGRATIONS_OPENAI_MODEL ?? null,
       AI_INTEGRATIONS_OPENAI_FALLBACK_MODEL: process.env.AI_INTEGRATIONS_OPENAI_FALLBACK_MODEL ?? null,
       REDIS_URL: Boolean(process.env.REDIS_URL),
