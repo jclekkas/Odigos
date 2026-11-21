@@ -23,10 +23,10 @@ describe("getStateFeeData", () => {
     expect(data!.docFeeCapAmount).toBe(378);
   });
 
-  it("IN has a doc fee cap of $251", () => {
+  it("IN has a doc fee cap of $251.05", () => {
     const data = getStateFeeData("IN");
     expect(data!.docFeeCap).toBe(true);
-    expect(data!.docFeeCapAmount).toBe(251);
+    expect(data!.docFeeCapAmount).toBe(251.05);
   });
 
   it("AR has a doc fee cap of $129", () => {
@@ -35,10 +35,10 @@ describe("getStateFeeData", () => {
     expect(data!.docFeeCapAmount).toBe(129);
   });
 
-  it("LA has a doc fee cap of $425", () => {
+  it("LA has a doc fee cap of $436", () => {
     const data = getStateFeeData("LA");
     expect(data!.docFeeCap).toBe(true);
-    expect(data!.docFeeCapAmount).toBe(425);
+    expect(data!.docFeeCapAmount).toBe(436);
   });
 
   it("AL does not have a doc fee cap", () => {

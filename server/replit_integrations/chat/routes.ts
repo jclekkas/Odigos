@@ -1,11 +1,19 @@
 import type { Express, Request, Response } from "express";
 import OpenAI from "openai";
 import { chatStorage } from "./storage.js";
+import { getOpenAIRuntimeConfig } from "../../openaiClient.js";
 
-const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-});
+function openAIClient(): OpenAI {
+  const config = getOpenAIRuntimeConfig();
+  if (config.keySource === "none") {
+    throw new Error("Set OPENAI_API_KEY before using chat routes. No key is built into the app.");
+  }
+  const key = process.env[config.keySource];
+  return new OpenAI({
+    apiKey: key,
+    baseURL: config.baseURL ?? undefined,
+  });
+}
 
 export function registerChatRoutes(app: Express): void {
   // Get all conversations
@@ -81,7 +89,7 @@ export function registerChatRoutes(app: Express): void {
       res.setHeader("Connection", "keep-alive");
 
       // Stream response from OpenAI
-      const stream = await openai.chat.completions.create({
+      const stream = await openAIClient().chat.completions.create({
         model: "gpt-5.1",
         messages: chatMessages,
         stream: true,

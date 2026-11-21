@@ -1,5 +1,6 @@
 import type { AnalysisResponse, DetectedFields, Fee } from "../shared/schema.js";
 import type { LeaseMathResult } from "./leaseMathEngine.js";
+import { computePurchase, splitFees } from "./quoteMath.js";
 
 export interface RuleEngineResult {
   dealScore: "GREEN" | "YELLOW" | "RED";
@@ -36,6 +37,9 @@ const DOC_FEE_KEYWORDS_EXACT = [
   "documentation fee",
   "document fee",
   "documentary fee",
+  "documentary service",
+  "documentary preparation",
+  "document processing",
 ];
 
 // Broader terms accepted only when a more specific doc-fee term is not found
@@ -149,32 +153,50 @@ const MARKET_ADJUSTMENT_KEYWORDS = [
 const ADD_ON_THRESHOLD = 300;
 const HIGH_ADD_ON_THRESHOLD = 500;
 
-function hasVagueFees(fees: Fee[]): boolean {
+function isDocFeeName(nameLower: string): boolean {
+  return (
+    DOC_FEE_KEYWORDS_EXACT.some((keyword) => nameLower.includes(keyword)) ||
+    DOC_FEE_KEYWORDS_BROAD.some((keyword) => nameLower.includes(keyword))
+  );
+}
+
+/** A doc fee at or under a known cap is legal. It is not an add-on. */
+function isDocFeeWithinCap(fee: Fee, capAmount: number | null): boolean {
+  if (capAmount === null || fee.amount === null) return false;
+  return isDocFeeName(fee.name.toLowerCase()) && fee.amount <= capAmount;
+}
+
+function hasVagueFees(fees: Fee[], allowedDocCap: number | null = null): boolean {
   return fees.some((fee) => {
+    if (isDocFeeWithinCap(fee, allowedDocCap)) return false;
     const nameLower = fee.name.toLowerCase();
-    const isVagueName = VAGUE_FEE_KEYWORDS.some((keyword) =>
-      nameLower.includes(keyword.toLowerCase())
-    );
-    return isVagueName && (fee.amount === null || fee.amount > ADD_ON_THRESHOLD);
+    return isJunkName(nameLower) && (fee.amount === null || fee.amount > ADD_ON_THRESHOLD);
   });
 }
 
 function hasMarketAdjustment(fees: Fee[]): boolean {
   return fees.some((fee) => {
     const nameLower = fee.name.toLowerCase();
-    return MARKET_ADJUSTMENT_KEYWORDS.some((keyword) =>
-      nameLower.includes(keyword.toLowerCase())
-    );
+    return MARKET_ADJUSTMENT_KEYWORDS.some((keyword) => {
+      // "adm" is contained in "admin". Match it only as its own word.
+      if (keyword === "adm") return /\badm\b/i.test(nameLower);
+      return nameLower.includes(keyword.toLowerCase());
+    });
   });
 }
 
-function countHighCostAddOns(fees: Fee[]): number {
+function isJunkName(nameLower: string): boolean {
+  return (
+    isDocFeeName(nameLower) ||
+    VAGUE_FEE_KEYWORDS.some((keyword) => nameLower.includes(keyword.toLowerCase()))
+  );
+}
+
+function countHighCostAddOns(fees: Fee[], allowedDocCap: number | null = null): number {
   return fees.filter((fee) => {
+    if (isDocFeeWithinCap(fee, allowedDocCap)) return false;
     const nameLower = fee.name.toLowerCase();
-    const isAddOn = VAGUE_FEE_KEYWORDS.some((keyword) =>
-      nameLower.includes(keyword.toLowerCase())
-    );
-    return isAddOn && fee.amount !== null && fee.amount >= HIGH_ADD_ON_THRESHOLD;
+    return isJunkName(nameLower) && fee.amount !== null && fee.amount >= HIGH_ADD_ON_THRESHOLD;
   }).length;
 }
 
@@ -206,8 +228,13 @@ function isMissingLeaseTerms(fields: DetectedFields): boolean {
   const hasResidual = (fields.residualValue !== null && fields.residualValue !== undefined) ||
     (fields.residualPercent !== null && fields.residualPercent !== undefined);
   const hasMileage = fields.mileageAllowance !== null && fields.mileageAllowance !== undefined;
-  // Missing if any of the core lease terms are absent
-  return !hasMoneyFactor || !hasResidual || !hasMileage;
+  const hasPrice =
+    (fields.salePrice !== null && fields.salePrice !== undefined) ||
+    (fields.msrp !== null && fields.msrp !== undefined) ||
+    (fields.outTheDoorPrice !== null && fields.outTheDoorPrice !== undefined);
+  // Missing if any of the core lease terms are absent. A payment with no
+  // capitalized-cost basis cannot be checked.
+  return !hasMoneyFactor || !hasResidual || !hasMileage || !hasPrice;
 }
 
 function hasExcessiveMileageRate(fields: DetectedFields): boolean {
@@ -254,8 +281,49 @@ export function applyRuleEngine(
     };
   }
 
+  // A purchase quote that itemizes tax can be added up. A lease uses its own
+  // payment formula, so this check stays on finance and cash deals.
+  if (!isLeaseQuote(fields, purchaseType) && fields.salePrice != null) {
+    const lines = splitFees(fields.fees || [], isDocFeeName);
+    if (lines.statedTax != null && fields.outTheDoorPrice != null) {
+      const worksheet = computePurchase({
+        vehiclePrice: fields.salePrice,
+        rebates: fields.rebates,
+        tradeInAllowance: fields.tradeInValue,
+        tradePayoff: lines.tradePayoff,
+        docFee: lines.docFee,
+        addOns: lines.addOns,
+        titleFee: lines.titleFee,
+        registrationFee: lines.registrationFee,
+        salesTaxAmount: lines.statedTax,
+        downPayment: fields.downPayment,
+        apr: fields.apr,
+        termMonths: fields.termMonths,
+        statedOutTheDoor: fields.outTheDoorPrice,
+        statedMonthlyPayment: fields.monthlyPayment,
+      });
+      if (worksheet.ok && worksheet.outTheDoorMismatch != null && Math.abs(worksheet.outTheDoorMismatch) >= 0.01) {
+        return {
+          dealScore: "YELLOW",
+          confidenceLevel: "HIGH",
+          verdictLabel: "PAUSE — OTD DOESN'T ADD UP",
+          goNoGo: "NEED-MORE-INFO",
+        };
+      }
+      if (worksheet.ok && worksheet.paymentMismatch != null && Math.abs(worksheet.paymentMismatch) >= 0.01) {
+        return {
+          dealScore: "YELLOW",
+          confidenceLevel: "HIGH",
+          verdictLabel: "PAUSE — PAYMENT DOESN'T MATCH",
+          goNoGo: "NEED-MORE-INFO",
+        };
+      }
+    }
+  }
+
   // Lease-specific rules (applied before general rules)
-  if (isLeaseQuote(fields, purchaseType)) {
+  const leaseQuote = isLeaseQuote(fields, purchaseType);
+  if (leaseQuote) {
     // Brand-aware acquisition fee check (replaces fixed $1000 threshold when brand data available)
     if (leaseMath?.acquisitionFeeBenchmark?.isMarkedUp) {
       return {
@@ -317,14 +385,16 @@ export function applyRuleEngine(
   }
 
   const fees = fields.fees || [];
+  const allowedDocCap =
+    docFeeCapResult && !docFeeCapResult.violated ? docFeeCapResult.capAmount : null;
 
   const hasMarketAdj = hasMarketAdjustment(fees);
-  const highCostAddOnCount = countHighCostAddOns(fees);
+  const highCostAddOnCount = countHighCostAddOns(fees, allowedDocCap);
   const paymentOnly = isPaymentOnlyQuote(fields);
   const otdPresent = hasOTD(fields);
   const aprTermPresent = hasAPRAndTerm(fields);
   const msrpOrSalePricePresent = hasMSRPOrSalePrice(fields);
-  const vagueFeesDetected = hasVagueFees(fees);
+  const vagueFeesDetected = hasVagueFees(fees, allowedDocCap);
 
   if (hasMarketAdj && highCostAddOnCount >= 2) {
     return {
@@ -359,6 +429,17 @@ export function applyRuleEngine(
       confidenceLevel: "LOW",
       verdictLabel: "PAUSE — REMOVE ADD-ONS / MARKUP",
       goNoGo: "NEED-MORE-INFO",
+    };
+  }
+
+  // A complete lease is not a purchase. Do not demand an out-the-door price
+  // after the lease checks above found no problem.
+  if (leaseQuote) {
+    return {
+      dealScore: "GREEN",
+      confidenceLevel: "MEDIUM",
+      verdictLabel: "GO — LEASE TERMS LOOK CLEAN",
+      goNoGo: "GO",
     };
   }
 

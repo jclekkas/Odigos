@@ -1,0 +1,12 @@
+node_modules
+dist
+coverage
+.git
+backups
+test-results
+attached_assets
+playwright-report
+*.tar.gz
+.env
+.env.*
+!.env.example

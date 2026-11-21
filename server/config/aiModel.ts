@@ -1,15 +1,29 @@
 /**
- * Shared AI model configuration so every call site (analyze, vision
- * text extraction) agrees on which OpenAI model to use. Keeping this in one
- * place means operators can override both via a single env var pair.
+ * Shared model names for every OpenAI-compatible call.
  *
- * - AI_PRIMARY_MODEL: the model we prefer. Defaults to gpt-4o.
- * - AI_FALLBACK_MODEL: tried once when the primary returns model_not_found
- *   (e.g. the API key does not have access to gpt-4o). Defaults to gpt-4o-mini
- *   which is broadly available on standard OpenAI plans.
+ * OPENAI_MODEL is the self-host name (Ollama, LM Studio, OpenAI, or any
+ * other server that speaks the Chat Completions API). The older
+ * AI_INTEGRATIONS_OPENAI_MODEL name is used only when OPENAI_MODEL is blank.
+ *
+ * The fallback model defaults to gpt-4o-mini on the official OpenAI host.
+ * A custom OPENAI_BASE_URL does not get that default, because a local server
+ * will not have gpt-4o-mini unless the operator names it.
  */
-export const AI_PRIMARY_MODEL =
-  process.env.AI_INTEGRATIONS_OPENAI_MODEL ?? "gpt-4o";
+function nonBlank(name: string): string | undefined {
+  const value = process.env[name];
+  return value && value.trim() ? value.trim() : undefined;
+}
 
-export const AI_FALLBACK_MODEL =
-  process.env.AI_INTEGRATIONS_OPENAI_FALLBACK_MODEL ?? "gpt-4o-mini";
+export const AI_PRIMARY_MODEL =
+  nonBlank("OPENAI_MODEL") ?? nonBlank("AI_INTEGRATIONS_OPENAI_MODEL") ?? "gpt-4o";
+
+function resolveFallbackModel(): string | null {
+  const explicit =
+    nonBlank("OPENAI_FALLBACK_MODEL") ?? nonBlank("AI_INTEGRATIONS_OPENAI_FALLBACK_MODEL");
+  if (explicit) return explicit;
+  const base = nonBlank("OPENAI_BASE_URL") ?? nonBlank("AI_INTEGRATIONS_OPENAI_BASE_URL");
+  if (base && !/api\.openai\.com/i.test(base)) return null;
+  return "gpt-4o-mini";
+}
+
+export const AI_FALLBACK_MODEL: string | null = resolveFallbackModel();

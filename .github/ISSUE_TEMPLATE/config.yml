@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: State fee dataset guide
+    url: https://github.com/jclekkas/Odigos/blob/main/data/README.md
+    about: How caps and tax rates are reviewed before they change the analyzer.

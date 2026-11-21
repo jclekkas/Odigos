@@ -16,19 +16,45 @@ export class OpenAIConfigurationError extends Error {
 }
 
 /**
- * Resolves the OpenAI API key, preferring the Replit-style
- * AI_INTEGRATIONS_OPENAI_API_KEY var (for backwards compatibility with
- * existing deployments) and falling back to the standard OPENAI_API_KEY
- * var used by most OpenAI tooling. This prevents a very common deployment
- * footgun where operators set OPENAI_API_KEY and see a 503 "not configured"
- * error because the code only looked at the Replit-prefixed name.
+ * First non-blank env var. Self-hosters set the standard OPENAI_* names.
+ * The AI_INTEGRATIONS_* names are accepted only when the standard name is
+ * unset, so an old deployment keeps working. Nothing in the repo supplies
+ * a key when both are absent.
  */
-function resolveApiKey(): string | undefined {
-  return process.env.AI_INTEGRATIONS_OPENAI_API_KEY ?? process.env.OPENAI_API_KEY;
+function firstNonBlank(names: string[]): { name: string; value: string } | undefined {
+  for (const name of names) {
+    const value = process.env[name];
+    if (value && value.trim()) return { name, value: value.trim() };
+  }
+  return undefined;
 }
 
-function resolveBaseUrl(): string | undefined {
-  return process.env.AI_INTEGRATIONS_OPENAI_BASE_URL ?? process.env.OPENAI_BASE_URL;
+function resolveApiKey(): { name: string; value: string } | undefined {
+  return firstNonBlank(["OPENAI_API_KEY", "AI_INTEGRATIONS_OPENAI_API_KEY"]);
+}
+
+function resolveBaseUrl(): { name: string; value: string } | undefined {
+  return firstNonBlank(["OPENAI_BASE_URL", "AI_INTEGRATIONS_OPENAI_BASE_URL"]);
+}
+
+export interface OpenAIRuntimeConfig {
+  configured: boolean;
+  keySource: "OPENAI_API_KEY" | "AI_INTEGRATIONS_OPENAI_API_KEY" | "none";
+  keySuffix: string | null;
+  baseURL: string | null;
+  baseURLSource: "OPENAI_BASE_URL" | "AI_INTEGRATIONS_OPENAI_BASE_URL" | "default";
+}
+
+export function getOpenAIRuntimeConfig(): OpenAIRuntimeConfig {
+  const key = resolveApiKey();
+  const base = resolveBaseUrl();
+  return {
+    configured: Boolean(key),
+    keySource: key ? (key.name as OpenAIRuntimeConfig["keySource"]) : "none",
+    keySuffix: key ? key.value.slice(-4) : null,
+    baseURL: base?.value ?? null,
+    baseURLSource: base ? (base.name as OpenAIRuntimeConfig["baseURLSource"]) : "default",
+  };
 }
 
 // Lazy-init so the module can be imported even if the API key env var
@@ -44,12 +70,13 @@ function getRawClient(): OpenAI {
   if (!apiKey) {
     throw new OpenAIConfigurationError(
       "OpenAI API key is not set — AI analysis is unavailable. " +
-      "Set AI_INTEGRATIONS_OPENAI_API_KEY (or OPENAI_API_KEY) on the Vercel project and redeploy.",
+      "Set OPENAI_API_KEY (AI_INTEGRATIONS_OPENAI_API_KEY is also accepted). " +
+      "The app does not include a key of its own.",
     );
   }
   _rawClient = new OpenAI({
-    apiKey,
-    baseURL: resolveBaseUrl(),
+    apiKey: apiKey.value,
+    baseURL: resolveBaseUrl()?.value,
   });
   return _rawClient;
 }

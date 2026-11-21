@@ -1,150 +1,104 @@
 # Odigos
 
-**AI-powered deal analysis for car buyers.**
+Privacy-first dealer quote analyzer for U.S. car buyers.
 
-Odigos is a consumer protection tool that analyzes dealer quotes, texts, and emails to help car buyers identify pricing problems, hidden fees, and dealership tactics before they commit. Paste or upload a dealer message, and Odigos returns a structured analysis with a clear GO/NO-GO verdict.
+Paste a dealer text, email, or quote. Odigos returns a GO / NO-GO verdict, the red flags it can support from the quote, and a draft reply you can send back. The hosted site at [odigosauto.com](https://odigosauto.com) is free and is the main way to use it. Self-hosting is optional.
+
+Odigos is not a dealer and does not sell your quote as a lead. See [docs/INDEPENDENCE.md](docs/INDEPENDENCE.md).
 
 ## Features
 
-- **Paste or upload dealer quotes** — supports text, email, screenshots, photos, and PDFs
-- **GO / NO-GO verdict** — color-coded score (GREEN / YELLOW / RED) for every deal
-- **Pricing extraction** — detects sale price, out-the-door price, APR, term, monthly payment, fees, and add-ons
-- **Red flag detection** — identifies hidden fees, payment-only framing, and vague terms
-- **Missing info checklist** — highlights what the dealer left out
-- **Negotiation reply templates** — copy-paste responses to send back to the dealer
-- **State-specific fee database** — documentation and dealer fees by state
-- **Educational content** — 20+ SEO pages covering OTD pricing, dealer fees, negotiation tactics, and more
+These are what the current code does:
 
-## How It Works
+- **Paste, upload, or link.** Text, a screenshot, a photo, a PDF, or a public URL that can be turned into text.
+- **GO / NO-GO verdict.** GREEN, YELLOW, or RED, with GO, NO-GO, or NEED-MORE-INFO.
+- **Red flags.** Missing out-the-door price, payment-only quotes, market adjustments, expensive add-ons, and vague fees.
+- **Doc fees over a state cap.** Where `data/state_fees.json` records a cap, a higher doc fee is a NO-GO. The statute string from that file is shown with the result.
+- **Missing-info checklist and a draft reply.** Questions the quote did not answer, and text you can copy to the dealer.
+- **State context.** Sales-tax rate, trade-in tax credit, and the typical doc-fee range from the state file are given to the model as context. They do not by themselves change the verdict color.
+- **Lease checks.** When the quote looks like a lease, the rules look at money factor, residual, mileage, and acquisition fee.
+- **State fee guides.** Public pages explain doc fees and out-the-door pricing. The comparison tables read the same rule file as the analyzer.
 
-1. User pastes a dealer quote or uploads a screenshot/PDF
-2. Odigos extracts the text and analyzes it with AI
-3. A free preview shows the GO/NO-GO verdict and high-level summary
-4. Paid passes unlock the full report: red flags, missing info, detailed reasoning, and a ready-to-send dealer reply
+The full analysis on the hosted site is free. No account and no payment.
 
-### Pricing
+Figures marked `needs_source` in the state file were not confirmed against a statute for this release. Read [data/README.md](data/README.md) before you rely on a cap.
 
-| Pass | Price | Window |
-|------|-------|--------|
-| Weekend Warrior | $29 | 72 hours unlimited scans |
-| Car Buyer's Pass | $49 | 14 days unlimited scans |
+## Privacy
 
-Both passes unlock identical features. One-time purchase, no subscriptions.
+Submitted text is sent to the model server you configure. On the hosted site, that is the operator's provider. Names, emails, phone numbers, and similar patterns are redacted before anything is stored, and that redaction is best-effort. With no database configured, analyses stay in memory for the life of the process. See the in-app privacy page for the hosted site's retention rules.
 
-## Tech Stack
+Analytics, error tracking, email alerts, Stripe, and cloud backups stay off unless their environment variables are set.
 
-| Layer | Technologies |
-|-------|-------------|
-| Frontend | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, Wouter, TanStack React Query |
-| Backend | Express.js, TypeScript, Zod |
-| Database | PostgreSQL 16, Drizzle ORM |
-| AI | OpenAI API |
-| Payments | Stripe |
-| Analytics | PostHog, Sentry |
-| Testing | Vitest, Playwright |
-| Deployment | Vercel (serverless) |
+## Self-hosting
 
-## Project Structure
+You bring your own model key. If `OPENAI_API_KEY` is unset, analysis does not run. The repository does not contain a fallback key.
 
-```
-client/          React frontend (pages, components, hooks)
-server/          Express.js backend (routes, services, rule engine, metrics)
-shared/          Shared TypeScript schemas and models
-migrations/      Database migrations (Drizzle)
-tests/           Test suites (unit, API, component, e2e, integration)
-scripts/         Build and automation scripts
-docs/            Documentation
-```
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 20+
-- PostgreSQL 16
-
-### Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `DATABASE_URL` | PostgreSQL connection string |
-| `STRIPE_SECRET_KEY` | Stripe secret key |
-| `STRIPE_PRICE_ID_49` | Stripe price ID for Car Buyer's Pass |
-| `SENTRY_DSN` | Sentry error tracking DSN |
-| `NODE_ENV` | `development` or `production` |
-
-### Install and Run
+### Docker
 
 ```bash
-npm install
-npm run db:push
+cp .env.example .env
+# set OPENAI_API_KEY, and OPENAI_BASE_URL / OPENAI_MODEL for Ollama or LM Studio
+docker compose up --build
+```
+
+Open `http://localhost:5000`. Postgres is not required. To store data, start the optional database and point `DATABASE_URL` at it:
+
+```bash
+docker compose --profile with-db up --build
+```
+
+Use `DATABASE_URL=postgresql://odigos:odigos@db:5432/odigos` in that mode. The `db` hostname works on the compose network.
+
+### Local setup
+
+Requirements: Node.js 20.
+
+```bash
+npm ci
+cp .env.example .env
 npm run dev
 ```
 
-The dev server starts on port 5000.
+The dev server listens on port 5000. Quote analysis needs `OPENAI_API_KEY`. A database is optional.
 
-## Scripts
+### Model server
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm start` | Start production server |
-| `npm run check` | TypeScript type checking |
-| `npm run lint` | ESLint validation |
-| `npm test` | Run all tests |
-| `npm run test:unit` | Unit tests only |
-| `npm run test:api` | API tests only |
-| `npm run test:components` | Component tests only |
-| `npm run test:e2e` | Playwright end-to-end tests |
-| `npm run db:push` | Apply database migrations |
+Any server that implements the OpenAI Chat Completions API works.
 
-## Testing
+| Setup | `OPENAI_BASE_URL` | `OPENAI_MODEL` |
+| --- | --- | --- |
+| OpenAI | leave unset | `gpt-4o` (the default) |
+| Ollama | `http://127.0.0.1:11434/v1` | the model you pulled, such as `llama3.1` |
+| LM Studio | `http://127.0.0.1:1234/v1` | the model loaded in LM Studio |
 
-Odigos uses a layered testing strategy:
+`OPENAI_API_KEY` still has to be non-blank for local servers that ignore the key. Use any placeholder the server accepts.
 
-- **Unit tests** — business logic, rule engine, utilities (Vitest)
-- **API tests** — endpoint behavior and validation (Vitest + Supertest)
-- **Component tests** — React component rendering and interaction (Vitest + Testing Library)
-- **E2E tests** — full user flows through the browser (Playwright)
+Older `AI_INTEGRATIONS_OPENAI_*` variable names still work when the matching `OPENAI_*` variable is blank. They exist so the hosted deployment keeps running. Prefer the `OPENAI_*` names.
 
-```bash
-npm test                  # Run all tests
-npm run test:e2e          # Run end-to-end tests
-npm run test:coverage     # Generate coverage report
-```
+On a custom base URL the app does not fall back to `gpt-4o-mini` unless you set `OPENAI_FALLBACK_MODEL`.
 
-## Deployment
+## Development
 
-Odigos is deployed on Vercel. The production entry point is `api/index.ts`, which boots the Express app from `server/index.ts`. `vercel.json` rewrites all requests to `/api` unless intercepted by the CDN for static assets. Pushes to `main` trigger an automatic production deploy; pull requests get a Vercel preview deploy via `.github/workflows/vercel-preview.yml`.
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Dev server |
+| `npm test` | Unit, API, and component tests |
+| `npm run check` | Typecheck |
+| `npm run lint` | ESLint |
+| `npm run build` | Production client and server bundle |
+| `npm start` | Run the production bundle |
+| `npm run test:e2e` | Playwright. Needs a running server and browser |
 
-Canonical production origin: `https://odigosauto.com` (apex, non-www).
+`npx tsx scripts/export-state-fees-csv.ts` rewrites `data/state_fees.csv` after a JSON edit.
 
-### CI Pipeline
+How the verdict is chosen: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-Every push and pull request runs:
+## Contributing
 
-1. **Install** — `npm ci`
-2. **Lint** — ESLint
-3. **Typecheck** — TypeScript strict mode
-4. **Test** — Vitest (unit, API, component)
-5. **Build** — Full production bundle
-6. **E2E** — Playwright tests with PostgreSQL service container
+See [CONTRIBUTING.md](CONTRIBUTING.md). State-fee corrections need a page that states the number. The review steps are in [data/README.md](data/README.md).
 
-Branch protection on `main` requires all status checks to pass and one approving review.
-
-A production smoke test (`scripts/smoke-test.ts`) runs on a 6-hour cron via `.github/workflows/smoke.yml`.
-
-## Security
-
-- **PII redaction** — IP addresses and user-agents stored as SHA-256 hashes only
-- **Audit logging** — all analysis attempts, payments, and admin actions are logged
-- **Rate limiting** — Redis-backed per-IP rate limiting
-- **CSP headers** — Content Security Policy with per-request nonces
-- **Helmet** — standard security headers
-
-See [SECURITY.md](SECURITY.md) for the full security policy.
+Community expectations are in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md). A short note on helping the project is in [docs/SUPPORT.md](docs/SUPPORT.md).
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE). Copyright 2025-2026 jclekkas.

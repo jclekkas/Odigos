@@ -1,10 +1,25 @@
 import fs from "node:fs";
 import OpenAI, { toFile } from "openai";
 import { Buffer } from "node:buffer";
+import { getOpenAIRuntimeConfig } from "../../openaiClient.js";
 
-export const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+function openAIClient(): OpenAI {
+  const config = getOpenAIRuntimeConfig();
+  if (config.keySource === "none") {
+    throw new Error("Set OPENAI_API_KEY before generating images. No key is built into the app.");
+  }
+  return new OpenAI({
+    apiKey: process.env[config.keySource],
+    baseURL: config.baseURL ?? undefined,
+  });
+}
+
+export const openai = new Proxy({} as OpenAI, {
+  get(_target, prop) {
+    const client = openAIClient();
+    const value = Reflect.get(client, prop, client);
+    return typeof value === "function" ? value.bind(client) : value;
+  },
 });
 
 /**

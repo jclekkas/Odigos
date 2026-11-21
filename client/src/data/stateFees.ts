@@ -907,12 +907,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Louisiana",
     abbreviation: "LA",
     slug: "louisiana",
-    docFeeRange: "Capped at $425 (CPI-adjusted)",
+    docFeeRange: "Capped at $436 for 2026",
     hasCap: true,
     metaDescription:
       "Louisiana caps dealer doc fees at $425, CPI-adjusted starting 2026. State sales tax is 5% (raised Jan 2025). Local additions can bring combined rates to 13.5% — among the highest in the US.",
     capNote:
-      "Louisiana caps dealer documentation fees at $425, with CPI adjustments beginning January 1, 2026. This cap is set by statute (LA RS 6:969.18). Dealers cannot legally exceed this amount.",
+      "Louisiana's CPI-adjusted documentary fee maximum for calendar year 2026 is $436 under La. R.S. 6:969.18, as verified by the Legislative Auditor. Dealers cannot legally exceed this amount.",
     salesTaxNote:
       "Louisiana's state sales tax on vehicles increased from 4.45% to 5% effective January 1, 2025. Local additions can bring combined rates as high as 13.5% in some jurisdictions (Monroe, Sterlington) — among the highest combined vehicle tax rates in the country. Most buyers see combined rates of 8–12% depending on location.",
     registrationNote:
@@ -920,7 +920,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "Louisiana has the highest potential combined sales tax rates in the country — some jurisdictions reach 13.5%. The state rate also increased to 5% in January 2025. The $425 doc fee cap provides some protection on the dealer side, but buyers need to budget carefully for local sales taxes, which vary dramatically by parish.",
     snippetAnswer:
-      "Louisiana caps dealer documentation fees at $425 (CPI-adjusted starting 2026). The state sales tax increased to 5% in January 2025, and combined local rates can reach 13.5% — the highest in the US. Verify your local rate before estimating your OTD total.",
+      "Louisiana's documentary fee maximum for 2026 is $436. The state sales tax increased to 5% in January 2025, and combined local rates can reach 13.5%. Verify your local rate before estimating your OTD total.",
     watchFor: [
       "Extreme local tax variation: Louisiana's combined rates vary from about 5% in some areas to 13.5% in others. The local tax can add thousands of dollars to the OTD on the same vehicle depending on where you buy.",
       "Recent state tax increase: the state rate increased from 4.45% to 5% in January 2025. If you're working from older estimates, update your numbers.",
@@ -1209,12 +1209,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Missouri",
     abbreviation: "MO",
     slug: "missouri",
-    docFeeRange: "Capped at $500 (CPI-adjusted)",
+    docFeeRange: "Capped at $620.79 for 2026",
     hasCap: true,
     metaDescription:
       "Missouri caps dealer doc fees at $500 (CPI-adjusted, effective Aug 2025). State tax is 4.225% with local additions. Combined rates can approach 10%. See the MO OTD picture.",
     capNote:
-      "Missouri caps dealer documentation fees at $500, with annual CPI adjustments. The current cap is effective August 17, 2025 per RSMo §301.558. Dealers cannot legally exceed this amount.",
+      "Missouri's maximum dealer administrative fee for the 2026 licensure year is $620.79 under RSMo §301.558. The Department of Revenue posts the CPI update each year. Dealers cannot legally exceed the posted maximum.",
     salesTaxNote:
       "Missouri charges 4.225% state sales tax on vehicles, with local additions of up to 5.875%. Combined rates can reach 10.1% in some jurisdictions. Total vehicle sales tax is also subject to a $725 cap per transaction.",
     registrationNote:
@@ -1222,7 +1222,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "Missouri has a $500 cap on doc fees (CPI-adjusted) and a horsepower-based registration structure. The low 4.225% state tax rate can be misleading — local additions push combined rates to 8–10% in many areas. The $725 total tax cap per transaction is a useful ceiling for high-value vehicles.",
     snippetAnswer:
-      "Missouri caps dealer documentation fees at $500 (CPI-adjusted, effective August 2025). State sales tax is 4.225% with local additions; combined rates reach 10%. A $725 cap on total vehicle sales tax applies per transaction.",
+      "Missouri's maximum dealer administrative fee for 2026 is $620.79. State sales tax is 4.225% with local additions. A $725 cap on total vehicle sales tax applies per transaction.",
     watchFor: [
       "Local tax variation: Missouri's combined rates range widely. Kansas City and St. Louis buyers may see rates above 8–9%. Verify your effective rate.",
       "$725 total tax cap: on very high-value vehicle purchases, total Missouri sales tax is capped at $725. This only benefits buyers of expensive vehicles where the uncapped tax would exceed that amount.",
@@ -1704,28 +1704,28 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Ohio",
     abbreviation: "OH",
     slug: "ohio",
-    docFeeRange: "Capped at $387 or 10% of cash price (whichever is lower)",
+    docFeeRange: "Capped at $398 or 10% of cash price (whichever is lower)",
     hasCap: true,
-    pageTitle: "Ohio Dealer Doc Fee: $387 Cap or 10% (2026) — Full Fee Breakdown",
+    pageTitle: "Ohio Dealer Doc Fee: $398 Cap or 10% (2026) — Full Fee Breakdown",
     metaDescription:
-      "Ohio caps the dealer doc fee at $387 or 10% of the vehicle price (whichever is lower) — raised from $250 in Oct 2024. State tax 5.75% + county. See the full breakdown and what changed.",
+      "Ohio caps the dealer doc fee at $398 or 10% of the vehicle price (whichever is lower) — raised from $250 in Oct 2024. State tax 5.75% + county. See the full breakdown and what changed.",
     capNote:
-      "Ohio caps dealer documentation fees at $387 OR 10% of the vehicle's cash price, whichever is lower (per Ohio Revised Code §4517.261). For most vehicles above about $3,870, the $387 flat limit applies. For cheaper vehicles, the 10% cap limits the fee further. A title fee increase of $3 took effect January 1, 2026.",
+      "Ohio caps dealer documentation fees at $398 OR 10% of the vehicle's cash price, whichever is lower (per Ohio Revised Code §4517.261). For most vehicles above about $3,980, the $398 flat limit applies. For cheaper vehicles, the 10% cap limits the fee further. A title fee increase of $3 took effect January 1, 2026.",
     salesTaxNote:
       "Ohio charges 5.75% state sales tax on vehicles, with county additions up to 2.5%. Combined rates range from 5.8% to 8.25% depending on the county. Trade-in deductions are allowed for new vehicle purchases.",
     registrationNote:
       "Ohio registration fees vary by vehicle type. A service fee increase of $5 (now $8) took effect January 1, 2026. The title fee also increased by $3 effective January 1, 2026.",
     introAngle:
-      "Ohio's doc fee cap has an important nuance: it's the lesser of $387 or 10% of the vehicle's cash price. For most vehicle purchases above $3,870, the $387 flat limit applies. Ohio also saw a title fee increase in January 2026. The county-level sales tax variation means buyers should verify their specific county's rate.",
+      "Ohio's doc fee cap has an important nuance: it's the lesser of $398 or 10% of the vehicle's cash price. For most vehicle purchases above $3,980, the $398 flat limit applies. Ohio also saw a title fee increase in January 2026. The county-level sales tax variation means buyers should verify their specific county's rate.",
     snippetAnswer:
-      "Ohio caps dealer documentation fees at $387 or 10% of the cash price, whichever is lower. State sales tax is 5.75% with county additions up to 8.25% combined. Title fee increased in January 2026.",
+      "Ohio caps dealer documentation fees at $398 or 10% of the cash price, whichever is lower. State sales tax is 5.75% with county additions up to 8.25% combined. Title fee increased in January 2026.",
     watchFor: [
-      "10% cap on lower-priced vehicles: for vehicles priced under $3,870, the 10% rule is more restrictive than the $387 flat cap. Used vehicle buyers should confirm which limit applies.",
+      "10% cap on lower-priced vehicles: for vehicles priced under $3,980, the 10% rule is more restrictive than the $398 flat cap. Used vehicle buyers should confirm which limit applies.",
       "County sales tax variation: Ohio's combined rates range from 5.8% to 8.25% by county. Verify the rate for your dealer's county before estimating your OTD.",
       "Recent title fee increase: the title fee increased $3 effective January 1, 2026. Update any older OTD estimates.",
     ],
     negotiationNote:
-      "Ohio's three major metros — Columbus (7.5% combined tax), Cleveland/Cuyahoga County (8%), and Cincinnati/Hamilton County (7.8%) — have competitive dealer markets. With the doc fee capped at $387 (or 10% of cash price on cheaper vehicles per ORC section 4517.261), your negotiation focuses on the vehicle price and add-ons. The trade-in credit for new vehicle purchases can meaningfully reduce your tax — on a $15,000 trade-in at 8% in Cuyahoga County, that saves $1,200.",
+      "Ohio's three major metros — Columbus (7.5% combined tax), Cleveland/Cuyahoga County (8%), and Cincinnati/Hamilton County (7.8%) — have competitive dealer markets. With the doc fee capped at $398 (or 10% of cash price on cheaper vehicles per ORC section 4517.261), your negotiation focuses on the vehicle price and add-ons. The trade-in credit for new vehicle purchases can meaningfully reduce your tax — on a $15,000 trade-in at 8% in Cuyahoga County, that saves $1,200.",
     ctaHeading: "Have an Ohio dealer quote you want to review?",
     ctaBody:
       "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
@@ -1734,14 +1734,14 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "https://www.bmv.ohio.gov/doc-fees.aspx",
     ],
     specialNotes:
-      "Cap is $387 OR 10% of cash price, whichever is LOWER. Title fee increase of $3 effective Jan 1, 2026.",
+      "Cap is $398 OR 10% of cash price, whichever is LOWER. Title fee increase of $3 effective Jan 1, 2026.",
     dealerMessage:
-      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (Ohio caps this at $387 or 10% of the cash price, whichever is lower), all additional dealer fees, Ohio sales tax (5.75% state + your county rate — please confirm the combined rate), title fee ($18 + the $3 increase effective Jan 2026), and registration costs (including the new $8 service fee)? If I'm buying new with a trade-in, please show the deduction applied. I'd like to see the complete itemized total. Thank you.",
+      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (Ohio caps this at $398 or 10% of the cash price, whichever is lower), all additional dealer fees, Ohio sales tax (5.75% state + your county rate — please confirm the combined rate), title fee ($18 + the $3 increase effective Jan 2026), and registration costs (including the new $8 service fee)? If I'm buying new with a trade-in, please show the deduction applied. I'd like to see the complete itemized total. Thank you.",
     lastVerified: "2026-03",
     commonQuestions: [
       {
         q: "What is the Ohio doc fee cap?",
-        a: "Ohio caps dealer documentation fees at $387 OR 10% of the vehicle's cash price, whichever is lower (Ohio Revised Code section 4517.261). For most vehicles above $3,870, the $387 flat cap applies. For cheaper used vehicles, the 10% formula is more restrictive.",
+        a: "Ohio caps dealer documentation fees at $398 OR 10% of the vehicle's cash price, whichever is lower (Ohio Revised Code section 4517.261). For most vehicles above $3,980, the $398 flat cap applies. For cheaper used vehicles, the 10% formula is more restrictive.",
       },
       {
         q: "How much does Ohio sales tax vary by county?",
@@ -1757,8 +1757,8 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       },
     ],
     competitorGapSection:
-      "Most Ohio guides cite the $387 doc fee cap without explaining the 10% alternative formula. For used vehicle buyers, this matters: on a $3,000 used car, the max doc fee is $300 (10% of $3,000), not $387. On a $2,000 vehicle, it's $200. Used car shoppers in Ohio should calculate 10% of their purchase price to know their actual cap. Also commonly overlooked: the trade-in credit applies only to new vehicles in Ohio. If you're buying used with a trade-in, the full purchase price is taxed — a meaningful difference that changes the OTD math.",
-    buyerTip: "Ohio Revised Code §4517.261 sets the doc fee cap at $387 or 10% of the vehicle's cash price, whichever is lower. This 10% rule catches used vehicle buyers off guard: on a $2,500 used car, the cap is $250 — not the flat $387. If you're buying an inexpensive used vehicle in Ohio, verify that the dealer's doc fee doesn't exceed the 10% ceiling for your specific vehicle price.",
+      "Most Ohio guides cite the $398 doc fee cap without explaining the 10% alternative formula. For used vehicle buyers, this matters: on a $3,000 used car, the max doc fee is $300 (10% of $3,000), not $398. On a $2,000 vehicle, it's $200. Used car shoppers in Ohio should calculate 10% of their purchase price to know their actual cap. Also commonly overlooked: the trade-in credit applies only to new vehicles in Ohio. If you're buying used with a trade-in, the full purchase price is taxed — a meaningful difference that changes the OTD math.",
+    buyerTip: "Ohio Revised Code §4517.261 sets the doc fee cap at $398 or 10% of the vehicle's cash price, whichever is lower. This 10% rule catches used vehicle buyers off guard: on a $2,500 used car, the cap is $250 — not the flat $398. If you're buying an inexpensive used vehicle in Ohio, verify that the dealer's doc fee doesn't exceed the 10% ceiling for your specific vehicle price.",
   },
 
   oklahoma: {

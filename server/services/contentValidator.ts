@@ -10,7 +10,7 @@
  * call; a false positive (real quote gets blocked) harms the user.
  */
 import { openai, isOpenAIConfigured } from "../openaiClient.js";
-import { AI_FALLBACK_MODEL } from "../config/aiModel.js";
+import { AI_FALLBACK_MODEL, AI_PRIMARY_MODEL } from "../config/aiModel.js";
 import { logger } from "../logger.js";
 
 /** Terms that appear in virtually all legitimate dealer quotes. */
@@ -137,7 +137,7 @@ export async function validateDealerContent(text: string): Promise<ContentValida
 
   try {
     const llmPromise = openai.chat.completions.create({
-      model: AI_FALLBACK_MODEL,
+      model: AI_FALLBACK_MODEL ?? AI_PRIMARY_MODEL,
       messages: [
         { role: "system", content: CLASSIFICATION_PROMPT },
         { role: "user", content: trimmed.slice(0, 2000) },

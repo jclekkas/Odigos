@@ -178,8 +178,9 @@ describe("applyRuleEngine", () => {
   });
 
   it("returns GREEN/HIGH when OTD + APR + term present, no vague fees", () => {
+    // 32000 + 2000 tax = 34000, which is the stated out-the-door price.
     const fields = makeFields({
-      outTheDoorPrice: 35000,
+      outTheDoorPrice: 34000,
       apr: 4.9,
       termMonths: 60,
       salePrice: 32000,
@@ -188,6 +189,19 @@ describe("applyRuleEngine", () => {
     const result = applyRuleEngine(makeLlm(), fields);
     expect(result.dealScore).toBe("GREEN");
     expect(result.goNoGo).toBe("GO");
+  });
+
+  it("does not call a quote clean when the out-the-door price leaves $1,000 unexplained", () => {
+    const fields = makeFields({
+      outTheDoorPrice: 35000,
+      apr: 4.9,
+      termMonths: 60,
+      salePrice: 32000,
+      fees: [{ name: "Tax", amount: 2000 }],
+    });
+    const result = applyRuleEngine(makeLlm(), fields);
+    expect(result.dealScore).toBe("YELLOW");
+    expect(result.verdictLabel).toMatch(/DOESN'T ADD UP/i);
   });
 
   it("returns GREEN/MEDIUM when OTD + APR + term but no MSRP/sale price", () => {
