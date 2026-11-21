@@ -1,5 +1,6 @@
 import type { AnalysisResponse, DetectedFields, Fee } from "../shared/schema.js";
 import type { LeaseMathResult } from "./leaseMathEngine.js";
+import { computePurchase, splitFees } from "./quoteMath.js";
 
 export interface RuleEngineResult {
   dealScore: "GREEN" | "YELLOW" | "RED";
@@ -278,6 +279,46 @@ export function applyRuleEngine(
       verdictLabel: "NO-GO — DOC FEE EXCEEDS STATE CAP",
       goNoGo: "NO-GO",
     };
+  }
+
+  // A purchase quote that itemizes tax can be added up. A lease uses its own
+  // payment formula, so this check stays on finance and cash deals.
+  if (!isLeaseQuote(fields, purchaseType) && fields.salePrice != null) {
+    const lines = splitFees(fields.fees || [], isDocFeeName);
+    if (lines.statedTax != null && fields.outTheDoorPrice != null) {
+      const worksheet = computePurchase({
+        vehiclePrice: fields.salePrice,
+        rebates: fields.rebates,
+        tradeInAllowance: fields.tradeInValue,
+        tradePayoff: lines.tradePayoff,
+        docFee: lines.docFee,
+        addOns: lines.addOns,
+        titleFee: lines.titleFee,
+        registrationFee: lines.registrationFee,
+        salesTaxAmount: lines.statedTax,
+        downPayment: fields.downPayment,
+        apr: fields.apr,
+        termMonths: fields.termMonths,
+        statedOutTheDoor: fields.outTheDoorPrice,
+        statedMonthlyPayment: fields.monthlyPayment,
+      });
+      if (worksheet.ok && worksheet.outTheDoorMismatch != null && Math.abs(worksheet.outTheDoorMismatch) >= 0.01) {
+        return {
+          dealScore: "YELLOW",
+          confidenceLevel: "HIGH",
+          verdictLabel: "PAUSE — OTD DOESN'T ADD UP",
+          goNoGo: "NEED-MORE-INFO",
+        };
+      }
+      if (worksheet.ok && worksheet.paymentMismatch != null && Math.abs(worksheet.paymentMismatch) >= 0.01) {
+        return {
+          dealScore: "YELLOW",
+          confidenceLevel: "HIGH",
+          verdictLabel: "PAUSE — PAYMENT DOESN'T MATCH",
+          goNoGo: "NEED-MORE-INFO",
+        };
+      }
+    }
   }
 
   // Lease-specific rules (applied before general rules)
