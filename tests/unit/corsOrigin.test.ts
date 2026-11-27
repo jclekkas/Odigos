@@ -31,24 +31,63 @@ describe("isAllowedCorsOrigin", () => {
   });
 
   describe("localhost development", () => {
-    it("allows http://localhost without a port", () => {
+    it("allows http://localhost without a port outside production", () => {
+      vi.stubEnv("NODE_ENV", "development");
       expect(isAllowedCorsOrigin("http://localhost")).toBe(true);
     });
 
-    it("allows http://localhost:5000", () => {
+    it("allows http://localhost:5000 outside production", () => {
+      vi.stubEnv("NODE_ENV", "development");
       expect(isAllowedCorsOrigin("http://localhost:5000")).toBe(true);
     });
 
-    it("allows http://localhost:3000", () => {
+    it("allows http://localhost:3000 outside production", () => {
+      vi.stubEnv("NODE_ENV", "development");
       expect(isAllowedCorsOrigin("http://localhost:3000")).toBe(true);
+    });
+
+    it("blocks localhost on the hosted production API", () => {
+      vi.stubEnv("NODE_ENV", "production");
+      vi.stubEnv("VERCEL", "1");
+      expect(isAllowedCorsOrigin("http://localhost:5000")).toBe(false);
+      expect(isAllowedCorsOrigin("http://localhost")).toBe(false);
+    });
+
+    it("allows localhost for a self-hosted production process", () => {
+      // Docker and `npm start` run NODE_ENV=production without VERCEL.
+      // The documented URL is http://localhost:5000, and CI's production
+      // server is reached the same way. Health probes send no Origin.
+      vi.stubEnv("NODE_ENV", "production");
+      vi.stubEnv("VERCEL", "");
+      expect(isAllowedCorsOrigin("http://localhost:5000")).toBe(true);
     });
   });
 
   describe("Vercel preview deployments", () => {
-    it("allows *.vercel.app", () => {
+    it("allows this project's own preview deployments", () => {
       expect(
         isAllowedCorsOrigin("https://odigos-git-feature-branch.vercel.app"),
       ).toBe(true);
+    });
+
+    // The old rule was /\.vercel\.app$/, which matched every deployment on
+    // Vercel's shared preview domain. Anyone can create a free account there,
+    // so with credentials:true on the cors() middleware that allowlist was
+    // effectively open. These lock the narrowed rule in place.
+    it("blocks an unrelated project's vercel.app deployment", () => {
+      expect(isAllowedCorsOrigin("https://evil-project.vercel.app")).toBe(false);
+    });
+
+    it("blocks a bare vercel.app origin", () => {
+      expect(isAllowedCorsOrigin("https://vercel.app")).toBe(false);
+    });
+
+    it("blocks a look-alike that only ends with the project prefix", () => {
+      expect(isAllowedCorsOrigin("https://notodigos-abc.vercel.app")).toBe(false);
+    });
+
+    it("blocks plain http preview origins", () => {
+      expect(isAllowedCorsOrigin("http://odigos-git-branch.vercel.app")).toBe(false);
     });
   });
 

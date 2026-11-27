@@ -9,6 +9,8 @@ import type { AnalysisResponse } from "@shared/schema";
 
 type AnalysisResponseWithExtras = AnalysisResponse & {
   listingId?: string;
+  /** Server-signed carrier for the "email me this" feature. */
+  emailToken?: string;
 };
 
 export type EmailPreviewStatus = "idle" | "success" | "error";
@@ -25,16 +27,11 @@ export default function EmailPreviewForm({ analysisResult }: EmailPreviewFormPro
   const emailMutation = useMutation({
     mutationFn: async () => {
       try {
+        // The email body is carried inside the server-signed emailToken, so
+        // there is nothing for the client to send but the recipient.
         const response = await apiRequest("POST", "/api/email-preview", {
           email,
-          analysisResult: {
-            goNoGo: analysisResult.goNoGo,
-            verdictLabel: analysisResult.verdictLabel,
-            confidenceLevel: analysisResult.confidenceLevel,
-            missingInfo: analysisResult.missingInfo.slice(0, 3),
-            detectedFields: analysisResult.detectedFields,
-            summary: analysisResult.summary,
-          },
+          emailToken: analysisResult.emailToken,
         });
         return response.json();
       } catch (err) {
