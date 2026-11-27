@@ -3,6 +3,8 @@
  */
 
 import type { DocFeeAssessment } from "./regulatoryClassification.js";
+import type { MarketBenchmarkKind } from "./marketValuation.js";
+import { FACTORY_STICKER_COMPARISON } from "../shared/windowSticker.js";
 
 export type ReplyVerdict =
   | "GO"
@@ -18,6 +20,7 @@ export interface ReplyFacts {
   primaryIssue: string;
   derivation: string[];
   askForVehicleEvidence: boolean;
+  benchmarkKind?: MarketBenchmarkKind | null;
 }
 
 const ENDORSEMENT =
@@ -26,7 +29,11 @@ const ENDORSEMENT =
 export function buildConstrainedReply(facts: ReplyFacts): string {
   const parts: string[] = [];
 
-  if (facts.verdict === "GO" && facts.marketVerified) {
+  if (facts.verdict === "GO" && facts.marketVerified && facts.benchmarkKind === "factory_msrp") {
+    parts.push(
+      `The numbers in this quote reconcile, the checked fees are within the verified rules, and the selling price is at or below the buyer-supplied factory window sticker MSRP. ${FACTORY_STICKER_COMPARISON} Please send the buyer's order only if it matches these exact figures.`,
+    );
+  } else if (facts.verdict === "GO" && facts.marketVerified) {
     parts.push(
       "The numbers in this quote reconcile, the checked fees are within the verified rules, and the selling price is inside an independent benchmark. Please send the buyer's order only if it matches these exact figures.",
     );
@@ -34,10 +41,19 @@ export function buildConstrainedReply(facts: ReplyFacts): string {
     parts.push(
       `${facts.docFee.summary} Please reduce that documentation charge before any paperwork is prepared.`,
     );
-  } else if (facts.docFee?.classification === "potentially_noncompliant") {
+  } else if (facts.verdict === "NO-GO" && facts.benchmarkKind === "factory_msrp") {
     parts.push(
-      `${facts.docFee.summary} Please confirm in writing whether the dealership has a Vehicle Code § 1685 private-industry-partner agreement. I am not approving the vehicle price.`,
+      `${facts.primaryIssue}. Please remove the markup over the factory window sticker MSRP and send an itemized out-the-door quote. I am not approving this selling price. ${FACTORY_STICKER_COMPARISON}`,
     );
+    if (facts.docFee?.classification === "potentially_noncompliant") {
+      parts.push(`${facts.docFee.summary} I am not treating that documentation charge as confirmed.`);
+    }
+  } else if (facts.docFee?.classification === "potentially_noncompliant") {
+    const ask =
+      facts.docFee.jurisdiction === "Oregon"
+        ? "Please confirm in writing whether the dealership uses an electronic integrator under ORS 822.043."
+        : "Please confirm in writing whether the dealership has a Vehicle Code § 1685 private-industry-partner agreement.";
+    parts.push(`${facts.docFee.summary} ${ask} I am not approving the vehicle price.`);
   } else if (facts.verdict === "NO-GO") {
     parts.push(
       `${facts.primaryIssue}. Please correct that item and send an itemized out-the-door quote.`,

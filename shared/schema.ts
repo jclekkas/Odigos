@@ -15,6 +15,11 @@ export const analysisRequestSchema = z.object({
   language: z.enum(["en", "es"]).optional().default("en"),
   /** QA and regression submissions. They are not stored or aggregated. */
   synthetic: z.boolean().optional(),
+  /**
+   * Optional Monroney MSRP typed by the buyer. Not a dealer addendum and not
+   * a market transaction price. Omitted requests keep the unverified benchmark.
+   */
+  factoryWindowStickerMsrp: z.number().finite().min(1000).max(2_000_000).nullable().optional(),
 });
 
 export const marketContextStrengthSchema = z.enum(["none", "thin", "moderate", "strong"]);
@@ -273,6 +278,8 @@ export const analysisResponseSchema = z.object({
   financialImpactConfidence: financialImpactConfidenceSchema.nullable().optional(),
   financialSummary: z.string().nullable().optional(),
   marketValueStatus: z.enum(["verified", "unverified"]).optional(),
+  marketBenchmarkKind: z.enum(["factory_msrp", "market_transaction"]).nullable().optional(),
+  marketBenchmarkSource: z.string().nullable().optional(),
   dimensions: analysisDimensionsSchema.optional(),
   mathematicalDerivation: z.array(z.string()).optional(),
   docFeeCapCheck: docFeeCapCheckSchema.nullable().optional(),

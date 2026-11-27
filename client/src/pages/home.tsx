@@ -81,6 +81,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -90,6 +91,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { apiRequest } from "@/lib/queryClient";
 import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel, MarketContext, DocFeeCapCheck, RankedSignal, MarketSignal, FlaggedItemEvidence, MarketConfidenceTier, GoNoGo } from "@shared/schema";
+import { FACTORY_STICKER_COMPARISON } from "@shared/windowSticker";
 import LeaseMathBlock from "@/components/LeaseMathBlock";
 import FinancialImpactHeroComponent from "@/components/results/FinancialImpactHero";
 import StatutoryCapCalloutComponent from "@/components/results/StatutoryCapCallout";
@@ -179,6 +181,11 @@ const formSchema = z.object({
   apr: z.string().optional(),
   termMonths: z.string().optional(),
   downPayment: z.string().optional(),
+  factoryWindowStickerMsrp: z.string().optional().refine((value) => {
+    if (value == null || value.trim() === "") return true;
+    const amount = Number(value);
+    return Number.isFinite(amount) && amount >= 1000 && amount <= 2_000_000;
+  }, "Enter the Monroney MSRP in dollars (1000 or more), or leave this blank."),
   source: z.enum(["paste", "upload", "url", "camera"]).default("paste").optional(),
 });
 
@@ -186,6 +193,13 @@ type FormValues = z.infer<typeof formSchema>;
 
 /** Explicit state machine for image intake (camera capture and upload). */
 type ImageIntakeStatus = "idle" | "processing" | "success" | "partial" | "failed" | "invalid";
+
+function parseFactoryWindowStickerMsrp(raw: string | undefined): number | undefined {
+  if (raw == null || raw.trim() === "") return undefined;
+  const amount = Number(raw);
+  if (!Number.isFinite(amount) || amount < 1000 || amount > 2_000_000) return undefined;
+  return amount;
+}
 
 function formatCurrency(value: number | null | undefined): string {
   if (value == null) return "Not specified";
@@ -447,9 +461,28 @@ interface ExpectedNormalRangeCardProps {
   normalOtdMin: number | null | undefined;
   normalOtdMax: number | null | undefined;
   marketValueStatus?: "verified" | "unverified" | null;
+  benchmarkKind?: "factory_msrp" | "market_transaction" | null;
 }
 
-function ExpectedNormalRangeCard({ normalOtdMin, normalOtdMax, marketValueStatus }: ExpectedNormalRangeCardProps) {
+function ExpectedNormalRangeCard({ normalOtdMin, normalOtdMax, marketValueStatus, benchmarkKind }: ExpectedNormalRangeCardProps) {
+  if (benchmarkKind === "factory_msrp") {
+    return (
+      <Card className="bg-muted/20 border-border/40" data-testid="expected-normal-range-card">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wider">
+            <Target className="w-4 h-4" aria-hidden="true" />
+            Factory window sticker
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-base leading-relaxed text-foreground" data-testid="expected-normal-range-value">
+            {FACTORY_STICKER_COMPARISON}
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const range = formatCurrencyRange(normalOtdMin, normalOtdMax);
   if (!range) {
     if (marketValueStatus !== "unverified") return null;
@@ -1574,7 +1607,7 @@ export default function Home() {
     capture("analyze_page_viewed", { route: "/analyze" });
     setSeoMeta({
       title: "Analyze Your Car Deal | Odigos",
-      description: "Paste dealer texts, emails, or quotes into Odigos. The audit checks disclosure, math, and verified fee caps, and withholds a price verdict when market value is not verified.",
+      description: "Paste dealer texts, emails, or quotes into Odigos. The audit checks disclosure, math, and verified fee caps. Market value stays unverified unless you optionally enter a factory window sticker MSRP.",
       path: "/analyze",
     });
   }, []);
@@ -1598,6 +1631,7 @@ export default function Home() {
       apr: "",
       termMonths: "",
       downPayment: "",
+      factoryWindowStickerMsrp: "",
       source: "paste",
     },
   });
@@ -1965,6 +1999,7 @@ export default function Home() {
         apr: data.apr ? parseFloat(data.apr) : undefined,
         termMonths: data.termMonths ? parseInt(data.termMonths) : undefined,
         downPayment: data.downPayment ? parseFloat(data.downPayment) : undefined,
+        factoryWindowStickerMsrp: parseFactoryWindowStickerMsrp(data.factoryWindowStickerMsrp),
         sessionId: getSessionId(),
         language: "en" as "en" | "es",
       };
@@ -2034,7 +2069,7 @@ export default function Home() {
         <div className="max-w-2xl mx-auto mb-2" data-testid="section-analyzer-context">
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground" data-testid="text-analyzer-heading">Analyze Your Car Dealer Quote</h1>
             <p className="text-sm text-muted-foreground mt-2 leading-relaxed" data-testid="text-analyzer-description">
-            Paste a dealer quote, email, or text message. Odigos checks whether charges are disclosed, whether the totals reconcile, and whether a fee exceeds a verified state cap. It does not estimate a fair vehicle price unless an independent pricing source is configured.
+            Paste a dealer quote, email, or text message. Odigos checks whether charges are disclosed, whether the totals reconcile, and whether a fee exceeds a verified state cap. An optional factory window sticker MSRP is compared with the selling price. That figure is not a live market transaction price.
           </p>
           <a
             href="/how-odigos-works"
@@ -2376,6 +2411,32 @@ export default function Home() {
               </CardContent>
             </Card>
 
+            <FormField
+              control={form.control}
+              name="factoryWindowStickerMsrp"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Factory Window Sticker MSRP (optional)</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="number"
+                      min={1000}
+                      step="0.01"
+                      inputMode="decimal"
+                      placeholder="e.g., 28700"
+                      data-testid="input-factory-window-sticker-msrp"
+                      onFocus={() => trackFormFocus("factory_window_sticker_msrp")}
+                    />
+                  </FormControl>
+                  <FormDescription data-testid="text-factory-window-sticker-help">
+                    A manufacturer Monroney sticker MSRP works. A dealer-printed addendum is not the factory window sticker.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <Collapsible
               open={isOptionalOpen}
               onOpenChange={(open) => {
@@ -2624,7 +2685,7 @@ export default function Home() {
               <li>Whether the charges in the quote are itemized</li>
               <li>Whether the out-the-door total and payment reconcile</li>
               <li>Whether a documentation fee exceeds a verified state cap</li>
-              <li>Market value stays unverified until an independent price source is configured</li>
+              <li>Without a factory window sticker MSRP, market value stays unverified</li>
             </ul>
           </div>
         )}
@@ -2644,6 +2705,7 @@ export default function Home() {
                 confidence={result.financialImpactConfidence ?? null}
                 financialSummary={result.financialSummary}
                 marketValueStatus={result.marketValueStatus}
+                benchmarkKind={result.marketBenchmarkKind}
                 fallbackSummary={
                   result.marketValueStatus === "unverified"
                     ? "Market value not verified. Savings are not estimated."
@@ -2824,6 +2886,7 @@ export default function Home() {
                     normalOtdMin={result.estimatedNormalOtdMin}
                     normalOtdMax={result.estimatedNormalOtdMax}
                     marketValueStatus={result.marketValueStatus}
+                    benchmarkKind={result.marketBenchmarkKind}
                   />
 
                   <LeaseMathBlock leaseMath={result.leaseMath} />

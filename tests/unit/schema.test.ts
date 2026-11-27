@@ -77,6 +77,18 @@ describe("analysisRequestSchema", () => {
     });
     expect(result.success).toBe(true);
   });
+
+  it("accepts an omitted or null factory window sticker MSRP", () => {
+    expect(analysisRequestSchema.safeParse({ dealerText: "text" }).success).toBe(true);
+    const empty = analysisRequestSchema.safeParse({ dealerText: "text", factoryWindowStickerMsrp: null });
+    expect(empty.success).toBe(true);
+  });
+
+  it("rejects a negative or non-finite factory window sticker MSRP", () => {
+    expect(analysisRequestSchema.safeParse({ dealerText: "text", factoryWindowStickerMsrp: -100 }).success).toBe(false);
+    expect(analysisRequestSchema.safeParse({ dealerText: "text", factoryWindowStickerMsrp: 0 }).success).toBe(false);
+    expect(analysisRequestSchema.safeParse({ dealerText: "text", factoryWindowStickerMsrp: 28700 }).success).toBe(true);
+  });
 });
 
 // ─── analysisResponseSchema ───────────────────────────────────────────────────

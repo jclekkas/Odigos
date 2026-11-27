@@ -176,7 +176,7 @@ export default function DealerPricingProblems() {
           Have a dealer quote you want checked?
         </h3>
         <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-          Paste it into Odigos. You get a verdict of GO, PROCEED WITH CAUTION, INSUFFICIENT INFORMATION, or NO-GO, plus the math and any verified fee-cap finding. GO requires an independent price benchmark. No signup required.
+          Paste it into Odigos. You get a verdict of GO, PROCEED WITH CAUTION, INSUFFICIENT INFORMATION, or NO-GO, plus the math and any verified fee-cap finding. Market value stays unverified unless you optionally enter a factory window sticker MSRP. No signup required.
         </p>
         <Link href="/analyze">
           <button

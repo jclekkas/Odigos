@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1.0",
-  "last_reviewed": "2026-11-20",
+  "last_reviewed": "2026-11-27",
   "dataset_version": "1.3.0",
   "description": "U.S. state vehicle purchase fee rules used by the Odigos quote analyzer. schema_version 1.1.0 is the November 20, 2026 primary-source audit. A citation is included only when a fetched statute, DMV, revenue, or attorney-general page states the value. source_status verified means both the doc-fee rule and the state sales or vehicle tax rate were confirmed. partial means only one of those was confirmed. needs_source means neither was confirmed in this audit.",
   "_metadata": {
@@ -175,20 +175,25 @@
       "tradeInTaxCredit": true,
       "titleFee": 10,
       "registrationFee": "$17-$30 based on weight",
-      "specialNotes": "Called 'service and handling' fees. Tiered sales tax based on vehicle price.",
+      "specialNotes": "23 CAR \u00a7 410-801, citing Arkansas Code \u00a7 23-112-317, states that a dealer service and handling fee shall be no more than $129. The fetched rule does not state an effective date. The stored sales-tax description was not re-verified.",
       "sources": [
         "https://caredge.com/guides/car-dealer-doc-fee-by-state",
         "https://www.dfa.arkansas.gov/office/taxes/excise-tax-administration/sales-use-tax/sales-use-tax-rates/state-sales-use-tax-rates/"
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: CarEdge + AR DFA tax rate page. Cap amount needs statute verification.",
-      "statuteCitation": "A.C.A. \u00a7 23-112-402",
-      "source_status": "needs_source",
-      "citations": [],
+      "verificationMethod": "Primary: Code of Arkansas Rules 23 CAR \u00a7 410-801, fetched 2026-11-27. Sales tax was not on that page.",
+      "statuteCitation": "Ark. Code \u00a7 23-112-317; 23 CAR \u00a7 410-801",
+      "source_status": "partial",
+      "citations": [
+        {
+          "url": "https://codeofarrules.arkansas.gov/Rules/Rule?chapterID=202&levelType=section&partID=908&sectionID=41369&subChapterID=248&subPartID=6343&titleID=23",
+          "title": "23 CAR \u00a7 410-801, Fees and disclosures",
+          "retrieved": "2026-11-27",
+          "supports": "Fetched rule: pursuant to Arkansas Code \u00a7 23-112-317, a dealer service and handling fee shall be no more than $129. The page does not state an effective date or a sales-tax rate."
+        }
+      ],
       "unverified_fields": [
-        "docFeeCap",
-        "docFeeCapAmount",
         "docFeeTypicalRange",
         "docFeeAverage",
         "stateSalesTaxRate",
@@ -198,7 +203,7 @@
         "registrationFee"
       ],
       "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only.",
-      "last_reviewed": "2026-11-20"
+      "last_reviewed": "2026-11-27"
     },
     "CA": {
       "name": "California",
@@ -616,7 +621,7 @@
       "tradeInTaxCreditNotes": "UNLIMITED as of Jan 1, 2022 (Public Act 102-0353 removed $10K cap).",
       "titleFee": 165,
       "registrationFee": "$151/year; +$100 annual EV fee",
-      "specialNotes": "Cap adjusts annually by CPI. Modern cap started at $300 effective Jan 1, 2020. For 2025: $367.70. For 2026: $377.63. Increases ~2-3%/year.",
+      "specialNotes": "Fetched 815 ILCS 375/11.1 on 2026-11-27: the base documentary fee beginning January 1, 2020 is $300, adjusted annually by the CPI. That page does not state the stored current dollar amount. The stored figure stays unverified and is not treated as a legal ceiling.",
       "cpiIndexing": {
         "isIndexed": true,
         "baseAmount": 300,
@@ -633,8 +638,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: Illinois Automobile Dealers Assoc. + ILSOS fee schedule",
-      "statuteCitation": "815 ILCS 306/1",
+      "verificationMethod": "Fetched 815 ILCS 375/11.1 on 2026-11-27. The statute states a $300 base as of January 1, 2020 plus annual CPI adjustment. It does not state the stored current dollar amount, so the cap stays unverified.",
+      "statuteCitation": "815 ILCS 375/11.1",
       "source_status": "needs_source",
       "citations": [],
       "unverified_fields": [
@@ -649,7 +654,7 @@
         "registrationFee"
       ],
       "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only.",
-      "last_reviewed": "2026-11-20"
+      "last_reviewed": "2026-11-27"
     },
     "IN": {
       "name": "Indiana",
@@ -1048,13 +1053,13 @@
       "tradeInTaxCreditNotes": "Maximum $11,000 credit or actual agreed value, whichever is less (2025)",
       "titleFee": 15,
       "registrationFee": "$15 (1-year) or $29 (2-year) base + percentage of MSRP",
-      "specialNotes": "Cap is $280 OR 5% of vehicle price, whichever is LESS. Adjusted biennially by CPI. Per DIFS Bulletin 2025-03-CF.",
+      "specialNotes": "DIFS Bulletin 2025-03-CF, issued and entered January 28, 2025: the documentary preparation fee shall not exceed 5% of the cash price or $280, whichever is less, under MCL 492.113(2)(a). The analyzer flags only the $280 dollar ceiling.",
       "cpiIndexing": {
         "isIndexed": true,
         "baseAmount": null,
         "baseYear": null,
         "currentAmount": 280,
-        "effectiveDate": "2025-01-01",
+        "effectiveDate": "2025-01-28",
         "frequency": "biennial",
         "indexType": "CPI",
         "nextExpectedDate": "2027-01-01"
@@ -1064,13 +1069,18 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: Michigan DIFS Bulletin 2025-03-CF",
-      "statuteCitation": "DIFS Bulletin 2025-03-CF",
-      "source_status": "needs_source",
-      "citations": [],
+      "verificationMethod": "Primary: Michigan DIFS Bulletin 2025-03-CF, fetched 2026-11-27. Sales tax was not on that page.",
+      "statuteCitation": "MCL 492.113(2)(a); DIFS Bulletin 2025-03-CF",
+      "source_status": "partial",
+      "citations": [
+        {
+          "url": "https://www.michigan.gov/difs/-/media/Project/Websites/difs/Bulletins/2025/Bulletin_2025-03-CF.pdf",
+          "title": "DIFS Bulletin 2025-03-CF",
+          "retrieved": "2026-11-27",
+          "supports": "Fetched bulletin, issued and entered January 28, 2025: the documentary preparation fee shall not exceed 5% of the cash price or $280, whichever is less. The page does not state a sales-tax rate."
+        }
+      ],
       "unverified_fields": [
-        "docFeeCap",
-        "docFeeCapAmount",
         "docFeeTypicalRange",
         "docFeeAverage",
         "stateSalesTaxRate",
@@ -1080,7 +1090,7 @@
         "registrationFee"
       ],
       "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only.",
-      "last_reviewed": "2026-11-20"
+      "last_reviewed": "2026-11-27"
     },
     "MN": {
       "name": "Minnesota",
@@ -1491,19 +1501,30 @@
       "tradeInTaxCredit": true,
       "titleFee": 50,
       "registrationFee": "$26-$56.50 state weight fee + $25 plate fee + county tax",
-      "specialNotes": "Cap set Aug 18, 2021. Still current as of March 2026.",
+      "specialNotes": "15 NYCRR \u00a7 78.19(c)(2), in DMV compilation CR-78, states the dealer fee for assisting with registration and/or title may not exceed $175. The fetched DMV pages do not state an effective date.",
       "sources": [
         "https://dmv.ny.gov/registration/sales-tax-information"
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
-      "verificationMethod": "Primary: 15 NYCRR \u00a778.19 + NYIADA confirmation",
-      "statuteCitation": "NY DMV Reg. 78.17",
-      "source_status": "needs_source",
-      "citations": [],
+      "verificationMethod": "Primary: NY DMV CR-78 \u00a7 78.19 and dmv.ny.gov, fetched 2026-11-27. Sales tax was not on those pages.",
+      "statuteCitation": "15 NYCRR \u00a7 78.19",
+      "source_status": "partial",
+      "citations": [
+        {
+          "url": "https://dmv.ny.gov/forms/cr78.pdf",
+          "title": "15 NYCRR \u00a7 78.19, DMV compilation CR-78",
+          "retrieved": "2026-11-27",
+          "supports": "Fetched DMV compilation: the fee a dealer charges for assisting in securing a registration and/or certificate of title may not exceed $175. The compilation does not state an effective date for that amount."
+        },
+        {
+          "url": "https://dmv.ny.gov/buy-sell-or-transfer-vehicle-ownership",
+          "title": "NY DMV, buy, sell, or transfer vehicle ownership",
+          "retrieved": "2026-11-27",
+          "supports": "Fetched DMV page: a dealer can charge a fee of $175 for sending the registration and title application to the DMV. The page does not state an effective date."
+        }
+      ],
       "unverified_fields": [
-        "docFeeCap",
-        "docFeeCapAmount",
         "docFeeTypicalRange",
         "docFeeAverage",
         "stateSalesTaxRate",
@@ -1513,7 +1534,7 @@
         "registrationFee"
       ],
       "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only.",
-      "last_reviewed": "2026-11-20"
+      "last_reviewed": "2026-11-27"
     },
     "NC": {
       "name": "North Carolina",
@@ -1713,27 +1734,57 @@
       "tradeInTaxCreditNotes": "N/A \u2014 no sales tax. Privilege tax applies to gross sale price.",
       "titleFee": 77,
       "registrationFee": "$43 (2-year); +$60 increase for EV/40+ MPG vehicles effective Jan 1, 2026",
-      "specialNotes": "ORS 822.043: document processing fee shall not exceed $250 if the dealer uses an integrator, or $200 if not. The analyzer uses $250, so a fee between $201 and $250 is flagged only when it exceeds $250. Oregon has no general sales tax. A vehicle privilege tax can apply to some vehicles purchased outside Oregon.",
+      "specialNotes": "ORS 822.043(4): the document processing fee shall not exceed $250 if the dealer uses an integrator, or $200 if the dealer does not. A fee from $201 through $250 is conditional until integrator use is confirmed. A fee above $250 exceeds both ceilings. Oregon has no general sales tax.",
+      "docFeeConditions": [
+        {
+          "id": "uses_integrator",
+          "jurisdiction": "Oregon",
+          "maxAmount": 250,
+          "condition": "Vehicle dealer uses an integrator, as defined in ORS 802.600.",
+          "statutoryReference": "ORS 822.043(4)(a)",
+          "officialSource": "https://www.oregonlegislature.gov/bills_laws/ors/ors822.html",
+          "relatedSource": "https://www.oregon.gov/odot/dmv/pages/vehicle/evr.aspx",
+          "effectiveDate": null,
+          "lastVerificationDate": "2026-11-27"
+        },
+        {
+          "id": "no_integrator",
+          "jurisdiction": "Oregon",
+          "maxAmount": 200,
+          "condition": "Vehicle dealer does not use an integrator.",
+          "statutoryReference": "ORS 822.043(4)(b)",
+          "officialSource": "https://www.oregonlegislature.gov/bills_laws/ors/ors822.html",
+          "relatedSource": "https://www.oregon.gov/odot/dmv/pages/vehicle/evr.aspx",
+          "effectiveDate": null,
+          "lastVerificationDate": "2026-11-27"
+        }
+      ],
       "sources": [
         "https://www.oregon.gov/odot/dmv/pages/fees/vehicle.aspx"
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Primary: ORS \u00a7822.043 confirmed $250/$200 cap. Rate: $250 with integrator.",
-      "statuteCitation": "ORS \u00a7 822.043",
+      "verificationMethod": "Primary: ORS 822.043 on oregonlegislature.gov and the ODOT DMV EVR page, fetched 2026-11-27. Sales tax: Oregon Department of Revenue, fetched 2026-11-27.",
+      "statuteCitation": "ORS 822.043",
       "source_status": "verified",
       "citations": [
         {
-          "url": "https://oregon.public.law/statutes/ors_822.043",
+          "url": "https://www.oregonlegislature.gov/bills_laws/ors/ors822.html",
           "title": "ORS 822.043",
-          "retrieved": "2026-11-20",
-          "supports": "Fetched statute: document processing fee shall not exceed $250 with an integrator and $200 without one."
+          "retrieved": "2026-11-27",
+          "supports": "Fetched statute: the document processing fee shall not exceed $250 if the vehicle dealer uses an integrator, or $200 if the dealer does not. The history line lists amendments through 2025 c.415 \u00a720 and does not state a single operative date for those dollar ceilings. The 2026 regular-session amendments table does not list 822.043."
+        },
+        {
+          "url": "https://www.oregon.gov/odot/dmv/pages/vehicle/evr.aspx",
+          "title": "Oregon DMV electronic vehicle registration fees",
+          "retrieved": "2026-11-27",
+          "supports": "Fetched DMV page: the maximum processing fees a dealership can charge a customer are $250 when using an EVR integrator and $200 when not using an EVR integrator."
         },
         {
           "url": "https://www.oregon.gov/dor/programs/businesses/pages/sales-tax.aspx",
           "title": "Oregon Department of Revenue",
-          "retrieved": "2026-11-20",
-          "supports": "Fetched page: Oregon does not have a general sales or use tax."
+          "retrieved": "2026-11-27",
+          "supports": "Fetched page: Oregon does not have a general sales or use tax. The page does not state the document-processing-fee ceilings."
         }
       ],
       "unverified_fields": [
@@ -1745,7 +1796,7 @@
         "registrationFee"
       ],
       "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only.",
-      "last_reviewed": "2026-11-20"
+      "last_reviewed": "2026-11-27"
     },
     "PA": {
       "name": "Pennsylvania",
@@ -2226,7 +2277,7 @@
       "tradeInTaxCredit": true,
       "titleFee": null,
       "registrationFee": "Varies; includes annual wheel tax",
-      "specialNotes": "$575 cap set by DMV Dealer Advisory Board effective July 1, 2024 (increased from $499). CPI-adjusted annually starting July 1, 2025. Per WV Code 17A-6A-8A.",
+      "specialNotes": "Fetched W. Va. Code \u00a717A-6A-8a on 2026-11-27: that section addresses warranty and recall compensation, not a buyer documentary fee. Fetched \u00a717A-6-1b(d): a fee established by the motor vehicle dealer advisory board may be charged for dealer registration services. Neither page states a $575 ceiling. The stored $575 figure stays unverified.",
       "cpiIndexing": {
         "isIndexed": true,
         "baseAmount": 575,
@@ -2243,8 +2294,8 @@
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: WVADA News confirmed $575 cap (July 2024). Statute 17A-6A-8A. Needs primary verification.",
-      "statuteCitation": "WV Code \u00a7 17A-6A-8A",
+      "verificationMethod": "Fetched W. Va. Code \u00a717A-6A-8a and chapter 17A, article 6 on 2026-11-27. Neither states a $575 documentary-fee ceiling, so the stored amount stays unverified.",
+      "statuteCitation": null,
       "source_status": "needs_source",
       "citations": [],
       "unverified_fields": [
@@ -2259,7 +2310,7 @@
         "registrationFee"
       ],
       "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only.",
-      "last_reviewed": "2026-11-20"
+      "last_reviewed": "2026-11-27"
     },
     "WI": {
       "name": "Wisconsin",

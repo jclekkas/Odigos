@@ -20,12 +20,12 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
   "/": {
     title: "Odigos — Dealer Quote Analyzer | Find What's Wrong With Your Quote",
     description:
-      "Paste your dealer quote. Odigos audits disclosure, math, and verified fee caps. It does not estimate market value without an independent price source. Full analysis is free.",
+      "Paste your dealer quote. Odigos audits disclosure, math, and verified fee caps. Market value stays unverified unless you optionally enter a factory window sticker MSRP. Full analysis is free.",
   },
   "/analyze": {
     title: "Check Your Dealer Quote | Odigos",
     description:
-      "Paste your dealer quote. Odigos audits disclosure, math, and verified fee caps, and withholds a price verdict when market value is not verified.",
+      "Paste your dealer quote. Odigos audits disclosure, math, and verified fee caps. Market value stays unverified unless you optionally enter a factory window sticker MSRP.",
   },
 
   // ── Top 10 GSC pages (updated SEO copy) ──────────────────────
@@ -35,9 +35,9 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
       "Texas Finance Code § 348.006 does not set a hard dollar cap. A fee above $225 is not automatically illegal. Compare the itemized out-the-door price.",
   },
   "/car-dealer-fees-new-york": {
-    title: "New York Dealer Doc Fee (2026): Stored $175 Figure Is Not Verified",
+    title: "New York Dealer Doc Fee (2026): Verified $175 Ceiling",
     description:
-      "New York's stored $175 documentation-fee figure needs a source. Odigos does not call a higher fee illegal from that number. Compare the itemized out-the-door price.",
+      "15 NYCRR § 78.19(c)(2) caps the New York dealer registration and title assistance fee at $175. Compare the itemized out-the-door price. Market value stays unverified unless you add a factory window sticker MSRP.",
   },
   "/car-dealer-fees-california": {
     title: "California Dealer Doc Fee (2026): $70 or $85 Depending on DMV Partner Status",
@@ -84,7 +84,7 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
   "/about": {
     title: "About Odigos — Independent Dealer Quote Analyzer",
     description:
-      "Odigos is an independent dealer-quote auditor. It checks disclosure, math, and verified state fee caps. It does not estimate market value unless an independent pricing source is configured.",
+      "Odigos is an independent dealer-quote auditor. It checks disclosure, math, and verified state fee caps. Market value stays unverified unless you optionally enter a factory window sticker MSRP.",
   },
   "/privacy": {
     title: "Privacy Policy | Odigos",

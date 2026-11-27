@@ -108,14 +108,34 @@ describe("state guide fee claims", () => {
     expect(guide.h1).toMatch(/\$70 or \$85/);
   });
 
-  it("does not call New York's stored $175 figure a legal cap", () => {
-    const guide = STATE_FEES["new-york"];
-    const text = stringsIn(guide).join("\n");
-    expect(guide.hasCap).toBe(false);
-    expect(text).toMatch(/not verified/);
-    expect(text).not.toMatch(/flags every fee over the \$175/);
-    expect(text).not.toMatch(/cannot legally/);
-    expect(text).not.toMatch(/Maximum Allowed by Law/);
+  it("states the verified New York, Arkansas, and Michigan ceilings", () => {
+    const ny = stringsIn(STATE_FEES["new-york"]).join("\n");
+    expect(STATE_FEES["new-york"].hasCap).toBe(true);
+    expect(ny).toContain("$175");
+    expect(ny).toContain("78.19");
+    expect(ny).not.toMatch(/not a verified legal cap/);
+    expect(ny).not.toMatch(/needs a source/);
+
+    const ar = stringsIn(STATE_FEES.arkansas).join("\n");
+    expect(STATE_FEES.arkansas.hasCap).toBe(true);
+    expect(ar).toContain("$129");
+    expect(ar).toMatch(/23 CAR § 410-801/);
+    expect(ar).not.toMatch(/not a verified legal cap/);
+
+    const mi = stringsIn(STATE_FEES.michigan).join("\n");
+    expect(STATE_FEES.michigan.hasCap).toBe(true);
+    expect(mi).toContain("$280");
+    expect(mi).toMatch(/DIFS Bulletin 2025-03-CF/);
+    expect(mi).toContain("5%");
+    expect(mi).not.toMatch(/not a verified legal cap/);
+  });
+
+  it("keeps Illinois and West Virginia stored caps unverified", () => {
+    expect(STATE_FEES.illinois.hasCap).toBe(false);
+    expect(stringsIn(STATE_FEES.illinois).join("\n")).toMatch(/not a verified legal cap/);
+    expect(STATE_FEES["west-virginia"].hasCap).toBe(false);
+    expect(stringsIn(STATE_FEES["west-virginia"]).join("\n")).toMatch(/not a verified legal cap/);
+    expect(stringsIn(STATE_FEES["west-virginia"]).join("\n")).toContain("$575");
   });
 
   it("mentions Oregon's integrator split instead of a single $250 ceiling", () => {
@@ -123,6 +143,7 @@ describe("state guide fee claims", () => {
     expect(text).toContain("$250");
     expect(text).toContain("$200");
     expect(text.toLowerCase()).toContain("integrator");
+    expect(STATE_FEES.oregon.hasCap).toBe(true);
   });
 });
 
@@ -136,6 +157,17 @@ describe("product claims in educational copy", () => {
       }
     }
     expect(hits).toEqual([]);
+  });
+
+  it("says market value stays unverified unless a factory window sticker MSRP is optional", () => {
+    const landing = readFileSync(resolve(ROOT, "client/src/pages/landing.tsx"), "utf8");
+    const about = readFileSync(resolve(ROOT, "client/src/pages/about.tsx"), "utf8");
+    const how = readFileSync(resolve(ROOT, "client/src/pages/how-odigos-works.tsx"), "utf8");
+    for (const text of [landing, about, how]) {
+      expect(text).toMatch(/factory window sticker MSRP/i);
+      expect(text).toMatch(/optional/i);
+      expect(text).toMatch(/unverified/i);
+    }
   });
 
   it("keeps the comparison tables on the verified-cap language", () => {

@@ -11,6 +11,7 @@ export interface FinancialImpactHeroProps {
   financialSummary: string | null | undefined;
   fallbackSummary: string;
   marketValueStatus?: "verified" | "unverified" | null;
+  benchmarkKind?: "factory_msrp" | "market_transaction" | null;
 }
 
 export default function FinancialImpactHero({
@@ -20,9 +21,11 @@ export default function FinancialImpactHero({
   financialSummary,
   fallbackSummary,
   marketValueStatus,
+  benchmarkKind,
 }: FinancialImpactHeroProps) {
   const range = formatCurrencyRange(overpaymentMin, overpaymentMax);
   const hasRange = range != null && marketValueStatus !== "unverified";
+  const factorySticker = benchmarkKind === "factory_msrp";
 
   // Tone: "roughly fair" if the range starts at 0 and max is small; otherwise
   // treat as a money-at-risk situation. Threshold is intentionally loose —
@@ -31,6 +34,10 @@ export default function FinancialImpactHero({
 
   const headline = marketValueStatus === "unverified"
     ? "Market value not verified"
+    : factorySticker && hasRange
+    ? isRoughlyFair
+      ? "Selling price is at or below factory window sticker MSRP"
+      : `Selling price is ${range} above factory window sticker MSRP`
     : hasRange
     ? isRoughlyFair
       ? `Selling price is inside the independent benchmark · Gap: ${range}`

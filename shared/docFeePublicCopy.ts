@@ -43,7 +43,7 @@ export interface PublicDocFeeClaim {
 }
 
 export const HONEST_ANALYSIS_BLURB =
-  "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. It does not estimate a fair vehicle price, and it does not treat an unverified fee range as a legal limit.";
+  "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.";
 
 export function formatFeeMoney(amount: number): string {
   const hasCents = Math.round(amount * 100) % 100 !== 0;
@@ -118,7 +118,7 @@ function capNoteFor(state: FeeStateRecord, posture: CapPosture): string {
       );
     case "verified_conditional_or":
       return (
-        "Oregon Revised Statutes § 822.043 limits the document processing fee to $250 if the dealer uses an integrator and to $200 if not. The ceiling stored for the analyzer is $250, so a fee from $201 to $250 is not automatically called a violation. " +
+        "ORS 822.043(4) limits the document processing fee to $250 if the dealer uses an integrator and to $200 if the dealer does not. A fee from $201 to $250 stays conditional until integrator use is confirmed. A fee above $250 is above both ceilings. " +
         range +
         compare
       );
@@ -152,6 +152,12 @@ function verifiedCapDetail(state: FeeStateRecord, money: string): string {
       return "Minnesota's fetched statute text says that on or after July 1, 2025, the maximum documentary fee is the lesser of $350 or ten percent of the sale or lease. This file stores the $350 ceiling.";
     case "IN":
       return "An Indiana Secretary of State memo says the office will not take enforcement action on documentation preparation fees at or below $251.05, citing IC 9-32-13-7(b). Odigos treats a higher documentation fee as above that verified ceiling.";
+    case "NY":
+      return "15 NYCRR § 78.19(c)(2) says the fee a New York dealer charges for assisting with registration and/or title may not exceed $175. The fetched DMV pages do not state an effective date. Odigos can flag a documentation fee above that verified ceiling.";
+    case "AR":
+      return "23 CAR § 410-801, citing Arkansas Code § 23-112-317, says a dealer service and handling fee shall be no more than $129. The fetched rule does not state an effective date. Odigos can flag a fee above that verified ceiling.";
+    case "MI":
+      return "DIFS Bulletin 2025-03-CF, issued January 28, 2025, says Michigan's documentary preparation fee shall not exceed 5% of the cash price or $280, whichever is less. Odigos flags the verified $280 dollar ceiling. On a low-priced vehicle, confirm the 5% alternative before you treat a smaller fee as allowed.";
     case "OH":
       return "Ohio's verified documentary service charge ceiling is $398 for calendar year 2026 under ORC § 4517.261. The state's note also describes a 10% cash-price limit. The fetched page quoted here supports the $398 ceiling.";
     case "IA":
@@ -193,6 +199,7 @@ function capCellFor(state: FeeStateRecord, posture: CapPosture): string {
       if (state.abbreviation === "PA") return "Verified: $490 electronic, $409 non-electronic";
       if (state.abbreviation === "RI") return "Verified: up to $400 on sales over $10,000";
       if (state.abbreviation === "MN") return "Verified: lesser of $350 or 10% of the sale";
+      if (state.abbreviation === "MI") return "Verified dollar ceiling: $280 (or 5% if less)";
       return `Verified ceiling: ${money}`;
     case "verified_no_cap":
       return state.abbreviation === "TX" ? "No hard dollar cap verified" : "No statutory cap verified";
