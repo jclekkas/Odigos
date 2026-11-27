@@ -1647,7 +1647,45 @@
       "tradeInTaxCreditNotes": "New vehicles only",
       "titleFee": 18,
       "registrationFee": "Varies by type; service fee increased $5 to $8 effective Jan 1, 2026",
-      "specialNotes": "Ohio Rev. Code \u00a7 4517.261 and the Ohio Dealer Board page, both fetched 2026-11-27: the documentary service charge is the lesser of the registrar amount and 10% of the contract amount excluding tax, title, registration, and negative equity. The registrar amount is $398 from January 1, 2026 through December 31, 2026, and $412 for calendar year 2027. When the contract amount is known, the analyzer applies the lesser figure. When it is unknown, the analyzer applies $398 and notes that the 10% limb was not applied.",
+      "specialNotes": "Ohio Rev. Code \u00a7 4517.261 and the Ohio Dealer Board page, both fetched 2026-11-27: the documentary service charge is the lesser of the registrar amount and 10% of the contract amount excluding tax, title, registration, and negative equity. The registrar amount is $398 from January 1, 2026 through December 31, 2026, and $412 from January 1, 2027 through December 31, 2027. The analyzer selects the registrar amount in effect on the quote date and, when the contract amount is known, applies the lesser of that amount and 10%.",
+      "statutoryThresholds": [
+        {
+          "id": "oh-registrar-2026",
+          "amount": 398,
+          "percent": null,
+          "basis": null,
+          "condition": null,
+          "effective_from": "2026-01-01",
+          "effective_to": "2026-12-31",
+          "statutoryReference": "Ohio Rev. Code \u00a7 4517.261",
+          "officialSource": "https://autodealers.ohio.gov/resources-for-dealers/resources/documentary-service-charge",
+          "lastVerificationDate": "2026-11-27"
+        },
+        {
+          "id": "oh-registrar-2027",
+          "amount": 412,
+          "percent": null,
+          "basis": null,
+          "condition": null,
+          "effective_from": "2027-01-01",
+          "effective_to": "2027-12-31",
+          "statutoryReference": "Ohio Rev. Code \u00a7 4517.261",
+          "officialSource": "https://autodealers.ohio.gov/resources-for-dealers/resources/documentary-service-charge",
+          "lastVerificationDate": "2026-11-27"
+        },
+        {
+          "id": "oh-ten-percent",
+          "amount": null,
+          "percent": 10,
+          "basis": "bill_of_sale_excluding_tax_title_registration_negative_equity",
+          "condition": null,
+          "effective_from": "2026-01-01",
+          "effective_to": null,
+          "statutoryReference": "Ohio Rev. Code \u00a7 4517.261",
+          "officialSource": "https://autodealers.ohio.gov/resources-for-dealers/resources/documentary-service-charge",
+          "lastVerificationDate": "2026-11-27"
+        }
+      ],
       "sources": [
         "https://www.bmv.ohio.gov/doc-fees.aspx"
       ],
@@ -1661,7 +1699,7 @@
           "url": "https://autodealers.ohio.gov/resources-for-dealers/resources/documentary-service-charge",
           "title": "Ohio Dealer Board, documentary service charge",
           "retrieved": "2026-11-27",
-          "supports": "Re-fetched 2026-11-27: the maximum documentary service charge is $398 from January 1, 2026 through December 31, 2026, and $412 for calendar year 2027. The page also states the lesser-of test with 10% of the bill-of-sale amount excluding tax, title, registration, and negative equity. The state sales-tax rate was not on this page."
+          "supports": "Fetched 2026-11-27: the maximum documentary service charge is $398 effective from 1/1/2026 to 12/31/2026, and $412 effective from 1/1/2027 to 12/31/2027. The page also states a dealer may not charge more than the lesser of that registrar amount and ten percent of the bill-of-sale amount excluding tax, title, registration fees, and any negative equity adjustment. The state sales-tax rate was not on this page."
         },
         {
           "url": "https://codes.ohio.gov/ohio-revised-code/section-4517.261",
@@ -1826,7 +1864,81 @@
       "tradeInTaxCredit": true,
       "titleFee": 72,
       "registrationFee": "$200-$300 varies by weight",
-      "specialNotes": "Pennsylvania State Board notice dated January 13, 2026, re-fetched 2026-11-27: the 2026 documentary preparation fee may not exceed $490 for an electronic transaction under 63 P.S. \u00a7 818.327(c)(1) or $409 for a non-electronic transaction under subsection (c)(2). A fee from $409.01 through $490 is conditional until electronic processing is confirmed. The underlying Act text was not fetched in this run; a palegis.us HTML URL returned 404, so the enforceable 2026 amounts come from this official notice.",
+      "specialNotes": "Pennsylvania State Board notice dated January 13, 2026, re-fetched 2026-11-27: calendar year 2026 is $490 electronic under 63 P.S. \u00a7 818.327(c)(1) and $409 non-electronic under subsection (c)(2). The same notice lists 2024 ($464/$387) and 2025 ($477/$398). No 2027 amount was on the notice. A fee between the two ceilings for the quote's calendar year is conditional until electronic processing is confirmed.",
+      "statutoryThresholds": [
+        {
+          "id": "pa-electronic-2024",
+          "amount": 464,
+          "percent": null,
+          "basis": null,
+          "condition": "electronic",
+          "effective_from": "2024-01-01",
+          "effective_to": "2024-12-31",
+          "statutoryReference": "63 P.S. \u00a7 818.327(c)(1)",
+          "officialSource": "https://www.pa.gov/content/dam/copapwp-pagov/en/dos/department-and-offices/bpoa/vehicle/Annual%20Fee.pdf",
+          "lastVerificationDate": "2026-11-27"
+        },
+        {
+          "id": "pa-nonelectronic-2024",
+          "amount": 387,
+          "percent": null,
+          "basis": null,
+          "condition": "non_electronic",
+          "effective_from": "2024-01-01",
+          "effective_to": "2024-12-31",
+          "statutoryReference": "63 P.S. \u00a7 818.327(c)(2)",
+          "officialSource": "https://www.pa.gov/content/dam/copapwp-pagov/en/dos/department-and-offices/bpoa/vehicle/Annual%20Fee.pdf",
+          "lastVerificationDate": "2026-11-27"
+        },
+        {
+          "id": "pa-electronic-2025",
+          "amount": 477,
+          "percent": null,
+          "basis": null,
+          "condition": "electronic",
+          "effective_from": "2025-01-01",
+          "effective_to": "2025-12-31",
+          "statutoryReference": "63 P.S. \u00a7 818.327(c)(1)",
+          "officialSource": "https://www.pa.gov/content/dam/copapwp-pagov/en/dos/department-and-offices/bpoa/vehicle/Annual%20Fee.pdf",
+          "lastVerificationDate": "2026-11-27"
+        },
+        {
+          "id": "pa-nonelectronic-2025",
+          "amount": 398,
+          "percent": null,
+          "basis": null,
+          "condition": "non_electronic",
+          "effective_from": "2025-01-01",
+          "effective_to": "2025-12-31",
+          "statutoryReference": "63 P.S. \u00a7 818.327(c)(2)",
+          "officialSource": "https://www.pa.gov/content/dam/copapwp-pagov/en/dos/department-and-offices/bpoa/vehicle/Annual%20Fee.pdf",
+          "lastVerificationDate": "2026-11-27"
+        },
+        {
+          "id": "pa-electronic-2026",
+          "amount": 490,
+          "percent": null,
+          "basis": null,
+          "condition": "electronic",
+          "effective_from": "2026-01-01",
+          "effective_to": "2026-12-31",
+          "statutoryReference": "63 P.S. \u00a7 818.327(c)(1)",
+          "officialSource": "https://www.pa.gov/content/dam/copapwp-pagov/en/dos/department-and-offices/bpoa/vehicle/Annual%20Fee.pdf",
+          "lastVerificationDate": "2026-11-27"
+        },
+        {
+          "id": "pa-nonelectronic-2026",
+          "amount": 409,
+          "percent": null,
+          "basis": null,
+          "condition": "non_electronic",
+          "effective_from": "2026-01-01",
+          "effective_to": "2026-12-31",
+          "statutoryReference": "63 P.S. \u00a7 818.327(c)(2)",
+          "officialSource": "https://www.pa.gov/content/dam/copapwp-pagov/en/dos/department-and-offices/bpoa/vehicle/Annual%20Fee.pdf",
+          "lastVerificationDate": "2026-11-27"
+        }
+      ],
       "cpiIndexing": {
         "isIndexed": true,
         "baseAmount": null,
@@ -1850,7 +1962,7 @@
           "url": "https://www.pa.gov/content/dam/copapwp-pagov/en/dos/department-and-offices/bpoa/vehicle/Annual%20Fee.pdf",
           "title": "Pennsylvania dealer board documentary fee notice, January 13, 2026",
           "retrieved": "2026-11-27",
-          "supports": "Re-fetched 2026-11-27. The January 13, 2026 notice sets the 2026 documentary preparation fee at $490 electronic under 63 P.S. \u00a7 818.327(c)(1) and $409 non-electronic under \u00a7 818.327(c)(2). The state sales-tax rate was not on this page."
+          "supports": "Re-fetched 2026-11-27. The January 13, 2026 notice table lists calendar-year documentary preparation fees: 2024 electronic $464 and non-electronic $387, 2025 electronic $477 and non-electronic $398, and 2026 electronic $490 under 63 P.S. \u00a7 818.327(c)(1) and non-electronic $409 under \u00a7 818.327(c)(2). The notice says the fee is adjusted annually and does not state a 2027 amount. The state sales-tax rate was not on this page."
         }
       ],
       "unverified_fields": [

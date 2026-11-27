@@ -19,10 +19,11 @@ import {
 } from "../shared/windowSticker.js";
 import {
   classifyDocFee,
-  detectDocFeeAmount,
   type DocFeeAssessment,
+  type DocFeeQuoteContext,
   type RegulatoryStateInput,
 } from "./regulatoryClassification.js";
+import { docFeeSurfaceCopy } from "../shared/docFeeSurfaceCopy.js";
 import { buildConstrainedReply } from "./replyConstraint.js";
 import { isDocFeeName } from "./docFeeName.js";
 
@@ -37,6 +38,8 @@ export interface RuleEngineOptions {
    * services, false when it does not, null when the quote does not say.
    */
   electronicTransaction?: boolean | null;
+  /** Quote or analysis date used to choose a dated statutory ceiling. */
+  asOf?: string | Date | null;
   /** A caller-supplied benchmark. Ignored when it merely copies the submitted price. */
   marketBenchmark?: MarketBenchmark | null;
   condition?: "new" | "used" | "unknown" | null;
@@ -92,57 +95,30 @@ export interface DocFeeCapResult {
   statuteCitation: string | null;
 }
 
-interface StateData {
-  docFeeCap: boolean;
-  docFeeCapAmount: number | null;
-  name?: string;
-  abbreviation?: string;
-  statuteCitation?: string | null;
-  cpiIndexing?: {
-    isIndexed: boolean;
-    currentAmount: number;
+/**
+ * Legacy cap check. It reports a violation only when classifyDocFee returns
+ * illegal. An unverified stored figure and a conditional ceiling do not.
+ */
+export function checkDocFeeCap(
+  fees: Fee[],
+  stateData: RegulatoryStateInput & { abbreviation?: string },
+  quote?: DocFeeQuoteContext | null,
+): DocFeeCapResult | null {
+  const assessment = classifyDocFee(fees, stateData, null, null, quote ?? null);
+  const projected = docFeeSurfaceCopy(assessment);
+  if (!projected.capCheck || assessment.chargedAmount == null) return null;
+  if (assessment.classification !== "illegal" && assessment.classification !== "permissible" && assessment.classification !== "potentially_noncompliant") {
+    return null;
+  }
+  return {
+    violated: projected.capCheck.violated,
+    capAmount: projected.capCheck.capAmount,
+    chargedAmount: projected.capCheck.chargedAmount,
+    overage: projected.capCheck.overage,
+    stateName: assessment.jurisdiction,
+    stateAbbreviation: stateData.abbreviation ?? "",
+    statuteCitation: projected.capCheck.statuteCitation,
   };
-}
-
-function detectDocFee(fees: Fee[], stateAbbreviation?: string | null): number | null {
-  return detectDocFeeAmount(fees, stateAbbreviation);
-}
-
-function getEffectiveCapAmount(stateData: StateData): number | null {
-  if (stateData.cpiIndexing?.isIndexed) {
-    return stateData.cpiIndexing.currentAmount;
-  }
-  return stateData.docFeeCapAmount;
-}
-
-export function checkDocFeeCap(fees: Fee[], stateData: StateData): DocFeeCapResult | null {
-  if (!stateData.docFeeCap) {
-    return null;
-  }
-  const capAmount = getEffectiveCapAmount(stateData);
-  if (capAmount === null) {
-    return null;
-  }
-  const chargedAmount = detectDocFee(fees, stateData.abbreviation);
-  if (chargedAmount === null) {
-    return null;
-  }
-  const stateName = stateData.name ?? "Unknown";
-  const stateAbbreviation = stateData.abbreviation ?? "";
-  const statuteCitation = stateData.statuteCitation ?? null;
-
-  if (chargedAmount > capAmount) {
-    return {
-      violated: true,
-      capAmount,
-      chargedAmount,
-      overage: chargedAmount - capAmount,
-      stateName,
-      stateAbbreviation,
-      statuteCitation,
-    };
-  }
-  return { violated: false, capAmount, chargedAmount, overage: 0, stateName, stateAbbreviation, statuteCitation };
 }
 
 // "Junk fees" — charges that provide little/no value or duplicate other charges.
@@ -379,7 +355,7 @@ function finishVerdict(
 export function applyRuleEngine(
   _llmResult: AnalysisResponse,
   fields: DetectedFields,
-  docFeeCapResult?: DocFeeCapResult | null,
+  _docFeeCapResult?: DocFeeCapResult | null,
   purchaseType?: string,
   leaseMath?: LeaseMathResult | null,
   options?: RuleEngineOptions,
@@ -391,6 +367,7 @@ export function applyRuleEngine(
     ? classifyDocFee(fees, options.stateData, partner, integrator, {
         vehicleCashPrice: fields.salePrice,
         electronicTransaction: options.electronicTransaction ?? null,
+        asOf: options.asOf ?? new Date(),
       })
     : null;
   const supplied = options?.marketBenchmark ?? null;
@@ -459,9 +436,7 @@ export function applyRuleEngine(
   const allowedDocCap =
     docFee?.classification === "permissible" && docFee.hardCeiling != null
       ? docFee.hardCeiling
-      : docFeeCapResult && !docFeeCapResult.violated
-        ? docFeeCapResult.capAmount
-        : null;
+      : null;
   const hasMarketAdj = hasMarketAdjustment(fees);
   const highCostAddOnCount = countHighCostAddOns(fees, allowedDocCap);
   const paymentOnly = isPaymentOnlyQuote(fields);
@@ -516,11 +491,7 @@ export function applyRuleEngine(
       : (!leaseQuote && fields.outTheDoorPrice != null && (lines.statedTax == null || !govFeesStated))
         ? "Tax or government fees were not itemized, so the out-the-door total was not fully reconciled."
         : "The itemized lines reconcile to the stated out-the-door price.";
-  const regulatorySummary = docFee?.summary ?? (
-    docFeeCapResult?.violated
-      ? `Documentation fee exceeds the supplied cap of $${docFeeCapResult.capAmount}.`
-      : "No verified documentation-fee violation was established."
-  );
+  const regulatorySummary = docFee?.summary ?? "No verified documentation-fee violation was established.";
   const negotiation: string[] = [];
   if (hasMarketAdj) negotiation.push("An explicit market adjustment is negotiable dealer markup.");
   if (highCostAddOnCount > 0) negotiation.push("High-cost dealer add-ons can be removed.");
@@ -539,7 +510,7 @@ export function applyRuleEngine(
   const missing: string[] = [];
   if (!vehicleNamed) missing.push("Vehicle year, make, or model is missing.");
   if (usedWithoutMileage) missing.push("A used vehicle has no mileage.");
-  if (!options?.stateData && !docFeeCapResult) missing.push("Dealership state was not identified.");
+  if (!options?.stateData) missing.push("Dealership state was not identified.");
   if (paymentOnly || (!otdPresent && !leaseQuote && fields.salePrice == null)) missing.push("Key pricing is missing.");
   if (!marketVerified) missing.push("Independent market value is not verified.");
 
@@ -565,7 +536,7 @@ export function applyRuleEngine(
     },
     regulatoryCompliance: {
       status:
-        docFee?.classification === "illegal" || docFeeCapResult?.violated && !docFee
+        docFee?.classification === "illegal"
           ? "fail"
           : docFee?.classification === "potentially_noncompliant" || docFee?.classification === "needs_source"
             ? "concern"
@@ -599,8 +570,7 @@ export function applyRuleEngine(
   );
   const context = { fields, benchmark, docFee, derivation, dimensions, marketVerified, msrpComparison, notes };
 
-  const illegal =
-    docFee?.classification === "illegal" || (!docFee && !!docFeeCapResult?.violated);
+  const illegal = docFee?.classification === "illegal";
   if (illegal) {
     return finishVerdict(
       {
@@ -700,6 +670,9 @@ export function applyRuleEngine(
   if (highCostAddOnCount >= 2) {
     return noGo("NO-GO — TOO MANY ADD-ONS", "Two or more high-cost dealer add-ons are on the quote");
   }
+  if (docFee?.classification === "needs_source" && docFee.exceedsStoredCap) {
+    return caution("PROCEED WITH CAUTION — DOC FEE CAP NOT VERIFIED", docFee.summary);
+  }
   if (highCostAddOnCount === 1) {
     return caution("PROCEED WITH CAUTION — REMOVE ADD-ONS / MARKUP", "A high-cost dealer add-on is on the quote");
   }
@@ -727,9 +700,6 @@ export function applyRuleEngine(
       "NO-GO — PRICE ABOVE INDEPENDENT BENCHMARK",
       `The selling price is above the independent benchmark of $${benchmark.low}–$${benchmark.high}`,
     );
-  }
-  if (docFee?.classification === "needs_source" && docFee.exceedsStoredCap) {
-    return caution("PROCEED WITH CAUTION — DOC FEE CAP NOT VERIFIED", docFee.summary);
   }
   if (docFee?.classification === "potentially_noncompliant") {
     return caution("PROCEED WITH CAUTION — CONDITIONAL DOC FEE", docFee.summary);
@@ -926,7 +896,6 @@ export function applyRuleEngine(
   }
 
   function regulatoryAllowsGo(): boolean {
-    if (docFeeCapResult?.violated) return false;
     if (!options?.stateData && !docFee) return false;
     if (!docFee) return false;
     if (docFee.classification === "permissible") return true;

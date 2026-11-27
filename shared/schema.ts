@@ -224,6 +224,31 @@ export const docFeeCapCheckSchema = z.object({
 
 export type DocFeeCapCheck = z.infer<typeof docFeeCapCheckSchema>;
 
+export const docFeeAssessmentSchema = z.object({
+  classification: z.enum([
+    "illegal",
+    "potentially_noncompliant",
+    "negotiable",
+    "permissible",
+    "government",
+    "needs_source",
+    "not_checked",
+  ]),
+  chargedAmount: z.number().nullable(),
+  hardCeiling: z.number().nullable(),
+  conditionalCeiling: z.number().nullable(),
+  condition: z.string().nullable(),
+  exceedsStoredCap: z.boolean(),
+  jurisdiction: z.string(),
+  statutoryReference: z.string(),
+  officialSource: z.string(),
+  effectiveDate: z.string(),
+  lastVerificationDate: z.string(),
+  summary: z.string(),
+});
+
+export type DocFeeAssessmentPublic = z.infer<typeof docFeeAssessmentSchema>;
+
 // ---------------------------------------------------------------------------
 // Lease Math Engine result schemas
 // ---------------------------------------------------------------------------
@@ -334,6 +359,7 @@ export const analysisResponseSchema = z.object({
   dimensions: analysisDimensionsSchema.optional(),
   mathematicalDerivation: z.array(z.string()).optional(),
   docFeeCapCheck: docFeeCapCheckSchema.nullable().optional(),
+  docFeeAssessment: docFeeAssessmentSchema.nullable().optional(),
   // ---------------------------------------------------------------------
   // Lease Math Engine — deterministic post-LLM computations
   // ---------------------------------------------------------------------

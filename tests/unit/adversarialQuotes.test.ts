@@ -239,7 +239,7 @@ cases.push({
   purchaseType: "cash",
   options: { stateData: getStateFeeData("WV") },
   expected: "PROCEED-WITH-CAUTION",
-  label: /ADD-ONS/,
+  label: /NOT VERIFIED/,
   critical: true,
   regulatory: true,
 });
@@ -596,7 +596,10 @@ describe("adversarial quote suite", () => {
 
   const results = cases.map((item) => {
     const leaseMath = item.purchaseType === "lease" ? runLeaseMath(item.fields, "lease") : null;
-    const result = applyRuleEngine(llm, item.fields, null, item.purchaseType, leaseMath, item.options);
+    const result = applyRuleEngine(llm, item.fields, null, item.purchaseType, leaseMath, {
+      ...item.options,
+      asOf: item.options?.asOf ?? "2026-11-27",
+    });
     return { item, result };
   });
 

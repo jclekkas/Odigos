@@ -444,8 +444,9 @@ describe("rule engine sees a quote that contradicts itself", () => {
         { name: "doc fee", amount: 199 },
       ],
     });
-    const cap = checkDocFeeCap(parsed.fees, getStateFeeData("CA")!);
-    const result = applyRuleEngine(llm, parsed, cap, "finance");
+    const stateData = getStateFeeData("CA")!;
+    const cap = checkDocFeeCap(parsed.fees, stateData, { asOf: "2026-11-27", vehicleCashPrice: parsed.salePrice });
+    const result = applyRuleEngine(llm, parsed, cap, "finance", null, { stateData, asOf: "2026-11-27" });
     expect(result.goNoGo).toBe("NO-GO");
     expect(result.verdictLabel.toUpperCase()).toContain("DOC FEE");
   });

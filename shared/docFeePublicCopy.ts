@@ -159,7 +159,7 @@ function verifiedCapDetail(state: FeeStateRecord, money: string): string {
     case "MI":
       return "DIFS Bulletin 2025-03-CF, issued January 28, 2025, says Michigan's documentary preparation fee shall not exceed 5% of the cash price or $280, whichever is less, under MCL 492.113(2)(a). When the vehicle cash price is on the quote, Odigos applies that lesser amount. When it is not, Odigos applies the $280 ceiling and says the 5% limb was not applied.";
     case "OH":
-      return "Ohio Rev. Code § 4517.261 limits the documentary service charge to the lesser of the registrar's adjusted amount and 10% of the amount due under the contract, excluding tax, title, registration, and negative equity. The Ohio Dealer Board states the registrar amount is $398 from January 1, 2026 through December 31, 2026. When the contract amount is on the quote, Odigos applies the lesser figure. When it is not, Odigos applies $398 and says the 10% limb was not applied.";
+      return "Ohio Rev. Code § 4517.261 limits the documentary service charge to the lesser of the registrar's adjusted amount and 10% of the amount due under the contract, excluding tax, title, registration, and negative equity. The Ohio Dealer Board states the registrar amount is $398 from January 1, 2026 through December 31, 2026, and $412 from January 1, 2027 through December 31, 2027. Odigos uses the amount in effect on the quote date. When the contract amount is on the quote, Odigos applies the lesser figure. When it is not, Odigos applies that year's registrar amount and says the 10% limb was not applied.";
     case "IA":
       return "Iowa Code § 322.19A says a documentary fee may not exceed $180.";
     case "LA":
