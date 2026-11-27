@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import AnalysisProgressBar from "@/components/AnalysisProgressBar";
 import { Link, useSearch } from "wouter";
 import { Helmet } from "react-helmet-async";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -103,6 +103,7 @@ import DetectedFieldsCardComponent from "@/components/results/DetectedFieldsCard
 import MissingInfoCardComponent from "@/components/results/MissingInfoCard";
 import SuggestedReplyCardComponent from "@/components/results/SuggestedReplyCard";
 import FeedbackWidgetComponent from "@/components/results/FeedbackWidget";
+import BuyerReportedCard from "@/components/results/BuyerReportedCard";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import {
   getActivePass,
@@ -186,13 +187,126 @@ const formSchema = z.object({
     const amount = Number(value);
     return Number.isFinite(amount) && amount >= 1000 && amount <= 2_000_000;
   }, "Enter the Monroney MSRP in dollars (1000 or more), or leave this blank."),
+  vin: z.string().optional(),
+  buyerBookAmount: z.string().optional(),
+  buyerBookSource: z.string().optional(),
+  competingQuoteText: z.string().optional(),
+  comps: z.array(z.object({
+    askingPrice: z.string(),
+    source: z.string(),
+    url: z.string(),
+    mileage: z.string(),
+  })).max(5),
   source: z.enum(["paste", "upload", "url", "camera"]).default("paste").optional(),
+}).superRefine((data, ctx) => {
+  const vin = (data.vin ?? "").replace(/[\s-]/g, "");
+  if (vin && !/^[A-HJ-NPR-Z0-9]{17}$/i.test(vin)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["vin"],
+      message: "A VIN is 17 characters and does not use the letters I, O, or Q. Leave this blank if you do not have one.",
+    });
+  }
+  data.comps.forEach((row, index) => {
+    const price = row.askingPrice.trim();
+    const extra = row.source.trim() || row.url.trim() || row.mileage.trim();
+    if (!price && !extra) return;
+    const amount = Number(price);
+    if (!price || !Number.isFinite(amount) || amount <= 0 || amount > 2_000_000) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["comps", index, "askingPrice"],
+        message: "Enter the asking price in dollars, or remove this listing.",
+      });
+    }
+    if (row.mileage.trim()) {
+      const miles = Number(row.mileage);
+      if (!Number.isInteger(miles) || miles < 0 || miles > 1_000_000) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["comps", index, "mileage"],
+          message: "Mileage should be a whole number of miles, or leave it blank.",
+        });
+      }
+    }
+  });
+  const bookAmount = (data.buyerBookAmount ?? "").trim();
+  const bookSource = (data.buyerBookSource ?? "").trim();
+  if (bookAmount && !bookSource) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["buyerBookSource"],
+      message: "Name the site you used, such as KBB or Edmunds. Odigos does not look it up.",
+    });
+  }
+  if (!bookAmount && bookSource) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["buyerBookAmount"],
+      message: "Enter the book value you saw, or clear the site name.",
+    });
+  }
+  if (bookAmount) {
+    const amount = Number(bookAmount);
+    if (!Number.isFinite(amount) || amount <= 0 || amount > 2_000_000) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["buyerBookAmount"],
+        message: "Enter the book value in dollars, or leave it blank.",
+      });
+    }
+  }
+  if ((data.competingQuoteText ?? "").length > 20_000) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["competingQuoteText"],
+      message: "That second quote is too long. Paste the price lines only.",
+    });
+  }
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 /** Explicit state machine for image intake (camera capture and upload). */
 type ImageIntakeStatus = "idle" | "processing" | "success" | "partial" | "failed" | "invalid";
+
+function buyerRequestFields(data: FormValues): {
+  vin?: string;
+  buyerComparables?: { askingPrice: number; url?: string; source?: string; mileage?: number }[];
+  buyerBookValue?: { amount: number; sourceLabel: string };
+  competingQuoteText?: string;
+} {
+  const payload: {
+    vin?: string;
+    buyerComparables?: { askingPrice: number; url?: string; source?: string; mileage?: number }[];
+    buyerBookValue?: { amount: number; sourceLabel: string };
+    competingQuoteText?: string;
+  } = {};
+  const vin = (data.vin ?? "").replace(/[\s-]/g, "").toUpperCase();
+  if (vin) payload.vin = vin;
+  const comps = data.comps
+    .map((row) => {
+      const askingPrice = Number(row.askingPrice);
+      if (!row.askingPrice.trim() || !Number.isFinite(askingPrice) || askingPrice <= 0) return null;
+      const mileage = row.mileage.trim() ? Number(row.mileage) : undefined;
+      return {
+        askingPrice,
+        url: row.url.trim() || undefined,
+        source: row.source.trim() || undefined,
+        mileage: mileage != null && Number.isInteger(mileage) ? mileage : undefined,
+      };
+    })
+    .filter((row): row is NonNullable<typeof row> => row != null);
+  if (comps.length > 0) payload.buyerComparables = comps;
+  const bookAmount = Number((data.buyerBookAmount ?? "").trim());
+  const bookSource = (data.buyerBookSource ?? "").trim();
+  if ((data.buyerBookAmount ?? "").trim() && bookSource && Number.isFinite(bookAmount) && bookAmount > 0) {
+    payload.buyerBookValue = { amount: bookAmount, sourceLabel: bookSource };
+  }
+  const competing = (data.competingQuoteText ?? "").trim();
+  if (competing) payload.competingQuoteText = competing;
+  return payload;
+}
 
 function parseFactoryWindowStickerMsrp(raw: string | undefined): number | undefined {
   if (raw == null || raw.trim() === "") return undefined;
@@ -1638,9 +1752,15 @@ export default function Home() {
       termMonths: "",
       downPayment: "",
       factoryWindowStickerMsrp: "",
+      vin: "",
+      buyerBookAmount: "",
+      buyerBookSource: "",
+      competingQuoteText: "",
+      comps: [],
       source: "paste",
     },
   });
+  const listingFields = useFieldArray({ control: form.control, name: "comps" });
 
   /**
    * Shared image-ingestion pipeline used by both camera capture and file upload.
@@ -2006,6 +2126,7 @@ export default function Home() {
         termMonths: data.termMonths ? parseInt(data.termMonths) : undefined,
         downPayment: data.downPayment ? parseFloat(data.downPayment) : undefined,
         factoryWindowStickerMsrp: parseFactoryWindowStickerMsrp(data.factoryWindowStickerMsrp),
+        ...buyerRequestFields(data),
         sessionId: getSessionId(),
         language: "en" as "en" | "es",
       };
@@ -2443,6 +2564,176 @@ export default function Home() {
               )}
             />
 
+            <Card data-testid="section-buyer-price-checks">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Your own price checks (optional)</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-5">
+                <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-buyer-reported-disclosure">
+                  These numbers are buyer-reported. Odigos does not look them up and does not treat them as a verified market value. They cannot turn the result into a GO on their own. If your price is above every listing you type, that can add a caution. The dollar gap is not guaranteed savings.
+                </p>
+
+                <FormField
+                  control={form.control}
+                  name="vin"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>VIN (optional)</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          maxLength={17}
+                          autoCapitalize="characters"
+                          spellCheck={false}
+                          placeholder="17 characters, no I, O, or Q"
+                          data-testid="input-vin"
+                          onFocus={() => trackFormFocus("vin")}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        If the quote already includes a VIN, you can leave this blank and we will use that one. We check it with the free NHTSA decoder to see whether the year, make, model, and trim match the quote. This does not price the car.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Similar cars you found</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Enter 1 to 5 asking prices. A site name, a link, and mileage are optional. We do not open the links. This is not a verified market value.
+                    </p>
+                  </div>
+                  {listingFields.fields.map((row, index) => (
+                    <div key={row.id} className="grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-md border border-border/60 p-3">
+                      <FormField
+                        control={form.control}
+                        name={`comps.${index}.askingPrice`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Asking price</FormLabel>
+                            <FormControl>
+                              <Input {...field} type="number" min={1} inputMode="decimal" placeholder="e.g., 27900" data-testid={`input-comp-price-${index}`} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`comps.${index}.mileage`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Mileage (optional)</FormLabel>
+                            <FormControl>
+                              <Input {...field} type="number" min={0} inputMode="numeric" placeholder="e.g., 32000" data-testid={`input-comp-mileage-${index}`} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`comps.${index}.source`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Where you saw it (optional)</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="e.g., dealer site" data-testid={`input-comp-source-${index}`} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`comps.${index}.url`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Link (optional)</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="https://..." data-testid={`input-comp-url-${index}`} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="sm:col-span-2">
+                        <Button type="button" variant="outline" size="sm" onClick={() => listingFields.remove(index)} data-testid={`button-remove-listing-${index}`}>
+                          Remove this listing
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={listingFields.fields.length >= 5}
+                    onClick={() => listingFields.append({ askingPrice: "", source: "", url: "", mileage: "" })}
+                    data-testid="button-add-listing"
+                  >
+                    Add a listing
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <FormField
+                    control={form.control}
+                    name="buyerBookAmount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Book value you looked up (optional)</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="number" min={1} inputMode="decimal" placeholder="e.g., 27500" data-testid="input-book-value" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="buyerBookSource"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Where you saw that number</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="e.g., KBB or Edmunds" data-testid="input-book-source" />
+                        </FormControl>
+                        <FormDescription>
+                          Type the number you saw in your own browser. Odigos does not visit those sites, and this number is not verified.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="competingQuoteText"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Another dealer quote (optional)</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          className="min-h-28"
+                          placeholder="Paste a second quote. Include the selling price, doc fee, add-ons, tax, and out-the-door total if you have them."
+                          data-testid="input-competing-quote"
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        We compare selling price, documentation fee, add-ons, tax and government fees, and the out-the-door total. This is a comparison of the two quotes you pasted, not a market valuation.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+
             <Collapsible
               open={isOptionalOpen}
               onOpenChange={(open) => {
@@ -2692,6 +2983,7 @@ export default function Home() {
               <li>Whether the out-the-door total and payment reconcile</li>
               <li>Whether a documentation fee exceeds a verified state cap</li>
               <li>Factory MSRP comparison and independent market valuation are different. Entering a factory MSRP does not verify market value</li>
+              <li>A VIN can be checked with the free NHTSA decoder. Listings, a book value, and a second quote that you type stay buyer-reported and do not verify market value</li>
             </ul>
           </div>
         )}
@@ -2729,6 +3021,8 @@ export default function Home() {
                 confidenceLevel={result.confidenceLevel}
                 verdictLabel={result.verdictLabel}
               />
+
+              <BuyerReportedCard vinCheck={result.vinCheck} buyerReported={result.buyerReported} />
 
               {result.dimensions && (
                 <Card data-testid="analysis-dimensions">

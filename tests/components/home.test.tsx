@@ -112,6 +112,14 @@ beforeEach(() => {
 // ─── Rendering ────────────────────────────────────────────────────────────────
 
 describe("Home page rendering", () => {
+  it("says typed prices are buyer-reported and not a verified market value", async () => {
+    renderHome();
+    const note = await screen.findByTestId("text-buyer-reported-disclosure");
+    expect(note).toHaveTextContent(/buyer-reported/i);
+    expect(note).toHaveTextContent(/does not treat them as a verified market value/i);
+    expect(note).toHaveTextContent(/not guaranteed savings/i);
+  });
+
   it("renders the dealer text input", async () => {
     renderHome();
     const textarea = await screen.findByTestId("input-dealer-text");

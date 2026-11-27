@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeAll, afterAll, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeAll, afterAll, beforeEach, afterEach } from "vitest";
 import express from "express";
 import { createServer } from "http";
 import request from "supertest";
@@ -93,6 +93,7 @@ vi.mock("../../server/db", () => ({
 
 import { openai } from "../../server/openaiClient.js";
 import { registerRoutes } from "../../server/routes.js";
+import { storage } from "../../server/storage.js";
 import { aiCircuitBreaker } from "../../server/lib/circuitBreaker.js";
 import { verifyEmailToken } from "../../server/emailPreviewToken.js";
 
@@ -650,5 +651,167 @@ describe("POST /api/analyze emailToken gate", () => {
         expect(signed?.confidenceLevel).toBe(res.body.confidenceLevel);
       },
     );
+  });
+});
+
+const CAMRY_FIELDS = {
+  salePrice: 32000,
+  msrp: null,
+  rebates: null,
+  fees: [
+    { name: "Doc fee", amount: 199 },
+    { name: "Sales tax", amount: 2000 },
+    { name: "Registration", amount: 400 },
+  ],
+  outTheDoorPrice: 34599,
+  monthlyPayment: null,
+  tradeInValue: null,
+  apr: null,
+  termMonths: null,
+  downPayment: null,
+  vehicle_make: "Toyota",
+  vehicle_model: "Camry XLE",
+  vehicle_year: 2025,
+};
+
+function vpicBody(row: Record<string, string> = {}) {
+  return {
+    Count: 1,
+    Message: "Results returned successfully.",
+    Results: [{
+      ModelYear: "2023",
+      Make: "TOYOTA",
+      Model: "Camry",
+      Trim: "LE",
+      Trim2: "",
+      Series: "",
+      BasePrice: "26320",
+      ErrorCode: "0",
+      ErrorText: "0 - VIN decoded clean. Check Digit (9th position) is correct",
+      ...row,
+    }],
+  };
+}
+
+describe("buyer-reported inputs and NHTSA VIN", () => {
+  const vin = "4T1G11AK5NU123456";
+
+  function stubVpic(body: unknown, fail = false) {
+    const fetchMock = vi.fn(async (url: string) => {
+      const href = String(url);
+      if (!href.includes("vpic.nhtsa.dot.gov")) {
+        return { ok: true, status: 200, text: async () => "{}" };
+      }
+      expect(href).toContain(`https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/${vin}?format=json`);
+      expect(href.toLowerCase()).not.toContain("api_key");
+      if (fail) throw new Error("network down");
+      return { ok: true, status: 200, text: async () => JSON.stringify(body) };
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    return fetchMock;
+  }
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("flags a VIN mismatch, shows base price, and does not verify market value", async () => {
+    stubVpic(vpicBody());
+    mockOpenAiSuccess({
+      ...VALID_LLM_RESPONSE,
+      detectedFields: CAMRY_FIELDS,
+    });
+    const res = await request(app).post("/api/analyze").send({
+      dealerText: "2025 Toyota Camry XLE from a California dealer. Selling price $32,000. Doc fee $199. Sales tax $2,000. Registration $400. Out the door $34,599.",
+      purchaseType: "cash",
+      zipCode: "90210",
+      vin,
+      buyerComparables: [
+        { askingPrice: 34000, source: "dealer site" },
+        { askingPrice: 35000 },
+        { askingPrice: 36000 },
+      ],
+    });
+    expect(res.status).toBe(200);
+    expect(res.body.goNoGo).not.toBe("GO");
+    expect(res.body.marketValuation.status).toBe("unverified");
+    expect(res.body.marketValueStatus).toBe("unverified");
+    expect(res.body.estimatedOverpaymentMin).toBeNull();
+    expect(res.body.vinCheck.status).toBe("decoded");
+    expect(res.body.vinCheck.mismatches.map((item: { field: string }) => item.field)).toEqual(["year", "trim"]);
+    expect(res.body.vinCheck.summary).toMatch(/2023/);
+    expect(res.body.vinCheck.basePrice.amount).toBe(26320);
+    expect(res.body.vinCheck.basePrice.label).toBe("Base price for standard equipment");
+    expect(res.body.vinCheck.basePrice.detail).toMatch(/not the MSRP with options/i);
+    expect(res.body.msrpComparison?.factoryMsrp ?? null).not.toBe(26320);
+    expect(res.body.buyerReported.label).toBe("buyer-reported");
+    expect(res.body.buyerReported.verifiesMarketValue).toBe(false);
+    expect(res.body.buyerReported.comps.position).toBe("below_all");
+    expect(res.body.buyerReported.summary).toMatch(/buyer-reported/i);
+    expect(res.body.summary).not.toMatch(/you save|overpaying by/i);
+  });
+
+  it("continues the analysis when the VIN decoder fails", async () => {
+    stubVpic(vpicBody(), true);
+    mockOpenAiSuccess({
+      ...VALID_LLM_RESPONSE,
+      detectedFields: CAMRY_FIELDS,
+    });
+    const res = await request(app).post("/api/analyze").send({
+      dealerText: "2025 Toyota Camry XLE. Selling price $32,000. Doc fee $199. Sales tax $2,000. Registration $400.",
+      purchaseType: "cash",
+      vin,
+    });
+    expect(res.status).toBe(200);
+    expect(res.body.vinCheck.status).toBe("failed");
+    expect(res.body.vinCheck.basePrice).toBeNull();
+    expect(res.body.goNoGo).not.toBe("GO");
+    expect(res.body.marketValuation.status).toBe("unverified");
+  });
+
+  it("compares a competing quote with a higher doc fee and keeps market value unverified", async () => {
+    mockOpenAiSuccess({
+      ...VALID_LLM_RESPONSE,
+      detectedFields: {
+        ...CAMRY_FIELDS,
+        vehicle_model: "Camry LE",
+        vehicle_year: 2024,
+      },
+    });
+    const res = await request(app).post("/api/analyze").send({
+      dealerText: "2024 Toyota Camry LE. Selling price $32,000. Doc fee $199. Sales tax $2,000. Registration $400. Out the door $34,599.",
+      purchaseType: "cash",
+      buyerBookValue: { amount: 30000, sourceLabel: "KBB" },
+      competingQuoteText: "Selling price: $31,000\nDoc fee: $899\nSales tax: $2,000\nRegistration: $400\nOut the door: $34,299",
+    });
+    expect(res.status).toBe(200);
+    expect(res.body.goNoGo).not.toBe("GO");
+    expect(res.body.marketValuation.status).toBe("unverified");
+    expect(res.body.buyerReported.bookValue.citationStatus).toBe("needs_source");
+    expect(res.body.buyerReported.bookValue.sourceLabel).toBe("KBB");
+    const doc = res.body.buyerReported.competingQuote.lines.find((line: { key: string }) => line.key === "docFee");
+    expect(doc.thisQuote).toBe(199);
+    expect(doc.otherQuote).toBe(899);
+    expect(res.body.buyerReported.competingQuote.summary).toMatch(/\$700 higher/i);
+    expect(res.body.financialSummary).toMatch(/buyer-reported/i);
+    expect(res.body.estimatedOverpaymentMin).toBeNull();
+  });
+
+  it("does not write a synthetic submission that includes buyer comps", async () => {
+    const save = vi.spyOn(storage, "saveDealerSubmission");
+    mockOpenAiSuccess({
+      ...VALID_LLM_RESPONSE,
+      detectedFields: CAMRY_FIELDS,
+    });
+    const res = await request(app).post("/api/analyze").send({
+      dealerText: "ODIGOS_SYNTHETIC_QA 2025 Toyota Camry XLE selling price $32,000. Doc fee $199.",
+      synthetic: true,
+      buyerComparables: [{ askingPrice: 30000 }, { askingPrice: 31000 }, { askingPrice: 31500 }],
+    });
+    expect(res.status).toBe(200);
+    expect(res.body.goNoGo).not.toBe("GO");
+    expect(res.body.marketValuation.status).toBe("unverified");
+    expect(save).not.toHaveBeenCalled();
+    save.mockRestore();
   });
 });

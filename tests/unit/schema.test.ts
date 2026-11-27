@@ -84,6 +84,28 @@ describe("analysisRequestSchema", () => {
     expect(empty.success).toBe(true);
   });
 
+  it("accepts buyer-reported comps, a book value, and a second quote without treating them as required", () => {
+    const parsed = analysisRequestSchema.safeParse({
+      dealerText: "Selling price $28,000.",
+      vin: "4t1g11ak5nu123456",
+      buyerComparables: [
+        { askingPrice: 27000, source: "dealer site", url: "https://example.com/car", mileage: 12000 },
+      ],
+      buyerBookValue: { amount: 26500, sourceLabel: "KBB" },
+      competingQuoteText: "Selling price: $27,000\nDoc fee: $899",
+    });
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    expect(parsed.data.vin).toBe("4T1G11AK5NU123456");
+    expect(parsed.data.buyerComparables).toHaveLength(1);
+    expect(parsed.data.buyerBookValue?.sourceLabel).toBe("KBB");
+  });
+
+  it("rejects a sixth buyer-reported listing", () => {
+    const listings = Array.from({ length: 6 }, (_, index) => ({ askingPrice: 25000 + index }));
+    expect(analysisRequestSchema.safeParse({ dealerText: "Selling price $28,000.", buyerComparables: listings }).success).toBe(false);
+  });
+
   it("rejects a negative or non-finite factory window sticker MSRP", () => {
     expect(analysisRequestSchema.safeParse({ dealerText: "text", factoryWindowStickerMsrp: -100 }).success).toBe(false);
     expect(analysisRequestSchema.safeParse({ dealerText: "text", factoryWindowStickerMsrp: 0 }).success).toBe(false);

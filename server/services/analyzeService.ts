@@ -13,6 +13,8 @@ import {
 } from "../../shared/schema.js";
 import { applyRuleEngine, checkDocFeeCap } from "../ruleEngine.js";
 import { formatUsd } from "../marketValuation.js";
+import { buildBuyerReported, buyerReportedHasInput, buyerReportedRuleOptions } from "../buyerReportedValuation.js";
+import { checkVin, unavailableVinCheck, withQuoteIdentity } from "../nhtsaVin.js";
 import { FACTORY_STICKER_COMPARISON } from "../../shared/windowSticker.js";
 import { isSyntheticSubmission } from "../syntheticGuard.js";
 import { rankSignals } from "../signalRanker.js";
@@ -334,6 +336,12 @@ export async function runAnalysis(data: AnalyzeInput): Promise<AnalyzeServiceRes
       category: validation.category,
     });
   }
+
+  const vinTask = checkVin({
+    explicitVin: data.vin,
+    dealerText: data.dealerText,
+    identity: { vehicleText: data.vehicle ?? null },
+  }).catch(() => unavailableVinCheck());
 
   const stateDetection = detectStateFromText(data.dealerText, data.zipCode);
   const stateData = stateDetection.state ? getStateFeeData(stateDetection.state) : null;
@@ -1018,6 +1026,8 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   delete rawResult.marketValueStatus;
   delete rawResult.marketValuation;
   delete rawResult.msrpComparison;
+  delete rawResult.vinCheck;
+  delete rawResult.buyerReported;
 
   // Normalize financialImpactConfidence to lowercase enum (the model
   // occasionally returns HIGH/MEDIUM/LOW from habit).
@@ -1037,6 +1047,21 @@ Respond entirely in Spanish. All text fields in your JSON response — including
 
   const llmResult = validationResult.data;
   llmResult.detectedFields = enrichDetectedFields(llmResult.detectedFields, data.dealerText);
+  const vinCheck = withQuoteIdentity(await vinTask, {
+    year: llmResult.detectedFields.vehicle_year ?? null,
+    make: llmResult.detectedFields.vehicle_make ?? null,
+    model: llmResult.detectedFields.vehicle_model ?? null,
+    vehicleText: data.vehicle ?? null,
+  });
+  const buyerReported = buildBuyerReported({
+    salePrice: llmResult.detectedFields.salePrice,
+    primary: llmResult.detectedFields,
+    primaryText: data.dealerText,
+    comps: data.buyerComparables,
+    bookValue: data.buyerBookValue ?? null,
+    competingQuoteText: data.competingQuoteText ?? null,
+  });
+  const buyerRule = buyerReportedRuleOptions(buyerReported);
 
   const docFeeCapResult = stateData
     ? checkDocFeeCap(llmResult.detectedFields.fees, stateData)
@@ -1109,6 +1134,9 @@ Respond entirely in Spanish. All text fields in your JSON response — including
       dealerText: data.dealerText,
       buyerWindowStickerMsrp: data.factoryWindowStickerMsrp ?? null,
       rebateContingentOnFinancing: /rebate/i.test(data.dealerText) && /financ|approved credit|with financing/i.test(data.dealerText),
+      buyerReportedExplanation: buyerRule.buyerReportedExplanation,
+      quoteAboveAllBuyerComps: buyerRule.quoteAboveAllBuyerComps,
+      vinMismatchNote: vinCheck.mismatches.length > 0 ? vinCheck.summary : null,
     },
   );
 
@@ -1129,6 +1157,9 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   const overpaymentMin = marketVerified && sale != null ? Math.max(0, Math.round((sale - benchmark!.high!) * 100) / 100) : null;
   const overpaymentMax = marketVerified && sale != null ? Math.max(0, Math.round((sale - benchmark!.low!) * 100) / 100) : null;
   const stickerCompared = msrpComparison?.status === "compared";
+  const buyerHeroNote = buyerReportedHasInput(buyerReported)
+    ? " Numbers you typed are buyer-reported and are not a verified market value. They are not estimated savings."
+    : "";
   const finalResult: AnalysisResponse = {
     ...llmResult,
     dealScore: ruleEngineAdjustments.dealScore,
@@ -1145,11 +1176,11 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     estimatedNormalOtdMin: marketVerified ? benchmark!.low : null,
     estimatedNormalOtdMax: marketVerified ? benchmark!.high : null,
     financialImpactConfidence: marketVerified ? "high" : null,
-    financialSummary: marketVerified
+    financialSummary: (marketVerified
       ? `Independent market valuation $${benchmark!.low}–$${benchmark!.high}. Any dollar gap is only the difference between the selling price and that valuation.`
       : stickerCompared
         ? msrpComparison!.summary
-        : "Market value not verified. Factory MSRP comparison and independent market valuation are different. Savings and a normal price range are not estimated.",
+        : "Market value not verified. Factory MSRP comparison and independent market valuation are different. Savings and a normal price range are not estimated.") + buyerHeroNote,
     marketComparison: marketVerified
       ? `Independent market valuation $${benchmark!.low}–$${benchmark!.high} from ${benchmark!.source ?? "an independent source"}.`
       : stickerCompared
@@ -1160,6 +1191,8 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     marketBenchmarkSource: marketVerified ? benchmark?.source ?? null : null,
     marketValuation: marketValuation ?? undefined,
     msrpComparison: msrpComparison ?? undefined,
+    vinCheck,
+    buyerReported,
     dimensions: ruleEngineAdjustments.dimensions,
     mathematicalDerivation: ruleEngineAdjustments.mathematicalDerivation,
     leaseMath: leaseMathResult,
@@ -1174,7 +1207,11 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     sessionId: data.sessionId,
   }).catch(err => logger.error("submission event failed", { source: "tracking", error: String(err) }));
 
-  const synthetic = isSyntheticSubmission(data);
+  const synthetic = isSyntheticSubmission({
+    synthetic: data.synthetic,
+    dealerText: data.dealerText,
+    competingQuoteText: data.competingQuoteText,
+  });
   let listingId: string | null = null;
   if (synthetic) {
     logger.info("Synthetic submission skipped persistence", { source: "analyze" });

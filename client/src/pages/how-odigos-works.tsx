@@ -118,7 +118,7 @@ export default function HowOdigosWorks() {
         <section className="rounded-lg border border-border bg-card p-5">
           <h2 className="text-base font-semibold mb-2 text-foreground">What Odigos does not do</h2>
           <p className="text-sm text-muted-foreground">
-            Odigos reviews whether the quote is itemized, whether the totals reconcile, and whether a fee exceeds a verified cap. It does not look up a live market price. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP can be compared with the selling price. That comparison does not verify market value, and that figure is not a transaction price. It does not evaluate vehicle condition, mechanical reliability, or accident history.
+            Odigos reviews whether the quote is itemized, whether the totals reconcile, and whether a fee exceeds a verified cap. It does not look up a live market price. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP can be compared with the selling price. That comparison does not verify market value, and that figure is not a transaction price. A VIN can be checked with the free NHTSA decoder to see whether the vehicle matches the quote. Listings, a book value, and a second quote that you type are buyer-reported. They do not verify market value. Odigos does not fetch Kelley Blue Book, Edmunds, or listing sites. It does not evaluate vehicle condition, mechanical reliability, or accident history.
           </p>
         </section>
 

@@ -23,6 +23,7 @@ import {
   type RegulatoryStateInput,
 } from "./regulatoryClassification.js";
 import { buildConstrainedReply } from "./replyConstraint.js";
+import { DOC_FEE_KEYWORDS_BROAD, DOC_FEE_KEYWORDS_EXACT, isDocFeeName } from "./docFeeName.js";
 
 export interface RuleEngineOptions {
   stateData?: RegulatoryStateInput | null;
@@ -45,6 +46,15 @@ export interface RuleEngineOptions {
    * A licensed valuation can still be passed as marketBenchmark later.
    */
   buyerWindowStickerMsrp?: number | null;
+  /**
+   * Plain-English note about buyer-typed listings, a book value, or a second
+   * quote. It is not an independent market valuation.
+   */
+  buyerReportedExplanation?: string | null;
+  /** True only when the selling price is clearly above every buyer-typed listing. */
+  quoteAboveAllBuyerComps?: boolean;
+  /** Plain-English note when the NHTSA VIN decode does not match the quote. */
+  vinMismatchNote?: string | null;
 }
 
 export interface RuleEngineResult {
@@ -85,25 +95,6 @@ interface StateData {
     currentAmount: number;
   };
 }
-
-// High-confidence doc-fee terms (explicit, low false-positive risk)
-const DOC_FEE_KEYWORDS_EXACT = [
-  "doc fee",
-  "documentation fee",
-  "document fee",
-  "documentary fee",
-  "documentary service",
-  "documentary preparation",
-  "document processing",
-];
-
-// Broader terms accepted only when a more specific doc-fee term is not found
-const DOC_FEE_KEYWORDS_BROAD = [
-  "dealer fee",
-  "processing fee",
-  "admin fee",
-  "administrative fee",
-];
 
 function detectDocFee(fees: Fee[]): number | null {
   // Collect all matching fees across both tiers; prefer explicit-tier matches.
@@ -207,13 +198,6 @@ const MARKET_ADJUSTMENT_KEYWORDS = [
 
 const ADD_ON_THRESHOLD = 300;
 const HIGH_ADD_ON_THRESHOLD = 500;
-
-function isDocFeeName(nameLower: string): boolean {
-  return (
-    DOC_FEE_KEYWORDS_EXACT.some((keyword) => nameLower.includes(keyword)) ||
-    DOC_FEE_KEYWORDS_BROAD.some((keyword) => nameLower.includes(keyword))
-  );
-}
 
 /** A doc fee at or under a known cap is legal. It is not an add-on. */
 function isDocFeeWithinCap(fee: Fee, capAmount: number | null): boolean {
@@ -321,6 +305,15 @@ interface VerdictDraft {
   summary: string;
 }
 
+function appendContextNotes(summary: string, notes: string[]): string {
+  let next = summary;
+  for (const note of notes) {
+    if (!note || next.includes(note)) continue;
+    next = `${next} ${note}`;
+  }
+  return next;
+}
+
 function declinedAddOnStillCharged(fees: Fee[]): Fee | null {
   return (
     fees.find((fee) => {
@@ -340,6 +333,7 @@ function finishVerdict(
     dimensions: AnalysisDimensions;
     marketVerified: boolean;
     msrpComparison: MsrpComparison;
+    notes?: string[];
   },
 ): RuleEngineResult {
   const askForVehicleEvidence = !extras.marketVerified || draft.goNoGo !== "GO";
@@ -353,8 +347,9 @@ function finishVerdict(
     benchmarkKind: extras.benchmark.kind ?? null,
     msrpMarkup: extras.msrpComparison.relation === "above",
   });
+  const summary = appendContextNotes(draft.summary, extras.notes ?? []);
   const reasoning = [
-    draft.summary,
+    summary,
     extras.benchmark.reason,
     ...extras.derivation,
     `Pricing transparency: ${extras.dimensions.pricingTransparency.summary}`,
@@ -366,6 +361,7 @@ function finishVerdict(
   ].join("\n");
   return {
     ...draft,
+    summary,
     reasoning,
     suggestedReply,
     dimensions: extras.dimensions,
@@ -590,7 +586,10 @@ export function applyRuleEngine(
     },
   };
 
-  const context = { fields, benchmark, docFee, derivation, dimensions, marketVerified, msrpComparison };
+  const notes = [options?.vinMismatchNote, options?.buyerReportedExplanation].filter(
+    (note): note is string => !!note && note.trim() !== "",
+  );
+  const context = { fields, benchmark, docFee, derivation, dimensions, marketVerified, msrpComparison, notes };
 
   const illegal =
     docFee?.classification === "illegal" || (!docFee && !!docFeeCapResult?.violated);
@@ -741,6 +740,18 @@ export function applyRuleEngine(
   }
   if (!otdPresent && !leaseQuote) {
     return insufficient("INSUFFICIENT INFORMATION — GET OTD BREAKDOWN", "The out-the-door price is missing");
+  }
+  if (options?.vinMismatchNote) {
+    return caution(
+      "PROCEED WITH CAUTION — VIN DOES NOT MATCH THE QUOTE",
+      options.vinMismatchNote,
+    );
+  }
+  if (options?.quoteAboveAllBuyerComps && !marketVerified && options.buyerReportedExplanation) {
+    return caution(
+      "PROCEED WITH CAUTION — ABOVE THE LISTINGS YOU ENTERED",
+      options.buyerReportedExplanation,
+    );
   }
   if (leaseQuote && !marketVerified) {
     return insufficient(
