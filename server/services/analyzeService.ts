@@ -12,6 +12,8 @@ import {
   type Fee,
 } from "../../shared/schema.js";
 import { applyRuleEngine, checkDocFeeCap } from "../ruleEngine.js";
+import { factoryMarkup, formatUsd } from "../marketValuation.js";
+import { FACTORY_STICKER_COMPARISON } from "../../shared/windowSticker.js";
 import { isSyntheticSubmission } from "../syntheticGuard.js";
 import { rankSignals } from "../signalRanker.js";
 import { runLeaseMath } from "../leaseMathEngine.js";
@@ -1017,6 +1019,9 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   coerceString("primaryIssue");
   coerceString("marketComparison");
   coerceString("financialSummary");
+  // The model does not choose the benchmark. These are set after the rule engine.
+  delete rawResult.marketBenchmarkKind;
+  delete rawResult.marketBenchmarkSource;
 
   // Normalize financialImpactConfidence to lowercase enum (the model
   // occasionally returns HIGH/MEDIUM/LOW from habit).
@@ -1106,6 +1111,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
       stateData: stateData ?? null,
       condition: data.condition,
       dealerText: data.dealerText,
+      buyerWindowStickerMsrp: data.factoryWindowStickerMsrp ?? null,
       rebateContingentOnFinancing: /rebate/i.test(data.dealerText) && /financ|approved credit|with financing/i.test(data.dealerText),
     },
   );
@@ -1121,9 +1127,20 @@ Respond entirely in Spanish. All text fields in your JSON response — including
 
   const benchmark = ruleEngineAdjustments.marketBenchmark;
   const marketVerified = benchmark?.status === "verified" && benchmark.low != null && benchmark.high != null;
+  const factorySticker = benchmark?.kind === "factory_msrp" && benchmark.high != null;
   const sale = llmResult.detectedFields.salePrice;
-  const overpaymentMin = marketVerified && sale != null ? Math.max(0, Math.round((sale - benchmark!.high!) * 100) / 100) : null;
-  const overpaymentMax = marketVerified && sale != null ? Math.max(0, Math.round((sale - benchmark!.low!) * 100) / 100) : null;
+  const factoryGap = factorySticker && sale != null
+    ? Math.max(0, Math.round((sale - benchmark!.high!) * 100) / 100)
+    : null;
+  const overpaymentMin = factorySticker
+    ? factoryGap
+    : marketVerified && sale != null ? Math.max(0, Math.round((sale - benchmark!.high!) * 100) / 100) : null;
+  const overpaymentMax = factorySticker
+    ? factoryGap
+    : marketVerified && sale != null ? Math.max(0, Math.round((sale - benchmark!.low!) * 100) / 100) : null;
+  const stickerMarkup = factorySticker && sale != null && benchmark?.high != null && sale > benchmark.high + 1
+    ? factoryMarkup(sale, benchmark.high)
+    : null;
   const finalResult: AnalysisResponse = {
     ...llmResult,
     dealScore: ruleEngineAdjustments.dealScore,
@@ -1136,16 +1153,25 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     primaryIssue: ruleEngineAdjustments.primaryIssue ?? llmResult.primaryIssue,
     estimatedOverpaymentMin: marketVerified ? overpaymentMin : null,
     estimatedOverpaymentMax: marketVerified ? overpaymentMax : null,
-    estimatedNormalOtdMin: marketVerified ? benchmark!.low : null,
-    estimatedNormalOtdMax: marketVerified ? benchmark!.high : null,
+    // Factory MSRP is not an out-the-door market range.
+    estimatedNormalOtdMin: factorySticker ? null : marketVerified ? benchmark!.low : null,
+    estimatedNormalOtdMax: factorySticker ? null : marketVerified ? benchmark!.high : null,
     financialImpactConfidence: marketVerified ? "high" : null,
-    financialSummary: marketVerified
-      ? `Independent benchmark $${benchmark!.low}–$${benchmark!.high}. Savings are only the gap between the selling price and that benchmark.`
-      : "Market value not verified. Savings and a normal price range are not estimated.",
-    marketComparison: marketVerified
-      ? `Independent benchmark $${benchmark!.low}–$${benchmark!.high} from ${benchmark!.source ?? "an independent source"}.`
-      : "Market value not verified. No independent vehicle pricing source is configured, so this quote was not compared with a market range.",
+    financialSummary: factorySticker
+      ? stickerMarkup
+        ? `The selling price is ${stickerMarkup.dollarsLabel} (${stickerMarkup.percentLabel}) above the buyer-supplied factory window sticker MSRP of ${formatUsd(benchmark!.high!)}. ${FACTORY_STICKER_COMPARISON}`
+        : `The selling price is at or below the buyer-supplied factory window sticker MSRP of ${formatUsd(benchmark!.high!)}. ${FACTORY_STICKER_COMPARISON}`
+      : marketVerified
+        ? `Independent benchmark $${benchmark!.low}–$${benchmark!.high}. Savings are only the gap between the selling price and that benchmark.`
+        : "Market value not verified. Savings and a normal price range are not estimated.",
+    marketComparison: factorySticker
+      ? FACTORY_STICKER_COMPARISON
+      : marketVerified
+        ? `Independent benchmark $${benchmark!.low}–$${benchmark!.high} from ${benchmark!.source ?? "an independent source"}.`
+        : "Market value not verified. No independent vehicle pricing source is configured, so this quote was not compared with a market range.",
     marketValueStatus: marketVerified ? "verified" : "unverified",
+    marketBenchmarkKind: benchmark?.kind ?? null,
+    marketBenchmarkSource: benchmark?.source ?? null,
     dimensions: ruleEngineAdjustments.dimensions,
     mathematicalDerivation: ruleEngineAdjustments.mathematicalDerivation,
     leaseMath: leaseMathResult,

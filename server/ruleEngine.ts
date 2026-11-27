@@ -4,9 +4,15 @@ import { computePurchase, type PurchaseMath } from "./quoteMath.js";
 import { resolvePurchaseLines } from "./governmentCharges.js";
 import {
   benchmarkCopiesSubmittedPrice,
+  factoryMarkup,
+  formatUsd,
   independentMarketBenchmark,
   type MarketBenchmark,
 } from "./marketValuation.js";
+import {
+  FACTORY_MSRP_TOLERANCE_DOLLARS,
+  FACTORY_STICKER_COMPARISON,
+} from "../shared/windowSticker.js";
 import {
   classifyDocFee,
   type DocFeeAssessment,
@@ -28,6 +34,11 @@ export interface RuleEngineOptions {
   rebateContingentOnFinancing?: boolean | null;
   /** Raw quote text. Used to restore a tax or registration line the model dropped. */
   dealerText?: string | null;
+  /**
+   * Monroney MSRP the buyer typed. Not the MSRP extracted from the dealer quote.
+   * A licensed valuation can still be passed as marketBenchmark later.
+   */
+  buyerWindowStickerMsrp?: number | null;
 }
 
 export interface RuleEngineResult {
@@ -330,6 +341,7 @@ function finishVerdict(
     primaryIssue: draft.primaryIssue,
     derivation: extras.derivation,
     askForVehicleEvidence,
+    benchmarkKind: extras.benchmark.kind ?? null,
   });
   const reasoning = [
     draft.summary,
@@ -379,6 +391,7 @@ export function applyRuleEngine(
           vehicleYear: fields.vehicle_year,
           vehicleMake: fields.vehicle_make,
           vehicleModel: fields.vehicle_model,
+          buyerWindowStickerMsrp: options?.buyerWindowStickerMsrp,
         });
   const marketVerified =
     benchmark.status === "verified" && benchmark.low != null && benchmark.high != null;
@@ -447,18 +460,27 @@ export function applyRuleEngine(
   const paymentGap =
     worksheet?.ok && worksheet.paymentMismatch != null ? Math.abs(worksheet.paymentMismatch) : 0;
   const mathMismatch = (worksheet?.ok && otdGap >= 0.01) || paymentGap >= 0.01;
+  const factoryCeiling = benchmark.kind === "factory_msrp" && benchmark.high != null;
   const priceAboveBenchmark =
     marketVerified &&
     fields.salePrice != null &&
     benchmark.high != null &&
-    fields.salePrice > benchmark.high;
+    (factoryCeiling
+      ? fields.salePrice > benchmark.high + FACTORY_MSRP_TOLERANCE_DOLLARS
+      : fields.salePrice > benchmark.high);
   const priceInsideBenchmark =
     marketVerified &&
     fields.salePrice != null &&
-    benchmark.low != null &&
     benchmark.high != null &&
-    fields.salePrice >= benchmark.low &&
-    fields.salePrice <= benchmark.high;
+    (factoryCeiling
+      ? fields.salePrice <= benchmark.high + FACTORY_MSRP_TOLERANCE_DOLLARS
+      : benchmark.low != null &&
+        fields.salePrice >= benchmark.low &&
+        fields.salePrice <= benchmark.high);
+  const markup =
+    factoryCeiling && priceAboveBenchmark && fields.salePrice != null && benchmark.high != null
+      ? factoryMarkup(fields.salePrice, benchmark.high)
+      : null;
 
   const transparencyConcerns: string[] = [];
   if (paymentOnly) transparencyConcerns.push("Only a monthly payment is shown.");
@@ -486,6 +508,11 @@ export function applyRuleEngine(
   }
   if (negativeEquity) negotiation.push("Negative equity is being rolled into the deal.");
   if (conditionalRebate) negotiation.push("A rebate appears to require financing and was not counted on this cash quote.");
+  if (markup) {
+    negotiation.push(
+      `The selling price is ${markup.dollarsLabel} (${markup.percentLabel}) above the buyer-supplied factory window sticker MSRP.`,
+    );
+  }
   if (negotiation.length === 0) negotiation.push("No dealer charge was identified as a negotiation target beyond verifying the vehicle price.");
 
   const missing: string[] = [];
@@ -517,11 +544,15 @@ export function applyRuleEngine(
     },
     marketCompetitiveness: {
       status: !marketVerified ? "insufficient" : priceAboveBenchmark ? "fail" : priceInsideBenchmark ? "clear" : "concern",
-      summary: marketVerified
-        ? priceAboveBenchmark
-          ? `Selling price $${fields.salePrice} is above the independent benchmark of $${benchmark.low}–$${benchmark.high} (${benchmark.source ?? "independent source"}).`
-          : `Selling price is compared with an independent benchmark of $${benchmark.low}–$${benchmark.high}. The submitted price did not set that range.`
-        : "Market value not verified.",
+      summary: !marketVerified
+        ? "Market value not verified."
+        : factoryCeiling
+          ? markup
+            ? `Selling price ${formatUsd(fields.salePrice ?? 0)} is ${markup.dollarsLabel} (${markup.percentLabel}) above the buyer-supplied factory window sticker MSRP of ${formatUsd(benchmark.high ?? 0)}. ${FACTORY_STICKER_COMPARISON}`
+            : `Selling price ${formatUsd(fields.salePrice ?? 0)} is at or below the buyer-supplied factory window sticker MSRP of ${formatUsd(benchmark.high ?? 0)}. ${FACTORY_STICKER_COMPARISON}`
+          : priceAboveBenchmark
+            ? `Selling price $${fields.salePrice} is above the independent benchmark of $${benchmark.low}–$${benchmark.high} (${benchmark.source ?? "independent source"}).`
+            : `Selling price is compared with an independent benchmark of $${benchmark.low}–$${benchmark.high}. The submitted price did not set that range.`,
     },
     negotiationOpportunities: {
       status: negotiation[0].startsWith("No dealer charge") ? "not_checked" : "concern",
@@ -629,6 +660,20 @@ export function applyRuleEngine(
   if (highCostAddOnCount === 1) {
     return caution("PROCEED WITH CAUTION — REMOVE ADD-ONS / MARKUP", "A high-cost dealer add-on is on the quote");
   }
+  if (priceAboveBenchmark && markup && benchmark.high != null) {
+    const issue = `The selling price is ${markup.dollarsLabel} (${markup.percentLabel}) above the buyer-supplied factory window sticker MSRP of ${formatUsd(benchmark.high)}`;
+    return finishVerdict(
+      {
+        dealScore: "RED",
+        confidenceLevel: "HIGH",
+        verdictLabel: "NO-GO — MARKUP OVER FACTORY MSRP",
+        goNoGo: "NO-GO",
+        primaryIssue: issue,
+        summary: `${issue}. ${FACTORY_STICKER_COMPARISON}`,
+      },
+      context,
+    );
+  }
   if (priceAboveBenchmark) {
     return noGo(
       "NO-GO — PRICE ABOVE INDEPENDENT BENCHMARK",
@@ -676,6 +721,19 @@ export function applyRuleEngine(
     return insufficient(
       "INSUFFICIENT INFORMATION — MARKET VALUE NOT VERIFIED",
       "Math and fee checks that could run did not establish a reason to approve the price. Market value is not verified.",
+    );
+  }
+  if (priceInsideBenchmark && !mathMismatch && factoryCeiling && benchmark.high != null) {
+    return finishVerdict(
+      {
+        dealScore: "GREEN",
+        confidenceLevel: "HIGH",
+        verdictLabel: "GO — AT OR BELOW FACTORY WINDOW STICKER MSRP",
+        goNoGo: "GO",
+        primaryIssue: "Selling price is at or below the buyer-supplied factory window sticker MSRP and the checked math is clean",
+        summary: `The selling price of ${formatUsd(fields.salePrice ?? 0)} is at or below the buyer-supplied factory window sticker MSRP of ${formatUsd(benchmark.high)}. ${FACTORY_STICKER_COMPARISON} The checked math and fee rules are clean.`,
+      },
+      context,
     );
   }
   if (priceInsideBenchmark && !mathMismatch) {

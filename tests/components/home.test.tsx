@@ -118,6 +118,14 @@ describe("Home page rendering", () => {
     expect(textarea).toBeInTheDocument();
   });
 
+  it("labels the optional factory window sticker MSRP and warns against a dealer addendum", async () => {
+    renderHome();
+    expect(await screen.findByText("Factory Window Sticker MSRP (optional)")).toBeInTheDocument();
+    expect(screen.getByTestId("text-factory-window-sticker-help")).toHaveTextContent(/Monroney/i);
+    expect(screen.getByTestId("text-factory-window-sticker-help")).toHaveTextContent(/dealer-printed addendum/i);
+    expect(screen.getByTestId("input-factory-window-sticker-msrp")).not.toBeRequired();
+  });
+
   it("renders the analyze button", async () => {
     renderHome();
     const btn = await screen.findByTestId("button-analyze");
