@@ -65,21 +65,42 @@ const DOC_FEE_EXACT = [
   "documentary service",
   "documentary preparation",
   "document processing",
+  "electronic filing",
 ];
 
 const DOC_FEE_BROAD = ["dealer fee", "processing fee", "admin fee", "administrative fee"];
 
-export function detectDocFeeAmount(fees: { name: string; amount: number | null }[]): number | null {
-  const exact: number[] = [];
-  const broad: number[] = [];
+function sumDocTier(
+  fees: { name: string; amount: number | null }[],
+  keywords: string[],
+): number | null {
+  const seen = new Set<string>();
+  let total = 0;
+  let count = 0;
   for (const fee of fees) {
-    if (fee.amount == null || !Number.isFinite(fee.amount)) continue;
-    const name = fee.name.toLowerCase();
-    if (DOC_FEE_EXACT.some((kw) => name.includes(kw))) exact.push(fee.amount);
-    else if (DOC_FEE_BROAD.some((kw) => name.includes(kw))) broad.push(fee.amount);
+    if (fee.amount == null || !Number.isFinite(fee.amount) || fee.amount < 0) continue;
+    const name = fee.name.toLowerCase().trim();
+    if (!keywords.some((keyword) => name.includes(keyword))) continue;
+    const normalized = name.replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
+    const key = `${normalized}|${fee.amount}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    total += fee.amount;
+    count += 1;
   }
-  const candidates = exact.length > 0 ? exact : broad;
-  return candidates.length > 0 ? Math.max(...candidates) : null;
+  if (count === 0) return null;
+  return Math.round(total * 100) / 100;
+}
+
+/**
+ * Total documentation charge checked against the cap.
+ * Explicit doc-fee lines are summed so a second documentation line cannot
+ * hide under the larger of the two. A same name and amount is counted once.
+ * When any explicit line exists, broader admin/dealer labels stay out of
+ * this total and are still reviewed as separate dealer charges.
+ */
+export function detectDocFeeAmount(fees: { name: string; amount: number | null }[]): number | null {
+  return sumDocTier(fees, DOC_FEE_EXACT) ?? sumDocTier(fees, DOC_FEE_BROAD);
 }
 
 function needsSource(summary: string, jurisdiction: string, charged: number | null): DocFeeAssessment {

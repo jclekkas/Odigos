@@ -35,6 +35,11 @@ import {
   enrichDetectedFields,
   governmentChargeExtractionRules,
 } from "../governmentCharges.js";
+import {
+  applyDealerQuoteFacts,
+  buyerStickerCopiesInflatedMsrp,
+  parseDealerQuoteFacts,
+} from "../dealerQuoteText.js";
 
 export type AnalyzeInput = z.infer<typeof analysisRequestSchema>;
 
@@ -1041,6 +1046,12 @@ Respond entirely in Spanish. All text fields in your JSON response — including
 
   const llmResult = validationResult.data;
   llmResult.detectedFields = enrichDetectedFields(llmResult.detectedFields, data.dealerText);
+  const quoteFacts = parseDealerQuoteFacts(data.dealerText);
+  llmResult.detectedFields = applyDealerQuoteFacts(llmResult.detectedFields, quoteFacts);
+  const requestedSticker = data.factoryWindowStickerMsrp ?? null;
+  const buyerWindowStickerMsrp = buyerStickerCopiesInflatedMsrp(requestedSticker, quoteFacts, data.condition)
+    ? null
+    : requestedSticker;
 
   const docFeeCapResult = stateData
     ? checkDocFeeCap(llmResult.detectedFields.fees, stateData)
@@ -1111,7 +1122,10 @@ Respond entirely in Spanish. All text fields in your JSON response — including
       stateData: stateData ?? null,
       condition: data.condition,
       dealerText: data.dealerText,
-      buyerWindowStickerMsrp: data.factoryWindowStickerMsrp ?? null,
+      mileage: quoteFacts.mileage,
+      alternateSalePrices: quoteFacts.salePrices,
+      alternateOutTheDoorPrices: quoteFacts.outTheDoorPrices,
+      buyerWindowStickerMsrp,
       rebateContingentOnFinancing: /rebate/i.test(data.dealerText) && /financ|approved credit|with financing/i.test(data.dealerText),
     },
   );

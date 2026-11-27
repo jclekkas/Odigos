@@ -75,14 +75,15 @@ describe("checkDocFeeCap", () => {
     expect(result!.statuteCitation).toBe("CA Vehicle Code § 11713.1(i)");
   });
 
-  it("picks the maximum doc fee when multiple matching fees exist", () => {
+  it("sums distinct doc-fee lines so a second documentation charge is not dropped", () => {
     const fees: Fee[] = [
       { name: "doc fee", amount: 60 },
       { name: "documentation fee", amount: 120 },
     ];
     const result = checkDocFeeCap(fees, CA_STATE);
-    expect(result!.chargedAmount).toBe(120);
+    expect(result!.chargedAmount).toBe(180);
     expect(result!.violated).toBe(true);
+    expect(result!.overage).toBe(95);
   });
 
   it("returns null statuteCitation when state has no citation", () => {
