@@ -11,6 +11,8 @@ export const DOC_FEE_KEYWORDS_EXACT = [
   "documentary service",
   "documentary preparation",
   "document processing",
+  "document administration fee",
+  "electronic filing",
 ];
 
 export const DOC_FEE_KEYWORDS_BROAD = [

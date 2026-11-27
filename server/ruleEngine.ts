@@ -19,11 +19,12 @@ import {
 } from "../shared/windowSticker.js";
 import {
   classifyDocFee,
+  detectDocFeeAmount,
   type DocFeeAssessment,
   type RegulatoryStateInput,
 } from "./regulatoryClassification.js";
 import { buildConstrainedReply } from "./replyConstraint.js";
-import { DOC_FEE_KEYWORDS_BROAD, DOC_FEE_KEYWORDS_EXACT, isDocFeeName } from "./docFeeName.js";
+import { isDocFeeName } from "./docFeeName.js";
 
 export interface RuleEngineOptions {
   stateData?: RegulatoryStateInput | null;
@@ -31,11 +32,18 @@ export interface RuleEngineOptions {
   privateIndustryPartner?: boolean | null;
   /** null means the quote did not say whether an Oregon dealer uses an electronic integrator. */
   electronicIntegrator?: boolean | null;
+  /**
+   * Pennsylvania only. True when the dealer provides electronic transaction
+   * services, false when it does not, null when the quote does not say.
+   */
+  electronicTransaction?: boolean | null;
   /** A caller-supplied benchmark. Ignored when it merely copies the submitted price. */
   marketBenchmark?: MarketBenchmark | null;
   condition?: "new" | "used" | "unknown" | null;
   mileage?: number | null;
   alternateSalePrices?: number[];
+  /** Distinct out-the-door totals printed in the same quote or thread. */
+  alternateOutTheDoorPrices?: number[];
   buyerState?: string | null;
   dealerState?: string | null;
   rebateContingentOnFinancing?: boolean | null;
@@ -96,24 +104,8 @@ interface StateData {
   };
 }
 
-function detectDocFee(fees: Fee[]): number | null {
-  // Collect all matching fees across both tiers; prefer explicit-tier matches.
-  // Return the maximum charged amount so cap violation is never understated.
-  const exactMatches: number[] = [];
-  const broadMatches: number[] = [];
-
-  for (const fee of fees) {
-    if (fee.amount === null) continue;
-    const nameLower = fee.name.toLowerCase();
-    if (DOC_FEE_KEYWORDS_EXACT.some((kw) => nameLower.includes(kw))) {
-      exactMatches.push(fee.amount);
-    } else if (DOC_FEE_KEYWORDS_BROAD.some((kw) => nameLower.includes(kw))) {
-      broadMatches.push(fee.amount);
-    }
-  }
-
-  const candidates = exactMatches.length > 0 ? exactMatches : broadMatches;
-  return candidates.length > 0 ? Math.max(...candidates) : null;
+function detectDocFee(fees: Fee[], stateAbbreviation?: string | null): number | null {
+  return detectDocFeeAmount(fees, stateAbbreviation);
 }
 
 function getEffectiveCapAmount(stateData: StateData): number | null {
@@ -131,7 +123,7 @@ export function checkDocFeeCap(fees: Fee[], stateData: StateData): DocFeeCapResu
   if (capAmount === null) {
     return null;
   }
-  const chargedAmount = detectDocFee(fees);
+  const chargedAmount = detectDocFee(fees, stateData.abbreviation);
   if (chargedAmount === null) {
     return null;
   }
@@ -194,6 +186,7 @@ const MARKET_ADJUSTMENT_KEYWORDS = [
   "additional dealer markup",
   "dealer markup",
   "market value adjustment",
+  "addendum",
 ];
 
 const ADD_ON_THRESHOLD = 300;
@@ -314,6 +307,16 @@ function appendContextNotes(summary: string, notes: string[]): string {
   return next;
 }
 
+function distinctPrices(values: number[] | undefined): number[] {
+  const out: number[] = [];
+  for (const price of values ?? []) {
+    if (!Number.isFinite(price)) continue;
+    if (out.some((existing) => Math.abs(existing - price) < 1)) continue;
+    out.push(price);
+  }
+  return out;
+}
+
 function declinedAddOnStillCharged(fees: Fee[]): Fee | null {
   return (
     fees.find((fee) => {
@@ -385,7 +388,10 @@ export function applyRuleEngine(
   const partner = options?.privateIndustryPartner ?? null;
   const integrator = options?.electronicIntegrator ?? null;
   const docFee = options?.stateData
-    ? classifyDocFee(fees, options.stateData, partner, integrator)
+    ? classifyDocFee(fees, options.stateData, partner, integrator, {
+        vehicleCashPrice: fields.salePrice,
+        electronicTransaction: options.electronicTransaction ?? null,
+      })
     : null;
   const supplied = options?.marketBenchmark ?? null;
   const anchored =
@@ -462,10 +468,12 @@ export function applyRuleEngine(
   const otdPresent = hasOTD(fields);
   const vagueFeesDetected = hasVagueFees(fees, allowedDocCap);
   const declined = declinedAddOnStillCharged(fees);
+  const saleOffers = distinctPrices(options?.alternateSalePrices);
+  const otdOffers = distinctPrices(options?.alternateOutTheDoorPrices);
   const competing =
-    (options?.alternateSalePrices ?? []).some(
-      (price) => fields.salePrice != null && Math.abs(price - fields.salePrice) >= 1,
-    ) || (options?.alternateSalePrices ?? []).length >= 2;
+    saleOffers.length >= 2 ||
+    otdOffers.length >= 2 ||
+    saleOffers.some((price) => fields.salePrice != null && Math.abs(price - fields.salePrice) >= 1);
   const interstate =
     !!options?.buyerState &&
     !!options?.dealerState &&
@@ -621,6 +629,16 @@ export function applyRuleEngine(
     );
   }
 
+  const rebateExcluded = worksheet?.ok ? worksheet.conditionalRebateExcluded : null;
+  const rebateExplainsOtd =
+    rebateExcluded != null && taxKnown && Math.abs(otdGap - rebateExcluded) < 1;
+  if (rebateExplainsOtd) {
+    return caution(
+      "PROCEED WITH CAUTION — CONDITIONAL REBATE",
+      "A financing-contingent rebate was excluded from the cash price",
+    );
+  }
+
   if (!leaseQuote && worksheet?.ok && lines.statedTax != null && otdGap >= 0.01) {
     return finishVerdict(
       {
@@ -723,7 +741,10 @@ export function applyRuleEngine(
     return caution("PROCEED WITH CAUTION — NEGATIVE EQUITY", `Negative equity is $${worksheet!.negativeEquity}`);
   }
   if (competing) {
-    return caution("PROCEED WITH CAUTION — COMPETING OFFERS", "The message contains more than one vehicle price");
+    return caution(
+      "PROCEED WITH CAUTION — COMPETING OFFERS",
+      "The message contains more than one selling price or out-the-door total",
+    );
   }
   if (interstate) {
     return caution("PROCEED WITH CAUTION — CONFIRM TAX JURISDICTION", "The buyer state and dealer state differ, so tax and fee rules may not be the dealer's state");
