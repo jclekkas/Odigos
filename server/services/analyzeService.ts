@@ -28,6 +28,11 @@ import { logger } from "../logger.js";
 import { AI_PRIMARY_MODEL, AI_FALLBACK_MODEL } from "../config/aiModel.js";
 import { validateDealerContent } from "./contentValidator.js";
 import { normalizeFeeNames } from "../warehouse/warehouseUtils.js";
+import {
+  coerceGovernmentFields,
+  enrichDetectedFields,
+  governmentChargeExtractionRules,
+} from "../governmentCharges.js";
 
 export type AnalyzeInput = z.infer<typeof analysisRequestSchema>;
 
@@ -507,7 +512,7 @@ SUGGESTED REPLY RULES:
 
 CRITICAL REQUIREMENTS:
 1. If key information is missing or ambiguous, you MUST explicitly state what's missing and provide the exact questions the buyer should ask the dealer.
-2. Extract all pricing information you can find (sale price, MSRP, fees, monthly payments, etc.)
+2. Extract all pricing information you can find (sale price, MSRP, sales tax, title, registration, license, DMV fees, other fees, monthly payments). A labeled tax, title, or registration dollar amount is never omitted.
 3. Flag any junk fees — charges that provide little or no value to the buyer, duplicate other charges, or were not clearly disclosed. Common junk fees include: dealer prep, nitrogen fills, paint protection, fabric guard, VIN etching, anti-theft packages, reconditioning fees, delivery fees (separate from manufacturer destination charge), and excessive dealer add-ons. Also flag market adjustments and unclear protection packages.
 4. Never invent numbers or make claims about "market averages" without data.
 5. For vehicle_make, vehicle_model, and vehicle_year: extract from the dealer text or the user-provided Vehicle field. Return null for any field that is not clearly determinable — do not guess.
@@ -602,6 +607,8 @@ Evidence too weak to quantify:
   "financialSummary": "We can't estimate a dollar range yet — the quote is missing the out-the-door total needed to compare."
 }
 
+${governmentChargeExtractionRules()}
+
 You must respond with a valid JSON object with this exact structure:
 {
   "dealScore": "GREEN" | "YELLOW" | "RED",
@@ -621,7 +628,11 @@ You must respond with a valid JSON object with this exact structure:
     "salePrice": number or null,
     "msrp": number or null,
     "rebates": number or null,
-    "fees": [{"name": "fee name", "amount": number or null}],
+    "fees": [{"name": "fee name as printed, including sales tax, title, registration, license, and DMV lines", "amount": number or null}],
+    "taxes": number or null (sales/use/excise tax in dollars; null if no tax dollars are printed; never a percentage),
+    "titleFee": number or null (separate title fee in dollars, else null),
+    "registrationFee": number or null (separate registration, license, tag, or plate fee in dollars, else null),
+    "govFees": number or null (one combined title/registration/license/DMV line in dollars when not already split above, else null),
     "outTheDoorPrice": number or null,
     "monthlyPayment": number or null,
     "tradeInValue": number or null,
@@ -945,9 +956,10 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     }
   }
 
-  if (rawResult.detectedFields) {
+  if (rawResult.detectedFields && typeof rawResult.detectedFields === "object") {
     const df = rawResult.detectedFields as Record<string, unknown>;
     if (df.fees === null) df.fees = [];
+    coerceGovernmentFields(df);
   }
   if (rawResult.missingInfo === null) rawResult.missingInfo = [];
 
@@ -1023,6 +1035,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   }
 
   const llmResult = validationResult.data;
+  llmResult.detectedFields = enrichDetectedFields(llmResult.detectedFields, data.dealerText);
 
   const docFeeCapResult = stateData
     ? checkDocFeeCap(llmResult.detectedFields.fees, stateData)
@@ -1092,6 +1105,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     {
       stateData: stateData ?? null,
       condition: data.condition,
+      dealerText: data.dealerText,
       rebateContingentOnFinancing: /rebate/i.test(data.dealerText) && /financ|approved credit|with financing/i.test(data.dealerText),
     },
   );

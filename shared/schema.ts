@@ -122,6 +122,18 @@ export const detectedFieldsSchema = z.object({
   msrp: z.number().nullable(),
   rebates: z.number().nullable(),
   fees: z.array(feeSchema),
+  taxes: z.number().nullable().optional().describe(
+    "Dollar amount of sales, use, or excise tax printed on the quote. Null when no tax dollars are stated. Never a tax-rate percentage.",
+  ),
+  titleFee: z.number().nullable().optional().describe(
+    "Title fee printed as its own dollar line. Null when title is not stated separately from registration.",
+  ),
+  registrationFee: z.number().nullable().optional().describe(
+    "Registration, license, tag, or plate fee printed as its own dollar line. Null when it is not stated separately.",
+  ),
+  govFees: z.number().nullable().optional().describe(
+    "One combined government line (title and registration, license/registration, or DMV fees) when those dollars are not already in titleFee, registrationFee, or taxes. Null when absent.",
+  ),
   outTheDoorPrice: z.number().nullable(),
   monthlyPayment: z.number().nullable(),
   tradeInValue: z.number().nullable(),
