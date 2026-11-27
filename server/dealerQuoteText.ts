@@ -7,9 +7,17 @@
  */
 
 import type { DetectedFields, Fee } from "../shared/schema.js";
-import { normalizeOcrMoney, stitchWrappedAmounts } from "./ocrMoney.js";
+import { matchesExtractedDocFeeLabel, matchesExtractedFilingLabel } from "../shared/feeVocabulary.js";
+import { normalizeOcrMoney, scanMoney, stitchWrappedAmounts, textContainsAmount } from "./ocrMoney.js";
 import { parseGovernmentLines, selectGovernmentLines } from "./governmentCharges.js";
 import { classifyFeeBucket, roundCents, splitFees } from "./quoteMath.js";
+
+export interface LocatedFee extends Fee {
+  /** 0-based line index in the normalized quote. Absent on a model-only row. */
+  sourceLine?: number;
+  /** Character offset of the amount on that line, so two charges on one line stay distinct. */
+  sourceOffset?: number;
+}
 
 export interface DealerQuoteFacts {
   normalizedText: string;
@@ -23,16 +31,13 @@ export interface DealerQuoteFacts {
   tradePayoffs: number[];
   downPayments: number[];
   mileage: number | null;
-  docFees: Fee[];
-  addOnFees: Fee[];
+  docFees: LocatedFee[];
+  filingFees: LocatedFee[];
+  addOnFees: LocatedFee[];
   inflatedMsrpAmounts: number[];
   originalMsrpAmounts: number[];
 }
 
-const MONEY = /\$(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d{2}))?/g;
-
-const DOC_LABEL =
-  /\b(?:doc(?:ument(?:ation)?)?\s*fee|document fee|documentary|electronic filing|admin(?:istrative)?\s*fee|processing\s*fee|dealer\s*fee)\b/i;
 const ADDON_LABEL =
   /\b(?:nitrogen|vin etch|paint protection|ceramic|protection package|market adjustment|dealer addendum|addendum|dealer add-?ons?|undercoating|fabric protection|anti-?theft|window tint|appearance package)\b/i;
 const PAYOFF_LABEL = /\b(?:payoff|amount owed)\b/i;
@@ -46,12 +51,6 @@ const INFLATED_MSRP_LABEL =
   /\b(?:adjusted|dealer|total)\s+msrp\b|\bmsrp\b[^\n]{0,80}(?:addendum|market adjustment)|\b(?:addendum|market adjustment)[^\n]{0,80}\bmsrp\b/i;
 const ORIGINAL_MSRP_LABEL = /\boriginal\s+msrp\b|\boriginal\s+sticker\b/i;
 const MSRP_LABEL = /\bmsrp\b|\bsticker\s+price\b/i;
-
-function moneyAmount(whole: string, cents: string | undefined): number {
-  const dollars = Number(whole.replace(/,/g, ""));
-  const fraction = cents ? Number(cents) / 100 : 0;
-  return roundCents(dollars + fraction);
-}
 
 function unique(values: number[]): number[] {
   const out: number[] = [];
@@ -71,22 +70,22 @@ function cleanLabel(label: string): string {
     .trim();
 }
 
-function feeIdentity(name: string, amount: number): string {
+export function feeIdentity(name: string, amount: number): string {
   const normalized = name.toLowerCase().replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
   return `${normalized}|${amount}`;
 }
 
-function segments(line: string): { label: string; amount: number }[] {
-  const out: { label: string; amount: number }[] = [];
-  const matches = line.matchAll(MONEY);
+function segments(line: string): { label: string; amount: number; offset: number }[] {
+  const out: { label: string; amount: number; offset: number }[] = [];
+  const spans = scanMoney(line);
   let previous = 0;
-  for (const match of matches) {
-    const start = match.index ?? 0;
+  for (const span of spans) {
     out.push({
-      label: line.slice(previous, start),
-      amount: moneyAmount(match[1], match[2]),
+      label: line.slice(previous, span.start),
+      amount: span.amount,
+      offset: span.start,
     });
-    previous = start + match[0].length;
+    previous = span.end;
   }
   return out;
 }
@@ -133,18 +132,20 @@ function parseTerm(text: string): number | null {
 
 function paymentAmounts(text: string): number[] {
   const amounts: number[] = [];
-  const trailing = /\$(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d{2}))?\s*(?:\/\s*mo\b|per month\b|a month\b)/gi;
+  const trailing = /(?:\$\s*|USD\s*|US\$\s*)?(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d{2}))?\s*(?:USD\s*)?(?:\/\s*mo\b|per month\b|a month\b)/gi;
   for (const match of text.matchAll(trailing)) {
-    amounts.push(moneyAmount(match[1], match[2]));
+    const start = match.index ?? 0;
+    if (/%\s*$/.test(text.slice(Math.max(0, start - 6), start))) continue;
+    const dollars = Number(match[1].replace(/,/g, ""));
+    const cents = match[2] ? Number(match[2]) / 100 : 0;
+    if (!Number.isFinite(dollars)) continue;
+    amounts.push(roundCents(dollars + cents));
   }
   return amounts;
 }
 
 function appears(text: string, amount: number): boolean {
-  for (const match of text.matchAll(MONEY)) {
-    if (Math.abs(moneyAmount(match[1], match[2]) - amount) < 0.01) return true;
-  }
-  return false;
+  return textContainsAmount(text, amount);
 }
 
 function reconcile(current: number | null | undefined, labeled: number[], text: string): number | null {
@@ -171,6 +172,68 @@ function addFee(fees: Fee[], name: string, amount: number): void {
     return feeIdentity(fee.name, fee.amount) === key;
   });
   if (!exists) fees.push({ name, amount });
+}
+
+/**
+ * A model row with no second printed line is one line seen twice.
+ * Two printed lines with the same name and amount are two charges.
+ * When the quote prints any documentation or filing line, those lines
+ * replace model rows for that kind so a renamed duplicate is not added.
+ */
+function usePrintedLines(modelFees: Fee[], printed: LocatedFee[], match: (name: string) => boolean): Fee[] {
+  const found = printed.filter((fee) => fee.amount != null && Number.isFinite(fee.amount) && match(fee.name));
+  const others = modelFees.filter((fee) => !match(fee.name));
+  if (found.length === 0) {
+    const collapsed: Fee[] = [];
+    for (const fee of modelFees) {
+      if (!match(fee.name) || fee.amount == null || !Number.isFinite(fee.amount)) continue;
+      addFee(collapsed, fee.name, fee.amount);
+    }
+    return [...others, ...collapsed];
+  }
+  const rows: Fee[] = [];
+  const seen = new Set<string>();
+  for (const fee of found) {
+    const key = `${fee.sourceLine ?? "na"}:${fee.sourceOffset ?? rows.length}|${feeIdentity(fee.name, fee.amount as number)}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    rows.push({ name: fee.name, amount: fee.amount });
+  }
+  return [...others, ...rows];
+}
+
+function keepSeparatePrintedAddOns(modelFees: Fee[], printed: LocatedFee[]): Fee[] {
+  const printedByIdentity = new Map<string, LocatedFee[]>();
+  for (const fee of printed) {
+    if (fee.amount == null || !Number.isFinite(fee.amount)) continue;
+    const key = feeIdentity(fee.name, fee.amount);
+    const list = printedByIdentity.get(key) ?? [];
+    if (fee.sourceLine != null && list.some((item) => item.sourceLine === fee.sourceLine && item.sourceOffset === fee.sourceOffset)) continue;
+    list.push(fee);
+    printedByIdentity.set(key, list);
+  }
+  const out: Fee[] = [];
+  const used = new Map<string, number>();
+  for (const fee of modelFees) {
+    if (!ADDON_LABEL.test(fee.name) || fee.amount == null || !Number.isFinite(fee.amount)) {
+      out.push(fee);
+      continue;
+    }
+    const key = feeIdentity(fee.name, fee.amount);
+    const allowed = printedByIdentity.get(key)?.length ?? 1;
+    const seen = used.get(key) ?? 0;
+    if (seen >= allowed) continue;
+    out.push({ name: fee.name, amount: fee.amount });
+    used.set(key, seen + 1);
+  }
+  for (const lines of printedByIdentity.values()) {
+    const key = feeIdentity(lines[0].name, lines[0].amount as number);
+    const seen = used.get(key) ?? 0;
+    for (let i = seen; i < lines.length; i++) {
+      out.push({ name: lines[i].name, amount: lines[i].amount });
+    }
+  }
+  return out;
 }
 
 function correctTaxFees(fees: Fee[], dealerText: string): Fee[] {
@@ -201,18 +264,20 @@ export function parseDealerQuoteFacts(dealerText: string): DealerQuoteFacts {
     downPayments: [],
     mileage: parseMileage(normalizedText),
     docFees: [],
+    filingFees: [],
     addOnFees: [],
     inflatedMsrpAmounts: [],
     originalMsrpAmounts: [],
   };
 
-  for (const line of normalizedText.split(/\r?\n/)) {
+  for (const [lineIndex, line] of normalizedText.split(/\r?\n/).entries()) {
     const pieces = segments(line);
     for (const segment of pieces) {
       const label = segment.label;
       const scope = pieces.length === 1 ? line : label;
       const name = cleanLabel(label) || cleanLabel(scope);
       const amount = segment.amount;
+      const located: LocatedFee = { name, amount, sourceLine: lineIndex, sourceOffset: segment.offset };
       if (PAYOFF_LABEL.test(scope)) {
         facts.tradePayoffs.push(amount);
       } else if (TRADE_LABEL.test(scope) && !OTD_LABEL.test(scope)) {
@@ -233,10 +298,12 @@ export function parseDealerQuoteFacts(dealerText: string): DealerQuoteFacts {
         facts.rebates.push(amount);
       } else if (DOWN_LABEL.test(scope)) {
         facts.downPayments.push(amount);
-      } else if (DOC_LABEL.test(scope)) {
-        if (name) facts.docFees.push({ name, amount });
+      } else if (matchesExtractedFilingLabel(scope)) {
+        if (name) facts.filingFees.push(located);
+      } else if (matchesExtractedDocFeeLabel(scope)) {
+        if (name) facts.docFees.push(located);
       } else if (ADDON_LABEL.test(scope) && name) {
-        facts.addOnFees.push({ name, amount });
+        facts.addOnFees.push(located);
       }
     }
   }
@@ -271,11 +338,10 @@ export function buyerStickerCopiesInflatedMsrp(
 }
 
 export function applyDealerQuoteFacts(fields: DetectedFields, facts: DealerQuoteFacts): DetectedFields {
-  const fees = correctTaxFees([...(fields.fees ?? [])], facts.normalizedText);
-  for (const fee of [...facts.docFees, ...facts.addOnFees]) {
-    if (fee.amount == null) continue;
-    addFee(fees, fee.name, fee.amount);
-  }
+  let fees = correctTaxFees([...(fields.fees ?? [])], facts.normalizedText);
+  fees = usePrintedLines(fees, facts.docFees, matchesExtractedDocFeeLabel);
+  fees = usePrintedLines(fees, facts.filingFees, matchesExtractedFilingLabel);
+  fees = keepSeparatePrintedAddOns(fees, facts.addOnFees);
   const payoff = unique(facts.tradePayoffs);
   if (payoff.length === 1) {
     const already = fees.some((fee) => {

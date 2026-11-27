@@ -19,9 +19,11 @@ import {
 } from "../shared/windowSticker.js";
 import {
   classifyDocFee,
+  classifySeparateFilingCharges,
   type DocFeeAssessment,
   type DocFeeQuoteContext,
   type RegulatoryStateInput,
+  type SeparateFilingAssessment,
 } from "./regulatoryClassification.js";
 import { docFeeSurfaceCopy } from "../shared/docFeeSurfaceCopy.js";
 import { buildConstrainedReply } from "./replyConstraint.js";
@@ -83,6 +85,7 @@ export interface RuleEngineResult {
   msrpComparison?: MsrpComparison;
   mathematicalDerivation?: string[];
   docFeeAssessment?: DocFeeAssessment | null;
+  separateFilingAssessments?: SeparateFilingAssessment[];
 }
 
 export interface DocFeeCapResult {
@@ -308,6 +311,7 @@ function finishVerdict(
     fields: DetectedFields;
     benchmark: MarketBenchmark;
     docFee: DocFeeAssessment | null;
+    separateFilingAssessments?: SeparateFilingAssessment[];
     derivation: string[];
     dimensions: AnalysisDimensions;
     marketVerified: boolean;
@@ -349,6 +353,7 @@ function finishVerdict(
     msrpComparison: extras.msrpComparison,
     mathematicalDerivation: extras.derivation,
     docFeeAssessment: extras.docFee,
+    separateFilingAssessments: extras.separateFilingAssessments ?? [],
   };
 }
 
@@ -367,9 +372,15 @@ export function applyRuleEngine(
     ? classifyDocFee(fees, options.stateData, partner, integrator, {
         vehicleCashPrice: fields.salePrice,
         electronicTransaction: options.electronicTransaction ?? null,
+        dealerText: options.dealerText,
         asOf: options.asOf ?? new Date(),
       })
     : null;
+  const separateFilingAssessments = classifySeparateFilingCharges(
+    fees,
+    options?.stateData,
+    options?.dealerText,
+  );
   const supplied = options?.marketBenchmark ?? null;
   const anchored =
     supplied != null &&
@@ -491,7 +502,11 @@ export function applyRuleEngine(
       : (!leaseQuote && fields.outTheDoorPrice != null && (lines.statedTax == null || !govFeesStated))
         ? "Tax or government fees were not itemized, so the out-the-door total was not fully reconciled."
         : "The itemized lines reconcile to the stated out-the-door price.";
-  const regulatorySummary = docFee?.summary ?? "No verified documentation-fee violation was established.";
+  const filingNote = separateFilingAssessments.map((item) => item.summary).join(" ");
+  const regulatorySummary = [
+    docFee?.summary ?? "No verified documentation-fee violation was established.",
+    filingNote,
+  ].filter((part) => part.trim() !== "").join(" ");
   const negotiation: string[] = [];
   if (hasMarketAdj) negotiation.push("An explicit market adjustment is negotiable dealer markup.");
   if (highCostAddOnCount > 0) negotiation.push("High-cost dealer add-ons can be removed.");
@@ -568,7 +583,17 @@ export function applyRuleEngine(
   const notes = [options?.vinMismatchNote, options?.buyerReportedExplanation].filter(
     (note): note is string => !!note && note.trim() !== "",
   );
-  const context = { fields, benchmark, docFee, derivation, dimensions, marketVerified, msrpComparison, notes };
+  const context = {
+    fields,
+    benchmark,
+    docFee,
+    separateFilingAssessments,
+    derivation,
+    dimensions,
+    marketVerified,
+    msrpComparison,
+    notes,
+  };
 
   const illegal = docFee?.classification === "illegal";
   if (illegal) {

@@ -1,3 +1,5 @@
+import { separateFilingKind } from "../shared/feeVocabulary.js";
+
 /**
  * Deterministic purchase worksheet.
  *
@@ -287,6 +289,9 @@ export type GovernmentBucket = "tax" | "title" | "registration" | "gov";
 export function classifyFeeBucket(name: string): GovernmentBucket | "payoff" | null {
   const n = name.toLowerCase();
   if (PAYOFF_NAME.test(n)) return "payoff";
+  // Electronic filing and a registration-service charge are not the state
+  // registration fee and are not the capped documentation fee.
+  if (separateFilingKind(n)) return null;
   if (isCombinedGovernmentName(n)) return "gov";
   if (isTaxFeeName(n)) return "tax";
   if (/\btitle\b/.test(n) && !/\btitle\s+loan\b/.test(n)) return "title";
@@ -316,6 +321,7 @@ function isTaxFeeName(n: string): boolean {
 function isRegistrationFeeName(n: string): boolean {
   if (/frame|bracket|cover|holder|surround/.test(n)) return false;
   if (/driver'?s?\s+license/.test(n)) return false;
+  if (/registration\s+service/.test(n)) return false;
   return /\b(?:registration|license\s+fees?|licensing\s+fees?|license\s+plates?|tag\s+fees?|plate\s+fees?|plates)\b/.test(n)
     || /\breg\b/.test(n);
 }
