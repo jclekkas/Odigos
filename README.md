@@ -77,6 +77,14 @@ Older `AI_INTEGRATIONS_OPENAI_*` variable names still work when the matching `OP
 
 On a custom base URL the app does not fall back to `gpt-4o-mini` unless you set `OPENAI_FALLBACK_MODEL`.
 
+### Email a copy of the analysis
+
+The results page can mail the verdict to an address the visitor types. That path is not an open relay. `/api/analyze` signs the verdict, and `/api/email-preview` sends only the text inside that signature.
+
+`EMAIL_TOKEN_SECRET` is the HMAC key. If it is unset or blank, the server uses `SESSION_SECRET`. If both are unset or blank, the server does not sign a token, the email button stays hidden, and `POST /api/email-preview` returns 503. The repository does not contain a fallback key. Set `ALERT_SMTP_URL` as well, or there is still no mail transport.
+
+Docker Compose passes `EMAIL_TOKEN_SECRET` and `SESSION_SECRET` through from `.env`. A self-hosted server is reached at `http://localhost:5000`, including when `NODE_ENV=production`. `GET /api/health` stays unauthenticated and returns `status` for that process and for Docker or CI probes. On the hosted site, where `VERCEL` is set, a localhost browser origin is not accepted.
+
 ## Development
 
 | Command | What it does |

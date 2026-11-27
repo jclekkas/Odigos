@@ -1,17 +1,18 @@
 import type { Express } from "express";
 import { z } from "zod";
 import { createSmtpTransport } from "../alerts.js";
+import {
+  isEmailTokenConfigured,
+  verifyEmailToken,
+  type EmailablePayload,
+} from "../emailPreviewToken.js";
 
+// The body carries only the recipient and the signed token. The email's
+// contents are read out of the token, never off the request, so a caller
+// cannot choose what the message says.
 const emailPreviewSchema = z.object({
   email: z.string().email("A valid email address is required"),
-  analysisResult: z.object({
-    goNoGo: z.string(),
-    verdictLabel: z.string(),
-    confidenceLevel: z.string(),
-    missingInfo: z.array(z.object({ field: z.string(), question: z.string() })).optional(),
-    detectedFields: z.record(z.unknown()).optional(),
-    summary: z.string().optional(),
-  }),
+  emailToken: z.string().min(1, "This analysis can no longer be emailed. Please re-run it."),
 });
 
 function escapeHtml(str: string): string {
@@ -35,7 +36,7 @@ function formatCurrencyOrNA(value: unknown): string {
   }).format(n);
 }
 
-function buildEmailContent(analysisResult: z.infer<typeof emailPreviewSchema>["analysisResult"]) {
+function buildEmailContent(analysisResult: EmailablePayload) {
   const { goNoGo, verdictLabel, confidenceLevel, missingInfo, detectedFields, summary } = analysisResult;
 
   const topIssues = (missingInfo ?? []).slice(0, 3);
@@ -126,6 +127,18 @@ export function registerEmailPreviewRoutes(app: Express): void {
   app.post("/api/email-preview", async (req, res) => {
     const emailFrom = process.env.ALERT_EMAIL_FROM || "alerts@odigosauto.com";
 
+    // Without a signing secret we cannot tell a real analysis from text a
+    // stranger made up, so refuse to send rather than relay anything.
+    if (!isEmailTokenConfigured()) {
+      console.error(
+        "[email-preview] EMAIL_TOKEN_SECRET (or SESSION_SECRET) is not set — refusing to send",
+      );
+      return res.status(503).json({
+        error: "EMAIL_NOT_CONFIGURED",
+        message: "Email sending is not configured on this server.",
+      });
+    }
+
     const transport = await createSmtpTransport();
     if (!transport) {
       return res.status(503).json({
@@ -142,7 +155,15 @@ export function registerEmailPreviewRoutes(app: Express): void {
       });
     }
 
-    const { email, analysisResult } = parsed.data;
+    const { email, emailToken } = parsed.data;
+
+    const analysisResult = verifyEmailToken(emailToken);
+    if (!analysisResult) {
+      return res.status(400).json({
+        error: "INVALID_TOKEN",
+        message: "This analysis can no longer be emailed. Please re-run it and try again.",
+      });
+    }
 
     try {
       const { textBody, htmlBody } = buildEmailContent(analysisResult);
