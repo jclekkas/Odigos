@@ -11,6 +11,7 @@
  */
 
 import type { DetectedFields, Fee } from "../shared/schema.js";
+import { normalizeOcrMoney, stitchWrappedAmounts } from "./ocrMoney.js";
 import { classifyFeeBucket, roundCents, splitFees, type ExtractedMoney } from "./quoteMath.js";
 
 export type ParsedKind = "tax" | "title" | "registration" | "titleReg" | "gov";
@@ -344,7 +345,7 @@ function parseLine(line: string): ParsedGovLine[] {
 
 /** Labeled government dollar lines. Percentages and unlabeled numbers are ignored. */
 export function parseGovernmentLines(text: string): ParsedGovLine[] {
-  const normalized = text.replace(/\u00a0/g, " ");
+  const normalized = stitchWrappedAmounts(normalizeOcrMoney(text));
   const lines = normalized.split(/\r?\n/);
   const found: ParsedGovLine[] = [];
   for (const line of lines) {

@@ -41,6 +41,8 @@ export interface RuleEngineOptions {
   condition?: "new" | "used" | "unknown" | null;
   mileage?: number | null;
   alternateSalePrices?: number[];
+  /** Distinct out-the-door totals printed in the same quote or thread. */
+  alternateOutTheDoorPrices?: number[];
   buyerState?: string | null;
   dealerState?: string | null;
   rebateContingentOnFinancing?: boolean | null;
@@ -101,6 +103,8 @@ const DOC_FEE_KEYWORDS_EXACT = [
   "documentary service",
   "documentary preparation",
   "document processing",
+  "document administration fee",
+  "electronic filing",
 ];
 
 // Broader terms accepted only when a more specific doc-fee term is not found
@@ -193,6 +197,7 @@ const MARKET_ADJUSTMENT_KEYWORDS = [
   "additional dealer markup",
   "dealer markup",
   "market value adjustment",
+  "addendum",
 ];
 
 const ADD_ON_THRESHOLD = 300;
@@ -309,6 +314,16 @@ interface VerdictDraft {
   goNoGo: GoNoGo;
   primaryIssue: string;
   summary: string;
+}
+
+function distinctPrices(values: number[] | undefined): number[] {
+  const out: number[] = [];
+  for (const price of values ?? []) {
+    if (!Number.isFinite(price)) continue;
+    if (out.some((existing) => Math.abs(existing - price) < 1)) continue;
+    out.push(price);
+  }
+  return out;
 }
 
 function declinedAddOnStillCharged(fees: Fee[]): Fee | null {
@@ -459,10 +474,12 @@ export function applyRuleEngine(
   const otdPresent = hasOTD(fields);
   const vagueFeesDetected = hasVagueFees(fees, allowedDocCap);
   const declined = declinedAddOnStillCharged(fees);
+  const saleOffers = distinctPrices(options?.alternateSalePrices);
+  const otdOffers = distinctPrices(options?.alternateOutTheDoorPrices);
   const competing =
-    (options?.alternateSalePrices ?? []).some(
-      (price) => fields.salePrice != null && Math.abs(price - fields.salePrice) >= 1,
-    ) || (options?.alternateSalePrices ?? []).length >= 2;
+    saleOffers.length >= 2 ||
+    otdOffers.length >= 2 ||
+    saleOffers.some((price) => fields.salePrice != null && Math.abs(price - fields.salePrice) >= 1);
   const interstate =
     !!options?.buyerState &&
     !!options?.dealerState &&
@@ -615,6 +632,16 @@ export function applyRuleEngine(
     );
   }
 
+  const rebateExcluded = worksheet?.ok ? worksheet.conditionalRebateExcluded : null;
+  const rebateExplainsOtd =
+    rebateExcluded != null && taxKnown && Math.abs(otdGap - rebateExcluded) < 1;
+  if (rebateExplainsOtd) {
+    return caution(
+      "PROCEED WITH CAUTION — CONDITIONAL REBATE",
+      "A financing-contingent rebate was excluded from the cash price",
+    );
+  }
+
   if (!leaseQuote && worksheet?.ok && lines.statedTax != null && otdGap >= 0.01) {
     return finishVerdict(
       {
@@ -717,7 +744,10 @@ export function applyRuleEngine(
     return caution("PROCEED WITH CAUTION — NEGATIVE EQUITY", `Negative equity is $${worksheet!.negativeEquity}`);
   }
   if (competing) {
-    return caution("PROCEED WITH CAUTION — COMPETING OFFERS", "The message contains more than one vehicle price");
+    return caution(
+      "PROCEED WITH CAUTION — COMPETING OFFERS",
+      "The message contains more than one selling price or out-the-door total",
+    );
   }
   if (interstate) {
     return caution("PROCEED WITH CAUTION — CONFIRM TAX JURISDICTION", "The buyer state and dealer state differ, so tax and fee rules may not be the dealer's state");

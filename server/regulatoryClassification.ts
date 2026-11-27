@@ -122,6 +122,7 @@ const DOC_FEE_EXACT = [
   "documentary preparation",
   "document processing",
   "document administration fee",
+  "electronic filing",
 ];
 
 /** Arkansas Code § 23-112-317 and 23 CAR § 410-801 use these names for the capped fee. */
@@ -159,6 +160,10 @@ function moneyLabel(amount: number): string {
   return Number.isInteger(amount) ? `$${amount}` : `$${amount.toFixed(2)}`;
 }
 
+function normalizeFeeIdentity(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
+}
+
 function matchesExactDocFee(name: string, stateAbbreviation?: string | null): boolean {
   if (DOC_FEE_EXACT.some((keyword) => name.includes(keyword))) return true;
   if (stateAbbreviation === "AR" && AR_DOC_FEE_ALIASES.some((keyword) => name.includes(keyword))) return true;
@@ -170,21 +175,31 @@ function isSeparateGovernmentFee(name: string, stateAbbreviation?: string | null
 }
 
 /**
- * Sum every line that names the same regulated documentation service.
- * A separate government title, registration, or tax line is not included,
- * even when its name also contains a broad word such as "processing fee".
- * Exact documentation names take priority over broad names so a distinct
- * "dealer fee" is not added on top of an itemized documentation fee.
+ * Sum distinct lines that name the regulated documentation service.
+ * The same name and amount is counted once, ignoring case and punctuation,
+ * so a repeated "Doc fee" is not added twice and a second documentation line
+ * is not dropped. A separate government title, registration, or tax line is
+ * not included. Exact documentation names take priority over broad names.
  */
 export function detectDocFeeAmount(fees: FeeLine[], stateAbbreviation?: string | null): number | null {
   const exact: number[] = [];
   const broad: number[] = [];
+  const seen = new Set<string>();
   for (const fee of fees) {
-    if (fee.amount == null || !Number.isFinite(fee.amount)) continue;
+    if (fee.amount == null || !Number.isFinite(fee.amount) || fee.amount < 0) continue;
     const name = fee.name.toLowerCase();
     if (isSeparateGovernmentFee(name, stateAbbreviation)) continue;
-    if (matchesExactDocFee(name, stateAbbreviation)) exact.push(fee.amount);
-    else if (DOC_FEE_BROAD.some((keyword) => name.includes(keyword))) broad.push(fee.amount);
+    const tier = matchesExactDocFee(name, stateAbbreviation)
+      ? "exact"
+      : DOC_FEE_BROAD.some((keyword) => name.includes(keyword))
+        ? "broad"
+        : null;
+    if (!tier) continue;
+    const key = `${tier}|${normalizeFeeIdentity(name)}|${fee.amount}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    if (tier === "exact") exact.push(fee.amount);
+    else broad.push(fee.amount);
   }
   const candidates = exact.length > 0 ? exact : broad;
   if (candidates.length === 0) return null;

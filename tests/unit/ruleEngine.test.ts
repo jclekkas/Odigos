@@ -75,10 +75,11 @@ describe("checkDocFeeCap", () => {
     expect(result!.statuteCitation).toBe("CA Vehicle Code § 11713.1(i)");
   });
 
-  it("aggregates documentation charges for the same regulated service", () => {
+  it("sums distinct doc-fee lines and does not count the same line twice", () => {
     const fees: Fee[] = [
       { name: "doc fee", amount: 60 },
       { name: "documentation fee", amount: 120 },
+      { name: ". Doc fee", amount: 60 },
     ];
     const result = checkDocFeeCap(fees, CA_STATE);
     expect(result!.chargedAmount).toBe(180);
