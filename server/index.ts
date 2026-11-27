@@ -12,6 +12,7 @@ import { trackEvent } from "./metrics.js";
 import { db } from "./db.js";
 import { writeAuditEvent } from "./audit.js";
 import { logger } from "./logger.js";
+import { logStatutoryThresholdGaps } from "./statutoryThresholds.js";
 import { isAllowedCorsOrigin } from "./corsOrigin.js";
 import { getOpenAIRuntimeConfig, isOpenAIConfigured } from "./openaiClient.js";
 import { AI_PRIMARY_MODEL, AI_FALLBACK_MODEL } from "./config/aiModel.js";
@@ -676,6 +677,8 @@ export async function initialize(): Promise<void> {
     // (no values) so this cannot leak secrets. Essential for diagnosing
     // Vercel production failures where misconfigured env vars are the most
     // common root cause.
+    logStatutoryThresholdGaps((message, fields) => logger.warn(message, fields));
+
     logger.info("startup env presence", {
       DATABASE_URL: Boolean(process.env.DATABASE_URL),
       AI_INTEGRATIONS_OPENAI_API_KEY: Boolean(process.env.AI_INTEGRATIONS_OPENAI_API_KEY),

@@ -62,7 +62,7 @@ describe("checkDocFeeCap", () => {
     expect(result!.overage).toBe(65);
     expect(result!.stateName).toBe("California");
     expect(result!.stateAbbreviation).toBe("CA");
-    expect(result!.statuteCitation).toBe("CA Vehicle Code § 11713.1(i)");
+    expect(result!.statuteCitation).toBe("Cal. Veh. Code § 4456.5");
   });
 
   it("does not flag a violation when doc fee is at or below cap", () => {
@@ -72,7 +72,7 @@ describe("checkDocFeeCap", () => {
     expect(result!.violated).toBe(false);
     expect(result!.overage).toBe(0);
     expect(result!.stateName).toBe("California");
-    expect(result!.statuteCitation).toBe("CA Vehicle Code § 11713.1(i)");
+    expect(result!.statuteCitation).toBe("Cal. Veh. Code § 4456.5");
   });
 
   it("sums distinct doc-fee lines and does not count the same line twice", () => {
@@ -98,13 +98,10 @@ describe("checkDocFeeCap", () => {
     expect(result!.violated).toBe(false);
   });
 
-  it("returns null statuteCitation when state has no citation", () => {
+  it("does not treat an uncited stored figure as a legal violation", () => {
     const TX_STATE = { docFeeCap: true, docFeeCapAmount: 225, name: "Texas", abbreviation: "TX", statuteCitation: null };
     const fees: Fee[] = [{ name: "doc fee", amount: 300 }];
-    const result = checkDocFeeCap(fees, TX_STATE);
-    expect(result!.violated).toBe(true);
-    expect(result!.stateName).toBe("Texas");
-    expect(result!.statuteCitation).toBeNull();
+    expect(checkDocFeeCap(fees, TX_STATE)).toBeNull();
   });
 
   it("treats broad keyword 'dealer fee' as a doc fee when no exact match exists", () => {
@@ -113,28 +110,28 @@ describe("checkDocFeeCap", () => {
     expect(result!.violated).toBe(true);
   });
 
-  it("IL cap is $378 — detects violation correctly", () => {
+  it("does not call an unverified Illinois figure a legal violation", () => {
     const IL_STATE = { docFeeCap: true, docFeeCapAmount: 378, name: "Illinois", abbreviation: "IL", statuteCitation: "815 ILCS 306/1" };
     const fees: Fee[] = [{ name: "doc fee", amount: 400 }];
-    const result = checkDocFeeCap(fees, IL_STATE);
-    expect(result!.violated).toBe(true);
-    expect(result!.overage).toBe(22);
+    expect(checkDocFeeCap(fees, IL_STATE)).toBeNull();
   });
 
-  it("IN cap is $251 — no violation when fee is below cap", () => {
+  it("does not report a cap result for an unverified Indiana figure", () => {
     const IN_STATE = { docFeeCap: true, docFeeCapAmount: 251, name: "Indiana", abbreviation: "IN", statuteCitation: "IC 9-23-3-7" };
     const fees: Fee[] = [{ name: "doc fee", amount: 200 }];
-    const result = checkDocFeeCap(fees, IN_STATE);
-    expect(result!.violated).toBe(false);
+    expect(checkDocFeeCap(fees, IN_STATE)).toBeNull();
   });
 });
 
 // ─── applyRuleEngine ──────────────────────────────────────────────────────────
 
 describe("applyRuleEngine", () => {
-  it("returns RED/NO-GO immediately when doc fee cap is violated", () => {
-    const capResult = { violated: true, capAmount: 85, chargedAmount: 300, overage: 215, stateName: "California", stateAbbreviation: "CA", statuteCitation: "CA Vehicle Code § 11713.1(i)" };
-    const result = applyRuleEngine(makeLlm(), makeFields(), capResult);
+  it("returns RED/NO-GO immediately when a verified doc fee cap is exceeded", () => {
+    const fields = makeFields({ fees: [{ name: "doc fee", amount: 199 }] });
+    const result = applyRuleEngine(makeLlm(), fields, null, "cash", null, {
+      stateData: { name: "California", abbreviation: "CA", docFeeCap: true, docFeeCapAmount: 85 },
+      asOf: "2026-11-27",
+    });
     expect(result.dealScore).toBe("RED");
     expect(result.goNoGo).toBe("NO-GO");
     expect(result.verdictLabel).toMatch(/DOC FEE/i);
@@ -260,25 +257,8 @@ describe("applyRuleEngine", () => {
 
 // ─── CPI-indexed cap tracking ─────────────────────────────────────────────────
 
-describe("checkDocFeeCap with CPI indexing", () => {
-  it("uses CPI currentAmount when cpiIndexing is present", () => {
-    const IL_STATE_CPI = {
-      docFeeCap: true,
-      docFeeCapAmount: 300, // base amount
-      name: "Illinois",
-      abbreviation: "IL",
-      statuteCitation: "815 ILCS 306/1",
-      cpiIndexing: { isIndexed: true, currentAmount: 378 },
-    };
-    const fees: Fee[] = [{ name: "doc fee", amount: 350 }];
-    const result = checkDocFeeCap(fees, IL_STATE_CPI);
-    expect(result).not.toBeNull();
-    // 350 < 378 (CPI-adjusted), so no violation
-    expect(result!.violated).toBe(false);
-    expect(result!.capAmount).toBe(378);
-  });
-
-  it("detects violation against CPI-adjusted cap, not base cap", () => {
+describe("checkDocFeeCap delegates to the classifier", () => {
+  it("does not treat an unverified CPI figure as a legal cap", () => {
     const IL_STATE_CPI = {
       docFeeCap: true,
       docFeeCapAmount: 300,
@@ -287,22 +267,18 @@ describe("checkDocFeeCap with CPI indexing", () => {
       statuteCitation: "815 ILCS 306/1",
       cpiIndexing: { isIndexed: true, currentAmount: 378 },
     };
-    const fees: Fee[] = [{ name: "documentation fee", amount: 400 }];
-    const result = checkDocFeeCap(fees, IL_STATE_CPI);
-    expect(result!.violated).toBe(true);
-    expect(result!.capAmount).toBe(378);
-    expect(result!.overage).toBe(22);
+    expect(checkDocFeeCap([{ name: "doc fee", amount: 400 }], IL_STATE_CPI)).toBeNull();
   });
 
-  it("falls back to docFeeCapAmount when cpiIndexing is absent", () => {
+  it("uses California's verified ceiling rather than a caller-supplied citation", () => {
     const CA_STATE = { docFeeCap: true, docFeeCapAmount: 85, name: "California", abbreviation: "CA", statuteCitation: "CA Vehicle Code § 11713.1(i)" };
-    const fees: Fee[] = [{ name: "doc fee", amount: 100 }];
-    const result = checkDocFeeCap(fees, CA_STATE);
+    const result = checkDocFeeCap([{ name: "doc fee", amount: 100 }], CA_STATE);
     expect(result!.violated).toBe(true);
     expect(result!.capAmount).toBe(85);
+    expect(result!.statuteCitation).toBe("Cal. Veh. Code § 4456.5");
   });
 
-  it("falls back to docFeeCapAmount when cpiIndexing.isIndexed is false", () => {
+  it("does not turn an uncited Washington figure into a violation", () => {
     const STATE = {
       docFeeCap: true,
       docFeeCapAmount: 200,
@@ -311,10 +287,7 @@ describe("checkDocFeeCap with CPI indexing", () => {
       statuteCitation: "RCW 46.70.180",
       cpiIndexing: { isIndexed: false, currentAmount: 999 },
     };
-    const fees: Fee[] = [{ name: "doc fee", amount: 250 }];
-    const result = checkDocFeeCap(fees, STATE);
-    expect(result!.violated).toBe(true);
-    expect(result!.capAmount).toBe(200);
+    expect(checkDocFeeCap([{ name: "doc fee", amount: 250 }], STATE)).toBeNull();
   });
 });
 
@@ -401,9 +374,14 @@ describe("applyRuleEngine — lease-specific rules", () => {
   });
 
   it("doc fee cap violation still takes priority over lease rules", () => {
-    const capResult = { violated: true, capAmount: 85, chargedAmount: 300, overage: 215, stateName: "California", stateAbbreviation: "CA", statuteCitation: "CA Vehicle Code § 11713.1(i)" };
-    const fields = makeFields({ acquisitionFee: 1500 });
-    const result = applyRuleEngine(makeLlm(), fields, capResult, "lease");
+    const fields = makeFields({
+      acquisitionFee: 1500,
+      fees: [{ name: "doc fee", amount: 300 }],
+    });
+    const result = applyRuleEngine(makeLlm(), fields, null, "lease", null, {
+      stateData: { name: "California", abbreviation: "CA", docFeeCap: true, docFeeCapAmount: 85 },
+      asOf: "2026-11-27",
+    });
     expect(result.dealScore).toBe("RED");
     expect(result.verdictLabel).toMatch(/DOC FEE/i);
   });
