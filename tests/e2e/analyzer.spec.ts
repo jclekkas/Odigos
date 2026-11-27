@@ -168,6 +168,91 @@ test.describe("Analyzer — happy path", () => {
   });
 });
 
+test.describe("Buyer-reported price checks", () => {
+  test("sends typed listings and shows that they are not a verified market value", async ({ page }) => {
+    await interceptStatsRoutes(page);
+    let posted: { buyerComparables?: { askingPrice: number }[] } | null = null;
+    await page.route("**/api/analyze", async (route) => {
+      if (route.request().method() !== "POST") {
+        await route.continue();
+        return;
+      }
+      posted = route.request().postDataJSON();
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          ...MOCK_ANALYSIS,
+          dealScore: "YELLOW",
+          goNoGo: "PROCEED-WITH-CAUTION",
+          verdictLabel: "PROCEED WITH CAUTION — VIN DOES NOT MATCH THE QUOTE",
+          marketValueStatus: "unverified",
+          summary: "The quote says 2025 Toyota Camry XLE, but the VIN decodes to a 2023 Toyota Camry LE. Your quote is above 3 of the 3 listings you entered.",
+          vinCheck: {
+            status: "decoded",
+            provenance: "quote",
+            source: "nhtsa_vpic",
+            vin: "4T1G11AK5NU123456",
+            decoded: { year: 2023, make: "TOYOTA", model: "Camry", trim: "LE", trim2: null, series: null },
+            mismatches: [
+              { field: "year", quoteValue: "2025", decodedValue: "2023" },
+              { field: "trim", quoteValue: "XLE", decodedValue: "LE" },
+            ],
+            basePrice: {
+              amount: 26320,
+              label: "Base price for standard equipment",
+              detail: "It is not the MSRP with options and it is not a market value.",
+              citation: "NHTSA vPIC DecodeVinValues BasePrice.",
+              citationStatus: "sourced",
+            },
+            errorText: null,
+            summary: "The quote says 2025 Toyota Camry XLE, but the VIN decodes to a 2023 Toyota Camry LE.",
+          },
+          buyerReported: {
+            label: "buyer-reported",
+            verifiesMarketValue: false,
+            citationStatus: "needs_source",
+            comps: {
+              count: 3,
+              min: 28000,
+              max: 30000,
+              median: 29000,
+              aboveCount: 3,
+              position: "above_all",
+              listings: [{ askingPrice: 28000, url: null, source: null, mileage: null }],
+              summary: "Your quote is above 3 of the 3 listings you entered. Those listings are buyer-reported and are not a verified market value. The dollar gap is not guaranteed savings.",
+            },
+            bookValue: null,
+            competingQuote: {
+              status: "compared",
+              citationStatus: "needs_source",
+              lines: [
+                { key: "docFee", label: "Documentation fee", thisQuote: 199, otherQuote: 899, detail: null },
+              ],
+              summary: "The other quote's documentation fee is $700 higher. It is buyer-reported and needs_source.",
+            },
+            summary: "buyer-reported",
+          },
+        }),
+      });
+    });
+    await page.goto("/analyze");
+    await acceptUploadConsent(page);
+    await expect(page.getByTestId("text-buyer-reported-disclosure")).toContainText("buyer-reported");
+    await expect(page.getByTestId("text-buyer-reported-disclosure")).toContainText("verified market value");
+    await page.getByTestId("button-add-listing").click();
+    await page.getByTestId("input-comp-price-0").fill("28000");
+    await page.getByTestId("input-dealer-text").fill("2025 Toyota Camry XLE selling price $32,000. Doc fee $199.");
+    await page.getByTestId("button-analyze").click();
+    await expect(page.getByTestId("vin-mismatch-year")).toContainText("2025");
+    await expect(page.getByTestId("vin-base-price")).toContainText("Base price for standard equipment");
+    await expect(page.getByTestId("buyer-comps-summary")).toContainText("above 3 of the 3 listings you entered");
+    await expect(page.getByTestId("competing-line-docFee")).toContainText("$899");
+    await expect(page.getByTestId("text-buyer-reported-result-note")).toContainText("does not treat them as a verified market value");
+    expect(posted?.buyerComparables?.[0]?.askingPrice).toBe(28000);
+  });
+});
+
 // ─── Analyzer page — validation ────────────────────────────────────────────────
 
 test.describe("Analyzer — validation", () => {

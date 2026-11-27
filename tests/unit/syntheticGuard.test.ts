@@ -5,6 +5,7 @@ describe("synthetic submission guard", () => {
   it("isolates explicit QA submissions", () => {
     expect(isSyntheticSubmission({ synthetic: true, dealerText: "2025 Camry" })).toBe(true);
     expect(isSyntheticSubmission({ dealerText: "Quote ODIGOS_SYNTHETIC_QA price $28000" })).toBe(true);
+    expect(isSyntheticSubmission({ dealerText: "Selling price $28,000", competingQuoteText: "ODIGOS_SYNTHETIC_QA doc fee $899" })).toBe(true);
   });
 
   it("does not treat a normal buyer quote as synthetic", () => {

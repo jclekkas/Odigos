@@ -1,4 +1,12 @@
 import { z } from "zod";
+import {
+  buyerBookValueSchema,
+  buyerComparablesSchema,
+  buyerReportedSchema,
+  competingQuoteTextSchema,
+  vinCheckSchema,
+  vinInputSchema,
+} from "./buyerReported.js";
 
 // Analysis request schema
 export const analysisRequestSchema = z.object({
@@ -20,6 +28,29 @@ export const analysisRequestSchema = z.object({
    * a market transaction price. Omitted requests keep the unverified benchmark.
    */
   factoryWindowStickerMsrp: z.number().finite().min(1000).max(2_000_000).nullable().optional(),
+  /**
+   * VIN typed by the buyer. A VIN already printed in the quote is used when
+   * this is omitted. It is decoded with NHTSA vPIC. It is not a market value.
+   */
+  vin: z.preprocess(
+    (value) => (value == null || value === "" ? undefined : value),
+    vinInputSchema.optional(),
+  ),
+  /** 1–5 asking prices the buyer found. Odigos does not fetch the listings. */
+  buyerComparables: z.preprocess(
+    (value) => (Array.isArray(value) && value.length === 0 ? undefined : value),
+    buyerComparablesSchema.optional(),
+  ),
+  /** A book value the buyer looked up. Odigos does not fetch that site. */
+  buyerBookValue: z.preprocess(
+    (value) => (value == null ? undefined : value),
+    buyerBookValueSchema.optional(),
+  ),
+  /** A second dealer quote, compared line by line. Not a market valuation. */
+  competingQuoteText: z.preprocess(
+    (value) => (typeof value === "string" && value.trim() === "" ? undefined : value),
+    competingQuoteTextSchema.optional(),
+  ),
 });
 
 export const marketContextStrengthSchema = z.enum(["none", "thin", "moderate", "strong"]);
@@ -298,6 +329,8 @@ export const analysisResponseSchema = z.object({
     markupPercent: z.string().nullable(),
     summary: z.string(),
   }).optional(),
+  vinCheck: vinCheckSchema.optional(),
+  buyerReported: buyerReportedSchema.optional(),
   dimensions: analysisDimensionsSchema.optional(),
   mathematicalDerivation: z.array(z.string()).optional(),
   docFeeCapCheck: docFeeCapCheckSchema.nullable().optional(),

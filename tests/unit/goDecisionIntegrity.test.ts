@@ -3,6 +3,7 @@ import { resolve } from "path";
 import { describe, expect, it } from "vitest";
 import { applyRuleEngine } from "../../server/ruleEngine.js";
 import { getStateFeeData } from "../../server/stateFeeLookup.js";
+import { buildBuyerReported, buyerReportedRuleOptions } from "../../server/buyerReportedValuation.js";
 import { factoryMarkup } from "../../server/marketValuation.js";
 import type { AnalysisResponse, DetectedFields } from "../../shared/schema.js";
 
@@ -208,6 +209,113 @@ describe("GO decision integrity", () => {
     expect(result.marketValuation?.kind).toBe("market_transaction");
     expect(result.dimensions?.mathematicalAccuracy.status).toBe("clear");
     expect(result.dimensions?.regulatoryCompliance.status).toBe("clear");
+  });
+});
+
+describe("buyer-reported comps cannot unlock GO", () => {
+  const favorable = [
+    { askingPrice: 32000, source: "listing", mileage: 10000 },
+    { askingPrice: 33000, source: "listing", mileage: 14000 },
+    { askingPrice: 34000, source: "listing", mileage: 18000 },
+  ];
+
+  function withFavorableComps(
+    fields: DetectedFields,
+    options: Parameters<typeof applyRuleEngine>[5],
+  ) {
+    const report = buildBuyerReported({
+      salePrice: fields.salePrice,
+      primary: fields,
+      primaryText: options?.dealerText,
+      comps: favorable,
+      bookValue: { amount: 30000, sourceLabel: "KBB" },
+    });
+    expect(report.verifiesMarketValue).toBe(false);
+    expect(report.citationStatus).toBe("needs_source");
+    expect(report.comps?.position).toBe("below_all");
+    expect(report.comps?.summary).toMatch(/above 0 of the 3 listings you entered/i);
+    expect(report.bookValue?.citationStatus).toBe("needs_source");
+    return run(fields, { ...options, ...buyerReportedRuleOptions(report) });
+  }
+
+  it("never returns GO for ODIGOS_SYNTHETIC_QA when tax and registration are missing, even with buyer comps", () => {
+    const fields = blank({
+      salePrice: 28000,
+      outTheDoorPrice: 40000,
+      fees: [{ name: "Doc fee", amount: 70 }],
+    });
+    const result = withFavorableComps(fields, {
+      stateData,
+      buyerWindowStickerMsrp: 28700,
+      dealerText:
+        "ODIGOS_SYNTHETIC_QA 2025 Toyota Camry LE selling price $28,000. Factory MSRP $28,700. Doc fee $70. Out the door $40,000. No tax or registration breakdown.",
+    });
+    expect(result.goNoGo).not.toBe("GO");
+    expect(result.verdictLabel).not.toMatch(/^GO/);
+    expect(result.dealScore).not.toBe("GREEN");
+    expect(result.marketValuation?.status).toBe("unverified");
+    expect(result.marketValuation?.low).toBeNull();
+    expect(result.marketValuation?.high).toBeNull();
+    expect(result.summary ?? "").toMatch(/buyer-reported/i);
+    expect(result.summary ?? "").not.toMatch(/you save|overpaying by/i);
+  });
+
+  it("does not give an unqualified GO to a used Camry under its original MSRP, even with buyer comps", () => {
+    const fields = blank({
+      salePrice: 28000,
+      outTheDoorPrice: 28000 + 70 + 1000 + 400,
+      fees: [
+        { name: "Doc fee", amount: 70 },
+        { name: "Sales tax", amount: 1000 },
+        { name: "Registration", amount: 400 },
+      ],
+    });
+    const result = withFavorableComps(fields, {
+      stateData,
+      condition: "used",
+      mileage: 32000,
+      buyerWindowStickerMsrp: 28700,
+    });
+    expect(result.goNoGo).not.toBe("GO");
+    expect(result.verdictLabel).not.toMatch(/^GO/);
+    expect(result.marketValuation?.status).toBe("unverified");
+    expect(result.summary).toMatch(/used vehicle/i);
+    expect(result.summary ?? "").not.toMatch(/\$700/);
+    expect(result.summary ?? "").not.toMatch(/you save|overpaying by/i);
+  });
+
+  it("does not give an unqualified GO when a $45,000 Camry is paired with an incorrect $50,000 MSRP, even with buyer comps", () => {
+    const higher = [
+      { askingPrice: 48000 },
+      { askingPrice: 49000 },
+      { askingPrice: 51000 },
+    ];
+    const fields = blank({
+      salePrice: 45000,
+      outTheDoorPrice: 45000 + 70 + 1000 + 400,
+      fees: [
+        { name: "Doc fee", amount: 70 },
+        { name: "Sales tax", amount: 1000 },
+        { name: "Registration", amount: 400 },
+      ],
+    });
+    const report = buildBuyerReported({
+      salePrice: fields.salePrice,
+      primary: fields,
+      comps: higher,
+    });
+    expect(report.comps?.position).toBe("below_all");
+    const result = run(fields, {
+      stateData,
+      buyerWindowStickerMsrp: 50000,
+      ...buyerReportedRuleOptions(report),
+    });
+    expect(result.goNoGo).not.toBe("GO");
+    expect(result.goNoGo).not.toBe("NO-GO");
+    expect(result.verdictLabel).not.toMatch(/MARKUP OVER FACTORY MSRP/);
+    expect(result.marketValuation?.status).toBe("unverified");
+    expect(result.msrpComparison?.relation).toBe("at_or_below");
+    expect(result.summary ?? "").not.toMatch(/you save|overpaying by/i);
   });
 });
 
