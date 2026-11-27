@@ -1,6 +1,7 @@
 import type { AnalysisDimensions, AnalysisResponse, DetectedFields, Fee, GoNoGo } from "../shared/schema.js";
 import type { LeaseMathResult } from "./leaseMathEngine.js";
-import { computePurchase, splitFees, type PurchaseMath } from "./quoteMath.js";
+import { computePurchase, type PurchaseMath } from "./quoteMath.js";
+import { resolvePurchaseLines } from "./governmentCharges.js";
 import {
   benchmarkCopiesSubmittedPrice,
   independentMarketBenchmark,
@@ -25,6 +26,8 @@ export interface RuleEngineOptions {
   buyerState?: string | null;
   dealerState?: string | null;
   rebateContingentOnFinancing?: boolean | null;
+  /** Raw quote text. Used to restore a tax or registration line the model dropped. */
+  dealerText?: string | null;
 }
 
 export interface RuleEngineResult {
@@ -381,7 +384,8 @@ export function applyRuleEngine(
     benchmark.status === "verified" && benchmark.low != null && benchmark.high != null;
 
   const leaseQuote = isLeaseQuote(fields, purchaseType);
-  const lines = splitFees(fees, isDocFeeName);
+  const lines = resolvePurchaseLines(fields, isDocFeeName, options?.dealerText);
+  const taxKnown = lines.statedTax != null;
   let worksheet: PurchaseMath | null = null;
   if (!leaseQuote && fields.salePrice != null) {
     const cash = purchaseType === "cash" || (fields.apr == null && fields.termMonths == null);
@@ -394,17 +398,25 @@ export function applyRuleEngine(
       addOns: lines.addOns,
       titleFee: lines.titleFee,
       registrationFee: lines.registrationFee,
+      govFees: lines.govFees,
       salesTaxAmount: lines.statedTax,
       downPayment: fields.downPayment,
       apr: fields.apr,
       termMonths: fields.termMonths,
-      statedOutTheDoor: fields.outTheDoorPrice,
+      // An unstated tax is not zero. Comparing the printed total against a
+      // worksheet that omitted it reports a false mismatch.
+      statedOutTheDoor: taxKnown ? fields.outTheDoorPrice : null,
       statedMonthlyPayment: fields.monthlyPayment,
       rebateContingentOnFinancing: options?.rebateContingentOnFinancing === true,
       cashPurchase: cash,
     });
   }
-  const derivation = worksheet?.ok ? worksheet.derivation : [];
+  let derivation = worksheet?.ok ? [...worksheet.derivation] : [];
+  if (worksheet?.ok && !taxKnown) {
+    derivation = derivation.map((line) =>
+      line.startsWith("Sales tax") ? "Sales tax not stated on the quote" : line,
+    );
+  }
 
   const allowedDocCap =
     docFee?.classification === "permissible" && docFee.hardCeiling != null
@@ -431,7 +443,7 @@ export function applyRuleEngine(
   const negativeEquity = worksheet?.ok && (worksheet.negativeEquity ?? 0) > 0;
   const conditionalRebate = worksheet?.ok && worksheet.conditionalRebateExcluded != null;
   const otdGap =
-    worksheet?.ok && worksheet.outTheDoorMismatch != null ? Math.abs(worksheet.outTheDoorMismatch) : 0;
+    taxKnown && worksheet?.ok && worksheet.outTheDoorMismatch != null ? Math.abs(worksheet.outTheDoorMismatch) : 0;
   const paymentGap =
     worksheet?.ok && worksheet.paymentMismatch != null ? Math.abs(worksheet.paymentMismatch) : 0;
   const mathMismatch = (worksheet?.ok && otdGap >= 0.01) || paymentGap >= 0.01;

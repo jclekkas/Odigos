@@ -43,6 +43,11 @@ export interface PurchaseInputs {
   addOns?: number | null;
   titleFee?: number | null;
   registrationFee?: number | null;
+  /**
+   * A combined government line (title & registration, DMV, license) that is
+   * not already split into titleFee and registrationFee.
+   */
+  govFees?: number | null;
   /** Decimal. 0.0725 means 7.25%. Ignored when salesTaxAmount is set. */
   salesTaxRate?: number | null;
   /** Tax already printed on the quote. Used to add the dealer's own lines. */
@@ -154,6 +159,7 @@ export function computePurchase(input: PurchaseInputs): PurchaseMath {
     addOns: money(input.addOns, "add-ons"),
     titleFee: money(input.titleFee, "title fee"),
     registrationFee: money(input.registrationFee, "registration"),
+    govFees: money(input.govFees, "government fees"),
     downPayment: money(input.downPayment, "down payment"),
   };
   for (const part of Object.values(parts)) {
@@ -166,6 +172,7 @@ export function computePurchase(input: PurchaseInputs): PurchaseMath {
   const addOns = parts.addOns as number;
   const titleFee = parts.titleFee as number;
   const registrationFee = parts.registrationFee as number;
+  const govFees = parts.govFees as number;
   const downPayment = parts.downPayment as number;
 
   const rate = input.salesTaxRate ?? 0;
@@ -185,9 +192,9 @@ export function computePurchase(input: PurchaseInputs): PurchaseMath {
     ? roundCents(input.salesTaxAmount)
     : roundCents(Math.max(0, taxablePrice) * rate);
   const netVehicle = roundCents(input.vehiclePrice - appliedRebates - tradeInAllowance);
-  const governmentCharges = roundCents(salesTax + titleFee + registrationFee);
+  const governmentCharges = roundCents(salesTax + titleFee + registrationFee + govFees);
   const dealerImposedCharges = roundCents(docFee + addOns);
-  const outTheDoor = roundCents(netVehicle + salesTax + titleFee + registrationFee + docFee + addOns);
+  const outTheDoor = roundCents(netVehicle + salesTax + titleFee + registrationFee + govFees + docFee + addOns);
   const tradeEquity = roundCents(tradeInAllowance - tradePayoff);
   const negativeEquity = roundCents(Math.max(0, tradePayoff - tradeInAllowance));
   const amountFinanced = roundCents(outTheDoor + tradePayoff - downPayment);
@@ -231,6 +238,7 @@ export function computePurchase(input: PurchaseInputs): PurchaseMath {
     moneyLine("Sales tax (government, as stated or computed)", salesTax),
     moneyLine("Title (government)", titleFee),
     moneyLine("Registration (government)", registrationFee),
+    govFees > 0 ? moneyLine("Other government fees", govFees) : null,
     moneyLine("Government charges", governmentCharges),
     moneyLine("Doc fee (dealer)", docFee),
     moneyLine("Dealer add-ons", addOns),
@@ -266,18 +274,65 @@ export function computePurchase(input: PurchaseInputs): PurchaseMath {
   };
 }
 
-const TAX_NAME = /\b(sales tax|use tax|excise tax|tax)\b/i;
-const TITLE_NAME = /\btitle\b/i;
-const REG_NAME = /\b(registration|license plate|tag fee|plates)\b/i;
 const PAYOFF_NAME = /\b(payoff|negative equity)\b/i;
+
+export type GovernmentBucket = "tax" | "title" | "registration" | "gov";
+
+/**
+ * Which worksheet bucket a fee name belongs in.
+ * Combined title/registration, DMV, and generic government lines are "gov"
+ * so they are added once and not treated as dealer add-ons.
+ * Returns null for dealer charges the caller may still treat as a doc fee.
+ */
+export function classifyFeeBucket(name: string): GovernmentBucket | "payoff" | null {
+  const n = name.toLowerCase();
+  if (PAYOFF_NAME.test(n)) return "payoff";
+  if (isCombinedGovernmentName(n)) return "gov";
+  if (isTaxFeeName(n)) return "tax";
+  if (/\btitle\b/.test(n) && !/\btitle\s+loan\b/.test(n)) return "title";
+  if (isRegistrationFeeName(n)) return "registration";
+  return null;
+}
+
+function isCombinedGovernmentName(n: string): boolean {
+  if (/\btitle\s*(?:&|and|\/)\s*(?:reg(?:istration)?|license)\b/.test(n)) return true;
+  if (/\b(?:reg(?:istration)?|license)\s*(?:&|and|\/)\s*title\b/.test(n)) return true;
+  if (/\btitle\s*\/\s*license\s*\/\s*reg/.test(n)) return true;
+  if (/\blicense\s*\/\s*(?:registration|reg)\b/.test(n)) return true;
+  if (/\b(?:registration|reg)\s*\/\s*license\b/.test(n)) return true;
+  if (/\b(?:tag|plate)s?\s*(?:&|and|\/)\s*title\b/.test(n)) return true;
+  if (/\bdmv\s+fees?\b/.test(n) || /\bdmv\s+charges?\b/.test(n)) return true;
+  if (/\bgovernment\s+fees?\b/.test(n) || /\bgov\.?\s+fees?\b/.test(n)) return true;
+  if (/\btax(?:es)?\b/.test(n) && /\b(title|registration|license)\b/.test(n)) return true;
+  return false;
+}
+
+function isTaxFeeName(n: string): boolean {
+  if (/\btax\s+credit\b/.test(n) || /\bpre-?tax\b/.test(n) || /\btaxable\b/.test(n)) return false;
+  if (/\btax\s+rate\b/.test(n)) return false;
+  return /\b(?:sales\s+tax|use\s+tax|excise\s+tax|state\s+tax|county\s+tax|city\s+tax|local\s+tax|district\s+tax|vehicle\s+tax|property\s+tax|tax(?:es)?)\b/.test(n);
+}
+
+function isRegistrationFeeName(n: string): boolean {
+  if (/frame|bracket|cover|holder|surround/.test(n)) return false;
+  if (/driver'?s?\s+license/.test(n)) return false;
+  return /\b(?:registration|license\s+fees?|licensing\s+fees?|license\s+plates?|tag\s+fees?|plate\s+fees?|plates)\b/.test(n)
+    || /\breg\b/.test(n);
+}
 
 export interface ExtractedMoney {
   docFee: number;
   addOns: number;
   titleFee: number;
   registrationFee: number;
+  /** Combined title/registration, DMV, or other government lines. */
+  govFees: number;
   statedTax: number | null;
   tradePayoff: number;
+  sawTax: boolean;
+  sawTitle: boolean;
+  sawRegistration: boolean;
+  sawGov: boolean;
 }
 
 /** Split an extracted fee list into worksheet lines. Unrecognized fees are add-ons. */
@@ -290,22 +345,33 @@ export function splitFees(
     addOns: 0,
     titleFee: 0,
     registrationFee: 0,
+    govFees: 0,
     statedTax: null,
     tradePayoff: 0,
+    sawTax: false,
+    sawTitle: false,
+    sawRegistration: false,
+    sawGov: false,
   };
   for (const fee of fees) {
     if (fee.amount == null || !Number.isFinite(fee.amount)) continue;
-    const name = fee.name.toLowerCase();
-    if (PAYOFF_NAME.test(name)) {
+    const bucket = classifyFeeBucket(fee.name);
+    if (bucket === "payoff") {
       out.tradePayoff = roundCents(out.tradePayoff + fee.amount);
-    } else if (isDocFee(name)) {
+    } else if (isDocFee(fee.name.toLowerCase())) {
       out.docFee = roundCents(out.docFee + fee.amount);
-    } else if (TITLE_NAME.test(name)) {
-      out.titleFee = roundCents(out.titleFee + fee.amount);
-    } else if (REG_NAME.test(name)) {
-      out.registrationFee = roundCents(out.registrationFee + fee.amount);
-    } else if (TAX_NAME.test(name)) {
+    } else if (bucket === "gov") {
+      out.govFees = roundCents(out.govFees + fee.amount);
+      out.sawGov = true;
+    } else if (bucket === "tax") {
       out.statedTax = roundCents((out.statedTax ?? 0) + fee.amount);
+      out.sawTax = true;
+    } else if (bucket === "title") {
+      out.titleFee = roundCents(out.titleFee + fee.amount);
+      out.sawTitle = true;
+    } else if (bucket === "registration") {
+      out.registrationFee = roundCents(out.registrationFee + fee.amount);
+      out.sawRegistration = true;
     } else {
       out.addOns = roundCents(out.addOns + fee.amount);
     }
