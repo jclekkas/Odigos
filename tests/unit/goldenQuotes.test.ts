@@ -745,6 +745,7 @@ describe("golden dealer quotes", () => {
       const leaseMath = runLeaseMath(parsed, item.purchaseType);
       const result = applyRuleEngine(llm, parsed, cap, item.purchaseType, leaseMath, {
         stateData,
+        asOf: "2026-11-27",
       });
       expect(result.goNoGo, item.id).toBe(item.goNoGo);
       expect(result.dealScore, item.id).toBe(item.dealScore);

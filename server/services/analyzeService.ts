@@ -11,7 +11,8 @@ import {
   type FlaggedItemEvidence,
   type Fee,
 } from "../../shared/schema.js";
-import { applyRuleEngine, checkDocFeeCap } from "../ruleEngine.js";
+import { applyRuleEngine } from "../ruleEngine.js";
+import { docFeeSurfaceCopy } from "../../shared/docFeeSurfaceCopy.js";
 import { formatUsd } from "../marketValuation.js";
 import { buildBuyerReported, buyerReportedHasInput, buyerReportedRuleOptions } from "../buyerReportedValuation.js";
 import { checkVin, unavailableVinCheck, withQuoteIdentity } from "../nhtsaVin.js";
@@ -1034,6 +1035,8 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   delete rawResult.msrpComparison;
   delete rawResult.vinCheck;
   delete rawResult.buyerReported;
+  delete rawResult.docFeeAssessment;
+  delete rawResult.docFeeCapCheck;
 
   // Normalize financialImpactConfidence to lowercase enum (the model
   // occasionally returns HIGH/MEDIUM/LOW from habit).
@@ -1075,23 +1078,11 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   });
   const buyerRule = buyerReportedRuleOptions(buyerReported);
 
-  const docFeeCapResult = stateData
-    ? checkDocFeeCap(llmResult.detectedFields.fees, stateData)
-    : null;
-
-  const capCheck = !!stateData;
-  const capViolation = docFeeCapResult?.violated ?? false;
   logger.info("state detection result", {
     source: "stateDetection",
     method: stateDetection.method ?? null,
     state: stateDetection.state ?? null,
-    capCheck,
-    overage: docFeeCapResult?.overage ?? 0,
-  });
-  recordAnalysisEvent(data, "state_detection", {
-    method: stateDetection.method ?? undefined,
-    state: stateDetection.state ?? undefined,
-    capViolation,
+    capCheck: !!stateData,
   });
 
   if (!stateDetection.state) {
@@ -1113,25 +1104,6 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     llmResult.missingInfo = missingInfoArr;
   }
 
-  if (docFeeCapResult?.violated && stateData) {
-    const { capAmount, chargedAmount, overage, statuteCitation } = docFeeCapResult;
-    const stateName = stateData.name;
-    const capViolationPrefix = `ALERT: Doc fee of $${chargedAmount} exceeds ${stateName}'s legal cap of $${capAmount} by $${overage}.`;
-
-    const citationSuffix = statuteCitation ? ` (${statuteCitation})` : "";
-
-    if (!llmResult.summary.includes(String(capAmount))) {
-      llmResult.summary = `${capViolationPrefix} ${llmResult.summary}`;
-    }
-    if (!llmResult.reasoning.includes(String(overage))) {
-      llmResult.reasoning = `Doc fee cap violation: ${stateName} cap is $${capAmount}${citationSuffix}. Charged: $${chargedAmount}. Overage: $${overage}. This is a hard NO-GO regardless of other deal terms. ` + llmResult.reasoning;
-    }
-    if (!llmResult.suggestedReply.includes(String(capAmount)) && !llmResult.suggestedReply.includes(String(overage))) {
-      const replyStatuteNote = citationSuffix ? ` per state law${citationSuffix}` : " to comply with state law";
-      llmResult.suggestedReply = `I noticed the documentation fee of $${chargedAmount} exceeds the ${stateName} state cap of $${capAmount} by $${overage}. Please adjust the doc fee${replyStatuteNote}. ` + llmResult.suggestedReply;
-    }
-  }
-
   const leaseMathResult = runLeaseMath(llmResult.detectedFields, data.purchaseType);
   const feeFacts = resolveConditionalFeeFacts({
     dealerText: data.dealerText,
@@ -1139,11 +1111,12 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     oregonIntegratorElection: data.oregonIntegratorElection,
     pennsylvaniaElectronicProcessing: data.pennsylvaniaElectronicProcessing,
   });
+  const analyzedAt = new Date();
 
   const ruleEngineAdjustments = applyRuleEngine(
     llmResult,
     llmResult.detectedFields,
-    docFeeCapResult,
+    null,
     data.purchaseType,
     leaseMathResult,
     {
@@ -1151,6 +1124,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
       privateIndustryPartner: feeFacts.privateIndustryPartner,
       electronicIntegrator: feeFacts.electronicIntegrator,
       electronicTransaction: feeFacts.electronicTransaction,
+      asOf: analyzedAt,
       condition: data.condition,
       dealerText: data.dealerText,
       mileage: quoteFacts.mileage,
@@ -1165,8 +1139,28 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     },
   );
 
+  const docFeeAssessment = ruleEngineAdjustments.docFeeAssessment ?? null;
+  const docFeeProjection = docFeeAssessment ? docFeeSurfaceCopy(docFeeAssessment) : null;
+  const docFeeCapCheck = docFeeProjection?.capCheck
+    ? {
+        violated: docFeeProjection.capCheck.violated,
+        capAmount: docFeeProjection.capCheck.capAmount,
+        chargedAmount: docFeeProjection.capCheck.chargedAmount,
+        overage: docFeeProjection.capCheck.overage,
+        stateName: docFeeAssessment?.jurisdiction ?? stateData?.name ?? "",
+        stateAbbreviation: stateData?.abbreviation ?? "",
+        statuteCitation: docFeeProjection.capCheck.statuteCitation,
+      }
+    : null;
+
+  recordAnalysisEvent(data, "state_detection", {
+    method: stateDetection.method ?? undefined,
+    state: stateDetection.state ?? undefined,
+    capViolation: docFeeCapCheck?.violated ?? false,
+  });
+
   const rankedSignals = rankSignals({
-    docFeeCapCheck: docFeeCapResult,
+    docFeeAssessment,
     detectedFields: llmResult.detectedFields,
     marketContext,
     ruleEngineResult: ruleEngineAdjustments,
@@ -1220,6 +1214,8 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     buyerReported,
     dimensions: ruleEngineAdjustments.dimensions,
     mathematicalDerivation: ruleEngineAdjustments.mathematicalDerivation,
+    docFeeAssessment,
+    docFeeCapCheck,
     leaseMath: leaseMathResult,
     rankedSignals,
   };
@@ -1360,7 +1356,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   // Build deterministic market signals and flagged item evidence
   const postDocFeeEntry = detectedFees.find((f) => /doc.?fee|document/i.test(f.name));
   const postDocFeeValue = postDocFeeEntry?.amount ?? null;
-  const marketSignals = buildMarketSignals(marketContext, lineItemStats, postDocFeeValue, docFeeCapResult?.violated ?? false);
+  const marketSignals = buildMarketSignals(marketContext, lineItemStats, postDocFeeValue, docFeeCapCheck?.violated ?? false);
   const flaggedItemEvidence = buildFlaggedItemEvidence(detectedFees, lineItemStats);
 
   // Dealer intelligence
@@ -1383,7 +1379,8 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   payload.marketContextUsed = marketContextUsed;
   payload.marketContextStrength = finalOverallStrength;
   if (marketContextSummary) payload.marketContextSummary = marketContextSummary;
-  payload.docFeeCapCheck = docFeeCapResult ?? null;
+  payload.docFeeCapCheck = docFeeCapCheck;
+  payload.docFeeAssessment = docFeeAssessment;
   // Market intelligence payload
   payload.marketSignals = marketSignals;
   payload.flaggedItemEvidence = flaggedItemEvidence;

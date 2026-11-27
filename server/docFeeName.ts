@@ -1,30 +1,10 @@
 /**
  * Documentation-fee name matching shared by the rule engine and the
- * competing-quote comparison so both sides use the same fee bucket.
+ * competing-quote comparison. The alias lists live in shared/feeVocabulary.
  */
 
-export const DOC_FEE_KEYWORDS_EXACT = [
-  "doc fee",
-  "documentation fee",
-  "document fee",
-  "documentary fee",
-  "documentary service",
-  "documentary preparation",
-  "document processing",
-  "document administration fee",
-  "electronic filing",
-];
-
-export const DOC_FEE_KEYWORDS_BROAD = [
-  "dealer fee",
-  "processing fee",
-  "admin fee",
-  "administrative fee",
-];
-
-export function isDocFeeName(nameLower: string): boolean {
-  return (
-    DOC_FEE_KEYWORDS_EXACT.some((keyword) => nameLower.includes(keyword)) ||
-    DOC_FEE_KEYWORDS_BROAD.some((keyword) => nameLower.includes(keyword))
-  );
-}
+export {
+  DOC_FEE_EXACT_ALIASES as DOC_FEE_KEYWORDS_EXACT,
+  DOC_FEE_BROAD_ALIASES as DOC_FEE_KEYWORDS_BROAD,
+  isDocFeeName,
+} from "../shared/feeVocabulary.js";

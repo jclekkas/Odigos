@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { classifyDocFee } from "../../server/regulatoryClassification.js";
+import { classifyDocFee, classifySeparateFilingCharges } from "../../server/regulatoryClassification.js";
 import { applyRuleEngine } from "../../server/ruleEngine.js";
 import { getStateFeeData } from "../../server/stateFeeLookup.js";
 import dataset from "../../data/state_fees.json" with { type: "json" };
@@ -365,16 +365,17 @@ describe("Pennsylvania, Rhode Island, Minnesota, and Ohio conditional rules", ()
   const oh = getStateFeeData("OH")!;
 
   it("treats a Pennsylvania fee between $409 and $490 as conditional until electronic processing is known", () => {
-    expect(classifyDocFee([{ name: "documentary preparation fee", amount: 409 }], pa).classification).toBe("permissible");
-    const conditional = classifyDocFee([{ name: "documentary preparation fee", amount: 450 }], pa);
+    const dated = { asOf: "2026-11-27" };
+    expect(classifyDocFee([{ name: "documentary preparation fee", amount: 409 }], pa, null, null, dated).classification).toBe("permissible");
+    const conditional = classifyDocFee([{ name: "documentary preparation fee", amount: 450 }], pa, null, null, dated);
     expect(conditional.classification).toBe("potentially_noncompliant");
     expect(conditional.hardCeiling).toBe(490);
     expect(conditional.conditionalCeiling).toBe(409);
     expect(conditional.officialSource).toContain("pa.gov");
     expect(conditional.lastVerificationDate).toBe("2026-11-27");
-    expect(classifyDocFee([{ name: "doc fee", amount: 450 }], pa, null, null, { electronicTransaction: true }).classification).toBe("permissible");
-    expect(classifyDocFee([{ name: "doc fee", amount: 450 }], pa, null, null, { electronicTransaction: false }).classification).toBe("illegal");
-    expect(classifyDocFee([{ name: "doc fee", amount: 491 }], pa, null, null, { electronicTransaction: true }).classification).toBe("illegal");
+    expect(classifyDocFee([{ name: "doc fee", amount: 450 }], pa, null, null, { electronicTransaction: true, asOf: "2026-11-27" }).classification).toBe("permissible");
+    expect(classifyDocFee([{ name: "doc fee", amount: 450 }], pa, null, null, { electronicTransaction: false, asOf: "2026-11-27" }).classification).toBe("illegal");
+    expect(classifyDocFee([{ name: "doc fee", amount: 491 }], pa, null, null, { electronicTransaction: true, asOf: "2026-11-27" }).classification).toBe("illegal");
 
     const result = applyRuleEngine(
       llmFixture,
@@ -382,7 +383,7 @@ describe("Pennsylvania, Rhode Island, Minnesota, and Ohio conditional rules", ()
       null,
       "cash",
       null,
-      { stateData: pa },
+      { stateData: pa, asOf: "2026-11-27" },
     );
     expect(result.goNoGo).toBe("PROCEED-WITH-CAUTION");
     expect(result.suggestedReply).toMatch(/818\.327/);
@@ -436,7 +437,7 @@ describe("Pennsylvania, Rhode Island, Minnesota, and Ohio conditional rules", ()
       oh,
       null,
       null,
-      { vehicleCashPrice: 3000 },
+      { vehicleCashPrice: 3000, asOf: "2026-11-27" },
     );
     expect(low.classification).toBe("illegal");
     expect(low.hardCeiling).toBe(335);
@@ -453,18 +454,190 @@ describe("Pennsylvania, Rhode Island, Minnesota, and Ohio conditional rules", ()
       oh,
       null,
       null,
-      { vehicleCashPrice: 3000 },
+      { vehicleCashPrice: 3000, asOf: "2026-11-27" },
     );
     expect(within.classification).toBe("permissible");
     expect(within.hardCeiling).toBe(330);
 
-    const ordinary = classifyDocFee([{ name: "doc fee", amount: 398 }], oh, null, null, { vehicleCashPrice: 32000 });
+    const ordinary = classifyDocFee([{ name: "doc fee", amount: 398 }], oh, null, null, { vehicleCashPrice: 32000, asOf: "2026-11-27" });
     expect(ordinary.classification).toBe("permissible");
     expect(ordinary.hardCeiling).toBe(398);
 
-    const unknown = classifyDocFee([{ name: "doc fee", amount: 398 }], oh);
+    const unknown = classifyDocFee([{ name: "doc fee", amount: 398 }], oh, null, null, { asOf: "2026-11-27" });
     expect(unknown.classification).toBe("permissible");
     expect(unknown.summary).toMatch(/not applied/i);
-    expect(classifyDocFee([{ name: "doc fee", amount: 399 }], oh).classification).toBe("illegal");
+    expect(classifyDocFee([{ name: "doc fee", amount: 399 }], oh, null, null, { asOf: "2026-11-27" }).classification).toBe("illegal");
+  });
+});
+
+describe("exact documentation aliases take precedence over administrative aliases", () => {
+  const ca = getStateFeeData("CA")!;
+
+  it("measures the $60 doc fee and does not add a $60 administrative processing charge for the same service", () => {
+    const fees = [
+      { name: "doc fee", amount: 60 },
+      { name: "administrative processing charge", amount: 60 },
+    ];
+    const result = classifyDocFee(fees, ca, false);
+    // Vehicle Code § 4456.5(a)(1) authorizes one document processing charge.
+    // Civil Code § 2982(a)(1)(B) itemizes that charge on its own line.
+    // The exact "doc fee" line is the charge compared with the ceiling.
+    // The broader administrative alias names the same service and is not added again.
+    expect(result.chargedAmount).toBe(60);
+    expect(result.classification).toBe("permissible");
+    expect(result.summary.toLowerCase()).not.toContain("illegal");
+
+    const onlyBroad = classifyDocFee([{ name: "administrative processing charge", amount: 120 }], ca, true);
+    expect(onlyBroad.chargedAmount).toBe(120);
+    expect(onlyBroad.classification).toBe("illegal");
+  });
+});
+
+describe("electronic filing and optional electronic transfer are not doc fees", () => {
+  const ca = getStateFeeData("CA")!;
+  const mn = getStateFeeData("MN")!;
+
+  it("does not add a California electronic filing charge to the document processing ceiling", () => {
+    const result = classifyDocFee(
+      [
+        { name: "doc fee", amount: 70 },
+        { name: "electronic filing fee", amount: 30 },
+      ],
+      ca,
+      false,
+    );
+    expect(result.chargedAmount).toBe(70);
+    expect(result.classification).toBe("permissible");
+
+    const filing = classifySeparateFilingCharges(
+      [
+        { name: "doc fee", amount: 70 },
+        { name: "electronic filing fee", amount: 30 },
+      ],
+      ca,
+    );
+    expect(filing).toHaveLength(1);
+    expect(filing[0].kind).toBe("ca_electronic_filing");
+    expect(filing[0].classification).toBe("potentially_noncompliant");
+    expect(filing[0].classification).not.toBe("illegal");
+    expect(filing[0].summary.toLowerCase()).not.toContain("illegal");
+    expect(filing[0].summary).toMatch(/4456\.5/);
+    expect(filing[0].summary).toMatch(/not added to the document processing ceiling/i);
+    expect(filing[0].officialSource).toContain("leginfo.legislature.ca.gov");
+    expect(filing[0].unconfirmed.length).toBeGreaterThan(0);
+  });
+
+  it("flags a California electronic filing charge above the handbook's $33 figure without calling it a statutory violation", () => {
+    const filing = classifySeparateFilingCharges([{ name: "electronic filing charge", amount: 50 }], ca);
+    expect(filing[0].classification).not.toBe("illegal");
+    expect(filing[0].summary).toMatch(/\$33/);
+    expect(filing[0].summary).toMatch(/not fetched|flagged/i);
+    const doc = classifyDocFee([{ name: "electronic filing charge", amount: 50 }], ca, true);
+    expect(doc.chargedAmount).toBeNull();
+    expect(doc.classification).toBe("not_checked");
+  });
+
+  it("does not treat a registration service charge as the California document processing charge", () => {
+    const doc = classifyDocFee(
+      [
+        { name: "document processing charge", amount: 70 },
+        { name: "registration service fee", amount: 45 },
+      ],
+      ca,
+      false,
+    );
+    expect(doc.chargedAmount).toBe(70);
+    const filing = classifySeparateFilingCharges(
+      [
+        { name: "electronic filing fee", amount: 25 },
+        { name: "registration service fee", amount: 45 },
+      ],
+      ca,
+    );
+    expect(filing.map((item) => item.kind).sort()).toEqual(["ca_electronic_filing", "ca_registration_service"]);
+    const service = filing.find((item) => item.kind === "ca_registration_service");
+    expect(service?.classification).toBe("needs_source");
+    expect(service?.summary.toLowerCase()).not.toContain("illegal");
+    const electronic = filing.find((item) => item.kind === "ca_electronic_filing");
+    expect(electronic?.unconfirmed.join(" ")).toMatch(/registration service/i);
+    expect(electronic?.classification).not.toBe("illegal");
+  });
+
+  it("excludes a Minnesota optional electronic transfer fee from the documentary fee", () => {
+    const doc = classifyDocFee(
+      [
+        { name: "documentary fee", amount: 125 },
+        { name: "optional electronic transfer fee", amount: 40 },
+      ],
+      mn,
+      null,
+      null,
+      { vehicleCashPrice: 20000 },
+    );
+    expect(doc.chargedAmount).toBe(125);
+    expect(doc.classification).toBe("permissible");
+    const filing = classifySeparateFilingCharges(
+      [{ name: "optional electronic transfer fee", amount: 40 }],
+      mn,
+    );
+    expect(filing[0].kind).toBe("mn_electronic_transfer");
+    expect(filing[0].classification).toBe("potentially_noncompliant");
+    expect(filing[0].summary).toMatch(/168\.27/);
+    expect(filing[0].summary).toMatch(/53C\.01/);
+    expect(filing[0].summary.toLowerCase()).not.toContain("illegal");
+    expect(filing[0].officialSource).toContain("revisor.mn.gov");
+  });
+
+  it("does not fold a Minnesota electronic filing line into the documentary fee when the statutory name is missing", () => {
+    const doc = classifyDocFee(
+      [
+        { name: "document administration fee", amount: 300 },
+        { name: "electronic filing fee", amount: 25 },
+      ],
+      mn,
+    );
+    expect(doc.chargedAmount).toBe(300);
+    const filing = classifySeparateFilingCharges([{ name: "electronic filing fee", amount: 25 }], mn);
+    expect(filing[0].classification).not.toBe("illegal");
+    expect(filing[0].unconfirmed.join(" ")).toMatch(/optional electronic transfer fee/i);
+  });
+});
+
+describe("printed line positions", () => {
+  const ca = getStateFeeData("CA")!;
+
+  it("counts one printed doc fee once when the model extracted it twice", () => {
+    const dealerText = "Doc fee: $60\nSelling price: $28,000";
+    const result = classifyDocFee(
+      [
+        { name: "Doc fee", amount: 60 },
+        { name: "Doc fee", amount: 60 },
+      ],
+      ca,
+      false,
+      null,
+      { dealerText },
+    );
+    expect(result.chargedAmount).toBe(60);
+    expect(result.classification).toBe("permissible");
+  });
+
+  it("counts two identical doc fee lines that are both printed", () => {
+    const dealerText = "Doc fee: $60\nSelling price: $28,000\nDoc fee: $60";
+    const result = classifyDocFee([{ name: "Doc fee", amount: 60 }], ca, true, null, { dealerText });
+    expect(result.chargedAmount).toBe(120);
+    expect(result.classification).toBe("illegal");
+  });
+
+  it("keeps two different source lines when the raw text is not supplied", () => {
+    const result = classifyDocFee(
+      [
+        { name: "doc fee", amount: 60, sourceLine: 1 },
+        { name: "doc fee", amount: 60, sourceLine: 8 },
+      ],
+      ca,
+      true,
+    );
+    expect(result.chargedAmount).toBe(120);
   });
 });

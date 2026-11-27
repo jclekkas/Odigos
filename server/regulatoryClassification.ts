@@ -1,14 +1,27 @@
+import { activeThresholds, type StatutoryThreshold } from "./statutoryThresholds.js";
+
 /**
  * Doc-fee classification.
  *
  * California's two ceilings come from Vehicle Code § 4456.5, fetched from
- * leginfo.legislature.ca.gov on 2026-11-27. Oregon's ceilings and the
- * purchaser's integrator election come from ORS 822.043, fetched from
+ * leginfo.legislature.ca.gov on 2026-11-27. The electronic filing charge in
+ * § 4456.5(a)(2) is a separate charge, itemized on its own line by Civil Code
+ * § 2982(a)(1)(H) (operative version fetched 2026-11-27). Oregon's ceilings
+ * and the purchaser's integrator election come from ORS 822.043, fetched from
  * oregonlegislature.gov on 2026-11-27. Michigan, Pennsylvania, Rhode Island,
  * Minnesota, and Ohio use only the government pages fetched on 2026-11-27.
- * Other states are called illegal only when this dataset records a citation
- * and does not list the cap as unverified. Otherwise the result is needs_source.
+ * Minn. Stat. § 168.27, subd. 31(c) excludes an optional electronic transfer
+ * fee from the documentary fee. Other states are called illegal only when
+ * this dataset records a citation and does not list the cap as unverified.
+ * Otherwise the result is needs_source.
  */
+
+import { parseDealerQuoteFacts } from "./dealerQuoteText.js";
+import {
+  docFeeAliasTier,
+  separateFilingKind,
+  type SeparateFilingKind,
+} from "../shared/feeVocabulary.js";
 
 export type ChargeClassification =
   | "illegal"
@@ -28,6 +41,7 @@ export interface RegulatoryStateInput {
   source_status?: string;
   unverified_fields?: string[];
   citations?: { url?: string; supports?: string }[];
+  statutoryThresholds?: StatutoryThreshold[];
 }
 
 export interface DocFeeAssessment {
@@ -54,6 +68,10 @@ export interface DocFeeQuoteContext {
    * services, false when it does not, null when the quote does not say.
    */
   electronicTransaction?: boolean | null;
+  /** Raw quote. Printed line positions decide duplicate documentation lines. */
+  dealerText?: string | null;
+  /** Quote or analysis date. Dated ceilings are chosen against this day. */
+  asOf?: string | Date | null;
 }
 
 const CA_SOURCE =
@@ -82,9 +100,6 @@ const MI_CONDITION =
 const PA_SOURCE =
   "https://www.pa.gov/content/dam/copapwp-pagov/en/dos/department-and-offices/bpoa/vehicle/Annual%20Fee.pdf";
 const PA_STATUTE = "63 P.S. § 818.327(c)";
-const PA_VERIFIED = "2026-11-27";
-const PA_ELECTRONIC = 490;
-const PA_NONELECTRONIC = 409;
 const PA_CONDITION =
   "The State Board of Vehicle Manufacturers, Dealers and Salespersons notice dated January 13, 2026, under 63 P.S. § 818.327(c), sets the 2026 documentary preparation fee at no more than $490 for an electronic transaction under subsection (c)(1) and no more than $409 for a non-electronic transaction under subsection (c)(2).";
 
@@ -108,40 +123,13 @@ const OH_BOARD_SOURCE =
   "https://autodealers.ohio.gov/resources-for-dealers/resources/documentary-service-charge";
 const OH_STATUTE = "Ohio Rev. Code § 4517.261";
 const OH_VERIFIED = "2026-11-27";
-const OH_DOLLAR = 398;
-const OH_EFFECTIVE = "2026-01-01";
 const OH_CONDITION =
-  "Ohio Rev. Code § 4517.261(B) limits the documentary service charge to the lesser of the registrar's adjusted amount and 10% of the amount the buyer or lessee must pay under the contract, excluding tax, title, and registration fees, and any negative equity adjustment. The Ohio Dealer Board page states the registrar amount is $398 from January 1, 2026 through December 31, 2026. When the contract amount is not on the quote, only the $398 ceiling is applied.";
-
-const DOC_FEE_EXACT = [
-  "doc fee",
-  "documentation fee",
-  "document fee",
-  "documentary fee",
-  "documentary service",
-  "documentary preparation",
-  "document processing",
-  "document administration fee",
-  "electronic filing",
-];
-
-/** Arkansas Code § 23-112-317 and 23 CAR § 410-801 use these names for the capped fee. */
-const AR_DOC_FEE_ALIASES = [
-  "dealer service and handling",
-  "dealer service & handling",
-  "dealer service or handling",
-  "service and handling",
-  "service & handling",
-  "service or handling",
-  "dealer service fee",
-];
-
-const DOC_FEE_BROAD = ["dealer fee", "processing fee", "admin fee", "administrative fee"];
+  "Ohio Rev. Code § 4517.261(B) limits the documentary service charge to the lesser of the registrar's adjusted amount and 10% of the amount the buyer or lessee must pay under the contract, excluding tax, title, and registration fees, and any negative equity adjustment. The Ohio Dealer Board page states the registrar amount is $398 from January 1, 2026 through December 31, 2026, and $412 from January 1, 2027 through December 31, 2027. The analyzer uses the registrar amount in effect on the quote date. When the contract amount is not on the quote, only that dollar ceiling is applied.";
 
 const SEPARATE_GOVERNMENT_FEE =
   /\b(sales tax|use tax|excise tax|privilege tax|tax|title fee|title preparation|registration|license plate|tag fee|plate fee|license fee)\b/;
 
-type FeeLine = { name: string; amount: number | null };
+type FeeLine = { name: string; amount: number | null; sourceLine?: number | null; sourceOffset?: number | null };
 
 function roundMoney(amount: number): number {
   return Math.round(amount * 100) / 100;
@@ -165,9 +153,8 @@ function normalizeFeeIdentity(name: string): string {
 }
 
 function matchesExactDocFee(name: string, stateAbbreviation?: string | null): boolean {
-  if (DOC_FEE_EXACT.some((keyword) => name.includes(keyword))) return true;
-  if (stateAbbreviation === "AR" && AR_DOC_FEE_ALIASES.some((keyword) => name.includes(keyword))) return true;
-  return false;
+  const tier = docFeeAliasTier(name, stateAbbreviation);
+  return tier === "exact" || tier === "arkansas";
 }
 
 function isSeparateGovernmentFee(name: string, stateAbbreviation?: string | null): boolean {
@@ -175,35 +162,62 @@ function isSeparateGovernmentFee(name: string, stateAbbreviation?: string | null
 }
 
 /**
- * Sum distinct lines that name the regulated documentation service.
- * The same name and amount is counted once, ignoring case and punctuation,
- * so a repeated "Doc fee" is not added twice and a second documentation line
- * is not dropped. A separate government title, registration, or tax line is
- * not included. Exact documentation names take priority over broad names.
+ * Sum the regulated documentation service.
+ *
+ * Vehicle Code § 4456.5(a)(1) and Civil Code § 2982(a)(1)(B) describe one
+ * document processing charge. An exact documentation alias is that charge.
+ * A broader administrative alias is not added on top of it. When no exact
+ * line is present, the broader alias is the amount that is checked.
+ *
+ * The same printed line extracted twice counts once. Two printed lines with
+ * the same name and amount count twice. Printed lines come from `dealerText`
+ * when it is provided; otherwise `sourceLine` distinguishes them, and rows
+ * with no line position collapse to one.
+ *
+ * Electronic filing, a registration-service charge, and an optional
+ * electronic transfer fee are not included. A separate government title,
+ * registration, or tax line is not included.
  */
-export function detectDocFeeAmount(fees: FeeLine[], stateAbbreviation?: string | null): number | null {
+export function detectDocFeeAmount(
+  fees: FeeLine[],
+  stateAbbreviation?: string | null,
+  dealerText?: string | null,
+): number | null {
+  const printed = dealerText ? printedDocFeeLines(dealerText) : [];
+  const source = printed.length > 0 ? printed : fees;
   const exact: number[] = [];
   const broad: number[] = [];
   const seen = new Set<string>();
-  for (const fee of fees) {
+  for (const fee of source) {
     if (fee.amount == null || !Number.isFinite(fee.amount) || fee.amount < 0) continue;
     const name = fee.name.toLowerCase();
+    if (separateFilingKind(name)) continue;
     if (isSeparateGovernmentFee(name, stateAbbreviation)) continue;
-    const tier = matchesExactDocFee(name, stateAbbreviation)
-      ? "exact"
-      : DOC_FEE_BROAD.some((keyword) => name.includes(keyword))
-        ? "broad"
-        : null;
-    if (!tier) continue;
-    const key = `${tier}|${normalizeFeeIdentity(name)}|${fee.amount}`;
+    const tier = docFeeAliasTier(name, stateAbbreviation);
+    const bucket = tier === "exact" || tier === "arkansas" ? "exact" : tier === "broad" ? "broad" : null;
+    if (!bucket) continue;
+    const key = fee.sourceLine == null
+      ? `${bucket}|${normalizeFeeIdentity(name)}|${fee.amount}`
+      : `${bucket}|${normalizeFeeIdentity(name)}|${fee.amount}|${fee.sourceLine}|${fee.sourceOffset ?? 0}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    if (tier === "exact") exact.push(fee.amount);
+    if (bucket === "exact") exact.push(fee.amount);
     else broad.push(fee.amount);
   }
   const candidates = exact.length > 0 ? exact : broad;
   if (candidates.length === 0) return null;
   return roundMoney(candidates.reduce((sum, amount) => sum + amount, 0));
+}
+
+function printedDocFeeLines(dealerText: string): FeeLine[] {
+  return parseDealerQuoteFacts(dealerText).docFees
+    .filter((fee) => fee.amount != null && Number.isFinite(fee.amount))
+    .map((fee) => ({
+      name: fee.name,
+      amount: fee.amount,
+      sourceLine: fee.sourceLine ?? null,
+      sourceOffset: fee.sourceOffset ?? null,
+    }));
 }
 
 function contractAmountExcludingGovernment(salePrice: number, fees: FeeLine[]): number {
@@ -250,7 +264,7 @@ export function classifyDocFee(
   electronicIntegrator: boolean | null = null,
   quote: DocFeeQuoteContext | null = null,
 ): DocFeeAssessment {
-  const charged = detectDocFeeAmount(fees, state?.abbreviation);
+  const charged = detectDocFeeAmount(fees, state?.abbreviation, quote?.dealerText);
   const jurisdiction = state?.name ?? state?.abbreviation ?? "Unknown";
 
   if (!state) {
@@ -276,7 +290,7 @@ export function classifyDocFee(
   }
 
   if (state.abbreviation === "PA") {
-    return classifyPennsylvania(charged, quote?.electronicTransaction ?? null);
+    return classifyPennsylvania(charged, quote?.electronicTransaction ?? null, quote?.asOf, state.statutoryThresholds);
   }
 
   if (state.abbreviation === "RI") {
@@ -288,7 +302,7 @@ export function classifyDocFee(
   }
 
   if (state.abbreviation === "OH") {
-    return classifyOhio(charged, quote?.vehicleCashPrice, fees);
+    return classifyOhio(charged, quote?.vehicleCashPrice, fees, quote?.asOf, state.statutoryThresholds);
   }
 
   if (charged == null) {
@@ -340,8 +354,8 @@ export function classifyDocFee(
       effectiveDate: "needs_source",
       lastVerificationDate: "needs_source",
       summary: over
-        ? `${jurisdiction} has a stored documentation-fee figure of $${state.docFeeCapAmount}, but that figure is not backed by a verified citation in this dataset. This audit does not treat the $${charged} charge as a legal violation.`
-        : `${jurisdiction}'s stored documentation-fee figure is not a verified legal finding. This audit does not treat the $${charged} charge as a legal violation.`,
+        ? `${jurisdiction}'s $${charged} documentation fee is high. A stored figure of $${state.docFeeCapAmount} could not be verified, so this audit does not treat that figure as a cap.`
+        : `${jurisdiction}'s stored documentation-fee figure could not be verified. This audit does not treat the $${charged} charge as a cap violation.`,
     };
   }
 
@@ -542,16 +556,44 @@ function classifyMichigan(charged: number | null, vehicleCashPrice: number | nul
   };
 }
 
-function classifyPennsylvania(charged: number | null, electronic: boolean | null): DocFeeAssessment {
+function dollarWindow(
+  thresholds: StatutoryThreshold[] | undefined,
+  asOf: string | Date | null | undefined,
+  condition: string | null,
+): StatutoryThreshold | null {
+  const matches = activeThresholds(thresholds, asOf).filter(
+    (threshold) => threshold.amount != null && threshold.percent == null && threshold.condition === condition,
+  );
+  return matches.length === 1 ? matches[0] : null;
+}
+
+function classifyPennsylvania(
+  charged: number | null,
+  electronic: boolean | null,
+  asOf: string | Date | null | undefined,
+  thresholds: StatutoryThreshold[] | undefined,
+): DocFeeAssessment {
+  const electronicCeiling = dollarWindow(thresholds, asOf, "electronic");
+  const nonElectronicCeiling = dollarWindow(thresholds, asOf, "non_electronic");
+  if (!electronicCeiling || !nonElectronicCeiling || electronicCeiling.amount == null || nonElectronicCeiling.amount == null) {
+    const day = asOf instanceof Date ? asOf.toISOString().slice(0, 10) : (asOf ?? "the analysis date");
+    return needsSource(
+      `Pennsylvania has no documentary preparation fee amount on file for ${day}. The stored figure could not be verified for that date, so this audit does not treat the charge as a cap violation.`,
+      "Pennsylvania",
+      charged,
+    );
+  }
+  const electronicAmount = electronicCeiling.amount;
+  const nonElectronicAmount = nonElectronicCeiling.amount;
   const base = {
-    hardCeiling: PA_ELECTRONIC,
-    conditionalCeiling: PA_NONELECTRONIC,
+    hardCeiling: electronicAmount,
+    conditionalCeiling: nonElectronicAmount,
     condition: PA_CONDITION,
     jurisdiction: "Pennsylvania",
     statutoryReference: PA_STATUTE,
     officialSource: PA_SOURCE,
-    effectiveDate: "2026-01-13",
-    lastVerificationDate: PA_VERIFIED,
+    effectiveDate: `${electronicCeiling.effective_from}/${electronicCeiling.effective_to ?? "open"}`,
+    lastVerificationDate: electronicCeiling.lastVerificationDate,
   };
 
   if (charged == null) {
@@ -560,11 +602,11 @@ function classifyPennsylvania(charged: number | null, electronic: boolean | null
       classification: "not_checked",
       chargedAmount: null,
       exceedsStoredCap: false,
-      summary: "No documentation fee amount was found to compare with Pennsylvania's 2026 documentary preparation fee notice.",
+      summary: `No documentation fee amount was found to compare with Pennsylvania's documentary preparation fee notice for ${electronicCeiling.effective_from} through ${electronicCeiling.effective_to}.`,
     };
   }
 
-  if (exceeds(charged, PA_ELECTRONIC) || (electronic === false && exceeds(charged, PA_NONELECTRONIC))) {
+  if (exceeds(charged, electronicAmount) || (electronic === false && exceeds(charged, nonElectronicAmount))) {
     return {
       ...base,
       classification: "illegal",
@@ -572,12 +614,12 @@ function classifyPennsylvania(charged: number | null, electronic: boolean | null
       exceedsStoredCap: true,
       summary:
         electronic === false
-          ? `The $${charged} documentary preparation fee exceeds the $409 ceiling in 63 P.S. § 818.327(c)(2) for a 2026 non-electronic transaction.`
-          : `The $${charged} documentary preparation fee exceeds $490, the 2026 electronic maximum in 63 P.S. § 818.327(c)(1).`,
+          ? `The $${charged} documentary preparation fee exceeds the legal cap of ${moneyLabel(nonElectronicAmount)} in 63 P.S. § 818.327(c)(2) for a non-electronic transaction from ${nonElectronicCeiling.effective_from} through ${nonElectronicCeiling.effective_to}.`
+          : `The $${charged} documentary preparation fee exceeds the legal cap of ${moneyLabel(electronicAmount)}, the electronic maximum in 63 P.S. § 818.327(c)(1) from ${electronicCeiling.effective_from} through ${electronicCeiling.effective_to}.`,
     };
   }
 
-  if (electronic === true || !exceeds(charged, PA_NONELECTRONIC)) {
+  if (electronic === true || !exceeds(charged, nonElectronicAmount)) {
     return {
       ...base,
       classification: "permissible",
@@ -585,8 +627,8 @@ function classifyPennsylvania(charged: number | null, electronic: boolean | null
       exceedsStoredCap: false,
       summary:
         electronic === true
-          ? `The transaction is confirmed as electronic, so the $${charged} documentary preparation fee is within the $490 ceiling in 63 P.S. § 818.327(c)(1) for 2026.`
-          : `The $${charged} documentary preparation fee is within the $409 ceiling that applies to a 2026 non-electronic transaction under 63 P.S. § 818.327(c)(2).`,
+          ? `The transaction is confirmed as electronic, so the $${charged} documentary preparation fee is within the ${moneyLabel(electronicAmount)} ceiling in 63 P.S. § 818.327(c)(1) for ${electronicCeiling.effective_from} through ${electronicCeiling.effective_to}.`
+          : `The $${charged} documentary preparation fee is within the ${moneyLabel(nonElectronicAmount)} ceiling that applies to a non-electronic transaction under 63 P.S. § 818.327(c)(2) for ${nonElectronicCeiling.effective_from} through ${nonElectronicCeiling.effective_to}.`,
     };
   }
 
@@ -595,7 +637,7 @@ function classifyPennsylvania(charged: number | null, electronic: boolean | null
     classification: "potentially_noncompliant",
     chargedAmount: charged,
     exceedsStoredCap: false,
-    summary: `The $${charged} documentary preparation fee is above $409 and at or below $490. The January 13, 2026 board notice allows $490 only for an electronic transaction under 63 P.S. § 818.327(c)(1). A non-electronic transaction is limited to $409 under subsection (c)(2). Electronic processing was not confirmed.`,
+    summary: `The $${charged} documentary preparation fee is above ${moneyLabel(nonElectronicAmount)} and at or below ${moneyLabel(electronicAmount)}. The board notice allows ${moneyLabel(electronicAmount)} only for an electronic transaction under 63 P.S. § 818.327(c)(1) from ${electronicCeiling.effective_from} through ${electronicCeiling.effective_to}. A non-electronic transaction is limited to ${moneyLabel(nonElectronicAmount)} under subsection (c)(2). Electronic processing was not confirmed.`,
   };
 }
 
@@ -712,25 +754,41 @@ function classifyOhio(
   charged: number | null,
   vehicleCashPrice: number | null | undefined,
   fees: FeeLine[],
+  asOf: string | Date | null | undefined,
+  thresholds: StatutoryThreshold[] | undefined,
 ): DocFeeAssessment {
+  const registrar = dollarWindow(thresholds, asOf, null);
+  if (!registrar || registrar.amount == null) {
+    const day = asOf instanceof Date ? asOf.toISOString().slice(0, 10) : (asOf ?? "the analysis date");
+    return needsSource(
+      `Ohio has no registrar documentary-service amount on file for ${day}. The stored figure could not be verified for that date, so this audit does not treat the charge as a cap violation.`,
+      "Ohio",
+      charged,
+    );
+  }
+  const percentRule = activeThresholds(thresholds, asOf).find((threshold) => threshold.percent != null);
+  const percent = percentRule?.percent ?? null;
   const salePrice = positiveAmount(vehicleCashPrice);
   const contractBase = salePrice == null ? null : contractAmountExcludingGovernment(salePrice, fees);
-  const tenPercent = contractBase == null ? null : roundMoney(contractBase * 0.1);
-  const applicable = tenPercent == null ? OH_DOLLAR : Math.min(OH_DOLLAR, tenPercent);
+  const percentCeiling = contractBase == null || percent == null ? null : roundMoney(contractBase * (percent / 100));
+  const applicable = percentCeiling == null ? registrar.amount : Math.min(registrar.amount, percentCeiling);
+  const window = `${registrar.effective_from} through ${registrar.effective_to}`;
   const base = {
     hardCeiling: applicable,
-    conditionalCeiling: tenPercent != null && tenPercent !== OH_DOLLAR ? tenPercent : null,
+    conditionalCeiling: percentCeiling != null && percentCeiling !== registrar.amount ? percentCeiling : null,
     condition: OH_CONDITION,
     jurisdiction: "Ohio",
     statutoryReference: OH_STATUTE,
     officialSource: OH_SOURCE,
-    effectiveDate: OH_EFFECTIVE,
-    lastVerificationDate: OH_VERIFIED,
+    effectiveDate: `${registrar.effective_from}/${registrar.effective_to ?? "open"}`,
+    lastVerificationDate: registrar.lastVerificationDate || OH_VERIFIED,
   };
   const priceNote =
-    contractBase == null
-      ? "The contract amount excluding tax, title, registration, and negative equity was not on the quote, so the 10% limb in Ohio Rev. Code § 4517.261(B)(2) was not applied and the ceiling used is the $398 registrar amount for calendar year 2026."
-      : `The applicable ceiling is ${moneyLabel(applicable)} under Ohio Rev. Code § 4517.261, the lesser of the $398 registrar amount for 2026 and 10% of the ${moneyLabel(contractBase)} contract amount excluding tax, title, registration, and negative equity (${moneyLabel(tenPercent ?? applicable)}).`;
+    percent == null
+      ? `No 10% limb is on file for this date, so the ceiling used is the ${moneyLabel(registrar.amount)} registrar amount for ${window}.`
+      : contractBase == null
+        ? `The contract amount excluding tax, title, registration, and negative equity was not on the quote, so the ${percent}% limb in Ohio Rev. Code § 4517.261 was not applied and the ceiling used is the ${moneyLabel(registrar.amount)} registrar amount for ${window}.`
+        : `The applicable ceiling is ${moneyLabel(applicable)} under Ohio Rev. Code § 4517.261, the lesser of the ${moneyLabel(registrar.amount)} registrar amount for ${window} and ${percent}% of the ${moneyLabel(contractBase)} contract amount excluding tax, title, registration, and negative equity (${moneyLabel(percentCeiling ?? applicable)}).`;
 
   if (charged == null) {
     return {
@@ -748,7 +806,7 @@ function classifyOhio(
       classification: "illegal",
       chargedAmount: charged,
       exceedsStoredCap: true,
-      summary: `The $${charged} documentary service charge exceeds Ohio's ceiling of ${moneyLabel(applicable)}. ${priceNote} The $398 amount was fetched from ${OH_BOARD_SOURCE} on ${OH_VERIFIED}.`,
+      summary: `The $${charged} documentary service charge exceeds the legal cap of ${moneyLabel(applicable)} in Ohio. ${priceNote} The registrar amount was fetched from ${OH_BOARD_SOURCE} on ${OH_VERIFIED}.`,
     };
   }
 
@@ -759,6 +817,210 @@ function classifyOhio(
     exceedsStoredCap: false,
     summary: `The $${charged} documentary service charge is at or under Ohio's ceiling of ${moneyLabel(applicable)}. ${priceNote}`,
   };
+}
+
+export interface SeparateFilingAssessment {
+  kind: SeparateFilingKind | "unspecified_filing";
+  name: string;
+  amount: number;
+  classification: ChargeClassification;
+  /** Conditions the fetched source states. */
+  conditions: string[];
+  /** Conditions the quote does not confirm. */
+  unconfirmed: string[];
+  summary: string;
+  statutoryReference: string;
+  officialSource: string;
+  lastVerificationDate: string;
+}
+
+const CA_EFILE_SOURCE =
+  "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=4456.5";
+const CA_CIVIL_SOURCE =
+  "https://leginfo.legislature.ca.gov/faces/codes_displayText.xhtml?article=&chapter=2b.&division=3.&lawCode=CIV&part=4.&title=14.";
+const CA_DMV_BPA_SOURCE =
+  "https://www.dmv.ca.gov/portal/handbook/vehicle-industry-registration-procedures-manual-2/general-information-licensees/business-partner-automation-program/";
+const CA_DMV_FEE_SOURCE =
+  "https://www.dmv.ca.gov/portal/handbook/vehicle-industry-registration-procedures-manual-2/collection-and-payment-of-fees-and-penalties/dealers-document-preparation-and-electronic-filing-service-fee/";
+const MN_TRANSFER_SOURCE = "https://www.revisor.mn.gov/statutes/cite/53C.01";
+const FILING_VERIFIED = "2026-11-27";
+const CA_EFILE_HANDBOOK_MAX = 33;
+
+const CA_EFILE_CONDITIONS = [
+  `Vehicle Code § 4456.5(a)(2) (${CA_EFILE_SOURCE}) allows an electronic filing charge that does not exceed the actual amount the dealer is charged by a first-line service provider for license plate processing, postage, and the services authorized by § 1685(a) and (d). It is not a governmental fee.`,
+  `Civil Code § 2982(a)(1)(H) (${CA_CIVIL_SOURCE}), in the version operative October 1, 2026, itemizes the charge to electronically register or transfer the vehicle separately from the document processing charge in § 2982(a)(1)(B). Section 2982(n) requires a disclosure that the charge is not a governmental fee.`,
+  `DMV handbook section 2.015 (${CA_DMV_BPA_SOURCE}), fetched 2026-11-27, says California regulations prohibit consumers from being charged more than $33. The regulation text itself was not fetched.`,
+  `DMV handbook sections 2.015 and 3.030 (${CA_DMV_FEE_SOURCE}) say a dealer may not charge an electronic filing fee if a registration service completes the electronic filing, and may not keep the fee if the transaction is not completed electronically.`,
+];
+
+const MN_TRANSFER_CONDITIONS = [
+  `Minn. Stat. § 168.27, subd. 31(c) (${MN_SOURCE}) says the documentary fee and document administration fee do not include an optional electronic transfer fee defined in § 53C.01, subd. 14.`,
+  `Minn. Stat. § 53C.01, subd. 14 (${MN_TRANSFER_SOURCE}) requires the charge to be separately stated, identified as "optional electronic transfer fee," and at least half paid to an electronic transmission service provider.`,
+];
+
+function filingLines(fees: FeeLine[], dealerText?: string | null): FeeLine[] {
+  const printed = dealerText
+    ? parseDealerQuoteFacts(dealerText).filingFees
+        .filter((fee) => fee.amount != null && Number.isFinite(fee.amount))
+        .map((fee) => ({
+          name: fee.name,
+          amount: fee.amount,
+          sourceLine: fee.sourceLine ?? null,
+          sourceOffset: fee.sourceOffset ?? null,
+        }))
+    : [];
+  const source = printed.length > 0 ? printed : fees;
+  const seen = new Set<string>();
+  const out: FeeLine[] = [];
+  for (const fee of source) {
+    if (fee.amount == null || !Number.isFinite(fee.amount) || fee.amount < 0) continue;
+    if (!separateFilingKind(fee.name.toLowerCase())) continue;
+    const key = fee.sourceLine == null
+      ? `${normalizeFeeIdentity(fee.name)}|${fee.amount}`
+      : `${normalizeFeeIdentity(fee.name)}|${fee.amount}|${fee.sourceLine}|${fee.sourceOffset ?? 0}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(fee);
+  }
+  return out;
+}
+
+function quoteConfirms(text: string | null | undefined, pattern: RegExp): boolean {
+  return text != null && pattern.test(text);
+}
+
+function assessCaliforniaElectronicFiling(
+  fee: FeeLine,
+  dealerText: string | null | undefined,
+  registrationServiceAlsoListed: boolean,
+): SeparateFilingAssessment {
+  const amount = fee.amount as number;
+  const unconfirmed: string[] = [];
+  const providerConfirmed = quoteConfirms(
+    dealerText,
+    /actual (?:amount|charge).{0,40}first-line service provider|equals the first-line service provider/i,
+  );
+  const electronicCompleted = quoteConfirms(
+    dealerText,
+    /electronic(?: filing)? (?:was )?completed|completed electronically/i,
+  );
+  const registrationServiceUsed = registrationServiceAlsoListed || quoteConfirms(dealerText, /uses a registration service/i);
+  if (!providerConfirmed) unconfirmed.push("The quote does not show the first-line service provider's actual charge");
+  if (!electronicCompleted) unconfirmed.push("The quote does not show that the electronic transaction was completed");
+  if (registrationServiceUsed) {
+    unconfirmed.push("A registration service may have completed the filing, and the DMV handbook says the dealer may not then charge an electronic filing fee");
+  } else if (!quoteConfirms(dealerText, /no registration service/i)) {
+    unconfirmed.push("The quote does not show whether a registration service completed the filing");
+  }
+  const aboveHandbook = exceeds(amount, CA_EFILE_HANDBOOK_MAX);
+  if (aboveHandbook) {
+    unconfirmed.push("The amount is above the $33 consumer figure stated in DMV handbook section 2.015. The regulation text was not fetched");
+  }
+  const notAViolation = "It was not added to the document processing ceiling, and it is not called a violation.";
+  const summary = aboveHandbook
+    ? `The ${moneyLabel(amount)} electronic filing charge is separate from California's document processing charge under Vehicle Code § 4456.5(a)(2) and Civil Code § 2982(a)(1)(H). DMV handbook section 2.015 says regulations prohibit charging a consumer more than $33. The regulation text was not fetched, so this amount is flagged rather than treated as a statutory violation. ${notAViolation}`
+    : `The ${moneyLabel(amount)} electronic filing charge is separate from California's document processing charge under Vehicle Code § 4456.5(a)(2) and Civil Code § 2982(a)(1)(H). ${unconfirmed.join("; ")}. ${notAViolation}`;
+  return {
+    kind: "ca_electronic_filing",
+    name: fee.name,
+    amount,
+    classification: unconfirmed.length === 0 ? "permissible" : "potentially_noncompliant",
+    conditions: CA_EFILE_CONDITIONS,
+    unconfirmed,
+    summary,
+    statutoryReference: "Cal. Veh. Code § 4456.5(a)(2); Cal. Civ. Code § 2982(a)(1)(H), (n)",
+    officialSource: CA_EFILE_SOURCE,
+    lastVerificationDate: FILING_VERIFIED,
+  };
+}
+
+function assessRegistrationService(fee: FeeLine): SeparateFilingAssessment {
+  const amount = fee.amount as number;
+  return {
+    kind: "ca_registration_service",
+    name: fee.name,
+    amount,
+    classification: "needs_source",
+    conditions: [
+      "DMV handbook sections 2.015 and 3.030 say a dealer may not charge an electronic filing fee when a registration service completes the electronic filing. Those pages do not state a dollar ceiling for the registration service charge itself.",
+    ],
+    unconfirmed: ["no fetched statute states a dollar ceiling for this registration service charge"],
+    summary: `The ${moneyLabel(amount)} registration service charge was not added to the document processing ceiling. DMV handbook section 3.030 says a dealer may not also charge an electronic filing fee when a registration service completes the filing. No dollar ceiling for the registration service charge was fetched, so the amount is needs_source rather than a violation.`,
+    statutoryReference: "needs_source",
+    officialSource: CA_DMV_FEE_SOURCE,
+    lastVerificationDate: FILING_VERIFIED,
+  };
+}
+
+function assessMinnesotaTransfer(fee: FeeLine, dealerText: string | null | undefined): SeparateFilingAssessment {
+  const amount = fee.amount as number;
+  const name = fee.name.toLowerCase();
+  const statutoryName = name.includes("optional electronic transfer");
+  const halfPaid = quoteConfirms(
+    dealerText,
+    /at least half.{0,40}electronic transmission service provider|half of the (?:fee|charge).{0,40}paid to/i,
+  );
+  const unconfirmed: string[] = [];
+  if (!statutoryName) {
+    unconfirmed.push("The line is not identified as \"optional electronic transfer fee,\" which § 53C.01, subd. 14 requires");
+  }
+  if (!halfPaid) unconfirmed.push("The quote does not show that at least half was paid to an electronic transmission service provider");
+  return {
+    kind: "mn_electronic_transfer",
+    name: fee.name,
+    amount,
+    classification: "potentially_noncompliant",
+    conditions: MN_TRANSFER_CONDITIONS,
+    unconfirmed,
+    summary: `The ${moneyLabel(amount)} ${fee.name} line was not added to Minnesota's documentary fee. Minn. Stat. § 168.27, subd. 31(c) excludes only an optional electronic transfer fee as defined in § 53C.01, subd. 14. ${unconfirmed.join("; ")}. Those conditions are not confirmed, so this is not called a documentary-fee violation.`,
+    statutoryReference: "Minn. Stat. § 168.27, subd. 31(c); Minn. Stat. § 53C.01, subd. 14",
+    officialSource: MN_SOURCE,
+    lastVerificationDate: FILING_VERIFIED,
+  };
+}
+
+function assessUnspecifiedFiling(fee: FeeLine, state: RegulatoryStateInput | null | undefined): SeparateFilingAssessment {
+  const amount = fee.amount as number;
+  const jurisdiction = state?.name ?? state?.abbreviation ?? "this state";
+  return {
+    kind: separateFilingKind(fee.name.toLowerCase()) ?? "unspecified_filing",
+    name: fee.name,
+    amount,
+    classification: "needs_source",
+    conditions: [],
+    unconfirmed: [`no fetched ${jurisdiction} rule confirms this filing charge or puts it inside the documentation fee`],
+    summary: `The ${moneyLabel(amount)} ${fee.name} line was not added to the documentation fee. No official source fetched for ${jurisdiction} classifies this filing charge, so it is needs_source rather than a violation.`,
+    statutoryReference: "needs_source",
+    officialSource: "needs_source",
+    lastVerificationDate: "needs_source",
+  };
+}
+
+/**
+ * Electronic filing, registration-service, and optional electronic transfer
+ * lines are classified on their own. They are not folded into the doc-fee cap.
+ * A missing condition is flagged. It is not called a violation.
+ */
+export function classifySeparateFilingCharges(
+  fees: FeeLine[],
+  state?: RegulatoryStateInput | null,
+  dealerText?: string | null,
+): SeparateFilingAssessment[] {
+  const lines = filingLines(fees, dealerText);
+  const registrationServiceAlsoListed = lines.some((fee) => separateFilingKind(fee.name.toLowerCase()) === "ca_registration_service");
+  const stateCode = state?.abbreviation ?? null;
+  return lines.map((fee) => {
+    const kind = separateFilingKind(fee.name.toLowerCase());
+    if (stateCode == null) return assessUnspecifiedFiling(fee, state);
+    if (stateCode === "CA" && kind === "ca_registration_service") return assessRegistrationService(fee);
+    if (stateCode === "CA" && (kind === "ca_electronic_filing" || kind === "mn_electronic_transfer")) {
+      return assessCaliforniaElectronicFiling(fee, dealerText, registrationServiceAlsoListed);
+    }
+    if (stateCode === "MN" && (kind === "mn_electronic_transfer" || kind === "ca_electronic_filing")) {
+      return assessMinnesotaTransfer(fee, dealerText);
+    }
+    return assessUnspecifiedFiling(fee, state);
+  });
 }
 
 export function classifyLineItem(name: string): ChargeClassification {

@@ -33,7 +33,9 @@ function conditionalDocFeeAsk(docFee: DocFeeAssessment): string {
     return "Please state in writing whether you elect to have the dealership use an integrator. ORS 822.043(6) gives you that election when the fee is higher than the non-integrator amount, and ORS 822.043(5) requires $35 of an integrator-tier fee to be paid to the integrator. Aside from that $35, ORS 822.043(4) says the fee is negotiable and still cannot exceed $250 with an integrator or $200 without one.";
   }
   if (docFee.jurisdiction === "Pennsylvania") {
-    return "Please confirm in writing whether this is an electronic transaction under 63 P.S. § 818.327(c)(1), which allows up to $490 in 2026, or a non-electronic transaction under § 818.327(c)(2), which allows up to $409.";
+    const electronic = docFee.hardCeiling != null ? `$${docFee.hardCeiling}` : "the electronic ceiling";
+    const nonElectronic = docFee.conditionalCeiling != null ? `$${docFee.conditionalCeiling}` : "the non-electronic ceiling";
+    return `Please confirm in writing whether this is an electronic transaction under 63 P.S. § 818.327(c)(1), which allows up to ${electronic}, or a non-electronic transaction under § 818.327(c)(2), which allows up to ${nonElectronic}.`;
   }
   if (docFee.jurisdiction === "California") {
     return "Please confirm in writing whether the dealership has a Vehicle Code § 1685 private-industry-partner agreement.";
