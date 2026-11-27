@@ -185,6 +185,93 @@ describe("POST /api/analyze", () => {
     expect(res.body).toHaveProperty("reasoning");
   });
 
+  it("NO-GOs a selling price above a buyer-supplied factory window sticker MSRP", async () => {
+    mockOpenAiSuccess({
+      ...VALID_LLM_RESPONSE,
+      detectedFields: {
+        ...VALID_LLM_RESPONSE.detectedFields,
+        salePrice: 45000,
+        msrp: 45000,
+        rebates: null,
+        fees: [
+          { name: "Doc fee", amount: 70 },
+          { name: "Sales tax", amount: 1000 },
+          { name: "Reg & title", amount: 400 },
+        ],
+        outTheDoorPrice: 46470,
+        monthlyPayment: null,
+        tradeInValue: null,
+        apr: null,
+        termMonths: null,
+        downPayment: null,
+        vehicle_make: "Toyota",
+        vehicle_model: "Camry",
+        vehicle_year: 2025,
+      },
+    });
+    const res = await request(app)
+      .post("/api/analyze")
+      .send({
+        dealerText: "2025 Toyota Camry LE from a California dealer. Selling price $45,000. Doc fee $70.",
+        purchaseType: "cash",
+        zipCode: "90210",
+        factoryWindowStickerMsrp: 28700,
+      });
+    expect(res.status).toBe(200);
+    expect(res.body.goNoGo).toBe("NO-GO");
+    expect(res.body.verdictLabel).toMatch(/MARKUP OVER FACTORY MSRP/);
+    expect(res.body.marketBenchmarkKind).toBe("factory_msrp");
+    expect(res.body.marketBenchmarkSource).toBe("buyer_window_sticker_msrp");
+    expect(res.body.marketComparison).toMatch(/not a live market transaction price/);
+    expect(res.body.financialSummary).toMatch(/\$16,300/);
+    expect(res.body.financialSummary).toMatch(/56\.79%/);
+    expect(res.body.suggestedReply).toMatch(/markup/i);
+    expect(res.body.suggestedReply).not.toMatch(/good deal|fair price|buyer's order/i);
+    expect(res.body.estimatedNormalOtdMin).toBeNull();
+    expect(res.body.estimatedNormalOtdMax).toBeNull();
+  });
+
+  it("does not treat an extracted MSRP as a factory sticker when the buyer omitted one", async () => {
+    mockOpenAiSuccess({
+      ...VALID_LLM_RESPONSE,
+      detectedFields: {
+        ...VALID_LLM_RESPONSE.detectedFields,
+        salePrice: 45000,
+        msrp: 28700,
+        fees: [
+          { name: "Doc fee", amount: 70 },
+          { name: "Sales tax", amount: 1000 },
+          { name: "Reg & title", amount: 400 },
+        ],
+        outTheDoorPrice: 46470,
+        monthlyPayment: null,
+        apr: null,
+        termMonths: null,
+      },
+    });
+    const res = await request(app)
+      .post("/api/analyze")
+      .send({
+        dealerText: "2025 Toyota Camry LE from a California dealer. Selling price $45,000. Doc fee $70.",
+        purchaseType: "cash",
+        zipCode: "90210",
+      });
+    expect(res.status).toBe(200);
+    expect(res.body.goNoGo).toBe("INSUFFICIENT-INFORMATION");
+    expect(res.body.marketValueStatus).toBe("unverified");
+    expect(res.body.financialSummary).toMatch(/Market value not verified/);
+  });
+
+  it("rejects a negative factory window sticker MSRP", async () => {
+    const res = await request(app)
+      .post("/api/analyze")
+      .send({
+        dealerText: "California dealer selling price $28,000.",
+        factoryWindowStickerMsrp: -1,
+      });
+    expect(res.status).toBe(400);
+  });
+
   it("rule engine overrides LLM: RED when doc fee violates CA cap", async () => {
     const capViolationResponse = {
       ...VALID_LLM_RESPONSE,
