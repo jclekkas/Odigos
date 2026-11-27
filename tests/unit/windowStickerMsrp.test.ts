@@ -3,6 +3,7 @@ import { applyRuleEngine } from "../../server/ruleEngine.js";
 import { getStateFeeData } from "../../server/stateFeeLookup.js";
 import {
   benchmarkCopiesSubmittedPrice,
+  compareFactoryMsrp,
   factoryMarkup,
   independentMarketBenchmark,
 } from "../../server/marketValuation.js";
@@ -85,16 +86,22 @@ describe("buyer-supplied factory window sticker MSRP", () => {
     expect(result.primaryIssue).toContain(markup.percentLabel);
     expect(result.primaryIssue).toContain("$28,700");
     expect(result.summary).toContain(FACTORY_STICKER_COMPARISON);
-    expect(result.marketBenchmark?.status).toBe("verified");
-    expect(result.marketBenchmark?.source).toBe("buyer_window_sticker_msrp");
-    expect(result.marketBenchmark?.kind).toBe("factory_msrp");
-    expect(result.marketBenchmark?.high).toBe(CA_MSRP);
-    expect(result.marketBenchmark?.low).toBe(CA_MSRP);
+    expect(result.marketValuation?.status).toBe("unverified");
+    expect(result.marketBenchmark?.status).toBe("unverified");
+    expect(result.marketBenchmark?.source).toBeNull();
+    expect(result.marketBenchmark?.high).toBeNull();
+    expect(result.msrpComparison?.status).toBe("compared");
+    expect(result.msrpComparison?.source).toBe("buyer_window_sticker_msrp");
+    expect(result.msrpComparison?.relation).toBe("above");
+    expect(result.msrpComparison?.factoryMsrp).toBe(CA_MSRP);
+    expect(result.msrpComparison?.markupDollars).toBe(16300);
+    expect(result.msrpComparison?.markupPercent).toBe("56.79%");
+    expect(result.summary).toMatch(/not an estimated market overpayment or guaranteed savings/i);
     expect(result.suggestedReply).toMatch(/markup/i);
     expect(result.suggestedReply).toContain(FACTORY_STICKER_COMPARISON);
     expect(result.suggestedReply).not.toMatch(/buyer's order|buyers order|good deal|fair price/i);
     expect(replyEndorsesUnverifiedPrice(result.suggestedReply ?? "", result.goNoGo)).toBe(false);
-    expect(result.dimensions?.marketCompetitiveness.status).toBe("fail");
+    expect(result.dimensions?.marketCompetitiveness.status).toBe("insufficient");
   });
 
   it("still NO-GOs the $45,000 ask when the California doc fee is the conditional $85", () => {
@@ -105,24 +112,30 @@ describe("buyer-supplied factory window sticker MSRP", () => {
     expect(replyEndorsesUnverifiedPrice(result.suggestedReply ?? "", result.goNoGo)).toBe(false);
   });
 
-  it("reaches GO when the selling price is exactly the factory MSRP and the $70 CA doc fee is clean", () => {
+  it("does not GO when the selling price equals the factory MSRP and the $70 CA doc fee is clean", () => {
     const result = analyze(camry(CA_MSRP, 70), CA_MSRP);
-    expect(result.goNoGo).toBe("GO");
+    expect(result.goNoGo).not.toBe("GO");
+    expect(result.verdictLabel).not.toMatch(/^GO/);
     expect(result.summary).toMatch(/at or below/i);
     expect(result.summary).toContain(FACTORY_STICKER_COMPARISON);
-    expect(result.marketBenchmark?.source).toBe("buyer_window_sticker_msrp");
+    expect(result.summary).toMatch(/not a buy decision|not estimated savings|not an independent market valuation/i);
+    expect(result.marketValuation?.status).toBe("unverified");
+    expect(result.msrpComparison?.relation).toBe("at_or_below");
+    expect(result.msrpComparison?.markupDollars).toBeNull();
   });
 
-  it("reaches GO for a $28,000 Camry LE at or below a $28,700 factory MSRP with a $70 CA doc fee", () => {
+  it("does not issue an unqualified GO for a $28,000 Camry LE at or below a $28,700 factory MSRP", () => {
     const result = analyze(camry(28000, 70), CA_MSRP);
-    expect(result.goNoGo).toBe("GO");
-    expect(result.verdictLabel).toMatch(/FACTORY WINDOW STICKER MSRP/);
+    expect(result.goNoGo).not.toBe("GO");
+    expect(result.verdictLabel).not.toMatch(/GO —/);
     expect(result.summary).toContain(FACTORY_STICKER_COMPARISON);
     expect(result.summary).toMatch(/at or below/i);
-    expect(result.suggestedReply).toContain(FACTORY_STICKER_COMPARISON);
-    expect(result.suggestedReply).toMatch(/buyer-supplied factory window sticker MSRP/i);
-    expect(result.marketBenchmark?.source).toBe("buyer_window_sticker_msrp");
-    expect(result.dimensions?.marketCompetitiveness.status).toBe("clear");
+    expect(result.summary).not.toMatch(/guaranteed savings|you save|overpaying by/i);
+    expect(result.suggestedReply).toMatch(/buyer-supplied factory window sticker MSRP|factory MSRP comparison/i);
+    expect(result.suggestedReply).not.toMatch(/buyer's order|good deal|fair price/i);
+    expect(result.marketValuation?.status).toBe("unverified");
+    expect(result.msrpComparison?.relation).toBe("at_or_below");
+    expect(result.dimensions?.marketCompetitiveness.status).toBe("insufficient");
     expect(result.dimensions?.mathematicalAccuracy.status).toBe("clear");
   });
 
@@ -133,7 +146,9 @@ describe("buyer-supplied factory window sticker MSRP", () => {
     expect(result.suggestedReply).toMatch(/private-industry-partner|1685/i);
     expect(result.suggestedReply).not.toMatch(/buyer's order|good deal|fair price/i);
     expect(replyEndorsesUnverifiedPrice(result.suggestedReply ?? "", result.goNoGo)).toBe(false);
-    expect(result.marketBenchmark?.source).toBe("buyer_window_sticker_msrp");
+    expect(result.marketValuation?.status).toBe("unverified");
+    expect(result.msrpComparison?.relation).toBe("at_or_below");
+    expect(result.goNoGo).not.toBe("GO");
   });
 
   it("keeps the safe abstention when the same quotes have no factory MSRP", () => {
@@ -158,9 +173,9 @@ describe("buyer-supplied factory window sticker MSRP", () => {
     }
   });
 
-  it("does not let the asking price move a fixed factory MSRP", () => {
-    const benchmarks = [20000, 28000, 45000, 100000].map((sale) =>
-      independentMarketBenchmark({
+  it("does not let the asking price move a fixed factory MSRP or verify market value", () => {
+    const comparisons = [20000, 28000, 45000, 100000].map((sale) =>
+      compareFactoryMsrp({
         submittedSalePrice: sale,
         submittedOutTheDoor: sale + 1485,
         vehicleYear: 2025,
@@ -169,12 +184,20 @@ describe("buyer-supplied factory window sticker MSRP", () => {
         buyerWindowStickerMsrp: CA_MSRP,
       }),
     );
-    for (const benchmark of benchmarks) {
-      expect(benchmark.high).toBe(CA_MSRP);
-      expect(benchmark.low).toBe(CA_MSRP);
-      expect(benchmark.source).toBe("buyer_window_sticker_msrp");
+    for (const comparison of comparisons) {
+      expect(comparison.factoryMsrp).toBe(CA_MSRP);
+      expect(comparison.source).toBe("buyer_window_sticker_msrp");
     }
-    expect(new Set(benchmarks.map((benchmark) => benchmark.high)).size).toBe(1);
+    expect(new Set(comparisons.map((comparison) => comparison.factoryMsrp)).size).toBe(1);
+    const market = independentMarketBenchmark({
+      submittedSalePrice: 28000,
+      submittedOutTheDoor: 29485,
+      buyerWindowStickerMsrp: CA_MSRP,
+    });
+    expect(market.status).toBe("unverified");
+    expect(market.low).toBeNull();
+    expect(market.high).toBeNull();
+    expect(market.source).toBeNull();
   });
 
   it("rejects invalid, negative, and out-the-door prices copied into the sticker", () => {
@@ -192,15 +215,22 @@ describe("buyer-supplied factory window sticker MSRP", () => {
       otd - 0.4,
     ];
     for (const sticker of rejected) {
-      const benchmark = independentMarketBenchmark({
+      const comparison = compareFactoryMsrp({
         submittedSalePrice: sale,
         submittedOutTheDoor: otd,
         buyerWindowStickerMsrp: sticker,
       });
-      expect(benchmark.status, String(sticker)).toBe("unverified");
-      expect(benchmark.low, String(sticker)).toBeNull();
-      expect(benchmark.high, String(sticker)).toBeNull();
-      expect(benchmark.source, String(sticker)).toBeNull();
+      expect(comparison.status, String(sticker)).toBe("rejected");
+      expect(comparison.factoryMsrp, String(sticker)).toBeNull();
+      expect(comparison.relation, String(sticker)).toBe("unavailable");
+      const market = independentMarketBenchmark({
+        submittedSalePrice: sale,
+        submittedOutTheDoor: otd,
+        buyerWindowStickerMsrp: sticker,
+      });
+      expect(market.status, String(sticker)).toBe("unverified");
+      expect(market.low, String(sticker)).toBeNull();
+      expect(market.high, String(sticker)).toBeNull();
       const result = analyze(camry(sale, 70), sticker);
       expect(result.goNoGo, String(sticker)).not.toBe("GO");
       expect(result.goNoGo, String(sticker)).not.toBe("NO-GO");
@@ -240,8 +270,10 @@ describe("buyer-supplied factory window sticker MSRP", () => {
       },
     });
     expect(result.goNoGo).toBe("NO-GO");
-    expect(result.marketBenchmark?.source).toBe("buyer_window_sticker_msrp");
-    expect(result.marketBenchmark?.high).toBe(CA_MSRP);
+    expect(result.marketValuation?.status).toBe("unverified");
+    expect(result.msrpComparison?.source).toBe("buyer_window_sticker_msrp");
+    expect(result.msrpComparison?.factoryMsrp).toBe(CA_MSRP);
+    expect(result.msrpComparison?.relation).toBe("above");
   });
 
   it("accepts an optional factory MSRP on the analyze request and rejects a bad one", () => {

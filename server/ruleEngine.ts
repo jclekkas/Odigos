@@ -4,12 +4,16 @@ import { computePurchase, type PurchaseMath } from "./quoteMath.js";
 import { resolvePurchaseLines } from "./governmentCharges.js";
 import {
   benchmarkCopiesSubmittedPrice,
-  factoryMarkup,
+  compareFactoryMsrp,
   formatUsd,
   independentMarketBenchmark,
+  toMarketValuation,
   type MarketBenchmark,
+  type MarketValuation,
+  type MsrpComparison,
 } from "./marketValuation.js";
 import {
+  BUYER_WINDOW_STICKER_SOURCE,
   FACTORY_MSRP_TOLERANCE_DOLLARS,
   FACTORY_STICKER_COMPARISON,
 } from "../shared/windowSticker.js";
@@ -27,6 +31,11 @@ export interface RuleEngineOptions {
   privateIndustryPartner?: boolean | null;
   /** null means the quote did not say whether an Oregon dealer uses an electronic integrator. */
   electronicIntegrator?: boolean | null;
+  /**
+   * Pennsylvania only. True when the dealer provides electronic transaction
+   * services, false when it does not, null when the quote does not say.
+   */
+  electronicTransaction?: boolean | null;
   /** A caller-supplied benchmark. Ignored when it merely copies the submitted price. */
   marketBenchmark?: MarketBenchmark | null;
   condition?: "new" | "used" | "unknown" | null;
@@ -57,6 +66,8 @@ export interface RuleEngineResult {
   primaryIssue?: string;
   dimensions?: AnalysisDimensions;
   marketBenchmark?: MarketBenchmark;
+  marketValuation?: MarketValuation;
+  msrpComparison?: MsrpComparison;
   mathematicalDerivation?: string[];
   docFeeAssessment?: DocFeeAssessment | null;
 }
@@ -92,6 +103,7 @@ const DOC_FEE_KEYWORDS_EXACT = [
   "documentary service",
   "documentary preparation",
   "document processing",
+  "document administration fee",
   "electronic filing",
 ];
 
@@ -103,10 +115,8 @@ const DOC_FEE_KEYWORDS_BROAD = [
   "administrative fee",
 ];
 
-function detectDocFee(fees: Fee[]): number | null {
-  // Same total the regulatory classifier uses: sum of distinct explicit
-  // doc-fee lines (a second "documentation" line is not ignored).
-  return detectDocFeeAmount(fees);
+function detectDocFee(fees: Fee[], stateAbbreviation?: string | null): number | null {
+  return detectDocFeeAmount(fees, stateAbbreviation);
 }
 
 function getEffectiveCapAmount(stateData: StateData): number | null {
@@ -124,7 +134,7 @@ export function checkDocFeeCap(fees: Fee[], stateData: StateData): DocFeeCapResu
   if (capAmount === null) {
     return null;
   }
-  const chargedAmount = detectDocFee(fees);
+  const chargedAmount = detectDocFee(fees, stateData.abbreviation);
   if (chargedAmount === null) {
     return null;
   }
@@ -334,6 +344,7 @@ function finishVerdict(
     derivation: string[];
     dimensions: AnalysisDimensions;
     marketVerified: boolean;
+    msrpComparison: MsrpComparison;
   },
 ): RuleEngineResult {
   const askForVehicleEvidence = !extras.marketVerified || draft.goNoGo !== "GO";
@@ -345,6 +356,7 @@ function finishVerdict(
     derivation: extras.derivation,
     askForVehicleEvidence,
     benchmarkKind: extras.benchmark.kind ?? null,
+    msrpMarkup: extras.msrpComparison.relation === "above",
   });
   const reasoning = [
     draft.summary,
@@ -363,6 +375,8 @@ function finishVerdict(
     suggestedReply,
     dimensions: extras.dimensions,
     marketBenchmark: extras.benchmark,
+    marketValuation: toMarketValuation(extras.benchmark),
+    msrpComparison: extras.msrpComparison,
     mathematicalDerivation: extras.derivation,
     docFeeAssessment: extras.docFee,
   };
@@ -380,25 +394,38 @@ export function applyRuleEngine(
   const partner = options?.privateIndustryPartner ?? null;
   const integrator = options?.electronicIntegrator ?? null;
   const docFee = options?.stateData
-    ? classifyDocFee(fees, options.stateData, partner, integrator)
+    ? classifyDocFee(fees, options.stateData, partner, integrator, {
+        vehicleCashPrice: fields.salePrice,
+        electronicTransaction: options.electronicTransaction ?? null,
+      })
     : null;
   const supplied = options?.marketBenchmark ?? null;
   const anchored =
     supplied != null &&
     benchmarkCopiesSubmittedPrice(supplied, fields.salePrice, fields.outTheDoorPrice);
+  const suppliedIsSticker =
+    supplied?.kind === "factory_msrp" || supplied?.source === BUYER_WINDOW_STICKER_SOURCE;
   const benchmark: MarketBenchmark =
-    supplied && supplied.status === "verified" && !anchored
-      ? supplied
+    supplied && supplied.status === "verified" && !anchored && !suppliedIsSticker && supplied.low != null && supplied.high != null
+      ? { ...supplied, kind: "market_transaction" as const }
       : independentMarketBenchmark({
           submittedSalePrice: fields.salePrice,
           submittedOutTheDoor: fields.outTheDoorPrice,
           vehicleYear: fields.vehicle_year,
           vehicleMake: fields.vehicle_make,
           vehicleModel: fields.vehicle_model,
-          buyerWindowStickerMsrp: options?.buyerWindowStickerMsrp,
         });
-  const marketVerified =
-    benchmark.status === "verified" && benchmark.low != null && benchmark.high != null;
+  const marketValuation = toMarketValuation(benchmark);
+  const marketVerified = marketValuation.status === "verified";
+  const msrpComparison = compareFactoryMsrp({
+    submittedSalePrice: fields.salePrice,
+    submittedOutTheDoor: fields.outTheDoorPrice,
+    vehicleYear: fields.vehicle_year,
+    vehicleMake: fields.vehicle_make,
+    vehicleModel: fields.vehicle_model,
+    buyerWindowStickerMsrp: options?.buyerWindowStickerMsrp,
+    condition: options?.condition,
+  });
 
   const leaseQuote = isLeaseQuote(fields, purchaseType);
   const lines = resolvePurchaseLines(fields, isDocFeeName, options?.dealerText);
@@ -466,27 +493,21 @@ export function applyRuleEngine(
   const paymentGap =
     worksheet?.ok && worksheet.paymentMismatch != null ? Math.abs(worksheet.paymentMismatch) : 0;
   const mathMismatch = (worksheet?.ok && otdGap >= 0.01) || paymentGap >= 0.01;
-  const factoryCeiling = benchmark.kind === "factory_msrp" && benchmark.high != null;
+  const govFeesStated = lines.sawTitle || lines.sawRegistration || lines.sawGov;
+  const financingQuoted = fields.apr != null && fields.termMonths != null;
   const priceAboveBenchmark =
     marketVerified &&
     fields.salePrice != null &&
     benchmark.high != null &&
-    (factoryCeiling
-      ? fields.salePrice > benchmark.high + FACTORY_MSRP_TOLERANCE_DOLLARS
-      : fields.salePrice > benchmark.high);
+    fields.salePrice > benchmark.high + (benchmark.kind === "factory_msrp" ? FACTORY_MSRP_TOLERANCE_DOLLARS : 0);
   const priceInsideBenchmark =
     marketVerified &&
     fields.salePrice != null &&
+    benchmark.low != null &&
     benchmark.high != null &&
-    (factoryCeiling
-      ? fields.salePrice <= benchmark.high + FACTORY_MSRP_TOLERANCE_DOLLARS
-      : benchmark.low != null &&
-        fields.salePrice >= benchmark.low &&
-        fields.salePrice <= benchmark.high);
-  const markup =
-    factoryCeiling && priceAboveBenchmark && fields.salePrice != null && benchmark.high != null
-      ? factoryMarkup(fields.salePrice, benchmark.high)
-      : null;
+    fields.salePrice >= benchmark.low &&
+    fields.salePrice <= benchmark.high + (benchmark.kind === "factory_msrp" ? FACTORY_MSRP_TOLERANCE_DOLLARS : 0);
+  const stickerMarkup = msrpComparison.relation === "above" ? msrpComparison : null;
 
   const transparencyConcerns: string[] = [];
   if (paymentOnly) transparencyConcerns.push("Only a monthly payment is shown.");
@@ -498,8 +519,8 @@ export function applyRuleEngine(
       : worksheet?.reason ?? "The worksheet could not be completed."
     : mathMismatch
       ? `The stated figures do not reconcile. ${derivation.find((line) => /difference/i.test(line)) ?? ""}`.trim()
-      : lines.statedTax == null && fields.outTheDoorPrice != null
-        ? "Tax was not itemized, so the out-the-door total was not fully reconciled."
+      : (!leaseQuote && fields.outTheDoorPrice != null && (lines.statedTax == null || !govFeesStated))
+        ? "Tax or government fees were not itemized, so the out-the-door total was not fully reconciled."
         : "The itemized lines reconcile to the stated out-the-door price.";
   const regulatorySummary = docFee?.summary ?? (
     docFeeCapResult?.violated
@@ -514,9 +535,9 @@ export function applyRuleEngine(
   }
   if (negativeEquity) negotiation.push("Negative equity is being rolled into the deal.");
   if (conditionalRebate) negotiation.push("A rebate appears to require financing and was not counted on this cash quote.");
-  if (markup) {
+  if (stickerMarkup?.markupDollars != null && stickerMarkup.markupPercent != null) {
     negotiation.push(
-      `The selling price is ${markup.dollarsLabel} (${markup.percentLabel}) above the buyer-supplied factory window sticker MSRP.`,
+      `The selling price is ${formatUsd(stickerMarkup.markupDollars)} (${stickerMarkup.markupPercent}) above the buyer-supplied factory window sticker MSRP.`,
     );
   }
   if (negotiation.length === 0) negotiation.push("No dealer charge was identified as a negotiation target beyond verifying the vehicle price.");
@@ -534,7 +555,18 @@ export function applyRuleEngine(
       summary: transparencyConcerns.length > 0 ? transparencyConcerns.join(" ") : "Material charges that were extracted are itemized.",
     },
     mathematicalAccuracy: {
-      status: mathMismatch ? "fail" : worksheet?.ok && lines.statedTax != null && otdGap < 0.01 && paymentGap < 0.01 ? "clear" : "not_checked",
+      status: mathMismatch
+        ? "fail"
+        : !leaseQuote &&
+            worksheet?.ok &&
+            lines.statedTax != null &&
+            govFeesStated &&
+            fields.outTheDoorPrice != null &&
+            otdGap < 0.01 &&
+            paymentGap < 0.01 &&
+            (!financingQuoted || fields.monthlyPayment != null)
+          ? "clear"
+          : "not_checked",
       summary: mathStatus,
     },
     regulatoryCompliance: {
@@ -551,14 +583,12 @@ export function applyRuleEngine(
     marketCompetitiveness: {
       status: !marketVerified ? "insufficient" : priceAboveBenchmark ? "fail" : priceInsideBenchmark ? "clear" : "concern",
       summary: !marketVerified
-        ? "Market value not verified."
-        : factoryCeiling
-          ? markup
-            ? `Selling price ${formatUsd(fields.salePrice ?? 0)} is ${markup.dollarsLabel} (${markup.percentLabel}) above the buyer-supplied factory window sticker MSRP of ${formatUsd(benchmark.high ?? 0)}. ${FACTORY_STICKER_COMPARISON}`
-            : `Selling price ${formatUsd(fields.salePrice ?? 0)} is at or below the buyer-supplied factory window sticker MSRP of ${formatUsd(benchmark.high ?? 0)}. ${FACTORY_STICKER_COMPARISON}`
-          : priceAboveBenchmark
-            ? `Selling price $${fields.salePrice} is above the independent benchmark of $${benchmark.low}–$${benchmark.high} (${benchmark.source ?? "independent source"}).`
-            : `Selling price is compared with an independent benchmark of $${benchmark.low}–$${benchmark.high}. The submitted price did not set that range.`,
+        ? msrpComparison.status === "compared"
+          ? `${msrpComparison.summary} Independent market value is not verified.`
+          : "Market value not verified. Factory MSRP comparison and independent market valuation are different checks."
+        : priceAboveBenchmark
+          ? `Selling price $${fields.salePrice} is above the independent benchmark of $${benchmark.low}–$${benchmark.high} (${benchmark.source ?? "independent source"}).`
+          : `Selling price is compared with an independent benchmark of $${benchmark.low}–$${benchmark.high}. The submitted price did not set that range.`,
     },
     negotiationOpportunities: {
       status: negotiation[0].startsWith("No dealer charge") ? "not_checked" : "concern",
@@ -570,7 +600,7 @@ export function applyRuleEngine(
     },
   };
 
-  const context = { fields, benchmark, docFee, derivation, dimensions, marketVerified };
+  const context = { fields, benchmark, docFee, derivation, dimensions, marketVerified, msrpComparison };
 
   const illegal =
     docFee?.classification === "illegal" || (!docFee && !!docFeeCapResult?.violated);
@@ -676,8 +706,13 @@ export function applyRuleEngine(
   if (highCostAddOnCount === 1) {
     return caution("PROCEED WITH CAUTION — REMOVE ADD-ONS / MARKUP", "A high-cost dealer add-on is on the quote");
   }
-  if (priceAboveBenchmark && markup && benchmark.high != null) {
-    const issue = `The selling price is ${markup.dollarsLabel} (${markup.percentLabel}) above the buyer-supplied factory window sticker MSRP of ${formatUsd(benchmark.high)}`;
+  if (
+    stickerMarkup &&
+    stickerMarkup.markupDollars != null &&
+    stickerMarkup.markupPercent != null &&
+    stickerMarkup.factoryMsrp != null
+  ) {
+    const issue = `The selling price is ${formatUsd(stickerMarkup.markupDollars)} (${stickerMarkup.markupPercent}) above the buyer-supplied factory window sticker MSRP of ${formatUsd(stickerMarkup.factoryMsrp)}`;
     return finishVerdict(
       {
         dealScore: "RED",
@@ -685,7 +720,7 @@ export function applyRuleEngine(
         verdictLabel: "NO-GO — MARKUP OVER FACTORY MSRP",
         goNoGo: "NO-GO",
         primaryIssue: issue,
-        summary: `${issue}. ${FACTORY_STICKER_COMPARISON}`,
+        summary: `${issue}. This factory-sticker markup is not an estimated market overpayment or guaranteed savings. ${FACTORY_STICKER_COMPARISON}`,
       },
       context,
     );
@@ -737,41 +772,50 @@ export function applyRuleEngine(
     );
   }
   if (!marketVerified) {
+    const stickerNote = msrpComparison.status === "compared" && msrpComparison.relation === "at_or_below"
+      ? ` The selling price is at or below the buyer-supplied factory window sticker MSRP${msrpComparison.factoryMsrp != null ? ` of ${formatUsd(msrpComparison.factoryMsrp)}` : ""}. ${FACTORY_STICKER_COMPARISON}${options?.condition === "used" ? " A used vehicle's original factory MSRP is not an independent used-market valuation." : ""} Being at or below that sticker is not a buy decision.`
+      : "";
     return insufficient(
       "INSUFFICIENT INFORMATION — MARKET VALUE NOT VERIFIED",
-      "Math and fee checks that could run did not establish a reason to approve the price. Market value is not verified.",
+      `Math and fee checks that could run did not establish a reason to approve the price.${stickerNote}`,
     );
   }
-  if (priceInsideBenchmark && !mathMismatch && factoryCeiling && benchmark.high != null) {
-    return finishVerdict(
-      {
-        dealScore: "GREEN",
-        confidenceLevel: "HIGH",
-        verdictLabel: "GO — AT OR BELOW FACTORY WINDOW STICKER MSRP",
-        goNoGo: "GO",
-        primaryIssue: "Selling price is at or below the buyer-supplied factory window sticker MSRP and the checked math is clean",
-        summary: `The selling price of ${formatUsd(fields.salePrice ?? 0)} is at or below the buyer-supplied factory window sticker MSRP of ${formatUsd(benchmark.high)}. ${FACTORY_STICKER_COMPARISON} The checked math and fee rules are clean.`,
-      },
-      context,
-    );
-  }
-  if (priceInsideBenchmark && !mathMismatch) {
+
+  const reconciliation = assessFinancialReconciliation();
+  const goPermitted =
+    priceInsideBenchmark &&
+    reconciliation.completed &&
+    reconciliation.successful &&
+    disclosureAdequate() &&
+    regulatoryAllowsGo();
+  if (goPermitted) {
     return finishVerdict(
       {
         dealScore: "GREEN",
         confidenceLevel: "HIGH",
         verdictLabel: "GO — PRICE INSIDE INDEPENDENT BENCHMARK",
         goNoGo: "GO",
-        primaryIssue: "Price is inside an independent benchmark and the checked math is clean",
-        summary: `The selling price is inside the independent benchmark of $${benchmark.low}–$${benchmark.high}, and the checked math and fee rules are clean.`,
+        primaryIssue: "Price is inside an independent market valuation and the applicable math, disclosure, and fee checks are complete",
+        summary: `The selling price is inside the independent market valuation of $${benchmark.low}–$${benchmark.high}. ${reconciliation.summary} Factory MSRP comparison is a separate check and was not used as this valuation.`,
       },
       context,
     );
   }
-
+  if (!(reconciliation.completed && reconciliation.successful)) {
+    return insufficient(
+      "INSUFFICIENT INFORMATION — FINANCIAL RECONCILIATION INCOMPLETE",
+      reconciliation.summary,
+    );
+  }
+  if (!disclosureAdequate() || !regulatoryAllowsGo()) {
+    return insufficient(
+      "INSUFFICIENT INFORMATION — CHECKS NOT COMPLETE",
+      "Disclosure or the applicable regulatory verification is not complete, so this quote cannot be approved.",
+    );
+  }
   return insufficient(
-    "INSUFFICIENT INFORMATION — MARKET VALUE NOT VERIFIED",
-    "A reliable buy decision cannot be made from this quote",
+    "INSUFFICIENT INFORMATION — PRICE NOT INSIDE INDEPENDENT VALUATION",
+    "The selling price is not inside the independent market valuation, so this quote cannot be approved.",
   );
 
   function caution(verdictLabel: string, primaryIssue: string): RuleEngineResult {
@@ -802,6 +846,84 @@ export function applyRuleEngine(
     );
   }
 
+  function assessFinancialReconciliation(): { completed: boolean; successful: boolean; summary: string } {
+    if (leaseQuote) {
+      const payment = leaseMath?.paymentValidation;
+      if (isMissingLeaseTerms(fields) || !leaseMath || !payment) {
+        return {
+          completed: false,
+          successful: false,
+          summary: "Lease math was not completed, so the payment was not reconciled.",
+        };
+      }
+      const successful = Math.abs(payment.discrepancy) < 0.01;
+      return {
+        completed: true,
+        successful,
+        summary: successful
+          ? "The lease payment reconciles to the money-factor formula."
+          : "The lease payment does not reconcile to the money-factor formula.",
+      };
+    }
+    if (fields.salePrice == null || !worksheet?.ok) {
+      return {
+        completed: false,
+        successful: false,
+        summary: !worksheet?.ok
+          ? worksheet?.reason ?? "The purchase worksheet could not be completed."
+          : "The purchase worksheet could not be completed.",
+      };
+    }
+    if (lines.statedTax == null || !govFeesStated || fields.outTheDoorPrice == null) {
+      return {
+        completed: false,
+        successful: false,
+        summary: "Tax or government fees were not stated, so the out-the-door total was not reconciled.",
+      };
+    }
+    if (financingQuoted && fields.monthlyPayment == null) {
+      return {
+        completed: false,
+        successful: false,
+        summary: "Financing terms are present, but the monthly payment was not available to reconcile.",
+      };
+    }
+    const otdOk = otdGap < 0.01;
+    const paymentOk = !financingQuoted || paymentGap < 0.01;
+    if (!otdOk || !paymentOk) {
+      return {
+        completed: true,
+        successful: false,
+        summary: !otdOk
+          ? "The stated out-the-door price does not reconcile to the itemized lines."
+          : "The financed payment does not reconcile.",
+      };
+    }
+    return {
+      completed: true,
+      successful: true,
+      summary: financingQuoted
+        ? "The out-the-door total and the financed payment reconcile, with stated tax and government fees."
+        : "The itemized lines, including stated tax and government fees, reconcile to the stated out-the-door price.",
+    };
+  }
+
+  function disclosureAdequate(): boolean {
+    if (!vehicleNamed || paymentOnly || vagueFeesDetected) return false;
+    if (fees.some((fee) => fee.amount == null)) return false;
+    if (leaseQuote) return !isMissingLeaseTerms(fields);
+    if (usedWithoutMileage) return false;
+    return fields.salePrice != null && otdPresent;
+  }
+
+  function regulatoryAllowsGo(): boolean {
+    if (docFeeCapResult?.violated) return false;
+    if (!options?.stateData && !docFee) return false;
+    if (!docFee) return false;
+    if (docFee.classification === "permissible") return true;
+    return docFee.classification === "not_checked" && docFee.chargedAmount == null && !!options?.stateData;
+  }
+
   function insufficient(verdictLabel: string, primaryIssue: string): RuleEngineResult {
     return finishVerdict(
       {
@@ -810,7 +932,7 @@ export function applyRuleEngine(
         verdictLabel,
         goNoGo: "INSUFFICIENT-INFORMATION",
         primaryIssue,
-        summary: `${primaryIssue} Market value not verified.`,
+        summary: marketVerified ? primaryIssue : `${primaryIssue} Market value not verified.`,
       },
       context,
     );

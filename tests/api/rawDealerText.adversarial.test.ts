@@ -237,7 +237,7 @@ describe("raw dealer text adversarial audits", () => {
     assertNoFalseGo(body);
     expect(body.verdictLabel).not.toMatch(/DOESN'T ADD UP/);
     expect(body.dimensions?.mathematicalAccuracy.status).not.toBe("fail");
-    expect(body.dimensions?.mathematicalAccuracy.summary).toMatch(/tax was not itemized/i);
+    expect(body.dimensions?.mathematicalAccuracy.summary).toMatch(/tax or government fees were not itemized/i);
     expect(amounts(body.detectedFields.fees).some((amount) => amount === 7.75 || amount === 775)).toBe(false);
     expect(body.detectedFields.fees.some((fee) => /tax/i.test(fee.name))).toBe(false);
     expect(body.detectedFields.outTheDoorPrice).toBe(36500);

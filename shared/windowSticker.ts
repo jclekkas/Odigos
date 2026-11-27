@@ -8,9 +8,12 @@
 
 export const BUYER_WINDOW_STICKER_SOURCE = "buyer_window_sticker_msrp";
 
-/** Shown wherever a factory-sticker check could be mistaken for a market comp. */
+/**
+ * Shown wherever a factory-sticker check could be mistaken for a market comp.
+ * Factory MSRP comparison and independent market valuation are different.
+ */
 export const FACTORY_STICKER_COMPARISON =
-  "Compared against buyer-supplied factory window sticker MSRP — not a live market transaction price.";
+  "Compared with a buyer-supplied factory window sticker MSRP. This is a factory MSRP comparison, not an independent market valuation and not a live market transaction price.";
 
 /** Differences of a dollar or less are rounding, not a markup over MSRP. */
 export const FACTORY_MSRP_TOLERANCE_DOLLARS = 1;
