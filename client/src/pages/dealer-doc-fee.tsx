@@ -11,7 +11,7 @@ import { ARTICLE_SOURCES } from "@/data/articleSources";
 const faqItems = [
   {
     question: "Which states cap dealer documentation fees?",
-    answer: "A number of states impose a legal cap. California caps the document processing charge at $85 for a DMV partner and $70 otherwise. New York's limit is $175. Arkansas caps service and handling fees at $129. Ohio's 2026 ceiling is $398 or 10% of the cash price, whichever is lower. Oregon's cap is $250 with an integrator and $200 without one. Texas does not set a hard cap. A fee of $225 or less is presumed reasonable without an OCCC filing. Georgia does not cap the fee. Illinois has a CPI-adjusted cap, but this audit did not confirm the current dollar amount on a state page.",
+    answer: "A number of states impose a legal cap. California caps the document processing charge at $85 for a DMV partner and $70 otherwise. New York's limit is $175. Arkansas caps service and handling fees at $129. Michigan's dollar ceiling is $280, or 5% of the cash price if that is less. Ohio's 2026 ceiling is $398 or 10% of the cash price, whichever is lower. Oregon's cap is $250 with an integrator and $200 without one. Texas does not set a hard cap. A fee of $225 or less is presumed reasonable without an OCCC filing. Georgia does not cap the fee. Illinois law sets a $300 base as of January 1, 2020 and adjusts it by CPI, but the official statute page does not state the current dollar amount.",
   },
   {
     question: "Is the doc fee required by law or government?",

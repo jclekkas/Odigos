@@ -35,9 +35,11 @@ export function buildConstrainedReply(facts: ReplyFacts): string {
       `${facts.docFee.summary} Please reduce that documentation charge before any paperwork is prepared.`,
     );
   } else if (facts.docFee?.classification === "potentially_noncompliant") {
-    parts.push(
-      `${facts.docFee.summary} Please confirm in writing whether the dealership has a Vehicle Code § 1685 private-industry-partner agreement. I am not approving the vehicle price.`,
-    );
+    const ask =
+      facts.docFee.jurisdiction === "Oregon"
+        ? "Please confirm in writing whether the dealership uses an electronic integrator under ORS 822.043."
+        : "Please confirm in writing whether the dealership has a Vehicle Code § 1685 private-industry-partner agreement.";
+    parts.push(`${facts.docFee.summary} ${ask} I am not approving the vehicle price.`);
   } else if (facts.verdict === "NO-GO") {
     parts.push(
       `${facts.primaryIssue}. Please correct that item and send an itemized out-the-door quote.`,
