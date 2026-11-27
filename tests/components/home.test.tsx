@@ -123,6 +123,7 @@ describe("Home page rendering", () => {
     expect(await screen.findByText("Factory Window Sticker MSRP (optional)")).toBeInTheDocument();
     expect(screen.getByTestId("text-factory-window-sticker-help")).toHaveTextContent(/Monroney/i);
     expect(screen.getByTestId("text-factory-window-sticker-help")).toHaveTextContent(/dealer-printed addendum/i);
+    expect(screen.getByTestId("text-factory-window-sticker-help")).toHaveTextContent(/does not verify market value/i);
     expect(screen.getByTestId("input-factory-window-sticker-msrp")).not.toBeRequired();
   });
 

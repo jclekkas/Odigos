@@ -20,12 +20,12 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
   "/": {
     title: "Odigos — Dealer Quote Analyzer | Find What's Wrong With Your Quote",
     description:
-      "Paste your dealer quote. Odigos audits disclosure, math, and verified fee caps. Market value stays unverified unless you optionally enter a factory window sticker MSRP. Full analysis is free.",
+      "Paste your dealer quote. Odigos audits disclosure, math, and verified fee caps. A factory window sticker MSRP does not verify market value. Independent market valuation stays unverified. Full analysis is free.",
   },
   "/analyze": {
     title: "Check Your Dealer Quote | Odigos",
     description:
-      "Paste your dealer quote. Odigos audits disclosure, math, and verified fee caps. Market value stays unverified unless you optionally enter a factory window sticker MSRP.",
+      "Paste your dealer quote. Odigos audits disclosure, math, and verified fee caps. A factory window sticker MSRP does not verify market value. Independent market valuation stays unverified.",
   },
 
   // ── Top 10 GSC pages (updated SEO copy) ──────────────────────
@@ -37,7 +37,7 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
   "/car-dealer-fees-new-york": {
     title: "New York Dealer Doc Fee (2026): Verified $175 Ceiling",
     description:
-      "15 NYCRR § 78.19(c)(2) caps the New York dealer registration and title assistance fee at $175. Compare the itemized out-the-door price. Market value stays unverified unless you add a factory window sticker MSRP.",
+      "15 NYCRR § 78.19(c)(2) caps the New York dealer registration and title assistance fee at $175. Compare the itemized out-the-door price. A factory window sticker MSRP does not verify market value.",
   },
   "/car-dealer-fees-california": {
     title: "California Dealer Doc Fee (2026): $70 or $85 Depending on DMV Partner Status",
@@ -84,7 +84,7 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
   "/about": {
     title: "About Odigos — Independent Dealer Quote Analyzer",
     description:
-      "Odigos is an independent dealer-quote auditor. It checks disclosure, math, and verified state fee caps. Market value stays unverified unless you optionally enter a factory window sticker MSRP.",
+      "Odigos is an independent dealer-quote auditor. It checks disclosure, math, and verified state fee caps. Factory MSRP comparison and independent market valuation are different. Entering a factory window sticker MSRP does not verify market value.",
   },
   "/privacy": {
     title: "Privacy Policy | Odigos",

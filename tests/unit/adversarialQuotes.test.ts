@@ -547,10 +547,11 @@ for (const label of ["documentation fee", "DOC. FEE", "document processing charg
   });
 }
 
+const reconciledInsideBenchmark = money(28000, [{ name: "Registration", amount: 400 }], 70);
 cases.push({
   id: "go-inside-benchmark",
   category: "independent-benchmark",
-  fields: money(28000, [], 70),
+  fields: reconciledInsideBenchmark,
   purchaseType: "cash",
   options: { stateData: ca, marketBenchmark: benchmark, privateIndustryPartner: true },
   expected: "GO",
