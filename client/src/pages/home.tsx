@@ -8,6 +8,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { z } from "zod";
 import { drawScorecard } from "@/components/ShareCard";
+import { docFeeSurfaceCopy } from "@shared/docFeeSurfaceCopy";
 import {
   track,
   trackPageView,
@@ -90,7 +91,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { apiRequest } from "@/lib/queryClient";
-import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel, MarketContext, DocFeeCapCheck, RankedSignal, MarketSignal, FlaggedItemEvidence, MarketConfidenceTier, GoNoGo } from "@shared/schema";
+import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel, MarketContext, RankedSignal, MarketSignal, FlaggedItemEvidence, MarketConfidenceTier, GoNoGo } from "@shared/schema";
 import { FACTORY_STICKER_COMPARISON } from "@shared/windowSticker";
 import LeaseMathBlock from "@/components/LeaseMathBlock";
 import FinancialImpactHeroComponent from "@/components/results/FinancialImpactHero";
@@ -446,42 +447,6 @@ function FinancialImpactHero({
           )}
         </div>
       )}
-    </div>
-  );
-}
-
-interface StatutoryCapCalloutProps {
-  docFeeCapCheck: DocFeeCapCheck | null | undefined;
-}
-
-function StatutoryCapCallout({ docFeeCapCheck }: StatutoryCapCalloutProps) {
-  if (!docFeeCapCheck?.violated) return null;
-
-  const { chargedAmount, capAmount, overage, stateName, statuteCitation } = docFeeCapCheck;
-
-  return (
-    <div
-      role="alert"
-      className="rounded-xl border-2 border-red-500/40 bg-red-500/10 p-5 sm:p-6 space-y-2 shadow-sm"
-      data-testid="statutory-cap-callout"
-    >
-      <div className="flex items-center gap-2">
-        <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" aria-hidden="true" />
-        <span className="text-xs font-semibold uppercase tracking-wider text-red-700 dark:text-red-400">
-          State fee cap exceeded
-        </span>
-      </div>
-      <p className="text-lg sm:text-xl font-bold leading-snug text-red-700 dark:text-red-300">
-        This dealer&rsquo;s ${chargedAmount} doc fee exceeds {stateName}&rsquo;s ${capAmount} cap
-      </p>
-      <p className="text-sm text-foreground/80 leading-relaxed">
-        That is ${overage} over the legal limit.
-        {statuteCitation ? (
-          <> Per <span className="font-medium">{statuteCitation}</span>, dealers in {stateName} cannot charge more than ${capAmount} for documentation fees.</>
-        ) : (
-          <> {stateName} law limits documentation fees to ${capAmount}. Request the dealer lower this fee to comply.</>
-        )}
-      </p>
     </div>
   );
 }
@@ -2100,7 +2065,16 @@ export default function Home() {
 
   const getTopShareIssues = useCallback((): string[] => {
     if (!result) return [];
-    return result.missingInfo.slice(0, 3).map((item) => sanitizeIssueLabel(item.field));
+    const lines: string[] = [];
+    if (result.docFeeAssessment) {
+      const line = docFeeSurfaceCopy(result.docFeeAssessment).scorecardLine;
+      if (line) lines.push(line);
+    }
+    for (const item of result.missingInfo) {
+      if (lines.length >= 3) break;
+      lines.push(sanitizeIssueLabel(item.field));
+    }
+    return lines.slice(0, 3);
   }, [result, sanitizeIssueLabel]);
 
   const purchaseType = form.watch("purchaseType");
@@ -3012,7 +2986,10 @@ export default function Home() {
               />
 
               {/* 1.5) Statutory cap violation — urgent legal callout with action */}
-              <StatutoryCapCalloutComponent docFeeCapCheck={result.docFeeCapCheck} />
+              <StatutoryCapCalloutComponent
+                docFeeCapCheck={result.docFeeCapCheck}
+                docFeeAssessment={result.docFeeAssessment}
+              />
 
               {/* 2) Verdict — moved up for immediate clarity */}
               <DealScoreBadge

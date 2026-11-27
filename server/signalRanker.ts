@@ -13,7 +13,9 @@
  *   5. Info gaps (missing OTD, APR, etc.)
  */
 import type { DetectedFields, Fee, MarketContext, MissingInfo } from "../shared/schema.js";
-import type { DocFeeCapResult, RuleEngineResult } from "./ruleEngine.js";
+import type { RuleEngineResult } from "./ruleEngine.js";
+import type { DocFeeAssessment } from "./regulatoryClassification.js";
+import { docFeeSurfaceCopy } from "../shared/docFeeSurfaceCopy.js";
 import type { LeaseMathResult } from "./leaseMathEngine.js";
 
 export interface RankedSignal {
@@ -26,7 +28,8 @@ export interface RankedSignal {
 }
 
 export interface SignalRankerContext {
-  docFeeCapCheck: DocFeeCapResult | null | undefined;
+  /** Authoritative doc-fee assessment. A separate cap flag is not consulted. */
+  docFeeAssessment?: DocFeeAssessment | null;
   detectedFields: DetectedFields;
   marketContext: MarketContext | null | undefined;
   ruleEngineResult: RuleEngineResult;
@@ -63,18 +66,6 @@ function hasVagueFees(fees: Fee[]): boolean {
 // ---------------------------------------------------------------------------
 // Signal builders
 // ---------------------------------------------------------------------------
-
-function buildLegalSignal(cap: DocFeeCapResult): RankedSignal {
-  const citation = cap.statuteCitation ? ` per ${cap.statuteCitation}` : "";
-  return {
-    priority: 1,
-    category: "legal",
-    label: "Doc fee exceeds state cap",
-    detail: `This dealer's $${cap.chargedAmount} doc fee exceeds ${cap.stateName}'s $${cap.capAmount} legal cap by $${cap.overage}${citation}.`,
-    action: `Tell the dealer: "Your doc fee of $${cap.chargedAmount} exceeds the ${cap.stateName} cap of $${cap.capAmount}${citation}. Please reduce it to $${cap.capAmount} or below."`,
-    severity: "critical",
-  };
-}
 
 function buildDealerPatternSignal(mc: MarketContext): RankedSignal | null {
   if (
@@ -303,9 +294,10 @@ export function rankSignals(ctx: SignalRankerContext): RankedSignal[] {
   const signals: RankedSignal[] = [];
   const fees = ctx.detectedFields.fees ?? [];
 
-  // 1. Legal cap violation (priority 1)
-  if (ctx.docFeeCapCheck?.violated) {
-    signals.push(buildLegalSignal(ctx.docFeeCapCheck));
+  // 1. The classifier's doc-fee finding. Unverified caps are warnings, not legal accusations.
+  if (ctx.docFeeAssessment) {
+    const projected = docFeeSurfaceCopy(ctx.docFeeAssessment);
+    if (projected.signal) signals.push(projected.signal);
   }
 
   // 2. Dealer-specific repeat pattern (priority 2)

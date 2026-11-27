@@ -365,16 +365,17 @@ describe("Pennsylvania, Rhode Island, Minnesota, and Ohio conditional rules", ()
   const oh = getStateFeeData("OH")!;
 
   it("treats a Pennsylvania fee between $409 and $490 as conditional until electronic processing is known", () => {
-    expect(classifyDocFee([{ name: "documentary preparation fee", amount: 409 }], pa).classification).toBe("permissible");
-    const conditional = classifyDocFee([{ name: "documentary preparation fee", amount: 450 }], pa);
+    const dated = { asOf: "2026-11-27" };
+    expect(classifyDocFee([{ name: "documentary preparation fee", amount: 409 }], pa, null, null, dated).classification).toBe("permissible");
+    const conditional = classifyDocFee([{ name: "documentary preparation fee", amount: 450 }], pa, null, null, dated);
     expect(conditional.classification).toBe("potentially_noncompliant");
     expect(conditional.hardCeiling).toBe(490);
     expect(conditional.conditionalCeiling).toBe(409);
     expect(conditional.officialSource).toContain("pa.gov");
     expect(conditional.lastVerificationDate).toBe("2026-11-27");
-    expect(classifyDocFee([{ name: "doc fee", amount: 450 }], pa, null, null, { electronicTransaction: true }).classification).toBe("permissible");
-    expect(classifyDocFee([{ name: "doc fee", amount: 450 }], pa, null, null, { electronicTransaction: false }).classification).toBe("illegal");
-    expect(classifyDocFee([{ name: "doc fee", amount: 491 }], pa, null, null, { electronicTransaction: true }).classification).toBe("illegal");
+    expect(classifyDocFee([{ name: "doc fee", amount: 450 }], pa, null, null, { electronicTransaction: true, asOf: "2026-11-27" }).classification).toBe("permissible");
+    expect(classifyDocFee([{ name: "doc fee", amount: 450 }], pa, null, null, { electronicTransaction: false, asOf: "2026-11-27" }).classification).toBe("illegal");
+    expect(classifyDocFee([{ name: "doc fee", amount: 491 }], pa, null, null, { electronicTransaction: true, asOf: "2026-11-27" }).classification).toBe("illegal");
 
     const result = applyRuleEngine(
       llmFixture,
@@ -382,7 +383,7 @@ describe("Pennsylvania, Rhode Island, Minnesota, and Ohio conditional rules", ()
       null,
       "cash",
       null,
-      { stateData: pa },
+      { stateData: pa, asOf: "2026-11-27" },
     );
     expect(result.goNoGo).toBe("PROCEED-WITH-CAUTION");
     expect(result.suggestedReply).toMatch(/818\.327/);
@@ -436,7 +437,7 @@ describe("Pennsylvania, Rhode Island, Minnesota, and Ohio conditional rules", ()
       oh,
       null,
       null,
-      { vehicleCashPrice: 3000 },
+      { vehicleCashPrice: 3000, asOf: "2026-11-27" },
     );
     expect(low.classification).toBe("illegal");
     expect(low.hardCeiling).toBe(335);
@@ -453,19 +454,19 @@ describe("Pennsylvania, Rhode Island, Minnesota, and Ohio conditional rules", ()
       oh,
       null,
       null,
-      { vehicleCashPrice: 3000 },
+      { vehicleCashPrice: 3000, asOf: "2026-11-27" },
     );
     expect(within.classification).toBe("permissible");
     expect(within.hardCeiling).toBe(330);
 
-    const ordinary = classifyDocFee([{ name: "doc fee", amount: 398 }], oh, null, null, { vehicleCashPrice: 32000 });
+    const ordinary = classifyDocFee([{ name: "doc fee", amount: 398 }], oh, null, null, { vehicleCashPrice: 32000, asOf: "2026-11-27" });
     expect(ordinary.classification).toBe("permissible");
     expect(ordinary.hardCeiling).toBe(398);
 
-    const unknown = classifyDocFee([{ name: "doc fee", amount: 398 }], oh);
+    const unknown = classifyDocFee([{ name: "doc fee", amount: 398 }], oh, null, null, { asOf: "2026-11-27" });
     expect(unknown.classification).toBe("permissible");
     expect(unknown.summary).toMatch(/not applied/i);
-    expect(classifyDocFee([{ name: "doc fee", amount: 399 }], oh).classification).toBe("illegal");
+    expect(classifyDocFee([{ name: "doc fee", amount: 399 }], oh, null, null, { asOf: "2026-11-27" }).classification).toBe("illegal");
   });
 });
 

@@ -1,5 +1,15 @@
 import { describe, it, expect } from "vitest";
-import { rankSignals, type SignalRankerContext, type RankedSignal } from "../../server/signalRanker.js";
+import { rankSignals, type SignalRankerContext } from "../../server/signalRanker.js";
+import { classifyDocFee } from "../../server/regulatoryClassification.js";
+import { getStateFeeData } from "../../server/stateFeeLookup.js";
+
+const illegalDocFee = classifyDocFee(
+  [{ name: "doc fee", amount: 800 }],
+  getStateFeeData("CA"),
+  null,
+  null,
+  { asOf: "2026-11-27" },
+);
 
 // ---------------------------------------------------------------------------
 // Helpers to build minimal context objects
@@ -7,7 +17,7 @@ import { rankSignals, type SignalRankerContext, type RankedSignal } from "../../
 
 function baseContext(overrides: Partial<SignalRankerContext> = {}): SignalRankerContext {
   return {
-    docFeeCapCheck: null,
+    docFeeAssessment: null,
     detectedFields: {
       salePrice: 35000,
       msrp: 36000,
@@ -46,36 +56,21 @@ describe("rankSignals", () => {
   it("produces a legal signal when doc fee cap is violated", () => {
     const signals = rankSignals(
       baseContext({
-        docFeeCapCheck: {
-          violated: true,
-          capAmount: 250,
-          chargedAmount: 800,
-          overage: 550,
-          stateName: "Colorado",
-          stateAbbreviation: "CO",
-          statuteCitation: "C.R.S. § 42-10-101",
-        },
+        docFeeAssessment: illegalDocFee,
       }),
     );
     expect(signals.length).toBeGreaterThanOrEqual(1);
     expect(signals[0].category).toBe("legal");
     expect(signals[0].priority).toBe(1);
     expect(signals[0].severity).toBe("critical");
-    expect(signals[0].action).toContain("$250");
+    expect(signals[0].action).toMatch(/exceeds the legal cap/i);
+    expect(signals[0].action).toContain("$85");
   });
 
   it("legal signal always sorts before all other signal types", () => {
     const signals = rankSignals(
       baseContext({
-        docFeeCapCheck: {
-          violated: true,
-          capAmount: 250,
-          chargedAmount: 800,
-          overage: 550,
-          stateName: "Colorado",
-          stateAbbreviation: "CO",
-          statuteCitation: null,
-        },
+        docFeeAssessment: illegalDocFee,
         detectedFields: {
           salePrice: null,
           msrp: null,
@@ -261,15 +256,7 @@ describe("rankSignals", () => {
   it("every signal has a non-empty action string", () => {
     const signals = rankSignals(
       baseContext({
-        docFeeCapCheck: {
-          violated: true,
-          capAmount: 250,
-          chargedAmount: 800,
-          overage: 550,
-          stateName: "Colorado",
-          stateAbbreviation: "CO",
-          statuteCitation: null,
-        },
+        docFeeAssessment: illegalDocFee,
         detectedFields: {
           salePrice: null,
           msrp: null,
@@ -301,15 +288,7 @@ describe("rankSignals", () => {
   it("signals are sorted by priority (ascending)", () => {
     const signals = rankSignals(
       baseContext({
-        docFeeCapCheck: {
-          violated: true,
-          capAmount: 250,
-          chargedAmount: 800,
-          overage: 550,
-          stateName: "Colorado",
-          stateAbbreviation: "CO",
-          statuteCitation: null,
-        },
+        docFeeAssessment: illegalDocFee,
         detectedFields: {
           salePrice: null,
           msrp: null,
