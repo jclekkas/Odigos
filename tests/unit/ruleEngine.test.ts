@@ -75,14 +75,26 @@ describe("checkDocFeeCap", () => {
     expect(result!.statuteCitation).toBe("CA Vehicle Code § 11713.1(i)");
   });
 
-  it("picks the maximum doc fee when multiple matching fees exist", () => {
+  it("aggregates documentation charges for the same regulated service", () => {
     const fees: Fee[] = [
       { name: "doc fee", amount: 60 },
       { name: "documentation fee", amount: 120 },
     ];
     const result = checkDocFeeCap(fees, CA_STATE);
-    expect(result!.chargedAmount).toBe(120);
+    expect(result!.chargedAmount).toBe(180);
     expect(result!.violated).toBe(true);
+    expect(result!.overage).toBe(95);
+  });
+
+  it("does not add a separate title or registration fee to the documentation charge", () => {
+    const fees: Fee[] = [
+      { name: "doc fee", amount: 60 },
+      { name: "title fee", amount: 60 },
+      { name: "registration fee", amount: 90 },
+    ];
+    const result = checkDocFeeCap(fees, CA_STATE);
+    expect(result!.chargedAmount).toBe(60);
+    expect(result!.violated).toBe(false);
   });
 
   it("returns null statuteCitation when state has no citation", () => {

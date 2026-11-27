@@ -1053,7 +1053,7 @@
       "tradeInTaxCreditNotes": "Maximum $11,000 credit or actual agreed value, whichever is less (2025)",
       "titleFee": 15,
       "registrationFee": "$15 (1-year) or $29 (2-year) base + percentage of MSRP",
-      "specialNotes": "DIFS Bulletin 2025-03-CF, issued and entered January 28, 2025: the documentary preparation fee shall not exceed 5% of the cash price or $280, whichever is less, under MCL 492.113(2)(a). The analyzer flags only the $280 dollar ceiling.",
+      "specialNotes": "DIFS Bulletin 2025-03-CF, issued and entered January 28, 2025: the documentary preparation fee shall not exceed 5% of the cash price or $280, whichever is less, under MCL 492.113(2)(a). When the vehicle cash price is known, the analyzer applies that lesser amount. When it is unknown, the analyzer applies $280 and notes that the 5% limb was not applied.",
       "cpiIndexing": {
         "isIndexed": true,
         "baseAmount": null,
@@ -1078,6 +1078,12 @@
           "title": "DIFS Bulletin 2025-03-CF",
           "retrieved": "2026-11-27",
           "supports": "Fetched bulletin, issued and entered January 28, 2025: the documentary preparation fee shall not exceed 5% of the cash price or $280, whichever is less. The page does not state a sales-tax rate."
+        },
+        {
+          "url": "https://www.legislature.mi.gov/Laws/MCL?objectName=mcl-492-113",
+          "title": "MCL 492.113",
+          "retrieved": "2026-11-27",
+          "supports": "Fetched statute: the documentary preparation fee must not exceed 5% of the cash price of the motor vehicle or $160, whichever is less, and the administrator adjusts that dollar amount every two years for CPI. The current $280 adjustment is the DIFS bulletin, not this statutory base amount."
         }
       ],
       "unverified_fields": [
@@ -1108,21 +1114,21 @@
       "tradeInTaxCredit": true,
       "titleFee": 34,
       "registrationFee": "1.575% of MSRP + $11.25 universal fees",
-      "specialNotes": "MAJOR CHANGE: Cap increased from ~$125 to $350 effective July 1, 2025. Or 10% of sale value for vehicles \u2264$3,499, whichever is less.",
+      "specialNotes": "Minn. Stat. \u00a7 168.27, subd. 31, fetched 2026-11-27: for a sale or lease on or after July 1, 2025, the maximum documentary fee or document administration fee is the lesser of $350 or ten percent of the value of the sale or lease. When the sale value is known, the analyzer applies that lesser amount. When it is unknown, the analyzer applies $350 and notes that the 10% limb was not applied.",
       "sources": [
         "https://mada.org/doc-fee-increase/"
       ],
       "lastVerified": "2026-03",
       "confidence": "high",
       "verificationMethod": "Primary: MADA official announcement + statute",
-      "statuteCitation": "Minn. Stat. \u00a7 168.27 Subd. 11a",
+      "statuteCitation": "Minn. Stat. \u00a7 168.27, subd. 31",
       "source_status": "partial",
       "citations": [
         {
           "url": "https://www.revisor.mn.gov/statutes/cite/168.27",
           "title": "Minn. Stat. \u00a7 168.27, subd. 31",
-          "retrieved": "2026-11-20",
-          "supports": "Fetched statute text says that for sales or leases made on or after July 1, 2025, the maximum documentary fee is the lesser of $350 or ten percent of the value of the sale or lease. The dataset stores the $350 dollar ceiling. The stored statuteCitation names subdivision 11a; the $350 figure on this page is in subdivision 31."
+          "retrieved": "2026-11-27",
+          "supports": "Re-fetched 2026-11-27. Subdivision 31(b) says that for sales or leases made on or after July 1, 2025, the maximum documentary fee is the lesser of $350 or ten percent of the value of the sale or lease. The same subdivision names both a documentary fee and a document administration fee."
         }
       ],
       "unverified_fields": [
@@ -1135,7 +1141,7 @@
         "registrationFee"
       ],
       "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only.",
-      "last_reviewed": "2026-11-20"
+      "last_reviewed": "2026-11-27"
     },
     "MS": {
       "name": "Mississippi",
@@ -1641,7 +1647,7 @@
       "tradeInTaxCreditNotes": "New vehicles only",
       "titleFee": 18,
       "registrationFee": "Varies by type; service fee increased $5 to $8 effective Jan 1, 2026",
-      "specialNotes": "Ohio Dealer Board: maximum documentary service charge is $398 from January 1, 2026 through December 31, 2026 ($412 in 2027). The charge also may not exceed 10% of the amount due excluding tax, title, registration, and negative equity. The analyzer flags only the $398 dollar ceiling.",
+      "specialNotes": "Ohio Rev. Code \u00a7 4517.261 and the Ohio Dealer Board page, both fetched 2026-11-27: the documentary service charge is the lesser of the registrar amount and 10% of the contract amount excluding tax, title, registration, and negative equity. The registrar amount is $398 from January 1, 2026 through December 31, 2026, and $412 for calendar year 2027. When the contract amount is known, the analyzer applies the lesser figure. When it is unknown, the analyzer applies $398 and notes that the 10% limb was not applied.",
       "sources": [
         "https://www.bmv.ohio.gov/doc-fees.aspx"
       ],
@@ -1654,8 +1660,14 @@
         {
           "url": "https://autodealers.ohio.gov/resources-for-dealers/resources/documentary-service-charge",
           "title": "Ohio Dealer Board, documentary service charge",
-          "retrieved": "2026-11-20",
-          "supports": "Fetched page: the maximum documentary service charge is $398 for calendar year 2026. The state sales-tax rate was not on this page."
+          "retrieved": "2026-11-27",
+          "supports": "Re-fetched 2026-11-27: the maximum documentary service charge is $398 from January 1, 2026 through December 31, 2026, and $412 for calendar year 2027. The page also states the lesser-of test with 10% of the bill-of-sale amount excluding tax, title, registration, and negative equity. The state sales-tax rate was not on this page."
+        },
+        {
+          "url": "https://codes.ohio.gov/ohio-revised-code/section-4517.261",
+          "title": "Ohio Rev. Code \u00a7 4517.261",
+          "retrieved": "2026-11-27",
+          "supports": "Fetched statute, effective October 24, 2024: the documentary service charge shall be not more than the lesser of the CPI-adjusted registrar amount and ten percent of the amount the buyer or lessee is required to pay pursuant to the contract, excluding tax, title, and registration fees, and any negative equity adjustment."
         }
       ],
       "unverified_fields": [
@@ -1668,7 +1680,7 @@
         "registrationFee"
       ],
       "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only.",
-      "last_reviewed": "2026-11-20"
+      "last_reviewed": "2026-11-27"
     },
     "OK": {
       "name": "Oklahoma",
@@ -1734,7 +1746,7 @@
       "tradeInTaxCreditNotes": "N/A \u2014 no sales tax. Privilege tax applies to gross sale price.",
       "titleFee": 77,
       "registrationFee": "$43 (2-year); +$60 increase for EV/40+ MPG vehicles effective Jan 1, 2026",
-      "specialNotes": "ORS 822.043(4): the document processing fee shall not exceed $250 if the dealer uses an integrator, or $200 if the dealer does not. A fee from $201 through $250 is conditional until integrator use is confirmed. A fee above $250 exceeds both ceilings. Oregon has no general sales tax.",
+      "specialNotes": "ORS 822.043, fetched 2026-11-27: the document processing fee shall not exceed $250 if the dealer uses an integrator, or $200 if the dealer does not. Subsection (5) requires $35 of an integrator-tier fee to be paid to the integrator. Subsection (6) requires the dealer to inform the purchaser of the integrator option, and the purchaser may elect whether or not the dealer uses an integrator, when the fee exceeds the non-integrator amount. Aside from that $35, subsection (4) says the fee is negotiable. Oregon has no general sales tax.",
       "docFeeConditions": [
         {
           "id": "uses_integrator",
@@ -1772,7 +1784,7 @@
           "url": "https://www.oregonlegislature.gov/bills_laws/ors/ors822.html",
           "title": "ORS 822.043",
           "retrieved": "2026-11-27",
-          "supports": "Fetched statute: the document processing fee shall not exceed $250 if the vehicle dealer uses an integrator, or $200 if the dealer does not. The history line lists amendments through 2025 c.415 \u00a720 and does not state a single operative date for those dollar ceilings. The 2026 regular-session amendments table does not list 822.043."
+          "supports": "Re-fetched 2026-11-27. Subsection (4) caps the document processing fee at $250 with an integrator and $200 without one, and says the purchaser may negotiate the fee other than the integrator portion. Subsection (5) requires $35 of an integrator-tier fee to be paid to the integrator. Subsection (6) requires disclosure of the integrator option and lets the purchaser elect whether or not the dealer uses an integrator. The history line lists amendments through 2025 c.415 \u00a720."
         },
         {
           "url": "https://www.oregon.gov/odot/dmv/pages/vehicle/evr.aspx",
@@ -1814,7 +1826,7 @@
       "tradeInTaxCredit": true,
       "titleFee": 72,
       "registrationFee": "$200-$300 varies by weight",
-      "specialNotes": "Pennsylvania State Board of Vehicle Manufacturers, Dealers and Salespersons, notice dated January 13, 2026: 2026 documentary preparation fee may not exceed $490 electronic or $409 non-electronic. The analyzer uses the $490 electronic ceiling.",
+      "specialNotes": "Pennsylvania State Board notice dated January 13, 2026, re-fetched 2026-11-27: the 2026 documentary preparation fee may not exceed $490 for an electronic transaction under 63 P.S. \u00a7 818.327(c)(1) or $409 for a non-electronic transaction under subsection (c)(2). A fee from $409.01 through $490 is conditional until electronic processing is confirmed. The underlying Act text was not fetched in this run; a palegis.us HTML URL returned 404, so the enforceable 2026 amounts come from this official notice.",
       "cpiIndexing": {
         "isIndexed": true,
         "baseAmount": null,
@@ -1837,8 +1849,8 @@
         {
           "url": "https://www.pa.gov/content/dam/copapwp-pagov/en/dos/department-and-offices/bpoa/vehicle/Annual%20Fee.pdf",
           "title": "Pennsylvania dealer board documentary fee notice, January 13, 2026",
-          "retrieved": "2026-11-20",
-          "supports": "Fetched notice: 2026 limits are $490 electronic and $409 non-electronic under 63 P.S. \u00a7 818.327. The state sales-tax rate was not on this page."
+          "retrieved": "2026-11-27",
+          "supports": "Re-fetched 2026-11-27. The January 13, 2026 notice sets the 2026 documentary preparation fee at $490 electronic under 63 P.S. \u00a7 818.327(c)(1) and $409 non-electronic under \u00a7 818.327(c)(2). The state sales-tax rate was not on this page."
         }
       ],
       "unverified_fields": [
@@ -1851,7 +1863,7 @@
         "registrationFee"
       ],
       "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only.",
-      "last_reviewed": "2026-11-20"
+      "last_reviewed": "2026-11-27"
     },
     "RI": {
       "name": "Rhode Island",
@@ -1869,22 +1881,22 @@
       "tradeInTaxCredit": true,
       "titleFee": 23,
       "registrationFee": "$30-$50/year",
-      "specialNotes": "A licensed dealer may charge a documentary preparation fee of up to $400 only on transactions over $10,000. Charging any documentary preparation fee on a vehicle sold for $10,000 or less is a violation. The analyzer only checks the $400 ceiling, not the $10,000 price floor.",
+      "specialNotes": "280-RICR-30-20-1.6(N), re-fetched 2026-11-27: a documentary preparation fee of up to $400 is allowed only on transactions in excess of $10,000, and any such fee on a sale for less than $10,000 is a violation. A sale of exactly $10,000 is not stated in the fetched rule and remains needs_source. Subsection (M) caps a separate title preparation fee at $20; that fee is not aggregated into the documentary fee.",
       "sources": [
         "https://www.law.cornell.edu/regulations/rhode-island/280-RICR-30-20-1.6",
         "https://tax.ri.gov/tax-sections/sales-excise-taxes/sales-use-tax"
       ],
       "lastVerified": "2026-03",
       "confidence": "medium",
-      "verificationMethod": "Secondary: 280-RICR-30-20-1.6 confirmed via LII/Cornell. $400 cap for vehicles $10K+.",
+      "verificationMethod": "Primary: 280-RICR-30-20-1 on rules.sos.ri.gov, fetched 2026-11-27.",
       "statuteCitation": "280-RICR-30-20-1.6(N)",
       "source_status": "partial",
       "citations": [
         {
           "url": "https://rules.sos.ri.gov/regulations/part/280-30-20-1",
           "title": "280-RICR-30-20-1.6(N)",
-          "retrieved": "2026-11-20",
-          "supports": "Fetched rule: documentary preparation fee may not exceed $400, and only on transactions over $10,000. The state sales-tax rate was not on this page."
+          "retrieved": "2026-11-27",
+          "supports": "Re-fetched 2026-11-27. Subsection (N) allows a documentary preparation fee of up to $400 only on transactions in excess of $10,000 and prohibits any such fee on a sale for less than $10,000. Subsection (M) caps a separate title preparation fee at $20. The state sales-tax rate was not on this page."
         }
       ],
       "unverified_fields": [
@@ -1897,7 +1909,7 @@
         "registrationFee"
       ],
       "legacy_references_note": "The sources array was carried forward from the previous internal file and was not re-fetched for this export. It is not a citation. Use citations only.",
-      "last_reviewed": "2026-11-20"
+      "last_reviewed": "2026-11-27"
     },
     "SC": {
       "name": "South Carolina",
