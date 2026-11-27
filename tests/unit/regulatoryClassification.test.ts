@@ -132,3 +132,339 @@ describe("caps checked against a fetched government page", () => {
     }
   });
 });
+
+function quote(partial: Partial<DetectedFields>): DetectedFields {
+  return {
+    salePrice: null,
+    msrp: null,
+    rebates: null,
+    fees: [],
+    outTheDoorPrice: null,
+    monthlyPayment: null,
+    tradeInValue: null,
+    apr: null,
+    termMonths: null,
+    downPayment: null,
+    moneyFactor: null,
+    residualValue: null,
+    residualPercent: null,
+    acquisitionFee: null,
+    dispositionFee: null,
+    mileageAllowance: null,
+    excessMileageRate: null,
+    ...partial,
+  };
+}
+
+const llmFixture = {
+  dealScore: "GREEN",
+  confidenceLevel: "MEDIUM",
+  verdictLabel: "PROCEED",
+  goNoGo: "GO",
+  summary: "fixture",
+  detectedFields: {} as DetectedFields,
+  missingInfo: [],
+  suggestedReply: "fixture",
+  reasoning: "fixture",
+} as AnalysisResponse;
+
+describe("Michigan 5% cash-price ceiling", () => {
+  const mi = getStateFeeData("MI")!;
+
+  it("uses the lesser of $280 and 5% of a known vehicle cash price", () => {
+    const result = classifyDocFee(
+      [{ name: "documentation fee", amount: 250 }],
+      mi,
+      null,
+      null,
+      { vehicleCashPrice: 4000 },
+    );
+    expect(result.classification).toBe("illegal");
+    expect(result.hardCeiling).toBe(200);
+    expect(result.chargedAmount).toBe(250);
+    expect(result.officialSource).toContain("michigan.gov");
+    expect(result.statutoryReference).toContain("492.113");
+    expect(result.lastVerificationDate).toBe("2026-11-27");
+    expect(result.summary).toContain("$200");
+    expect(result.summary).toContain("5%");
+  });
+
+  it("NO-GOs a $250 documentation fee on a $4,000 Michigan vehicle", () => {
+    const result = applyRuleEngine(
+      llmFixture,
+      quote({
+        salePrice: 4000,
+        outTheDoorPrice: 4800,
+        fees: [{ name: "documentation fee", amount: 250 }],
+      }),
+      null,
+      "cash",
+      null,
+      { stateData: mi },
+    );
+    expect(result.goNoGo).toBe("NO-GO");
+    expect(result.verdictLabel).toMatch(/DOC FEE/i);
+    expect(result.docFeeAssessment?.hardCeiling).toBe(200);
+    expect(result.docFeeAssessment?.chargedAmount).toBe(250);
+  });
+
+  it("falls back to the $280 ceiling when the cash price is unknown and notes the 5% rule", () => {
+    const under = classifyDocFee([{ name: "doc fee", amount: 250 }], mi);
+    expect(under.classification).toBe("permissible");
+    expect(under.hardCeiling).toBe(280);
+    expect(under.summary).toMatch(/5%/);
+    expect(under.summary).toMatch(/not on the quote|was not applied/i);
+    expect(classifyDocFee([{ name: "doc fee", amount: 281 }], mi).classification).toBe("illegal");
+  });
+
+  it("keeps a $280 fee permissible when 5% of the cash price is higher", () => {
+    const result = classifyDocFee([{ name: "documentary preparation fee", amount: 280 }], mi, null, null, {
+      vehicleCashPrice: 10000,
+    });
+    expect(result.classification).toBe("permissible");
+    expect(result.hardCeiling).toBe(280);
+  });
+});
+
+describe("Arkansas service-and-handling aliases", () => {
+  const ar = getStateFeeData("AR")!;
+  const ca = getStateFeeData("CA")!;
+
+  it("checks dealer service and handling names against the $129 ceiling", () => {
+    expect(classifyDocFee([{ name: "dealer service and handling fee", amount: 129 }], ar).classification).toBe("permissible");
+    expect(classifyDocFee([{ name: "service and handling fee", amount: 130 }], ar).classification).toBe("illegal");
+    expect(classifyDocFee([{ name: "service & handling", amount: 140 }], ar).classification).toBe("illegal");
+    expect(classifyDocFee([{ name: "dealer service fee", amount: 150 }], ar).classification).toBe("illegal");
+    const over = classifyDocFee([{ name: "Dealer Service and Handling Fee", amount: 200 }], ar);
+    expect(over.hardCeiling).toBe(129);
+    expect(over.statutoryReference).toMatch(/23-112-317|410-801/);
+    expect(over.officialSource).toContain("codeofarrules.arkansas.gov");
+  });
+
+  it("does not treat an Arkansas service-and-handling label as a California document processing charge", () => {
+    const result = classifyDocFee([{ name: "service and handling fee", amount: 200 }], ca);
+    expect(result.classification).toBe("not_checked");
+    expect(result.chargedAmount).toBeNull();
+  });
+
+  it("NO-GOs an Arkansas service and handling fee above $129", () => {
+    const result = applyRuleEngine(
+      llmFixture,
+      quote({
+        salePrice: 18000,
+        outTheDoorPrice: 20000,
+        fees: [{ name: "service and handling fee", amount: 140 }],
+      }),
+      null,
+      "cash",
+      null,
+      { stateData: ar },
+    );
+    expect(result.goNoGo).toBe("NO-GO");
+    expect(result.docFeeAssessment?.chargedAmount).toBe(140);
+    expect(result.docFeeAssessment?.hardCeiling).toBe(129);
+  });
+});
+
+describe("aggregated documentation charges", () => {
+  const ca = getStateFeeData("CA")!;
+
+  it("NO-GOs two $60 California documentation charges because $120 exceeds both ceilings", () => {
+    const fees = [
+      { name: "documentation fee", amount: 60 },
+      { name: "doc fee", amount: 60 },
+    ];
+    const partner = classifyDocFee(fees, ca, true);
+    const unknown = classifyDocFee(fees, ca, null);
+    expect(partner.chargedAmount).toBe(120);
+    expect(partner.classification).toBe("illegal");
+    expect(unknown.classification).toBe("illegal");
+    expect(partner.summary).toMatch(/\$85|\$120/);
+
+    const result = applyRuleEngine(
+      llmFixture,
+      quote({ salePrice: 28000, outTheDoorPrice: 32000, fees }),
+      null,
+      "cash",
+      null,
+      { stateData: ca, privateIndustryPartner: true },
+    );
+    expect(result.goNoGo).toBe("NO-GO");
+    expect(result.docFeeAssessment?.chargedAmount).toBe(120);
+  });
+
+  it("does not add separate government title or registration fees to the documentation total", () => {
+    const result = classifyDocFee(
+      [
+        { name: "documentation fee", amount: 60 },
+        { name: "title fee", amount: 60 },
+        { name: "registration fee", amount: 90 },
+        { name: "registration processing fee", amount: 40 },
+      ],
+      ca,
+      false,
+    );
+    expect(result.chargedAmount).toBe(60);
+    expect(result.classification).toBe("permissible");
+  });
+
+  it("does not add a separate broad dealer fee on top of an itemized documentation fee", () => {
+    const result = classifyDocFee(
+      [
+        { name: "doc fee", amount: 50 },
+        { name: "dealer fee", amount: 80 },
+      ],
+      ca,
+      false,
+    );
+    expect(result.chargedAmount).toBe(50);
+    expect(result.classification).toBe("permissible");
+  });
+});
+
+describe("Oregon purchaser election under ORS 822.043(5) and (6)", () => {
+  const oregon = getStateFeeData("OR")!;
+
+  it("carries the fetched integrator payment and election rights on every Oregon result", () => {
+    const result = classifyDocFee([{ name: "document processing fee", amount: 225 }], oregon, null, null);
+    expect(result.condition).toMatch(/822\.043\(5\)/);
+    expect(result.condition).toMatch(/\$35/);
+    expect(result.condition).toMatch(/822\.043\(6\)/);
+    expect(result.condition).toMatch(/elect/i);
+    expect(result.officialSource).toContain("oregonlegislature.gov");
+    expect(result.lastVerificationDate).toBe("2026-11-27");
+    expect(result.summary).toMatch(/elect/i);
+    expect(result.summary).toMatch(/\$35/);
+  });
+
+  it("asks the buyer to make the integrator election instead of citing California", () => {
+    const result = applyRuleEngine(
+      llmFixture,
+      quote({
+        salePrice: 32000,
+        outTheDoorPrice: 36000,
+        fees: [{ name: "document processing fee", amount: 225 }],
+      }),
+      null,
+      "cash",
+      null,
+      { stateData: oregon },
+    );
+    expect(result.goNoGo).toBe("PROCEED-WITH-CAUTION");
+    expect(result.suggestedReply).toMatch(/822\.043\(6\)/);
+    expect(result.suggestedReply).toMatch(/elect/i);
+    expect(result.suggestedReply).toMatch(/\$35/);
+    expect(result.suggestedReply).not.toMatch(/1685/);
+  });
+});
+
+describe("Pennsylvania, Rhode Island, Minnesota, and Ohio conditional rules", () => {
+  const pa = getStateFeeData("PA")!;
+  const ri = getStateFeeData("RI")!;
+  const mn = getStateFeeData("MN")!;
+  const oh = getStateFeeData("OH")!;
+
+  it("treats a Pennsylvania fee between $409 and $490 as conditional until electronic processing is known", () => {
+    expect(classifyDocFee([{ name: "documentary preparation fee", amount: 409 }], pa).classification).toBe("permissible");
+    const conditional = classifyDocFee([{ name: "documentary preparation fee", amount: 450 }], pa);
+    expect(conditional.classification).toBe("potentially_noncompliant");
+    expect(conditional.hardCeiling).toBe(490);
+    expect(conditional.conditionalCeiling).toBe(409);
+    expect(conditional.officialSource).toContain("pa.gov");
+    expect(conditional.lastVerificationDate).toBe("2026-11-27");
+    expect(classifyDocFee([{ name: "doc fee", amount: 450 }], pa, null, null, { electronicTransaction: true }).classification).toBe("permissible");
+    expect(classifyDocFee([{ name: "doc fee", amount: 450 }], pa, null, null, { electronicTransaction: false }).classification).toBe("illegal");
+    expect(classifyDocFee([{ name: "doc fee", amount: 491 }], pa, null, null, { electronicTransaction: true }).classification).toBe("illegal");
+
+    const result = applyRuleEngine(
+      llmFixture,
+      quote({ salePrice: 32000, outTheDoorPrice: 36000, fees: [{ name: "documentary preparation fee", amount: 450 }] }),
+      null,
+      "cash",
+      null,
+      { stateData: pa },
+    );
+    expect(result.goNoGo).toBe("PROCEED-WITH-CAUTION");
+    expect(result.suggestedReply).toMatch(/818\.327/);
+    expect(result.suggestedReply).not.toMatch(/1685/);
+  });
+
+  it("prohibits any Rhode Island documentary fee on a sale under $10,000 and caps sales over $10,000 at $400", () => {
+    const under = classifyDocFee([{ name: "documentary preparation fee", amount: 50 }], ri, null, null, { vehicleCashPrice: 9000 });
+    expect(under.classification).toBe("illegal");
+    expect(under.hardCeiling).toBe(0);
+    expect(under.officialSource).toContain("rules.sos.ri.gov");
+    expect(classifyDocFee([{ name: "documentary preparation fee", amount: 400 }], ri, null, null, { vehicleCashPrice: 10001 }).classification).toBe("permissible");
+    expect(classifyDocFee([{ name: "documentary preparation fee", amount: 401 }], ri, null, null, { vehicleCashPrice: 15000 }).classification).toBe("illegal");
+    const exact = classifyDocFee([{ name: "documentary preparation fee", amount: 100 }], ri, null, null, { vehicleCashPrice: 10000 });
+    expect(exact.classification).toBe("needs_source");
+    expect(exact.summary).toMatch(/exactly \$10,000/);
+    const unknown = classifyDocFee([{ name: "documentary preparation fee", amount: 400 }], ri);
+    expect(unknown.classification).toBe("permissible");
+    expect(unknown.summary).toMatch(/\$10,000/);
+    expect(unknown.summary).toMatch(/not applied/i);
+    const titleOnly = classifyDocFee([{ name: "Title Preparation Fee", amount: 20 }], ri, null, null, { vehicleCashPrice: 9000 });
+    expect(titleOnly.chargedAmount).toBeNull();
+    expect(titleOnly.classification).toBe("not_checked");
+  });
+
+  it("uses the lesser of $350 and 10% of the Minnesota sale value", () => {
+    const low = classifyDocFee([{ name: "document administration fee", amount: 250 }], mn, null, null, { vehicleCashPrice: 2000 });
+    expect(low.classification).toBe("illegal");
+    expect(low.hardCeiling).toBe(200);
+    expect(low.statutoryReference).toContain("subd. 31");
+    expect(low.officialSource).toContain("revisor.mn.gov");
+    expect(low.lastVerificationDate).toBe("2026-11-27");
+    expect(classifyDocFee([{ name: "documentary fee", amount: 200 }], mn, null, null, { vehicleCashPrice: 2000 }).classification).toBe("permissible");
+    expect(classifyDocFee([{ name: "doc fee", amount: 350 }], mn, null, null, { vehicleCashPrice: 20000 }).classification).toBe("permissible");
+    const unknown = classifyDocFee([{ name: "doc fee", amount: 350 }], mn);
+    expect(unknown.classification).toBe("permissible");
+    expect(unknown.hardCeiling).toBe(350);
+    expect(unknown.summary).toMatch(/10%/);
+    expect(unknown.summary).toMatch(/not applied/i);
+    expect(classifyDocFee([{ name: "doc fee", amount: 351 }], mn).classification).toBe("illegal");
+  });
+
+  it("uses the lesser of Ohio's $398 registrar amount and 10% of the contract amount excluding tax, title, registration, and negative equity", () => {
+    const low = classifyDocFee(
+      [
+        { name: "documentary service charge", amount: 350 },
+        { name: "sales tax", amount: 200 },
+        { name: "title fee", amount: 18 },
+        { name: "negative equity", amount: 1000 },
+      ],
+      oh,
+      null,
+      null,
+      { vehicleCashPrice: 3000 },
+    );
+    expect(low.classification).toBe("illegal");
+    expect(low.hardCeiling).toBe(335);
+    expect(low.officialSource).toContain("codes.ohio.gov");
+    expect(low.lastVerificationDate).toBe("2026-11-27");
+    expect(low.summary).toMatch(/4517\.261/);
+
+    const within = classifyDocFee(
+      [
+        { name: "documentary service charge", amount: 300 },
+        { name: "sales tax", amount: 200 },
+        { name: "title fee", amount: 18 },
+      ],
+      oh,
+      null,
+      null,
+      { vehicleCashPrice: 3000 },
+    );
+    expect(within.classification).toBe("permissible");
+    expect(within.hardCeiling).toBe(330);
+
+    const ordinary = classifyDocFee([{ name: "doc fee", amount: 398 }], oh, null, null, { vehicleCashPrice: 32000 });
+    expect(ordinary.classification).toBe("permissible");
+    expect(ordinary.hardCeiling).toBe(398);
+
+    const unknown = classifyDocFee([{ name: "doc fee", amount: 398 }], oh);
+    expect(unknown.classification).toBe("permissible");
+    expect(unknown.summary).toMatch(/not applied/i);
+    expect(classifyDocFee([{ name: "doc fee", amount: 399 }], oh).classification).toBe("illegal");
+  });
+});

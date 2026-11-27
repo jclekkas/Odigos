@@ -1074,7 +1074,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     metaDescription:
       "Michigan documentation fee: verified $280 dollar ceiling under DIFS Bulletin 2025-03-CF. Reported $200–$280 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "DIFS Bulletin 2025-03-CF, issued January 28, 2025, says Michigan's documentary preparation fee shall not exceed 5% of the cash price or $280, whichever is less. Odigos flags the verified $280 dollar ceiling. On a low-priced vehicle, confirm the 5% alternative before you treat a smaller fee as allowed. Unverified reports mention documentation fees around $200–$280. That range is not a market standard. Compare the itemized out-the-door price.",
+      "DIFS Bulletin 2025-03-CF, issued January 28, 2025, says Michigan's documentary preparation fee shall not exceed 5% of the cash price or $280, whichever is less, under MCL 492.113(2)(a). When the vehicle cash price is on the quote, Odigos applies that lesser amount. On a $4,000 vehicle the ceiling is $200, so a $250 fee exceeds it. When the cash price is missing, Odigos applies the $280 ceiling and says the 5% limb was not applied. Unverified reports mention documentation fees around $200–$280. That range is not a market standard. Compare the itemized out-the-door price.",
     salesTaxNote:
       "Michigan charges a flat 6% sales tax on vehicle purchases statewide. There are no local additions — the rate is uniform. Trade-in credit is allowed up to $11,000 (2025 cap) or the actual agreed trade-in value, whichever is less.",
     registrationNote:
@@ -1082,7 +1082,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "Michigan's doc fee cap has an important nuance: it's the lesser of $280 or 5% of the vehicle's cash price. For most vehicles above $5,600, the $280 flat cap applies. For cheaper vehicles, the 5% formula limits the fee more. DIFS Bulletin 2025-03-CF provides the current guidance. The trade-in credit is listed with a stored figure that is not a verified cap in 2025.",
     snippetAnswer:
-      "DIFS Bulletin 2025-03-CF says Michigan's documentary preparation fee shall not exceed 5% of the cash price or $280, whichever is less. Odigos flags a fee above the verified $280 ceiling. The state tax is a flat 6%. Trade-in credit is allowed up to $11,000.",
+      "DIFS Bulletin 2025-03-CF says Michigan's documentary preparation fee shall not exceed 5% of the cash price or $280, whichever is less. Odigos applies that lesser amount when the vehicle cash price is on the quote. The state tax is a flat 6%. Trade-in credit is allowed up to $11,000.",
     watchFor: [
       "5% cap for lower-priced vehicles: on a $4,000 vehicle, the max doc fee is $200, not $280. If you're buying an inexpensive used vehicle, confirm which limit applies.",
       "Trade-in credit cap: Michigan's trade-in credit is listed with a stored figure that is not a verified cap (2025). If your trade-in is worth more, the excess doesn't reduce your taxable amount.",
@@ -1105,7 +1105,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     commonQuestions: [
       {
         q: "How does Michigan's doc fee cap work?",
-        a: "DIFS Bulletin 2025-03-CF says the documentary preparation fee shall not exceed 5% of the cash price or $280, whichever is less. Odigos flags a fee above the verified $280 dollar ceiling. On a $4,000 vehicle, 5% is $200, so confirm that alternative before you treat a fee under $280 as allowed.",
+        a: "DIFS Bulletin 2025-03-CF says the documentary preparation fee shall not exceed 5% of the cash price or $280, whichever is less. On a $4,000 vehicle, 5% is $200, and a $250 documentation fee exceeds that ceiling.",
       },
       {
         q: "What is Michigan's trade-in credit cap?",
@@ -1134,7 +1134,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     metaDescription:
       "Minnesota documentation fee: verified ceiling $350. Reported $125–$350 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Minnesota's fetched statute text says that on or after July 1, 2025, the maximum documentary fee is the lesser of $350 or ten percent of the sale or lease. This file stores the $350 ceiling. Unverified reports mention documentation fees around $125–$350. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
+      "Minn. Stat. § 168.27, subd. 31 says that on or after July 1, 2025, the maximum documentary fee or document administration fee is the lesser of $350 or ten percent of the value of the sale or lease. When that value is on the quote, Odigos applies the lesser amount. When it is not, Odigos applies the $350 ceiling and says the 10% limb was not applied. Unverified reports mention documentation fees around $125–$350. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "Minnesota charges 6.875% state sales tax on vehicle purchases, plus a 0.5% metro transit tax in the metro area. Trade-in deductions are allowed, reducing the taxable amount.",
     registrationNote:
@@ -1142,7 +1142,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "Minnesota's verified ceiling, for sales on or after July 1, 2025, is the lesser of $350 or ten percent of the sale. Older guides quoted a much lower number. A dealer charging exactly $350 is not a market finding — it is the dollar ceiling stored in this file. The registration fee, calculated as a percentage of MSRP, can also be substantial on higher-priced vehicles.",
     snippetAnswer:
-      "Minnesota's fetched statute text says that on or after July 1, 2025, the maximum documentary fee is the lesser of $350 or ten percent of the sale or lease. This file stores the $350 ceiling. Unverified reports mention documentation fees around $125–$350. That range is not a market standard. State sales tax is 6.875% plus metro transit additions. Registration is value-based at 1.575% of MSRP annually.",
+      "Minn. Stat. § 168.27, subd. 31 says that on or after July 1, 2025, the maximum documentary fee is the lesser of $350 or ten percent of the value of the sale or lease. When that value is on the quote, Odigos applies the lesser amount. Unverified reports mention documentation fees around $125–$350. That range is not a market standard. State sales tax is 6.875% plus metro transit additions. Registration is value-based at 1.575% of MSRP annually.",
     watchFor: [
       "New $350 cap: buyers used to Minnesota's old ~$125 cap may be surprised by the new $350 ceiling. This change took effect July 1, 2025.",
       "Metro transit surcharge: the additional 0.5% tax applies in the Twin Cities metro area. Confirm whether your dealer's location is in the metro transit district.",
@@ -1710,22 +1710,22 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     metaDescription:
       "Ohio documentation fee: verified ceiling $398. Reported $200–$387 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Ohio's verified documentary service charge ceiling is $398 for calendar year 2026 under ORC § 4517.261. The state's note also describes a 10% cash-price limit. The fetched page quoted here supports the $398 ceiling. Unverified reports mention documentation fees around $200–$387. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
+      "Ohio Rev. Code § 4517.261 limits the documentary service charge to the lesser of the registrar's adjusted amount and 10% of the amount due under the contract, excluding tax, title, registration, and negative equity. The Ohio Dealer Board states the registrar amount is $398 from January 1, 2026 through December 31, 2026. When the contract amount is on the quote, Odigos applies the lesser figure. When it is not, Odigos applies $398 and says the 10% limb was not applied. Unverified reports mention documentation fees around $200–$387. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "Ohio charges 5.75% state sales tax on vehicles, with county additions up to 2.5%. Combined rates range from 5.8% to 8.25% depending on the county. Trade-in deductions are allowed for new vehicle purchases.",
     registrationNote:
       "Ohio registration fees vary by vehicle type. A service fee increase of $5 (now $8) took effect January 1, 2026. The title fee also increased by $3 effective January 1, 2026.",
     introAngle:
-      "Ohio's doc fee cap has an important nuance: it's the lesser of $398 or 10% of the vehicle's cash price. For most vehicle purchases above $3,980, the $398 flat limit applies. Ohio also saw a title fee increase in January 2026. The county-level sales tax variation means buyers should verify their specific county's rate.",
+      "Ohio's documentary service charge is the lesser of the $398 registrar amount for 2026 and 10% of the amount due under the contract, excluding tax, title, registration, and negative equity. Ohio also saw a title fee increase in January 2026. The county-level sales tax variation means buyers should verify their specific county's rate.",
     snippetAnswer:
-      "Ohio's verified documentary service charge ceiling is $398 for calendar year 2026 under ORC § 4517.261. The state's note also describes a 10% cash-price limit. Unverified reports mention documentation fees around $200–$387. That range is not a market standard. State sales tax is 5.75% with county additions up to 8.25% combined.",
+      "Ohio Rev. Code § 4517.261 limits the documentary service charge to the lesser of $398 for calendar year 2026 and 10% of the contract amount excluding tax, title, registration, and negative equity. Unverified reports mention documentation fees around $200–$387. That range is not a market standard. State sales tax is 5.75% with county additions up to 8.25% combined.",
     watchFor: [
-      "10% cap on lower-priced vehicles: for vehicles priced under $3,980, the 10% rule is more restrictive than the $398 flat cap. Used vehicle buyers should confirm which limit applies.",
+      "10% contract-amount limb: Ohio Rev. Code § 4517.261(B)(2) can be tighter than $398 when 10% of the amount due, excluding tax, title, registration, and negative equity, is lower than $398.",
       "County sales tax variation: Ohio's combined rates range from 5.8% to 8.25% by county. Verify the rate for your dealer's county before estimating your OTD.",
       "Recent title fee increase: the title fee increased $3 effective January 1, 2026. Update any older OTD estimates.",
     ],
     negotiationNote:
-      "Ohio's three major metros — Columbus (7.5% combined tax), Cleveland/Cuyahoga County (8%), and Cincinnati/Hamilton County (7.8%) — have competitive dealer markets. The verified ceiling in this file is $398 for 2026. A 10% cash-price limit is also described in the state's note; confirm that part before you rely on it. Your negotiation still focuses on the vehicle price and add-ons. The trade-in credit for new vehicle purchases can meaningfully reduce your tax — on a $15,000 trade-in at 8% in Cuyahoga County, that saves $1,200.",
+      "Ohio's three major metros — Columbus (7.5% combined tax), Cleveland/Cuyahoga County (8%), and Cincinnati/Hamilton County (7.8%) — have competitive dealer markets. The 2026 registrar ceiling is $398, and the statute also applies 10% of the contract amount excluding tax, title, registration, and negative equity when that figure is lower. Your negotiation still focuses on the vehicle price and add-ons. The trade-in credit for new vehicle purchases can meaningfully reduce your tax — on a $15,000 trade-in at 8% in Cuyahoga County, that saves $1,200.",
     ctaHeading: "Have an Ohio dealer quote you want to review?",
     ctaBody:
       "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
@@ -1734,14 +1734,14 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "https://www.bmv.ohio.gov/doc-fees.aspx",
     ],
     specialNotes:
-      "Cap is $398 OR 10% of cash price, whichever is LOWER. Title fee increase of $3 effective Jan 1, 2026.",
+      "Lesser of $398 for calendar year 2026 and 10% of the contract amount excluding tax, title, registration, and negative equity. Title fee increase of $3 effective Jan 1, 2026.",
     dealerMessage:
-      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (Ohio caps this at $398 or 10% of the cash price, whichever is lower), all additional dealer fees, Ohio sales tax (5.75% state + your county rate — please confirm the combined rate), title fee ($18 + the $3 increase effective Jan 2026), and registration costs (including the new $8 service fee)? If I'm buying new with a trade-in, please show the deduction applied. I'd like to see the complete itemized total. Thank you.",
+      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (Ohio caps this at the lesser of $398 for 2026 and 10% of the contract amount excluding tax, title, registration, and negative equity), all additional dealer fees, Ohio sales tax (5.75% state + your county rate — please confirm the combined rate), title fee ($18 + the $3 increase effective Jan 2026), and registration costs (including the new $8 service fee)? If I'm buying new with a trade-in, please show the deduction applied. I'd like to see the complete itemized total. Thank you.",
     lastVerified: "2026-03",
     commonQuestions: [
       {
         q: "What is the Ohio doc fee cap?",
-        a: "Ohio caps dealer documentation fees at $398 OR 10% of the vehicle's cash price, whichever is lower (Ohio Revised Code section 4517.261). For most vehicles above $3,980, the $398 flat cap applies. For cheaper used vehicles, the 10% formula is more restrictive.",
+        a: "Ohio Rev. Code § 4517.261 limits the documentary service charge to the lesser of the registrar's adjusted amount, which the Dealer Board sets at $398 for calendar year 2026, and 10% of the amount due under the contract, excluding tax, title, registration, and negative equity.",
       },
       {
         q: "How much does Ohio sales tax vary by county?",
@@ -1757,8 +1757,8 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       },
     ],
     competitorGapSection:
-      "Most Ohio guides cite the $398 doc fee cap without explaining the 10% alternative formula. For used vehicle buyers, this matters: on a $3,000 used car, the max doc fee is $300 (10% of $3,000), not $398. On a $2,000 vehicle, it's $200. Used car shoppers in Ohio should calculate 10% of their purchase price to know their actual cap. Also commonly overlooked: the trade-in credit applies only to new vehicles in Ohio. If you're buying used with a trade-in, the full purchase price is taxed — a meaningful difference that changes the OTD math.",
-    buyerTip: "Ohio's verified documentary service charge ceiling in this file is $398 for 2026. The state's note also describes a 10% cash-price limit. The fetched page supports the $398 ceiling. Confirm the percentage with the Dealer Board before you rely on it, especially on a low-priced used car.",
+      "Most Ohio guides cite only the $398 registrar amount. Ohio Rev. Code § 4517.261 also limits the charge to 10% of the amount due under the contract, excluding tax, title, registration, and negative equity, when that figure is lower. Also commonly overlooked: the trade-in credit applies only to new vehicles in Ohio. If you're buying used with a trade-in, the full purchase price is taxed — a meaningful difference that changes the OTD math.",
+    buyerTip: "Ohio Rev. Code § 4517.261 limits the documentary service charge to the lesser of $398 for calendar year 2026 and 10% of the amount due under the contract, excluding tax, title, registration, and negative equity. On a low-priced contract, the 10% limb can be the one that binds.",
   },
 
   oklahoma: {
@@ -1810,7 +1810,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     metaDescription:
       "Oregon's document processing fee is $250 with an integrator and $200 otherwise. Reported $150–$250 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "ORS 822.043(4) limits the document processing fee to $250 if the dealer uses an integrator and to $200 if the dealer does not. A fee from $201 to $250 stays conditional until integrator use is confirmed. A fee above $250 is above both ceilings. Unverified reports mention documentation fees around $150–$250. That range is not a market standard. Compare the itemized out-the-door price.",
+      "ORS 822.043(4) limits the document processing fee to $250 if the dealer uses an integrator and to $200 if the dealer does not. A fee from $201 to $250 stays conditional until integrator use is confirmed. A fee above $250 is above both ceilings. ORS 822.043(5) requires $35 of an integrator-tier fee to be paid to the integrator. ORS 822.043(6) requires the dealer to tell the purchaser that the purchaser may elect whether or not the dealer uses an integrator when that fee is higher than the non-integrator amount. Aside from the $35, the fee is negotiable. Unverified reports mention documentation fees around $150–$250. That range is not a market standard. Compare the itemized out-the-door price.",
     salesTaxNote:
       "Oregon has no state sales tax on vehicle purchases. However, a 0.5% Vehicle Privilege Tax applies to new vehicle sales (applied to the dealer's gross receipts). HB 3991 proposes increasing this to 2.25% — pending voter referendum. Private-party and used vehicle sales are generally not subject to this tax.",
     registrationNote:
@@ -1850,7 +1850,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     metaDescription:
       "Pennsylvania documentation fee: verified ceiling $490. Reported $300–$490 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Pennsylvania's 2026 notice under 63 P.S. § 818.327 sets the documentary preparation fee at no more than $490 for an electronic transaction and $409 for a non-electronic one. The analyzer's hard ceiling is the $490 electronic figure. Unverified reports mention documentation fees around $300–$490. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
+      "Pennsylvania's January 13, 2026 notice under 63 P.S. § 818.327 sets the documentary preparation fee at no more than $490 for an electronic transaction and $409 for a non-electronic one. A fee from $409.01 through $490 stays conditional until electronic processing is confirmed. A fee above $490 exceeds both 2026 ceilings. Unverified reports mention documentation fees around $300–$490. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "Pennsylvania charges 6% state sales tax on vehicles, increasing to 6.5% October 1, 2025 and 7% October 1, 2026. Philadelphia applies an additional 2% local tax, bringing the Philadelphia rate to 8% currently (and higher in future years). Trade-in deductions are allowed.",
     registrationNote:
@@ -1910,7 +1910,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     metaDescription:
       "Rhode Island documentation fee: verified ceiling $400. Reported $200–$400 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Rhode Island's rule (280-RICR-30-20-1.6(N)) allows a documentary preparation fee of up to $400 only on transactions over $10,000. The analyzer checks the $400 ceiling and does not by itself apply the $10,000 price floor. Unverified reports mention documentation fees around $200–$400. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
+      "Rhode Island's rule (280-RICR-30-20-1.6(N)) allows a documentary preparation fee of up to $400 only on a transaction in excess of $10,000, and prohibits any such fee on a sale for less than $10,000. The fetched rule does not state a result for a sale of exactly $10,000. A separate title preparation fee under subsection (M) is capped at $20 and is not this documentary fee. Unverified reports mention documentation fees around $200–$400. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "Rhode Island charges a flat 7% sales tax on vehicle purchases statewide. There are no local additions — the rate is uniform. Trade-in deductions are allowed. Note that Rhode Island includes documentation fees in the taxable sales amount, which slightly increases the sales tax.",
     registrationNote:
@@ -1918,7 +1918,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "Rhode Island has an unusual doc fee structure: a $400 cap for vehicles $10,000 or above, and a complete prohibition on fees for vehicles under $10,000. An additional $20 title prep fee is allowed separately. And unlike most states, Rhode Island includes the documentation fee in the taxable sales amount — meaning you'll pay 7% sales tax on the doc fee as well as the vehicle price.",
     snippetAnswer:
-      "Rhode Island's rule (280-RICR-30-20-1.6(N)) allows a documentary preparation fee of up to $400 only on transactions over $10,000. The analyzer checks the $400 ceiling and does not by itself apply the $10,000 price floor. Unverified reports mention documentation fees around $200–$400. That range is not a market standard.",
+      "Rhode Island's rule (280-RICR-30-20-1.6(N)) allows a documentary preparation fee of up to $400 only on a transaction in excess of $10,000, and prohibits any such fee on a sale for less than $10,000. The fetched rule does not state a result for a sale of exactly $10,000. Unverified reports mention documentation fees around $200–$400. That range is not a market standard.",
     watchFor: [
       "Doc fee included in taxable amount: Rhode Island applies 7% sales tax to the documentation fee as well as the vehicle price. This adds about $28 to your tax on a $400 doc fee.",
       "Prohibition for vehicles under $10K: if you're buying a vehicle under $10,000, the dealer cannot charge a documentation fee. If you see one, ask for it to be removed.",

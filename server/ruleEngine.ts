@@ -19,6 +19,7 @@ import {
 } from "../shared/windowSticker.js";
 import {
   classifyDocFee,
+  detectDocFeeAmount,
   type DocFeeAssessment,
   type RegulatoryStateInput,
 } from "./regulatoryClassification.js";
@@ -30,6 +31,11 @@ export interface RuleEngineOptions {
   privateIndustryPartner?: boolean | null;
   /** null means the quote did not say whether an Oregon dealer uses an electronic integrator. */
   electronicIntegrator?: boolean | null;
+  /**
+   * Pennsylvania only. True when the dealer provides electronic transaction
+   * services, false when it does not, null when the quote does not say.
+   */
+  electronicTransaction?: boolean | null;
   /** A caller-supplied benchmark. Ignored when it merely copies the submitted price. */
   marketBenchmark?: MarketBenchmark | null;
   condition?: "new" | "used" | "unknown" | null;
@@ -105,24 +111,8 @@ const DOC_FEE_KEYWORDS_BROAD = [
   "administrative fee",
 ];
 
-function detectDocFee(fees: Fee[]): number | null {
-  // Collect all matching fees across both tiers; prefer explicit-tier matches.
-  // Return the maximum charged amount so cap violation is never understated.
-  const exactMatches: number[] = [];
-  const broadMatches: number[] = [];
-
-  for (const fee of fees) {
-    if (fee.amount === null) continue;
-    const nameLower = fee.name.toLowerCase();
-    if (DOC_FEE_KEYWORDS_EXACT.some((kw) => nameLower.includes(kw))) {
-      exactMatches.push(fee.amount);
-    } else if (DOC_FEE_KEYWORDS_BROAD.some((kw) => nameLower.includes(kw))) {
-      broadMatches.push(fee.amount);
-    }
-  }
-
-  const candidates = exactMatches.length > 0 ? exactMatches : broadMatches;
-  return candidates.length > 0 ? Math.max(...candidates) : null;
+function detectDocFee(fees: Fee[], stateAbbreviation?: string | null): number | null {
+  return detectDocFeeAmount(fees, stateAbbreviation);
 }
 
 function getEffectiveCapAmount(stateData: StateData): number | null {
@@ -140,7 +130,7 @@ export function checkDocFeeCap(fees: Fee[], stateData: StateData): DocFeeCapResu
   if (capAmount === null) {
     return null;
   }
-  const chargedAmount = detectDocFee(fees);
+  const chargedAmount = detectDocFee(fees, stateData.abbreviation);
   if (chargedAmount === null) {
     return null;
   }
@@ -389,7 +379,10 @@ export function applyRuleEngine(
   const partner = options?.privateIndustryPartner ?? null;
   const integrator = options?.electronicIntegrator ?? null;
   const docFee = options?.stateData
-    ? classifyDocFee(fees, options.stateData, partner, integrator)
+    ? classifyDocFee(fees, options.stateData, partner, integrator, {
+        vehicleCashPrice: fields.salePrice,
+        electronicTransaction: options.electronicTransaction ?? null,
+      })
     : null;
   const supplied = options?.marketBenchmark ?? null;
   const anchored =

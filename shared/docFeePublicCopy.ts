@@ -118,7 +118,7 @@ function capNoteFor(state: FeeStateRecord, posture: CapPosture): string {
       );
     case "verified_conditional_or":
       return (
-        "ORS 822.043(4) limits the document processing fee to $250 if the dealer uses an integrator and to $200 if the dealer does not. A fee from $201 to $250 stays conditional until integrator use is confirmed. A fee above $250 is above both ceilings. " +
+        "ORS 822.043(4) limits the document processing fee to $250 if the dealer uses an integrator and to $200 if the dealer does not. A fee from $201 to $250 stays conditional until integrator use is confirmed. A fee above $250 is above both ceilings. ORS 822.043(5) requires $35 of an integrator-tier fee to be paid to the integrator. ORS 822.043(6) requires the dealer to tell the purchaser that the purchaser may elect whether or not the dealer uses an integrator when that fee is higher than the non-integrator amount. Aside from the $35, the fee is negotiable. " +
         range +
         compare
       );
@@ -145,11 +145,11 @@ function capNoteFor(state: FeeStateRecord, posture: CapPosture): string {
 function verifiedCapDetail(state: FeeStateRecord, money: string): string {
   switch (state.abbreviation) {
     case "PA":
-      return "Pennsylvania's 2026 notice under 63 P.S. § 818.327 sets the documentary preparation fee at no more than $490 for an electronic transaction and $409 for a non-electronic one. The analyzer's hard ceiling is the $490 electronic figure.";
+      return "Pennsylvania's January 13, 2026 notice under 63 P.S. § 818.327 sets the documentary preparation fee at no more than $490 for an electronic transaction and $409 for a non-electronic one. A fee from $409.01 through $490 stays conditional until electronic processing is confirmed. A fee above $490 exceeds both 2026 ceilings.";
     case "RI":
-      return "Rhode Island's rule (280-RICR-30-20-1.6(N)) allows a documentary preparation fee of up to $400 only on transactions over $10,000. The analyzer checks the $400 ceiling and does not by itself apply the $10,000 price floor.";
+      return "Rhode Island's rule (280-RICR-30-20-1.6(N)) allows a documentary preparation fee of up to $400 only on a transaction in excess of $10,000, and prohibits any such fee on a sale for less than $10,000. The fetched rule does not state a result for a sale of exactly $10,000. A separate title preparation fee under subsection (M) is capped at $20 and is not this documentary fee.";
     case "MN":
-      return "Minnesota's fetched statute text says that on or after July 1, 2025, the maximum documentary fee is the lesser of $350 or ten percent of the sale or lease. This file stores the $350 ceiling.";
+      return "Minn. Stat. § 168.27, subd. 31 says that on or after July 1, 2025, the maximum documentary fee or document administration fee is the lesser of $350 or ten percent of the value of the sale or lease. When that value is on the quote, Odigos applies the lesser amount. When it is not, Odigos applies the $350 ceiling and says the 10% limb was not applied.";
     case "IN":
       return "An Indiana Secretary of State memo says the office will not take enforcement action on documentation preparation fees at or below $251.05, citing IC 9-32-13-7(b). Odigos treats a higher documentation fee as above that verified ceiling.";
     case "NY":
@@ -157,9 +157,9 @@ function verifiedCapDetail(state: FeeStateRecord, money: string): string {
     case "AR":
       return "23 CAR § 410-801, citing Arkansas Code § 23-112-317, says a dealer service and handling fee shall be no more than $129. The fetched rule does not state an effective date. Odigos can flag a fee above that verified ceiling.";
     case "MI":
-      return "DIFS Bulletin 2025-03-CF, issued January 28, 2025, says Michigan's documentary preparation fee shall not exceed 5% of the cash price or $280, whichever is less. Odigos flags the verified $280 dollar ceiling. On a low-priced vehicle, confirm the 5% alternative before you treat a smaller fee as allowed.";
+      return "DIFS Bulletin 2025-03-CF, issued January 28, 2025, says Michigan's documentary preparation fee shall not exceed 5% of the cash price or $280, whichever is less, under MCL 492.113(2)(a). When the vehicle cash price is on the quote, Odigos applies that lesser amount. When it is not, Odigos applies the $280 ceiling and says the 5% limb was not applied.";
     case "OH":
-      return "Ohio's verified documentary service charge ceiling is $398 for calendar year 2026 under ORC § 4517.261. The state's note also describes a 10% cash-price limit. The fetched page quoted here supports the $398 ceiling.";
+      return "Ohio Rev. Code § 4517.261 limits the documentary service charge to the lesser of the registrar's adjusted amount and 10% of the amount due under the contract, excluding tax, title, registration, and negative equity. The Ohio Dealer Board states the registrar amount is $398 from January 1, 2026 through December 31, 2026. When the contract amount is on the quote, Odigos applies the lesser figure. When it is not, Odigos applies $398 and says the 10% limb was not applied.";
     case "IA":
       return "Iowa Code § 322.19A says a documentary fee may not exceed $180.";
     case "LA":

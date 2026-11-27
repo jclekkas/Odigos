@@ -28,6 +28,19 @@ export interface ReplyFacts {
 const ENDORSEMENT =
   /buyer'?s order|buyers order|fair price|good deal|great deal|reasonably priced|accept this price|looking forward to coming|we'?ll be there|we will be there|priced fairly|go ahead and/i;
 
+function conditionalDocFeeAsk(docFee: DocFeeAssessment): string {
+  if (docFee.jurisdiction === "Oregon") {
+    return "Please state in writing whether you elect to have the dealership use an integrator. ORS 822.043(6) gives you that election when the fee is higher than the non-integrator amount, and ORS 822.043(5) requires $35 of an integrator-tier fee to be paid to the integrator. Aside from that $35, ORS 822.043(4) says the fee is negotiable and still cannot exceed $250 with an integrator or $200 without one.";
+  }
+  if (docFee.jurisdiction === "Pennsylvania") {
+    return "Please confirm in writing whether this is an electronic transaction under 63 P.S. § 818.327(c)(1), which allows up to $490 in 2026, or a non-electronic transaction under § 818.327(c)(2), which allows up to $409.";
+  }
+  if (docFee.jurisdiction === "California") {
+    return "Please confirm in writing whether the dealership has a Vehicle Code § 1685 private-industry-partner agreement.";
+  }
+  return "Please confirm in writing which statutory condition allows this documentation charge.";
+}
+
 export function buildConstrainedReply(facts: ReplyFacts): string {
   const parts: string[] = [];
 
@@ -47,10 +60,7 @@ export function buildConstrainedReply(facts: ReplyFacts): string {
       parts.push(`${facts.docFee.summary} I am not treating that documentation charge as confirmed.`);
     }
   } else if (facts.docFee?.classification === "potentially_noncompliant") {
-    const ask =
-      facts.docFee.jurisdiction === "Oregon"
-        ? "Please confirm in writing whether the dealership uses an electronic integrator under ORS 822.043."
-        : "Please confirm in writing whether the dealership has a Vehicle Code § 1685 private-industry-partner agreement.";
+    const ask = conditionalDocFeeAsk(facts.docFee);
     parts.push(`${facts.docFee.summary} ${ask} I am not approving the vehicle price.`);
   } else if (facts.verdict === "NO-GO") {
     parts.push(
