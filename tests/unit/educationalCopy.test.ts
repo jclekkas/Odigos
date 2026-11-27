@@ -159,14 +159,15 @@ describe("product claims in educational copy", () => {
     expect(hits).toEqual([]);
   });
 
-  it("says market value stays unverified unless a factory window sticker MSRP is optional", () => {
+  it("says factory MSRP comparison does not verify independent market value", () => {
     const landing = readFileSync(resolve(ROOT, "client/src/pages/landing.tsx"), "utf8");
     const about = readFileSync(resolve(ROOT, "client/src/pages/about.tsx"), "utf8");
     const how = readFileSync(resolve(ROOT, "client/src/pages/how-odigos-works.tsx"), "utf8");
     for (const text of [landing, about, how]) {
       expect(text).toMatch(/factory window sticker MSRP/i);
-      expect(text).toMatch(/optional/i);
-      expect(text).toMatch(/unverified/i);
+      expect(text).toMatch(/independent market valuation/i);
+      expect(text).toMatch(/does not verify market value/i);
+      expect(text).not.toMatch(/market value stays unverified unless/i);
     }
   });
 

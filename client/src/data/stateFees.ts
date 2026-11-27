@@ -70,7 +70,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Because Alabama does not have a verified doc-fee cap on file, the fee is one of the items worth questioning. Some dealers will reduce it to close a deal, especially in competitive markets. Focus on the total OTD price and get competing quotes from multiple dealers to create leverage. The vehicle price is almost always the most flexible number in the deal.",
     ctaHeading: "Have an Alabama dealer quote you want to check?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://caredge.com/guides/car-dealer-doc-fee-by-state",
@@ -110,7 +110,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Alaska's remote market means fewer dealers to compare in most areas — which reduces buyer leverage. Focus your energy on the vehicle price and ask for the doc fee to be disclosed upfront. In Anchorage, where competition is higher, you have more options. Always ask for a full itemized OTD breakdown before visiting.",
     ctaHeading: "Have an Alaska dealer quote you want reviewed?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://law.alaska.gov/press/releases/2025/122925-LithiaMotors.html",
@@ -150,7 +150,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Arizona's Phoenix metro is a competitive market with many dealers, which gives buyers real comparison leverage. Get competing OTD quotes from multiple dealers and use them to negotiate both vehicle price and doc fee. The doc fee is not capped, so it is technically negotiable — some dealers will reduce it to close a deal.",
     ctaHeading: "Have an Arizona dealer quote with fees you want to check?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://caredge.com/guides/car-dealer-doc-fee-by-state",
@@ -215,7 +215,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "With the service and handling fee capped at a verified $129, negotiation leverage in Arkansas is focused on the vehicle price and any add-ons. The tiered tax structure means verifying your exact local rate is important before comparing OTD quotes across dealers. Get the full itemized breakdown in writing before agreeing to any price.",
     ctaHeading: "Have an Arkansas dealer quote you want to verify?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://caredge.com/guides/car-dealer-doc-fee-by-state",
@@ -259,7 +259,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "California's document processing charge is $85 only for a DMV private industry partner under Vehicle Code § 4456.5, and $70 otherwise. A fee above $85 is above both ceilings. If a dealer tries to charge more, cite § 4456.5 ($85 for private industry partners, $70 for other dealers). SB 791 attempted to raise this to $260 but was vetoed by Governor Newsom in October 2025, so the cap remains. Your negotiation leverage is on the vehicle price, add-ons, and financing terms. California does NOT allow trade-in tax deductions — you pay tax on the full purchase price — which makes negotiating the sale price even more critical. The state's massive dealer market (especially LA and Bay Area) means getting 3+ competing OTD quotes is realistic and effective.",
     ctaHeading: "Have a California dealer quote?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     ctaTopBody:
       "Got a California dealer quote? Paste it and Odigos checks the math, the line items, and the $70 / $85 DMV-partner split. It does not estimate the car's market value.",
     ctaMidBody:
@@ -333,7 +333,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Colorado's competitive Front Range markets (Denver, Boulder, Fort Collins, Colorado Springs) give buyers multiple dealer options for the same vehicle. Use competing OTD quotes to create leverage on both the vehicle price and the handling fee. Since no cap is verified in this file, some dealers will reduce the fee to close a deal.",
     ctaHeading: "Have a Colorado dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://tax.colorado.gov/motor-vehicle",
@@ -374,7 +374,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Connecticut's competitive shoreline and metro markets mean dealers are often willing to negotiate vehicle price. The doc fee is without a verified cap on file, so it's worth asking whether it's flexible. Focus the overall negotiation on the total OTD price, including any add-ons or accessories that may be bundled.",
     ctaHeading: "Have a Connecticut dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://portal.ct.gov/dmv/vehicle-services/sales-tax-registrations/sales-tax-calculator",
@@ -414,7 +414,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "The 5.25% state document fee is non-negotiable — it's a government charge. Your negotiation focus is on the vehicle price and any dealer-added doc fee or add-ons. Delaware's relatively small market means fewer competing dealers than in neighboring states.",
     ctaHeading: "Have a Delaware dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://news.delaware.gov/2025/09/30/dmv-fees-increase-in-october-2025/",
@@ -456,7 +456,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "DC's market is limited in dealer options, which reduces competitive leverage. Focus negotiation on the vehicle price and any dealer add-ons. The excise tax is a government charge and is not negotiable — verify the correct rate for your vehicle's weight class early in the process.",
     ctaHeading: "Have a DC dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://dmv.dc.gov/page/vehicle-registration-and-title-fee-estimator",
@@ -499,7 +499,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Florida's doc fees average $670 statewide but regularly reach $899–$999 at high-volume stores. While most dealers charge the same fee to every customer, the vehicle price is almost always negotiable. If a dealer charges $899, ask for a matching reduction in the sale price — frame it as a total OTD negotiation, not a doc fee argument. Florida's $76 title fee and $225 initial registration are also higher than most states, so factor those into your OTD estimate. Having a competing OTD quote from another Florida dealer is the most effective leverage. With Florida's dense dealer market — especially in South Florida, Tampa Bay, and Orlando — getting three quotes in an afternoon is realistic.",
     ctaHeading: "Seeing a high doc fee on a Florida quote?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.etags.com/blog/dealer-fees-in-florida-the-legit-the-bogus-the-weird/",
@@ -565,7 +565,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Georgia's TAVT at 7% of assessed fair market value is a government charge — you cannot negotiate it. Your leverage is entirely on the pre-tax portion: the vehicle price (averaging $502 doc fee statewide), any dealer markup, and bundled add-ons. The $18 title fee is low, but the TAVT itself is substantial — 7% of a $35,000 vehicle is $2,450. If you have a trade-in at a dealer, the TAVT is calculated on the net price after the trade-in deduction, which can save hundreds. The Atlanta metro has a competitive dealer market with many options — getting 2–3 competing OTD quotes on the same vehicle is the most effective approach.",
     ctaHeading: "Not sure how Georgia's title tax affects your out-the-door price?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://dor.georgia.gov/title-ad-valorem-tax-tavt-faq",
@@ -626,7 +626,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Hawaii's limited market and island geography reduce competitive pressure. However, buyers on Oahu have more dealer options than those on other islands. Focus on the vehicle price and ask for the doc fee to be disclosed upfront. The GET and county surcharges are fixed — negotiation is focused on the pre-tax components.",
     ctaHeading: "Have a Hawaii dealer quote you want to verify?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://tax.hawaii.gov/geninfo/get/",
@@ -667,7 +667,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Idaho's market is less competitive than major metro areas, particularly outside Boise. Compare competing quotes across the Treasure Valley area if possible. The trade-in deduction is a meaningful benefit — make sure it's properly applied to reduce your tax bill.",
     ctaHeading: "Have an Idaho dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://caredge.com/guides/car-dealer-doc-fee-by-state",
@@ -707,7 +707,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "With the doc fee listed with a stored figure that is not a verified cap Illinois buyers should focus negotiation on the vehicle price and any dealer add-ons. The Chicagoland market has intense dealer competition — use it. For buyers trading in a vehicle, the unlimited trade-in credit (without a verified cap on file since Public Act 102-0353 in 2022) is a powerful tool: a $25,000 trade-in at a 10.25% Chicago rate saves $2,563 in tax. Make sure the dealer applies the full deduction before calculating tax. The $165 title fee and $151/year registration are fixed government charges — not negotiable, but important to include in your OTD estimate.",
     ctaHeading: "Have an Illinois dealer quote you want to verify?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.ilsos.gov/departments/vehicles/basicfees.html",
@@ -768,7 +768,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Indiana's straightforward fee structure means your negotiation is focused almost entirely on the vehicle price and any add-ons. The doc fee and tax are both effectively fixed — which makes the math simpler. Compare OTD quotes from multiple Indiana dealers on the same vehicle for the clearest comparison.",
     ctaHeading: "Have an Indiana dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.in.gov/sos/dealer/files/Doc-Fees-in-2025.pdf",
@@ -809,7 +809,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "With the doc fee capped at $180, your negotiation leverage in Iowa is focused on the vehicle price and any add-ons. Iowa's market is less competitive than major metro areas, so get competing quotes from multiple dealers before committing.",
     ctaHeading: "Have an Iowa dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.legis.iowa.gov/docs/code/322.19A.pdf",
@@ -850,7 +850,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Kansas markets outside Wichita and Kansas City tend to have fewer competing dealers, which limits buyer leverage. Get multiple competing quotes and focus negotiation on the vehicle price. The trade-in credit, if applicable, can meaningfully reduce your tax obligation.",
     ctaHeading: "Have a Kansas dealer quote you want to verify?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://caredge.com/guides/car-dealer-doc-fee-by-state",
@@ -890,7 +890,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Kentucky's flat 6% MVUT means the tax portion of your deal is predictable — negotiation focuses on the vehicle price, doc fee, and add-ons. Louisville and Lexington have multiple competing dealers, which improves your leverage.",
     ctaHeading: "Have a Kentucky dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://revenue.ky.gov/Property/Motor-Vehicles/Pages/Motor-Vehicle-Usage-Tax.aspx",
@@ -930,7 +930,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "The local sales tax in Louisiana is fixed by your purchase location — it's not negotiable. Focus your negotiation energy on the vehicle price and any add-ons. The doc fee is capped at $425, so the main leverage points are above-cap fees and dealer-installed packages.",
     ctaHeading: "Have a Louisiana dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://law.justia.com/codes/louisiana/revised-statutes/title-6/rs-6-969-18/",
@@ -970,7 +970,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Maine's less-populated market means fewer competing dealers, particularly outside of Portland and Bangor. Get OTD quotes from multiple dealers and focus negotiation on the vehicle price and the doc fee. With no cap, the doc fee is technically negotiable.",
     ctaHeading: "Have a Maine dealer quote you want to verify?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://legislature.maine.gov/statutes/29-a/title29-Asec953-A.html",
@@ -1011,7 +1011,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Maryland's competitive DC-metro and Baltimore markets give buyers options. With the doc fee capped at $800, your negotiation is focused on the vehicle price and any add-ons. The excise tax and title fee are government charges — not negotiable.",
     ctaHeading: "Have a Maryland dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://mva.maryland.gov/businesses/Documents/bulletins/2024/Bulletin%20-%20Vehicle%20Reg%20Fees,%20Term,%20and%20Weight%20Changes_SB%20362.pdf",
@@ -1051,7 +1051,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Massachusetts's competitive Boston metro market gives buyers real leverage. Compare OTD quotes from multiple dealers. The doc fee is without a verified cap on file and worth asking about — some dealers will reduce it to close a deal.",
     ctaHeading: "Have a Massachusetts dealer quote you want to verify?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.mass.gov/directive/directive-14-1-document-and-title-preparation-fees-charged-by-motor-vehicle-dealers",
@@ -1092,7 +1092,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Michigan's flat 6% tax (no local additions) and $280 doc fee cap per DIFS Bulletin 2025-03-CF make OTD math predictable. The Detroit metro's competitive dealer network gives buyers real leverage on vehicle price. The trade-in credit ceiling of $11,000 is critical to know — if your trade-in is worth $18,000, only $11,000 reduces the taxable amount, costing you $420 in additional tax on the uncredited $7,000. For used car buyers, check whether the 5% formula applies: on a $4,000 vehicle, the max doc fee is $200, not $280.",
     ctaHeading: "Have a Michigan dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.michigan.gov/difs/-/media/Project/Websites/difs/Bulletins/2025/Bulletin_2025-03-CF.pdf",
@@ -1152,7 +1152,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Minnesota's Twin Cities market is competitive with multiple dealers. With the doc fee capped at $350, your negotiation focuses on vehicle price and add-ons. The registration fee is a government charge based on MSRP — not negotiable.",
     ctaHeading: "Have a Minnesota dealer quote you want to verify?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://mada.org/doc-fee-increase/",
@@ -1192,7 +1192,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Mississippi's market is spread across smaller cities, which limits competitive leverage outside the Jackson area. The district-based fee system means some dealers charge at the upper bound while others charge less — comparison shopping is worth the effort.",
     ctaHeading: "Have a Mississippi dealer quote you want to verify?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.mmvc.ms.gov/sites/mmvc/files/rules/Regulation8.pdf",
@@ -1232,7 +1232,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Missouri's Kansas City and St. Louis markets have competitive dealer networks. With the doc fee capped at $500, your leverage is on the vehicle price and add-ons. Verify the local tax rate at your specific dealership — it can vary significantly even within the same metro area.",
     ctaHeading: "Have a Missouri dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://revisor.mo.gov/main/OneSection.aspx?section=301.558",
@@ -1272,7 +1272,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Montana's less-populated market means fewer competing dealers, particularly outside Billings and Missoula. The absence of sales tax is a significant advantage — focus negotiation on the vehicle price and any dealer add-ons. Doc fees are without a verified cap on file and may be negotiable.",
     ctaHeading: "Have a Montana dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://revenue.mt.gov/taxes/general-sales-tax",
@@ -1313,7 +1313,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Omaha and Lincoln have competitive dealer markets that give buyers more leverage. Outside these areas, options are more limited. Focus negotiation on the vehicle price and the doc fee, which is without a verified cap on file.",
     ctaHeading: "Have a Nebraska dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://dmv.nebraska.gov/dvr/reg/registration-fees-and-taxes",
@@ -1353,7 +1353,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Las Vegas has a highly competitive dealer market — use it to your advantage by getting multiple OTD quotes. The doc fee is without a verified cap on file and potentially negotiable. The registration and sales tax are government charges and are fixed.",
     ctaHeading: "Have a Nevada dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://dmv.nv.gov/regfees.htm",
@@ -1393,7 +1393,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "The absence of sales tax makes New Hampshire an attractive buying state for residents of neighboring high-tax states. Dealer admin fees are without a verified cap on file and may be negotiable. Focus on the total OTD, including the value-based registration.",
     ctaHeading: "Have a New Hampshire dealer quote you want to verify?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.banking.nh.gov/rsa-361-faq",
@@ -1434,7 +1434,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "New Jersey's dense dealer market — particularly in North Jersey near the NYC metro — creates real competitive pressure. Use multiple competing OTD quotes as leverage. The wide doc fee range (up to $900) means there's meaningful savings potential by shopping around.",
     ctaHeading: "Have a New Jersey dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.nj.gov/mvc/vehicles/regfees.htm",
@@ -1500,7 +1500,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "New Mexico's market is less competitive outside Albuquerque. Get multiple quotes and ask for the tax structure to be explained in detail. The dual tax structure makes comparing OTD quotes across state lines more complex than usual.",
     ctaHeading: "Have a New Mexico dealer quote?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     ctaTopBody:
       "Have a New Mexico dealer quote? Paste it here — Odigos checks whether the charges are itemized and whether the total reconciles. It does not score the vehicle's market value.",
     ctaMidBody:
@@ -1552,14 +1552,14 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "New York's verified $175 ceiling under 15 NYCRR § 78.19(c)(2) is a hard limit on the registration and title assistance fee. A higher documentation fee is the kind of charge Odigos can flag. The main negotiation pressure beyond that fee is the vehicle price and add-ons. NYC buyers pay 8.875% combined tax (4% state + 4.5% NYC + 0.375% MTA), making the pre-tax negotiation especially important: every $1,000 off the sale price saves $88.75 in NYC tax. New York does allow trade-in credits, which reduce the taxable amount. The dense metro dealer market means multiple dealers within driving distance sell the same vehicle — use competing OTD quotes as leverage.",
     ctaHeading: "Have a New York dealer quote?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     ctaTopBody:
-      "Have a New York dealer quote? Paste it here. Odigos checks the line items, the math, and the verified $175 ceiling. Market value stays unverified unless you add a factory window sticker MSRP.",
+      "Have a New York dealer quote? Paste it here. Odigos checks the line items, the math, and the verified $175 ceiling. Factory MSRP comparison and independent market valuation are different. Adding a factory window sticker MSRP does not verify market value.",
     ctaMidBody:
       "A New York documentation fee above $175 exceeds the verified ceiling in 15 NYCRR § 78.19(c)(2). Ask the dealer to itemize it.",
     ctaMidLink: "Check My NY Quote",
     ctaBottomBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     ctaBottomButton: "Check My Quote Free",
     internalLinks: [
       ...STANDARD_LINKS,
@@ -1627,7 +1627,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "North Carolina's 3% Highway Use Tax is one of the lowest vehicle transfer rates nationally — saving buyers roughly $1,000+ compared to states with 6–7% rates on a $35,000 vehicle. Unverified reports mention documentation fees around $550 and up to $800. Those figures are not a market standard, and they can offset the tax advantage if they show up on your quote. Charlotte and Raleigh-Durham have competitive dealer networks — ask three dealers for OTD quotes and you'll likely see $200+ variation in doc fees alone. The fee is without a verified cap on file and potentially negotiable. The $56 title fee is on the higher side.",
     ctaHeading: "Have a North Carolina dealer quote you want to verify?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.ncdot.gov/dmv/title-registration/taxes/Pages/default.aspx",
@@ -1687,7 +1687,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "North Dakota's market is smaller than most states, but Fargo and Bismarck offer some competitive dealer options. The fee environment is generally favorable — focus negotiation on the vehicle price.",
     ctaHeading: "Have a North Dakota dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.dot.nd.gov/motor-vehicle",
@@ -1728,7 +1728,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Ohio's three major metros — Columbus (7.5% combined tax), Cleveland/Cuyahoga County (8%), and Cincinnati/Hamilton County (7.8%) — have competitive dealer markets. The 2026 registrar ceiling is $398, and the statute also applies 10% of the contract amount excluding tax, title, registration, and negative equity when that figure is lower. Your negotiation still focuses on the vehicle price and add-ons. The trade-in credit for new vehicle purchases can meaningfully reduce your tax — on a $15,000 trade-in at 8% in Cuyahoga County, that saves $1,200.",
     ctaHeading: "Have an Ohio dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.bmv.ohio.gov/doc-fees.aspx",
@@ -1788,7 +1788,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Oklahoma City and Tulsa have competitive dealer markets. The flat 4.5% tax makes OTD comparisons straightforward. Focus negotiation on the vehicle price and the documentation fee (no verified cap on file).",
     ctaHeading: "Have an Oklahoma dealer quote you want to verify?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://oklahoma.gov/service/all-services/auto-vehicle/fees.html",
@@ -1828,7 +1828,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Oregon's doc fee cap removes one area of negotiation. Focus on vehicle price and add-ons. The Portland metro offers competitive dealer options. The absence of sales tax is a meaningful advantage for buyers coming from neighboring high-tax states.",
     ctaHeading: "Have an Oregon dealer quote you want to verify?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.oregon.gov/odot/dmv/pages/fees/vehicle.aspx",
@@ -1868,7 +1868,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Pennsylvania's Philadelphia and Pittsburgh markets have strong dealer competition. With the doc fee capped at $490 (electronic) or $409 (non-electronic), negotiation focuses on the vehicle price and add-ons. The rising sales tax — 6% now, 6.5% in October 2025, 7% in October 2026 — creates a timing consideration: buying before the next increase saves real money. On a $35,000 vehicle, 0.5% is $175. Philadelphia buyers at the 8% combined rate pay $2,800 in tax on that vehicle — ask if the dealer can offset with a lower sale price.",
     ctaHeading: "Have a Pennsylvania dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.pacodeandbulletin.gov/Display/pabull?file=/secure/pabulletin/data/vol55/55-1/26.html",
@@ -1928,7 +1928,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Rhode Island's small geographic area means buyers can shop across multiple dealerships relatively easily. The doc fee is capped, so focus negotiation on the vehicle price and any add-ons. The sales tax on the doc fee is a small but real additional cost to include in your OTD estimate.",
     ctaHeading: "Have a Rhode Island dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.law.cornell.edu/regulations/rhode-island/280-RICR-30-20-1.6",
@@ -1969,7 +1969,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "South Carolina's Columbia and Greenville-Spartanburg markets offer competitive dealer options. Ask about the documentation fee upfront and whether it's above the $225 state documentation threshold. Focus negotiation on the vehicle price and any add-ons.",
     ctaHeading: "Have a South Carolina dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://consumer.sc.gov/business-resourceslaws/licensing/registered-creditors/motor-vehicle-dealers",
@@ -2010,7 +2010,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "South Dakota's market is concentrated in Sioux Falls and Rapid City. The low fee environment means less financial pressure on the doc fee side — focus negotiation on the vehicle price. Verify both the sales tax and excise tax are correctly calculated.",
     ctaHeading: "Have a South Dakota dealer quote you want to verify?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://dor.sd.gov/individuals/motor-vehicle/all-vehicles-title-fees-registration/",
@@ -2050,7 +2050,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Tennessee's Nashville and Memphis metros have competitive dealer networks. The high tax rate is fixed by location — focus negotiation on the vehicle price and doc fee. Having a competing OTD quote from another Tennessee dealer is the best leverage.",
     ctaHeading: "Have a Tennessee dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.tn.gov/revenue/title-and-registration.html",
@@ -2093,7 +2093,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Texas's $225 'presumed reasonable' guideline under Texas Administrative Code section 84.205 means most dealers stay at or below this amount — but dealers who file a cost analysis with the OCCC can exceed it after that filing. Ask what the specific doc fee is before visiting. Texas's flat 6.25% sales tax (minimal local variation) and trade-in credit make OTD math straightforward. The large metro markets — Dallas, Houston, San Antonio, Austin — create real competitive pressure. Getting OTD quotes from 3+ dealers in your metro on the same vehicle is the best negotiation strategy. EV buyers should budget for the $400 first-time fee plus $200/year.",
     ctaHeading: "Got a Texas dealer quote?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     ctaTopBody:
       "Got a Texas dealer quote? Paste it and Odigos checks the line items, the math, and any verified cap. It does not compare the price to a typical Texas market range.",
     ctaMidBody:
@@ -2101,7 +2101,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     ctaMidLink: "Check My Texas Quote",
     ctaBottomHeadline: "Don't sign until you check.",
     ctaBottomBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     ctaBottomButton: "Check My Quote Free",
     internalLinks: [
       ...STANDARD_LINKS,
@@ -2169,7 +2169,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "The Salt Lake metro has a competitive dealer market. Focus negotiation on vehicle price and doc fees. The registration cost is a government fee based on vehicle weight — not negotiable. The local tax rate is also fixed by location.",
     ctaHeading: "Have a Utah dealer quote you want to verify?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://tax.utah.gov/business/sales-tax/sales/rates/",
@@ -2210,7 +2210,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Vermont's smaller market means fewer competing dealers, particularly outside Burlington. The low doc fee environment is favorable — focus negotiation on the vehicle price. Ask for the doc fee to be itemized separately since it's included in the taxable amount.",
     ctaHeading: "Have a Vermont dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://dmv.vermont.gov/faq/are-dealer-documentation-fees-taxable",
@@ -2252,7 +2252,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Virginia's Northern Virginia / DC metro area has a competitive dealer market. The high doc fees and no trade-in credit make it important to compare total OTD quotes, not just vehicle prices. The trade-in situation means if you have a trade-in, verify the dealer isn't implying a credit that the state doesn't actually allow.",
     ctaHeading: "Have a Virginia dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.tax.virginia.gov/retail-sales-and-use-tax",
@@ -2318,7 +2318,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "The Seattle metro has a competitive dealer market. With the doc fee capped at $200, negotiation is focused on vehicle price and add-ons. The local sales tax is fixed by the dealer's location — not negotiable.",
     ctaHeading: "Have a Washington State dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://dor.wa.gov/education/industry-guides/auto-dealers/miscellaneous",
@@ -2384,7 +2384,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "West Virginia's market is less competitive than major metro areas. Compare quotes across the state's limited dealer network. The doc fee is capped, so focus negotiation on vehicle price and add-ons.",
     ctaHeading: "Have a West Virginia dealer quote you want to verify?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://code.wvlegislature.gov/17A-6A-8A/",
@@ -2425,7 +2425,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Milwaukee and Madison have competitive dealer markets. The doc fee is without a verified cap on file — ask if it's flexible. The recent title fee increase adds to the OTD cost, so make sure your quote is current.",
     ctaHeading: "Have a Wisconsin dealer quote you want to review?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://wisconsindot.gov/Pages/dmv/vehicles/title-plates/fee-chart.aspx",
@@ -2466,7 +2466,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Wyoming has a limited dealer market outside Cheyenne and Casper. The doc fee is without a verified cap on file and worth asking about. The unique county registration formula means getting the exact first-year registration cost from the dealer is important for an accurate OTD comparison.",
     ctaHeading: "Have a Wyoming dealer quote you want to verify?",
     ctaBody:
-      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://wyominglicenseplate.org/vehicle-registration-fees",

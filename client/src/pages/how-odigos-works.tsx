@@ -82,7 +82,7 @@ export default function HowOdigosWorks() {
             <li className="flex items-center gap-3">
               <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />
               <span className="text-muted-foreground">
-                A verdict of <strong className="text-foreground">GO, PROCEED WITH CAUTION, INSUFFICIENT INFORMATION, or NO-GO</strong>. GO needs reconciled math, clean verified fees, and a price check. The optional check is a factory window sticker MSRP you type in. Without it, market value stays unverified.
+                A verdict of <strong className="text-foreground">GO, PROCEED WITH CAUTION, INSUFFICIENT INFORMATION, or NO-GO</strong>. GO needs completed financial reconciliation, adequate disclosure, applicable regulatory verification, and an independent market valuation. An optional factory window sticker MSRP is a separate comparison and does not verify market value. Independent market valuation stays unverified unless a third-party source is configured.
               </span>
             </li>
             <li className="flex items-center gap-3">
@@ -118,7 +118,7 @@ export default function HowOdigosWorks() {
         <section className="rounded-lg border border-border bg-card p-5">
           <h2 className="text-base font-semibold mb-2 text-foreground">What Odigos does not do</h2>
           <p className="text-sm text-muted-foreground">
-            Odigos reviews whether the quote is itemized, whether the totals reconcile, and whether a fee exceeds a verified cap. It does not look up a live market price. An optional factory window sticker MSRP can be compared with the selling price, and that figure is not a transaction price. It does not evaluate vehicle condition, mechanical reliability, or accident history.
+            Odigos reviews whether the quote is itemized, whether the totals reconcile, and whether a fee exceeds a verified cap. It does not look up a live market price. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP can be compared with the selling price. That comparison does not verify market value, and that figure is not a transaction price. It does not evaluate vehicle condition, mechanical reliability, or accident history.
           </p>
         </section>
 

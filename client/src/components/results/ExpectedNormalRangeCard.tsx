@@ -8,22 +8,28 @@ export interface ExpectedNormalRangeCardProps {
   normalOtdMax: number | null | undefined;
   marketValueStatus?: "verified" | "unverified" | null;
   benchmarkKind?: "factory_msrp" | "market_transaction" | null;
+  msrpSummary?: string | null;
 }
 
-export default function ExpectedNormalRangeCard({ normalOtdMin, normalOtdMax, marketValueStatus, benchmarkKind }: ExpectedNormalRangeCardProps) {
-  if (benchmarkKind === "factory_msrp") {
+export default function ExpectedNormalRangeCard({ normalOtdMin, normalOtdMax, marketValueStatus, benchmarkKind, msrpSummary }: ExpectedNormalRangeCardProps) {
+  if (benchmarkKind === "factory_msrp" || msrpSummary) {
     return (
       <Card className="bg-muted/20 border-border/40" data-testid="expected-normal-range-card">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wider">
             <Target className="w-4 h-4" aria-hidden="true" />
-            Factory window sticker
+            Factory MSRP comparison
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
           <p className="text-base leading-relaxed text-foreground" data-testid="expected-normal-range-value">
-            {FACTORY_STICKER_COMPARISON}
+            {msrpSummary ?? FACTORY_STICKER_COMPARISON}
           </p>
+          {marketValueStatus !== "verified" && (
+            <p className="text-sm leading-relaxed text-muted-foreground" data-testid="expected-normal-range-market">
+              Independent market valuation is a separate check and is not verified. No market price range is shown.
+            </p>
+          )}
         </CardContent>
       </Card>
     );
