@@ -217,7 +217,30 @@
       "tradeInTaxCreditNotes": "California does NOT allow trade-in deduction. Tax applies to full vehicle price.",
       "titleFee": 15,
       "registrationFee": "$62 base + value-based fees",
-      "specialNotes": "Document processing charge shall not exceed $85 if the dealer is a DMV private-industry partner, and $70 if not. A 2025 bill to raise the cap was vetoed. The analyzer uses $85, the higher ceiling.",
+      "specialNotes": "Cal. Veh. Code § 4456.5(a)(1), operative January 1, 2019: the document processing charge shall not exceed $85 if the dealer has a contractual agreement with the DMV to be a private industry partner under § 1685, and shall not exceed $70 if the dealer does not. $85 is not a universal ceiling for every dealer.",
+      "docFeeConditions": [
+        {
+          "id": "private_industry_partner",
+          "jurisdiction": "California",
+          "maxAmount": 85,
+          "condition": "Dealer has a contractual agreement with the department to be a private industry partner pursuant to Vehicle Code § 1685.",
+          "statutoryReference": "Cal. Veh. Code § 4456.5(a)(1)(A)",
+          "officialSource": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=4456.5",
+          "relatedSource": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=1685",
+          "effectiveDate": "2019-01-01",
+          "lastVerificationDate": "2026-11-27"
+        },
+        {
+          "id": "not_private_industry_partner",
+          "jurisdiction": "California",
+          "maxAmount": 70,
+          "condition": "Dealer does not have a contractual agreement with the department to be a private industry partner pursuant to Vehicle Code § 1685.",
+          "statutoryReference": "Cal. Veh. Code § 4456.5(a)(1)(B)",
+          "officialSource": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=4456.5",
+          "effectiveDate": "2019-01-01",
+          "lastVerificationDate": "2026-11-27"
+        }
+      ],
       "sources": [
         "https://calmatters.org/politics/2025/10/california-car-dealer-fees-veto/",
         "https://cdtfa.ca.gov/taxes-and-fees/rates.aspx"
@@ -233,6 +256,18 @@
           "title": "Cal. Veh. Code \u00a7 4456.5",
           "retrieved": "2026-11-20",
           "supports": "Fetched text: document processing charge shall not exceed $85 for a DMV private-industry partner and $70 otherwise."
+        },
+        {
+          "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=4456.5",
+          "title": "California Vehicle Code § 4456.5",
+          "retrieved": "2026-11-27",
+          "supports": "Official leginfo text: § 4456.5(a)(1)(A) caps the document processing charge at $85 for a private industry partner under § 1685, and § 4456.5(a)(1)(B) caps it at $70 otherwise. The section became operative January 1, 2019."
+        },
+        {
+          "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=1685",
+          "title": "California Vehicle Code § 1685",
+          "retrieved": "2026-11-27",
+          "supports": "Official leginfo text: the department may contract with qualified private industry partners for electronic vehicle registration and titling, including first-line business partners, first-line service providers, and second-line business partners."
         },
         {
           "url": "https://cdtfa.ca.gov/taxes-and-fees/sales-use-tax-rates.htm",

@@ -1,8 +1,8 @@
-import type { ConfidenceLevel, MissingInfo } from "@shared/schema";
+import type { ConfidenceLevel, GoNoGo, MissingInfo } from "@shared/schema";
 
 export interface DealScoreBadgeProps {
   score: "GREEN" | "YELLOW" | "RED";
-  goNoGo: "GO" | "NO-GO" | "NEED-MORE-INFO";
+  goNoGo: GoNoGo;
   confidenceLevel: ConfidenceLevel;
   verdictLabel: string;
   missingInfo: MissingInfo[];
@@ -40,15 +40,19 @@ export default function DealScoreBadge({ score, goNoGo, confidenceLevel, verdict
   };
 
   const verdictHeadings: Record<string, string> = {
-    "GO": "Deal appears reasonable — a few things to confirm",
-    "NO-GO": "Significant red flags found — key information is missing or unclear",
-    "NEED-MORE-INFO": "Proceed with caution — several pricing concerns detected",
+    "GO": "Checked math, fees, and an independent price benchmark support this quote",
+    "NO-GO": "Do not sign yet — a material problem is in this quote",
+    "NEED-MORE-INFO": "Proceed with caution — resolve the items below before you agree",
+    "PROCEED-WITH-CAUTION": "Proceed with caution — resolve the items below before you agree",
+    "INSUFFICIENT-INFORMATION": "Not enough verified information to call this a good price",
   };
 
   const verdictSubtext: Record<string, string> = {
-    "GO": "The quote looks broadly in line with market norms. The details below are worth verifying before you sign.",
-    "NO-GO": "This quote has enough gaps or warning signs that visiting the dealership without resolving them first is high-risk.",
-    "NEED-MORE-INFO": "There are open questions in this quote that could meaningfully change the out-the-door price. Get answers before proceeding.",
+    "GO": "The selling price sits inside an independent benchmark, and the checked math and fee rules are clean.",
+    "NO-GO": "A financial, regulatory, or transactional problem was established from the quote. Resolve it before you sign.",
+    "NEED-MORE-INFO": "Specific items in this quote still need an answer.",
+    "PROCEED-WITH-CAUTION": "Specific items in this quote still need an answer. A clean fee list is not a price approval.",
+    "INSUFFICIENT-INFORMATION": "Market value not verified, or a required fact is missing. This is not a recommendation to buy.",
   };
 
   const config = scoreConfig[score];
@@ -60,7 +64,7 @@ export default function DealScoreBadge({ score, goNoGo, confidenceLevel, verdict
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-semibold tracking-wide border ${config.chipBg} ${config.chipBorder} ${config.text}`}>
-              {goNoGo}
+              {goNoGo === "PROCEED-WITH-CAUTION" ? "PROCEED WITH CAUTION" : goNoGo === "INSUFFICIENT-INFORMATION" ? "INSUFFICIENT INFORMATION" : goNoGo}
             </span>
             <span className="text-xs text-muted-foreground border border-border/60 px-2 py-0.5 rounded bg-muted/40">
               {confidenceLabels[confidenceLevel]}

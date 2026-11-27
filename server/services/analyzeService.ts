@@ -12,6 +12,7 @@ import {
   type Fee,
 } from "../../shared/schema.js";
 import { applyRuleEngine, checkDocFeeCap } from "../ruleEngine.js";
+import { isSyntheticSubmission } from "../syntheticGuard.js";
 import { rankSignals } from "../signalRanker.js";
 import { runLeaseMath } from "../leaseMathEngine.js";
 import { detectStateFromText, getStateFeeData, getAmbiguousCityOptions } from "../stateFeeLookup.js";
@@ -552,6 +553,10 @@ Before explaining anything else, determine the money at stake. The buyer needs t
    - Good: "This deal appears broadly fair, with only limited room left to negotiate."
 
 FINANCIAL IMPACT — HARD RULES:
+- You do not have an independent vehicle valuation. Set estimatedOverpaymentMin, estimatedOverpaymentMax, estimatedNormalOtdMin, and estimatedNormalOtdMax to null.
+- Do not invent a normal out-the-door range from the selling price or the quoted out-the-door price.
+- Do not call the vehicle price fair, reasonable, or a good deal.
+- The suggested reply must not ask the buyer to accept the price or to request a buyer's order.
 - Do NOT fabricate certainty. If the evidence is weak, return null rather than a made-up number.
 - Do NOT invent dealer-specific patterns or claim "this dealer always…".
 - Do NOT base seeded-inclusive comparisons on tactic-flag prevalence ("N% of dealers use market adjustments"). Use numeric anchors (doc fee, selling price, OTD) only.
@@ -1078,7 +1083,18 @@ Respond entirely in Spanish. All text fields in your JSON response — including
 
   const leaseMathResult = runLeaseMath(llmResult.detectedFields, data.purchaseType);
 
-  const ruleEngineAdjustments = applyRuleEngine(llmResult, llmResult.detectedFields, docFeeCapResult, data.purchaseType, leaseMathResult);
+  const ruleEngineAdjustments = applyRuleEngine(
+    llmResult,
+    llmResult.detectedFields,
+    docFeeCapResult,
+    data.purchaseType,
+    leaseMathResult,
+    {
+      stateData: stateData ?? null,
+      condition: data.condition,
+      rebateContingentOnFinancing: /rebate/i.test(data.dealerText) && /financ|approved credit|with financing/i.test(data.dealerText),
+    },
+  );
 
   const rankedSignals = rankSignals({
     docFeeCapCheck: docFeeCapResult,
@@ -1089,12 +1105,35 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     missingInfo: llmResult.missingInfo ?? [],
   });
 
+  const benchmark = ruleEngineAdjustments.marketBenchmark;
+  const marketVerified = benchmark?.status === "verified" && benchmark.low != null && benchmark.high != null;
+  const sale = llmResult.detectedFields.salePrice;
+  const overpaymentMin = marketVerified && sale != null ? Math.max(0, Math.round((sale - benchmark!.high!) * 100) / 100) : null;
+  const overpaymentMax = marketVerified && sale != null ? Math.max(0, Math.round((sale - benchmark!.low!) * 100) / 100) : null;
   const finalResult: AnalysisResponse = {
     ...llmResult,
     dealScore: ruleEngineAdjustments.dealScore,
     confidenceLevel: ruleEngineAdjustments.confidenceLevel,
     verdictLabel: ruleEngineAdjustments.verdictLabel,
     goNoGo: ruleEngineAdjustments.goNoGo,
+    summary: ruleEngineAdjustments.summary ?? llmResult.summary,
+    reasoning: ruleEngineAdjustments.reasoning ?? llmResult.reasoning,
+    suggestedReply: ruleEngineAdjustments.suggestedReply ?? llmResult.suggestedReply,
+    primaryIssue: ruleEngineAdjustments.primaryIssue ?? llmResult.primaryIssue,
+    estimatedOverpaymentMin: marketVerified ? overpaymentMin : null,
+    estimatedOverpaymentMax: marketVerified ? overpaymentMax : null,
+    estimatedNormalOtdMin: marketVerified ? benchmark!.low : null,
+    estimatedNormalOtdMax: marketVerified ? benchmark!.high : null,
+    financialImpactConfidence: marketVerified ? "high" : null,
+    financialSummary: marketVerified
+      ? `Independent benchmark $${benchmark!.low}–$${benchmark!.high}. Savings are only the gap between the selling price and that benchmark.`
+      : "Market value not verified. Savings and a normal price range are not estimated.",
+    marketComparison: marketVerified
+      ? `Independent benchmark $${benchmark!.low}–$${benchmark!.high} from ${benchmark!.source ?? "an independent source"}.`
+      : "Market value not verified. No independent vehicle pricing source is configured, so this quote was not compared with a market range.",
+    marketValueStatus: marketVerified ? "verified" : "unverified",
+    dimensions: ruleEngineAdjustments.dimensions,
+    mathematicalDerivation: ruleEngineAdjustments.mathematicalDerivation,
     leaseMath: leaseMathResult,
     rankedSignals,
   };
@@ -1107,8 +1146,12 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     sessionId: data.sessionId,
   }).catch(err => logger.error("submission event failed", { source: "tracking", error: String(err) }));
 
+  const synthetic = isSyntheticSubmission(data);
   let listingId: string | null = null;
-  try {
+  if (synthetic) {
+    logger.info("Synthetic submission skipped persistence", { source: "analyze" });
+  }
+  if (!synthetic) try {
     const { zipToStateCode } = await import("../zipToState.js");
     const { redactPII } = await import("../piiRedact.js");
     const { normalizeSubmissionText, sha256Hex } = await import("../warehouse/warehouseUtils.js");
@@ -1267,7 +1310,9 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     marketSignalCount: marketSignals.length,
   }).catch(err => logger.error("submission_score event failed", { source: "tracking", error: String(err) }));
 
-  enqueueSubmission({ request: data, result: finalResult, preSavedListingId: listingId });
+  if (!synthetic) {
+    enqueueSubmission({ request: data, result: finalResult, preSavedListingId: listingId });
+  }
 
   return { payload, listingId, stateCode: stateDetection.state ?? null };
 }

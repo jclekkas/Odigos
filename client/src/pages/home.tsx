@@ -89,7 +89,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { apiRequest } from "@/lib/queryClient";
-import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel, MarketContext, DocFeeCapCheck, RankedSignal, MarketSignal, FlaggedItemEvidence, MarketConfidenceTier } from "@shared/schema";
+import type { AnalysisResponse, DetectedFields, MissingInfo, ConfidenceLevel, MarketContext, DocFeeCapCheck, RankedSignal, MarketSignal, FlaggedItemEvidence, MarketConfidenceTier, GoNoGo } from "@shared/schema";
 import LeaseMathBlock from "@/components/LeaseMathBlock";
 import FinancialImpactHeroComponent from "@/components/results/FinancialImpactHero";
 import StatutoryCapCalloutComponent from "@/components/results/StatutoryCapCallout";
@@ -405,9 +405,9 @@ function MarketComparisonBlock({ marketComparison, marketContext, detectedDocFee
             </div>
           </div>
         )}
-        {!hasLocalData && (
+        {!hasLocalData && !sentence.toLowerCase().includes("market value not verified") && (
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Based on limited local examples in your state — treat as early signal only.
+            A state doc-fee average is not a vehicle price comparison.
           </p>
         )}
       </CardContent>
@@ -446,11 +446,29 @@ function BiggestIssueCard({ primaryIssue }: BiggestIssueCardProps) {
 interface ExpectedNormalRangeCardProps {
   normalOtdMin: number | null | undefined;
   normalOtdMax: number | null | undefined;
+  marketValueStatus?: "verified" | "unverified" | null;
 }
 
-function ExpectedNormalRangeCard({ normalOtdMin, normalOtdMax }: ExpectedNormalRangeCardProps) {
+function ExpectedNormalRangeCard({ normalOtdMin, normalOtdMax, marketValueStatus }: ExpectedNormalRangeCardProps) {
   const range = formatCurrencyRange(normalOtdMin, normalOtdMax);
-  if (!range) return null;
+  if (!range) {
+    if (marketValueStatus !== "unverified") return null;
+    return (
+      <Card className="bg-muted/20 border-border/40" data-testid="expected-normal-range-card">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wider">
+            <Target className="w-4 h-4" aria-hidden="true" />
+            Market value
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-base leading-relaxed text-foreground" data-testid="expected-normal-range-value">
+            Market value not verified. No independent price range is shown.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="bg-muted/20 border-border/40" data-testid="expected-normal-range-card">
@@ -475,9 +493,15 @@ function ExpectedNormalRangeCard({ normalOtdMin, normalOtdMax }: ExpectedNormalR
 
 interface DealScoreBadgeProps {
   score: "GREEN" | "YELLOW" | "RED";
-  goNoGo: "GO" | "NO-GO" | "NEED-MORE-INFO";
+  goNoGo: GoNoGo;
   confidenceLevel: ConfidenceLevel;
   verdictLabel: string;
+}
+
+function verdictChip(goNoGo: GoNoGo): string {
+  if (goNoGo === "PROCEED-WITH-CAUTION") return "PROCEED WITH CAUTION";
+  if (goNoGo === "INSUFFICIENT-INFORMATION") return "INSUFFICIENT INFORMATION";
+  return goNoGo;
 }
 
 function DealScoreBadge({ score, goNoGo, confidenceLevel, verdictLabel }: DealScoreBadgeProps) {
@@ -512,15 +536,19 @@ function DealScoreBadge({ score, goNoGo, confidenceLevel, verdictLabel }: DealSc
   };
 
   const verdictHeadings: Record<string, string> = {
-    "GO": "Deal appears reasonable — a few things to confirm",
-    "NO-GO": "Significant red flags found — key information is missing or unclear",
-    "NEED-MORE-INFO": "Proceed with caution — several pricing concerns detected",
+    "GO": "Checked math, fees, and an independent price benchmark support this quote",
+    "NO-GO": "Do not sign yet — a material problem is in this quote",
+    "NEED-MORE-INFO": "Proceed with caution — resolve the items below before you agree",
+    "PROCEED-WITH-CAUTION": "Proceed with caution — resolve the items below before you agree",
+    "INSUFFICIENT-INFORMATION": "Not enough verified information to call this a good price",
   };
 
   const verdictSubtext: Record<string, string> = {
-    "GO": "The quote looks broadly in line with market norms. The details below are worth verifying before you sign.",
-    "NO-GO": "This quote has enough gaps or warning signs that visiting the dealership without resolving them first is high-risk.",
-    "NEED-MORE-INFO": "There are open questions in this quote that could meaningfully change the out-the-door price. Get answers before proceeding.",
+    "GO": "The selling price sits inside an independent benchmark, and the checked math and fee rules are clean.",
+    "NO-GO": "A financial, regulatory, or transactional problem was established from the quote. Resolve it before you sign.",
+    "NEED-MORE-INFO": "Specific items in this quote still need an answer. Market value is a separate question.",
+    "PROCEED-WITH-CAUTION": "Specific items in this quote still need an answer. A clean fee list is not a price approval.",
+    "INSUFFICIENT-INFORMATION": "Market value not verified, or a required fact is missing. This is not a recommendation to buy.",
   };
 
   const config = scoreConfig[score];
@@ -531,7 +559,7 @@ function DealScoreBadge({ score, goNoGo, confidenceLevel, verdictLabel }: DealSc
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-semibold tracking-wide border ${config.chipBg} ${config.chipBorder} ${config.text}`}>
-              {goNoGo}
+              {verdictChip(goNoGo)}
             </span>
             <span className="text-xs text-muted-foreground border border-border/60 px-2 py-0.5 rounded bg-muted/40">
               {confidenceLabels[confidenceLevel]}
@@ -2005,8 +2033,8 @@ export default function Home() {
       <main className="max-w-4xl mx-auto px-6 py-10 space-y-8">
         <div className="max-w-2xl mx-auto mb-2" data-testid="section-analyzer-context">
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground" data-testid="text-analyzer-heading">Analyze Your Car Dealer Quote</h1>
-          <p className="text-sm text-muted-foreground mt-2 leading-relaxed" data-testid="text-analyzer-description">
-            Paste a dealer quote, email, or text message. Odigos flags missing out-the-door pricing, hidden fees, and common dealership tactics.
+            <p className="text-sm text-muted-foreground mt-2 leading-relaxed" data-testid="text-analyzer-description">
+            Paste a dealer quote, email, or text message. Odigos checks whether charges are disclosed, whether the totals reconcile, and whether a fee exceeds a verified state cap. It does not estimate a fair vehicle price unless an independent pricing source is configured.
           </p>
           <a
             href="/how-odigos-works"
@@ -2038,10 +2066,10 @@ export default function Home() {
         <div className="max-w-2xl mx-auto" data-testid="section-what-you-get">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Free preview includes:</p>
           <ul className="space-y-1 text-sm text-muted-foreground" data-testid="list-what-you-get">
-            <li>GO / NO-GO verdict with confidence level</li>
-            <li>Deal score out of 100</li>
+            <li>Verdict: GO, PROCEED WITH CAUTION, INSUFFICIENT INFORMATION, or NO-GO</li>
+            <li>Separate checks for disclosure, math, verified fee rules, and market value</li>
             <li>Pricing terms found in the quote</li>
-            <li>Every detected issue, full dealer reply, and analysis reasoning</li>
+            <li>A dealer reply limited to those findings</li>
           </ul>
         </div>
 
@@ -2591,12 +2619,12 @@ export default function Home() {
 
         {!result && (
           <div className="border-t pt-6 mt-2">
-            <p className="text-sm font-medium text-muted-foreground mb-2">Why Odigos instead of generic AI?</p>
+            <p className="text-sm font-medium text-muted-foreground mb-2">What this audit checks</p>
             <ul className="space-y-1 text-xs text-muted-foreground list-disc list-inside">
-              <li>Built specifically for car dealer quotes — not general answers</li>
-              <li>Consistent detection of fees, add-ons, and missing pricing</li>
-              <li>Structured output with clear next steps</li>
-              <li>Designed for real negotiation situations</li>
+              <li>Whether the charges in the quote are itemized</li>
+              <li>Whether the out-the-door total and payment reconcile</li>
+              <li>Whether a documentation fee exceeds a verified state cap</li>
+              <li>Market value stays unverified until an independent price source is configured</li>
             </ul>
           </div>
         )}
@@ -2615,9 +2643,10 @@ export default function Home() {
                 overpaymentMax={result.estimatedOverpaymentMax}
                 confidence={result.financialImpactConfidence ?? null}
                 financialSummary={result.financialSummary}
+                marketValueStatus={result.marketValueStatus}
                 fallbackSummary={
-                  result.estimatedOverpaymentMin == null || result.estimatedOverpaymentMax == null
-                    ? "We need more pricing details to estimate the dollar impact of this quote."
+                  result.marketValueStatus === "unverified"
+                    ? "Market value not verified. Savings are not estimated."
                     : result.summary
                 }
               />
@@ -2632,6 +2661,31 @@ export default function Home() {
                 confidenceLevel={result.confidenceLevel}
                 verdictLabel={result.verdictLabel}
               />
+
+              {result.dimensions && (
+                <Card data-testid="analysis-dimensions">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm text-muted-foreground uppercase tracking-wider">Separate checks</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2 text-sm">
+                    {(
+                      [
+                        ["Pricing transparency", result.dimensions.pricingTransparency],
+                        ["Mathematical accuracy", result.dimensions.mathematicalAccuracy],
+                        ["Regulatory compliance", result.dimensions.regulatoryCompliance],
+                        ["Market competitiveness", result.dimensions.marketCompetitiveness],
+                        ["Negotiation opportunities", result.dimensions.negotiationOpportunities],
+                        ["Information completeness", result.dimensions.informationCompleteness],
+                      ] as const
+                    ).map(([label, dimension]) => (
+                      <p key={label}>
+                        <span className="font-medium text-foreground">{label}: </span>
+                        <span className="text-muted-foreground">{dimension.summary}</span>
+                      </p>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
 
               {/* 2.5) Ranked signals — deterministic, action-oriented negotiation moves */}
               {result.rankedSignals && result.rankedSignals.length > 0 && (
@@ -2769,6 +2823,7 @@ export default function Home() {
                   <ExpectedNormalRangeCard
                     normalOtdMin={result.estimatedNormalOtdMin}
                     normalOtdMax={result.estimatedNormalOtdMax}
+                    marketValueStatus={result.marketValueStatus}
                   />
 
                   <LeaseMathBlock leaseMath={result.leaseMath} />

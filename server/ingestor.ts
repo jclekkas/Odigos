@@ -30,6 +30,7 @@ import { dealerSubmissions } from "../shared/schema.js";
 import { normalizeSubmissionText, sha256Hex, normalizeFeeNames } from "./warehouse/warehouseUtils.js";
 import { db } from "./db.js";
 import { eq, isNull } from "drizzle-orm";
+import { isSyntheticSubmission } from "./syntheticGuard.js";
 
 // ââ Concurrency limiter âââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
@@ -75,6 +76,7 @@ export interface SubmissionPayload {
 }
 
 export function enqueueSubmission(payload: SubmissionPayload): void {
+  if (isSyntheticSubmission(payload.request)) return;
   // Check queue depth before enqueuing to prevent unbounded memory growth
   if (_queueDepth >= MAX_QUEUE_DEPTH) {
     console.error(

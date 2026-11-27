@@ -20,12 +20,12 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
   "/": {
     title: "Odigos — Dealer Quote Analyzer | Find What's Wrong With Your Quote",
     description:
-      "Paste your dealer quote. Odigos shows what's overpriced, what's illegal, and what to say back — in 60 seconds. Full analysis is free. No pass or payment required.",
+      "Paste your dealer quote. Odigos audits disclosure, math, and verified fee caps. It does not estimate market value without an independent price source. Full analysis is free.",
   },
   "/analyze": {
     title: "Check Your Dealer Quote | Odigos",
     description:
-      "Paste your dealer quote. Odigos shows what's overpriced, what's illegal, and what to say back. Free instant analysis with GO/NO-GO verdict.",
+      "Paste your dealer quote. Odigos audits disclosure, math, and verified fee caps, and withholds a price verdict when market value is not verified.",
   },
 
   // ── Top 10 GSC pages (updated SEO copy) ──────────────────────
@@ -84,7 +84,7 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
   "/about": {
     title: "About Odigos — Independent Dealer Quote Analyzer",
     description:
-      "Odigos (Greek for 'guide') is an independent dealer quote analyzer that flags overpriced fees, illegal charges, and missing details. No dealership affiliations. No referral fees. Just clarity before you sign.",
+      "Odigos is an independent dealer-quote auditor. It checks disclosure, math, and verified state fee caps. It does not estimate market value unless an independent pricing source is configured.",
   },
   "/privacy": {
     title: "Privacy Policy | Odigos",

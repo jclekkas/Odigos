@@ -13,6 +13,8 @@ export const analysisRequestSchema = z.object({
   source: z.enum(["paste", "upload", "url", "camera"]).default("paste").optional(),
   sessionId: z.string().optional(),
   language: z.enum(["en", "es"]).optional().default("en"),
+  /** QA and regression submissions. They are not stored or aggregated. */
+  synthetic: z.boolean().optional(),
 });
 
 export const marketContextStrengthSchema = z.enum(["none", "thin", "moderate", "strong"]);
@@ -73,6 +75,38 @@ export const flaggedItemEvidenceSchema = z.object({
 export type FlaggedItemEvidence = z.infer<typeof flaggedItemEvidenceSchema>;
 
 export type AnalysisRequest = z.infer<typeof analysisRequestSchema>;
+
+export const goNoGoSchema = z.enum([
+  "GO",
+  "NO-GO",
+  "NEED-MORE-INFO",
+  "PROCEED-WITH-CAUTION",
+  "INSUFFICIENT-INFORMATION",
+]);
+export type GoNoGo = z.infer<typeof goNoGoSchema>;
+
+export const dimensionStatusSchema = z.enum([
+  "clear",
+  "concern",
+  "insufficient",
+  "fail",
+  "not_checked",
+]);
+
+export const analysisDimensionSchema = z.object({
+  status: dimensionStatusSchema,
+  summary: z.string(),
+});
+
+export const analysisDimensionsSchema = z.object({
+  pricingTransparency: analysisDimensionSchema,
+  mathematicalAccuracy: analysisDimensionSchema,
+  regulatoryCompliance: analysisDimensionSchema,
+  marketCompetitiveness: analysisDimensionSchema,
+  negotiationOpportunities: analysisDimensionSchema,
+  informationCompleteness: analysisDimensionSchema,
+});
+export type AnalysisDimensions = z.infer<typeof analysisDimensionsSchema>;
 
 // Fee item for itemized fees
 export const feeSchema = z.object({
@@ -203,7 +237,7 @@ export const analysisResponseSchema = z.object({
   dealScore: z.enum(["GREEN", "YELLOW", "RED"]),
   confidenceLevel: confidenceLevelSchema,
   verdictLabel: z.string(),
-  goNoGo: z.enum(["GO", "NO-GO", "NEED-MORE-INFO"]),
+  goNoGo: goNoGoSchema,
   summary: z.string(),
   detectedFields: detectedFieldsSchema,
   missingInfo: z.array(missingInfoSchema),
@@ -226,6 +260,9 @@ export const analysisResponseSchema = z.object({
   marketComparison: z.string().nullable().optional(),
   financialImpactConfidence: financialImpactConfidenceSchema.nullable().optional(),
   financialSummary: z.string().nullable().optional(),
+  marketValueStatus: z.enum(["verified", "unverified"]).optional(),
+  dimensions: analysisDimensionsSchema.optional(),
+  mathematicalDerivation: z.array(z.string()).optional(),
   docFeeCapCheck: docFeeCapCheckSchema.nullable().optional(),
   // ---------------------------------------------------------------------
   // Lease Math Engine — deterministic post-LLM computations

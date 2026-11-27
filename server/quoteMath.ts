@@ -54,6 +54,9 @@ export interface PurchaseInputs {
   termMonths?: number | null;
   statedOutTheDoor?: number | null;
   statedMonthlyPayment?: number | null;
+  /** When true on a cash purchase, rebates are not subtracted from the price. */
+  rebateContingentOnFinancing?: boolean | null;
+  cashPurchase?: boolean | null;
 }
 
 export interface PurchaseMath {
@@ -67,6 +70,13 @@ export interface PurchaseMath {
   monthlyPayment: number | null;
   outTheDoorMismatch: number | null;
   paymentMismatch: number | null;
+  tradeEquity: number | null;
+  governmentCharges: number | null;
+  dealerImposedCharges: number | null;
+  totalOfPayments: number | null;
+  financeCharge: number | null;
+  conditionalRebateExcluded: number | null;
+  derivation: string[];
 }
 
 export function roundCents(amount: number): number {
@@ -95,6 +105,11 @@ export function amortizingPayment(
   return roundCents((principal * monthlyRate * growth) / (growth - 1));
 }
 
+function moneyLine(label: string, amount: number): string {
+  const sign = amount < 0 ? "-" : "";
+  return `${label} ${sign}$${Math.abs(amount).toFixed(2)}`;
+}
+
 function money(value: number | null | undefined, label: string): number | { error: string } {
   if (value == null) return 0;
   if (typeof value !== "number" || !Number.isFinite(value)) {
@@ -115,6 +130,13 @@ export function computePurchase(input: PurchaseInputs): PurchaseMath {
     monthlyPayment: null,
     outTheDoorMismatch: null,
     paymentMismatch: null,
+    tradeEquity: null,
+    governmentCharges: null,
+    dealerImposedCharges: null,
+    totalOfPayments: null,
+    financeCharge: null,
+    conditionalRebateExcluded: null,
+    derivation: [],
   };
 
   if (input.vehiclePrice == null || !Number.isFinite(input.vehiclePrice)) {
@@ -154,13 +176,19 @@ export function computePurchase(input: PurchaseInputs): PurchaseMath {
     return { ...blank, reason: "sales tax cannot be negative" };
   }
 
+  const excludeRebate = input.rebateContingentOnFinancing === true && input.cashPurchase === true && rebates > 0;
+  const appliedRebates = excludeRebate ? 0 : rebates;
+  const conditionalRebateExcluded = excludeRebate ? rebates : null;
   const credit = input.tradeInTaxCredit === true ? tradeInAllowance : 0;
-  const taxablePrice = roundCents(input.vehiclePrice - rebates - credit);
+  const taxablePrice = roundCents(input.vehiclePrice - appliedRebates - credit);
   const salesTax = input.salesTaxAmount != null
     ? roundCents(input.salesTaxAmount)
     : roundCents(Math.max(0, taxablePrice) * rate);
-  const netVehicle = roundCents(input.vehiclePrice - rebates - tradeInAllowance);
+  const netVehicle = roundCents(input.vehiclePrice - appliedRebates - tradeInAllowance);
+  const governmentCharges = roundCents(salesTax + titleFee + registrationFee);
+  const dealerImposedCharges = roundCents(docFee + addOns);
   const outTheDoor = roundCents(netVehicle + salesTax + titleFee + registrationFee + docFee + addOns);
+  const tradeEquity = roundCents(tradeInAllowance - tradePayoff);
   const negativeEquity = roundCents(Math.max(0, tradePayoff - tradeInAllowance));
   const amountFinanced = roundCents(outTheDoor + tradePayoff - downPayment);
 
@@ -184,6 +212,40 @@ export function computePurchase(input: PurchaseInputs): PurchaseMath {
       ? null
       : roundCents(input.statedMonthlyPayment - monthlyPayment);
 
+  const totalOfPayments =
+    monthlyPayment != null && input.termMonths != null
+      ? roundCents(monthlyPayment * input.termMonths)
+      : null;
+  const financeCharge =
+    totalOfPayments != null ? roundCents(totalOfPayments - Math.max(0, amountFinanced)) : null;
+
+  const derivation = [
+    moneyLine("Vehicle price", input.vehiclePrice),
+    appliedRebates > 0 ? moneyLine("Rebates subtracted", appliedRebates) : null,
+    conditionalRebateExcluded != null
+      ? `Financing-contingent rebate of $${conditionalRebateExcluded.toFixed(2)} was not applied to this cash quote.`
+      : null,
+    tradeInAllowance > 0 ? moneyLine("Trade-in allowance", tradeInAllowance) : null,
+    tradePayoff > 0 ? moneyLine("Trade payoff", tradePayoff) : null,
+    moneyLine("Trade equity", tradeEquity),
+    moneyLine("Sales tax (government, as stated or computed)", salesTax),
+    moneyLine("Title (government)", titleFee),
+    moneyLine("Registration (government)", registrationFee),
+    moneyLine("Government charges", governmentCharges),
+    moneyLine("Doc fee (dealer)", docFee),
+    moneyLine("Dealer add-ons", addOns),
+    moneyLine("Dealer-imposed charges", dealerImposedCharges),
+    moneyLine("Computed out-the-door", outTheDoor),
+    input.statedOutTheDoor != null ? moneyLine("Stated out-the-door", input.statedOutTheDoor) : null,
+    outTheDoorMismatch != null ? moneyLine("Out-the-door difference (stated minus computed)", outTheDoorMismatch) : null,
+    amountFinanced != null ? moneyLine("Amount financed", amountFinanced) : null,
+    monthlyPayment != null ? moneyLine("Computed monthly payment", monthlyPayment) : null,
+    paymentMismatch != null ? moneyLine("Payment difference (stated minus computed)", paymentMismatch) : null,
+    totalOfPayments != null ? moneyLine("Total of payments", totalOfPayments) : null,
+    financeCharge != null ? moneyLine("Finance charge", financeCharge) : null,
+    negativeEquity > 0 ? moneyLine("Negative equity", negativeEquity) : null,
+  ].filter((line): line is string => line != null);
+
   return {
     ok: true,
     taxablePrice,
@@ -194,6 +256,13 @@ export function computePurchase(input: PurchaseInputs): PurchaseMath {
     monthlyPayment,
     outTheDoorMismatch,
     paymentMismatch,
+    tradeEquity,
+    governmentCharges,
+    dealerImposedCharges,
+    totalOfPayments,
+    financeCharge,
+    conditionalRebateExcluded,
+    derivation,
   };
 }
 

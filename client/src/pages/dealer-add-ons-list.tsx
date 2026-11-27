@@ -60,7 +60,7 @@ export default function DealerAddOnsList() {
 
             <div className="rounded-lg border border-blue-600/20 bg-blue-600/5 p-5 mb-8">
               <p className="text-base font-semibold text-foreground mb-2">
-                Dealer added extras to your quote? Paste it here — Odigos flags every add-on that's overpriced or unnecessary.
+                Dealer added extras to your quote? Paste it here — Odigos lists the add-ons it can read and separates them from government charges. It does not assign a market value to the vehicle.
               </p>
               <Button asChild variant="cta" className="font-semibold">
                 <Link href="/analyze">Check My Quote</Link>

@@ -6,10 +6,12 @@ const VERDICT_COLORS: Record<string, { text: string; badge: string }> = {
   "GO": { text: "#065f46", badge: "#10b981" },
   "NO-GO": { text: "#991b1b", badge: "#ef4444" },
   "NEED-MORE-INFO": { text: "#92400e", badge: "#f59e0b" },
+  "PROCEED-WITH-CAUTION": { text: "#92400e", badge: "#f59e0b" },
+  "INSUFFICIENT-INFORMATION": { text: "#92400e", badge: "#f59e0b" },
 };
 
 interface DrawScorecardOptions {
-  goNoGo: "GO" | "NO-GO" | "NEED-MORE-INFO";
+  goNoGo: "GO" | "NO-GO" | "NEED-MORE-INFO" | "PROCEED-WITH-CAUTION" | "INSUFFICIENT-INFORMATION";
   verdictLabel: string;
   topIssues: string[];
 }

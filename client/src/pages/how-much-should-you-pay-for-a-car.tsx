@@ -130,7 +130,7 @@ export default function HowMuchShouldYouPayForACar() {
           </li>
           <li className="flex items-start gap-3">
             <span className="shrink-0 font-semibold text-foreground">Doc fee:</span>
-            <span>Dealer-controlled but bounded by norms. Some states cap it (California: ~$85). In uncapped states, $200–$400 is typical; $700–$999 is at the high end. See <Link href="/hidden-dealer-fees" className="underline text-foreground">common hidden dealer fees</Link> for context on what's normal.</span>
+            <span>Dealer-controlled. In California, Vehicle Code § 4456.5 sets $85 only for a DMV private industry partner and $70 otherwise. Other states differ, and an unverified cap is not treated as a legal finding. See <Link href="/hidden-dealer-fees" className="underline text-foreground">common hidden dealer fees</Link>.</span>
           </li>
           <li className="flex items-start gap-3">
             <span className="shrink-0 font-semibold text-foreground">Taxes, title, registration:</span>
@@ -143,9 +143,9 @@ export default function HowMuchShouldYouPayForACar() {
         </ul>
 
         <div className="rounded-lg border border-border bg-muted/30 p-5 mb-8">
-          <p className="text-sm font-medium text-foreground mb-2">Odigos checks whether your quote is in line with a fair all-in price</p>
+          <p className="text-sm font-medium text-foreground mb-2">Odigos audits the quote you paste</p>
           <p className="text-sm text-muted-foreground">
-            <Link href="/analyze" className="underline text-foreground">Paste your dealer quote</Link> and Odigos flags fees that look inflated, add-ons that seem overpriced, and information that's missing from the total. No signup required.
+            <Link href="/analyze" className="underline text-foreground">Paste your dealer quote</Link> and Odigos checks whether the charges are disclosed, whether the total reconciles, and whether a fee exceeds a verified cap. It does not invent a fair market price. No signup required.
           </p>
         </div>
 

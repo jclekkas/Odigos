@@ -642,7 +642,7 @@ describe("rule engine with lease math", () => {
     expect(leaseMath?.paymentValidation?.isSignificant).toBe(false);
 
     const result = applyRuleEngine(makeLlm(), fields, null, "lease", leaseMath);
-    // Should reach general rules (OTD present → GREEN)
-    expect(result.dealScore).toBe("GREEN");
+    expect(result.goNoGo).toBe("INSUFFICIENT-INFORMATION");
+    expect(result.dealScore).not.toBe("GREEN");
   });
 });

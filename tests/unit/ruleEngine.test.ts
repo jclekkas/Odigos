@@ -160,14 +160,14 @@ describe("applyRuleEngine", () => {
     const fees: Fee[] = [{ name: "extended warranty", amount: 800 }];
     const result = applyRuleEngine(makeLlm(), makeFields({ fees }));
     expect(result.dealScore).toBe("YELLOW");
-    expect(result.goNoGo).toBe("NEED-MORE-INFO");
+    expect(result.goNoGo).toBe("PROCEED-WITH-CAUTION");
   });
 
   it("returns YELLOW when payment-only quote (no sale price, no OTD)", () => {
     const fields = makeFields({ monthlyPayment: 450 });
     const result = applyRuleEngine(makeLlm(), fields);
     expect(result.dealScore).toBe("YELLOW");
-    expect(result.goNoGo).toBe("NEED-MORE-INFO");
+    expect(result.goNoGo).toBe("INSUFFICIENT-INFORMATION");
     expect(result.verdictLabel).toMatch(/OTD/i);
   });
 
@@ -177,7 +177,7 @@ describe("applyRuleEngine", () => {
     expect(result.dealScore).toBe("YELLOW");
   });
 
-  it("returns GREEN/HIGH when OTD + APR + term present, no vague fees", () => {
+  it("does not approve a reconciled quote when market value is unverified", () => {
     // 32000 + 2000 tax = 34000, which is the stated out-the-door price.
     const fields = makeFields({
       outTheDoorPrice: 34000,
@@ -187,8 +187,10 @@ describe("applyRuleEngine", () => {
       fees: [{ name: "Tax", amount: 2000 }],
     });
     const result = applyRuleEngine(makeLlm(), fields);
-    expect(result.dealScore).toBe("GREEN");
-    expect(result.goNoGo).toBe("GO");
+    expect(result.dealScore).toBe("YELLOW");
+    expect(result.goNoGo).toBe("INSUFFICIENT-INFORMATION");
+    expect(result.verdictLabel).toMatch(/MARKET VALUE NOT VERIFIED/i);
+    expect(result.marketBenchmark?.low).toBeNull();
   });
 
   it("does not call a quote clean when the out-the-door price leaves $1,000 unexplained", () => {
@@ -204,15 +206,15 @@ describe("applyRuleEngine", () => {
     expect(result.verdictLabel).toMatch(/DOESN'T ADD UP/i);
   });
 
-  it("returns GREEN/MEDIUM when OTD + APR + term but no MSRP/sale price", () => {
+  it("does not approve an out-the-door quote that has no selling price", () => {
     const fields = makeFields({
       outTheDoorPrice: 35000,
       apr: 3.9,
       termMonths: 72,
     });
     const result = applyRuleEngine(makeLlm(), fields);
-    expect(result.dealScore).toBe("GREEN");
-    expect(result.goNoGo).toBe("GO");
+    expect(result.goNoGo).not.toBe("GO");
+    expect(result.dealScore).not.toBe("GREEN");
   });
 
   it("returns YELLOW when OTD present but vague fees detected", () => {
@@ -222,16 +224,16 @@ describe("applyRuleEngine", () => {
     });
     const result = applyRuleEngine(makeLlm(), fields);
     expect(result.dealScore).toBe("YELLOW");
-    expect(result.goNoGo).toBe("NEED-MORE-INFO");
+    expect(result.goNoGo).toBe("PROCEED-WITH-CAUTION");
   });
 
-  it("returns GREEN/MEDIUM when OTD present and no red flags", () => {
+  it("does not call a title-only quote a clean approval", () => {
     const fields = makeFields({
       outTheDoorPrice: 28000,
       fees: [{ name: "Title Fee", amount: 150 }],
     });
     const result = applyRuleEngine(makeLlm(), fields);
-    expect(result.dealScore).toBe("GREEN");
+    expect(result.goNoGo).toBe("INSUFFICIENT-INFORMATION");
   });
 
   it("rule engine takes precedence over LLM — LLM RED is overridden to YELLOW when only rule is 'no OTD'", () => {
@@ -239,7 +241,7 @@ describe("applyRuleEngine", () => {
     const fields = makeFields({ salePrice: 30000 });
     const result = applyRuleEngine(llm, fields);
     expect(result.dealScore).toBe("YELLOW");
-    expect(result.goNoGo).toBe("NEED-MORE-INFO");
+    expect(result.goNoGo).toBe("INSUFFICIENT-INFORMATION");
   });
 });
 
@@ -316,7 +318,7 @@ describe("applyRuleEngine — lease-specific rules", () => {
     });
     const result = applyRuleEngine(makeLlm(), fields, null, "lease");
     expect(result.dealScore).toBe("YELLOW");
-    expect(result.goNoGo).toBe("NEED-MORE-INFO");
+    expect(result.goNoGo).toBe("PROCEED-WITH-CAUTION");
     expect(result.verdictLabel).toMatch(/ACQUISITION/i);
   });
 
@@ -330,7 +332,7 @@ describe("applyRuleEngine — lease-specific rules", () => {
     });
     const result = applyRuleEngine(makeLlm(), fields, null, "lease");
     expect(result.dealScore).toBe("YELLOW");
-    expect(result.goNoGo).toBe("NEED-MORE-INFO");
+    expect(result.goNoGo).toBe("PROCEED-WITH-CAUTION");
     expect(result.verdictLabel).toMatch(/MILEAGE/i);
   });
 
@@ -338,7 +340,7 @@ describe("applyRuleEngine — lease-specific rules", () => {
     const fields = makeFields({ monthlyPayment: 350 });
     const result = applyRuleEngine(makeLlm(), fields, null, "lease");
     expect(result.dealScore).toBe("YELLOW");
-    expect(result.goNoGo).toBe("NEED-MORE-INFO");
+    expect(result.goNoGo).toBe("INSUFFICIENT-INFORMATION");
     expect(result.verdictLabel).toMatch(/LEASE TERMS/i);
   });
 
@@ -368,8 +370,8 @@ describe("applyRuleEngine — lease-specific rules", () => {
       mileageAllowance: 12000,
     });
     const result = applyRuleEngine(makeLlm(), fields, null, "lease");
-    // Should pass through to general rules (OTD present path)
-    expect(result.dealScore).toBe("GREEN");
+    expect(result.goNoGo).toBe("INSUFFICIENT-INFORMATION");
+    expect(result.dealScore).not.toBe("GREEN");
   });
 
   it("does not flag mileage rate at $0.25 (below threshold)", () => {
@@ -381,7 +383,8 @@ describe("applyRuleEngine — lease-specific rules", () => {
       excessMileageRate: 0.25,
     });
     const result = applyRuleEngine(makeLlm(), fields, null, "lease");
-    expect(result.dealScore).toBe("GREEN");
+    expect(result.goNoGo).toBe("INSUFFICIENT-INFORMATION");
+    expect(result.dealScore).not.toBe("GREEN");
   });
 
   it("doc fee cap violation still takes priority over lease rules", () => {

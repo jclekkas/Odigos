@@ -123,7 +123,7 @@ function HeroSection({
           className="mt-5 text-lg sm:text-xl text-foreground/75 leading-relaxed"
           data-testid="text-hero-subheadline"
         >
-          Paste your quote. We'll show what's overpriced, what's illegal, and what to say back.
+          Paste your quote. We'll check the math, the disclosed fees, and any verified state cap, then tell you what is still unverified.
         </p>
 
         {/* Textarea card */}
@@ -283,7 +283,7 @@ function HowWeKnowSection() {
               <div className="flex items-center justify-center h-14 w-14 rounded-full bg-primary/10">
                 <Database className="w-5 h-5 text-primary" />
               </div>
-              <p className="text-sm font-medium text-foreground">Based on real dealer quotes submitted by buyers</p>
+              <p className="text-sm font-medium text-foreground">The audit uses the numbers in the quote you submit</p>
             </div>
           </FadeIn>
           <FadeIn delay={0.08}>
@@ -291,7 +291,7 @@ function HowWeKnowSection() {
               <div className="flex items-center justify-center h-14 w-14 rounded-full bg-primary/10">
                 <BookOpen className="w-5 h-5 text-primary" />
               </div>
-              <p className="text-sm font-medium text-foreground">Compared against state laws and market data</p>
+              <p className="text-sm font-medium text-foreground">Fee caps are applied only when a citation is on file</p>
             </div>
           </FadeIn>
           <FadeIn delay={0.16}>
@@ -299,7 +299,7 @@ function HowWeKnowSection() {
               <div className="flex items-center justify-center h-14 w-14 rounded-full bg-primary/10">
                 <RefreshCw className="w-5 h-5 text-primary" />
               </div>
-              <p className="text-sm font-medium text-foreground">Updated continuously</p>
+              <p className="text-sm font-medium text-foreground">Vehicle price is not estimated without an independent source</p>
             </div>
           </FadeIn>
         </div>
@@ -321,7 +321,7 @@ function PricingSection() {
             <h3 className="font-medium">Full Dealer Quote Analysis</h3>
             <p className="my-4 text-3xl font-semibold">$0</p>
             <ul className="space-y-2 text-sm text-muted-foreground text-left mb-6">
-              {["GO / NO-GO verdict and deal score", "Every detected red flag and hidden fee", "Missing-info checklist", "Copy-paste dealer reply", "Full analysis reasoning"].map((feature) => (
+              {["GO, caution, insufficient information, or NO-GO", "Math worksheet and verified fee-cap checks", "Missing-info checklist", "Dealer reply limited to those findings", "Market value left unverified until a price source is configured"].map((feature) => (
                 <li key={feature} className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
                   <span>{feature}</span>
@@ -433,7 +433,7 @@ export default function Landing() {
   useEffect(() => {
     setSeoMeta({
       title: "Odigos \u2014 Dealer Quote Analyzer | Find What\u2019s Wrong With Your Quote",
-      description: "Paste your dealer quote. Odigos shows what\u2019s overpriced, what\u2019s illegal, and what to say back \u2014 in 60 seconds. Full analysis is free. No pass or payment required.",
+      description: "Paste your dealer quote. Odigos audits disclosure, math, and verified fee caps. Market value stays unverified until an independent price source is configured. Full analysis is free.",
       path: "/",
     });
   }, []);
