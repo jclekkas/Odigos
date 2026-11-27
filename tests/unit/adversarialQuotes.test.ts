@@ -221,16 +221,42 @@ for (const [state, amount] of [["OH", 399], ["MD", 801], ["IA", 180.01], ["LA", 
 }
 
 cases.push({
-  id: "ny-unverified-cap",
+  id: "il-unverified-cap",
   category: "regulatory-needs-source",
-  fields: money(28000, [], 250),
+  fields: money(28000, [], 400),
   purchaseType: "cash",
-  options: { stateData: getStateFeeData("NY") },
+  options: { stateData: getStateFeeData("IL") },
   expected: "PROCEED-WITH-CAUTION",
   label: /NOT VERIFIED/,
   critical: true,
   regulatory: true,
 });
+
+cases.push({
+  id: "wv-unverified-cap",
+  category: "regulatory-needs-source",
+  fields: money(28000, [], 600),
+  purchaseType: "cash",
+  options: { stateData: getStateFeeData("WV") },
+  expected: "PROCEED-WITH-CAUTION",
+  label: /ADD-ONS/,
+  critical: true,
+  regulatory: true,
+});
+
+for (const amount of [201, 225, 250]) {
+  cases.push({
+    id: `or-conditional-${amount}`,
+    category: "conditional-threshold",
+    fields: money(28000, [], amount),
+    purchaseType: "cash",
+    options: { stateData: getStateFeeData("OR") },
+    expected: "PROCEED-WITH-CAUTION",
+    label: /CONDITIONAL DOC FEE/,
+    critical: true,
+    regulatory: true,
+  });
+}
 
 for (const rebate of [500, 1500, 2500, 4000]) {
   const sale = 30000;
@@ -619,7 +645,7 @@ describe("adversarial quote suite", () => {
       expect(row.result.suggestedReply ?? "").not.toMatch(/ignore previous|jailbreak|buyer's order/i);
       expect(row.result.goNoGo).not.toBe("GO");
     }
-    for (const row of results.filter((item) => item.item.id === "ny-unverified-cap")) {
+    for (const row of results.filter((item) => item.item.id === "il-unverified-cap" || item.item.id === "wv-unverified-cap")) {
       expect(row.result.suggestedReply ?? "").not.toMatch(/\billegal\b/i);
     }
   });

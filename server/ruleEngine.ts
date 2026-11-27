@@ -18,6 +18,8 @@ export interface RuleEngineOptions {
   stateData?: RegulatoryStateInput | null;
   /** null means the dealer did not say whether it is a DMV private industry partner. */
   privateIndustryPartner?: boolean | null;
+  /** null means the quote did not say whether an Oregon dealer uses an electronic integrator. */
+  electronicIntegrator?: boolean | null;
   /** A caller-supplied benchmark. Ignored when it merely copies the submitted price. */
   marketBenchmark?: MarketBenchmark | null;
   condition?: "new" | "used" | "unknown" | null;
@@ -363,8 +365,9 @@ export function applyRuleEngine(
 ): RuleEngineResult {
   const fees = fields.fees || [];
   const partner = options?.privateIndustryPartner ?? null;
+  const integrator = options?.electronicIntegrator ?? null;
   const docFee = options?.stateData
-    ? classifyDocFee(fees, options.stateData, partner)
+    ? classifyDocFee(fees, options.stateData, partner, integrator)
     : null;
   const supplied = options?.marketBenchmark ?? null;
   const anchored =

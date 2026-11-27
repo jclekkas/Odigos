@@ -2,9 +2,10 @@
  * Doc-fee classification.
  *
  * California's two ceilings come from Vehicle Code § 4456.5, fetched from
- * leginfo.legislature.ca.gov on 2026-11-27. Other states are called illegal
- * only when this dataset records a citation and does not list the cap as
- * unverified. Otherwise the result is needs_source.
+ * leginfo.legislature.ca.gov on 2026-11-27. Oregon's two ceilings come from
+ * ORS 822.043, fetched from oregonlegislature.gov on 2026-11-27. Other states
+ * are called illegal only when this dataset records a citation and does not
+ * list the cap as unverified. Otherwise the result is needs_source.
  */
 
 export type ChargeClassification =
@@ -49,6 +50,12 @@ const CA_EFFECTIVE = "2019-01-01";
 const CA_VERIFIED = "2026-11-27";
 const CA_PARTNER_CONDITION =
   "A dealer with a contractual agreement to be a DMV private industry partner under Vehicle Code § 1685 may charge up to $85. A dealer without that agreement may charge up to $70.";
+
+const OR_SOURCE = "https://www.oregonlegislature.gov/bills_laws/ors/ors822.html";
+const OR_STATUTE = "ORS 822.043";
+const OR_VERIFIED = "2026-11-27";
+const OR_INTEGRATOR_CONDITION =
+  "A dealer that uses an integrator may charge a document processing fee of up to $250. A dealer that does not use an integrator may charge up to $200.";
 
 const DOC_FEE_EXACT = [
   "doc fee",
@@ -104,6 +111,7 @@ export function classifyDocFee(
   fees: { name: string; amount: number | null }[],
   state: RegulatoryStateInput | null | undefined,
   privateIndustryPartner: boolean | null = null,
+  electronicIntegrator: boolean | null = null,
 ): DocFeeAssessment {
   const charged = detectDocFeeAmount(fees);
   const jurisdiction = state?.name ?? state?.abbreviation ?? "Unknown";
@@ -120,6 +128,10 @@ export function classifyDocFee(
 
   if (state.abbreviation === "CA") {
     return classifyCalifornia(charged, privateIndustryPartner);
+  }
+
+  if (state.abbreviation === "OR") {
+    return classifyOregon(charged, electronicIntegrator);
   }
 
   if (charged == null) {
@@ -265,6 +277,63 @@ function classifyCalifornia(charged: number | null, partner: boolean | null): Do
     chargedAmount: charged,
     exceedsStoredCap: false,
     summary: `The $${charged} document processing charge is above $70 and at or below $85. Vehicle Code § 4456.5 allows $85 only when the dealer has a DMV private-industry-partner agreement under § 1685. That agreement was not confirmed.`,
+  };
+}
+
+function classifyOregon(charged: number | null, integrator: boolean | null): DocFeeAssessment {
+  const base = {
+    hardCeiling: 250,
+    conditionalCeiling: 200,
+    condition: OR_INTEGRATOR_CONDITION,
+    jurisdiction: "Oregon",
+    statutoryReference: OR_STATUTE,
+    officialSource: OR_SOURCE,
+    effectiveDate: "not stated",
+    lastVerificationDate: OR_VERIFIED,
+  };
+
+  if (charged == null) {
+    return {
+      ...base,
+      classification: "not_checked",
+      chargedAmount: null,
+      exceedsStoredCap: false,
+      summary: "No documentation fee amount was found to compare with ORS 822.043.",
+    };
+  }
+
+  if (charged > 250 || (integrator === false && charged > 200)) {
+    return {
+      ...base,
+      classification: "illegal",
+      chargedAmount: charged,
+      exceedsStoredCap: true,
+      summary:
+        integrator === false
+          ? `The $${charged} document processing fee exceeds the $200 ceiling in ORS 822.043(4)(b) for a dealer that does not use an integrator.`
+          : `The $${charged} document processing fee exceeds $250, the maximum in ORS 822.043(4)(a) for a dealer that uses an integrator.`,
+    };
+  }
+
+  if (integrator === true || charged <= 200) {
+    return {
+      ...base,
+      classification: "permissible",
+      chargedAmount: charged,
+      exceedsStoredCap: false,
+      summary:
+        integrator === true
+          ? `The dealer is confirmed to use an integrator, so the $${charged} document processing fee is within the $250 ceiling in ORS 822.043(4)(a).`
+          : `The $${charged} document processing fee is within the $200 ceiling that applies when a dealer does not use an integrator.`,
+    };
+  }
+
+  return {
+    ...base,
+    classification: "potentially_noncompliant",
+    chargedAmount: charged,
+    exceedsStoredCap: false,
+    summary: `The $${charged} document processing fee is above $200 and at or below $250. ORS 822.043(4) allows $250 only when the dealer uses an integrator. Integrator use was not confirmed.`,
   };
 }
 
