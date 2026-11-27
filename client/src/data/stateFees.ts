@@ -47,30 +47,30 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Alabama",
     abbreviation: "AL",
     slug: "alabama",
-    docFeeRange: "Typically $400–$700",
+    docFeeRange: "Reported $400–$700 (not verified)",
     hasCap: false,
     metaDescription:
-      "Alabama has no cap on dealer doc fees — $400–$700 is common. The state tax is 4% with local additions up to 11%. See what Alabama car buyers actually pay.",
+      "Alabama does not have a verified documentation-fee cap on file. Reported $400–$700 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Alabama has no state law capping the documentation fee. Dealers set their own amounts, and fees of $400–$700 are commonly reported. There is no legal ceiling, so it pays to compare quotes across dealers.",
+      "Alabama does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $400–$700. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
-      "Alabama's state sales tax on vehicles is 4%, but local county and city taxes can push the combined rate as high as 11%. Rates vary significantly by jurisdiction — always verify the effective rate for your specific purchase location.",
+      "Alabama's state sales tax on automotive vehicles is 2% (the general sales-tax rate is 4%), but local county and city taxes can push the combined rate higher once local taxes are added. Those combined rates are not verified in this file. Rates vary significantly by jurisdiction — always verify the effective rate for your specific purchase location.",
     registrationNote:
       "Alabama registration includes a base state fee of approximately $23, plus county-specific fees that vary by location. Title fee is $15.",
     introAngle:
-      "Alabama has no cap on dealer documentation fees, meaning buyers can see fees anywhere from a few hundred dollars to $700 or more at the same dealership on different days. The wide local tax variation — from 4% in some areas to over 10% in others — makes the OTD price harder to estimate without knowing your exact county. Understanding both the doc fee and your local rate is essential before comparing quotes.",
+      "Alabama does not have a verified documentation-fee cap on file, meaning buyers can see fees anywhere from a few hundred dollars to $700 or more at the same dealership on different days. Local additions sit on top of the 2% automotive rate. Combined rates are not fully verified in this file, so look up the rate for the dealer's location before you estimate the out-the-door price. Understanding both the doc fee and your local rate is essential before comparing quotes.",
     snippetAnswer:
-      "Alabama dealers typically charge $400–$700 in documentation fees with no state cap. The state sales tax is 4%, but combined local rates can reach 11% depending on your county. Always compare the full out-the-door price, not just the vehicle price.",
+      "Alabama does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $400–$700. That range is not a market standard. The automotive sales tax on vehicles is 2%, Local additions are not verified in this file. Look them up for the dealer's county. Always compare the full out-the-door price, not just the vehicle price.",
     watchFor: [
-      "High local tax rates: Alabama's local additions can more than double the 4% base rate in some counties. Verify the combined rate for your purchase location before estimating your OTD total.",
-      "Uncapped doc fees: Alabama has no limit on what dealers can charge. If the doc fee is above $600, ask whether it's the same for all customers or negotiable.",
+      "High local tax rates: Alabama's local additions sit on top of the 2% automotive rate. Confirm the combined rate for your county. Verify the combined rate for your purchase location before estimating your OTD total.",
+      "Doc fees without a verified cap on file: This file does not verify a limit on what dealers can charge. If the doc fee is above $600, ask whether it's the same for all customers or negotiable.",
       "Add-on packages: protection packages, paint sealant, and nitrogen tires are common in Alabama dealerships and are almost never required even when presented as standard.",
     ],
     negotiationNote:
-      "Because Alabama has no doc fee cap, the fee is one of the items worth questioning. Some dealers will reduce it to close a deal, especially in competitive markets. Focus on the total OTD price and get competing quotes from multiple dealers to create leverage. The vehicle price is almost always the most flexible number in the deal.",
+      "Because Alabama does not have a verified doc-fee cap on file, the fee is one of the items worth questioning. Some dealers will reduce it to close a deal, especially in competitive markets. Focus on the total OTD price and get competing quotes from multiple dealers to create leverage. The vehicle price is almost always the most flexible number in the deal.",
     ctaHeading: "Have an Alabama dealer quote you want to check?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://caredge.com/guides/car-dealer-doc-fee-by-state",
@@ -80,27 +80,27 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     dealerMessage:
       "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee, all additional dealer fees, Alabama sales tax (state + local), title fee, and registration costs? I'd like to understand the complete total before scheduling a visit. Thank you.",
     lastVerified: "2026-03",
-    buyerTip: "Alabama's local sales tax can vary by more than 7 percentage points between counties — the difference between a 4% and 11% rate on a $35,000 vehicle is $2,450. Before finalizing any deal, look up the exact combined rate for your dealer's zip code on the Alabama Department of Revenue's rate lookup tool.",
+    buyerTip: "Alabama's automotive sales tax on file is 2%, and local additions change the combined rate. Those combined rates are not verified in this file. Before finalizing any deal, look up the exact combined rate for your dealer's zip code on the Alabama Department of Revenue's rate lookup tool.",
   },
 
   alaska: {
     name: "Alaska",
     abbreviation: "AK",
     slug: "alaska",
-    docFeeRange: "Typically $0–$500",
+    docFeeRange: "Reported $0–$500 (not verified)",
     hasCap: false,
     metaDescription:
-      "Alaska has no state sales tax — but doc fees are uncapped and municipal taxes may apply. A major 2025 enforcement action reshaped how dealers disclose fees.",
+      "Alaska does not have a verified documentation-fee cap on file. Reported $0–$500 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Alaska has no state cap on dealer documentation fees. A 2025 enforcement action against Lithia Motors resulted in a $300K civil penalty for hidden doc fees — dealers must now include the doc fee in their advertised price.",
+      "Alaska does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees up to $500. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Alaska has no state sales tax on vehicles. However, municipalities may impose their own sales tax ranging from 0% to 9.5%. If you're buying in Anchorage or another city, verify whether a local tax applies.",
     registrationNote:
       "Alaska registration fees run approximately $100 for a two-year registration period. The title fee is $15. Actual costs vary by municipality.",
     introAngle:
-      "Alaska is one of five states with no state sales tax, which simplifies the OTD picture for buyers. However, doc fees are uncapped and can vary widely — and a December 2025 enforcement action against Lithia Motors ($300K civil penalty for hidden fees) put Alaska dealers on notice that fee transparency is required. Dealers must include the doc fee in advertised prices.",
+      "Alaska is one of five states with no state sales tax, which simplifies the OTD picture for buyers. However, doc fees are without a verified cap on file and can vary widely — and a December 2025 enforcement action against Lithia Motors ($300K civil penalty for hidden fees) put Alaska dealers on notice that fee transparency is required. Dealers must include the doc fee in advertised prices.",
     snippetAnswer:
-      "Alaska has no state sales tax, but doc fees are uncapped and can range from nothing to $500. Municipal taxes may apply depending on where you purchase. A 2025 enforcement action established that doc fees must be included in advertised vehicle prices.",
+      "Alaska does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees up to $500. That range is not a market standard. Municipal taxes may apply depending on where you purchase.",
     watchFor: [
       "Municipal sales taxes: Alaska has no state tax, but some cities and boroughs have local sales taxes up to 9.5%. Confirm whether a local tax applies at your dealership's location.",
       "Hidden or add-on doc fees: the 2025 Lithia Motors case shows that Alaska dealers have sometimes obscured fees. Ask for the doc fee to be itemized clearly before you agree to any price.",
@@ -110,7 +110,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Alaska's remote market means fewer dealers to compare in most areas — which reduces buyer leverage. Focus your energy on the vehicle price and ask for the doc fee to be disclosed upfront. In Anchorage, where competition is higher, you have more options. Always ask for a full itemized OTD breakdown before visiting.",
     ctaHeading: "Have an Alaska dealer quote you want reviewed?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://law.alaska.gov/press/releases/2025/122925-LithiaMotors.html",
@@ -127,30 +127,30 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Arizona",
     abbreviation: "AZ",
     slug: "arizona",
-    docFeeRange: "Typically $400–$600",
+    docFeeRange: "Reported $400–$600 (not verified)",
     hasCap: false,
     metaDescription:
-      "Arizona has no cap on dealer doc fees — $400–$600 is typical. The Transaction Privilege Tax adds 5.6% base, with local rates up to 11.2%. See the AZ OTD breakdown.",
+      "Arizona does not have a verified documentation-fee cap on file. Reported $400–$600 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Arizona has no state cap on dealer documentation fees. Dealers typically charge $400–$600, though some charge more. Because there's no legal limit, it's worth comparing fee disclosures across multiple dealers before committing.",
+      "Arizona does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $400–$600. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Arizona applies a Transaction Privilege Tax (TPT) on vehicle sales. The state base rate is 5.6%, and local city/county additions bring combined rates to 8.6% in Phoenix and up to 11.2% in some areas. The TPT applies to the full purchase price.",
     registrationNote:
       "Arizona registration includes a base $8 registration fee plus a Vehicle License Tax (VLT) calculated on the vehicle's assessed value. The VLT is roughly 60% of the MSRP at 1% per year, so a $40,000 vehicle in its first year carries a significant VLT. The title fee is $4.",
     introAngle:
-      "Arizona has no cap on dealer doc fees, and buyers often encounter fees in the $400–$600 range. The state's Transaction Privilege Tax — essentially a sales tax on the dealer's gross income — applies to vehicle sales and varies significantly by city. Phoenix area buyers pay around 8.6%, while some areas approach 11%. The Vehicle License Tax, which is value-based rather than flat, can also surprise buyers who are used to simple flat-rate registration.",
+      "Arizona does not have a verified doc-fee cap on file, and buyers often encounter fees in the $400–$600 range. The state's Transaction Privilege Tax — essentially a sales tax on the dealer's gross income — applies to vehicle sales and varies significantly by city. Phoenix area buyers pay around 8.6%, while some areas approach 11%. The Vehicle License Tax, which is value-based rather than flat, can also surprise buyers who are used to simple flat-rate registration.",
     snippetAnswer:
-      "Arizona dealers typically charge $400–$600 in documentation fees with no state cap. The Transaction Privilege Tax is 5.6% base with local additions up to 11.2% in some cities. Registration includes a value-based Vehicle License Tax that scales with the vehicle's price.",
+      "Arizona does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $400–$600. That range is not a market standard. The Transaction Privilege Tax is 5.6% base with local additions up to 11.2% in some cities. Registration includes a value-based Vehicle License Tax that scales with the vehicle's price.",
     watchFor: [
       "Local TPT rates: Phoenix's combined rate (~8.6%) differs significantly from other cities. Always verify the effective tax rate for the dealer's location — it affects your OTD total more than the doc fee in many cases.",
       "Vehicle License Tax scaling: Arizona's VLT is calculated on a percentage of the vehicle's value and decreases with age. For new or near-new vehicles, the VLT is a meaningful additional cost — budget for it when estimating your OTD.",
-      "Uncapped doc fees: ask for the doc fee to be disclosed before visiting. If it exceeds $600, ask whether the vehicle price can be adjusted to offset it.",
+      "Doc fees without a verified cap on file: ask for the doc fee to be disclosed before visiting. If it exceeds $600, ask whether the vehicle price can be adjusted to offset it.",
     ],
     negotiationNote:
       "Arizona's Phoenix metro is a competitive market with many dealers, which gives buyers real comparison leverage. Get competing OTD quotes from multiple dealers and use them to negotiate both vehicle price and doc fee. The doc fee is not capped, so it is technically negotiable — some dealers will reduce it to close a deal.",
     ctaHeading: "Have an Arizona dealer quote with fees you want to check?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://caredge.com/guides/car-dealer-doc-fee-by-state",
@@ -167,7 +167,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       },
       {
         q: "Is there a cap on dealer doc fees in Arizona?",
-        a: "No. Arizona has no state-imposed cap on dealer documentation fees. Most dealers charge $400–$600, but there is no legal ceiling. Because the fee is uncapped, it's negotiable — especially in the competitive Phoenix metro market. Get the doc fee disclosed before visiting and compare across dealers.",
+        a: "No. Arizona does not have a verified documentation-fee cap in this file. Unverified reports mention $400–$600. That is not a market standard or a legal finding. Because no cap is verified, the fee is one place to ask for a better out-the-door price — especially in the competitive Phoenix metro market. Get the doc fee disclosed before visiting and compare across dealers.",
       },
       {
         q: "What is Arizona's Transaction Privilege Tax on vehicles?",
@@ -184,7 +184,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     ],
     competitorGapSection:
       "Most Arizona car-buying guides explain the TPT and doc fee but barely mention the Vehicle License Tax — the fee that actually surprises buyers the most. The VLT is a value-based annual charge that can easily exceed $600 in the first year on a new vehicle, and it's separate from the TPT, doc fee, and registration. Budget for it explicitly. The other gap: Arizona's city-level TPT rates vary enough that buying from a dealer in a lower-rate city (e.g., Gilbert at 7.8%) versus a higher-rate city (e.g., Tucson at 8.7%) can save several hundred dollars on the same vehicle.",
-    pageTitle: "Arizona Dealer Fees (2026): No Doc Fee Cap + VLT Explained — AZ OTD Guide",
+    pageTitle: "Arizona Dealer Fees (2026): Doc Fee Cap Not Verified — AZ OTD Guide",
     buyerTip: "Arizona's Vehicle License Tax (VLT) is often the biggest registration surprise for buyers from other states. On a $40,000 new vehicle, the first-year VLT is approximately $480. This decreases each year as the vehicle ages, but it's substantially higher than the flat registration fees buyers are used to in states like Texas or Georgia. Always confirm your first-year VLT before comparing OTD quotes across state lines.",
   },
 
@@ -192,30 +192,30 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Arkansas",
     abbreviation: "AR",
     slug: "arkansas",
-    docFeeRange: "Capped at $129",
+    docFeeRange: "Reported $129 (not verified)",
     hasCap: true,
     metaDescription:
-      "Arkansas caps dealer 'service and handling' fees at $129 — one of the lowest caps in the country. The state uses a tiered sales tax based on vehicle price.",
+      "Arkansas documentation fee: verified ceiling $129 under 23 CAR § 410-801. Reported $129 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Arkansas caps what dealers can charge for documentation (called 'service and handling fees') at $129. This is one of the lowest caps in the country. Dealers cannot legally exceed this amount. If you're seeing a higher fee, ask for clarification.",
+      "23 CAR § 410-801, citing Arkansas Code § 23-112-317, says a dealer service and handling fee shall be no more than $129. The fetched rule does not state an effective date. Odigos can flag a fee above that verified ceiling. Unverified reports mention documentation fees around $129. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "Arkansas uses a tiered sales tax rate based on vehicle price: 0% for vehicles under $4,000, 3.5% for $4,000–$10,000, and 6.5% for vehicles over $10,000. Local additions of up to 5% apply, bringing some combined rates to 11.5%. Most buyers of new vehicles fall into the 6.5% base rate bracket.",
     registrationNote:
       "Arkansas registration fees range from $17 to $30 based on vehicle weight. The title fee is $10.",
     introAngle:
-      "Arkansas offers one of the strongest buyer protections in the country on documentation fees — a hard $129 cap on 'service and handling fees.' Where buyers need to pay attention is the sales tax structure: Arkansas uses a tiered rate based on the vehicle price, plus local additions that can push rates well above 10% in some jurisdictions. The tax varies more than the doc fee here.",
+      "Arkansas has a verified $129 ceiling on the dealer service and handling fee under 23 CAR § 410-801. Where buyers still need to pay attention is the sales tax structure: Arkansas uses a tiered rate based on the vehicle price, plus local additions that can push rates well above 10% in some jurisdictions. The tax varies more than the doc fee here.",
     snippetAnswer:
-      "Arkansas caps dealer 'service and handling' fees at $129 — one of the lowest caps nationally. Sales tax is tiered by vehicle price (6.5% for vehicles over $10K) with local additions up to 11.5%. The low doc fee cap means the main OTD variable is the vehicle price and local tax rate.",
+      "23 CAR § 410-801 says an Arkansas dealer service and handling fee shall be no more than $129. Unverified reports mention documentation fees around $129. That range is not a market standard. Sales tax is tiered by vehicle price (6.5% for vehicles over $10K) with local additions up to 11.5%.",
     watchFor: [
       "Tiered sales tax: the 6.5% base rate only applies to vehicles over $10,000, but local additions can push the combined rate significantly higher. Know your local rate before estimating your OTD total.",
-      "Fees above the $129 cap: any documentation or service fee above $129 is not permitted by Arkansas law. If you see a higher amount, ask the dealer to itemize and justify it.",
+      "Fees above the $129 ceiling: a service and handling fee above $129 exceeds the verified rule in 23 CAR § 410-801. Ask the dealer to itemize it.",
       "Additional dealer add-ons: with the doc fee capped low, dealers may bundle value into protection packages or accessories. These are usually optional and negotiable.",
     ],
     negotiationNote:
-      "With the doc fee capped at $129, your negotiation leverage in Arkansas is focused on the vehicle price and any add-ons. The tiered tax structure means verifying your exact local rate is important before comparing OTD quotes across dealers. Get the full itemized breakdown in writing before agreeing to any price.",
+      "With the service and handling fee capped at a verified $129, negotiation leverage in Arkansas is focused on the vehicle price and any add-ons. The tiered tax structure means verifying your exact local rate is important before comparing OTD quotes across dealers. Get the full itemized breakdown in writing before agreeing to any price.",
     ctaHeading: "Have an Arkansas dealer quote you want to verify?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://caredge.com/guides/car-dealer-doc-fee-by-state",
@@ -224,7 +224,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     specialNotes:
       "Called 'service and handling' fees. Tiered sales tax based on vehicle price.",
     dealerMessage:
-      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, service and handling fee (capped at $129 in Arkansas), all additional dealer fees, Arkansas sales tax (state + local rate), title fee, and registration costs? I'd like to see the complete total. Thank you.",
+      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, service and handling fee (Arkansas rule 23 CAR § 410-801 caps this at $129), all additional dealer fees, Arkansas sales tax (state + local rate), title fee, and registration costs? I'd like to see the complete total. Thank you.",
     lastVerified: "2026-03",
     buyerTip: "Arkansas uses a tiered sales tax system — the 6.5% rate only applies to vehicles over $10,000. If you're purchasing a vehicle between $4,000 and $10,000, the applicable rate is 3.5%. Make sure your dealer's quote uses the correct tier for your vehicle price, since applying the wrong rate could overstate your taxes by several hundred dollars.",
   },
@@ -233,22 +233,22 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "California",
     abbreviation: "CA",
     slug: "california",
-    docFeeRange: "Typically $85 or under",
+    docFeeRange: "Reported $70–$85 (not verified)",
     hasCap: true,
-    pageTitle: "California Dealer Doc Fee (2026): $85 Cap — Know the Legal Limit",
-    h1: "California Dealer Doc Fee (2026): $85 Legal Limit",
+    pageTitle: "California Dealer Doc Fee (2026): $70 or $85 Depending on DMV Partner Status",
+    h1: "California Dealer Doc Fee (2026): $70 or $85, Depending on DMV Partner Status",
     metaDescription:
-      "California caps dealer doc fees at $85. Learn the legal limit and how extra fees may still increase your total cost.",
+      "California's document processing charge is $85 for a DMV partner and $70 otherwise. Reported $70–$85 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "California law limits the documentation fee dealers can charge. Most buyers see a doc fee at or near $85 — dealers cannot legally charge more. This cap is one of the strongest consumer protections in the country for car buyers.",
+      "California Vehicle Code § 4456.5, operative January 1, 2019, limits the document processing charge to $85 only if the dealer is a DMV private industry partner under § 1685, and to $70 otherwise. $85 is not allowed for every dealer, and the charge cannot be presented as a government fee. Ask whether the dealer has that partner agreement. A fee above $85 is above both ceilings. A fee from $70 to $85 is allowed only when the partner agreement is confirmed. Unverified reports mention documentation fees around $70–$85. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "California's base state sales tax is 7.25%, but local district taxes raise it further. Most buyers in major metro areas — Los Angeles, the Bay Area, San Diego — see effective rates between 9.5% and 10.75%. The tax is applied to the vehicle price after any trade-in credit.",
     registrationNote:
       "California registration fees include a base registration fee (typically $60–$70), a Vehicle License Fee (0.65% of the vehicle's value), and county fees. New vehicle registration can run $400–$600 or more depending on the vehicle's value, which surprises buyers used to flat-rate registration in other states.",
     introAngle:
-      "California limits dealer documentation fees to $85 per vehicle. Dealers are not allowed to exceed this amount for the doc fee itself. However, additional charges may still appear in the deal through add-ons or dealer services.",
+      "California limits dealer documentation fees to $85 per vehicle. A dealer may charge up to $85 only with a DMV private industry partner agreement, and up to $70 without one. However, additional charges may still appear in the deal through add-ons or dealer services.",
     snippetAnswer:
-      "California limits dealer documentation fees to $85 per vehicle. Dealers are not allowed to exceed this amount for the doc fee itself. However, additional charges may still appear in the deal through add-ons or dealer services.",
+      "California Vehicle Code § 4456.5, operative January 1, 2019, limits the document processing charge to $85 only if the dealer is a DMV private industry partner under § 1685, and to $70 otherwise. $85 is not allowed for every dealer, and the charge cannot be presented as a government fee. Unverified reports mention documentation fees around $70–$85. That range is not a market standard.",
     watchFor: [
       "High local sales tax: buyers in Los Angeles (10.25%), Alameda County (10.75%), and other high-tax districts pay significantly more than the 7.25% base rate. Always verify the effective rate for your zip code before estimating your OTD total.",
       "Registration fees scaled to vehicle value: California's Vehicle License Fee is a percentage of the car's value, not a flat amount. On a $45,000 vehicle, that's roughly $293 — more than buyers from flat-rate states expect.",
@@ -256,18 +256,18 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Dealer-installed accessories marked up heavily: some California dealerships pre-install accessories (floor mats, roof rails, protection film) and build them into the vehicle price at retail-plus margins. Ask for the base MSRP before accessories.",
     ],
     negotiationNote:
-      "California's $85 doc fee cap is a hard legal limit — if a dealer tries to charge more, cite the California DMV fee schedule ($85 for private industry partners, $70 for other dealers). SB 791 attempted to raise this to $260 but was vetoed by Governor Newsom in October 2025, so the cap remains. Your negotiation leverage is on the vehicle price, add-ons, and financing terms. California does NOT allow trade-in tax deductions — you pay tax on the full purchase price — which makes negotiating the sale price even more critical. The state's massive dealer market (especially LA and Bay Area) means getting 3+ competing OTD quotes is realistic and effective.",
+      "California's document processing charge is $85 only for a DMV private industry partner under Vehicle Code § 4456.5, and $70 otherwise. A fee above $85 is above both ceilings. If a dealer tries to charge more, cite § 4456.5 ($85 for private industry partners, $70 for other dealers). SB 791 attempted to raise this to $260 but was vetoed by Governor Newsom in October 2025, so the cap remains. Your negotiation leverage is on the vehicle price, add-ons, and financing terms. California does NOT allow trade-in tax deductions — you pay tax on the full purchase price — which makes negotiating the sale price even more critical. The state's massive dealer market (especially LA and Bay Area) means getting 3+ competing OTD quotes is realistic and effective.",
     ctaHeading: "Have a California dealer quote?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     ctaTopBody:
-      "Got a California dealer quote? The doc fee cap is $85 — paste your quote and Odigos checks every line. Free, no signup.",
+      "Got a California dealer quote? Paste it and Odigos checks the math, the line items, and the $70 / $85 DMV-partner split. It does not estimate the car's market value.",
     ctaMidBody:
-      "We've seen California doc fees range from $0 to $899 on the same vehicle. Where does your quote fall?",
+      "A California document processing charge above $85 is above both ceilings. From $70 to $85, ask whether the dealer is a DMV private industry partner.",
     ctaMidLink: "Check My California Quote",
-    ctaBottomHeadline: "The $85 cap covers doc fees — but add-ons are still fair game.",
+    ctaBottomHeadline: "The $70 / $85 partner split covers the document processing charge. Add-ons are still a separate question.",
     ctaBottomBody:
-      "Paste your dealer quote and get a DealScore showing how every fee compares to California market averages.",
+      "Paste your dealer quote. Odigos checks the math and the $70 / $85 partner split. It does not estimate a fair market price.",
     ctaBottomButton: "Check My CA Quote Free",
     internalLinks: STANDARD_LINKS,
     sources: [
@@ -277,12 +277,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     specialNotes:
       "$85 for DMV private industry partners, $70 for other dealers. SB 791 (raise to $260) vetoed by Governor Newsom Oct 2025.",
     dealerMessage:
-      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (California law caps this at ~$85), all additional dealer fees, California sales tax (state + local rate for your city), title fee, and registration/VLF costs? I'd like to see the complete total. Thank you.",
+      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (California law allows $85 only for a DMV private industry partner and $70 otherwise), all additional dealer fees, California sales tax (state + local rate for your city), title fee, and registration/VLF costs? I'd like to see the complete total. Thank you.",
     lastVerified: "2026-03",
     commonQuestions: [
       {
         q: "What is the California doc fee cap in 2026?",
-        a: "California caps dealer documentation fees at approximately $85 for most dealers ($85 for DMV private industry partners, $70 for others). A bill that would have raised this to $260 (SB 791) was vetoed by Governor Newsom in October 2025. The $85 cap remains in effect as of 2026.",
+        a: "California sets the document processing charge at $85 for a DMV private industry partner and $70 otherwise for most dealers ($85 for DMV private industry partners, $70 for others). A bill that would have raised this to $260 (SB 791) was vetoed by Governor Newsom in October 2025. The $70 / $85 partner split remains in effect as of 2026.",
       },
       {
         q: "Why is California's local sales tax so different from the state rate?",
@@ -294,7 +294,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       },
       {
         q: "Can a California dealer charge more than $85 for documentation?",
-        a: "Not legally. The California cap is a hard limit — dealers who charge more are out of compliance. If you see a doc fee above $85 on a California dealer's quote, ask for it to be corrected before signing anything.",
+        a: "A fee above $85 is above both ceilings in Vehicle Code § 4456.5. A fee from $70 to $85 is allowed only for a DMV private industry partner. Ask which agreement the dealer has before you treat $85 as permitted.",
       },
       {
         q: "Are dealer add-ons negotiable in California?",
@@ -302,38 +302,38 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       },
     ],
     competitorGapSection:
-      "Most California car-buying guides emphasize the $85 doc fee cap but don't explain the local tax rate variation clearly. The practical gap: buyers in high-tax districts pay 10–10.75% sales tax — more than 3 percentage points above the 7.25% base. On a $40,000 vehicle, that's a $1,200+ difference in tax alone. Before comparing OTD quotes, confirm the effective sales tax rate at each dealer's specific address. Two dealers in the same city can be in different tax districts. The California CDTFA website lets you look up rates by zip code in under a minute.",
-    buyerTip: "SB 791, which would have raised California's doc fee cap from $85 to $260, was vetoed by Governor Newsom in October 2025. The $85 cap remains in effect. Any California dealer quoting a documentation fee significantly above $85 is out of compliance with state law — not a negotiating tactic, but an actual legal violation.",
+      "Most California car-buying guides emphasize an $85 doc fee cap and skip the DMV-partner split: $85 only with that agreement, and $70 otherwise. They also skip the local tax variation. The practical gap: buyers in high-tax districts pay 10–10.75% sales tax — more than 3 percentage points above the 7.25% base. On a $40,000 vehicle, that's a $1,200+ difference in tax alone. Before comparing OTD quotes, confirm the effective sales tax rate at each dealer's specific address. Two dealers in the same city can be in different tax districts. The California CDTFA website lets you look up rates by zip code in under a minute.",
+    buyerTip: "SB 791, which would have raised California's doc fee cap from $85 to $260, was vetoed by Governor Newsom in October 2025. The $70 / $85 partner split remains in effect. A documentation fee above $85 is above both California ceilings in Vehicle Code § 4456.5. From $70 to $85, the fee is allowed only if the dealer is a DMV private industry partner.",
   },
 
   colorado: {
     name: "Colorado",
     abbreviation: "CO",
     slug: "colorado",
-    docFeeRange: "Typically $400–$700",
+    docFeeRange: "Reported $400–$700 (not verified)",
     hasCap: false,
     metaDescription:
-      "Colorado has no cap on dealer 'handling fees' — $400–$700 is common. The state tax is 2.9% plus local additions up to 8%. See the CO OTD picture.",
+      "Colorado does not have a verified documentation-fee cap on file. Reported $400–$700 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Colorado has no state cap on the dealer documentation fee (often called a 'dealer handling fee'). Fees of $400–$700 are common, with some dealers charging more. There is no legal ceiling, so comparison shopping across dealers is important.",
+      "Colorado does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $400–$700. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Colorado's base state sales tax on vehicles is 2.9%, but local county and city taxes add significantly — bringing combined rates up to 8% in some areas. The effective rate varies considerably by location, so confirm your local rate before comparing OTD quotes.",
     registrationNote:
       "Colorado registration fees vary by vehicle weight, age, and value. Costs include a state registration fee plus county-specific additions. Expect to pay several hundred dollars for first-year registration on a new vehicle.",
     introAngle:
-      "Colorado's doc fee is typically in the $400–$700 range with no state cap — called a 'dealer handling fee' at many stores. The state sales tax rate is one of the lower base rates in the country at 2.9%, but local additions bring the effective rate to 6–8% in major areas. A lien filing fee also increased to $40 effective July 2025.",
+      "Unverified reports mention Colorado documentation fees around $400–$700 with no verified cap on file — called a 'dealer handling fee' at many stores. The state sales tax rate is one of the lower base rates in the country at 2.9%, but local additions bring the effective rate to 6–8% in major areas. A lien filing fee also increased to $40 effective July 2025.",
     snippetAnswer:
-      "Colorado dealers typically charge $400–$700 in documentation/handling fees with no state cap. The state sales tax base is 2.9%, with local additions bringing combined rates to around 6–8%. A lien filing fee of $40 applies if you're financing.",
+      "Colorado does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $400–$700. That range is not a market standard. The state sales tax base is 2.9%, with local additions bringing combined rates to around 6–8%.",
     watchFor: [
-      "Handling fee vs. doc fee: Colorado dealers often call the documentation charge a 'dealer handling fee' — it's the same charge but named differently. It's uncapped and can vary between dealers.",
+      "Handling fee vs. doc fee: Colorado dealers often call the documentation charge a 'dealer handling fee' — it's the same charge but named differently. It's without a verified cap on file and can vary between dealers.",
       "Lien filing fee: as of July 1, 2025, Colorado charges a flat $40 lien filing fee for financed vehicles. This is a government fee, not a dealer markup.",
       "Local tax rate variation: combined rates in Denver and other cities are higher than the 2.9% state base. Confirm your effective rate before estimating your OTD total.",
     ],
     negotiationNote:
-      "Colorado's competitive Front Range markets (Denver, Boulder, Fort Collins, Colorado Springs) give buyers multiple dealer options for the same vehicle. Use competing OTD quotes to create leverage on both the vehicle price and the handling fee. Since there's no cap, some dealers will reduce the fee to close a deal.",
+      "Colorado's competitive Front Range markets (Denver, Boulder, Fort Collins, Colorado Springs) give buyers multiple dealer options for the same vehicle. Use competing OTD quotes to create leverage on both the vehicle price and the handling fee. Since no cap is verified in this file, some dealers will reduce the fee to close a deal.",
     ctaHeading: "Have a Colorado dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://tax.colorado.gov/motor-vehicle",
@@ -351,30 +351,30 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Connecticut",
     abbreviation: "CT",
     slug: "connecticut",
-    docFeeRange: "Typically $300–$600",
+    docFeeRange: "Reported $300–$600 (not verified)",
     hasCap: false,
     metaDescription:
-      "Connecticut has no cap on dealer doc fees — $300–$600 is typical. Sales tax is 6.35% for vehicles under $50K and 7.75% above. See the CT OTD picture.",
+      "Connecticut does not have a verified documentation-fee cap on file. Reported $300–$600 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Connecticut has no cap on dealer documentation fees. Several bills (HB 06544, HB 06827, SB 774) were proposed in 2025 to cap fees at 1% of the vehicle price, but none were enacted as of March 2026. Fees of $300–$600 are common.",
+      "Connecticut does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$600. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Connecticut applies a 6.35% sales tax on vehicles priced under $50,000, and 7.75% on vehicles $50,000 or above. There are no local additions — the state rate is uniform. The higher rate on luxury vehicles can meaningfully increase the OTD cost.",
     registrationNote:
       "Connecticut registration runs approximately $120 for a three-year period, plus various surcharges (approximately $71 additional). The title fee is $25.",
     introAngle:
-      "Connecticut buyers face no doc fee cap despite several recent legislative attempts to install one. Fees in the $300–$600 range are typical. The state's two-tier tax structure — 6.35% under $50K, 7.75% above — means buyers of higher-end vehicles should budget accordingly. No local tax additions make the math simpler than in many other states.",
+      "Connecticut does not have a verified documentation-fee cap in this file. Older notes mention bills that did not pass. Unverified reports mention fees around $300–$600. That range is not a market standard. The state's two-tier tax structure — 6.35% under $50K, 7.75% above — means buyers of higher-end vehicles should budget accordingly. No local tax additions make the math simpler than in many other states.",
     snippetAnswer:
-      "Connecticut dealers typically charge $300–$600 in documentation fees with no state cap. Sales tax is 6.35% for vehicles under $50,000 and 7.75% for those at or above. No local additions apply. Multiple bills to cap fees have failed to pass as of 2026.",
+      "Connecticut does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$600. That range is not a market standard. Sales tax is 6.35% for vehicles under $50,000 and 7.75% for those at or above.",
     watchFor: [
       "Luxury vehicle tax tier: the 7.75% rate kicks in at $50,000. If your vehicle is near that threshold, even a small negotiation on the sale price can drop you to the lower 6.35% bracket.",
-      "Uncapped doc fees: Connecticut has no cap, so fees vary by dealer. Ask for the doc fee to be disclosed before you visit — and compare it across multiple dealers.",
+      "Doc fees without a verified cap on file: Connecticut has no cap, so fees vary by dealer. Ask for the doc fee to be disclosed before you visit — and compare it across multiple dealers.",
       "Pending legislative changes: cap legislation may pass in future sessions. Check current status before your purchase.",
     ],
     negotiationNote:
-      "Connecticut's competitive shoreline and metro markets mean dealers are often willing to negotiate vehicle price. The doc fee is uncapped, so it's worth asking whether it's flexible. Focus the overall negotiation on the total OTD price, including any add-ons or accessories that may be bundled.",
+      "Connecticut's competitive shoreline and metro markets mean dealers are often willing to negotiate vehicle price. The doc fee is without a verified cap on file, so it's worth asking whether it's flexible. Focus the overall negotiation on the total OTD price, including any add-ons or accessories that may be bundled.",
     ctaHeading: "Have a Connecticut dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://portal.ct.gov/dmv/vehicle-services/sales-tax-registrations/sales-tax-calculator",
@@ -391,12 +391,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Delaware",
     abbreviation: "DE",
     slug: "delaware",
-    docFeeRange: "Typically $300–$600",
+    docFeeRange: "Reported $300–$600 (not verified)",
     hasCap: false,
     metaDescription:
-      "Delaware has no sales tax but charges a 5.25% state document fee on vehicle purchases. Dealer doc fees are uncapped. See what DE buyers actually pay.",
+      "Delaware does not have a verified documentation-fee cap on file. Reported $300–$600 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Delaware has no state cap on the dealer documentation fee. Doc fees of $300–$600 are common. A separate bill (HB 295) proposing a $475 cap on dealer processing fees was pending as of March 2026 but had not been enacted.",
+      "Delaware does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$600. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Delaware has no traditional sales tax on vehicle purchases. However, the state charges a 5.25% 'document fee' (essentially a transfer tax) on the vehicle's purchase price. This increased from 4.25% effective October 1, 2025. This government fee is separate from the dealer documentation fee.",
     registrationNote:
@@ -404,7 +404,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "Delaware is one of five states with no sales tax — but the state makes up part of that difference with a 5.25% Document Fee applied at titling, which increased from 4.25% in October 2025. This is a government fee, not to be confused with the dealer's own documentation fee. Buyers often see two 'doc fee' line items in Delaware: one from the state and one from the dealer — make sure you understand which is which.",
     snippetAnswer:
-      "Delaware has no traditional sales tax but charges a 5.25% state document fee on vehicle purchases (increased Oct 2025). Dealer documentation fees are separate and uncapped. Buyers should distinguish between the state document fee and any dealer-imposed documentation charge.",
+      "Delaware does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$600. That range is not a market standard. Delaware has no traditional sales tax but charges a 5.25% state document fee on vehicle purchases (increased Oct 2025).",
     watchFor: [
       "Two types of 'document fees': Delaware has a state-level document fee (5.25% of purchase price) AND a dealer-level documentation fee. These are separate charges — make sure any quote itemizes both clearly.",
       "State document fee increase: the state fee increased from 4.25% to 5.25% effective October 2025. On a $35,000 vehicle, that's $1,837 in state fees — a significant jump.",
@@ -414,7 +414,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "The 5.25% state document fee is non-negotiable — it's a government charge. Your negotiation focus is on the vehicle price and any dealer-added doc fee or add-ons. Delaware's relatively small market means fewer competing dealers than in neighboring states.",
     ctaHeading: "Have a Delaware dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://news.delaware.gov/2025/09/30/dmv-fees-increase-in-october-2025/",
@@ -432,12 +432,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "District of Columbia",
     abbreviation: "DC",
     slug: "district-of-columbia",
-    docFeeRange: "Typically $300–$600",
+    docFeeRange: "Reported $300–$600 (not verified)",
     hasCap: false,
     metaDescription:
-      "DC has no cap on dealer doc fees. Vehicle excise tax rates are weight-based and increasing. EV exemptions were removed in 2024. See the DC OTD breakdown.",
+      "District of Columbia does not have a verified documentation-fee cap on file. Reported $300–$600 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "The District of Columbia has no cap on dealer documentation fees. Fees of $300–$600 are typical. There is no legal ceiling, so comparing quotes across multiple dealers is important.",
+      "District of Columbia does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$600. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "DC charges a weight-based excise tax on vehicle purchases rather than a traditional sales tax. Rates as of 2025: under 3,500 lbs at 6% (rising to 7% Oct 2026), 3,500–4,999 lbs at 7% (rising to 8%), and 5,000+ lbs at 8% (rising to 9%). Hybrid vehicles achieving 40+ mpg may qualify for an exemption. The EV exemption was removed effective October 2024.",
     registrationNote:
@@ -445,7 +445,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "The District of Columbia uses a weight-based excise tax system rather than a standard sales tax, and tax rates are increasing in two steps (October 2025 and October 2026). The EV exemption was eliminated in 2024. Buyers should verify the current rates based on their specific vehicle's weight class before estimating their OTD total.",
     snippetAnswer:
-      "DC has no doc fee cap and charges a weight-based excise tax (6–8% depending on vehicle weight) that is increasing in future years. The EV tax exemption was removed in 2024. Budget for the excise tax based on your specific vehicle's weight class.",
+      "District of Columbia does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$600. That range is not a market standard. DC does not have a verified doc-fee cap on file and charges a weight-based excise tax (6–8% depending on vehicle weight) that is increasing in future years. The EV tax exemption was removed in 2024. Budget for the excise tax based on your specific vehicle's weight class.",
     watchFor: [
       "Weight-based excise tax tiers: heavier vehicles (SUVs, trucks) fall into higher tax brackets. A 5,000-lb vehicle is taxed at 8%, rising to 9% in 2026 — a meaningful difference from lighter cars.",
       "EV exemption removed: electric vehicles no longer qualify for a DC excise tax exemption as of October 2024. Budget for the full weight-based rate.",
@@ -456,7 +456,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "DC's market is limited in dealer options, which reduces competitive leverage. Focus negotiation on the vehicle price and any dealer add-ons. The excise tax is a government charge and is not negotiable — verify the correct rate for your vehicle's weight class early in the process.",
     ctaHeading: "Have a DC dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://dmv.dc.gov/page/vehicle-registration-and-title-fee-estimator",
@@ -474,21 +474,21 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Florida",
     abbreviation: "FL",
     slug: "florida",
-    docFeeRange: "Commonly $499–$999",
+    docFeeRange: "Reported $500–$1,000 (not verified)",
     hasCap: false,
-    pageTitle: "Florida Dealer Fees (2026): No State Cap — What to Watch Out For",
+    pageTitle: "Florida Dealer Fees (2026): Cap Not Verified — Compare the Out-the-Door Price",
     metaDescription:
-      "Florida has no doc fee cap — $499–$999 is common, among the highest nationwide. State tax is 6% plus county surtax. See the full FL OTD picture for 2026.",
+      "Florida does not have a verified documentation-fee cap on file. Reported $500–$1,000 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Florida has no cap on dealer documentation fees. Florida routinely has some of the highest doc fees in the country. Fees of $500–$999 are common, and some dealers charge even more. Because there's no state limit, the doc fee is whatever the dealership decides — and it's often the first major surprise buyers see at the finance desk.",
+      "Florida does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $500–$1,000. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Florida's base state sales tax on vehicles is 6%, but counties add their own discretionary surtax. The combined rate varies by county — Miami-Dade is 7%, Broward is 7%, Orange County (Orlando) is 6.5%, and some rural counties stay at 6%. The tax is applied to the full sale price of the vehicle.",
     registrationNote:
       "Florida registration fees include a base registration fee that varies by vehicle weight, plus a title fee. Registration for a standard passenger vehicle typically runs $200–$400 for the first year, depending on the vehicle and county. There's also a temporary tag fee if you take the vehicle home before permanent plates arrive.",
     introAngle:
-      "Florida has some of the highest uncapped dealer documentation fees in the country — and buyers frequently report sticker shock when they see the doc fee at the finance desk for the first time. A $699 or $899 doc fee is routine at many Florida dealerships. There's no state law preventing it. What makes Florida's OTD prices particularly variable is the combination of high doc fees, county-level sales tax variations, and a dealer market that includes both high-volume tourist-area stores and more aggressive smaller dealers. Knowing what's typical before you sit down saves you from being anchored to a number that isn't normal.",
+      "Florida has some of the highest dealer documentation fees in unverified reports, and no cap is verified in the country — and buyers frequently report sticker shock when they see the doc fee at the finance desk for the first time. Unverified reports mention documentation fees of $699 or $899 at some Florida dealerships. This file does not verify a statute that either allows or caps that amount. What makes Florida's OTD prices particularly variable is the combination of high doc fees, county-level sales tax variations, and a dealer market that includes both high-volume tourist-area stores and more aggressive smaller dealers. Ask for the fee in writing before you sit down, and compare the full out-the-door price rather than treating any one number as normal.",
     snippetAnswer:
-      "Florida has no cap on dealer documentation fees, and fees of $499–$999 are common — among the highest in the country. The state sales tax is 6% plus a county surtax that varies by location. Florida buyers should expect a higher doc fee than in most other states and should factor it into any OTD comparison.",
+      "Florida does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $500–$1,000. That range is not a market standard. The state sales tax is 6% plus a county surtax that varies by location.",
     watchFor: [
       "High doc fees presented as fixed and non-negotiable: dealers in Florida often say the doc fee is the same for all customers and can't be changed. That may be the store's policy, but the vehicle price can usually be adjusted to offset it — the total OTD is what matters.",
       "County surtax surprises: the difference between a 6% and 7% county rate on a $40,000 vehicle is $400. If you're shopping across county lines in Florida, the tax rate difference can make one dealer's quote look better than another's before fees are factored in.",
@@ -499,7 +499,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Florida's doc fees average $670 statewide but regularly reach $899–$999 at high-volume stores. While most dealers charge the same fee to every customer, the vehicle price is almost always negotiable. If a dealer charges $899, ask for a matching reduction in the sale price — frame it as a total OTD negotiation, not a doc fee argument. Florida's $76 title fee and $225 initial registration are also higher than most states, so factor those into your OTD estimate. Having a competing OTD quote from another Florida dealer is the most effective leverage. With Florida's dense dealer market — especially in South Florida, Tampa Bay, and Orlando — getting three quotes in an afternoon is realistic.",
     ctaHeading: "Seeing a high doc fee on a Florida quote?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.etags.com/blog/dealer-fees-in-florida-the-legit-the-bogus-the-weird/",
@@ -508,12 +508,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     specialNotes:
       "Florida has some of the highest doc fees in the nation. No cap exists despite multiple legislative attempts.",
     dealerMessage:
-      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (I understand Florida has no state cap), all additional dealer fees, Florida sales tax (6% state + your county's discretionary surtax), title fee ($76), initial registration ($225), and any temporary tag fees? I'd like to see the complete itemized total before scheduling a visit. Thank you.",
+      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (I understand Florida has no verified cap on file), all additional dealer fees, Florida sales tax (6% state + your county's discretionary surtax), title fee ($76), initial registration ($225), and any temporary tag fees? I'd like to see the complete itemized total before scheduling a visit. Thank you.",
     lastVerified: "2026-03",
     commonQuestions: [
       {
         q: "Why are Florida dealer doc fees so high?",
-        a: "Florida has no state cap on documentation fees, and the state has never enacted one despite multiple legislative attempts. With no legal ceiling, competitive dynamics set the price — and the state's high transaction volume and tourist-heavy buying patterns have pushed fees higher than most other states. Fees of $699–$999 are routine at many Florida dealerships.",
+        a: "Florida does not have a verified documentation-fee cap in this file. Older notes say lawmakers have not enacted one. That is not itself a legal finding. Unverified reports mention fees of $699–$999. That range is not a market standard.",
       },
       {
         q: "Can I negotiate a Florida dealer's doc fee?",
@@ -541,12 +541,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Georgia",
     abbreviation: "GA",
     slug: "georgia",
-    docFeeRange: "Typically $300–$599",
+    docFeeRange: "Reported $400–$700 (not verified)",
     hasCap: false,
     metaDescription:
-      "Georgia uses a 7% Title Ad Valorem Tax instead of traditional sales tax — a common point of confusion for buyers. Doc fees run $300–$599 with no state cap.",
+      "Georgia has no verified statutory cap on the documentation fee. Reported $400–$700 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Georgia has no cap on the dealer documentation fee. Most Georgia dealerships charge between $300 and $599 for the doc fee, though some dealers charge more. Because there's no state limit, the amount varies by dealership and is often non-negotiable at individual stores, though the vehicle price can be adjusted.",
+      "A fetched Georgia page says the state does not regulate how much a dealer can charge for a document or processing fee. That is not a finding about a typical price. Unverified reports mention documentation fees around $400–$700. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "Georgia replaced the traditional sales tax on vehicle purchases with the Title Ad Valorem Tax (TAVT) in 2013. The TAVT is a one-time tax paid at the time of titling, calculated at 7% of the vehicle's fair market value (as defined by the state, not necessarily the purchase price). Unlike a traditional sales tax, the TAVT is a title fee — it appears in a different place on the OTD breakdown and is calculated differently than buyers from other states expect.",
     registrationNote:
@@ -554,7 +554,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "Georgia is one of a handful of states that replaced traditional sales tax on vehicles with a Title Ad Valorem Tax (TAVT), which has been in place since 2013. Buyers who are used to seeing a sales tax line on a car deal are often confused when they see a 'title tax' or 'ad valorem' line instead — it's not a mistake, it's how Georgia structures the transfer tax. The 7% TAVT is calculated on the state's assessed fair market value of the vehicle, which may differ from what you actually paid. Understanding this distinction is essential to evaluating a Georgia OTD breakdown correctly.",
     snippetAnswer:
-      "Georgia replaced traditional sales tax with a Title Ad Valorem Tax (TAVT) of 7%, paid at titling. This appears differently on a Georgia OTD breakdown than a standard sales tax line. Doc fees typically run $300–$599 with no state cap. Buyers unfamiliar with the TAVT structure often find Georgia OTD quotes harder to interpret than other states.",
+      "A fetched Georgia page says the state does not regulate how much a dealer can charge for a document or processing fee. That is not a finding about a typical price. Unverified reports mention documentation fees around $400–$700. That range is not a market standard. Georgia replaced traditional sales tax with a Title Ad Valorem Tax (TAVT) of 7%, paid at titling. This appears differently on a Georgia OTD breakdown than a standard sales tax line. Buyers unfamiliar with the TAVT structure often find Georgia OTD quotes harder to interpret than other states.",
     watchFor: [
       "TAVT calculated on state fair market value, not sale price: Georgia's 7% title tax is applied to the state's assessed value of the vehicle, which is based on published retail value data — not necessarily what you negotiated. If you bought the car below market value, the TAVT may still be calculated on the higher published value.",
       "Doc fees in the $500–$600 range without explanation: Georgia has no cap, and some dealers charge toward the top of the typical range. If the doc fee is above $450, it's worth asking whether it's the same for all customers and whether the vehicle price can be adjusted to offset it.",
@@ -565,7 +565,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Georgia's TAVT at 7% of assessed fair market value is a government charge — you cannot negotiate it. Your leverage is entirely on the pre-tax portion: the vehicle price (averaging $502 doc fee statewide), any dealer markup, and bundled add-ons. The $18 title fee is low, but the TAVT itself is substantial — 7% of a $35,000 vehicle is $2,450. If you have a trade-in at a dealer, the TAVT is calculated on the net price after the trade-in deduction, which can save hundreds. The Atlanta metro has a competitive dealer market with many options — getting 2–3 competing OTD quotes on the same vehicle is the most effective approach.",
     ctaHeading: "Not sure how Georgia's title tax affects your out-the-door price?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://dor.georgia.gov/title-ad-valorem-tax-tavt-faq",
@@ -603,20 +603,20 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Hawaii",
     abbreviation: "HI",
     slug: "hawaii",
-    docFeeRange: "Typically $150–$350",
+    docFeeRange: "Reported $150–$350 (not verified)",
     hasCap: false,
     metaDescription:
-      "Hawaii has no cap on dealer doc fees — $150–$350 is typical. The General Excise Tax is 4% with a 0.5% county surcharge. A luxury vehicle surcharge also applies.",
+      "Hawaii does not have a verified documentation-fee cap on file. Reported $150–$350 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Hawaii has no state cap on dealer documentation fees. Fees in the $150–$350 range are commonly reported — lower than many mainland states, but still uncapped.",
+      "Hawaii does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $150–$350. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Hawaii applies a General Excise Tax (GET) of 4% on vehicle sales, plus a 0.5% county surcharge in most counties. Unlike a traditional sales tax, GET is a tax on the seller's gross income — but it is effectively passed to the buyer. Private-party purchases are generally exempt. A luxury vehicle surcharge of 50% of applicable taxes applies to higher-priced vehicles.",
     registrationNote:
       "Hawaii registration includes a $46 state fee plus a county-level weight tax that typically ranges $100–$300 depending on the county and vehicle weight. Title fee is $10.",
     introAngle:
-      "Hawaii's island location creates a unique vehicle market — inventory is limited, prices tend to be higher than on the mainland, and registration costs are structured differently. The General Excise Tax on vehicle sales, while similar to a sales tax in effect, is technically a business receipts tax. A luxury vehicle surcharge adds an additional cost for higher-priced vehicles. Doc fees are uncapped but tend to be lower than many mainland states.",
+      "Hawaii's island location creates a unique vehicle market — inventory is limited, prices tend to be higher than on the mainland, and registration costs are structured differently. The General Excise Tax on vehicle sales, while similar to a sales tax in effect, is technically a business receipts tax. A luxury vehicle surcharge adds an additional cost for higher-priced vehicles. Doc fees are without a verified cap on file but tend to be lower than many mainland states.",
     snippetAnswer:
-      "Hawaii dealers typically charge $150–$350 in documentation fees with no state cap. The General Excise Tax is 4% base plus a 0.5% county surcharge. A luxury vehicle surcharge adds 50% to applicable taxes for higher-priced vehicles. Vehicle prices and registration costs tend to be higher than on the mainland.",
+      "Hawaii does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $150–$350. That range is not a market standard. The General Excise Tax is 4% base plus a 0.5% county surcharge. A luxury vehicle surcharge adds 50% to applicable taxes for higher-priced vehicles. Vehicle prices and registration costs tend to be higher than on the mainland.",
     watchFor: [
       "Luxury vehicle surcharge: Hawaii adds a 50% surcharge to the applicable taxes on luxury vehicles. If your vehicle qualifies, factor this into your OTD estimate.",
       "GET passed through to buyer: while the GET is technically a seller's tax, it is routinely passed to buyers as part of the purchase price. Confirm how the dealer is handling this in the quote.",
@@ -626,7 +626,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Hawaii's limited market and island geography reduce competitive pressure. However, buyers on Oahu have more dealer options than those on other islands. Focus on the vehicle price and ask for the doc fee to be disclosed upfront. The GET and county surcharges are fixed — negotiation is focused on the pre-tax components.",
     ctaHeading: "Have a Hawaii dealer quote you want to verify?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://tax.hawaii.gov/geninfo/get/",
@@ -644,30 +644,30 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Idaho",
     abbreviation: "ID",
     slug: "idaho",
-    docFeeRange: "Typically $200–$400",
+    docFeeRange: "Reported $200–$400 (not verified)",
     hasCap: false,
     metaDescription:
-      "Idaho has no cap on dealer doc fees — $200–$400 is typical. Sales tax is 6% with local additions up to 3%. Trade-in deductions are allowed. See the ID OTD picture.",
+      "Idaho does not have a verified documentation-fee cap on file. Reported $200–$400 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Idaho has no state cap on dealer documentation fees. Fees of $200–$400 are commonly reported — in the moderate range for uncapped states. There is no legal ceiling.",
+      "Idaho does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $200–$400. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Idaho charges a 6% state sales tax on vehicle purchases, with local option taxes adding up to 3% in some areas. Idaho allows trade-in deductions, meaning your trade-in value reduces the taxable purchase price per state statute IDAPA 35.01.02.044.",
     registrationNote:
       "Idaho registration fees vary by vehicle weight and value. The title fee is $14.",
     introAngle:
-      "Idaho has no doc fee cap, but fees tend to be in the moderate range of $200–$400. The state allows trade-in deductions, which can meaningfully reduce the taxable amount if you're trading in a vehicle. The 6% state tax with local additions is straightforward compared to many other states.",
+      "Idaho does not have a verified doc-fee cap on file, but fees tend to be in the moderate range of $200–$400. The state allows trade-in deductions, which can meaningfully reduce the taxable amount if you're trading in a vehicle. The 6% state tax with local additions is straightforward compared to many other states.",
     snippetAnswer:
-      "Idaho dealers typically charge $200–$400 in documentation fees with no state cap. The state sales tax is 6% plus local additions up to 3%. Idaho allows full trade-in deductions from the taxable amount.",
+      "Idaho does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $200–$400. That range is not a market standard. The state sales tax is 6% plus local additions up to 3%. Idaho allows full trade-in deductions from the taxable amount.",
     watchFor: [
       "Trade-in credit: Idaho allows trade-in value to reduce the taxable purchase price — make sure the dealer is applying this deduction before calculating your sales tax.",
       "Local tax additions: some Idaho areas have local option sales taxes that increase the effective rate above 6%. Confirm the rate for your dealer's location.",
-      "Uncapped doc fees: $200–$400 is typical, but some dealers charge more. Ask for the fee to be disclosed before visiting.",
+      "Doc fees without a verified cap on file: $200–$400 appears in unverified reports. Some dealers charge more. Ask for the fee to be disclosed before visiting.",
     ],
     negotiationNote:
       "Idaho's market is less competitive than major metro areas, particularly outside Boise. Compare competing quotes across the Treasure Valley area if possible. The trade-in deduction is a meaningful benefit — make sure it's properly applied to reduce your tax bill.",
     ctaHeading: "Have an Idaho dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://caredge.com/guides/car-dealer-doc-fee-by-state",
@@ -684,30 +684,30 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Illinois",
     abbreviation: "IL",
     slug: "illinois",
-    docFeeRange: "Capped at $378 (2026)",
-    hasCap: true,
+    docFeeRange: "Reported $378 (not verified)",
+    hasCap: false,
     metaDescription:
-      "Illinois caps dealer doc fees at $378 for 2026 — adjusted annually by CPI. Trade-in credit is unlimited. Chicago area combined tax reaches 10.25%. See the IL OTD picture.",
+      "Illinois's stored documentation-fee figure is not a verified legal cap. Reported $378 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Illinois caps dealer documentation fees by statute, with the amount adjusted annually by CPI. For 2026, the cap is $377.63 (commonly cited as $378). The cap started at $300 when enacted in 2020 and has increased roughly 2–3% per year. Dealers cannot legally exceed this amount.",
+      "Illinois has a stored documentation-fee figure of $378 in this file, and that figure needs a source. It is not a verified legal cap. Odigos will not call a higher fee illegal from that number alone. Unverified reports mention documentation fees around $378. That range is not a market standard. Ask the dealer to itemize the charge, and confirm any limit with the state before you rely on it. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "Illinois charges 6.25% in state sales tax on vehicles, with local additions of up to 4%. Chicago's combined rate is 10.25% — one of the highest in the country. Trade-in deductions are unlimited as of January 1, 2022 (Public Act 102-0353 removed the prior $10,000 cap), meaning your full trade-in value can reduce the taxable amount.",
     registrationNote:
       "Illinois registration is $151 per year for standard vehicles, with an additional $100 annual fee for electric vehicles. The title fee is $165.",
     introAngle:
-      "Illinois has one of the more robust consumer protection frameworks for car buyers: a CPI-adjusted cap on doc fees and an unlimited trade-in deduction as of 2022. The cap for 2026 is approximately $378. Buyers in the Chicago metro, however, should be prepared for one of the higher combined sales tax rates in the country — 10.25% — which significantly affects the OTD total on any vehicle.",
+      "Illinois notes in this file mention a CPI-adjusted documentation-fee figure around $378 for 2026, but that figure is not verified. A full trade-in deduction is also described. Buyers in the Chicago metro, however, should be prepared for one of the higher combined sales tax rates in the country — 10.25% — which significantly affects the OTD total on any vehicle.",
     snippetAnswer:
-      "Illinois caps dealer doc fees at approximately $378 for 2026 (adjusted annually). The state sales tax is 6.25% with local additions up to 10.25% in Chicago. Trade-in deductions are unlimited, which can significantly reduce the taxable amount.",
+      "Illinois has a stored documentation-fee figure of $378 in this file, and that figure needs a source. It is not a verified legal cap. Unverified reports mention documentation fees around $378. That range is not a market standard. The state sales tax is 6.25% with local additions up to 10.25% in Chicago. Trade-in deductions are unlimited, which can significantly reduce the taxable amount.",
     watchFor: [
       "Chicago combined tax rate: at 10.25%, the Chicago combined rate means $4,100 in tax on a $40,000 vehicle. Buyers in the suburbs may see lower rates — confirm your dealer's location.",
-      "Doc fee above the cap: any documentation fee above $378 in 2026 is above the legal limit. Ask for clarification if you see a higher amount.",
+      "Doc fee above the cap: the stored $378 figure is not a verified legal cap. A higher fee is not automatically illegal. Ask for clarification if you see a higher amount.",
       "Trade-in credit: Illinois allows the full trade-in value to reduce the taxable purchase price with no dollar cap. Make sure this deduction is applied before your tax is calculated.",
     ],
     negotiationNote:
-      "With the doc fee capped at $378, Illinois buyers should focus negotiation on the vehicle price and any dealer add-ons. The Chicagoland market has intense dealer competition — use it. For buyers trading in a vehicle, the unlimited trade-in credit (uncapped since Public Act 102-0353 in 2022) is a powerful tool: a $25,000 trade-in at a 10.25% Chicago rate saves $2,563 in tax. Make sure the dealer applies the full deduction before calculating tax. The $165 title fee and $151/year registration are fixed government charges — not negotiable, but important to include in your OTD estimate.",
+      "With the doc fee listed with a stored figure that is not a verified cap Illinois buyers should focus negotiation on the vehicle price and any dealer add-ons. The Chicagoland market has intense dealer competition — use it. For buyers trading in a vehicle, the unlimited trade-in credit (without a verified cap on file since Public Act 102-0353 in 2022) is a powerful tool: a $25,000 trade-in at a 10.25% Chicago rate saves $2,563 in tax. Make sure the dealer applies the full deduction before calculating tax. The $165 title fee and $151/year registration are fixed government charges — not negotiable, but important to include in your OTD estimate.",
     ctaHeading: "Have an Illinois dealer quote you want to verify?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.ilsos.gov/departments/vehicles/basicfees.html",
@@ -721,7 +721,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     commonQuestions: [
       {
         q: "What is the Illinois doc fee cap for 2026?",
-        a: "The Illinois doc fee cap for 2026 is $377.63 (commonly cited as $378). The cap started at $300 when enacted January 1, 2020, and adjusts annually by CPI — increasing roughly 2–3% per year. Any dealer charging above this amount is out of compliance with Illinois law.",
+        a: "The Illinois doc fee cap for 2026 is $377.63 (commonly cited as $378). The cap started at $300 when enacted January 1, 2020, and adjusts annually by CPI — increasing roughly 2–3% per year. Any dealer charging above this amount is above a stored figure that is not verified with Illinois law.",
       },
       {
         q: "Why is the Chicago sales tax so much higher than the rest of Illinois?",
@@ -737,7 +737,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       },
     ],
     competitorGapSection:
-      "Most Illinois car-buying guides mention the doc fee cap but overlook two significant buyer advantages: the unlimited trade-in credit and the cap's annual CPI adjustment. Since the $10,000 trade-in cap was removed in 2022, a buyer trading in a $30,000 vehicle saves $1,875 in sales tax at the 6.25% base rate — or $3,075 in a 10.25% Chicago jurisdiction. Before you negotiate the vehicle price, confirm the trade-in deduction is applied pre-tax and check whether your purchase falls in a high-tax jurisdiction. The gap between 6.25% and 10.25% on a $35,000 vehicle (after trade-in) is $1,400 — a larger swing than any doc fee negotiation could produce.",
+      "Most Illinois car-buying guides treat a documentation-fee cap as settled. The $378 figure in this file is not verified. Two other notes are still worth checking with the state: an unlimited trade-in credit, and a claim that the figure adjusts with CPI. Since the $10,000 trade-in cap was removed in 2022, a buyer trading in a $30,000 vehicle saves $1,875 in sales tax at the 6.25% base rate — or $3,075 in a 10.25% Chicago jurisdiction. Before you negotiate the vehicle price, confirm the trade-in deduction is applied pre-tax and check whether your purchase falls in a high-tax jurisdiction. The gap between 6.25% and 10.25% on a $35,000 vehicle (after trade-in) is $1,400 — a larger swing than any doc fee negotiation could produce.",
     buyerTip: "Since January 1, 2022, Illinois removed the prior $10,000 cap on trade-in deductions — meaning your full trade-in value now reduces your taxable purchase price with no dollar ceiling. In Chicago's 10.25% combined tax environment, trading in a $30,000 vehicle saves $3,075 in sales tax compared to states where no deduction is allowed. If you have a high-value trade-in, Illinois's unlimited deduction makes the effective tax cost significantly more favorable than the headline rate suggests.",
   },
 
@@ -745,12 +745,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Indiana",
     abbreviation: "IN",
     slug: "indiana",
-    docFeeRange: "Capped at $251",
+    docFeeRange: "Reported $251 (not verified)",
     hasCap: true,
     metaDescription:
-      "Indiana caps dealer doc fees at $251 (as of July 2025, CPI-adjusted). The state tax is a flat 7% with no local additions. See what Indiana car buyers actually pay.",
+      "Indiana documentation fee: verified ceiling $251.05. Reported $251 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Indiana caps dealer documentation fees with annual CPI adjustments. The cap effective July 1, 2025 is $251.05. Dealers must include the doc fee in their advertised price and disclose it separately on the bill of sale. Any fee above $251 is not permitted.",
+      "An Indiana Secretary of State memo says the office will not take enforcement action on documentation preparation fees at or below $251.05, citing IC 9-32-13-7(b). Odigos treats a higher documentation fee as above that verified ceiling. Unverified reports mention documentation fees around $251. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "Indiana charges a flat 7% sales tax statewide on vehicle purchases. There are no local additions — the rate is uniform across all Indiana counties, making the tax calculation predictable.",
     registrationNote:
@@ -758,7 +758,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "Indiana offers clear, predictable fee structure for car buyers: a capped doc fee (currently $251), a flat 7% statewide tax with no local variation, and a requirement that the doc fee appear in advertised prices. This makes comparing OTD quotes across Indiana dealers more straightforward than in most other states.",
     snippetAnswer:
-      "Indiana caps dealer documentation fees at $251 (as of July 2025, CPI-adjusted annually). The state sales tax is a flat 7% with no local additions. Dealers must include the doc fee in advertised prices.",
+      "An Indiana Secretary of State memo says the office will not take enforcement action on documentation preparation fees at or below $251.05, citing IC 9-32-13-7(b). Odigos treats a higher documentation fee as above that verified ceiling. Unverified reports mention documentation fees around $251. That range is not a market standard. The state sales tax is a flat 7% with no local additions.",
     watchFor: [
       "Doc fee at or near the cap: in Indiana, fees often cluster at the maximum allowed amount. Confirm the exact figure and whether it's been disclosed in the advertised price.",
       "Add-on packages: with the doc fee and tax predictable, dealers may push more aggressively on add-on products. Protection packages and extended warranties are almost always optional.",
@@ -768,7 +768,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Indiana's straightforward fee structure means your negotiation is focused almost entirely on the vehicle price and any add-ons. The doc fee and tax are both effectively fixed — which makes the math simpler. Compare OTD quotes from multiple Indiana dealers on the same vehicle for the clearest comparison.",
     ctaHeading: "Have an Indiana dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.in.gov/sos/dealer/files/Doc-Fees-in-2025.pdf",
@@ -786,12 +786,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Iowa",
     abbreviation: "IA",
     slug: "iowa",
-    docFeeRange: "Capped at $180",
+    docFeeRange: "Reported $180 (not verified)",
     hasCap: true,
     metaDescription:
-      "Iowa caps dealer doc fees at $180 by statute. The registration fee is 5% of purchase price. Title fee increased to $35 in January 2025. See the IA OTD picture.",
+      "Iowa documentation fee: verified ceiling $180. Reported $180 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Iowa caps dealer documentation fees at $180 under Iowa Code §322.19A. Dealers cannot legally charge more. The cap is a hard statutory limit — not a recommendation.",
+      "Iowa Code § 322.19A says a documentary fee may not exceed $180. Unverified reports mention documentation fees around $180. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "Iowa charges a 5% registration fee on vehicle purchases rather than a traditional sales tax, with an optional 1% Local Option Sales Tax in some jurisdictions. Trade-in deductions apply for same-transaction dealer sales.",
     registrationNote:
@@ -799,7 +799,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "Iowa's $180 cap on documentation fees is clear, statutory, and enforced. Buyers benefit from predictable doc fees and a 5% registration rate structure. The title fee increased to $35 in January 2025 — a meaningful change to factor into your OTD estimate if you're working from older references.",
     snippetAnswer:
-      "Iowa caps dealer documentation fees at $180 per state statute. The purchase 'registration fee' is 5% of the price (not a traditional sales tax). Title fee increased to $35 as of January 2025.",
+      "Iowa Code § 322.19A says a documentary fee may not exceed $180. Unverified reports mention documentation fees around $180. Unverified reports mention documentation fees around $180. That range is not a market standard. The purchase 'registration fee' is 5% of the price (not a traditional sales tax).",
     watchFor: [
       "Title fee change: Iowa's title fee increased from $25 to $35 effective January 1, 2025. If you're working from older OTD estimates, update this number.",
       "Registration as a 5% fee: Iowa structures its vehicle transfer tax as a registration fee rather than a sales tax — it functions similarly but may be labeled differently on your quote.",
@@ -809,7 +809,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "With the doc fee capped at $180, your negotiation leverage in Iowa is focused on the vehicle price and any add-ons. Iowa's market is less competitive than major metro areas, so get competing quotes from multiple dealers before committing.",
     ctaHeading: "Have an Iowa dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.legis.iowa.gov/docs/code/322.19A.pdf",
@@ -827,12 +827,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Kansas",
     abbreviation: "KS",
     slug: "kansas",
-    docFeeRange: "Typically $200–$400",
+    docFeeRange: "Reported $200–$400 (not verified)",
     hasCap: false,
     metaDescription:
-      "Kansas has no cap on dealer doc fees — $200–$400 is typical. Sales tax is 6.5% plus local additions up to 10.6%. Trade-in window expanded to 120 days in 2025.",
+      "Kansas does not have a verified documentation-fee cap on file. Reported $200–$400 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Kansas has no state cap on dealer documentation fees. Fees of $200–$400 are commonly reported. There is no legal ceiling, so comparison shopping is important.",
+      "Kansas does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $200–$400. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Kansas charges 6.5% state sales tax on vehicles, with local additions of up to 4.1% in some areas. Combined rates can reach 10.6% in high-tax jurisdictions. A 120-day trade-in window (expanded as of January 1, 2025) allows full deduction of trade-in value from the taxable amount.",
     registrationNote:
@@ -840,17 +840,17 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "Kansas has no cap on doc fees and a sales tax structure that varies significantly by locality. The 2025 expansion of the trade-in window to 120 days is a buyer-friendly change — if you're trading in a vehicle purchased up to 120 days ago, it can reduce your taxable amount. Combined local rates can approach 10% or more in some areas.",
     snippetAnswer:
-      "Kansas dealers typically charge $200–$400 in documentation fees with no state cap. State sales tax is 6.5% plus local additions up to 10.6%. A 120-day trade-in window allows full deduction from the taxable amount.",
+      "Kansas does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $200–$400. That range is not a market standard. State sales tax is 6.5% plus local additions up to 10.6%. A 120-day trade-in window allows full deduction from the taxable amount.",
     watchFor: [
       "Local tax rate variation: combined rates can reach 10.6% in some Kansas jurisdictions. Verify your dealer's effective rate before estimating your OTD total.",
       "Trade-in window: the 120-day trade-in deduction window was expanded in 2025. If you recently purchased a vehicle you're trading in, confirm that the deduction is properly applied.",
-      "Uncapped doc fees: ask for the documentation fee before visiting. If it exceeds $400, compare with other dealers.",
+      "Doc fees without a verified cap on file: ask for the documentation fee before visiting. If it exceeds $400, compare with other dealers.",
     ],
     negotiationNote:
       "Kansas markets outside Wichita and Kansas City tend to have fewer competing dealers, which limits buyer leverage. Get multiple competing quotes and focus negotiation on the vehicle price. The trade-in credit, if applicable, can meaningfully reduce your tax obligation.",
     ctaHeading: "Have a Kansas dealer quote you want to verify?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://caredge.com/guides/car-dealer-doc-fee-by-state",
@@ -867,22 +867,22 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Kentucky",
     abbreviation: "KY",
     slug: "kentucky",
-    docFeeRange: "Typically $300–$600",
+    docFeeRange: "Reported $300–$600 (not verified)",
     hasCap: false,
     metaDescription:
-      "Kentucky has no cap on dealer doc fees — $300–$600 is typical. The Motor Vehicle Usage Tax is a flat 6% statewide with no local additions. See the KY OTD picture.",
+      "Kentucky does not have a verified documentation-fee cap on file. Reported $300–$600 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Kentucky has no state cap on dealer documentation fees. Fees of $300–$600 are commonly reported. There is no legal ceiling, making comparison shopping important.",
+      "Kentucky does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$600. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Kentucky charges a 6% Motor Vehicle Usage Tax on vehicle sales. The rate is flat statewide with no local additions, making the tax calculation predictable. The MVUT applies to the full vehicle price, with trade-in deductions allowed for new vehicles.",
     registrationNote:
       "Kentucky base registration is $21 per year. The title fee is $9.",
     introAngle:
-      "Kentucky has no doc fee cap, but its Motor Vehicle Usage Tax is simple: a flat 6% with no local variation. The lack of local additions makes the tax portion of your OTD easy to calculate — the main variable is the doc fee itself, which ranges from $300 to $600 across dealers.",
+      "Kentucky does not have a verified doc-fee cap on file, but its Motor Vehicle Usage Tax is simple: a flat 6% with no local variation. The lack of local additions makes the tax portion of your OTD easy to calculate — the main variable is the doc fee itself, which ranges from $300 to $600 across dealers.",
     snippetAnswer:
-      "Kentucky dealers typically charge $300–$600 in documentation fees with no state cap. The Motor Vehicle Usage Tax is a flat 6% with no local additions — making the tax portion of your OTD predictable.",
+      "Kentucky does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$600. That range is not a market standard. The Motor Vehicle Usage Tax is a flat 6% with no local additions — making the tax portion of your OTD predictable.",
     watchFor: [
-      "Uncapped doc fees: $300–$600 is typical, but some dealers charge more. Ask for the fee to be disclosed before visiting.",
+      "Doc fees without a verified cap on file: $300–$600 appears in unverified reports. Some dealers charge more. Ask for the fee to be disclosed before visiting.",
       "New vs. used trade-in credit: Kentucky allows trade-in deductions for new vehicles but limits them for used vehicles. Clarify how the credit applies to your specific transaction.",
       "Dealer add-ons: protection packages and extended warranties are common in Kentucky dealerships. Always confirm what's included in the vehicle price.",
     ],
@@ -890,7 +890,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Kentucky's flat 6% MVUT means the tax portion of your deal is predictable — negotiation focuses on the vehicle price, doc fee, and add-ons. Louisville and Lexington have multiple competing dealers, which improves your leverage.",
     ctaHeading: "Have a Kentucky dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://revenue.ky.gov/Property/Motor-Vehicles/Pages/Motor-Vehicle-Usage-Tax.aspx",
@@ -907,12 +907,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Louisiana",
     abbreviation: "LA",
     slug: "louisiana",
-    docFeeRange: "Capped at $436 for 2026",
+    docFeeRange: "Reported $300–$425 (not verified)",
     hasCap: true,
     metaDescription:
-      "Louisiana caps dealer doc fees at $425, CPI-adjusted starting 2026. State sales tax is 5% (raised Jan 2025). Local additions can bring combined rates to 13.5% — among the highest in the US.",
+      "Louisiana documentation fee: verified ceiling $436. Reported $300–$425 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Louisiana's CPI-adjusted documentary fee maximum for calendar year 2026 is $436 under La. R.S. 6:969.18, as verified by the Legislative Auditor. Dealers cannot legally exceed this amount.",
+      "Louisiana's 2026 bulletin sets the CPI-adjusted maximum documentary fee at $436 under La. R.S. 6:969.18. Unverified reports mention documentation fees around $300–$425. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "Louisiana's state sales tax on vehicles increased from 4.45% to 5% effective January 1, 2025. Local additions can bring combined rates as high as 13.5% in some jurisdictions (Monroe, Sterlington) — among the highest combined vehicle tax rates in the country. Most buyers see combined rates of 8–12% depending on location.",
     registrationNote:
@@ -920,7 +920,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "Louisiana has the highest potential combined sales tax rates in the country — some jurisdictions reach 13.5%. The state rate also increased to 5% in January 2025. The $425 doc fee cap provides some protection on the dealer side, but buyers need to budget carefully for local sales taxes, which vary dramatically by parish.",
     snippetAnswer:
-      "Louisiana's documentary fee maximum for 2026 is $436. The state sales tax increased to 5% in January 2025, and combined local rates can reach 13.5%. Verify your local rate before estimating your OTD total.",
+      "Louisiana's 2026 bulletin sets the CPI-adjusted maximum documentary fee at $436 under La. R.S. Unverified reports mention documentation fees around $300–$425. That range is not a market standard. The state sales tax increased to 5% in January 2025, and combined local rates can reach 13.5%.",
     watchFor: [
       "Extreme local tax variation: Louisiana's combined rates vary from about 5% in some areas to 13.5% in others. The local tax can add thousands of dollars to the OTD on the same vehicle depending on where you buy.",
       "Recent state tax increase: the state rate increased from 4.45% to 5% in January 2025. If you're working from older estimates, update your numbers.",
@@ -930,7 +930,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "The local sales tax in Louisiana is fixed by your purchase location — it's not negotiable. Focus your negotiation energy on the vehicle price and any add-ons. The doc fee is capped at $425, so the main leverage points are above-cap fees and dealer-installed packages.",
     ctaHeading: "Have a Louisiana dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://law.justia.com/codes/louisiana/revised-statutes/title-6/rs-6-969-18/",
@@ -947,22 +947,22 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Maine",
     abbreviation: "ME",
     slug: "maine",
-    docFeeRange: "Typically $300–$600",
+    docFeeRange: "Reported $300–$600 (not verified)",
     hasCap: false,
     metaDescription:
-      "Maine has no cap on dealer doc fees — $300–$600 is typical. The state tax is a flat 5.5% with no local additions. See what Maine car buyers actually pay.",
+      "Maine does not have a verified documentation-fee cap on file. Reported $300–$600 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Maine has no state cap on dealer documentation fees. Fees of $300–$600 are commonly reported. There is no legal ceiling. Maine statute §953-A governs fee disclosure requirements.",
+      "Maine does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$600. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Maine charges a flat 5.5% sales tax on vehicle purchases statewide. There are no local additions — the rate is uniform across all Maine counties. Trade-in deductions are allowed when both vehicles are in the same category.",
     registrationNote:
       "Maine base registration runs approximately $35 for a two-year period. The title fee is $33.",
     introAngle:
-      "Maine has a simple, uniform tax structure for vehicle purchases — 5.5% flat with no local variation. Doc fees are uncapped but tend to be in a moderate range. The flat tax makes it easy to calculate the tax portion of your OTD without looking up local rates.",
+      "Maine has a simple, uniform tax structure for vehicle purchases — 5.5% flat with no local variation. Doc fees are without a verified cap on file but tend to be in a moderate range. The flat tax makes it easy to calculate the tax portion of your OTD without looking up local rates.",
     snippetAnswer:
-      "Maine dealers typically charge $300–$600 in documentation fees with no state cap. The state sales tax is a flat 5.5% with no local additions, making the tax portion of your OTD predictable.",
+      "Maine does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$600. That range is not a market standard. The state sales tax is a flat 5.5% with no local additions, making the tax portion of your OTD predictable.",
     watchFor: [
-      "Uncapped doc fees: Maine has no cap, so fees vary by dealer. Get the fee disclosed before your visit and compare across dealers.",
+      "Doc fees without a verified cap on file: Maine has no cap, so fees vary by dealer. Get the fee disclosed before your visit and compare across dealers.",
       "Trade-in credit: Maine allows trade-in deductions for same-category vehicles. Make sure this credit is applied before your tax is calculated.",
       "Dealer add-ons: ask for an itemized OTD breakdown to identify any add-ons included in the vehicle price.",
     ],
@@ -970,7 +970,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Maine's less-populated market means fewer competing dealers, particularly outside of Portland and Bangor. Get OTD quotes from multiple dealers and focus negotiation on the vehicle price and the doc fee. With no cap, the doc fee is technically negotiable.",
     ctaHeading: "Have a Maine dealer quote you want to verify?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://legislature.maine.gov/statutes/29-a/title29-Asec953-A.html",
@@ -980,19 +980,19 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     dealerMessage:
       "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee, all additional dealer fees, Maine sales tax (5.5% flat), title fee ($33), and registration costs? I'd like to see the complete total. Thank you.",
     lastVerified: "2026-03",
-    buyerTip: "Maine's 5.5% flat statewide rate with no local additions makes the tax portion of your OTD completely predictable — no need to look up ZIP codes or county rates. Maine statute §953-A governs fee disclosure, requiring dealers to disclose the doc fee separately. The predictable tax environment means the main OTD variables for Maine buyers are the vehicle price and the uncapped doc fee, making dealer-to-dealer comparison straightforward.",
+    buyerTip: "Maine's 5.5% flat statewide rate with no local additions makes the tax portion of your OTD completely predictable — no need to look up ZIP codes or county rates. Maine statute §953-A governs fee disclosure, requiring dealers to disclose the doc fee separately. The predictable tax environment means the main OTD variables for Maine buyers are the vehicle price and the documentation fee (no verified cap on file), making dealer-to-dealer comparison straightforward.",
   },
 
   maryland: {
     name: "Maryland",
     abbreviation: "MD",
     slug: "maryland",
-    docFeeRange: "Capped at $800",
+    docFeeRange: "Reported $300–$800 (not verified)",
     hasCap: true,
     metaDescription:
-      "Maryland caps dealer doc fees at $800 (increased from ~$500 via SB 362, July 2024). The vehicle excise tax increased to 6.5% in July 2025. See the MD OTD picture.",
+      "Maryland documentation fee: verified ceiling $800. Reported $300–$800 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Maryland caps dealer documentation fees at $800, effective July 1, 2024 (SB 362). This increased from a prior cap of approximately $500. No dealer can legally charge more than $800 for documentation.",
+      "Maryland's dealer processing-charge ceiling is $800 on and after July 1, 2024 (Md. Code, Transp. § 15-311.1). Unverified reports mention documentation fees around $300–$800. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "Maryland charges a vehicle excise tax of 6.5% on vehicle purchases, effective July 1, 2025 (increased from 6%). The rate applies statewide with no local additions for vehicles. It is applied to the purchase price.",
     registrationNote:
@@ -1000,7 +1000,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "Maryland buyers have seen two significant changes in 2024–2025: the doc fee cap increased from approximately $500 to $800 (SB 362, July 2024), and the vehicle excise tax increased from 6% to 6.5% (July 2025). The $200 title fee is also notably high compared to most states. Budget for these updated amounts when estimating your OTD.",
     snippetAnswer:
-      "Maryland caps dealer documentation fees at $800 (increased July 2024). The vehicle excise tax increased to 6.5% in July 2025. The title fee is $200 — higher than most states. Both the cap and tax rate changed recently.",
+      "Maryland's dealer processing-charge ceiling is $800 on and after July 1, 2024 (Md. Code, Transp. Unverified reports mention documentation fees around $300–$800. That range is not a market standard. The vehicle excise tax increased to 6.5% in July 2025. Both the cap and tax rate changed recently.",
     watchFor: [
       "Recent cap increase: Maryland's doc fee cap rose from ~$500 to $800 in July 2024. If you're comparing older quotes, note that higher fees are now legally permitted.",
       "Recent tax rate increase: the excise tax increased from 6% to 6.5% in July 2025. Update any older OTD estimates accordingly.",
@@ -1011,7 +1011,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Maryland's competitive DC-metro and Baltimore markets give buyers options. With the doc fee capped at $800, your negotiation is focused on the vehicle price and any add-ons. The excise tax and title fee are government charges — not negotiable.",
     ctaHeading: "Have a Maryland dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://mva.maryland.gov/businesses/Documents/bulletins/2024/Bulletin%20-%20Vehicle%20Reg%20Fees,%20Term,%20and%20Weight%20Changes_SB%20362.pdf",
@@ -1028,71 +1028,71 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Massachusetts",
     abbreviation: "MA",
     slug: "massachusetts",
-    docFeeRange: "Typically $300–$500",
+    docFeeRange: "Reported $300–$500 (not verified)",
     hasCap: false,
     metaDescription:
-      "Massachusetts has no cap on general dealer doc fees. The state tax is a flat 6.25%. A $5 title preparation fee cap exists separately. See the MA OTD breakdown.",
+      "Massachusetts does not have a verified documentation-fee cap on file. Reported $300–$500 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Massachusetts caps the 'title preparation fee' at $5 per Directive 14-1, but general dealer documentation fees are uncapped. Fees of $300–$500 are common. There is no hard limit on the overall doc fee.",
+      "Massachusetts does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$500. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Massachusetts charges a flat 6.25% sales tax on vehicle purchases statewide. There are no local additions — the rate is uniform across all Massachusetts cities and counties. Trade-in deductions are allowed.",
     registrationNote:
       "Massachusetts registration runs approximately $60 for a two-year period. The title fee is $75.",
     introAngle:
-      "Massachusetts buyers should note an important distinction: the state caps the 'title preparation fee' at $5, but the broader 'documentation fee' that most dealers charge is uncapped. Fees of $300–$500 are common. The state's 6.25% flat tax is uniform — no need to look up local rates.",
+      "Massachusetts buyers should note an important distinction: the state caps the 'title preparation fee' at $5, but the broader 'documentation fee' that most dealers charge is without a verified cap on file. Fees of $300–$500 are common. The state's 6.25% flat tax is uniform — no need to look up local rates.",
     snippetAnswer:
-      "Massachusetts caps the title preparation fee at $5 but general documentation fees are uncapped at $300–$500. The state sales tax is a flat 6.25% with no local additions.",
+      "Massachusetts does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$500. That range is not a market standard. The state sales tax is a flat 6.25% with no local additions.",
     watchFor: [
-      "Title prep vs. doc fee: Massachusetts caps the 'title preparation fee' at $5, but the broader documentation fee is uncapped. These may be billed as one combined charge — ask for them to be itemized separately.",
-      "Uncapped doc fees: $300–$500 is typical, but some dealers charge more. Compare across dealers before committing.",
+      "Title prep vs. doc fee: Massachusetts caps the 'title preparation fee' at $5, but the broader documentation fee is without a verified cap on file. These may be billed as one combined charge — ask for them to be itemized separately.",
+      "Doc fees without a verified cap on file: $300–$500 appears in unverified reports. Some dealers charge more. Compare across dealers before committing.",
       "Dealer add-ons: protection packages are common. Ask for everything included in the vehicle price to be listed explicitly.",
     ],
     negotiationNote:
-      "Massachusetts's competitive Boston metro market gives buyers real leverage. Compare OTD quotes from multiple dealers. The doc fee is uncapped and worth asking about — some dealers will reduce it to close a deal.",
+      "Massachusetts's competitive Boston metro market gives buyers real leverage. Compare OTD quotes from multiple dealers. The doc fee is without a verified cap on file and worth asking about — some dealers will reduce it to close a deal.",
     ctaHeading: "Have a Massachusetts dealer quote you want to verify?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.mass.gov/directive/directive-14-1-document-and-title-preparation-fees-charged-by-motor-vehicle-dealers",
       "https://www.mass.gov/guides/motor-vehicle-and-trailer-sales-and-use-tax",
     ],
     specialNotes:
-      "Title prep fee only is capped at $5 per Directive 14-1. General doc fees are uncapped.",
+      "Title prep fee only is listed with a stored figure that is not a verified cap per Directive 14-1. General doc fees are without a verified cap on file.",
     dealerMessage:
       "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation/processing fee (please itemize separately from any title preparation fee), all additional dealer fees, Massachusetts sales tax (6.25% flat), title fee ($75), and registration costs? I'd like to see the complete total. Thank you.",
     lastVerified: "2026-03",
-    buyerTip: "Massachusetts Directive 14-1 caps the 'title preparation fee' at $5 — but this is different from the general documentation fee, which is uncapped. Dealers sometimes bundle both into a single line on the quote. Ask the dealer to split them: the title prep portion should be $5 or less, and the general doc fee is the uncapped amount. If both are combined at $400+, you have a right to see them itemized separately under state directive.",
+    buyerTip: "Massachusetts Directive 14-1 caps the 'title preparation fee' at $5 — but this is different from the general documentation fee, which is without a verified cap on file. Dealers sometimes bundle both into a single line on the quote. Ask the dealer to split them: the title prep portion should be $5 or less, and the general doc fee is the without a verified cap on file amount. If both are combined at $400+, you have a right to see them itemized separately under state directive.",
   },
 
   michigan: {
     name: "Michigan",
     abbreviation: "MI",
     slug: "michigan",
-    docFeeRange: "Capped at $280 or 5% of price (whichever is less)",
+    docFeeRange: "Reported $200–$280 (not verified)",
     hasCap: true,
     metaDescription:
-      "Michigan caps dealer doc fees at $280 or 5% of the vehicle price, whichever is less. Per DIFS Bulletin 2025-03-CF. The state tax is a flat 6%. See the MI OTD picture.",
+      "Michigan documentation fee: verified $280 dollar ceiling under DIFS Bulletin 2025-03-CF. Reported $200–$280 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Michigan caps dealer documentation fees at $280 OR 5% of the vehicle price, whichever is less. This means on a $4,000 vehicle, the cap is $200 (5% of $4,000), not the full $280. Per DIFS Bulletin 2025-03-CF. The cap is adjusted biennially by CPI.",
+      "DIFS Bulletin 2025-03-CF, issued January 28, 2025, says Michigan's documentary preparation fee shall not exceed 5% of the cash price or $280, whichever is less. Odigos flags the verified $280 dollar ceiling. On a low-priced vehicle, confirm the 5% alternative before you treat a smaller fee as allowed. Unverified reports mention documentation fees around $200–$280. That range is not a market standard. Compare the itemized out-the-door price.",
     salesTaxNote:
       "Michigan charges a flat 6% sales tax on vehicle purchases statewide. There are no local additions — the rate is uniform. Trade-in credit is allowed up to $11,000 (2025 cap) or the actual agreed trade-in value, whichever is less.",
     registrationNote:
       "Michigan base registration is $15 per year (one-year) or $29 for two years, plus a percentage of the vehicle's original MSRP. The title fee is $15.",
     introAngle:
-      "Michigan's doc fee cap has an important nuance: it's the lesser of $280 or 5% of the vehicle's cash price. For most vehicles above $5,600, the $280 flat cap applies. For cheaper vehicles, the 5% formula limits the fee more. DIFS Bulletin 2025-03-CF provides the current guidance. The trade-in credit is capped at $11,000 in 2025.",
+      "Michigan's doc fee cap has an important nuance: it's the lesser of $280 or 5% of the vehicle's cash price. For most vehicles above $5,600, the $280 flat cap applies. For cheaper vehicles, the 5% formula limits the fee more. DIFS Bulletin 2025-03-CF provides the current guidance. The trade-in credit is listed with a stored figure that is not a verified cap in 2025.",
     snippetAnswer:
-      "Michigan caps dealer documentation fees at $280 or 5% of the vehicle price, whichever is lower. The state tax is a flat 6%. Trade-in credit is allowed up to $11,000. The cap is adjusted biennially by CPI per DIFS Bulletin 2025-03-CF.",
+      "DIFS Bulletin 2025-03-CF says Michigan's documentary preparation fee shall not exceed 5% of the cash price or $280, whichever is less. Odigos flags a fee above the verified $280 ceiling. The state tax is a flat 6%. Trade-in credit is allowed up to $11,000.",
     watchFor: [
       "5% cap for lower-priced vehicles: on a $4,000 vehicle, the max doc fee is $200, not $280. If you're buying an inexpensive used vehicle, confirm which limit applies.",
-      "Trade-in credit cap: Michigan's trade-in credit is capped at $11,000 (2025). If your trade-in is worth more, the excess doesn't reduce your taxable amount.",
-      "Doc fee above the cap: any fee above the applicable limit (lesser of $280 or 5%) is not permitted. Ask for the fee to be itemized if it seems high.",
+      "Trade-in credit cap: Michigan's trade-in credit is listed with a stored figure that is not a verified cap (2025). If your trade-in is worth more, the excess doesn't reduce your taxable amount.",
+      "Doc fee above $280: that exceeds the verified dollar ceiling in DIFS Bulletin 2025-03-CF. On a cheaper vehicle, also check the 5% of cash price alternative.",
     ],
     negotiationNote:
       "Michigan's flat 6% tax (no local additions) and $280 doc fee cap per DIFS Bulletin 2025-03-CF make OTD math predictable. The Detroit metro's competitive dealer network gives buyers real leverage on vehicle price. The trade-in credit ceiling of $11,000 is critical to know — if your trade-in is worth $18,000, only $11,000 reduces the taxable amount, costing you $420 in additional tax on the uncredited $7,000. For used car buyers, check whether the 5% formula applies: on a $4,000 vehicle, the max doc fee is $200, not $280.",
     ctaHeading: "Have a Michigan dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.michigan.gov/difs/-/media/Project/Websites/difs/Bulletins/2025/Bulletin_2025-03-CF.pdf",
@@ -1105,7 +1105,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     commonQuestions: [
       {
         q: "How does Michigan's doc fee cap work?",
-        a: "Michigan caps dealer documentation fees at $280 OR 5% of the vehicle's cash price, whichever is less (per DIFS Bulletin 2025-03-CF). For vehicles above $5,600, the $280 flat cap applies. For a $4,000 used car, the max fee is $200 (5%). The cap is adjusted biennially by CPI.",
+        a: "DIFS Bulletin 2025-03-CF says the documentary preparation fee shall not exceed 5% of the cash price or $280, whichever is less. Odigos flags a fee above the verified $280 dollar ceiling. On a $4,000 vehicle, 5% is $200, so confirm that alternative before you treat a fee under $280 as allowed.",
       },
       {
         q: "What is Michigan's trade-in credit cap?",
@@ -1122,27 +1122,27 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     ],
     competitorGapSection:
       "Most Michigan guides cite the $280 cap but miss the 5% alternative formula and the trade-in credit ceiling. The 5% rule protects used car buyers: on a $3,000 vehicle, the max doc fee is $150, not $280. The $11,000 trade-in cap is also widely overlooked. If you're trading in a vehicle worth more than $11,000, the excess doesn't reduce your taxable amount — which means you pay 6% on that gap. On a $20,000 trade-in, the uncredited $9,000 costs you $540 in additional tax. Knowing these limits before you walk into the dealership prevents surprise at the finance desk.",
-    buyerTip: "Michigan's trade-in credit is capped at $11,000 — the state only allows you to reduce your taxable purchase price by up to that amount. If your trade-in is worth $20,000, you still pay 6% tax on the full purchase price minus only $11,000, not the full $20,000 trade-in value. Buyers with high-value trade-ins should factor this limitation into their tax estimate — it's a common source of OTD surprises.",
+    buyerTip: "Michigan's trade-in credit is listed with a stored figure that is not a verified cap — the state only allows you to reduce your taxable purchase price by up to that amount. If your trade-in is worth $20,000, you still pay 6% tax on the full purchase price minus only $11,000, not the full $20,000 trade-in value. Buyers with high-value trade-ins should factor this limitation into their tax estimate — it's a common source of OTD surprises.",
   },
 
   minnesota: {
     name: "Minnesota",
     abbreviation: "MN",
     slug: "minnesota",
-    docFeeRange: "Capped at $350 (increased July 2025)",
+    docFeeRange: "Reported $125–$350 (not verified)",
     hasCap: true,
     metaDescription:
-      "Minnesota raised its dealer doc fee cap from ~$125 to $350 effective July 2025. State tax is 6.875% plus metro transit additions. See the MN OTD picture.",
+      "Minnesota documentation fee: verified ceiling $350. Reported $125–$350 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Minnesota caps dealer documentation fees at $350 effective July 1, 2025 — a major increase from the prior cap of approximately $125. The cap was raised by MADA and the state legislature. For vehicles priced at $3,499 or less, the cap is 10% of the sale value, whichever is less.",
+      "Minnesota's fetched statute text says that on or after July 1, 2025, the maximum documentary fee is the lesser of $350 or ten percent of the sale or lease. This file stores the $350 ceiling. Unverified reports mention documentation fees around $125–$350. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "Minnesota charges 6.875% state sales tax on vehicle purchases, plus a 0.5% metro transit tax in the metro area. Trade-in deductions are allowed, reducing the taxable amount.",
     registrationNote:
       "Minnesota registration is calculated at 1.575% of the vehicle's MSRP annually, plus $11.25 in universal fees. This value-based structure makes registration costs meaningfully higher for expensive vehicles. The title fee is $34.",
     introAngle:
-      "Minnesota buyers saw a major change in July 2025: the doc fee cap jumped from approximately $125 to $350. This was a significant expansion of what dealers can legally charge. If you're buying in 2025 or 2026, expect doc fees closer to $350 than the $125 buyers were used to in prior years. The registration fee, calculated as a percentage of MSRP, can also be substantial on higher-priced vehicles.",
+      "Minnesota's verified ceiling, for sales on or after July 1, 2025, is the lesser of $350 or ten percent of the sale. Older guides quoted a much lower number. A dealer charging exactly $350 is not a market finding — it is the dollar ceiling stored in this file. The registration fee, calculated as a percentage of MSRP, can also be substantial on higher-priced vehicles.",
     snippetAnswer:
-      "Minnesota raised its dealer documentation fee cap to $350 effective July 1, 2025 (from ~$125). State sales tax is 6.875% plus metro transit additions. Registration is value-based at 1.575% of MSRP annually.",
+      "Minnesota's fetched statute text says that on or after July 1, 2025, the maximum documentary fee is the lesser of $350 or ten percent of the sale or lease. This file stores the $350 ceiling. Unverified reports mention documentation fees around $125–$350. That range is not a market standard. State sales tax is 6.875% plus metro transit additions. Registration is value-based at 1.575% of MSRP annually.",
     watchFor: [
       "New $350 cap: buyers used to Minnesota's old ~$125 cap may be surprised by the new $350 ceiling. This change took effect July 1, 2025.",
       "Metro transit surcharge: the additional 0.5% tax applies in the Twin Cities metro area. Confirm whether your dealer's location is in the metro transit district.",
@@ -1152,7 +1152,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Minnesota's Twin Cities market is competitive with multiple dealers. With the doc fee capped at $350, your negotiation focuses on vehicle price and add-ons. The registration fee is a government charge based on MSRP — not negotiable.",
     ctaHeading: "Have a Minnesota dealer quote you want to verify?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://mada.org/doc-fee-increase/",
@@ -1169,20 +1169,20 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Mississippi",
     abbreviation: "MS",
     slug: "mississippi",
-    docFeeRange: "Typically $300–$550",
+    docFeeRange: "Reported $300–$550 (not verified)",
     hasCap: false,
     metaDescription:
-      "Mississippi has a district-based doc fee system — fees can't exceed 25% above the district average (~$425 typical). State sales tax on vehicles is 5%. See the MS OTD picture.",
+      "Mississippi does not have a verified documentation-fee cap on file. Reported $300–$550 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Mississippi does not have a hard state cap on documentation fees, but dealers are limited to charges that don't exceed 25% above the district average under MMVC Regulation 8. This is not a fixed ceiling but a market-relative limit — with the typical average around $425, the practical upper bound is approximately $531.",
+      "Mississippi does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$550. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Mississippi charges 5% sales tax specifically for passenger vehicles (different from the 7% general sales tax rate). Local additions of up to 0.25% may apply. Trade-in deductions are allowed.",
     registrationNote:
       "Mississippi registration is approximately $14 for first-time or $12.75 for renewal, plus approximately $15 in county taxes. The title fee is $9.",
     introAngle:
-      "Mississippi uses an unusual district-based fee system — rather than a fixed state cap, dealers cannot charge more than 25% above the average doc fee in their district. With the typical average around $425, this creates an effective ceiling near $531, though it varies by district. The passenger vehicle sales tax rate of 5% is lower than the general state rate.",
+      "Older notes describe a district-based documentation fee in Mississippi, including a limit tied to a local average. That rule is not verified in this file, and those averages are not a market standard. The passenger vehicle sales tax rate of 5% is lower than the general state rate.",
     snippetAnswer:
-      "Mississippi dealers are limited to fees within 25% of their district average (~$425 typical). The state sales tax on passenger vehicles is 5% — lower than the 7% general rate. Registration costs are among the lowest in the country.",
+      "Mississippi does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$550. That range is not a market standard. The state sales tax on passenger vehicles is 5% — lower than the 7% general rate. Registration costs are among the lowest in the country.",
     watchFor: [
       "District-based fee variation: the effective upper bound on doc fees varies by dealer district. Ask if the dealer can show you what 'district average' means for their location.",
       "Passenger vehicle vs. general tax rate: Mississippi's 5% passenger vehicle rate is lower than the 7% general sales tax. Make sure your quote uses the correct rate.",
@@ -1192,7 +1192,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Mississippi's market is spread across smaller cities, which limits competitive leverage outside the Jackson area. The district-based fee system means some dealers charge at the upper bound while others charge less — comparison shopping is worth the effort.",
     ctaHeading: "Have a Mississippi dealer quote you want to verify?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.mmvc.ms.gov/sites/mmvc/files/rules/Regulation8.pdf",
@@ -1209,12 +1209,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Missouri",
     abbreviation: "MO",
     slug: "missouri",
-    docFeeRange: "Capped at $620.79 for 2026",
+    docFeeRange: "Reported $300–$500 (not verified)",
     hasCap: true,
     metaDescription:
-      "Missouri caps dealer doc fees at $500 (CPI-adjusted, effective Aug 2025). State tax is 4.225% with local additions. Combined rates can approach 10%. See the MO OTD picture.",
+      "Missouri documentation fee: verified ceiling $620.79. Reported $300–$500 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Missouri's maximum dealer administrative fee for the 2026 licensure year is $620.79 under RSMo §301.558. The Department of Revenue posts the CPI update each year. Dealers cannot legally exceed the posted maximum.",
+      "Missouri's 2026 maximum dealer administrative fee on file is $620.79 under Mo. Rev. Stat. § 301.558. Unverified reports mention documentation fees around $300–$500. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "Missouri charges 4.225% state sales tax on vehicles, with local additions of up to 5.875%. Combined rates can reach 10.1% in some jurisdictions. Total vehicle sales tax is also subject to a $725 cap per transaction.",
     registrationNote:
@@ -1222,7 +1222,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "Missouri has a $500 cap on doc fees (CPI-adjusted) and a horsepower-based registration structure. The low 4.225% state tax rate can be misleading — local additions push combined rates to 8–10% in many areas. The $725 total tax cap per transaction is a useful ceiling for high-value vehicles.",
     snippetAnswer:
-      "Missouri's maximum dealer administrative fee for 2026 is $620.79. State sales tax is 4.225% with local additions. A $725 cap on total vehicle sales tax applies per transaction.",
+      "Missouri's 2026 maximum dealer administrative fee on file is $620.79 under Mo. Rev. Unverified reports mention documentation fees around $300–$500. That range is not a market standard. State sales tax is 4.225% with local additions. A $725 cap on total vehicle sales tax applies per transaction.",
     watchFor: [
       "Local tax variation: Missouri's combined rates range widely. Kansas City and St. Louis buyers may see rates above 8–9%. Verify your effective rate.",
       "$725 total tax cap: on very high-value vehicle purchases, total Missouri sales tax is capped at $725. This only benefits buyers of expensive vehicles where the uncapped tax would exceed that amount.",
@@ -1232,7 +1232,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Missouri's Kansas City and St. Louis markets have competitive dealer networks. With the doc fee capped at $500, your leverage is on the vehicle price and add-ons. Verify the local tax rate at your specific dealership — it can vary significantly even within the same metro area.",
     ctaHeading: "Have a Missouri dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://revisor.mo.gov/main/OneSection.aspx?section=301.558",
@@ -1249,30 +1249,30 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Montana",
     abbreviation: "MT",
     slug: "montana",
-    docFeeRange: "Typically $200–$400",
+    docFeeRange: "Reported $200–$400 (not verified)",
     hasCap: false,
     metaDescription:
-      "Montana has no sales tax on vehicles — one of five such states. Dealer doc fees are uncapped at $200–$400. Registration varies by vehicle age. See the MT OTD picture.",
+      "Montana does not have a verified documentation-fee cap on file. Reported $200–$400 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Montana has no state cap on dealer documentation fees. Fees of $200–$400 are commonly reported. There is no legal ceiling.",
+      "Montana does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $200–$400. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Montana has no state sales tax on vehicle purchases — one of only five states in the country (along with Alaska, Delaware, New Hampshire, and Oregon). This significantly reduces the OTD total compared to most states.",
     registrationNote:
       "Montana registration fees vary by vehicle age: $217 for vehicles 0–4 years old, $130 for 5–10 years old, with decreasing rates beyond that. A county option fee of approximately $10 may also apply. The title fee is $12.",
     introAngle:
-      "Montana is one of five states with no vehicle sales tax, which gives buyers a meaningful OTD advantage over most of the country. On a $40,000 vehicle, the absence of a 6% sales tax saves $2,400. Doc fees are uncapped but tend to be in a moderate range. Registration decreases with vehicle age.",
+      "Montana is one of five states with no vehicle sales tax, which gives buyers a meaningful OTD advantage over most of the country. On a $40,000 vehicle, the absence of a 6% sales tax saves $2,400. Doc fees are without a verified cap on file but tend to be in a moderate range. Registration decreases with vehicle age.",
     snippetAnswer:
-      "Montana has no state sales tax on vehicles — one of only five states. Dealer doc fees are uncapped at $200–$400. Registration runs $130–$217 based on vehicle age and decreases over time.",
+      "Montana does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $200–$400. That range is not a market standard. Montana has no state sales tax on vehicles — one of only five states. Registration runs $130–$217 based on vehicle age and decreases over time.",
     watchFor: [
       "Montana buyers from other states: Montana's lack of sales tax attracts buyers from neighboring states. If you're not a Montana resident, verify whether you can legally use Montana's tax exemption for your purchase.",
-      "Uncapped doc fees: $200–$400 is typical, but there's no cap. Compare across dealers.",
+      "Doc fees without a verified cap on file: $200–$400 appears in unverified reports, and there is no verified cap on file. Compare across dealers.",
       "County option fees: a small county fee may apply on top of the state registration amount.",
     ],
     negotiationNote:
-      "Montana's less-populated market means fewer competing dealers, particularly outside Billings and Missoula. The absence of sales tax is a significant advantage — focus negotiation on the vehicle price and any dealer add-ons. Doc fees are uncapped and may be negotiable.",
+      "Montana's less-populated market means fewer competing dealers, particularly outside Billings and Missoula. The absence of sales tax is a significant advantage — focus negotiation on the vehicle price and any dealer add-ons. Doc fees are without a verified cap on file and may be negotiable.",
     ctaHeading: "Have a Montana dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://revenue.mt.gov/taxes/general-sales-tax",
@@ -1290,30 +1290,30 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Nebraska",
     abbreviation: "NE",
     slug: "nebraska",
-    docFeeRange: "Typically $200–$400",
+    docFeeRange: "Reported $200–$400 (not verified)",
     hasCap: false,
     metaDescription:
-      "Nebraska has no cap on dealer doc fees — $200–$400 is typical. State sales tax is 5.5% plus local additions up to 2%. See what Nebraska car buyers pay.",
+      "Nebraska does not have a verified documentation-fee cap on file. Reported $200–$400 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Nebraska has no state cap on dealer documentation fees. Fees of $200–$400 are commonly reported. There is no legal ceiling.",
+      "Nebraska does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $200–$400. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Nebraska charges 5.5% state sales tax on vehicle purchases, with local additions of up to 2%. Trade-in deductions are allowed, reducing the taxable purchase price.",
     registrationNote:
       "Nebraska base registration is approximately $68 plus approximately $20.50 in additional statutory fees. The title fee is $18.",
     introAngle:
-      "Nebraska has moderate doc fees in the $200–$400 range with no state cap. The 5.5% state tax with modest local additions keeps the tax portion predictable. Buyers should verify the exact local rate for their purchase location and confirm whether a trade-in deduction applies.",
+      "Nebraska has moderate doc fees in the $200–$400 range with no verified cap on file. The 5.5% state tax with modest local additions keeps the tax portion predictable. Buyers should verify the exact local rate for their purchase location and confirm whether a trade-in deduction applies.",
     snippetAnswer:
-      "Nebraska dealers typically charge $200–$400 in documentation fees with no state cap. State sales tax is 5.5% with local additions up to 2%. Trade-in deductions are allowed.",
+      "Nebraska does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $200–$400. That range is not a market standard. State sales tax is 5.5% with local additions up to 2%. Trade-in deductions are allowed.",
     watchFor: [
-      "Uncapped doc fees: ask for the fee to be disclosed before visiting. If it exceeds $400, compare with other Nebraska dealers.",
+      "Doc fees without a verified cap on file: ask for the fee to be disclosed before visiting. If it exceeds $400, compare with other Nebraska dealers.",
       "Local tax additions: some Nebraska cities add up to 2% on top of the 5.5% base. Confirm your effective rate.",
       "Trade-in credit: Nebraska allows trade-in deductions. Make sure the credit is applied before your tax is calculated.",
     ],
     negotiationNote:
-      "Omaha and Lincoln have competitive dealer markets that give buyers more leverage. Outside these areas, options are more limited. Focus negotiation on the vehicle price and the doc fee, which is uncapped.",
+      "Omaha and Lincoln have competitive dealer markets that give buyers more leverage. Outside these areas, options are more limited. Focus negotiation on the vehicle price and the doc fee, which is without a verified cap on file.",
     ctaHeading: "Have a Nebraska dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://dmv.nebraska.gov/dvr/reg/registration-fees-and-taxes",
@@ -1330,30 +1330,30 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Nevada",
     abbreviation: "NV",
     slug: "nevada",
-    docFeeRange: "Typically $400–$700",
+    docFeeRange: "Reported $400–$700 (not verified)",
     hasCap: false,
     metaDescription:
-      "Nevada has no cap on dealer doc fees — $400–$700 is typical. State sales tax is 4.6% plus local additions. Registration is value-based using an MSRP formula.",
+      "Nevada does not have a verified documentation-fee cap on file. Reported $400–$700 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Nevada has no state cap on dealer documentation fees. Fees of $400–$700 are commonly reported. There is no legal ceiling.",
+      "Nevada does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $400–$700. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Nevada charges 4.6% state sales tax on vehicle purchases, with local county additions. Reno-area buyers typically see combined rates of around 8.265%. The tax applies to the full purchase price with trade-in deductions allowed.",
     registrationNote:
       "Nevada registration includes a $33 base fee plus a value-based component calculated on approximately 35% of the vehicle's MSRP. This value-based fee can be substantial on newer or more expensive vehicles. The title fee is $28.",
     introAngle:
-      "Nevada's Las Vegas and Reno markets attract a high volume of vehicle purchases. Doc fees are uncapped and tend to be on the higher end at $400–$700. The value-based registration formula, calculated on 35% of MSRP, can make first-year registration significantly more expensive than buyers expect from other states.",
+      "Nevada's Las Vegas and Reno markets attract a high volume of vehicle purchases. Doc fees are without a verified cap on file and tend to be on the higher end at $400–$700. The value-based registration formula, calculated on 35% of MSRP, can make first-year registration significantly more expensive than buyers expect from other states.",
     snippetAnswer:
-      "Nevada dealers typically charge $400–$700 in documentation fees with no state cap. The base sales tax is 4.6% with local additions. Registration includes a value-based component calculated at 35% of MSRP.",
+      "Nevada does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $400–$700. That range is not a market standard. The base sales tax is 4.6% with local additions. Registration includes a value-based component calculated at 35% of MSRP.",
     watchFor: [
       "Value-based registration: Nevada's registration is tied to your vehicle's MSRP. On a $45,000 vehicle, the value-based component adds several hundred dollars on top of the $33 base. Budget for this when estimating your OTD.",
-      "Uncapped doc fees: $400–$700 is typical, but there's no cap. Compare across multiple dealers.",
+      "Doc fees without a verified cap on file: $400–$700 appears in unverified reports, and there is no verified cap on file. Compare across multiple dealers.",
       "Local tax rate variation: combined rates vary by county. Verify the rate at your specific dealer location.",
     ],
     negotiationNote:
-      "Las Vegas has a highly competitive dealer market — use it to your advantage by getting multiple OTD quotes. The doc fee is uncapped and potentially negotiable. The registration and sales tax are government charges and are fixed.",
+      "Las Vegas has a highly competitive dealer market — use it to your advantage by getting multiple OTD quotes. The doc fee is without a verified cap on file and potentially negotiable. The registration and sales tax are government charges and are fixed.",
     ctaHeading: "Have a Nevada dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://dmv.nv.gov/regfees.htm",
@@ -1370,63 +1370,63 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "New Hampshire",
     abbreviation: "NH",
     slug: "new-hampshire",
-    docFeeRange: "Typically $300–$500 (two-part structure)",
+    docFeeRange: "Reported $300–$500 (not verified)",
     hasCap: false,
     metaDescription:
-      "New Hampshire has no sales tax and a unique two-part doc fee structure: a $27 state fee plus an uncapped dealer admin fee. Total fees average ~$459. See the NH OTD picture.",
+      "New Hampshire does not have a verified documentation-fee cap on file. Reported $300–$500 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "New Hampshire has a unique two-part fee structure: (1) a $27 state documentation fee capped by statute (RSA 361-A:1, IV), and (2) a separate dealer 'administrative fee' that is uncapped and must be itemized. Most dealers charge total documentation-related fees of $300–$500. The title fee increased to $37 effective January 1, 2026.",
+      "New Hampshire does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$500. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "New Hampshire has no state sales tax on vehicle purchases. There are no local sales taxes on vehicles either. This is one of the most significant buyer advantages in New Hampshire — the absence of sales tax on a $40,000 vehicle saves approximately $2,000–$2,500 compared to most states.",
     registrationNote:
       "New Hampshire registration fees are calculated based on the vehicle's value: $18 per $1,000 of value in the first two years, decreasing thereafter. The title fee increased to $37 effective January 1, 2026.",
     introAngle:
-      "New Hampshire has no vehicle sales tax, which provides a significant OTD advantage. However, the documentation fee structure is unusual: a $27 state fee is capped by statute, but dealers also charge a separate uncapped 'administrative fee.' Total doc-related charges average around $459. The title fee also increased in January 2026.",
+      "New Hampshire has no vehicle sales tax, which provides a significant OTD advantage. However, the documentation fee structure is unusual: a $27 state fee is capped by statute, but dealers also charge a separate without a verified cap on file 'administrative fee.' Total doc-related charges average around $459. The title fee also increased in January 2026.",
     snippetAnswer:
-      "New Hampshire has no vehicle sales tax. The documentation fee has two parts: a $27 state fee (capped) plus an uncapped dealer admin fee — averaging $459 total. The title fee increased to $37 in January 2026.",
+      "New Hampshire does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$500. That range is not a market standard. New Hampshire has no vehicle sales tax.",
     watchFor: [
       "Two-part documentation fee: confirm that the quote itemizes both the $27 state fee and any dealer admin fee separately, as required by law.",
       "New title fee: the title fee increased from $25 to $37 effective January 1, 2026. Update any older OTD estimates.",
       "Registration cost: NH registration is value-based, not flat — it can be meaningful on newer vehicles.",
     ],
     negotiationNote:
-      "The absence of sales tax makes New Hampshire an attractive buying state for residents of neighboring high-tax states. Dealer admin fees are uncapped and may be negotiable. Focus on the total OTD, including the value-based registration.",
+      "The absence of sales tax makes New Hampshire an attractive buying state for residents of neighboring high-tax states. Dealer admin fees are without a verified cap on file and may be negotiable. Focus on the total OTD, including the value-based registration.",
     ctaHeading: "Have a New Hampshire dealer quote you want to verify?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.banking.nh.gov/rsa-361-faq",
       "https://caredge.com/guides/car-dealer-doc-fee-by-state",
     ],
     specialNotes:
-      "Two-part fee structure: (1) $27 state doc fee (capped by statute), (2) Dealer admin fee (uncapped, must be itemized). Total fees average $459. Title fee increased to $37 effective Jan 1, 2026.",
+      "Two-part fee structure: (1) $27 state doc fee (capped by statute), (2) Dealer admin fee (without a verified cap on file, must be itemized). Total fees average $459. Title fee increased to $37 effective Jan 1, 2026.",
     dealerMessage:
       "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, the $27 state documentation fee, any additional dealer administrative fee (itemized separately), all other dealer fees, title fee ($37), and registration costs (value-based)? New Hampshire has no sales tax, so please confirm no sales tax is included. I'd like to see the complete total. Thank you.",
     lastVerified: "2026-03",
-    buyerTip: "New Hampshire's two-part documentation fee structure is unique: a $27 state-mandated fee capped by RSA 361-A, plus a separate dealer 'administrative fee' that is uncapped. By statute, these must be itemized separately on the quote. If a dealer shows only one bundled 'doc fee' without splitting these, ask for the statutory and dealer portions to be shown separately. This distinction matters because the $27 portion is fixed but the admin fee is negotiable.",
+    buyerTip: "New Hampshire's two-part documentation fee structure is unique: a $27 state-mandated fee capped by RSA 361-A, plus a separate dealer 'administrative fee' that is without a verified cap on file. By statute, these must be itemized separately on the quote. If a dealer shows only one bundled 'doc fee' without splitting these, ask for the statutory and dealer portions to be shown separately. This distinction matters because the $27 portion is fixed but the admin fee is negotiable.",
   },
 
   "new-jersey": {
     name: "New Jersey",
     abbreviation: "NJ",
     slug: "new-jersey",
-    docFeeRange: "Typically $200–$900",
+    docFeeRange: "Reported $200–$900 (not verified)",
     hasCap: false,
     metaDescription:
-      "New Jersey has no cap on dealer doc fees — fees range widely from $200 to $900. The state tax is 6.625%. Title fee is $60 (or $85 with a lien). See the NJ OTD picture.",
+      "New Jersey does not have a verified documentation-fee cap on file. Reported $200–$900 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "New Jersey has no state cap on dealer documentation fees. Fees vary widely — anywhere from $200 to $900 — depending on the dealer. There is no legal ceiling, making comparison shopping important.",
+      "New Jersey does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $200–$900. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "New Jersey charges 6.625% sales tax on vehicle purchases statewide, with one exception: Millville's rate is 8.625%. There are no other local additions. Trade-in deductions are allowed.",
     registrationNote:
       "New Jersey registration fees vary by vehicle type and weight. Electric vehicles are subject to a $260 ZEV fee in 2026. Title fee is $60, or $85 if you're financing (title with lien).",
     introAngle:
-      "New Jersey has no doc fee cap, and fees vary exceptionally widely — from $200 to $900 — across the state's dealer network. The 6.625% statewide sales tax is straightforward with minimal local variation. Buyers financing a vehicle should note the $85 title fee (lien) vs. $60 for cash purchases.",
+      "New Jersey does not have a verified doc-fee cap on file, and fees vary exceptionally widely — from $200 to $900 — across the state's dealer network. The 6.625% statewide sales tax is straightforward with minimal local variation. Buyers financing a vehicle should note the $85 title fee (lien) vs. $60 for cash purchases.",
     snippetAnswer:
-      "New Jersey dealer documentation fees vary widely from $200 to $900 with no state cap. State sales tax is 6.625%. Title fee is $60 (cash) or $85 (financed). No local additions apply except in Millville.",
+      "New Jersey does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $200–$900. That range is not a market standard. State sales tax is 6.625%.",
     watchFor: [
-      "Wide doc fee range: fees vary from $200 to $900 at New Jersey dealerships with no cap. Always get the doc fee disclosed before visiting and compare across dealers.",
+      "Wide doc fee range: fees vary from $200 to $900 at New Jersey dealerships with no verified cap on file. Always get the doc fee disclosed before visiting and compare across dealers.",
       "Lien vs. cash title fee: if you're financing, the title fee is $85. If paying cash, it's $60. Make sure your quote reflects the correct amount.",
       "EV registration surcharge: electric vehicle buyers pay an additional $260 ZEV fee in 2026.",
     ],
@@ -1434,7 +1434,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "New Jersey's dense dealer market — particularly in North Jersey near the NYC metro — creates real competitive pressure. Use multiple competing OTD quotes as leverage. The wide doc fee range (up to $900) means there's meaningful savings potential by shopping around.",
     ctaHeading: "Have a New Jersey dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.nj.gov/mvc/vehicles/regfees.htm",
@@ -1447,7 +1447,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     commonQuestions: [
       {
         q: "Is there a cap on dealer doc fees in New Jersey?",
-        a: "No. New Jersey has no state-imposed cap on dealer documentation fees. Fees range from $200 to $900 depending on the dealership. Because there's no legal limit, the doc fee is one of the most variable line items in an NJ dealer quote — always ask for it upfront and compare across dealers.",
+        a: "No. New Jersey has no verified state-imposed cap in this file on dealer documentation fees. Unverified reports mention fees from $200 to $900. That range is not a market standard. Because this file does not verify a legal limit, the doc fee is one of the most variable line items in an NJ dealer quote — always ask for it upfront and compare across dealers.",
       },
       {
         q: "What is the sales tax on a car in New Jersey?",
@@ -1467,48 +1467,48 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       },
     ],
     competitorGapSection:
-      "Most NJ car-buying guides list the 6.625% tax rate and move on — but they miss the doc fee story. New Jersey's $200–$900 range is one of the widest in the country for an uncapped state. The real savings opportunity isn't the tax (which is flat statewide) — it's shopping the doc fee across North Jersey's dense dealer corridor. Two dealers 10 minutes apart can differ by $500+ on the doc fee alone. Get 3 itemized OTD quotes before committing, and use the doc fee gap as your primary negotiation lever.",
-    pageTitle: "New Jersey Dealer Fees (2026): No Cap, $200–$900 Range — What NJ Buyers Pay",
-    buyerTip: "New Jersey's doc fee range ($200–$900) is one of the widest in the country for an uncapped state. That $700 spread is a real difference, and it exists between dealers in the same city. Before visiting any New Jersey dealership, call or email ahead and ask for their current documentation fee — many dealers will disclose it over the phone. Use competing fee disclosures as a direct comparison tool before you commit to visiting.",
+      "Most NJ car-buying guides list the 6.625% tax rate and move on — but they miss the doc fee story. New Jersey's $200–$900 range is one of the widest in the country for an without a verified cap on file state. The real savings opportunity isn't the tax (which is flat statewide) — it's shopping the doc fee across North Jersey's dense dealer corridor. Two dealers 10 minutes apart can differ by $500+ on the doc fee alone. Get 3 itemized OTD quotes before committing, and use the doc fee gap as your primary negotiation lever.",
+    pageTitle: "New Jersey Dealer Fees (2026): Cap Not Verified — Compare the Out-the-Door Price",
+    buyerTip: "New Jersey's doc fee range ($200–$900) is one of the widest in the country for an without a verified cap on file state. That $700 spread is a real difference, and it exists between dealers in the same city. Before visiting any New Jersey dealership, call or email ahead and ask for their current documentation fee — many dealers will disclose it over the phone. Use competing fee disclosures as a direct comparison tool before you commit to visiting.",
   },
 
   "new-mexico": {
     name: "New Mexico",
     abbreviation: "NM",
     slug: "new-mexico",
-    docFeeRange: "Typically $200–$400",
+    docFeeRange: "Reported $200–$400 (not verified)",
     hasCap: false,
     pageTitle: "New Mexico Dealer Fees (2026): Doc Fee Rules & What's Negotiable",
     metaDescription:
-      "New Mexico dealer doc fee rules for 2026. See what's legally allowed, what you can negotiate, and check any NM dealer quote for junk fees — free with Odigos.",
+      "New Mexico does not have a verified documentation-fee cap on file. Reported $200–$400 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "New Mexico has no state cap on dealer documentation fees. Fees of $200–$400 are commonly reported. There is no legal ceiling.",
+      "New Mexico does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $200–$400. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "New Mexico has a unique dual-tax structure: a 4% Motor Vehicle Excise Tax (MVET) on the vehicle purchase price, plus a Gross Receipts Tax (GRT) that functions like a sales tax on the dealer's gross receipts. The GRT base is 5.125% with local additions up to 4.315%, reaching combined rates near 9.44% in some areas. Buyers should clarify which taxes appear on their quote.",
     registrationNote:
       "New Mexico registration fees range from $27 to $62 per year based on vehicle weight and age. The title fee is $20.",
     introAngle:
-      "New Mexico has an unusually complex tax structure for vehicle purchases — both a Motor Vehicle Excise Tax and a Gross Receipts Tax may apply. Understanding which charges appear on your quote and why is important to accurately evaluating your OTD total. Doc fees are uncapped and in a moderate range.",
+      "New Mexico has an unusually complex tax structure for vehicle purchases — both a Motor Vehicle Excise Tax and a Gross Receipts Tax may apply. Understanding which charges appear on your quote and why is important to accurately evaluating your OTD total. Doc fees are without a verified cap on file and in a moderate range.",
     snippetAnswer:
-      "New Mexico has no doc fee cap. The state applies both a 4% Motor Vehicle Excise Tax and a Gross Receipts Tax (GRT, up to 9.44% combined) on vehicle transactions. Confirm which taxes are itemized on your quote.",
+      "New Mexico does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $200–$400. That range is not a market standard. The state applies both a 4% Motor Vehicle Excise Tax and a Gross Receipts Tax (GRT, up to 9.44% combined) on vehicle transactions. Confirm which taxes are itemized on your quote.",
     watchFor: [
       "Dual tax structure: New Mexico uses both MVET and GRT. Make sure your quote clearly itemizes which taxes apply and at what rates.",
       "Local GRT additions: combined GRT rates vary by location and can reach 9.44% in some areas. Know the rate for your dealer's location.",
-      "Uncapped doc fees: ask for the fee before visiting and compare across dealers.",
+      "Doc fees without a verified cap on file: ask for the fee before visiting and compare across dealers.",
     ],
     negotiationNote:
       "New Mexico's market is less competitive outside Albuquerque. Get multiple quotes and ask for the tax structure to be explained in detail. The dual tax structure makes comparing OTD quotes across state lines more complex than usual.",
     ctaHeading: "Have a New Mexico dealer quote?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     ctaTopBody:
-      "Have a New Mexico dealer quote? Paste it here — Odigos checks every fee and scores your deal in 60 seconds.",
+      "Have a New Mexico dealer quote? Paste it here — Odigos checks whether the charges are itemized and whether the total reconciles. It does not score the vehicle's market value.",
     ctaMidBody:
       "Not sure if your New Mexico dealer's charges are normal?",
-    ctaMidLink: "Check My NM Quote Against State Rules",
-    ctaBottomHeadline: "New Mexico's fee rules protect buyers — but only if you know them.",
+    ctaMidLink: "Check My NM Quote",
+    ctaBottomHeadline: "Ask for an itemized out-the-door price before you sign.",
     ctaBottomBody:
-      "Paste your quote and let Odigos flag anything above what's allowed.",
+      "Paste your quote and let Odigos check the math and the line items. An unverified fee figure is not treated as a legal limit.",
     ctaBottomButton: "Check My NM Quote Free",
     internalLinks: STANDARD_LINKS,
     sources: [
@@ -1526,22 +1526,22 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "New York",
     abbreviation: "NY",
     slug: "new-york",
-    docFeeRange: "Capped at $175",
+    docFeeRange: "Reported $175 (not verified)",
     hasCap: true,
-    pageTitle: "New York Dealer Doc Fee (2026): $175 Legal Cap — Don't Pay More",
-    h1: "New York Dealer Doc Fee (2026): $175 Maximum Allowed by Law",
+    pageTitle: "New York Dealer Doc Fee (2026): Verified $175 Ceiling",
+    h1: "New York Dealer Doc Fee (2026): Verified $175 Ceiling",
     metaDescription:
-      "New York caps dealer doc fees at $175. Learn the legal limit and check if your dealer added extra fees.",
+      "New York documentation fee: verified ceiling $175 under 15 NYCRR § 78.19(c)(2). Reported $175 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "New York caps dealer documentation fees at $175 per 15 NYCRR §78.19, set August 18, 2021 and still current as of March 2026. Dealers cannot legally charge more than $175 for documentation.",
+      "15 NYCRR § 78.19(c)(2) says the fee a New York dealer charges for assisting with registration and/or title may not exceed $175. The fetched DMV pages do not state an effective date. Odigos can flag a documentation fee above that verified ceiling. Unverified reports mention documentation fees around $175. That range is not a market standard. Compare the itemized out-the-door price.",
     salesTaxNote:
       "New York has a 4% state sales tax on vehicles, but local county and city taxes add significantly. New York City buyers pay a combined rate of 8.875% (4% state + 4.5% NYC + 0.375% MTA). Buyers in suburban counties typically see 7%–8.5% combined rates. Upstate buyers in lower-tax counties may see 6%–7%. The combined rate varies more than buyers usually expect.",
     registrationNote:
       "New York registration fees are calculated on a schedule based on the vehicle's weight. A standard passenger car typically runs $26–$140 in base registration depending on weight, plus a title fee of around $50. NYC buyers also pay an additional Metropolitan Commuter Transportation District (MCTD) surcharge. Total first-year registration and title costs often run $200–$400 depending on vehicle and location.",
     introAngle:
-      "New York law caps dealer documentation fees at $175 per vehicle. Dealers cannot legally charge more than this amount. However, buyers may still pay more through additional fees, add-ons, or bundled charges included in the quote.",
+      "New York's verified ceiling on the dealer registration and title assistance fee is $175 under 15 NYCRR § 78.19(c)(2). The fetched DMV pages do not state an effective date. Buyers may still pay more through additional fees, add-ons, or bundled charges.",
     snippetAnswer:
-      "New York law caps dealer documentation fees at $175 per vehicle. Dealers cannot legally charge more than this amount. However, buyers may still pay more through additional fees, add-ons, or bundled charges included in the quote.",
+      "15 NYCRR § 78.19(c)(2) says a New York dealer fee for assisting with registration and/or title may not exceed $175. Unverified reports mention documentation fees around $175. That range is not a market standard.",
     watchFor: [
       "NYC combined tax rate: buyers purchasing in New York City pay 8.875% combined — one of the highest effective vehicle sales tax rates in the country. On a $35,000 vehicle, that's $3,106 in tax. Buyers who don't account for this are often surprised at the OTD total.",
       "MCTD surcharge on registration: buyers in the Metropolitan Commuter Transportation District (which includes NYC and several surrounding counties) pay an additional surcharge on their registration.",
@@ -1549,17 +1549,17 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Dealer prep and reconditioning fees: some New York dealers add preparation or reconditioning fees outside the standard doc fee. These aren't government charges — ask for each fee to be named and explained individually.",
     ],
     negotiationNote:
-      "New York's $175 doc fee cap per 15 NYCRR section 78.19 is a hard legal limit — any dealer charging more is out of compliance. The main negotiation pressure is on vehicle price and add-ons. NYC buyers pay 8.875% combined tax (4% state + 4.5% NYC + 0.375% MTA), making the pre-tax negotiation especially important: every $1,000 off the sale price saves $88.75 in NYC tax. New York does allow trade-in credits, which reduce the taxable amount. The dense metro dealer market means multiple dealers within driving distance sell the same vehicle — use competing OTD quotes as leverage.",
+      "New York's verified $175 ceiling under 15 NYCRR § 78.19(c)(2) is a hard limit on the registration and title assistance fee. A higher documentation fee is the kind of charge Odigos can flag. The main negotiation pressure beyond that fee is the vehicle price and add-ons. NYC buyers pay 8.875% combined tax (4% state + 4.5% NYC + 0.375% MTA), making the pre-tax negotiation especially important: every $1,000 off the sale price saves $88.75 in NYC tax. New York does allow trade-in credits, which reduce the taxable amount. The dense metro dealer market means multiple dealers within driving distance sell the same vehicle — use competing OTD quotes as leverage.",
     ctaHeading: "Have a New York dealer quote?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     ctaTopBody:
-      "Have a New York dealer quote? Paste it here — Odigos flags every fee over the $175 cap instantly. Free, no signup.",
+      "Have a New York dealer quote? Paste it here. Odigos checks the line items, the math, and the verified $175 ceiling. Market value stays unverified unless you add a factory window sticker MSRP.",
     ctaMidBody:
-      "A New York dealer can't legally charge more than $175 for documentation. If your quote shows more, that's money back in your pocket.",
+      "A New York documentation fee above $175 exceeds the verified ceiling in 15 NYCRR § 78.19(c)(2). Ask the dealer to itemize it.",
     ctaMidLink: "Check My NY Quote",
     ctaBottomBody:
-      "New York dealers have some of the tightest fee caps in the country — but junk fees still slip through. Paste your quote and see every charge broken down with a DealScore.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     ctaBottomButton: "Check My Quote Free",
     internalLinks: [
       ...STANDARD_LINKS,
@@ -1569,14 +1569,14 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "https://dmv.ny.gov/registration/sales-tax-information",
     ],
     specialNotes:
-      "Cap set Aug 18, 2021. Still current as of March 2026.",
+      "15 NYCRR § 78.19(c)(2): the dealer fee for assisting with registration and/or title may not exceed $175. The fetched DMV pages do not state an effective date.",
     dealerMessage:
       "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (New York caps this at $175), all additional dealer fees, New York sales tax (state + local rate for your county/city), title fee ($50), and registration costs? I'd like to see the complete total. Thank you.",
     lastVerified: "2026-03",
     commonQuestions: [
       {
         q: "What is the New York doc fee cap in 2026?",
-        a: "New York caps dealer documentation fees at $175, set by 15 NYCRR §78.19 on August 18, 2021. This limit is still current as of 2026. Any dealer charging above $175 for documentation is out of compliance with state regulations.",
+        a: "15 NYCRR § 78.19(c)(2) says the dealer fee for assisting with registration and/or title may not exceed $175. The fetched DMV pages do not state an effective date. A documentation fee above $175 exceeds that verified ceiling.",
       },
       {
         q: "How much is sales tax on a car in New York City?",
@@ -1584,7 +1584,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       },
       {
         q: "Is the doc fee the same at every New York dealership?",
-        a: "Not necessarily. The cap is $175 but dealers can charge less. Many New York dealers charge exactly $175. Others charge a lower amount. The cap means no dealer can legally charge more — it doesn't mean all dealers charge the same.",
+        a: "Not necessarily. The verified ceiling is $175, and a dealer can charge less. A documentation fee above $175 exceeds 15 NYCRR § 78.19(c)(2). Ask for the fee as its own line.",
       },
       {
         q: "What is the MCTD surcharge on New York vehicle registration?",
@@ -1604,30 +1604,30 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "North Carolina",
     abbreviation: "NC",
     slug: "north-carolina",
-    docFeeRange: "Typically $500–$800",
+    docFeeRange: "Reported $500–$800 (not verified)",
     hasCap: false,
     metaDescription:
-      "North Carolina has no cap on dealer doc fees — $500–$800 is typical. The state uses a 3% Highway Use Tax instead of traditional sales tax. See the NC OTD breakdown.",
+      "North Carolina does not have a verified documentation-fee cap on file. Reported $500–$800 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "North Carolina has no state cap on dealer documentation fees. Fees of $500–$800 are commonly reported — on the higher end of uncapped states. There is no legal ceiling.",
+      "North Carolina does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $500–$800. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "North Carolina uses a 3% Highway Use Tax (HUT) rather than traditional sales tax for vehicle purchases. This is a flat statewide rate with no local additions — making the tax portion of your OTD straightforward to calculate. The HUT applies to the vehicle purchase price with trade-in deductions allowed for dealer transactions.",
     registrationNote:
       "North Carolina registration is $46.25 per year (effective July 1, 2024). The title fee is $56.",
     introAngle:
-      "North Carolina is one of a few states that uses a Highway Use Tax instead of traditional sales tax for vehicles. At 3%, it's one of the lower vehicle transfer tax rates in the country. However, doc fees are uncapped and tend to be relatively high at $500–$800 — which can offset the tax advantage for buyers who don't compare carefully.",
+      "North Carolina is one of a few states that uses a Highway Use Tax instead of traditional sales tax for vehicles. At 3%, it's one of the lower vehicle transfer tax rates in the country. However, doc fees are without a verified cap on file and tend to be relatively high at $500–$800 — which can offset the tax advantage for buyers who don't compare carefully.",
     snippetAnswer:
-      "North Carolina uses a 3% Highway Use Tax (no local additions) instead of sales tax. Dealer documentation fees are uncapped and typically $500–$800 — on the higher end. The registration is $46.25/year.",
+      "North Carolina does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $500–$800. That range is not a market standard. North Carolina uses a 3% Highway Use Tax (no local additions) instead of sales tax. The registration is $46.25/year.",
     watchFor: [
-      "High uncapped doc fees: $500–$800 is typical with no cap. The HUT advantage (3% vs. higher rates elsewhere) can be eroded by a high doc fee. Compare total OTD quotes.",
+      "Documentation fees with no verified cap on file: $500–$800 appears in unverified reports, and there is no verified cap on file. The HUT advantage (3% vs. higher rates elsewhere) can be eroded by a high doc fee. Compare total OTD quotes.",
       "Highway Use Tax at titling: the HUT is typically collected at the DMV when you title the vehicle, not at the dealership. Clarify how your dealer is handling this in the quote.",
       "Title fee: at $56, North Carolina's title fee is higher than many states. Make sure it's included in your OTD estimate.",
     ],
     negotiationNote:
-      "North Carolina's 3% Highway Use Tax is one of the lowest vehicle transfer rates nationally — saving buyers roughly $1,000+ compared to states with 6–7% rates on a $35,000 vehicle. But doc fees averaging $550 (and reaching $800) partially offset that advantage. Charlotte and Raleigh-Durham have competitive dealer networks — ask three dealers for OTD quotes and you'll likely see $200+ variation in doc fees alone. The fee is uncapped and potentially negotiable. The $56 title fee is on the higher side.",
+      "North Carolina's 3% Highway Use Tax is one of the lowest vehicle transfer rates nationally — saving buyers roughly $1,000+ compared to states with 6–7% rates on a $35,000 vehicle. Unverified reports mention documentation fees around $550 and up to $800. Those figures are not a market standard, and they can offset the tax advantage if they show up on your quote. Charlotte and Raleigh-Durham have competitive dealer networks — ask three dealers for OTD quotes and you'll likely see $200+ variation in doc fees alone. The fee is without a verified cap on file and potentially negotiable. The $56 title fee is on the higher side.",
     ctaHeading: "Have a North Carolina dealer quote you want to verify?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.ncdot.gov/dmv/title-registration/taxes/Pages/default.aspx",
@@ -1635,7 +1635,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     specialNotes:
       "NC uses Highway Use Tax instead of sales tax for vehicles. Relatively low at 3%.",
     dealerMessage:
-      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (I understand NC has no state cap), all additional dealer fees, North Carolina Highway Use Tax (3% — please show any trade-in deduction applied before calculating), title fee ($56), and registration ($46.25/year)? I'd like to see the complete itemized total. Thank you.",
+      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (I understand NC has no verified cap on file), all additional dealer fees, North Carolina Highway Use Tax (3% — please show any trade-in deduction applied before calculating), title fee ($56), and registration ($46.25/year)? I'd like to see the complete itemized total. Thank you.",
     lastVerified: "2026-03",
     commonQuestions: [
       {
@@ -1648,7 +1648,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       },
       {
         q: "Why are North Carolina doc fees so high?",
-        a: "North Carolina has no state cap on dealer documentation fees. Fees of $500–$800 are typical — on the higher end for uncapped states. Without a legal ceiling, competitive pressure and market norms set the price. The low 3% HUT sometimes leads dealers to position higher doc fees as offsetting the tax savings.",
+        a: "North Carolina does not have a verified documentation-fee cap on file. Unverified reports mention fees of $500–$800. That range is not a market standard or a legal ceiling. Compare itemized out-the-door quotes. The low 3% HUT sometimes leads dealers to position higher doc fees as offsetting the tax savings.",
       },
       {
         q: "How much is North Carolina registration and title?",
@@ -1656,28 +1656,28 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       },
     ],
     competitorGapSection:
-      "Most North Carolina guides highlight the favorable 3% Highway Use Tax but don't connect it to the doc fee picture. The low tax rate ($1,200 on a $40,000 vehicle vs. $2,500+ in many other states) saves buyers money — but the high uncapped doc fees ($500–$800) absorb some of that savings. On a $40,000 vehicle, a buyer paying a $799 doc fee in NC versus a $175 capped fee in New York gives back $624. Compare total OTD costs, not just the tax rate. Charlotte and Raleigh-Durham have enough competing dealers that shopping across 3–4 stores usually produces meaningful doc fee variation.",
-    buyerTip: "North Carolina's 3% Highway Use Tax is one of the lower vehicle transfer tax rates in the country — but the state's uncapped doc fees ($500–$800) can offset much of that advantage. On a $40,000 vehicle, the HUT saves roughly $1,200 compared to a 6% state (like Virginia). But if the North Carolina dealer charges $750 in doc fees versus $200 elsewhere, the savings narrow considerably. Always compare total OTD including both the HUT and the doc fee to get the real picture.",
+      "Most North Carolina guides highlight the favorable 3% Highway Use Tax but don't connect it to the doc fee picture. The low tax rate ($1,200 on a $40,000 vehicle vs. $2,500+ in many other states) saves buyers money — but documentation fees in unverified reports ($500–$800) can absorb some of that savings. No cap is verified. On a $40,000 vehicle, a buyer paying a $799 doc fee in NC versus a lower documentation fee elsewhere changes the comparison. New York's stored $175 figure is not a verified cap. Compare total OTD costs, not just the tax rate. Charlotte and Raleigh-Durham have enough competing dealers that shopping across 3–4 stores usually produces meaningful doc fee variation.",
+    buyerTip: "North Carolina's 3% Highway Use Tax is one of the lower vehicle transfer tax rates in the country — but unverified reports mention documentation fees of $500–$800, and no cap is verified, which can offset much of that advantage. On a $40,000 vehicle, the HUT saves roughly $1,200 compared to a 6% state (like Virginia). But if the North Carolina dealer charges $750 in doc fees versus $200 elsewhere, the savings narrow considerably. Always compare total OTD including both the HUT and the doc fee to get the real picture.",
   },
 
   "north-dakota": {
     name: "North Dakota",
     abbreviation: "ND",
     slug: "north-dakota",
-    docFeeRange: "Typically $100–$250",
+    docFeeRange: "Reported $100–$250 (not verified)",
     hasCap: false,
     metaDescription:
-      "North Dakota has no cap on dealer doc fees — $100–$250 is typical, among the lowest in uncapped states. The vehicle excise tax is a flat 5%. See the ND OTD picture.",
+      "North Dakota does not have a verified documentation-fee cap on file. Reported $100–$250 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "North Dakota has no state cap on dealer documentation fees. Fees of $100–$250 are commonly reported — among the lowest in the country for uncapped states. There is no legal ceiling.",
+      "North Dakota does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $100–$250. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "North Dakota charges a 5% vehicle excise tax on vehicle purchases statewide. There are no local additions for vehicles — the rate is flat. Trade-in deductions are allowed.",
     registrationNote:
       "North Dakota registration fees vary by vehicle age and weight. The title fee is $5 — one of the lowest in the country.",
     introAngle:
-      "North Dakota has some of the lowest documentation fees in the country for an uncapped state — typically $100–$250. Combined with a flat 5% excise tax and a $5 title fee, North Dakota offers a relatively low-cost OTD environment. The main variable is the vehicle price itself.",
+      "North Dakota has some of the lowest documentation fees in the country for an without a verified cap on file state — typically $100–$250. Combined with a flat 5% excise tax and a $5 title fee, North Dakota offers a relatively low-cost OTD environment. The main variable is the vehicle price itself.",
     snippetAnswer:
-      "North Dakota dealers typically charge $100–$250 in documentation fees — among the lowest in the country. The vehicle excise tax is a flat 5% with no local additions. Title fee is $5.",
+      "North Dakota does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $100–$250. That range is not a market standard. The vehicle excise tax is a flat 5% with no local additions.",
     watchFor: [
       "Low fee environment: North Dakota's costs are lower than most states, but fees can still vary between dealers. Compare quotes.",
       "Limited dealer competition: outside Fargo and Bismarck, options are limited. Get multiple quotes before committing.",
@@ -1687,7 +1687,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "North Dakota's market is smaller than most states, but Fargo and Bismarck offer some competitive dealer options. The fee environment is generally favorable — focus negotiation on the vehicle price.",
     ctaHeading: "Have a North Dakota dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.dot.nd.gov/motor-vehicle",
@@ -1697,20 +1697,20 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     dealerMessage:
       "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee, all additional dealer fees, North Dakota vehicle excise tax (5%), title fee ($5), and registration costs? I'd like to see the complete total. Thank you.",
     lastVerified: "2026-03",
-    buyerTip: "North Dakota's $5 title fee is one of the lowest in the country — compare that to Maryland's $200 or Wisconsin's $215. The state's doc fees ($100–$250) are also among the lowest for uncapped states, driven largely by competitive pressure in a small market. For North Dakota buyers, the main OTD variable is the vehicle price itself, since both fees and taxes are relatively predictable and low.",
+    buyerTip: "North Dakota's $5 title fee is one of the lowest in the country — compare that to Maryland's $200 or Wisconsin's $215. The state's doc fees ($100–$250) are also among the lowest where no cap is verified, driven largely by competitive pressure in a small market. For North Dakota buyers, the main OTD variable is the vehicle price itself, since both fees and taxes are relatively predictable and low.",
   },
 
   ohio: {
     name: "Ohio",
     abbreviation: "OH",
     slug: "ohio",
-    docFeeRange: "Capped at $398 or 10% of cash price (whichever is lower)",
+    docFeeRange: "Reported $200–$387 (not verified)",
     hasCap: true,
-    pageTitle: "Ohio Dealer Doc Fee: $398 Cap or 10% (2026) — Full Fee Breakdown",
+    pageTitle: "Ohio Dealer Doc Fee: Verified $398 Ceiling (2026) — Full Fee Breakdown",
     metaDescription:
-      "Ohio caps the dealer doc fee at $398 or 10% of the vehicle price (whichever is lower) — raised from $250 in Oct 2024. State tax 5.75% + county. See the full breakdown and what changed.",
+      "Ohio documentation fee: verified ceiling $398. Reported $200–$387 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Ohio caps dealer documentation fees at $398 OR 10% of the vehicle's cash price, whichever is lower (per Ohio Revised Code §4517.261). For most vehicles above about $3,980, the $398 flat limit applies. For cheaper vehicles, the 10% cap limits the fee further. A title fee increase of $3 took effect January 1, 2026.",
+      "Ohio's verified documentary service charge ceiling is $398 for calendar year 2026 under ORC § 4517.261. The state's note also describes a 10% cash-price limit. The fetched page quoted here supports the $398 ceiling. Unverified reports mention documentation fees around $200–$387. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "Ohio charges 5.75% state sales tax on vehicles, with county additions up to 2.5%. Combined rates range from 5.8% to 8.25% depending on the county. Trade-in deductions are allowed for new vehicle purchases.",
     registrationNote:
@@ -1718,17 +1718,17 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "Ohio's doc fee cap has an important nuance: it's the lesser of $398 or 10% of the vehicle's cash price. For most vehicle purchases above $3,980, the $398 flat limit applies. Ohio also saw a title fee increase in January 2026. The county-level sales tax variation means buyers should verify their specific county's rate.",
     snippetAnswer:
-      "Ohio caps dealer documentation fees at $398 or 10% of the cash price, whichever is lower. State sales tax is 5.75% with county additions up to 8.25% combined. Title fee increased in January 2026.",
+      "Ohio's verified documentary service charge ceiling is $398 for calendar year 2026 under ORC § 4517.261. The state's note also describes a 10% cash-price limit. Unverified reports mention documentation fees around $200–$387. That range is not a market standard. State sales tax is 5.75% with county additions up to 8.25% combined.",
     watchFor: [
       "10% cap on lower-priced vehicles: for vehicles priced under $3,980, the 10% rule is more restrictive than the $398 flat cap. Used vehicle buyers should confirm which limit applies.",
       "County sales tax variation: Ohio's combined rates range from 5.8% to 8.25% by county. Verify the rate for your dealer's county before estimating your OTD.",
       "Recent title fee increase: the title fee increased $3 effective January 1, 2026. Update any older OTD estimates.",
     ],
     negotiationNote:
-      "Ohio's three major metros — Columbus (7.5% combined tax), Cleveland/Cuyahoga County (8%), and Cincinnati/Hamilton County (7.8%) — have competitive dealer markets. With the doc fee capped at $398 (or 10% of cash price on cheaper vehicles per ORC section 4517.261), your negotiation focuses on the vehicle price and add-ons. The trade-in credit for new vehicle purchases can meaningfully reduce your tax — on a $15,000 trade-in at 8% in Cuyahoga County, that saves $1,200.",
+      "Ohio's three major metros — Columbus (7.5% combined tax), Cleveland/Cuyahoga County (8%), and Cincinnati/Hamilton County (7.8%) — have competitive dealer markets. The verified ceiling in this file is $398 for 2026. A 10% cash-price limit is also described in the state's note; confirm that part before you rely on it. Your negotiation still focuses on the vehicle price and add-ons. The trade-in credit for new vehicle purchases can meaningfully reduce your tax — on a $15,000 trade-in at 8% in Cuyahoga County, that saves $1,200.",
     ctaHeading: "Have an Ohio dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.bmv.ohio.gov/doc-fees.aspx",
@@ -1758,37 +1758,37 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     ],
     competitorGapSection:
       "Most Ohio guides cite the $398 doc fee cap without explaining the 10% alternative formula. For used vehicle buyers, this matters: on a $3,000 used car, the max doc fee is $300 (10% of $3,000), not $398. On a $2,000 vehicle, it's $200. Used car shoppers in Ohio should calculate 10% of their purchase price to know their actual cap. Also commonly overlooked: the trade-in credit applies only to new vehicles in Ohio. If you're buying used with a trade-in, the full purchase price is taxed — a meaningful difference that changes the OTD math.",
-    buyerTip: "Ohio Revised Code §4517.261 sets the doc fee cap at $398 or 10% of the vehicle's cash price, whichever is lower. This 10% rule catches used vehicle buyers off guard: on a $2,500 used car, the cap is $250 — not the flat $398. If you're buying an inexpensive used vehicle in Ohio, verify that the dealer's doc fee doesn't exceed the 10% ceiling for your specific vehicle price.",
+    buyerTip: "Ohio's verified documentary service charge ceiling in this file is $398 for 2026. The state's note also describes a 10% cash-price limit. The fetched page supports the $398 ceiling. Confirm the percentage with the Dealer Board before you rely on it, especially on a low-priced used car.",
   },
 
   oklahoma: {
     name: "Oklahoma",
     abbreviation: "OK",
     slug: "oklahoma",
-    docFeeRange: "Typically $200–$400",
+    docFeeRange: "Reported $200–$400 (not verified)",
     hasCap: false,
     metaDescription:
-      "Oklahoma has no cap on dealer doc fees — $200–$400 is typical. The combined vehicle tax is 4.5% (1.25% sales + 3.25% excise). No local additions for vehicles. See the OK OTD picture.",
+      "Oklahoma does not have a verified documentation-fee cap on file. Reported $200–$400 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Oklahoma has no state cap on dealer documentation fees. Fees of $200–$400 are commonly reported. There is no legal ceiling.",
+      "Oklahoma does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $200–$400. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Oklahoma charges a combined vehicle tax of 4.5% — consisting of a 1.25% state sales tax plus a 3.25% excise tax on new vehicles. There are no local additions for vehicle purchases, making the effective rate flat statewide.",
     registrationNote:
       "Oklahoma registration is $96 for vehicles in their first through fourth year, decreasing with vehicle age. The title fee is $11.",
     introAngle:
-      "Oklahoma has a simple, flat vehicle tax structure: 4.5% combined (1.25% sales + 3.25% excise) with no local additions. Doc fees are uncapped but tend to be moderate. The predictable tax rate makes OTD estimation easier than in many other states.",
+      "Oklahoma has a simple, flat vehicle tax structure: 4.5% combined (1.25% sales + 3.25% excise) with no local additions. Doc fees are without a verified cap on file but tend to be moderate. The predictable tax rate makes OTD estimation easier than in many other states.",
     snippetAnswer:
-      "Oklahoma dealers typically charge $200–$400 in documentation fees with no state cap. The combined vehicle tax is a flat 4.5% (1.25% sales + 3.25% excise) statewide with no local additions.",
+      "Oklahoma does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $200–$400. That range is not a market standard. The combined vehicle tax is a flat 4.5% (1.25% sales + 3.25% excise) statewide with no local additions.",
     watchFor: [
       "Combined tax components: make sure your quote shows both the sales tax (1.25%) and excise tax (3.25%) components, or their correct combined total of 4.5%.",
-      "Uncapped doc fees: $200–$400 is typical, but there's no cap. Ask for the fee before visiting.",
+      "Doc fees without a verified cap on file: $200–$400 appears in unverified reports, and there is no verified cap on file. Ask for the fee before visiting.",
       "Registration by age: Oklahoma's registration decreases as the vehicle ages — used vehicles cost less to register annually.",
     ],
     negotiationNote:
-      "Oklahoma City and Tulsa have competitive dealer markets. The flat 4.5% tax makes OTD comparisons straightforward. Focus negotiation on the vehicle price and uncapped doc fee.",
+      "Oklahoma City and Tulsa have competitive dealer markets. The flat 4.5% tax makes OTD comparisons straightforward. Focus negotiation on the vehicle price and the documentation fee (no verified cap on file).",
     ctaHeading: "Have an Oklahoma dealer quote you want to verify?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://oklahoma.gov/service/all-services/auto-vehicle/fees.html",
@@ -1805,12 +1805,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Oregon",
     abbreviation: "OR",
     slug: "oregon",
-    docFeeRange: "Capped at $250 (with integrator) / $200 (without)",
+    docFeeRange: "Reported $150–$250 (not verified)",
     hasCap: true,
     metaDescription:
-      "Oregon caps dealer doc fees at $250 (with integrator) or $200 (without). No sales tax. A 0.5% Vehicle Privilege Tax applies to new vehicles. See the OR OTD picture.",
+      "Oregon's document processing fee is $250 with an integrator and $200 otherwise. Reported $150–$250 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Oregon caps dealer documentation fees at $250 for dealers using an integrator system, or $200 for dealers without an integrator, per ORS §822.043. This is a hard statutory cap. Oregon is also one of five states with no traditional sales tax.",
+      "ORS 822.043(4) limits the document processing fee to $250 if the dealer uses an integrator and to $200 if the dealer does not. A fee from $201 to $250 stays conditional until integrator use is confirmed. A fee above $250 is above both ceilings. Unverified reports mention documentation fees around $150–$250. That range is not a market standard. Compare the itemized out-the-door price.",
     salesTaxNote:
       "Oregon has no state sales tax on vehicle purchases. However, a 0.5% Vehicle Privilege Tax applies to new vehicle sales (applied to the dealer's gross receipts). HB 3991 proposes increasing this to 2.25% — pending voter referendum. Private-party and used vehicle sales are generally not subject to this tax.",
     registrationNote:
@@ -1818,7 +1818,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "Oregon combines two major buyer advantages: no traditional sales tax and a capped doc fee ($200–$250). However, buyers should be aware of the 0.5% Vehicle Privilege Tax on new vehicles and the MPG-based sliding scale title fee — which means fuel-efficient and electric vehicles actually pay higher title fees in Oregon.",
     snippetAnswer:
-      "Oregon caps dealer doc fees at $250 (with integrator) or $200 (without). No state sales tax, but a 0.5% Vehicle Privilege Tax applies to new vehicles. The title fee scales by MPG — fuel-efficient vehicles pay more.",
+      "ORS 822.043(4) limits Oregon's document processing fee to $250 with an integrator and $200 without one. A fee from $201 to $250 is conditional until integrator use is confirmed. There is no state sales tax, but a 0.5% Vehicle Privilege Tax applies to new vehicles.",
     watchFor: [
       "Vehicle Privilege Tax on new vehicles: Oregon's 0.5% tax on new vehicle sales applies to the dealer's gross, which is passed to buyers. This is not a traditional sales tax but does appear on new car deals.",
       "MPG-based title fee: Oregon's title fee ranges from $77 to $192 depending on fuel economy. Higher-MPG vehicles pay more — the opposite of what buyers might expect.",
@@ -1828,7 +1828,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Oregon's doc fee cap removes one area of negotiation. Focus on vehicle price and add-ons. The Portland metro offers competitive dealer options. The absence of sales tax is a meaningful advantage for buyers coming from neighboring high-tax states.",
     ctaHeading: "Have an Oregon dealer quote you want to verify?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.oregon.gov/odot/dmv/pages/fees/vehicle.aspx",
@@ -1836,7 +1836,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     specialNotes:
       "$250 with integrator / $200 without integrator. Title fee is sliding scale $77–$192 based on MPG.",
     dealerMessage:
-      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (Oregon's cap is $250 or $200 depending on your system), all additional dealer fees, Vehicle Privilege Tax if applicable (0.5% on new vehicles), title fee (MPG-based sliding scale), and registration costs? Oregon has no sales tax — please confirm none is included. I'd like to see the complete total. Thank you.",
+      "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee (Oregon's statute sets $250 with an integrator and $200 without one. The analyzer's hard ceiling is $250 or $200 depending on your system), all additional dealer fees, Vehicle Privilege Tax if applicable (0.5% on new vehicles), title fee (MPG-based sliding scale), and registration costs? Oregon has no sales tax — please confirm none is included. I'd like to see the complete total. Thank you.",
     lastVerified: "2026-03",
     buyerTip: "Oregon's title fee scales inversely to what buyers expect: more fuel-efficient vehicles pay higher title fees, not lower. An EV or 40+ MPG hybrid will pay the maximum $192 title fee, while a less efficient vehicle pays closer to $77. Additionally, a new $60 annual surcharge applies to EVs and 40+ MPG vehicles starting January 2026. This counterintuitive structure means choosing an efficient vehicle in Oregon comes with specific upfront and ongoing registration costs worth factoring in.",
   },
@@ -1845,12 +1845,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Pennsylvania",
     abbreviation: "PA",
     slug: "pennsylvania",
-    docFeeRange: "Capped at $490 (electronic) / $409 (non-electronic)",
+    docFeeRange: "Reported $300–$490 (not verified)",
     hasCap: true,
     metaDescription:
-      "Pennsylvania caps dealer doc fees at $490 (electronic) or $409 (non-electronic) per Jan 2026 CPI update. State tax is 6%. Philadelphia is 8%. See the PA OTD picture.",
+      "Pennsylvania documentation fee: verified ceiling $490. Reported $300–$490 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Pennsylvania caps dealer documentation fees at $490 for electronic processing or $409 for non-electronic, effective January 13, 2026 (up from $477/$398 in 2025). These are adjusted annually by CPI per Pennsylvania Bulletin Vol. 55 Issue 1.",
+      "Pennsylvania's 2026 notice under 63 P.S. § 818.327 sets the documentary preparation fee at no more than $490 for an electronic transaction and $409 for a non-electronic one. The analyzer's hard ceiling is the $490 electronic figure. Unverified reports mention documentation fees around $300–$490. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "Pennsylvania charges 6% state sales tax on vehicles, increasing to 6.5% October 1, 2025 and 7% October 1, 2026. Philadelphia applies an additional 2% local tax, bringing the Philadelphia rate to 8% currently (and higher in future years). Trade-in deductions are allowed.",
     registrationNote:
@@ -1858,7 +1858,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "Pennsylvania buyers should be aware of two significant changes: (1) the doc fee cap increased in January 2026 to $490 electronic / $409 non-electronic, and (2) the state sales tax is scheduled to increase to 6.5% in October 2025 and 7% in October 2026. If your purchase straddles either date, confirm which rate applies. Philadelphia's 8% combined rate is substantially higher than the statewide base.",
     snippetAnswer:
-      "Pennsylvania caps dealer doc fees at $490 (electronic) or $409 (non-electronic) as of January 2026. State sales tax is 6% (increasing to 6.5% Oct 2025, 7% Oct 2026). Philadelphia buyers pay 8% combined.",
+      "Pennsylvania's 2026 notice under 63 P.S. § 818.327 sets the documentary preparation fee at no more than $490 for an electronic transaction and $409 for a non-electronic one. Unverified reports mention documentation fees around $300–$490. That range is not a market standard. State sales tax is 6% (increasing to 6.5% Oct 2025, 7% Oct 2026).",
     watchFor: [
       "Rising state tax: Pennsylvania's sales tax increases to 6.5% in October 2025 and 7% in October 2026. Time-sensitive buyers should factor in the current applicable rate.",
       "Philadelphia 8% rate: if you're buying in Philadelphia or through a dealer in the city, the combined 8% rate applies. This is meaningfully higher than the statewide 6%.",
@@ -1868,7 +1868,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Pennsylvania's Philadelphia and Pittsburgh markets have strong dealer competition. With the doc fee capped at $490 (electronic) or $409 (non-electronic), negotiation focuses on the vehicle price and add-ons. The rising sales tax — 6% now, 6.5% in October 2025, 7% in October 2026 — creates a timing consideration: buying before the next increase saves real money. On a $35,000 vehicle, 0.5% is $175. Philadelphia buyers at the 8% combined rate pay $2,800 in tax on that vehicle — ask if the dealer can offset with a lower sale price.",
     ctaHeading: "Have a Pennsylvania dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.pacodeandbulletin.gov/Display/pabull?file=/secure/pabulletin/data/vol55/55-1/26.html",
@@ -1905,12 +1905,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Rhode Island",
     abbreviation: "RI",
     slug: "rhode-island",
-    docFeeRange: "Capped at $400 (for vehicles $10,000+)",
+    docFeeRange: "Reported $200–$400 (not verified)",
     hasCap: true,
     metaDescription:
-      "Rhode Island caps dealer doc fees at $400 for vehicles over $10,000 — and prohibits them entirely on vehicles under $10,000. Sales tax is a flat 7%. See the RI OTD picture.",
+      "Rhode Island documentation fee: verified ceiling $400. Reported $200–$400 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Rhode Island caps dealer documentation fees at $400 for vehicles priced at $10,000 or more (280-RICR-30-20-1.6). Documentation fees are completely prohibited on vehicles under $10,000. A separate $20 title preparation fee is also allowed. Doc fees are included in the taxable measure for sales tax purposes.",
+      "Rhode Island's rule (280-RICR-30-20-1.6(N)) allows a documentary preparation fee of up to $400 only on transactions over $10,000. The analyzer checks the $400 ceiling and does not by itself apply the $10,000 price floor. Unverified reports mention documentation fees around $200–$400. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "Rhode Island charges a flat 7% sales tax on vehicle purchases statewide. There are no local additions — the rate is uniform. Trade-in deductions are allowed. Note that Rhode Island includes documentation fees in the taxable sales amount, which slightly increases the sales tax.",
     registrationNote:
@@ -1918,7 +1918,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "Rhode Island has an unusual doc fee structure: a $400 cap for vehicles $10,000 or above, and a complete prohibition on fees for vehicles under $10,000. An additional $20 title prep fee is allowed separately. And unlike most states, Rhode Island includes the documentation fee in the taxable sales amount — meaning you'll pay 7% sales tax on the doc fee as well as the vehicle price.",
     snippetAnswer:
-      "Rhode Island caps dealer doc fees at $400 for vehicles $10,000+, and prohibits them entirely for vehicles under $10,000. The 7% state sales tax applies even to the documentation fee. A separate $20 title prep fee is allowed.",
+      "Rhode Island's rule (280-RICR-30-20-1.6(N)) allows a documentary preparation fee of up to $400 only on transactions over $10,000. The analyzer checks the $400 ceiling and does not by itself apply the $10,000 price floor. Unverified reports mention documentation fees around $200–$400. That range is not a market standard.",
     watchFor: [
       "Doc fee included in taxable amount: Rhode Island applies 7% sales tax to the documentation fee as well as the vehicle price. This adds about $28 to your tax on a $400 doc fee.",
       "Prohibition for vehicles under $10K: if you're buying a vehicle under $10,000, the dealer cannot charge a documentation fee. If you see one, ask for it to be removed.",
@@ -1928,7 +1928,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Rhode Island's small geographic area means buyers can shop across multiple dealerships relatively easily. The doc fee is capped, so focus negotiation on the vehicle price and any add-ons. The sales tax on the doc fee is a small but real additional cost to include in your OTD estimate.",
     ctaHeading: "Have a Rhode Island dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.law.cornell.edu/regulations/rhode-island/280-RICR-30-20-1.6",
@@ -1946,12 +1946,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "South Carolina",
     abbreviation: "SC",
     slug: "south-carolina",
-    docFeeRange: "Typically $300–$600",
+    docFeeRange: "Reported $300–$600 (not verified)",
     hasCap: false,
     metaDescription:
-      "South Carolina has no hard cap on dealer doc fees, but fees over $225 require additional documentation to the state. Sales tax is 6% plus local additions up to 9%.",
+      "South Carolina does not have a verified documentation-fee cap on file. Reported $300–$600 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "South Carolina does not have a hard statutory cap on documentation fees, but dealers must provide additional documentation to the state for fees exceeding $225. Fees of $300–$600 are commonly reported. There is no legal maximum amount.",
+      "South Carolina does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$600. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "South Carolina charges 6% state sales tax on vehicle purchases, with local additions of up to 3%. Combined rates can reach 9% in some counties. Trade-in deductions are allowed.",
     registrationNote:
@@ -1959,17 +1959,17 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "South Carolina has a soft threshold at $225 — doc fees above this amount require additional state documentation, which creates some implicit accountability without a hard cap. Fees of $300–$600 are still common. The 6% state tax with local additions makes comparison shopping across counties meaningful.",
     snippetAnswer:
-      "South Carolina requires additional state documentation for doc fees over $225, but has no hard cap — fees of $300–$600 are common. State sales tax is 6% with local additions up to 9% combined.",
+      "South Carolina does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$600. That range is not a market standard. State sales tax is 6% with local additions up to 9% combined.",
     watchFor: [
       "Fees above $225: any doc fee above $225 requires the dealer to file additional documentation with the state. If your fee is higher, it should be justified — ask for an explanation.",
       "Local tax variation: combined rates can reach 9% in some counties. Verify your effective rate.",
-      "Uncapped fees: despite the documentation requirement above $225, there's no hard ceiling. Compare quotes.",
+      "without a verified cap on file fees: despite the documentation requirement above $225, there's no hard ceiling. Compare quotes.",
     ],
     negotiationNote:
       "South Carolina's Columbia and Greenville-Spartanburg markets offer competitive dealer options. Ask about the documentation fee upfront and whether it's above the $225 state documentation threshold. Focus negotiation on the vehicle price and any add-ons.",
     ctaHeading: "Have a South Carolina dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://consumer.sc.gov/business-resourceslaws/licensing/registered-creditors/motor-vehicle-dealers",
@@ -1987,12 +1987,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "South Dakota",
     abbreviation: "SD",
     slug: "south-dakota",
-    docFeeRange: "Typically $75–$200",
+    docFeeRange: "Reported $75–$200 (not verified)",
     hasCap: false,
     metaDescription:
-      "South Dakota has no cap on dealer doc fees, but they average among the lowest in the country at $75–$200. The state charges a 4.2% excise tax plus a 4% vehicle excise at registration.",
+      "South Dakota does not have a verified documentation-fee cap on file. Reported $75–$200 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "South Dakota has no state cap on dealer documentation fees. However, fees average among the lowest in the country at $75–$200. There is no legal ceiling, but competitive pressure keeps fees modest.",
+      "South Dakota does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $75–$200. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "South Dakota charges 4.2% state sales tax (reduced from 4.5% as of July 2023) on vehicle purchases, with local additions of up to 2%. A separate 4% excise tax is also applied to the purchase price at registration. Trade-in deductions are allowed.",
     registrationNote:
@@ -2000,17 +2000,17 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "South Dakota has some of the lowest dealer documentation fees in the country — typically $75–$200. The overall vehicle purchase cost includes both a state sales tax (4.2%) and a separate 4% excise tax at registration, so buyers should account for both when estimating their OTD.",
     snippetAnswer:
-      "South Dakota has no doc fee cap, but fees average among the lowest nationally at $75–$200. The state charges a 4.2% sales tax plus a 4% vehicle excise tax. Account for both when estimating your OTD.",
+      "South Dakota does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $75–$200. That range is not a market standard. The state charges a 4.2% sales tax plus a 4% vehicle excise tax.",
     watchFor: [
       "Double tax structure: South Dakota applies both a 4.2% sales tax and a 4% excise tax. Make sure your OTD estimate includes both components.",
-      "Low doc fees: while fees are typically low, there's no cap. Confirm the amount before visiting.",
+      "Low doc fees: while unverified reports describe low fees, no cap is verified in this file. Confirm the amount before visiting.",
       "Local sales tax additions: some South Dakota municipalities add up to 2% on top of the 4.2% base.",
     ],
     negotiationNote:
       "South Dakota's market is concentrated in Sioux Falls and Rapid City. The low fee environment means less financial pressure on the doc fee side — focus negotiation on the vehicle price. Verify both the sales tax and excise tax are correctly calculated.",
     ctaHeading: "Have a South Dakota dealer quote you want to verify?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://dor.sd.gov/individuals/motor-vehicle/all-vehicles-title-fees-registration/",
@@ -2020,37 +2020,37 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     dealerMessage:
       "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee, all additional dealer fees, South Dakota sales tax (4.2% + local), 4% vehicle excise tax, title fee ($12), and registration costs? I'd like to see the complete total including both the sales tax and excise tax. Thank you.",
     lastVerified: "2026-03",
-    buyerTip: "South Dakota's doc fee environment is among the most buyer-friendly in uncapped states — the market pressure from a low-density buyer pool keeps fees typically under $200 without any legal mandate. The more significant OTD consideration is accounting for both the 4.2% sales tax and the separate 4% vehicle excise tax. These are two distinct charges, and buyers from other states often underestimate the total tax burden by missing the excise component.",
+    buyerTip: "South Dakota's doc fee environment is among the most buyer-friendly in without a verified cap on file states — the market pressure from a low-density buyer pool keeps fees typically under $200 without any legal mandate. The more significant OTD consideration is accounting for both the 4.2% sales tax and the separate 4% vehicle excise tax. These are two distinct charges, and buyers from other states often underestimate the total tax burden by missing the excise component.",
   },
 
   tennessee: {
     name: "Tennessee",
     abbreviation: "TN",
     slug: "tennessee",
-    docFeeRange: "Typically $300–$600",
+    docFeeRange: "Reported $300–$600 (not verified)",
     hasCap: false,
     metaDescription:
-      "Tennessee has no cap on dealer doc fees — $300–$600 is typical. Combined sales tax rates can reach 9.75% — among the highest in the US. See the TN OTD picture.",
+      "Tennessee does not have a verified documentation-fee cap on file. Reported $300–$600 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Tennessee has no state cap on dealer documentation fees. Fees of $300–$600 are commonly reported. There is no legal ceiling.",
+      "Tennessee does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$600. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Tennessee charges 7% state sales tax on vehicle purchases, with local additions of up to 2.75%. Combined rates in the Memphis area reach 9.75% — among the highest in the country. Trade-in deductions are allowed.",
     registrationNote:
       "Tennessee base registration ranges from $14.50 to $36, plus a county wheel tax that varies from $0 to $55 depending on the county. The title fee is $14.",
     introAngle:
-      "Tennessee has no doc fee cap and some of the highest combined sales tax rates in the country — reaching 9.75% in the Memphis area. Buyers in high-tax counties should budget carefully for the tax impact, which can add $3,000 or more on a $35,000 vehicle in the Memphis metro. Doc fees are uncapped and vary by dealer.",
+      "Tennessee does not have a verified doc-fee cap on file and some of the highest combined sales tax rates in the country — reaching 9.75% in the Memphis area. Buyers in high-tax counties should budget carefully for the tax impact, which can add $3,000 or more on a $35,000 vehicle in the Memphis metro. Doc fees are without a verified cap on file and vary by dealer.",
     snippetAnswer:
-      "Tennessee dealers typically charge $300–$600 in documentation fees with no state cap. Combined sales tax rates reach 9.75% in the Memphis area — among the highest nationally. Verify your county's combined rate before estimating your OTD.",
+      "Tennessee does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $300–$600. That range is not a market standard. Combined sales tax rates reach 9.75% in the Memphis area — among the highest nationally.",
     watchFor: [
       "High combined tax rates: Memphis area buyers pay 9.75% combined. Even outside Memphis, Tennessee rates are generally high. Know your county's exact rate.",
       "County wheel tax: many Tennessee counties charge an annual wheel tax on registration ($0–$55). This is a small but real addition to your OTD.",
-      "Uncapped doc fees: ask for the doc fee before visiting. If above $500, compare with other dealers in the area.",
+      "Doc fees without a verified cap on file: ask for the doc fee before visiting. If above $500, compare with other dealers in the area.",
     ],
     negotiationNote:
       "Tennessee's Nashville and Memphis metros have competitive dealer networks. The high tax rate is fixed by location — focus negotiation on the vehicle price and doc fee. Having a competing OTD quote from another Tennessee dealer is the best leverage.",
     ctaHeading: "Have a Tennessee dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.tn.gov/revenue/title-and-registration.html",
@@ -2067,22 +2067,22 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Texas",
     abbreviation: "TX",
     slug: "texas",
-    docFeeRange: "Typically $150–$300+",
+    docFeeRange: "Reported $150–$225 (not verified)",
     hasCap: false,
-    pageTitle: "Texas Dealer Doc Fee (2026): No Legal Cap — What Dealers Can Charge",
-    h1: "Texas Dealer Doc Fee (2026): No State Limit",
+    pageTitle: "Texas Dealer Doc Fee (2026): No Hard Dollar Cap — Compare the Full Price",
+    h1: "Texas Dealer Doc Fee (2026): No Hard Dollar Cap",
     metaDescription:
-      "Texas has no legal cap on dealer doc fees. See how pricing varies and how to evaluate your deal.",
+      "Texas has no verified hard dollar cap on the documentary fee. A fee above $225 is not automatically illegal. Reported $150–$225 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Texas does not set a hard legal cap on dealer documentation fees. A $225 'presumed reasonable' guideline took effect July 11, 2024 (Texas Administrative Code §84.205), but dealers can exceed it by filing a cost analysis with the OCCC. Most dealers charge $150–$225, though higher fees are not uncommon.",
+      "Texas Finance Code § 348.006 does not set a hard dollar cap. The documentary fee must be a reasonable amount the parties agree to. A bulletin in this file says a fee of $225 or less needs no OCCC filing, and a higher fee can be charged only after the dealer files a notice and a cost analysis. A fee above $225 is not automatically illegal. Unverified reports mention documentation fees around $150–$225. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "Texas charges a flat 6.25% state motor vehicle sales tax. Local add-ons are limited, so buyers across the state generally see the same effective rate. The tax is calculated on the full purchase price of the vehicle.",
     registrationNote:
       "Texas registration fees are primarily made up of a base registration fee (around $50–$65 depending on county) plus county-specific fees. New vehicle registration is generally straightforward by national standards, though some counties add local assessments. Electric vehicles pay a $400 first-time EV fee plus $200 annually.",
     introAngle:
-      "Texas does not set a legal cap on dealer documentation fees. Dealers can charge different amounts depending on pricing practices. Because there is no cap, the key question is whether the fee is reasonable compared to other deals.",
+      "Texas Finance Code § 348.006 does not set a hard dollar cap. Dealers can charge different amounts depending on pricing practices. Because there is no verified hard dollar cap, the key question is whether the fee is reasonable compared to other deals.",
     snippetAnswer:
-      "Texas does not set a legal cap on dealer documentation fees. Dealers can charge different amounts depending on pricing practices. Because there is no cap, the key question is whether the fee is reasonable compared to other deals.",
+      "Texas Finance Code § 348.006 does not set a hard dollar cap. The documentary fee must be a reasonable amount the parties agree to. Unverified reports mention documentation fees around $150–$225. That range is not a market standard. Because there is no verified hard dollar cap, the key question is whether the fee is reasonable compared to other deals.",
     watchFor: [
       "Fees above $225: while the $225 level is 'presumed reasonable,' some dealers do file for higher amounts with the state. If you see a doc fee above $225, ask for the justification.",
       "Market adjustment markups on popular models: Texas dealerships on high-demand vehicles sometimes add a market adjustment above MSRP. This is a dealer markup, not a tax — it's negotiable.",
@@ -2090,18 +2090,18 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "EV registration fees: if you're buying an electric vehicle in Texas, budget for the $400 first-time fee plus $200 annually.",
     ],
     negotiationNote:
-      "Texas's $225 'presumed reasonable' guideline under Texas Administrative Code section 84.205 means most dealers stay at or below this amount — but dealers who file a cost analysis with the OCCC can legally exceed it. Ask what the specific doc fee is before visiting. Texas's flat 6.25% sales tax (minimal local variation) and trade-in credit make OTD math straightforward. The large metro markets — Dallas, Houston, San Antonio, Austin — create real competitive pressure. Getting OTD quotes from 3+ dealers in your metro on the same vehicle is the best negotiation strategy. EV buyers should budget for the $400 first-time fee plus $200/year.",
+      "Texas's $225 'presumed reasonable' guideline under Texas Administrative Code section 84.205 means most dealers stay at or below this amount — but dealers who file a cost analysis with the OCCC can exceed it after that filing. Ask what the specific doc fee is before visiting. Texas's flat 6.25% sales tax (minimal local variation) and trade-in credit make OTD math straightforward. The large metro markets — Dallas, Houston, San Antonio, Austin — create real competitive pressure. Getting OTD quotes from 3+ dealers in your metro on the same vehicle is the best negotiation strategy. EV buyers should budget for the $400 first-time fee plus $200/year.",
     ctaHeading: "Got a Texas dealer quote?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     ctaTopBody:
-      "Got a Texas dealer quote? Paste it below — Odigos checks every fee against typical Texas pricing in 60 seconds. Free, no signup.",
+      "Got a Texas dealer quote? Paste it and Odigos checks the line items, the math, and any verified cap. It does not compare the price to a typical Texas market range.",
     ctaMidBody:
-      "Texas has no hard cap on doc fees — some dealers charge well above $225. Want to check if your quote has overcharges?",
+      "Texas has no verified hard dollar cap. A fee above $225 is not automatically illegal. Paste the quote to check the math and the line items.",
     ctaMidLink: "Check My Texas Quote",
     ctaBottomHeadline: "Don't sign until you check.",
     ctaBottomBody:
-      "Paste your Texas dealer quote and get a DealScore with every fee flagged — overcharges, junk fees, and what's negotiable.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     ctaBottomButton: "Check My Quote Free",
     internalLinks: [
       ...STANDARD_LINKS,
@@ -2118,7 +2118,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     commonQuestions: [
       {
         q: "What is the maximum doc fee a Texas dealer can charge in 2026?",
-        a: "Texas has no hard legal cap on dealer doc fees. A $225 'presumed reasonable' guideline took effect July 11, 2024, but dealers can exceed it by filing a cost analysis with the OCCC. Most dealers charge $150–$225, though higher fees are not uncommon.",
+        a: "Texas has no verified hard dollar cap on dealer doc fees. A $225 'presumed reasonable' guideline took effect July 11, 2024, but dealers can exceed it by filing a cost analysis with the OCCC. Unverified reports mention $150–$225. Higher fees are not automatically illegal.",
       },
       {
         q: "Do all Texas dealers charge the same doc fee?",
@@ -2138,7 +2138,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       },
     ],
     competitorGapSection:
-      "Most Texas car-buying guides quote $225 as a hard cap without explaining that it's a 'presumed reasonable' guideline, not a legal ceiling. The key detail: dealers who file a cost analysis with the OCCC can legally charge above $225, and some do. Before visiting, ask the specific dealer what their current doc fee is — don't assume $225 is the maximum. If the fee exceeds $225, ask to see the justification or request that the vehicle price be reduced to offset it. Also note that market adjustment markups on high-demand vehicles are a separate line item from the doc fee and are fully negotiable.",
+      "Most Texas car-buying guides quote $225 as a hard cap without explaining that it's a 'presumed reasonable' guideline, not a legal ceiling. The key detail: dealers who file a cost analysis with the OCCC can charge above $225, and the fee still has to be reasonable. Before visiting, ask the specific dealer what their current doc fee is — don't assume $225 is the maximum. If the fee exceeds $225, ask to see the justification or request that the vehicle price be reduced to offset it. Also note that market adjustment markups on high-demand vehicles are a separate line item from the doc fee and are fully negotiable.",
     buyerTip: "Texas set a $225 'presumed reasonable' guideline effective July 11, 2024 — but this is not a hard legal ceiling. Dealers can exceed $225 by filing a cost analysis with the OCCC, and some high-volume stores do. If you see a Texas dealer quoting $350 or more in documentation fees, it's worth asking directly: 'Has this store filed a cost analysis with the OCCC, and can I see it?' The guideline is not as absolute as many guides imply.",
   },
 
@@ -2146,30 +2146,30 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Utah",
     abbreviation: "UT",
     slug: "utah",
-    docFeeRange: "Typically $149–$400",
+    docFeeRange: "Reported $149–$400 (not verified)",
     hasCap: false,
     metaDescription:
-      "Utah has no cap on dealer doc fees. State sales tax is 4.7% plus local additions. Registration is among the most expensive in the US at ~$1,541 average for new vehicles.",
+      "Utah does not have a verified documentation-fee cap on file. Reported $149–$400 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Utah has no state cap on dealer documentation fees. Fees of $149–$400 are commonly reported. There is no legal ceiling.",
+      "Utah does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $149–$400. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Utah charges 4.7% state sales tax on vehicle purchases, with local additions up to 4%. Combined rates vary significantly — Carbon County at 6.35%, Park City at 9.05%. Trade-in deductions are allowed.",
     registrationNote:
       "Utah's total registration costs for new vehicles average approximately $1,541 — among the most expensive in the country. Registration is weight-based and includes multiple fee components. The title fee is included in registration.",
     introAngle:
-      "Utah buyers face two significant costs to be aware of: the state's average new vehicle registration of approximately $1,541 is among the highest nationally, and the local sales tax variation is substantial (from 6.35% to 9.05% depending on location). Doc fees are uncapped in the moderate range.",
+      "Utah buyers face two significant costs to be aware of: the state's average new vehicle registration of approximately $1,541 is among the highest nationally, and the local sales tax variation is substantial (from 6.35% to 9.05% depending on location). Doc fees are without a verified cap on file in the moderate range.",
     snippetAnswer:
-      "Utah has no doc fee cap. The state tax is 4.7% with local additions up to 9.05% combined. Total new vehicle registration averages ~$1,541 — one of the highest in the country.",
+      "Utah does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $149–$400. That range is not a market standard. The state tax is 4.7% with local additions up to 9.05% combined. Total new vehicle registration averages ~$1,541 — one of the highest in the country.",
     watchFor: [
       "Very high registration costs: Utah's average new vehicle registration of ~$1,541 should be budgeted in your OTD estimate. This is significantly above the national average.",
       "Local tax variation: rates range from 6.35% (Carbon County) to 9.05% (Park City). Know the rate for your dealer's location.",
-      "Uncapped doc fees: ask for the fee before visiting. Some Utah dealers charge at the lower end of the $149–$400 range.",
+      "Doc fees without a verified cap on file: ask for the fee before visiting. Some Utah dealers charge at the lower end of the $149–$400 range.",
     ],
     negotiationNote:
       "The Salt Lake metro has a competitive dealer market. Focus negotiation on vehicle price and doc fees. The registration cost is a government fee based on vehicle weight — not negotiable. The local tax rate is also fixed by location.",
     ctaHeading: "Have a Utah dealer quote you want to verify?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://tax.utah.gov/business/sales-tax/sales/rates/",
@@ -2187,20 +2187,20 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Vermont",
     abbreviation: "VT",
     slug: "vermont",
-    docFeeRange: "Typically $150–$300",
+    docFeeRange: "Reported $150–$300 (not verified)",
     hasCap: false,
     metaDescription:
-      "Vermont has no cap on dealer doc fees — $150–$300 is typical. The state tax is 6% (some localities add 1%). Uniquely, Vermont taxes doc fees as part of the purchase price.",
+      "Vermont does not have a verified documentation-fee cap on file. Reported $150–$300 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Vermont has no state cap on dealer documentation fees. Fees of $150–$300 are commonly reported — lower than most uncapped states. There is no legal ceiling.",
+      "Vermont does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $150–$300. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Vermont charges 6% state sales tax on vehicle purchases, with an optional 1% local tax in some municipalities (Burlington, Hartford, Middlebury effective July 1, 2025). Trade-in deductions are allowed. Vermont's DMV specifically states that documentation fees are taxable — they are included in the purchase price for sales tax calculation.",
     registrationNote:
       "Vermont registration is $76 per year or $140 for two years, plus a $2 Clean Air fee. Electric vehicle owners pay $89 additionally (or $44.50 for plug-in hybrids). The title fee is $35.",
     introAngle:
-      "Vermont has a notable quirk: per the Vermont DMV, documentation fees are included in the taxable purchase price — meaning you pay 6% sales tax on the doc fee as well as the vehicle price. Fees are relatively modest at $150–$300 with no cap. Some municipalities added local 1% tax options in July 2025.",
+      "Vermont has a notable quirk: per the Vermont DMV, documentation fees are included in the taxable purchase price — meaning you pay 6% sales tax on the doc fee as well as the vehicle price. Fees are relatively modest at $150–$300 with no verified cap on file. Some municipalities added local 1% tax options in July 2025.",
     snippetAnswer:
-      "Vermont dealers typically charge $150–$300 in documentation fees — lower than most states. Vermont taxes documentation fees as part of the purchase price. The state sales tax is 6%, with some municipalities adding 1%.",
+      "Vermont does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $150–$300. That range is not a market standard. The state sales tax is 6%, with some municipalities adding 1%.",
     watchFor: [
       "Doc fees are taxable: Vermont includes documentation fees in the taxable purchase price. On a $250 doc fee, you'll pay $15 additional sales tax.",
       "New municipal taxes: Burlington, Hartford, and Middlebury added local 1% taxes effective July 1, 2025. Confirm your dealer's municipality's rate.",
@@ -2210,7 +2210,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Vermont's smaller market means fewer competing dealers, particularly outside Burlington. The low doc fee environment is favorable — focus negotiation on the vehicle price. Ask for the doc fee to be itemized separately since it's included in the taxable amount.",
     ctaHeading: "Have a Vermont dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://dmv.vermont.gov/faq/are-dealer-documentation-fees-taxable",
@@ -2228,23 +2228,23 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Virginia",
     abbreviation: "VA",
     slug: "virginia",
-    docFeeRange: "Typically $500–$800",
+    docFeeRange: "Reported $500–$800 (not verified)",
     hasCap: false,
     metaDescription:
-      "Virginia has no cap on dealer doc fees — $500–$800 is typical. Virginia does NOT allow trade-in deductions. Total tax is 5.3%–7% by locality. See the VA OTD picture.",
+      "Virginia does not have a verified documentation-fee cap on file. Reported $500–$800 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Virginia has no state cap on dealer documentation fees. Fees of $500–$800 are commonly reported — on the higher end of uncapped states. There is no legal ceiling.",
+      "Virginia does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $500–$800. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Virginia charges 4.15% state sales tax on vehicles (with a minimum $75 tax), and combined with local additions, total rates range from 5.3% to 7% by locality. Critically, Virginia does NOT allow trade-in deductions — tax applies to the full vehicle price, not the net price after trade-in.",
     registrationNote:
       "Virginia registration runs $30.75 per year for vehicles 0–4,000 lbs, or $35.75 per year for 4,001–6,500 lbs. Electric vehicles pay an additional $131.88 annual fee. The title fee is $15.",
     introAngle:
-      "Virginia buyers face two notable challenges: high uncapped doc fees ($500–$800) and one of the few states that does not allow trade-in deductions from the taxable purchase price. If you're trading in a $20,000 vehicle in Virginia, you still pay tax on the full purchase price — not the net. This can add hundreds to your OTD compared to trade-in-credit states.",
+      "Virginia buyers face two notable challenges: documentation fees in unverified reports ($500–$800), with no verified cap on file, and one of the few states that does not allow trade-in deductions from the taxable purchase price. If you're trading in a $20,000 vehicle in Virginia, you still pay tax on the full purchase price — not the net. This can add hundreds to your OTD compared to trade-in-credit states.",
     snippetAnswer:
-      "Virginia dealers typically charge $500–$800 in documentation fees with no state cap. Virginia does NOT allow trade-in tax deductions — you pay tax on the full purchase price. Combined tax rates range from 5.3% to 7% by locality.",
+      "Virginia does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $500–$800. That range is not a market standard. Virginia does NOT allow trade-in tax deductions — you pay tax on the full purchase price. Combined tax rates range from 5.3% to 7% by locality.",
     watchFor: [
       "No trade-in credit: Virginia is one of the few states that taxes the full purchase price even when you have a trade-in. Budget for the full tax on the vehicle price, not the net.",
-      "High uncapped doc fees: $500–$800 is typical with no cap. Ask for the fee before visiting and compare across dealers.",
+      "Documentation fees with no verified cap on file: $500–$800 appears in unverified reports, and there is no verified cap on file. Ask for the fee before visiting and compare across dealers.",
       "Local tax rate variation: combined rates vary from 5.3% to 7% by locality. Confirm the effective rate for your dealer's location.",
       "EV annual fee: electric vehicles pay $131.88 additional per year in registration surcharge.",
     ],
@@ -2252,14 +2252,14 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "Virginia's Northern Virginia / DC metro area has a competitive dealer market. The high doc fees and no trade-in credit make it important to compare total OTD quotes, not just vehicle prices. The trade-in situation means if you have a trade-in, verify the dealer isn't implying a credit that the state doesn't actually allow.",
     ctaHeading: "Have a Virginia dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://www.tax.virginia.gov/retail-sales-and-use-tax",
       "https://www.dmv.virginia.gov/vehicles/title",
     ],
     specialNotes:
-      "One of few states that does not allow trade-in tax credit. High doc fees with no cap.",
+      "One of few states that does not allow trade-in tax credit. High doc fees with no verified cap on file.",
     dealerMessage:
       "Hi — I'm interested in a vehicle at your dealership and would like to confirm the full out-the-door price before visiting. Could you please send me an itemized breakdown showing the vehicle sale price, documentation fee, all additional dealer fees, Virginia sales tax (4.15% state + your locality's additional rate — please note Virginia does not allow trade-in deductions), title fee ($15), and registration costs? I'd like to see the complete total. Thank you.",
     lastVerified: "2026-03",
@@ -2270,7 +2270,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       },
       {
         q: "Is there a cap on dealer doc fees in Virginia?",
-        a: "No. Virginia has no state cap on dealer documentation fees. Fees of $500–$800 are commonly reported, placing Virginia among the higher-fee uncapped states. The doc fee is technically negotiable, but many dealers treat it as fixed. Your best lever is comparing total OTD quotes across dealers.",
+        a: "No. Virginia does not have a verified documentation-fee cap on file. unverified reports mention fees around $500–$800, placing Virginia among the higher-fee without a verified cap on file states. The doc fee is technically negotiable, but many dealers treat it as fixed. Your best lever is comparing total OTD quotes across dealers.",
       },
       {
         q: "What is the sales tax rate on cars in Virginia?",
@@ -2287,7 +2287,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     ],
     competitorGapSection:
       "The biggest gap in Virginia car-buying guides is the no-trade-in-credit rule. Most buyers assume their trade-in reduces the taxable amount — it does in 42+ other states — but not in Virginia. On a $40,000 purchase with a $15,000 trade-in, you pay $795–$1,050 more in tax than you would in a trade-in-credit state (depending on your local rate). If you're stationed at a Virginia military base but domiciled elsewhere, check whether your home state's tax rules apply — the SCRA may save you hundreds. Northern Virginia's proximity to Maryland (which does allow trade-in credits) makes cross-border comparison shopping worth the drive for high-value purchases.",
-    pageTitle: "Virginia Dealer Fees (2026): No Doc Fee Cap, No Trade-In Credit — VA OTD Guide",
+    pageTitle: "Virginia Dealer Fees (2026): Doc Fee Cap Not Verified — VA OTD Guide",
     buyerTip: "Virginia is one of very few states that does not allow trade-in deductions from the taxable purchase price. If you're trading in a $25,000 vehicle toward a $50,000 purchase in Virginia, you pay tax on the full $50,000 — not on $25,000 as you would in most states. At Virginia's 5.3–7% combined rate, the cost of this rule on a high-value trade-in can exceed $1,500 compared to neighboring states that allow the deduction.",
   },
 
@@ -2295,12 +2295,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Washington",
     abbreviation: "WA",
     slug: "washington",
-    docFeeRange: "Capped at $200 (effective July 2022)",
+    docFeeRange: "Reported $150–$200 (not verified)",
     hasCap: true,
     metaDescription:
-      "Washington State caps dealer doc fees at $200 (effective July 2022). State sales tax is 6.5% with local additions. Title fee increased to $6.50 in 2026. See the WA OTD picture.",
+      "Washington documentation fee: verified ceiling $200. Reported $150–$200 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Washington State caps dealer documentation fees at $200, effective July 1, 2022. Dealers cannot represent this fee as required by law. The title fee increased to $6.50 effective January 1, 2026.",
+      "Washington requires dealers to disclose that a documentary service fee of up to $200 may be added (RCW 46.70.180). Dealers cannot present that fee as required by law. Unverified reports mention documentation fees around $150–$200. That range is not a market standard. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "Washington charges 6.5% state sales tax on vehicle purchases, with local additions of up to 4.1%. Combined rates range from 7% to 10.4% depending on location. Trade-in deductions are allowed for vehicles of like kind.",
     registrationNote:
@@ -2308,7 +2308,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "Washington State's $200 cap on documentation fees provides buyer protection, but the significant range of local sales tax rates (7% to 10.4%) makes the effective OTD cost vary substantially by location. Seattle-area buyers face rates near the high end. The cap prohibits dealers from representing the doc fee as required by law.",
     snippetAnswer:
-      "Washington State caps dealer documentation fees at $200. State sales tax is 6.5% with local additions up to 10.4% combined. Trade-in credit applies for like-kind vehicles.",
+      "Washington requires dealers to disclose that a documentary service fee of up to $200 may be added (RCW 46.70.180). Dealers cannot present that fee as required by law. Unverified reports mention documentation fees around $150–$200. That range is not a market standard. State sales tax is 6.5% with local additions up to 10.4% combined. Trade-in credit applies for like-kind vehicles.",
     watchFor: [
       "Local sales tax variation: combined rates in Washington vary from 7% to 10.4%. Seattle buyers face some of the higher rates. Verify the rate for your dealer's location.",
       "Doc fee above the cap: any documentation fee above $200 is not permitted. Dealers also cannot call this fee 'required by law.' If you see a higher amount, it's above the cap.",
@@ -2318,7 +2318,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "The Seattle metro has a competitive dealer market. With the doc fee capped at $200, negotiation is focused on vehicle price and add-ons. The local sales tax is fixed by the dealer's location — not negotiable.",
     ctaHeading: "Have a Washington State dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://dor.wa.gov/education/industry-guides/auto-dealers/miscellaneous",
@@ -2353,7 +2353,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     ],
     competitorGapSection:
       "Most Washington car-buying guides mention the $200 doc fee cap and the 6.5% base tax — but they skip the use tax trap entirely. Buyers who purchase in Oregon to avoid sales tax still owe Washington use tax at their full local rate when they register the vehicle. On a $40,000 vehicle in Seattle, that's over $4,000 in use tax — exactly what you'd pay buying locally. The real savings opportunity in Washington is location arbitrage: buying from a dealer in a lower-tax city (7.7%) instead of Seattle (10.25%) can save $1,000+ on the same vehicle, legally.",
-    pageTitle: "Washington Dealer Fees (2026): $200 Cap + Sales Tax Up to 10.4% — WA OTD Guide",
+    pageTitle: "Washington Dealer Fees (2026): Verified $200 Ceiling — WA OTD Guide",
     buyerTip: "Washington State's doc fee cap prohibits dealers from representing the $200 documentation fee as 'required by law' — it is not a government charge. If a dealer tells you the $200 fee is mandatory or required, that statement itself may violate the cap rules. Washington combined local sales tax rates range from 7% to 10.4%, with Seattle-area buyers near the top of that range. Confirming your dealer's exact local rate matters more than the capped doc fee for most buyers.",
   },
 
@@ -2361,12 +2361,12 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "West Virginia",
     abbreviation: "WV",
     slug: "west-virginia",
-    docFeeRange: "Capped at $575 (CPI-adjusted from July 2025)",
-    hasCap: true,
+    docFeeRange: "Reported $300–$575 (not verified)",
+    hasCap: false,
     metaDescription:
-      "West Virginia caps dealer doc fees at $575, raised from $499 effective July 2024 and CPI-adjusted annually from July 2025. State tax is 6% plus local additions up to 7%.",
+      "West Virginia's stored documentation-fee figure is not a verified legal cap. Reported $300–$575 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "West Virginia caps dealer documentation fees at $575, effective July 1, 2024 (increased from $499). CPI adjustments apply annually starting July 1, 2025 per WV Code 17A-6A-8A. Dealers cannot legally exceed this amount.",
+      "West Virginia has a stored documentation-fee figure of $575 in this file, and that figure needs a source. It is not a verified legal cap. Odigos will not call a higher fee illegal from that number alone. Unverified reports mention documentation fees around $300–$575. That range is not a market standard. Ask the dealer to itemize the charge, and confirm any limit with the state before you rely on it. Compare the itemized out-the-door price. A lower documentation fee with a higher vehicle price is not automatically a better deal.",
     salesTaxNote:
       "West Virginia charges 6% state sales tax on vehicle purchases, with local additions of up to 1%. Combined rates reach 7% in Charleston, Huntington, and Morgantown. Trade-in deductions are allowed.",
     registrationNote:
@@ -2374,7 +2374,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     introAngle:
       "West Virginia's doc fee cap increased from $499 to $575 in July 2024, with annual CPI adjustments beginning July 2025. Buyers should use the current cap amount rather than older references. The 6% state tax with modest local additions is relatively straightforward.",
     snippetAnswer:
-      "West Virginia caps dealer doc fees at $575 (increased July 2024, CPI-adjusted annually from July 2025). State sales tax is 6% with local additions up to 7% combined. Cap set by WV Code 17A-6A-8A.",
+      "West Virginia has a stored documentation-fee figure of $575 in this file, and that figure needs a source. It is not a verified legal cap. Unverified reports mention documentation fees around $300–$575. That range is not a market standard. State sales tax is 6% with local additions up to 7% combined.",
     watchFor: [
       "Updated cap: West Virginia's cap increased from $499 to $575 in July 2024. If you're using older references, update to the current cap amount.",
       "CPI adjustments: the cap adjusts annually by CPI from July 2025 onward. Verify the current year's cap before finalizing your OTD estimate.",
@@ -2384,7 +2384,7 @@ export const STATE_FEES: Record<string, StateFeeData> = {
       "West Virginia's market is less competitive than major metro areas. Compare quotes across the state's limited dealer network. The doc fee is capped, so focus negotiation on vehicle price and add-ons.",
     ctaHeading: "Have a West Virginia dealer quote you want to verify?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://code.wvlegislature.gov/17A-6A-8A/",
@@ -2402,30 +2402,30 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Wisconsin",
     abbreviation: "WI",
     slug: "wisconsin",
-    docFeeRange: "Typically $295–$500",
+    docFeeRange: "Reported $295–$500 (not verified)",
     hasCap: false,
     metaDescription:
-      "Wisconsin has no cap on dealer doc fees — $295–$500 is typical. Title fee increased to ~$215 in October 2025. State tax is 5% plus county additions. See the WI OTD picture.",
+      "Wisconsin does not have a verified documentation-fee cap on file. Reported $295–$500 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Wisconsin has no state cap on dealer documentation fees. Fees of $295–$500 are commonly reported. There is no legal ceiling.",
+      "Wisconsin does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $295–$500. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Wisconsin charges 5% state sales tax on vehicle purchases, with county and city additions. Milwaukee area buyers see the highest combined rate at 7.9%. Most other areas are at 5.5%, with 4 counties at 5%. Trade-in deductions are allowed.",
     registrationNote:
       "Wisconsin base registration is $85 per year, plus $175 annually for electric vehicles or $75 for hybrids. The title fee increased from $164.50 to approximately $214.50 effective October 1, 2025.",
     introAngle:
-      "Wisconsin saw a significant title fee increase in October 2025 — from $164.50 to approximately $214.50. Buyers working from older OTD estimates should update this figure. Doc fees are uncapped in the moderate $295–$500 range. The 5% state rate with county additions is straightforward.",
+      "Wisconsin saw a significant title fee increase in October 2025 — from $164.50 to approximately $214.50. Buyers working from older OTD estimates should update this figure. Doc fees are without a verified cap on file in the moderate $295–$500 range. The 5% state rate with county additions is straightforward.",
     snippetAnswer:
-      "Wisconsin dealers typically charge $295–$500 in documentation fees with no state cap. The title fee increased to ~$215 effective October 2025. State tax is 5% with county additions up to 7.9% in Milwaukee.",
+      "Wisconsin does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $295–$500. That range is not a market standard. State tax is 5% with county additions up to 7.9% in Milwaukee.",
     watchFor: [
       "Title fee increase: Wisconsin's title fee jumped from ~$164 to ~$215 in October 2025. Update any older OTD estimates to reflect the new amount.",
       "EV/hybrid surcharges: EVs pay $175 additional annually, PHEVs pay $75 additional. Budget for these if you're buying an electrified vehicle.",
       "Milwaukee vs. other counties: Milwaukee's 7.9% combined rate is notably higher than the 5–5.5% elsewhere. Know your dealer's county.",
     ],
     negotiationNote:
-      "Milwaukee and Madison have competitive dealer markets. The doc fee is uncapped — ask if it's flexible. The recent title fee increase adds to the OTD cost, so make sure your quote is current.",
+      "Milwaukee and Madison have competitive dealer markets. The doc fee is without a verified cap on file — ask if it's flexible. The recent title fee increase adds to the OTD cost, so make sure your quote is current.",
     ctaHeading: "Have a Wisconsin dealer quote you want to review?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://wisconsindot.gov/Pages/dmv/vehicles/title-plates/fee-chart.aspx",
@@ -2443,30 +2443,30 @@ export const STATE_FEES: Record<string, StateFeeData> = {
     name: "Wyoming",
     abbreviation: "WY",
     slug: "wyoming",
-    docFeeRange: "Typically $200–$400",
+    docFeeRange: "Reported $200–$400 (not verified)",
     hasCap: false,
     metaDescription:
-      "Wyoming has no cap on dealer doc fees — $200–$400 is typical. Sales tax is 4% plus local additions up to 9%. A VIN inspection fee of $10 is also required. See the WY OTD picture.",
+      "Wyoming does not have a verified documentation-fee cap on file. Reported $200–$400 (not verified). Compare the itemized out-the-door price before you sign.",
     capNote:
-      "Wyoming has no state cap on dealer documentation fees. Fees of $200–$400 are commonly reported. There is no legal ceiling.",
+      "Wyoming does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $200–$400. That range is not a market standard. Compare itemized out-the-door quotes instead of treating one line as legal or illegal.",
     salesTaxNote:
       "Wyoming charges 4% state sales tax on vehicle purchases, with local additions of up to 5%. Combined rates vary from 4% in some areas to 9% in Teton Village/Alta. Jackson and Cheyenne are at 6%. Trade-in deductions are allowed.",
     registrationNote:
       "Wyoming registration consists of a $30 state fee plus a county fee calculated at 3% of the vehicle's factory price multiplied by a depreciation rate. A $10 VIN inspection fee is also required. No separate title fee exists — title is included.",
     introAngle:
-      "Wyoming has no sales tax on vehicle purchases in most areas outside of tourist-heavy locations, but the 4% base with local additions means some areas (Teton Village, Jackson) reach 9% — one of the wider ranges in the country. Doc fees are uncapped but moderate. The unique VIN inspection fee is an additional small cost to include in your estimate.",
+      "Wyoming has no sales tax on vehicle purchases in most areas outside of tourist-heavy locations, but the 4% base with local additions means some areas (Teton Village, Jackson) reach 9% — one of the wider ranges in the country. Doc fees are without a verified cap on file but moderate. The unique VIN inspection fee is an additional small cost to include in your estimate.",
     snippetAnswer:
-      "Wyoming dealers typically charge $200–$400 in documentation fees with no state cap. State sales tax is 4% with local additions up to 9% in tourist areas. A $10 VIN inspection fee applies to all purchases.",
+      "Wyoming does not have a verified documentation-fee cap in this file. A stored note may say dealers set the fee, but that is not a legal finding that no cap exists. Unverified reports mention documentation fees around $200–$400. That range is not a market standard. State sales tax is 4% with local additions up to 9% in tourist areas.",
     watchFor: [
       "High resort area tax rates: Teton Village and Alta reach 9% combined. Jackson is 6%. If you're buying near a tourist area, confirm the local rate.",
       "$10 VIN inspection fee: this is a state requirement for all vehicle purchases in Wyoming. It's a small fee but should be in your OTD.",
       "County registration formula: Wyoming registration is calculated using factory price and a depreciation schedule — not a flat fee. Confirm the exact amount for your specific vehicle.",
     ],
     negotiationNote:
-      "Wyoming has a limited dealer market outside Cheyenne and Casper. The doc fee is uncapped and worth asking about. The unique county registration formula means getting the exact first-year registration cost from the dealer is important for an accurate OTD comparison.",
+      "Wyoming has a limited dealer market outside Cheyenne and Casper. The doc fee is without a verified cap on file and worth asking about. The unique county registration formula means getting the exact first-year registration cost from the dealer is important for an accurate OTD comparison.",
     ctaHeading: "Have a Wyoming dealer quote you want to verify?",
     ctaBody:
-      "Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.",
+      "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.",
     internalLinks: STANDARD_LINKS,
     sources: [
       "https://wyominglicenseplate.org/vehicle-registration-fees",

@@ -34,21 +34,21 @@ export function productSchema() {
         "@type": "Review",
         "author": { "@type": "Person", "name": "Marcus T." },
         "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
-        "reviewBody": "Caught two fees I had no idea were optional — a $399 protection package and an inflated doc fee. The copy-paste reply I sent the dealer got both removed. Paid for itself in about 60 seconds.",
+        "reviewBody": "The analysis called out a $399 protection package I had not noticed and asked me to get the documentation fee itemized. The reply I sent the dealer got both addressed.",
         "datePublished": "2026-02-14"
       },
       {
         "@type": "Review",
         "author": { "@type": "Person", "name": "Diane R." },
         "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
-        "reviewBody": "The dealer was only quoting monthly payment and wouldn't give me a total price. Odigos flagged it immediately and gave me the exact questions to ask. Ended up saving over $1,200 on the final deal.",
+        "reviewBody": "The dealer was only quoting a monthly payment and would not give me a total price. Odigos said the quote was missing the out-the-door price and gave me the questions to ask.",
         "datePublished": "2026-01-29"
       },
       {
         "@type": "Review",
         "author": { "@type": "Person", "name": "Kevin S." },
         "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
-        "reviewBody": "I've bought cars before but never knew how many fees were negotiable. The analysis was clear and the GO/NO-GO verdict helped me decide whether to keep negotiating or walk. Worth every dollar.",
+        "reviewBody": "The analysis separated itemized charges from missing ones. The verdict said the vehicle price was not verified, which told me to keep asking questions instead of treating the quote as a good deal.",
         "datePublished": "2026-03-05"
       }
     ]
@@ -60,7 +60,7 @@ export function howToSchema() {
     "@context": "https://schema.org",
     "@type": "HowTo",
     "name": "How to check your dealer quote",
-    "description": "Use Odigos to check a car dealer quote for overpriced fees, illegal charges, and missing details — and get the exact response to send back.",
+    "description": "Use Odigos to check whether a dealer quote is itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified without an independent price source.",
     "step": [
       {
         "@type": "HowToStep",
@@ -77,8 +77,8 @@ export function howToSchema() {
       {
         "@type": "HowToStep",
         "position": 3,
-        "name": "Get a GO/NO-GO verdict",
-        "text": "Receive an instant Green, Yellow, or Red verdict with a deal score and confidence level based on pricing transparency and completeness."
+        "name": "Read the verdict",
+        "text": "The verdict is GO, PROCEED WITH CAUTION, INSUFFICIENT INFORMATION, or NO-GO. GO requires an independent price benchmark. A complete quote with no benchmark says market value is not verified."
       },
       {
         "@type": "HowToStep",

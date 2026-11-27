@@ -45,4 +45,4 @@ Narrative guides under `client/src/data/stateFees.ts` are written pages, not thi
 
 ## What the analyzer uses
 
-For each detected state, the analyzer reads `docFeeCap`, `docFeeCapAmount`, `cpiIndexing` (when present), `docFeeTypicalRange`, `stateSalesTaxRate`, `tradeInTaxCredit`, `statuteCitation`, and `specialNotes`. A doc fee above the effective cap forces a NO-GO verdict. Typical ranges and tax rates are context for the model. They are not, by themselves, a legal conclusion.
+For each detected state, the analyzer reads `docFeeCap`, `docFeeCapAmount`, `cpiIndexing` (when present), `docFeeTypicalRange`, `stateSalesTaxRate`, `tradeInTaxCredit`, `statuteCitation`, and `specialNotes`. A documentation fee above a verified cap can force a NO-GO verdict. A cap is verified only when this file has a citation and does not list `docFeeCapAmount` under `unverified_fields`. California's verified rule is a split: $85 for a DMV private industry partner and $70 otherwise. Typical ranges are not a legal conclusion, and they are not a market price for the vehicle.

@@ -80,7 +80,7 @@ export default function ResidualValueExplained() {
         <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
           <p className="text-sm font-semibold text-foreground mb-2">Wondering if your residual is fair?</p>
           <p className="text-sm text-muted-foreground mb-3">
-            Paste your lease quote into Odigos. We'll check the residual percentage against current data and flag anything unusual.
+            Paste your lease quote into Odigos. It checks whether a residual is stated and whether the payment math reconciles. It does not look up a live residual or a market value.
           </p>
           <Link href="/analyze">
             <Button variant="cta" size="sm" data-testid="button-cta-mid-article-residual-value">

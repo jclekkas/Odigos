@@ -107,7 +107,7 @@ export default function WhatDoesOutTheDoorPriceInclude() {
         <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
           <p className="text-sm font-semibold text-foreground mb-2">If you're looking at a real quote…</p>
           <p className="text-sm text-muted-foreground mb-3">
-            Paste it into Odigos and we'll flag any line items that look off, missing, or inflated — before you respond to the dealer.
+            Paste it into Odigos. It checks whether the charges are itemized, whether the total reconciles, and whether a fee exceeds a verified cap. It does not label a fee inflated without that evidence.
           </p>
           <Link href="/analyze">
             <button className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors" data-testid="button-cta-mid-article">
@@ -123,7 +123,7 @@ export default function WhatDoesOutTheDoorPriceInclude() {
         <ul className="space-y-2 mb-4 text-muted-foreground">
           {[
             "Ranges from $50 to $999+ depending on the dealer and state",
-            "Some states cap it by law (e.g., California caps at ~$85). States with no cap, like Florida, commonly see $500–$1,000+",
+            "Some states have a verified ceiling. California allows $85 only for a DMV partner and $70 otherwise. Florida has no verified cap in this file, and reports of $500–$1,000 are not a market standard",
             "Many dealers treat it as non-negotiable — but you can sometimes negotiate the vehicle price to offset it",
             "It should always appear as its own line item, not buried in a catch-all \"dealer fee\"",
           ].map((item) => (

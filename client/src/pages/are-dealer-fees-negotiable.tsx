@@ -85,7 +85,7 @@ export default function AreDealerFeesNegotiable() {
         <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
           <p className="text-sm font-semibold text-foreground mb-2">See what's in your quote before you respond</p>
           <p className="text-sm text-muted-foreground mb-3">
-            Paste your dealer quote into Odigos and we'll identify which fees are government charges vs. dealer profit items — and flag anything that looks inflated.
+            Paste your dealer quote into Odigos. It separates government charges from dealer charges when the line names are clear, and it flags a documentation fee only when it exceeds a verified cap. It does not call a fee inflated from a typical range.
           </p>
           <Link href="/analyze">
             <Button variant="cta" size="sm" data-testid="button-cta-mid-article-fees-negotiable">

@@ -10,36 +10,11 @@ import ArticleLayout from "@/components/ArticleLayout";
 import SourceCitation from "@/components/SourceCitation";
 import stateFeeData from "@dataset/state_fees.json";
 import { STATE_FEES } from "@/data/stateFees";
+import { publicDocFeeClaim, type FeeStateRecord } from "@shared/docFeePublicCopy";
 
-interface StateEntry {
-  name: string;
-  abbreviation: string;
-  docFeeCap: boolean;
-  docFeeCapAmount: number | null;
-  docFeeTypicalRange: [number, number];
-}
-
-const stateRows: StateEntry[] = Object.values(
-  stateFeeData.states as unknown as Record<string, StateEntry>
+const stateRows: FeeStateRecord[] = Object.values(
+  stateFeeData.states as unknown as Record<string, FeeStateRecord>
 ).sort((a, b) => a.name.localeCompare(b.name));
-
-function formatCapStatus(state: StateEntry): string {
-  if (state.docFeeCap && state.docFeeCapAmount !== null) {
-    return `Capped at $${state.docFeeCapAmount.toLocaleString()}`;
-  }
-  return "No cap";
-}
-
-function formatTypicalFee(state: StateEntry): string {
-  if (state.docFeeCap && state.docFeeCapAmount !== null) {
-    return `Up to $${state.docFeeCapAmount.toLocaleString()}`;
-  }
-  const [low, high] = state.docFeeTypicalRange;
-  if (low === 0 && high === 0) return "Varies";
-  if (low === 0) return `Up to $${high.toLocaleString()}`;
-  if (low === high) return `~$${low.toLocaleString()}`;
-  return `$${low.toLocaleString()}–$${high.toLocaleString()}`;
-}
 
 const DOC_FEE_REQUEST_MESSAGE = `Hi — I'm comparing offers from a few dealerships. Before I come in, could you send me an itemized out-the-door price that breaks out the documentation fee as its own line? I'd also like to see taxes, title, and registration listed separately. Thanks.`;
 
@@ -48,8 +23,8 @@ export default function DealerDocFeeByState() {
 
   useEffect(() => {
     setSeoMeta({
-      title: "Dealer Doc Fee by State (2026): Legal Caps and Limits",
-      description: "See dealer doc fee limits by state, including capped and uncapped states, and understand how fees vary.",
+      title: "Dealer Doc Fee by State (2026): Verified Caps and Unverified Ranges",
+      description: "See which documentation-fee caps Odigos has verified, including California's $70 / $85 DMV-partner split. Reported ranges are not a market standard.",
       path: "/dealer-doc-fee-by-state",
     });
   }, []);
@@ -73,7 +48,7 @@ export default function DealerDocFeeByState() {
   };
 
   return (
-    <ArticleLayout title="Dealer Doc Fee by State (2026): Caps and Limits">
+    <ArticleLayout title="Dealer Doc Fee by State (2026): Verified Caps and Unverified Ranges">
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(itemListSchema({
           name: "Dealer Doc Fee by State",
@@ -113,12 +88,12 @@ export default function DealerDocFeeByState() {
         }))}</script>
       </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-doc-fee-by-state-headline">
-            Dealer Doc Fee by State (2026): Caps and Limits
+            Dealer Doc Fee by State (2026): Verified Caps and Unverified Ranges
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-lg text-muted-foreground">
-              Dealer documentation fees vary by state. Some states set a legal maximum, while others allow dealers to determine pricing.
+              Dealer documentation fees vary by state. Some states have a citation in Odigos's source file for a legal maximum. Others do not. A stored range is not a market standard, and a figure marked as needing a source is not a legal cap.
             </p>
             <p className="text-lg text-muted-foreground">
               Understanding whether your state has a cap is the first step in evaluating your deal.
@@ -126,7 +101,7 @@ export default function DealerDocFeeByState() {
 
             <div className="rounded-lg border border-blue-600/20 bg-blue-600/5 p-5 mb-8">
               <p className="text-base font-semibold text-foreground mb-2">
-                Looking up your state? After you check the cap, paste your dealer quote into Odigos to see if they're actually following it.
+                Looking up your state? Paste the quote and Odigos checks the math, the line items, and any verified cap. It does not treat an unverified range as a violation.
               </p>
               <Button asChild variant="cta" className="font-semibold">
                 <Link href="/analyze">Check This Quote</Link>
@@ -136,11 +111,11 @@ export default function DealerDocFeeByState() {
             <h2 className="text-2xl font-semibold text-foreground">Why doc fees vary so much</h2>
 
             <p className="text-lg text-muted-foreground">
-              The core issue is regulation — or the lack of it. Some states set a legal maximum on what dealers can charge for documentation. In those states, every dealership charges the same amount (or close to it) because there's a hard cap. Other states have no cap at all, which means the doc fee is entirely at the dealer's discretion.
+              Some states publish a documentation-fee ceiling that Odigos has checked against a statute or agency page. In those states the ceiling is a real limit, and California's is a split: $85 only for a DMV private industry partner, and $70 otherwise. Where the source file has no verified cap, the dealer still sets a number, but this guide will not call that number legal or illegal.
             </p>
 
             <p className="text-lg text-muted-foreground">
-              In uncapped states, dealers set their doc fee based on local competition, overhead costs, and profit strategy. A high-volume dealer in a competitive metro area might keep the fee lower to attract buyers. A dealer in a less competitive market might charge $700 or more because there's no regulatory reason not to. The actual work the fee covers — printing contracts, filing paperwork, submitting registration — is essentially the same everywhere.
+              Where no cap is verified, dealers still choose the fee. A high-volume store in a competitive area may keep it lower. Another store may charge more. The paperwork — contracts, title, registration — is similar either way. Compare the full out-the-door price, not one line that this file has not verified.
             </p>
 
             <p className="text-lg text-muted-foreground">
@@ -150,7 +125,7 @@ export default function DealerDocFeeByState() {
             <h2 className="text-2xl font-semibold text-foreground">Doc fee ranges by state</h2>
 
             <p className="text-muted-foreground">
-              The table below shows approximate documentation fee ranges for all 50 states and Washington D.C. Where a state caps the fee, the cap is noted. In uncapped states, the ranges reflect what buyers commonly report. Always verify current limits with your state's attorney general or motor vehicle agency.
+              The table covers all 50 states and Washington, D.C. A ceiling is labeled verified only when the source file has a citation and does not mark the amount as needing a source. Reported ranges are not verified market averages. Confirm a figure with your state before you rely on it.
             </p>
 
             <div className="overflow-x-auto mb-4">
@@ -158,24 +133,27 @@ export default function DealerDocFeeByState() {
                 <thead>
                   <tr className="bg-muted/50">
                     <th className="px-4 py-3 font-semibold text-foreground border-b border-border">State</th>
-                    <th className="px-4 py-3 font-semibold text-foreground border-b border-border">Doc Fee Cap?</th>
-                    <th className="px-4 py-3 font-semibold text-foreground border-b border-border">Typical Doc Fee</th>
+                    <th className="px-4 py-3 font-semibold text-foreground border-b border-border">Cap on file</th>
+                    <th className="px-4 py-3 font-semibold text-foreground border-b border-border">Reported range</th>
                   </tr>
                 </thead>
                 <tbody className="text-muted-foreground">
-                  {stateRows.map((state, idx) => (
+                  {stateRows.map((state, idx) => {
+                    const claim = publicDocFeeClaim(state);
+                    return (
                     <tr key={state.abbreviation} className={idx < stateRows.length - 1 ? "border-b border-border/50" : ""} data-testid={`row-doc-fee-${state.abbreviation}`}>
                       <td className="px-4 py-2">{state.name}</td>
-                      <td className="px-4 py-2">{formatCapStatus(state)}</td>
-                      <td className="px-4 py-2">{formatTypicalFee(state)}</td>
+                      <td className="px-4 py-2">{claim.capCell}</td>
+                      <td className="px-4 py-2">{claim.rangeCell}</td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
 
             <p className="text-sm text-muted-foreground mb-6 italic">
-              These ranges are approximate and based on commonly reported dealer practices. Fee caps and regulations change over time — always verify with your state's attorney general or motor vehicle agency before relying on specific numbers.{" "}
+              Reported ranges are not verified market averages. A stored cap is a legal limit only when this table says it is verified. Caps change — confirm them with your state before you rely on a number.{" "}
               <SourceCitation
                 sources={[
                   "https://consumer.ftc.gov/articles/buying-new-car",
@@ -186,10 +164,10 @@ export default function DealerDocFeeByState() {
             </p>
 
             <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
-              <p className="text-sm font-semibold text-foreground mb-2">Fun fact: 14 states have no doc fee cap at all. If you're in one of them, your only defense is knowing what others pay.</p>
+              <p className="text-sm font-semibold text-foreground mb-2">Only some states have a documentation-fee cap this file has verified. Everywhere else, compare itemized out-the-door quotes instead of treating a reported range as the going rate.</p>
               <Link href="/analyze">
                 <Button variant="cta" size="sm">
-                  Check My Quote Against Market Data
+                  Check the quote math
                 </Button>
               </Link>
             </div>
@@ -197,11 +175,11 @@ export default function DealerDocFeeByState() {
             <h2 className="text-2xl font-semibold text-foreground">What if your doc fee seems too high?</h2>
 
             <p className="text-lg text-muted-foreground">
-              If the doc fee on your quote is significantly above the typical range for your state, that's worth questioning — but it's not automatically a red flag. Some dealers charge more for doc fees and less on the vehicle price. Others do the opposite. What matters most is the total <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link>, not any single line item.
+              A documentation fee above a reported range is worth a question. It is not automatically illegal, and the range itself is not verified. Some dealers charge more for the fee and less for the vehicle. What matters is the total <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link>, plus whether a verified cap was exceeded.
             </p>
 
             <p className="text-lg text-muted-foreground">
-              That said, a doc fee well above local averages is a sign you should ask questions. In states without a cap, the dealer sets this fee entirely on their own. If they're charging $900 when nearby dealers charge $400 for the same paperwork, that's $500 in pure margin — and you should know about it before you commit.
+              Ask the dealer to itemize the fee. If two nearby quotes for the same paperwork differ by hundreds of dollars, that difference belongs in the out-the-door comparison. This file does not turn that gap into a verified market average.
             </p>
 
             <p className="text-lg text-muted-foreground">
@@ -241,7 +219,7 @@ export default function DealerDocFeeByState() {
             </p>
 
             <p className="text-lg text-muted-foreground">
-              When shopping across state lines, doc fee differences become even more significant. A dealer in a capped state like California ($85) might seem cheaper on paper, but higher sales tax rates or a higher vehicle price can erase that advantage. Always compare the full OTD price — not just one fee.
+              When shopping across state lines, the documentation fee is only one line. California allows $85 only for a DMV private industry partner and $70 otherwise. A lower fee can still lose to a higher vehicle price or a higher tax. Compare the full out-the-door price.
             </p>
 
             <p className="text-lg text-muted-foreground">
@@ -249,7 +227,7 @@ export default function DealerDocFeeByState() {
             </p>
 
             <p className="text-lg text-muted-foreground">
-              If you already have a dealer quote and want to know whether the doc fee — or anything else — looks off, Odigos can analyze the full breakdown and flag anything that doesn't add up.
+              If you already have a dealer quote, Odigos checks whether the documentation fee is itemized, whether the total reconciles, and whether it exceeds a verified cap. An unverified range is not a violation.
             </p>
 
             <h2 className="text-2xl font-semibold text-foreground">State-by-state dealer fee guides</h2>
@@ -271,7 +249,7 @@ export default function DealerDocFeeByState() {
                     <span className="text-muted-foreground text-xs font-mono w-6 shrink-0">{state.abbreviation}</span>
                     <span className="underline">{state.name}</span>
                     {state.hasCap && (
-                      <span className="ml-auto text-xs text-green-600 dark:text-green-400 font-medium shrink-0">capped</span>
+                      <span className="ml-auto text-xs text-green-600 dark:text-green-400 font-medium shrink-0">verified cap</span>
                     )}
                   </Link>
                 ))}
@@ -281,7 +259,7 @@ export default function DealerDocFeeByState() {
 
           <div className="rounded-xl border border-border bg-muted/30 p-6 mt-12">
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Knowing the cap is step one. Checking your actual quote is step two. Paste any dealer quote and Odigos scores it against your state's rules — every fee, every charge.
+              A verified cap is one check. Paste the quote and Odigos also checks whether the charges are itemized and whether the total reconciles. It does not estimate a fair vehicle price, and it does not treat an unverified fee as a legal limit.
             </p>
             <Link href="/analyze">
               <Button variant="cta" size="lg">

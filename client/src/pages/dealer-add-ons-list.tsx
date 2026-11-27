@@ -212,7 +212,7 @@ export default function DealerAddOnsList() {
             <h2 className="text-2xl font-semibold text-foreground">How Odigos helps</h2>
 
             <p className="text-lg text-muted-foreground">
-              If you already have a dealer quote and aren't sure which charges are add-ons, paste it into Odigos. We'll identify every dealer-installed extra, flag the ones with high markup, and show you what the <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> would look like without them. No guesswork, no math — just a clear picture of what's optional and what's not.
+              If you already have a dealer quote and aren't sure which charges are add-ons, paste it into Odigos. It lists the dealer-installed extras it can read and separates them from government charges. It does not price those extras against a market, and it does not rebuild an <Link href="/out-the-door-price" className="underline text-foreground">out-the-door price</Link> the quote never stated.
             </p>
 
             <p className="text-lg text-muted-foreground">
@@ -228,7 +228,7 @@ export default function DealerAddOnsList() {
           <div className="rounded-xl border border-border bg-muted/30 p-6 mt-12">
             <h3 className="text-base font-semibold text-foreground mb-2">Add-ons are the most negotiable part of any dealer quote.</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Paste yours and see exactly which charges to push back on — with a DealScore for the whole deal.
+              Paste yours. Odigos lists the add-ons it can read. It does not score the vehicle's market value.
             </p>
             <Link href="/analyze">
               <Button variant="cta" size="lg">

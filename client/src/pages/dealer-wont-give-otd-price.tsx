@@ -133,7 +133,7 @@ export default function DealerWontGiveOtdPrice() {
 
             <div className="rounded-lg border border-blue-600/20 bg-blue-600/5 p-5 mb-8">
               <p className="text-base font-semibold text-foreground mb-2">
-                Got a quote but no OTD price? Paste it here — Odigos calculates your true out-the-door cost and flags every hidden fee.
+                Got a quote but no OTD price? Paste it here. Odigos tells you the total is missing. It does not invent the out-the-door price or a market value.
               </p>
               <Button asChild variant="cta" className="font-semibold">
                 <Link href="/analyze">Get My Real OTD Price</Link>
@@ -334,11 +334,11 @@ export default function DealerWontGiveOtdPrice() {
           <div className="rounded-xl border border-border bg-muted/30 p-6 mt-12">
             <h3 className="text-base font-semibold text-foreground mb-2">Stop asking. Start checking.</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Paste your dealer quote into Odigos and get the out-the-door price they didn't want you to see — with every fee exposed.
+              Paste your dealer quote into Odigos. If the out-the-door price is missing, the result says so. It does not invent that total.
             </p>
             <Link href="/analyze">
               <Button variant="cta" size="lg">
-                Get My Real OTD Price
+                Check This Quote
               </Button>
             </Link>
           </div>

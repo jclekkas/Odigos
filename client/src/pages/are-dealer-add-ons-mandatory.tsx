@@ -139,7 +139,7 @@ export default function AreDealerAddOnsMandatory() {
             <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
               <p className="text-sm font-semibold text-foreground mb-2">Not sure which charges in your quote are optional?</p>
               <p className="text-sm text-muted-foreground mb-3">
-                Paste your dealer quote into Odigos. We'll flag every add-on, show what's negotiable, and give you the specific language to push back.
+                Paste your dealer quote into Odigos. It lists the add-ons it can read and separates them from government charges. It does not assign those products a market price.
               </p>
               <Link href="/analyze">
                 <Button variant="cta" size="sm" data-testid="button-cta-mid-article-are-mandatory">

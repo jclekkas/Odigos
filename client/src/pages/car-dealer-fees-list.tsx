@@ -19,7 +19,7 @@ export default function CarDealerFeesList() {
   useEffect(() => {
     setSeoMeta({
       title: "Every Car Dealer Fee Listed: Ranges, Markups, and What to Question | Odigos",
-      description: "Every dealer fee you'll see on a car quote — with typical ranges, markup indicators, and verdicts on which to accept vs. question. Compare dealers the right way.",
+      description: "Dealer fees you may see on a quote, with reported spans that are not verified market averages, and what to question before you sign.",
       path: "/car-dealer-fees-list",
     });
   }, []);
@@ -44,7 +44,7 @@ export default function CarDealerFeesList() {
   return (
     <ArticleLayout title="Car Dealer Fees List: Every Charge, Range, and Verdict">
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Every Car Dealer Fee Listed: Ranges, Markups, and What to Question | Odigos", description: "Every dealer fee you'll see on a car quote — with typical ranges, markup indicators, and verdicts on which to accept vs. question. Compare dealers the right way.", path: "/car-dealer-fees-list" }))}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema({ title: "Every Car Dealer Fee Listed: Ranges, Markups, and What to Question | Odigos", description: "Dealer fees you may see on a quote, with reported spans that are not verified market averages, and what to question before you sign.", path: "/car-dealer-fees-list" }))}</script>
       </Helmet>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight" data-testid="text-fees-list-headline">
             Car Dealer Fees List: Every Charge, Range, and Verdict
@@ -70,15 +70,15 @@ export default function CarDealerFeesList() {
                 <thead>
                   <tr className="border-b border-border">
                     <th className="text-left py-3 pr-4 font-semibold text-foreground">Fee</th>
-                    <th className="text-left py-3 pr-4 font-semibold text-foreground">Typical Range</th>
+                    <th className="text-left py-3 pr-4 font-semibold text-foreground">Reported span (not verified)</th>
                     <th className="text-left py-3 font-semibold text-foreground">Notes</th>
                   </tr>
                 </thead>
                 <tbody className="text-muted-foreground">
                   <tr className="border-b border-border/50">
                     <td className="py-3 pr-4 font-medium text-foreground">Documentation (doc) fee</td>
-                    <td className="py-3 pr-4">$85 – $999+</td>
-                    <td className="py-3">Covers paperwork processing. Capped in some states. Often negotiable.</td>
+                    <td className="py-3 pr-4">Varies by state. Not a verified national range.</td>
+                    <td className="py-3">Dealer paperwork charge. California's verified ceiling is $85 for a DMV partner and $70 otherwise. Other ceilings count only when a citation is on file.</td>
                   </tr>
                   <tr className="border-b border-border/50">
                     <td className="py-3 pr-4 font-medium text-foreground">Sales tax</td>

@@ -1607,7 +1607,7 @@ export default function Home() {
     capture("analyze_page_viewed", { route: "/analyze" });
     setSeoMeta({
       title: "Analyze Your Car Deal | Odigos",
-      description: "Paste dealer texts, emails, or quotes into Odigos. Get an instant GO/NO-GO recommendation with hidden fee detection and suggested questions for the dealer.",
+      description: "Paste dealer texts, emails, or quotes into Odigos. The audit checks disclosure, math, and verified fee caps. Market value stays unverified unless you optionally enter a factory window sticker MSRP.",
       path: "/analyze",
     });
   }, []);

@@ -167,7 +167,7 @@ export default function MarketAdjustmentFee() {
             </p>
 
             <p className="text-lg text-muted-foreground">
-              If you have a dealer quote and you're not sure whether the pricing is fair, Odigos can break it down for you and flag anything that looks off. You can also use our <Link href="/calculate-out-the-door-price" className="underline text-foreground">out-the-door price calculation guide</Link> to estimate what you should be paying before the dealer adjusts any numbers.
+              If a quote names a market adjustment, Odigos can flag that line. It does not decide whether the vehicle price is fair. Use the <Link href="/calculate-out-the-door-price" className="underline text-foreground">out-the-door price guide</Link> to add up the numbers the dealer actually gave you.
             </p>
           </div>
 

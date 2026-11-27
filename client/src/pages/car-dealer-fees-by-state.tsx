@@ -11,29 +11,11 @@ import ArticleCta from "@/components/ArticleCta";
 import SourceCitation from "@/components/SourceCitation";
 import stateFeeData from "@dataset/state_fees.json";
 import { STATE_FEES } from "@/data/stateFees";
+import { publicDocFeeClaim, type FeeStateRecord } from "@shared/docFeePublicCopy";
 
-interface StateEntry {
-  name: string;
-  abbreviation: string;
-  docFeeCap: boolean;
-  docFeeCapAmount: number | null;
-  docFeeTypicalRange: [number, number];
-}
-
-const stateRows: StateEntry[] = Object.values(
-  stateFeeData.states as unknown as Record<string, StateEntry>
+const stateRows: FeeStateRecord[] = Object.values(
+  stateFeeData.states as unknown as Record<string, FeeStateRecord>
 ).sort((a, b) => a.name.localeCompare(b.name));
-
-function formatDocFeeRange(state: StateEntry): string {
-  if (state.docFeeCap && state.docFeeCapAmount !== null) {
-    return `Up to $${state.docFeeCapAmount.toLocaleString()} (capped)`;
-  }
-  const [low, high] = state.docFeeTypicalRange;
-  if (low === 0 && high === 0) return "Varies (no cap)";
-  if (low === 0) return `Up to $${high.toLocaleString()} (no cap)`;
-  if (low === high) return `~$${low.toLocaleString()} (no cap)`;
-  return `$${low.toLocaleString()}–$${high.toLocaleString()} (no cap)`;
-}
 
 const FEE_REQUEST_MESSAGE = `Before I visit the dealership, could you please send the full out-the-door price including vehicle price, taxes, registration, doc fee, and any dealer add-ons? I'm comparing total pricing across multiple dealers.`;
 
@@ -42,8 +24,8 @@ export default function CarDealerFeesByState() {
 
   useEffect(() => {
     setSeoMeta({
-      title: "Car Dealer Fees by State (2026): Caps, Limits, and What Dealers Can Charge You",
-      description: "Which states cap dealer doc fees — and which let dealers charge whatever they want? See 2026 limits for all 50 states and how to compare out-the-door prices.",
+      title: "Car Dealer Fees by State (2026): Verified Caps and What Still Needs a Source",
+      description: "Which documentation-fee caps Odigos has verified, and which stored ranges still need a source. Compare the out-the-door price before you treat a fee as legal or typical.",
       path: "/car-dealer-fees-by-state",
     });
   }, []);
@@ -128,17 +110,17 @@ export default function CarDealerFeesByState() {
             </p>
 
             <p className="text-muted-foreground">
-              <strong className="text-foreground">Dealer documentation fees</strong> cover the cost of processing your paperwork — title work, registration filing, loan documents, and contract preparation. Unlike government fees, these are set entirely by the dealer. In states with caps, the fee might be limited to $85 or $200. In uncapped states, dealers regularly charge $500 to $900 or more for the same paperwork. For a deeper look at what this fee actually covers, see our guide on <Link href="/doc-fee-too-high" className="underline text-foreground">what to do when a dealer doc fee seems too high</Link>.
+              <strong className="text-foreground">Dealer documentation fees</strong> cover paperwork — title work, registration filing, and contract preparation. The dealer sets the amount unless a state ceiling is verified. California's verified ceiling is a split: $85 for a DMV private industry partner and $70 otherwise. Washington's verified disclosure ceiling is $200. Reported ranges such as $500 to $900 are not a verified market rate. For what to do when a fee looks high, see <Link href="/doc-fee-too-high" className="underline text-foreground">what to do when a dealer doc fee seems too high</Link>.
             </p>
 
             <p className="text-muted-foreground">
               <strong className="text-foreground">Optional dealer add-ons</strong> are products like paint protection, fabric coating, nitrogen-filled tires, VIN etching, or extended warranties. These are profit items added by the dealership and are almost always optional, even when they're presented as included or required.
             </p>
 
-            <h2 className="text-2xl font-semibold text-foreground">Typical dealer doc fee ranges by state</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Documentation fees on file, by state</h2>
 
             <p className="text-muted-foreground">
-              The table below shows approximate documentation fee ranges for all 50 states and Washington D.C. Some states set legal caps; others allow dealers to charge whatever they choose. Where there's no cap, the ranges shown reflect what buyers commonly report.
+              The table covers all 50 states and Washington, D.C. A ceiling is called verified only when the source file has a citation and does not mark the amount as needing a source. Reported ranges are not verified market averages.
             </p>
 
             <div className="overflow-x-auto mb-4">
@@ -146,22 +128,25 @@ export default function CarDealerFeesByState() {
                 <thead>
                   <tr className="bg-muted/50">
                     <th className="px-4 py-3 font-semibold text-foreground border-b border-border">State</th>
-                    <th className="px-4 py-3 font-semibold text-foreground border-b border-border">Typical Dealer Doc Fee Range</th>
+                    <th className="px-4 py-3 font-semibold text-foreground border-b border-border">Cap and reported range</th>
                   </tr>
                 </thead>
                 <tbody className="text-muted-foreground">
-                  {stateRows.map((state, idx) => (
+                  {stateRows.map((state, idx) => {
+                    const claim = publicDocFeeClaim(state);
+                    return (
                     <tr key={state.abbreviation} className={idx < stateRows.length - 1 ? "border-b border-border/50" : ""} data-testid={`row-state-fee-${state.abbreviation}`}>
                       <td className="px-4 py-2">{state.name}</td>
-                      <td className="px-4 py-2">{formatDocFeeRange(state)}</td>
+                      <td className="px-4 py-2">{claim.capCell}. {claim.rangeCell}</td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
 
             <p className="text-sm text-muted-foreground italic">
-              These ranges are approximate and based on commonly reported dealer practices. Fee limits and regulations can change — always verify with your state's attorney general or consumer protection office before relying on specific numbers.{" "}
+              A stored range is not a verified market average. Confirm a ceiling with your state before you treat it as a legal limit.{" "}
               <SourceCitation
                 sources={[
                   "https://consumer.ftc.gov/articles/buying-new-car",
@@ -264,7 +249,7 @@ export default function CarDealerFeesByState() {
             </p>
 
             <p className="text-lg text-muted-foreground">
-              If you already have a dealer quote with fees that seem unusual, Odigos can analyze the full breakdown and flag anything that looks off.
+              If you already have a dealer quote, Odigos checks whether the charges are itemized, whether the total reconciles, and whether a fee exceeds a verified cap. It does not treat a reported range as a violation.
             </p>
 
             <h2 className="text-2xl font-semibold text-foreground">State-specific dealer fee guides</h2>
@@ -286,7 +271,7 @@ export default function CarDealerFeesByState() {
                     <span className="text-muted-foreground text-xs font-mono w-6 shrink-0">{state.abbreviation}</span>
                     <span className="underline">{state.name}</span>
                     {state.hasCap && (
-                      <span className="ml-auto text-xs text-green-600 dark:text-green-400 font-medium shrink-0">capped</span>
+                      <span className="ml-auto text-xs text-green-600 dark:text-green-400 font-medium shrink-0">verified cap</span>
                     )}
                   </Link>
                 ))}

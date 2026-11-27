@@ -41,8 +41,8 @@ export default function ExampleAnalysis() {
 
           <div className="rounded-lg border border-amber-500/30 bg-amber-50/5 p-5 mb-5" data-testid="block-verdict">
             <p className="text-sm font-semibold text-foreground uppercase tracking-wide mb-1">Verdict</p>
-            <p className="text-2xl font-bold text-amber-500 mb-1" data-testid="text-verdict-label">NO-GO</p>
-            <p className="text-sm text-muted-foreground">This quote has multiple missing disclosures and a bundled dealer add-on that is likely optional. Do not visit the dealership or commit to anything until you have a full out-the-door price in writing.</p>
+            <p className="text-2xl font-bold text-amber-500 mb-1" data-testid="text-verdict-label">INSUFFICIENT INFORMATION</p>
+            <p className="text-sm text-muted-foreground">The quote has no out-the-door price, so a buy decision cannot be made. The protection package is named and still needs a yes or no from you. Missing paperwork is not approval of the price, and it is not a finding that the car is overpriced.</p>
           </div>
 
           <h3 className="text-base font-semibold text-foreground mb-3">Issues Found</h3>
@@ -62,7 +62,7 @@ export default function ExampleAnalysis() {
             <li className="flex items-start gap-3" data-testid="issue-add-on">
               <AlertTriangle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
               <span className="text-muted-foreground">
-                <strong className="text-foreground">Dealer add-on presented as included.</strong>{" The \"Premier Protection Package\" (paint sealant, fabric protection, nitrogen tires) is worded as a feature of the vehicle. These are typically dealer-installed add-ons that cost $500–$2,000 and are optional. You are likely being asked to pay for them whether you want them or not."}
+                <strong className="text-foreground">Dealer add-on presented as included.</strong>{" The \"Premier Protection Package\" (paint sealant, fabric protection, nitrogen tires) is worded as a feature of the vehicle. Those items are usually optional. Ask for the price of each one. This example does not assign them a market value."}
               </span>
             </li>
             <li className="flex items-start gap-3" data-testid="issue-vague-language">

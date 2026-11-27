@@ -92,7 +92,7 @@ export default function DealerAddOnsExplained() {
         <div className="rounded-lg border border-border bg-muted/30 p-5 mb-8">
           <p className="text-sm font-medium text-foreground mb-2">Seeing add-ons in your quote?</p>
           <p className="text-sm text-muted-foreground">
-            <Link href="/analyze" className="underline text-foreground">Paste your dealer quote into Odigos</Link> and we'll identify each add-on, flag the ones with the highest markup, and show you your real out-the-door price without the extras.
+            <Link href="/analyze" className="underline text-foreground">Paste your dealer quote into Odigos</Link> and it lists the add-ons it can read and separates them from government charges. It does not assign a market value to the vehicle or to the add-on.
           </p>
         </div>
 

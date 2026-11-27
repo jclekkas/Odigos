@@ -12,12 +12,12 @@ const sections = [
       {
         href: "/dealer-doc-fee",
         title: "Are Dealer Documentation Fees Legit?",
-        description: "What a doc fee is, whether it's negotiable, and what's normal in your state.",
+        description: "What a doc fee is, whether you can negotiate around it, and which state ceilings are verified.",
       },
       {
         href: "/dealer-doc-fee-by-state",
         title: "Dealer Doc Fee by State",
-        description: "State-by-state breakdown of documentation fee caps and typical ranges.",
+        description: "State-by-state documentation fees, with verified caps separated from ranges that still need a source.",
       },
       {
         href: "/car-dealer-fees-explained",
@@ -176,7 +176,7 @@ export default function DealerPricingProblems() {
           Have a dealer quote you want checked?
         </h3>
         <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-          Paste it into Odigos and get a GO/NO-GO verdict with hidden fee detection — results usually take about a minute. No signup required.
+          Paste it into Odigos. You get a verdict of GO, PROCEED WITH CAUTION, INSUFFICIENT INFORMATION, or NO-GO, plus the math and any verified fee-cap finding. Market value stays unverified unless you optionally enter a factory window sticker MSRP. No signup required.
         </p>
         <Link href="/analyze">
           <button
