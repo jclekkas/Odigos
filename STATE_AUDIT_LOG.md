@@ -1,5 +1,7 @@
 # State-Specific Dealer Doc Fee Claims — Full Content Audit
 
+> Historical log from March 23, 2026. It is not the current rule. `data/state_fees.json` marks many of the caps and ranges below as `needs_source`, including New York's stored $175 figure. A checkmark in this file is not a current legal finding. California's verified ceiling is $85 only for a DMV private industry partner and $70 otherwise.
+
 **Audit date:** 2026-03-23  
 **Reference file:** `server/state_fee_reference.json`  
 **Pages audited:** All `.tsx` pages under `client/src/pages/` (50 files scanned; 13 contain state-specific doc fee claims)

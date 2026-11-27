@@ -88,7 +88,7 @@ export default function IsThisAGoodCarDeal() {
         <div className="rounded-lg border border-blue-600/20 bg-blue-600/5 p-6 mb-8" data-testid="cta-mid-article">
           <p className="text-base font-semibold text-foreground mb-2">The fastest way to get a verdict on your quote</p>
           <p className="text-sm text-muted-foreground">
-            Paste your quote. Odigos checks all four signals, flags hidden fees, identifies forced add-ons, and gives you a GO / NO-GO verdict — no signup required.
+            Paste your quote. Odigos checks whether the price, fees, and add-ons are itemized, whether the total reconciles, and whether a fee exceeds a verified cap. GO requires an independent price benchmark. Without one, the result says market value is not verified. No signup required.
           </p>
           <Button asChild variant="cta" className="font-semibold" data-testid="button-cta-best-way">
             <Link href="/analyze">Check my deal now</Link>

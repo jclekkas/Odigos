@@ -34,7 +34,7 @@ export default function JunkFeesExplained() {
         </p>
 
         <p className="text-sm text-muted-foreground">
-          Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and we'll flag every junk fee automatically.
+          Already have a dealer quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link>. Odigos checks itemized fees, add-ons, and verified caps. It does not catch every possible junk fee, and it does not price the car.
         </p>
 
         <h2 className="text-2xl font-semibold text-foreground">What Makes a Fee a "Junk Fee"?</h2>
@@ -146,7 +146,7 @@ export default function JunkFeesExplained() {
           <li><strong>Identify each line item</strong> and ask whether it's a government fee, a dealer fee, or an optional add-on.</li>
           <li><strong>Decline optional add-ons</strong> — you are not legally required to purchase dealer-installed accessories, protection packages, or services.</li>
           <li><strong>Know your state's doc fee cap</strong> — if the dealer's doc fee exceeds your state's legal limit, that's a violation. Check the <Link href="/car-dealer-fees-by-state" className="underline text-foreground">fees by state</Link> page.</li>
-          <li><strong>Get a second opinion</strong> — <Link href="/analyze" className="underline text-foreground">paste your dealer quote into Odigos</Link> and we'll flag every junk fee, tell you what's missing, and give you the exact words to say back.</li>
+          <li><strong>Get a second reading</strong> — <Link href="/analyze" className="underline text-foreground">paste your dealer quote into Odigos</Link>. It tells you which charges are itemized, which are missing, and whether a fee exceeds a verified cap, then drafts a reply that stays inside those findings.</li>
         </ol>
 
         <h2 className="text-2xl font-semibold text-foreground">The FTC and Junk Fees in 2026</h2>

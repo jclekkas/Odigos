@@ -30,29 +30,29 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
 
   // ── Top 10 GSC pages (updated SEO copy) ──────────────────────
   "/car-dealer-fees-texas": {
-    title: "Texas Dealer Doc Fee (2026): No Legal Cap — What Dealers Can Charge",
+    title: "Texas Dealer Doc Fee (2026): No Hard Dollar Cap — Compare the Full Price",
     description:
-      "Texas has no legal cap on dealer doc fees. See how pricing varies and how to evaluate your deal.",
+      "Texas Finance Code § 348.006 does not set a hard dollar cap. A fee above $225 is not automatically illegal. Compare the itemized out-the-door price.",
   },
   "/car-dealer-fees-new-york": {
-    title: "New York Dealer Doc Fee (2026): $175 Legal Cap — Don't Pay More",
+    title: "New York Dealer Doc Fee (2026): Stored $175 Figure Is Not Verified",
     description:
-      "New York caps dealer doc fees at $175. Learn the legal limit and check if your dealer added extra fees.",
+      "New York's stored $175 documentation-fee figure needs a source. Odigos does not call a higher fee illegal from that number. Compare the itemized out-the-door price.",
   },
   "/car-dealer-fees-california": {
-    title: "California Dealer Doc Fee (2026): $85 Cap — Know the Legal Limit",
+    title: "California Dealer Doc Fee (2026): $70 or $85 Depending on DMV Partner Status",
     description:
-      "California caps dealer doc fees at $85. Learn the legal limit and how extra fees may still increase your total cost.",
+      "California Vehicle Code § 4456.5 allows $85 only for a DMV private industry partner and $70 otherwise. $85 is not a universal cap.",
   },
   "/car-dealer-fees-new-mexico": {
     title: "New Mexico Dealer Fees (2026): Doc Fee Rules & What's Negotiable",
     description:
-      "New Mexico dealer doc fee rules for 2026. See what's legally allowed, what you can negotiate, and check any NM dealer quote for junk fees — free with Odigos.",
+      "New Mexico dealer documentation fees for 2026. The source file does not verify a doc-fee cap. Compare the itemized out-the-door price. Odigos does not estimate market value without an independent price source.",
   },
   "/dealer-doc-fee-by-state": {
-    title: "Dealer Doc Fee by State (2026): Legal Caps and Limits",
+    title: "Dealer Doc Fee by State (2026): Verified Caps and Unverified Ranges",
     description:
-      "See dealer doc fee limits by state, including capped and uncapped states, and understand how fees vary.",
+      "See which documentation-fee caps Odigos has verified, including California's $70 / $85 DMV-partner split. Reported ranges are not a market standard.",
   },
   "/out-the-door-price": {
     title: "Out-the-Door Price Calculator & Hidden Fee Checker (2026)",
@@ -119,12 +119,12 @@ const SEO_MAP: Record<string, PageSeoMeta> = {
   "/car-dealer-fees-list": {
     title: "Every Car Dealer Fee Listed: Ranges, Markups, and What to Question | Odigos",
     description:
-      "Every dealer fee you'll see on a car quote — with typical ranges, markup indicators, and verdicts on which to accept vs. question. Compare dealers the right way.",
+      "Dealer fees you may see on a quote, with reported spans that are not verified market averages, and what to question before you sign.",
   },
   "/car-dealer-fees-by-state": {
-    title: "Car Dealer Fees by State (2026): Caps, Limits, and What Dealers Can Charge You",
+    title: "Car Dealer Fees by State (2026): Verified Caps and What Still Needs a Source",
     description:
-      "Which states cap dealer doc fees — and which let dealers charge whatever they want? See 2026 limits for all 50 states and how to compare out-the-door prices.",
+      "Which documentation-fee caps Odigos has verified, and which stored ranges still need a source. Compare the out-the-door price before you treat a fee as legal or typical.",
   },
   "/dealer-pricing-tactics": {
     title: "Dealer Pricing Tactics: Complete Guide (2026) | Odigos",
@@ -322,8 +322,8 @@ export function getSeoMeta(
   if (stateMatch && STATE_SLUGS.has(stateMatch[1])) {
     const name = slugToName(stateMatch[1]);
     return {
-      title: `${name} Dealer Fees (2026): What Dealers Can Legally Charge | Odigos`,
-      description: `${name} dealer doc fee rules, sales tax, and registration costs for 2026. See what's legally allowed and check any ${name} dealer quote for junk fees.`,
+      title: `${name} Dealer Fees (2026): What Is Verified and What to Compare | Odigos`,
+      description: `${name} documentation fees, with verified caps separated from figures that still need a source. Compare the itemized out-the-door price. Odigos does not estimate market value without an independent price source.`,
       canonical: `${CANONICAL_ORIGIN}${normalized}`,
     };
   }

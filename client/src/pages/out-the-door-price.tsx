@@ -101,7 +101,7 @@ export default function OutTheDoorPrice() {
       </h1>
 
       <p className="text-lg text-muted-foreground">
-        Calculate your exact out-the-door price and spot if a dealer is padding the quote with hidden markups, inflated doc fees, or illegal add-ons. Enter your numbers below — then paste your actual dealer quote into Odigos for a full hidden-fee check.{" "}<SourceCitation sources={ARTICLE_SOURCES["out-the-door-price"].sources} lastVerified={ARTICLE_SOURCES["out-the-door-price"].lastVerified} />
+        Add up the numbers the dealer gave you. This page does not decide that a fee is illegal or above market. Paste the actual quote into Odigos to check whether the charges are itemized, whether the total reconciles, and whether a fee exceeds a verified cap.{" "}<SourceCitation sources={ARTICLE_SOURCES["out-the-door-price"].sources} lastVerified={ARTICLE_SOURCES["out-the-door-price"].lastVerified} />
       </p>
 
       {/* Interactive Calculator */}
@@ -439,7 +439,7 @@ export default function OutTheDoorPrice() {
         <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
           <h2 className="text-lg font-semibold text-foreground mb-2">Get a real breakdown of your deal</h2>
           <p className="text-sm text-muted-foreground">
-            Paste your quote and we'll calculate your true out-the-door price, flag hidden fees, and tell you exactly what to say to the dealer.
+            Paste your quote. Odigos checks whether the charges are itemized, whether the total reconciles, and whether a fee exceeds a verified cap. It does not invent the out-the-door price if the dealer left it out.
           </p>
           <Link href="/analyze">
             <Button variant="cta" data-testid="analyze-my-deal-bottom">

@@ -98,7 +98,7 @@ export default function HowOdigosWorks() {
           <ul className="space-y-2 ml-10">
             <li className="flex items-center gap-3">
               <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />
-              <span className="text-muted-foreground">Every red flag and hidden fee detected</span>
+              <span className="text-muted-foreground">The math breaks, add-ons, and verified fee-cap findings the rules can support</span>
             </li>
             <li className="flex items-center gap-3">
               <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />

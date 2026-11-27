@@ -103,7 +103,7 @@ export default function CarLeaseFeesExplained() {
         <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
           <p className="text-sm font-semibold text-foreground mb-2">Not sure what's in your lease quote?</p>
           <p className="text-sm text-muted-foreground mb-3">
-            Paste your dealer lease quote into Odigos. We'll break down every fee, flag anything unusual, and show you the real cost of the lease.
+            Paste your dealer lease quote into Odigos. It checks the lease math it can read, including payment, money factor, residual, and acquisition fee. A clean lease is not a GO while the vehicle price is unverified.
           </p>
           <Link href="/analyze">
             <Button variant="cta" size="sm" data-testid="button-cta-mid-article-lease-fees">

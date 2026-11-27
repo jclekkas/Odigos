@@ -11,7 +11,7 @@ import { ARTICLE_SOURCES } from "@/data/articleSources";
 const faqItems = [
   {
     question: "Which states cap dealer documentation fees?",
-    answer: "A number of states impose a legal cap. California caps the document processing charge at $85 for a DMV partner and $70 otherwise. New York's limit is $175. Arkansas caps service and handling fees at $129. Ohio's 2026 ceiling is $398 or 10% of the cash price, whichever is lower. Oregon's cap is $250 with an integrator and $200 without one. Texas does not set a hard cap. A fee of $225 or less is presumed reasonable without an OCCC filing. Georgia does not cap the fee. Illinois has a CPI-adjusted cap, but this audit did not confirm the current dollar amount on a state page.",
+    answer: "Odigos calls a ceiling a legal cap only when its source file has a citation and does not mark the amount as needing a source. California's document processing charge is $85 for a DMV private industry partner and $70 otherwise. Oregon is $250 with an integrator and $200 without one; the analyzer's hard ceiling is $250. Ohio's verified 2026 ceiling is $398. The state's note also describes a 10% cash-price limit that the fetched page did not quote. Texas has no verified hard dollar cap. A bulletin says $225 or less needs no OCCC filing, and a higher fee is not automatically illegal. Georgia's fetched page says the state does not regulate the amount. New York's stored $175 figure and Arkansas's stored $129 figure need a source and are not called illegal. Illinois has a stored CPI-adjusted figure that this file has not verified.",
   },
   {
     question: "Is the doc fee required by law or government?",
@@ -27,11 +27,11 @@ const faqItems = [
   },
   {
     question: "Can a doc fee be above the state cap?",
-    answer: "Only in limited circumstances. In Texas, dealers can charge above $225 by filing a cost analysis with the state agency (OCCC). In most capped states, the cap is a hard limit — dealers cannot legally exceed it. If you see a doc fee above your state's cap, ask the dealer to explain the justification or provide their state filing.",
+    answer: "Only a verified ceiling can be treated as a hard limit. In Texas, a bulletin says a fee above $225 can be charged after the dealer files a notice and a cost analysis, and it still has to be reasonable. Where this file has verified a ceiling, a higher documentation fee is the kind of problem Odigos can flag. Where the figure needs a source, a higher fee is not automatically illegal. Ask the dealer to itemize it and confirm the rule with the state.",
   },
   {
     question: "What's a normal doc fee amount in states with no cap?",
-    answer: "In uncapped states, $400–$900 is common depending on the region. Florida averages $499–$999. Georgia and North Carolina see $300–$800. Colorado and Illinois typically run $400–$700. Any single fee is hard to call 'normal' because each dealership sets its own amount. The most practical approach: compare the total out-the-door price across multiple dealers rather than focusing on any single line item.",
+    answer: "This file does not verify a normal documentation fee. Stored reports mention wide ranges, including figures sometimes associated with Florida, Georgia, North Carolina, Colorado, and Illinois. Those ranges are not a market standard, and several of those states do not have a verified cap. Compare the itemized out-the-door price across dealers instead of treating one line as the going rate.",
   },
 ];
 
@@ -56,7 +56,7 @@ export default function DealerDocFee() {
 
           <div className="rounded-lg border border-border bg-muted/30 p-5 mb-8" data-testid="block-snippet-doc-fee">
             <p className="text-sm font-semibold text-foreground mb-2">Quick answer</p>
-            <p className="text-sm text-muted-foreground">A dealer documentation fee is a dealer-imposed charge — not a government fee — that covers paperwork processing. It ranges from $85 in capped states like California to $999 or more in uncapped states like Florida. In states with no cap, dealers set their own amount and it is often negotiable through the vehicle price, even when the fee line item itself is "fixed."</p>
+            <p className="text-sm text-muted-foreground">A dealer documentation fee is a dealer-imposed charge — not a government fee — for paperwork. California's verified ceiling is $85 only for a DMV private industry partner and $70 otherwise. Florida does not have a verified cap in this file, and reported high fees there are not a market standard. Where the fee line is fixed for every customer, you can still ask the dealer to adjust the vehicle price so the out-the-door total comes down.</p>
           </div>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
@@ -69,7 +69,7 @@ export default function DealerDocFee() {
 
             <div className="rounded-lg border border-blue-600/20 bg-blue-600/5 p-5 mb-8">
               <p className="text-base font-semibold text-foreground mb-2">
-                Wondering if your doc fee is too high? Paste your dealer quote — Odigos checks it against your state's cap instantly.
+                Wondering about the doc fee? Paste the quote. Odigos checks the math and any verified cap. It does not treat an unverified range as a legal limit.
               </p>
               <Button asChild variant="cta" className="font-semibold">
                 <Link href="/analyze">Check My Doc Fee</Link>
@@ -126,11 +126,11 @@ export default function DealerDocFee() {
             <ul className="space-y-2 mb-8 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                <span><strong className="text-foreground">Caps (examples):</strong> <Link href="/car-dealer-fees-california" className="underline text-foreground">California</Link> ($85 or $70), <Link href="/car-dealer-fees-new-york" className="underline text-foreground">New York</Link> ($175), Washington ($200), Maryland ($800 as of July 2024). <Link href="/car-dealer-fees-texas" className="underline text-foreground">Texas</Link> has no hard cap.</span>
+                <span><strong className="text-foreground">Verified examples:</strong> <Link href="/car-dealer-fees-california" className="underline text-foreground">California</Link> ($85 for a DMV partner, $70 otherwise), Washington (up to $200), Maryland ($800 on and after July 1, 2024). <Link href="/car-dealer-fees-texas" className="underline text-foreground">Texas</Link> has no verified hard dollar cap. New York's stored $175 figure is not verified.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
-                <span><strong className="text-foreground">No caps (examples):</strong> <Link href="/car-dealer-fees-florida" className="underline text-foreground">Florida</Link>, Georgia, Colorado — dealers can charge what they want, and $700–$1,000+ isn't unusual.</span>
+                <span><strong className="text-foreground">Not a verified cap:</strong> <Link href="/car-dealer-fees-florida" className="underline text-foreground">Florida</Link> and Colorado do not have a verified ceiling in this file. Georgia's fetched page says the state does not regulate the amount. Reports of $700–$1,000 are not a verified market rate.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground mt-1.5 shrink-0">•</span>
@@ -138,7 +138,7 @@ export default function DealerDocFee() {
               </li>
             </ul>
             <p className="text-muted-foreground">
-              If a dealer in a no-cap state is charging $999, it's technically legal — but it's worth asking whether competitors nearby charge less. You can also check <a href="https://www.kbb.com/car-advice/" target="_blank" rel="noopener" className="underline text-foreground">Kelley Blue Book</a> for regional pricing benchmarks. The fee should be part of your total deal comparison, not treated as a fixed cost.
+              A $999 documentation fee is not automatically legal or illegal when this file has no verified cap. Ask whether nearby dealers itemize a lower fee, and compare the full out-the-door price. Kelley Blue Book and similar guides are outside this file. They are not an Odigos market-value check.
             </p>
 
             <h2 className="text-2xl font-semibold text-foreground">Can You Negotiate a Doc Fee?</h2>
@@ -156,7 +156,7 @@ export default function DealerDocFee() {
             <ul className="space-y-2 mb-8 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-amber-500 mt-1.5 shrink-0">•</span>
-                <span>A doc fee significantly higher than the state average without explanation</span>
+                <span>A documentation fee you cannot compare, because the quote does not itemize it or this file has no verified ceiling for the state</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-amber-500 mt-1.5 shrink-0">•</span>
@@ -180,7 +180,7 @@ export default function DealerDocFee() {
             </p>
 
             <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
-              <p className="text-sm font-semibold text-foreground mb-2">The average doc fee nationally is around $350, but legal caps vary from $0 to unlimited depending on your state.</p>
+              <p className="text-sm font-semibold text-foreground mb-2">There is no verified national average in this file. A legal ceiling exists only for the states whose caps are cited.</p>
               <Link href="/analyze">
                 <Button variant="cta" size="sm">
                   Check My Doc Fee

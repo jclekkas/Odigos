@@ -33,7 +33,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     slug: "doc-fee",
     term: "Documentation Fee (Doc Fee)",
     shortDefinition: "A dealer-set charge for processing the paperwork involved in a vehicle sale — contracts, title transfer, and registration filing. Not a government fee.",
-    fullDefinition: "A documentation fee (commonly called a 'doc fee') is charged by the dealership to cover administrative costs of completing the sale. It covers preparing purchase agreements, financing contracts, filing title transfers, and maintaining records. Doc fees are regulated or capped in many states — for example, California caps them at $85, while Florida has no cap and fees can exceed $1,000. Doc fees are typically non-negotiable on their own but can be offset by negotiating the vehicle price.",
+    fullDefinition: "A documentation fee (commonly called a 'doc fee') is charged by the dealership to cover administrative costs of completing the sale. It covers preparing purchase agreements, financing contracts, filing title transfers, and maintaining records. Some states have a verified ceiling. California's is $85 only for a DMV private industry partner and $70 otherwise. Florida does not have a verified cap in Odigos's source file, and reports of fees over $1,000 are not a market standard. The fee line is often the same for every customer at a store. You can still ask the dealer to adjust the vehicle price so the out-the-door total comes down.",
     relatedPages: [
       { label: "What Is a Dealer Doc Fee?", path: "/dealer-doc-fee" },
       { label: "Doc Fee by State", path: "/dealer-doc-fee-by-state" },

@@ -34,7 +34,7 @@ export default function DealerReconditioningFee() {
         </p>
 
         <p className="text-sm text-muted-foreground">
-          Already reviewing a used car quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and we'll flag every fee.
+          Already reviewing a used car quote? <Link href="/analyze" className="underline text-foreground">Paste it here</Link>. Odigos checks the lines it can read. It does not price the car.
         </p>
 
         <h2 className="text-2xl font-semibold text-foreground">What a Reconditioning Fee Is Supposed to Cover</h2>
@@ -97,13 +97,13 @@ export default function DealerReconditioningFee() {
           </li>
         </ul>
         <p className="text-muted-foreground">
-          Even when the work was real, a fee above $500–$800 for routine refurbishment deserves scrutiny. Substantial repair work on a used vehicle — replacing brakes, tires, or major components — is typically reflected in either the vehicle price or a separate inspection report, not lumped into a "recon fee" line item.
+          Even when the work was real, ask what the reconditioning line covers. This guide does not have a verified normal price for that work. Substantial repair work on a used vehicle — replacing brakes, tires, or major components — belongs in the vehicle price or in a separate inspection report, not in an unexplained recon line.
         </p>
 
         <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
           <p className="text-sm font-semibold text-foreground mb-2">Not sure what's in your used car quote?</p>
           <p className="text-sm text-muted-foreground mb-3">
-            Paste your dealer quote into Odigos. We'll identify the reconditioning fee, flag other charges, and show you the complete out-the-door total.
+            Paste your dealer quote into Odigos. It checks whether a reconditioning fee is itemized and whether the total reconciles. It does not price that work against a market.
           </p>
           <Link href="/analyze">
             <Button variant="cta" size="sm" data-testid="button-cta-mid-article-recon-fee">

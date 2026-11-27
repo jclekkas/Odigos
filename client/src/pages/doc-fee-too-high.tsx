@@ -62,7 +62,7 @@ export default function DocFeeTooHigh() {
             <h2 className="text-2xl font-semibold text-foreground">What's a normal doc fee?</h2>
 
             <p className="text-lg text-muted-foreground">
-              There's no single "normal" amount — it depends on where you're buying. Some states cap doc fees by law. For example, California limits the fee to $85, while Florida and Colorado have no cap at all. In states without regulation, dealers may charge $500, $700, or even more. For a deeper look at what the <Link href="/dealer-doc-fee" className="underline text-foreground">dealer doc fee</Link> typically covers and how it varies by state, see our full breakdown.
+              There is no single normal amount in this file. California's verified ceiling is $85 for a DMV private industry partner and $70 otherwise. Florida and Colorado do not have a verified cap here. Reports of $500 or $700 are not a market standard. For what the <Link href="/dealer-doc-fee" className="underline text-foreground">dealer doc fee</Link> is, and which state figures are verified, see the full breakdown.
             </p>
 
             <p className="text-lg text-muted-foreground">
@@ -139,7 +139,7 @@ export default function DocFeeTooHigh() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
-                <span><strong className="text-foreground">The fee is well above the local average.</strong> If dealers in your area typically charge $200–$400 and you're being quoted $900, that's padding.</span>
+                <span><strong className="text-foreground">The fee is far apart from another itemized quote.</strong> If one dealer lists about $200–$400 and another lists $900 for the same paperwork, ask why. Those figures are a comparison, not a verified local average.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-muted-foreground">•</span>
@@ -152,7 +152,7 @@ export default function DocFeeTooHigh() {
             </ul>
 
             <p className="text-lg text-muted-foreground">
-              If you already have a quote with a doc fee that seems high, Odigos can analyze the full breakdown and flag anything that doesn't add up.
+              If you already have a quote, Odigos checks whether the charges are itemized, whether the total reconciles, and whether a fee exceeds a verified cap. It does not invent a local average.
             </p>
           </div>
 

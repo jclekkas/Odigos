@@ -33,7 +33,7 @@ export default function CarDealerFeesState() {
   const baseFaqQuestions = [
     {
       question: `What is the dealer doc fee in ${data.name}?`,
-      answer: `The typical dealer documentation fee in ${data.name} is ${data.docFeeRange}. ${data.capNote}`,
+      answer: `What this guide has on file for the documentation fee in ${data.name}: ${data.docFeeRange}. ${data.capNote}`,
     },
     {
       question: `What is the sales tax on cars in ${data.name}?`,
@@ -100,7 +100,7 @@ export default function CarDealerFeesState() {
           <p className="text-base font-semibold text-foreground mb-2">{data.ctaTopBody ?? data.ctaHeading}</p>
           {!data.ctaTopBody && (
             <p className="text-sm text-muted-foreground mb-3">
-              Not sure if your dealer quote is complete? Paste the message or quote you received and Odigos will flag anything unusual.
+              Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. It does not estimate a fair vehicle price.
             </p>
           )}
           <Button asChild variant="cta" className="font-semibold" data-testid={`button-cta-top-${data.slug}`}>
@@ -113,7 +113,7 @@ export default function CarDealerFeesState() {
         </h2>
 
         <p className="text-lg text-muted-foreground">
-          <strong className="text-foreground">Typical range: {data.docFeeRange}</strong>{" "}
+          <strong className="text-foreground">Figure on file: {data.docFeeRange}</strong>{" "}
           <SourceCitation sources={data.sources} lastVerified={data.lastVerified} />
         </p>
 
@@ -346,7 +346,7 @@ export default function CarDealerFeesState() {
       )}
 
       <p className="text-xs text-muted-foreground mt-12">
-        These figures are approximate and based on {data.lastVerified} source data. Verify with your state's attorney general or motor vehicle agency.
+        A documentation-fee ceiling is stated as a legal limit only when the source file has a citation for it. Reported ranges are not verified market averages. The notes on this page were last edited against that file in {data.lastVerified}. Confirm a figure with your state before you rely on it.
       </p>
     </ArticleLayout>
   );

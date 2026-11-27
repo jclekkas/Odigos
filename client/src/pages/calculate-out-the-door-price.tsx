@@ -224,7 +224,7 @@ export default function CalculateOutTheDoorPrice() {
             <h2 className="text-2xl font-semibold text-foreground">Why Odigos Helps</h2>
 
             <p className="text-muted-foreground">
-              Running the numbers yourself is a strong first step — but it only works if you know every fee the dealer plans to charge. Odigos analyzes the actual quote or text messages you receive from a dealer and flags anything that's missing, vague, or higher than expected.
+              Running the numbers yourself is a strong first step — but it only works if the dealer has listed every fee. Odigos reads the quote you paste and checks whether the charges are itemized, whether the total reconciles, and whether a fee exceeds a verified cap. It does not decide that a fee is high just because it looks high.
             </p>
 
             <p className="text-muted-foreground">
@@ -240,7 +240,7 @@ export default function CalculateOutTheDoorPrice() {
           <div className="rounded-xl border border-border bg-muted/30 p-6 mt-12">
             <h3 className="text-base font-semibold text-foreground mb-2">Your out-the-door price shouldn't be a surprise.</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Paste any dealer quote — lease or finance — and Odigos calculates your real cost with every charge explained.
+              Paste any dealer quote — lease or finance — and Odigos explains the charges it can read. It does not fill in a market price.
             </p>
             <Link href="/analyze">
               <Button variant="cta" size="lg">

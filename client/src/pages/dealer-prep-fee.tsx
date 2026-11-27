@@ -34,7 +34,7 @@ export default function DealerPrepFee() {
         </p>
 
         <p className="text-sm text-muted-foreground">
-          Have a dealer quote with a prep fee on it? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and we'll flag it.
+          Have a dealer quote with a prep fee on it? <Link href="/analyze" className="underline text-foreground">Paste it here</Link>. Odigos checks whether that fee is itemized. It does not set a normal prep-fee price.
         </p>
 
         <h2 className="text-2xl font-semibold text-foreground">What Dealers Say the Prep Fee Covers</h2>
@@ -85,7 +85,7 @@ export default function DealerPrepFee() {
         <div className="my-10 p-6 rounded-lg bg-muted/30 border border-border">
           <p className="text-sm font-semibold text-foreground mb-2">See every fee in your quote before you respond</p>
           <p className="text-sm text-muted-foreground mb-3">
-            Paste your dealer quote into Odigos. We'll flag the prep fee, identify what's negotiable, and show you the full out-the-door breakdown.
+            Paste your dealer quote into Odigos. It checks whether a prep fee is itemized and whether the total reconciles. It does not decide a normal prep-fee price.
           </p>
           <Link href="/analyze">
             <Button variant="cta" size="sm" data-testid="button-cta-mid-article-dealer-prep-fee">

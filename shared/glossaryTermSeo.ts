@@ -24,7 +24,7 @@ export const GLOSSARY_TERMS_SEO: GlossaryTermSeo[] = [
     slug: "doc-fee",
     seoTitle: "What Is a Doc Fee? Dealer Documentation Fee Explained | Odigos",
     seoDescription:
-      "A doc fee is a dealer-set paperwork charge, not a government fee. Learn what it covers, state caps, and typical ranges.",
+      "A doc fee is a dealer-set paperwork charge, not a government fee. Learn what it covers, which state caps are verified, and which ranges still need a source.",
   },
   {
     slug: "out-the-door-price",

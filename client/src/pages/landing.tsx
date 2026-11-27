@@ -27,14 +27,14 @@ const PLACEHOLDER_EXAMPLES = [
 
 const HOW_IT_WORKS_STEPS = [
   { step: "1", title: "Paste", desc: "your dealer's message" },
-  { step: "2", title: "Review", desc: "hidden fees & red flags" },
+  { step: "2", title: "Review", desc: "math, fees, and gaps" },
   { step: "3", title: "Respond", desc: "with a ready-made reply" },
 ];
 
 const faqsSchema = [
   {
     q: "How does the analysis work?",
-    a: "Paste your dealer quote, email, or text message. Our AI evaluates it against state-specific fee regulations, junk fee detection rules, market pricing data, and patterns from thousands of analyzed quotes. You get a GREEN/YELLOW/RED verdict with specific issues identified.",
+    a: "Paste your dealer quote, email, or text message. Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. It does not estimate a fair vehicle price. The verdict is GO, PROCEED WITH CAUTION, INSUFFICIENT INFORMATION, or NO-GO. GO requires an independent price benchmark.",
   },
   {
     q: "Is Odigos free?",
@@ -224,10 +224,10 @@ function ExampleOutputSection() {
             <div className="rounded-xl border-2 border-red-500/30 bg-red-500/5 p-5 space-y-2 h-full" data-testid="card-example-overpayment">
               <div className="flex items-center gap-2">
                 <DollarSign className="w-5 h-5 text-red-600 dark:text-red-400" />
-                <span className="text-xs font-semibold uppercase tracking-wider text-red-700 dark:text-red-400">Overpayment</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-red-700 dark:text-red-400">Price not verified</span>
               </div>
               <p className="text-lg font-bold text-red-700 dark:text-red-300 leading-snug">
-                You may be overpaying by $1,200&ndash;$2,100
+                Market value not verified — no savings range
               </p>
             </div>
           </FadeIn>
@@ -238,7 +238,7 @@ function ExampleOutputSection() {
                 <span className="text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400">State cap exceeded</span>
               </div>
               <p className="text-lg font-bold text-amber-700 dark:text-amber-300 leading-snug">
-                $499 doc fee exceeds California's $85 cap
+                $499 is above both California ceilings: $85 for a DMV partner, $70 otherwise
               </p>
             </div>
           </FadeIn>

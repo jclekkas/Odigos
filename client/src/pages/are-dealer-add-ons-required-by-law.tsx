@@ -60,7 +60,7 @@ export default function AreDealerAddOnsRequiredByLaw() {
         </p>
 
         <p className="text-sm text-muted-foreground">
-          Have a quote with charges that seem mandatory? <Link href="/analyze" className="underline text-foreground">Paste it here</Link> and we'll flag what's legally required vs. what's a dealer decision.
+          Have a quote with charges that seem mandatory? <Link href="/analyze" className="underline text-foreground">Paste it here</Link>. Odigos separates named government charges from dealer add-ons. A fee is called illegal only when it exceeds a verified cap.
         </p>
 
         <h2 className="text-2xl font-semibold text-foreground">What is actually required by law</h2>
