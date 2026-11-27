@@ -379,9 +379,9 @@ describe("splitFees", () => {
 });
 
 describe("rule engine sees a quote that contradicts itself", () => {
-  it("does not invent a tax line for quotes that never itemized tax", () => {
-    // The existing golden shape: a price, an OTD, and a doc fee, but no tax
-    // line. That must stay a clean GO. Local tax is not the state base rate.
+  it("does not invent a tax line, and does not approve the price without a market benchmark", () => {
+    // A price, an OTD, and a doc fee, but no tax line. Local tax is not invented.
+    // California's $85 fee is conditional, and market value is unverified.
     const parsed = fields({
       salePrice: 32000,
       outTheDoorPrice: 36000,
@@ -389,9 +389,12 @@ describe("rule engine sees a quote that contradicts itself", () => {
       termMonths: 60,
       fees: [{ name: "doc fee", amount: 85 }],
     });
-    const cap = checkDocFeeCap(parsed.fees, getStateFeeData("CA")!);
-    const result = applyRuleEngine(llm, parsed, cap, "finance");
-    expect(result.goNoGo).toBe("GO");
+    const stateData = getStateFeeData("CA")!;
+    const cap = checkDocFeeCap(parsed.fees, stateData);
+    const result = applyRuleEngine(llm, parsed, cap, "finance", null, { stateData });
+    expect(result.goNoGo).toBe("PROCEED-WITH-CAUTION");
+    expect(result.verdictLabel).toMatch(/CONDITIONAL DOC FEE/i);
+    expect(result.marketBenchmark?.status).toBe("unverified");
   });
 
   it("returns need-more-info when the stated out-the-door price is not the sum of the lines", () => {
@@ -412,7 +415,7 @@ describe("rule engine sees a quote that contradicts itself", () => {
       ],
     });
     const result = applyRuleEngine(llm, parsed, null, "finance");
-    expect(result.goNoGo).toBe("NEED-MORE-INFO");
+    expect(result.goNoGo).toBe("PROCEED-WITH-CAUTION");
     expect(result.verdictLabel.toUpperCase()).toContain("DOESN'T ADD UP");
   });
 
@@ -428,7 +431,7 @@ describe("rule engine sees a quote that contradicts itself", () => {
       fees: [{ name: "sales tax", amount: 0 }],
     });
     const result = applyRuleEngine(llm, parsed, null, "finance");
-    expect(result.goNoGo).toBe("NEED-MORE-INFO");
+    expect(result.goNoGo).toBe("PROCEED-WITH-CAUTION");
     expect(result.verdictLabel.toUpperCase()).toContain("PAYMENT");
   });
 
@@ -445,5 +448,49 @@ describe("rule engine sees a quote that contradicts itself", () => {
     const result = applyRuleEngine(llm, parsed, cap, "finance");
     expect(result.goNoGo).toBe("NO-GO");
     expect(result.verdictLabel.toUpperCase()).toContain("DOC FEE");
+  });
+});
+
+describe("purchase worksheet extensions", () => {
+  it("separates government charges, dealer charges, equity, and finance charge", () => {
+    const result = computePurchase({
+      vehiclePrice: 28000,
+      tradeInAllowance: 5000,
+      tradePayoff: 8000,
+      docFee: 70,
+      addOns: 0,
+      titleFee: 15,
+      registrationFee: 385,
+      salesTaxAmount: 2176.59,
+      downPayment: 0,
+      apr: 6,
+      termMonths: 60,
+      statedOutTheDoor: 28000 - 5000 + 2176.59 + 15 + 385 + 70,
+    });
+    expect(result.ok).toBe(true);
+    expect(result.governmentCharges).toBeCloseTo(2176.59 + 15 + 385, 2);
+    expect(result.dealerImposedCharges).toBe(70);
+    expect(result.tradeEquity).toBe(-3000);
+    expect(result.negativeEquity).toBe(3000);
+    expect(result.outTheDoorMismatch).toBe(0);
+    expect(result.financeCharge).not.toBeNull();
+    expect(result.totalOfPayments).toBeGreaterThan(result.amountFinanced ?? 0);
+    expect(result.derivation.some((line) => line.startsWith("Finance charge"))).toBe(true);
+    expect(result.derivation.some((line) => line.startsWith("Government charges"))).toBe(true);
+  });
+
+  it("does not apply a financing-contingent rebate to a cash quote", () => {
+    const result = computePurchase({
+      vehiclePrice: 30000,
+      rebates: 2000,
+      salesTaxAmount: 1000,
+      docFee: 70,
+      statedOutTheDoor: 31070,
+      rebateContingentOnFinancing: true,
+      cashPurchase: true,
+    });
+    expect(result.conditionalRebateExcluded).toBe(2000);
+    expect(result.outTheDoor).toBe(31070);
+    expect(result.outTheDoorMismatch).toBe(0);
   });
 });

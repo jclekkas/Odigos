@@ -47,7 +47,7 @@ export default function MarketIntelligencePanel({
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            We're building market data for your area. Submit more deals to improve accuracy.
+            Vehicle market value is not verified from submitted quotes. A doc-fee average is not a price for this vehicle.
           </p>
         </CardContent>
       </Card>

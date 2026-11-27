@@ -10,6 +10,7 @@ import { sql, eq, and } from "drizzle-orm";
 import type { AnalysisResponse, AnalysisRequest, DetectedFields } from "../../shared/schema.js";
 import { failedWarehouseWrites, detectedFieldsSchema } from "../../shared/schema.js";
 import { rawUserAnalyses, coreDealers, coreListings, coreAnalysisLineItems } from "../../shared/warehouse.js";
+import { isSyntheticSubmission } from "../syntheticGuard.js";
 import {
   normalizeDealerName,
   normalizeLineItemName,
@@ -447,6 +448,7 @@ async function performWarehouseWrite(payload: WarehouseWritePayload): Promise<vo
 export async function writeSubmissionToWarehouse(
   payload: WarehouseWritePayload,
 ): Promise<void> {
+  if (isSyntheticSubmission(payload.request)) return;
   let lastError: unknown;
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {

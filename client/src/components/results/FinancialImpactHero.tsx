@@ -10,6 +10,7 @@ export interface FinancialImpactHeroProps {
   confidence: FinancialImpactConfidence | null | undefined;
   financialSummary: string | null | undefined;
   fallbackSummary: string;
+  marketValueStatus?: "verified" | "unverified" | null;
 }
 
 export default function FinancialImpactHero({
@@ -18,19 +19,22 @@ export default function FinancialImpactHero({
   confidence,
   financialSummary,
   fallbackSummary,
+  marketValueStatus,
 }: FinancialImpactHeroProps) {
   const range = formatCurrencyRange(overpaymentMin, overpaymentMax);
-  const hasRange = range != null;
+  const hasRange = range != null && marketValueStatus !== "unverified";
 
   // Tone: "roughly fair" if the range starts at 0 and max is small; otherwise
   // treat as a money-at-risk situation. Threshold is intentionally loose —
   // the LLM is the source of truth, we just pick visual tone.
   const isRoughlyFair = hasRange && overpaymentMin === 0 && (overpaymentMax ?? 0) <= 500;
 
-  const headline = hasRange
+  const headline = marketValueStatus === "unverified"
+    ? "Market value not verified"
+    : hasRange
     ? isRoughlyFair
-      ? `Likely fair deal · Savings opportunity: ${range}`
-      : `You may be overpaying by ${range}`
+      ? `Selling price is inside the independent benchmark · Gap: ${range}`
+      : `Selling price is ${range} from the independent benchmark`
     : "Dollar impact not yet estimable";
 
   const toneClasses = !hasRange

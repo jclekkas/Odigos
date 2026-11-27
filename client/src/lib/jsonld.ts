@@ -6,7 +6,7 @@ export function productSchema() {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": "Odigos Dealer Quote Analyzer",
-    "description": "Paste your dealer quote. Odigos shows what's overpriced, what's illegal, and what to say back — with a GO/NO-GO verdict in 60 seconds.",
+    "description": "Paste your dealer quote. Odigos audits disclosure, math, and verified fee caps. Market value stays unverified until an independent price source is configured.",
     "image": `${CANONICAL_ORIGIN}/og-image.png`,
     "brand": {
       "@type": "Brand",

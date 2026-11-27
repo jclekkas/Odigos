@@ -10,7 +10,7 @@ export default function About() {
     setSeoMeta({
       title: "About Odigos — Independent Dealer Quote Analyzer",
       description:
-        "Odigos (Greek for 'guide') is an independent dealer quote analyzer that flags overpriced fees, illegal charges, and missing details. No dealership affiliations. No referral fees. Just clarity before you sign.",
+        "Odigos is an independent dealer-quote auditor. It checks disclosure, math, and verified state fee caps. It does not estimate market value unless an independent pricing source is configured.",
       path: "/about",
     });
   }, []);
@@ -40,7 +40,7 @@ export default function About() {
             What Odigos does
           </h2>
           <p className="text-muted-foreground mb-3">
-            You paste a dealer quote — an email, a text message, a photo of a worksheet — and Odigos tells you exactly what's wrong with it, what's illegal, what's overpriced, and what to say back. The analysis checks for:
+            You paste a dealer quote — an email, a text message, a photo of a worksheet — and Odigos audits that quote. It does not guess a fair vehicle price. The analysis checks for:
           </p>
           <ul className="space-y-2 text-muted-foreground list-none">
             <li className="flex items-start gap-2">
@@ -61,7 +61,7 @@ export default function About() {
             </li>
           </ul>
           <p className="text-muted-foreground mt-3">
-            For the 18 U.S. states that cap dealer doc fees by law, Odigos flags any fee that exceeds the legal limit — with the specific dollar overage and the statute behind it.
+            Where a documentation-fee cap is backed by a recorded official citation, Odigos flags a charge above that cap. California's document processing charge is conditional: $85 only for a DMV private industry partner under Vehicle Code § 4456.5, and $70 otherwise. A cap that is not verified is not called a legal violation.
           </p>
         </section>
 
@@ -84,7 +84,7 @@ export default function About() {
             How it works
           </h2>
           <p className="text-muted-foreground mb-2">
-            The analysis is free. You get a GO / NO-GO verdict, a deal score, every red flag the rules find, a checklist of missing information, and a copy-paste reply you can send to the dealer.
+            The analysis is free. You get one of four verdicts — GO, PROCEED WITH CAUTION, INSUFFICIENT INFORMATION, or NO-GO — plus the math worksheet, any verified fee-cap finding, and a reply that stays inside those findings. GO requires an independent price benchmark. Without one, the result says market value is not verified.
           </p>
           <p className="text-muted-foreground mb-2">
             No pass, payment, or subscription is required.

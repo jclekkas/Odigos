@@ -82,7 +82,7 @@ export default function HowOdigosWorks() {
             <li className="flex items-center gap-3">
               <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />
               <span className="text-muted-foreground">
-                A <strong className="text-foreground">GO / NO-GO verdict</strong> with a deal score and confidence level
+                A verdict of <strong className="text-foreground">GO, PROCEED WITH CAUTION, INSUFFICIENT INFORMATION, or NO-GO</strong>. GO is used only when an independent price benchmark supports the selling price.
               </span>
             </li>
             <li className="flex items-center gap-3">
@@ -118,7 +118,7 @@ export default function HowOdigosWorks() {
         <section className="rounded-lg border border-border bg-card p-5">
           <h2 className="text-base font-semibold mb-2 text-foreground">What Odigos does not do</h2>
           <p className="text-sm text-muted-foreground">
-            Odigos reviews pricing transparency and financing terms only. It does not evaluate vehicle condition, mechanical reliability, accident history, or market value. It is not a substitute for a pre-purchase inspection or independent appraisal.
+            Odigos reviews whether the quote is itemized, whether the totals reconcile, and whether a fee exceeds a verified cap. It does not evaluate vehicle condition, mechanical reliability, accident history, or market value. It is not a substitute for a pre-purchase inspection or an independent appraisal.
           </p>
         </section>
 

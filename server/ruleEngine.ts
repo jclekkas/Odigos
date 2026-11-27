@@ -1,12 +1,45 @@
-import type { AnalysisResponse, DetectedFields, Fee } from "../shared/schema.js";
+import type { AnalysisDimensions, AnalysisResponse, DetectedFields, Fee, GoNoGo } from "../shared/schema.js";
 import type { LeaseMathResult } from "./leaseMathEngine.js";
-import { computePurchase, splitFees } from "./quoteMath.js";
+import { computePurchase, splitFees, type PurchaseMath } from "./quoteMath.js";
+import {
+  benchmarkCopiesSubmittedPrice,
+  independentMarketBenchmark,
+  type MarketBenchmark,
+} from "./marketValuation.js";
+import {
+  classifyDocFee,
+  type DocFeeAssessment,
+  type RegulatoryStateInput,
+} from "./regulatoryClassification.js";
+import { buildConstrainedReply } from "./replyConstraint.js";
+
+export interface RuleEngineOptions {
+  stateData?: RegulatoryStateInput | null;
+  /** null means the dealer did not say whether it is a DMV private industry partner. */
+  privateIndustryPartner?: boolean | null;
+  /** A caller-supplied benchmark. Ignored when it merely copies the submitted price. */
+  marketBenchmark?: MarketBenchmark | null;
+  condition?: "new" | "used" | "unknown" | null;
+  mileage?: number | null;
+  alternateSalePrices?: number[];
+  buyerState?: string | null;
+  dealerState?: string | null;
+  rebateContingentOnFinancing?: boolean | null;
+}
 
 export interface RuleEngineResult {
   dealScore: "GREEN" | "YELLOW" | "RED";
   confidenceLevel: "HIGH" | "MEDIUM" | "LOW";
   verdictLabel: string;
-  goNoGo: "GO" | "NO-GO" | "NEED-MORE-INFO";
+  goNoGo: GoNoGo;
+  summary?: string;
+  reasoning?: string;
+  suggestedReply?: string;
+  primaryIssue?: string;
+  dimensions?: AnalysisDimensions;
+  marketBenchmark?: MarketBenchmark;
+  mathematicalDerivation?: string[];
+  docFeeAssessment?: DocFeeAssessment | null;
 }
 
 export interface DocFeeCapResult {
@@ -257,250 +290,440 @@ function hasOTD(fields: DetectedFields): boolean {
   return fields.outTheDoorPrice !== null;
 }
 
-function hasAPRAndTerm(fields: DetectedFields): boolean {
-  return fields.apr !== null && fields.termMonths !== null;
+interface VerdictDraft {
+  dealScore: "GREEN" | "YELLOW" | "RED";
+  confidenceLevel: "HIGH" | "MEDIUM" | "LOW";
+  verdictLabel: string;
+  goNoGo: GoNoGo;
+  primaryIssue: string;
+  summary: string;
 }
 
-function hasMSRPOrSalePrice(fields: DetectedFields): boolean {
-  return fields.msrp !== null || fields.salePrice !== null;
+function declinedAddOnStillCharged(fees: Fee[]): Fee | null {
+  return (
+    fees.find((fee) => {
+      if (fee.amount == null || fee.amount <= 0) return false;
+      return /declined|removed|waived|buyer refused/i.test(fee.name);
+    }) ?? null
+  );
+}
+
+function finishVerdict(
+  draft: VerdictDraft,
+  extras: {
+    fields: DetectedFields;
+    benchmark: MarketBenchmark;
+    docFee: DocFeeAssessment | null;
+    derivation: string[];
+    dimensions: AnalysisDimensions;
+    marketVerified: boolean;
+  },
+): RuleEngineResult {
+  const askForVehicleEvidence = !extras.marketVerified || draft.goNoGo !== "GO";
+  const suggestedReply = buildConstrainedReply({
+    verdict: draft.goNoGo,
+    marketVerified: extras.marketVerified,
+    docFee: extras.docFee,
+    primaryIssue: draft.primaryIssue,
+    derivation: extras.derivation,
+    askForVehicleEvidence,
+  });
+  const reasoning = [
+    draft.summary,
+    extras.benchmark.reason,
+    ...extras.derivation,
+    `Pricing transparency: ${extras.dimensions.pricingTransparency.summary}`,
+    `Mathematical accuracy: ${extras.dimensions.mathematicalAccuracy.summary}`,
+    `Regulatory compliance: ${extras.dimensions.regulatoryCompliance.summary}`,
+    `Market competitiveness: ${extras.dimensions.marketCompetitiveness.summary}`,
+    `Negotiation opportunities: ${extras.dimensions.negotiationOpportunities.summary}`,
+    `Information completeness: ${extras.dimensions.informationCompleteness.summary}`,
+  ].join("\n");
+  return {
+    ...draft,
+    reasoning,
+    suggestedReply,
+    dimensions: extras.dimensions,
+    marketBenchmark: extras.benchmark,
+    mathematicalDerivation: extras.derivation,
+    docFeeAssessment: extras.docFee,
+  };
 }
 
 export function applyRuleEngine(
-  llmResult: AnalysisResponse,
+  _llmResult: AnalysisResponse,
   fields: DetectedFields,
   docFeeCapResult?: DocFeeCapResult | null,
   purchaseType?: string,
   leaseMath?: LeaseMathResult | null,
+  options?: RuleEngineOptions,
 ): RuleEngineResult {
-  if (docFeeCapResult?.violated) {
-    return {
-      dealScore: "RED",
-      confidenceLevel: "HIGH",
-      verdictLabel: "NO-GO — DOC FEE EXCEEDS STATE CAP",
-      goNoGo: "NO-GO",
-    };
-  }
-
-  // A purchase quote that itemizes tax can be added up. A lease uses its own
-  // payment formula, so this check stays on finance and cash deals.
-  if (!isLeaseQuote(fields, purchaseType) && fields.salePrice != null) {
-    const lines = splitFees(fields.fees || [], isDocFeeName);
-    if (lines.statedTax != null && fields.outTheDoorPrice != null) {
-      const worksheet = computePurchase({
-        vehiclePrice: fields.salePrice,
-        rebates: fields.rebates,
-        tradeInAllowance: fields.tradeInValue,
-        tradePayoff: lines.tradePayoff,
-        docFee: lines.docFee,
-        addOns: lines.addOns,
-        titleFee: lines.titleFee,
-        registrationFee: lines.registrationFee,
-        salesTaxAmount: lines.statedTax,
-        downPayment: fields.downPayment,
-        apr: fields.apr,
-        termMonths: fields.termMonths,
-        statedOutTheDoor: fields.outTheDoorPrice,
-        statedMonthlyPayment: fields.monthlyPayment,
-      });
-      if (worksheet.ok && worksheet.outTheDoorMismatch != null && Math.abs(worksheet.outTheDoorMismatch) >= 0.01) {
-        return {
-          dealScore: "YELLOW",
-          confidenceLevel: "HIGH",
-          verdictLabel: "PAUSE — OTD DOESN'T ADD UP",
-          goNoGo: "NEED-MORE-INFO",
-        };
-      }
-      if (worksheet.ok && worksheet.paymentMismatch != null && Math.abs(worksheet.paymentMismatch) >= 0.01) {
-        return {
-          dealScore: "YELLOW",
-          confidenceLevel: "HIGH",
-          verdictLabel: "PAUSE — PAYMENT DOESN'T MATCH",
-          goNoGo: "NEED-MORE-INFO",
-        };
-      }
-    }
-  }
-
-  // Lease-specific rules (applied before general rules)
-  const leaseQuote = isLeaseQuote(fields, purchaseType);
-  if (leaseQuote) {
-    // Brand-aware acquisition fee check (replaces fixed $1000 threshold when brand data available)
-    if (leaseMath?.acquisitionFeeBenchmark?.isMarkedUp) {
-      return {
-        dealScore: "YELLOW",
-        confidenceLevel: "MEDIUM",
-        verdictLabel: "PAUSE — ACQUISITION FEE ABOVE LENDER STANDARD",
-        goNoGo: "NEED-MORE-INFO",
-      };
-    }
-    if (!leaseMath?.acquisitionFeeBenchmark && hasHighAcquisitionFee(fields)) {
-      return {
-        dealScore: "YELLOW",
-        confidenceLevel: "MEDIUM",
-        verdictLabel: "PAUSE — HIGH ACQUISITION FEE",
-        goNoGo: "NEED-MORE-INFO",
-      };
-    }
-    // Lease math-driven rules
-    if (leaseMath?.rateMarkup && leaseMath.rateMarkup.totalMarkupDollars > 1500) {
-      return {
-        dealScore: "YELLOW",
-        confidenceLevel: "MEDIUM",
-        verdictLabel: "PAUSE — RATE MARKUP DETECTED",
-        goNoGo: "NEED-MORE-INFO",
-      };
-    }
-    if (leaseMath?.paymentValidation?.isSignificant && Math.abs(leaseMath.paymentValidation.discrepancy) > 50) {
-      return {
-        dealScore: "YELLOW",
-        confidenceLevel: "MEDIUM",
-        verdictLabel: "PAUSE — PAYMENT DOESN'T MATCH",
-        goNoGo: "NEED-MORE-INFO",
-      };
-    }
-    if (leaseMath?.residualCheck?.status === "low") {
-      return {
-        dealScore: "YELLOW",
-        confidenceLevel: "MEDIUM",
-        verdictLabel: "PAUSE — LOW RESIDUAL VALUE",
-        goNoGo: "NEED-MORE-INFO",
-      };
-    }
-    if (hasExcessiveMileageRate(fields)) {
-      return {
-        dealScore: "YELLOW",
-        confidenceLevel: "MEDIUM",
-        verdictLabel: "PAUSE — HIGH MILEAGE PENALTY",
-        goNoGo: "NEED-MORE-INFO",
-      };
-    }
-    if (isMissingLeaseTerms(fields)) {
-      return {
-        dealScore: "YELLOW",
-        confidenceLevel: "MEDIUM",
-        verdictLabel: "PAUSE — GET LEASE TERMS",
-        goNoGo: "NEED-MORE-INFO",
-      };
-    }
-  }
-
   const fees = fields.fees || [];
-  const allowedDocCap =
-    docFeeCapResult && !docFeeCapResult.violated ? docFeeCapResult.capAmount : null;
+  const partner = options?.privateIndustryPartner ?? null;
+  const docFee = options?.stateData
+    ? classifyDocFee(fees, options.stateData, partner)
+    : null;
+  const supplied = options?.marketBenchmark ?? null;
+  const anchored =
+    supplied != null &&
+    benchmarkCopiesSubmittedPrice(supplied, fields.salePrice, fields.outTheDoorPrice);
+  const benchmark: MarketBenchmark =
+    supplied && supplied.status === "verified" && !anchored
+      ? supplied
+      : independentMarketBenchmark({
+          submittedSalePrice: fields.salePrice,
+          submittedOutTheDoor: fields.outTheDoorPrice,
+          vehicleYear: fields.vehicle_year,
+          vehicleMake: fields.vehicle_make,
+          vehicleModel: fields.vehicle_model,
+        });
+  const marketVerified =
+    benchmark.status === "verified" && benchmark.low != null && benchmark.high != null;
 
+  const leaseQuote = isLeaseQuote(fields, purchaseType);
+  const lines = splitFees(fees, isDocFeeName);
+  let worksheet: PurchaseMath | null = null;
+  if (!leaseQuote && fields.salePrice != null) {
+    const cash = purchaseType === "cash" || (fields.apr == null && fields.termMonths == null);
+    worksheet = computePurchase({
+      vehiclePrice: fields.salePrice,
+      rebates: fields.rebates,
+      tradeInAllowance: fields.tradeInValue,
+      tradePayoff: lines.tradePayoff,
+      docFee: lines.docFee,
+      addOns: lines.addOns,
+      titleFee: lines.titleFee,
+      registrationFee: lines.registrationFee,
+      salesTaxAmount: lines.statedTax,
+      downPayment: fields.downPayment,
+      apr: fields.apr,
+      termMonths: fields.termMonths,
+      statedOutTheDoor: fields.outTheDoorPrice,
+      statedMonthlyPayment: fields.monthlyPayment,
+      rebateContingentOnFinancing: options?.rebateContingentOnFinancing === true,
+      cashPurchase: cash,
+    });
+  }
+  const derivation = worksheet?.ok ? worksheet.derivation : [];
+
+  const allowedDocCap =
+    docFee?.classification === "permissible" && docFee.hardCeiling != null
+      ? docFee.hardCeiling
+      : docFeeCapResult && !docFeeCapResult.violated
+        ? docFeeCapResult.capAmount
+        : null;
   const hasMarketAdj = hasMarketAdjustment(fees);
   const highCostAddOnCount = countHighCostAddOns(fees, allowedDocCap);
   const paymentOnly = isPaymentOnlyQuote(fields);
   const otdPresent = hasOTD(fields);
-  const aprTermPresent = hasAPRAndTerm(fields);
-  const msrpOrSalePricePresent = hasMSRPOrSalePrice(fields);
   const vagueFeesDetected = hasVagueFees(fees, allowedDocCap);
+  const declined = declinedAddOnStillCharged(fees);
+  const competing =
+    (options?.alternateSalePrices ?? []).some(
+      (price) => fields.salePrice != null && Math.abs(price - fields.salePrice) >= 1,
+    ) || (options?.alternateSalePrices ?? []).length >= 2;
+  const interstate =
+    !!options?.buyerState &&
+    !!options?.dealerState &&
+    options.buyerState.toUpperCase() !== options.dealerState.toUpperCase();
+  const usedWithoutMileage = options?.condition === "used" && (options.mileage == null || options.mileage <= 0);
+  const vehicleNamed = !!(fields.vehicle_make || fields.vehicle_model || fields.vehicle_year);
+  const negativeEquity = worksheet?.ok && (worksheet.negativeEquity ?? 0) > 0;
+  const conditionalRebate = worksheet?.ok && worksheet.conditionalRebateExcluded != null;
+  const otdGap =
+    worksheet?.ok && worksheet.outTheDoorMismatch != null ? Math.abs(worksheet.outTheDoorMismatch) : 0;
+  const paymentGap =
+    worksheet?.ok && worksheet.paymentMismatch != null ? Math.abs(worksheet.paymentMismatch) : 0;
+  const mathMismatch = (worksheet?.ok && otdGap >= 0.01) || paymentGap >= 0.01;
+  const priceAboveBenchmark =
+    marketVerified &&
+    fields.salePrice != null &&
+    benchmark.high != null &&
+    fields.salePrice > benchmark.high;
+  const priceInsideBenchmark =
+    marketVerified &&
+    fields.salePrice != null &&
+    benchmark.low != null &&
+    benchmark.high != null &&
+    fields.salePrice >= benchmark.low &&
+    fields.salePrice <= benchmark.high;
+
+  const transparencyConcerns: string[] = [];
+  if (paymentOnly) transparencyConcerns.push("Only a monthly payment is shown.");
+  if (!otdPresent && !leaseQuote) transparencyConcerns.push("No out-the-door total is shown.");
+  if (fees.some((fee) => fee.amount == null)) transparencyConcerns.push("At least one fee has no dollar amount.");
+  const mathStatus = !worksheet?.ok
+    ? leaseQuote
+      ? "Lease payment math is checked separately from the purchase worksheet."
+      : worksheet?.reason ?? "The worksheet could not be completed."
+    : mathMismatch
+      ? `The stated figures do not reconcile. ${derivation.find((line) => /difference/i.test(line)) ?? ""}`.trim()
+      : lines.statedTax == null && fields.outTheDoorPrice != null
+        ? "Tax was not itemized, so the out-the-door total was not fully reconciled."
+        : "The itemized lines reconcile to the stated out-the-door price.";
+  const regulatorySummary = docFee?.summary ?? (
+    docFeeCapResult?.violated
+      ? `Documentation fee exceeds the supplied cap of $${docFeeCapResult.capAmount}.`
+      : "No verified documentation-fee violation was established."
+  );
+  const negotiation: string[] = [];
+  if (hasMarketAdj) negotiation.push("An explicit market adjustment is negotiable dealer markup.");
+  if (highCostAddOnCount > 0) negotiation.push("High-cost dealer add-ons can be removed.");
+  if (docFee && (docFee.classification === "negotiable" || docFee.classification === "potentially_noncompliant")) {
+    negotiation.push("The documentation fee should be questioned.");
+  }
+  if (negativeEquity) negotiation.push("Negative equity is being rolled into the deal.");
+  if (conditionalRebate) negotiation.push("A rebate appears to require financing and was not counted on this cash quote.");
+  if (negotiation.length === 0) negotiation.push("No dealer charge was identified as a negotiation target beyond verifying the vehicle price.");
+
+  const missing: string[] = [];
+  if (!vehicleNamed) missing.push("Vehicle year, make, or model is missing.");
+  if (usedWithoutMileage) missing.push("A used vehicle has no mileage.");
+  if (!options?.stateData && !docFeeCapResult) missing.push("Dealership state was not identified.");
+  if (paymentOnly || (!otdPresent && !leaseQuote && fields.salePrice == null)) missing.push("Key pricing is missing.");
+  if (!marketVerified) missing.push("Independent market value is not verified.");
+
+  const dimensions: AnalysisDimensions = {
+    pricingTransparency: {
+      status: transparencyConcerns.length > 0 ? "concern" : otdPresent || leaseQuote ? "clear" : "insufficient",
+      summary: transparencyConcerns.length > 0 ? transparencyConcerns.join(" ") : "Material charges that were extracted are itemized.",
+    },
+    mathematicalAccuracy: {
+      status: mathMismatch ? "fail" : worksheet?.ok && lines.statedTax != null && otdGap < 0.01 && paymentGap < 0.01 ? "clear" : "not_checked",
+      summary: mathStatus,
+    },
+    regulatoryCompliance: {
+      status:
+        docFee?.classification === "illegal" || docFeeCapResult?.violated && !docFee
+          ? "fail"
+          : docFee?.classification === "potentially_noncompliant" || docFee?.classification === "needs_source"
+            ? "concern"
+            : docFee
+              ? "clear"
+              : "not_checked",
+      summary: regulatorySummary,
+    },
+    marketCompetitiveness: {
+      status: !marketVerified ? "insufficient" : priceAboveBenchmark ? "fail" : priceInsideBenchmark ? "clear" : "concern",
+      summary: marketVerified
+        ? priceAboveBenchmark
+          ? `Selling price $${fields.salePrice} is above the independent benchmark of $${benchmark.low}–$${benchmark.high} (${benchmark.source ?? "independent source"}).`
+          : `Selling price is compared with an independent benchmark of $${benchmark.low}–$${benchmark.high}. The submitted price did not set that range.`
+        : "Market value not verified.",
+    },
+    negotiationOpportunities: {
+      status: negotiation[0].startsWith("No dealer charge") ? "not_checked" : "concern",
+      summary: negotiation.join(" "),
+    },
+    informationCompleteness: {
+      status: missing.length > 1 || usedWithoutMileage || paymentOnly ? "insufficient" : missing.length === 1 ? "concern" : "clear",
+      summary: missing.length > 0 ? missing.join(" ") : "The quote includes the vehicle, price, and terms needed for this audit.",
+    },
+  };
+
+  const context = { fields, benchmark, docFee, derivation, dimensions, marketVerified };
+
+  const illegal =
+    docFee?.classification === "illegal" || (!docFee && !!docFeeCapResult?.violated);
+  if (illegal) {
+    return finishVerdict(
+      {
+        dealScore: "RED",
+        confidenceLevel: "HIGH",
+        verdictLabel: "NO-GO — DOC FEE EXCEEDS STATE CAP",
+        goNoGo: "NO-GO",
+        primaryIssue: docFee?.summary ?? "Documentation fee exceeds the verified state cap",
+        summary: "A documentation fee exceeds a verified legal ceiling. That is a NO-GO. Market value was not used to reach this finding.",
+      },
+      context,
+    );
+  }
+
+  if (declined) {
+    return finishVerdict(
+      {
+        dealScore: "RED",
+        confidenceLevel: "HIGH",
+        verdictLabel: "NO-GO — DECLINED ADD-ON STILL CHARGED",
+        goNoGo: "NO-GO",
+        primaryIssue: `${declined.name} is still charged at $${declined.amount}`,
+        summary: "A charge the buyer declined is still on the quote. That is a NO-GO.",
+      },
+      context,
+    );
+  }
+
+  if (!leaseQuote && worksheet?.ok && lines.statedTax != null && otdGap >= 0.01) {
+    return finishVerdict(
+      {
+        dealScore: "YELLOW",
+        confidenceLevel: "HIGH",
+        verdictLabel: "PROCEED WITH CAUTION — OTD DOESN'T ADD UP",
+        goNoGo: "PROCEED-WITH-CAUTION",
+        primaryIssue: "The out-the-door total does not equal the itemized lines",
+        summary: `The stated out-the-door price does not reconcile. ${mathStatus}`,
+      },
+      context,
+    );
+  }
+
+  if (!leaseQuote && worksheet?.ok && paymentGap >= 0.01 && fields.outTheDoorPrice != null) {
+    return finishVerdict(
+      {
+        dealScore: "YELLOW",
+        confidenceLevel: "HIGH",
+        verdictLabel: "PROCEED WITH CAUTION — PAYMENT DOESN'T MATCH",
+        goNoGo: "PROCEED-WITH-CAUTION",
+        primaryIssue: "The monthly payment does not match the amortized loan",
+        summary: `The stated payment does not match the deterministic amortization. ${mathStatus}`,
+      },
+      context,
+    );
+  }
+
+  if (leaseQuote) {
+    if (leaseMath?.acquisitionFeeBenchmark?.isMarkedUp) {
+      return caution("PROCEED WITH CAUTION — ACQUISITION FEE ABOVE LENDER STANDARD", "Acquisition fee is above the lender benchmark");
+    }
+    if (!leaseMath?.acquisitionFeeBenchmark && hasHighAcquisitionFee(fields)) {
+      return caution("PROCEED WITH CAUTION — HIGH ACQUISITION FEE", "Acquisition fee is above $1,000 and no lender benchmark was available");
+    }
+    if (leaseMath?.rateMarkup && leaseMath.rateMarkup.totalMarkupDollars > 1500) {
+      return caution("PROCEED WITH CAUTION — RATE MARKUP DETECTED", "The lease money factor is marked up versus the stored buy rate");
+    }
+    if (leaseMath?.paymentValidation?.isSignificant && Math.abs(leaseMath.paymentValidation.discrepancy) > 50) {
+      return caution("PROCEED WITH CAUTION — PAYMENT DOESN'T MATCH", "The lease payment does not match the money-factor formula");
+    }
+    if (leaseMath?.residualCheck?.status === "low") {
+      return caution("PROCEED WITH CAUTION — LOW RESIDUAL VALUE", "The residual is below the stored brand band");
+    }
+    if (hasExcessiveMileageRate(fields)) {
+      return caution("PROCEED WITH CAUTION — HIGH MILEAGE PENALTY", "The excess-mileage rate is above $0.30 per mile");
+    }
+    if (isMissingLeaseTerms(fields)) {
+      return insufficient("INSUFFICIENT INFORMATION — GET LEASE TERMS", "Money factor, residual, mileage allowance, or price is missing");
+    }
+  }
 
   if (hasMarketAdj && highCostAddOnCount >= 2) {
-    return {
-      dealScore: "RED",
-      confidenceLevel: "LOW",
-      verdictLabel: "NO-GO — TOO MANY RED FLAGS",
-      goNoGo: "NO-GO",
-    };
+    return noGo("NO-GO — TOO MANY RED FLAGS", "The quote stacks a market adjustment with multiple high-cost add-ons");
   }
-
   if (hasMarketAdj) {
-    return {
-      dealScore: "RED",
-      confidenceLevel: "LOW",
-      verdictLabel: "NO-GO — REMOVE MARKET ADJUSTMENT",
-      goNoGo: "NO-GO",
-    };
+    return noGo("NO-GO — REMOVE MARKET ADJUSTMENT", "An explicit market adjustment is on the quote");
   }
-
   if (highCostAddOnCount >= 2) {
-    return {
-      dealScore: "RED",
-      confidenceLevel: "LOW",
-      verdictLabel: "NO-GO — TOO MANY ADD-ONS",
-      goNoGo: "NO-GO",
-    };
+    return noGo("NO-GO — TOO MANY ADD-ONS", "Two or more high-cost dealer add-ons are on the quote");
   }
-
   if (highCostAddOnCount === 1) {
-    return {
-      dealScore: "YELLOW",
-      confidenceLevel: "LOW",
-      verdictLabel: "PAUSE — REMOVE ADD-ONS / MARKUP",
-      goNoGo: "NEED-MORE-INFO",
-    };
+    return caution("PROCEED WITH CAUTION — REMOVE ADD-ONS / MARKUP", "A high-cost dealer add-on is on the quote");
   }
-
-  // A complete lease is not a purchase. Do not demand an out-the-door price
-  // after the lease checks above found no problem.
-  if (leaseQuote) {
-    return {
-      dealScore: "GREEN",
-      confidenceLevel: "MEDIUM",
-      verdictLabel: "GO — LEASE TERMS LOOK CLEAN",
-      goNoGo: "GO",
-    };
+  if (priceAboveBenchmark) {
+    return noGo(
+      "NO-GO — PRICE ABOVE INDEPENDENT BENCHMARK",
+      `The selling price is above the independent benchmark of $${benchmark.low}–$${benchmark.high}`,
+    );
+  }
+  if (docFee?.classification === "needs_source" && docFee.exceedsStoredCap) {
+    return caution("PROCEED WITH CAUTION — DOC FEE CAP NOT VERIFIED", docFee.summary);
+  }
+  if (docFee?.classification === "potentially_noncompliant") {
+    return caution("PROCEED WITH CAUTION — CONDITIONAL DOC FEE", docFee.summary);
+  }
+  if (conditionalRebate) {
+    return caution("PROCEED WITH CAUTION — CONDITIONAL REBATE", "A financing-contingent rebate was excluded from the cash price");
+  }
+  if (negativeEquity) {
+    return caution("PROCEED WITH CAUTION — NEGATIVE EQUITY", `Negative equity is $${worksheet!.negativeEquity}`);
+  }
+  if (competing) {
+    return caution("PROCEED WITH CAUTION — COMPETING OFFERS", "The message contains more than one vehicle price");
+  }
+  if (interstate) {
+    return caution("PROCEED WITH CAUTION — CONFIRM TAX JURISDICTION", "The buyer state and dealer state differ, so tax and fee rules may not be the dealer's state");
+  }
+  if (vagueFeesDetected) {
+    return caution("PROCEED WITH CAUTION — CLARIFY FEES", "A dealer fee needs an itemized explanation");
   }
 
   if (paymentOnly) {
-    return {
-      dealScore: "YELLOW",
-      confidenceLevel: "MEDIUM",
-      verdictLabel: "PAUSE — ASK FOR ITEMIZED OTD",
-      goNoGo: "NEED-MORE-INFO",
-    };
+    return insufficient("INSUFFICIENT INFORMATION — ASK FOR ITEMIZED OTD", "The quote is payment-only");
+  }
+  if (usedWithoutMileage) {
+    return insufficient("INSUFFICIENT INFORMATION — MILEAGE NOT PROVIDED", "A used vehicle cannot be assessed without mileage");
+  }
+  if (!otdPresent && !leaseQuote) {
+    return insufficient("INSUFFICIENT INFORMATION — GET OTD BREAKDOWN", "The out-the-door price is missing");
+  }
+  if (leaseQuote && !marketVerified) {
+    return insufficient(
+      "INSUFFICIENT INFORMATION — MARKET VALUE NOT VERIFIED",
+      "Lease math did not show a discrepancy, and vehicle market value is not verified",
+    );
+  }
+  if (!marketVerified) {
+    return insufficient(
+      "INSUFFICIENT INFORMATION — MARKET VALUE NOT VERIFIED",
+      "Math and fee checks that could run did not establish a reason to approve the price. Market value is not verified.",
+    );
+  }
+  if (priceInsideBenchmark && !mathMismatch) {
+    return finishVerdict(
+      {
+        dealScore: "GREEN",
+        confidenceLevel: "HIGH",
+        verdictLabel: "GO — PRICE INSIDE INDEPENDENT BENCHMARK",
+        goNoGo: "GO",
+        primaryIssue: "Price is inside an independent benchmark and the checked math is clean",
+        summary: `The selling price is inside the independent benchmark of $${benchmark.low}–$${benchmark.high}, and the checked math and fee rules are clean.`,
+      },
+      context,
+    );
   }
 
-  if (!otdPresent) {
-    return {
-      dealScore: "YELLOW",
-      confidenceLevel: "MEDIUM",
-      verdictLabel: "PAUSE — GET OTD BREAKDOWN",
-      goNoGo: "NEED-MORE-INFO",
-    };
+  return insufficient(
+    "INSUFFICIENT INFORMATION — MARKET VALUE NOT VERIFIED",
+    "A reliable buy decision cannot be made from this quote",
+  );
+
+  function caution(verdictLabel: string, primaryIssue: string): RuleEngineResult {
+    return finishVerdict(
+      {
+        dealScore: "YELLOW",
+        confidenceLevel: "MEDIUM",
+        verdictLabel,
+        goNoGo: "PROCEED-WITH-CAUTION",
+        primaryIssue,
+        summary: primaryIssue,
+      },
+      context,
+    );
   }
 
-  if (otdPresent && aprTermPresent && !msrpOrSalePricePresent) {
-    return {
-      dealScore: "GREEN",
-      confidenceLevel: "MEDIUM",
-      verdictLabel: "PROCEED — CONFIRM DETAILS",
-      goNoGo: "GO",
-    };
+  function noGo(verdictLabel: string, primaryIssue: string): RuleEngineResult {
+    return finishVerdict(
+      {
+        dealScore: "RED",
+        confidenceLevel: "HIGH",
+        verdictLabel,
+        goNoGo: "NO-GO",
+        primaryIssue,
+        summary: primaryIssue,
+      },
+      context,
+    );
   }
 
-  if (otdPresent && aprTermPresent && !vagueFeesDetected) {
-    return {
-      dealScore: "GREEN",
-      confidenceLevel: "HIGH",
-      verdictLabel: "GO — TERMS LOOK CLEAN",
-      goNoGo: "GO",
-    };
+  function insufficient(verdictLabel: string, primaryIssue: string): RuleEngineResult {
+    return finishVerdict(
+      {
+        dealScore: "YELLOW",
+        confidenceLevel: usedWithoutMileage || paymentOnly || !vehicleNamed ? "LOW" : "MEDIUM",
+        verdictLabel,
+        goNoGo: "INSUFFICIENT-INFORMATION",
+        primaryIssue,
+        summary: `${primaryIssue} Market value not verified.`,
+      },
+      context,
+    );
   }
-
-  if (otdPresent && vagueFeesDetected) {
-    return {
-      dealScore: "YELLOW",
-      confidenceLevel: "MEDIUM",
-      verdictLabel: "PAUSE — CLARIFY FEES",
-      goNoGo: "NEED-MORE-INFO",
-    };
-  }
-
-  if (otdPresent) {
-    return {
-      dealScore: "GREEN",
-      confidenceLevel: "MEDIUM",
-      verdictLabel: "PROCEED — CONFIRM DETAILS",
-      goNoGo: "GO",
-    };
-  }
-
-  return {
-    dealScore: llmResult.dealScore,
-    confidenceLevel: llmResult.confidenceLevel || "MEDIUM",
-    verdictLabel: llmResult.verdictLabel || "REVIEW — CHECK DETAILS",
-    goNoGo: llmResult.goNoGo,
-  };
 }
