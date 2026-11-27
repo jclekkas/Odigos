@@ -2857,7 +2857,8 @@ export default function Home() {
               </details>
             </div>
 
-            {/* 8) Email / Paywall. Hidden when the server could not sign a token. */}
+            {/* 8) Email / Paywall. Shown only when the server issued a token,
+                which requires ALERT_SMTP_URL and a signing secret. */}
             {result.emailToken && (
               <EmailPreviewForm analysisResult={result} />
             )}

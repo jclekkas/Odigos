@@ -243,6 +243,34 @@ describe("Statutory cap callout", () => {
 });
 
 
+describe("Email me a copy form", () => {
+  async function analyze(user: ReturnType<typeof userEvent.setup>) {
+    const textarea = await screen.findByTestId("input-dealer-text");
+    await user.type(textarea, "OTD $35,000 with doc fee $199");
+    await user.click(await screen.findByTestId("button-analyze"));
+    await screen.findByTestId("text-market-context-disclosure");
+  }
+
+  it("hides the form when the analysis has no emailToken", async () => {
+    const user = userEvent.setup();
+    setupFetchMock(VALID_ANALYSIS);
+    renderHome();
+    await analyze(user);
+    expect(screen.queryByTestId("email-preview-form")).not.toBeInTheDocument();
+    expect(screen.queryByText("Want a copy of this analysis?")).not.toBeInTheDocument();
+  });
+
+  it("shows the form when the analysis includes an emailToken", async () => {
+    const user = userEvent.setup();
+    setupFetchMock({ ...VALID_ANALYSIS, emailToken: "signed.token" });
+    renderHome();
+    await analyze(user);
+    expect(screen.getByTestId("email-preview-form")).toBeInTheDocument();
+    expect(screen.getByText("Want a copy of this analysis?")).toBeInTheDocument();
+    expect(screen.getByTestId("button-send-email-preview")).toBeInTheDocument();
+  });
+});
+
 describe("Free full analysis", () => {
   it("shows the complete reply and reasoning without a paid pass", async () => {
     localStorage.clear();

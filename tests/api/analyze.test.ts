@@ -94,6 +94,7 @@ vi.mock("../../server/db", () => ({
 import { openai } from "../../server/openaiClient.js";
 import { registerRoutes } from "../../server/routes.js";
 import { aiCircuitBreaker } from "../../server/lib/circuitBreaker.js";
+import { verifyEmailToken } from "../../server/emailPreviewToken.js";
 
 const VALID_LLM_RESPONSE = {
   dealScore: "GREEN",
@@ -464,5 +465,94 @@ describe("POST /api/analyze", () => {
     expect(res.body.error).toBe("AI service error");
     expect(res.body.requestId).toBe("req_unknown_999");
     expect(res.body.debugCode).toBeDefined();
+  });
+});
+
+// ─── Email-a-copy gate ────────────────────────────────────────────────────────
+//
+// A signing secret alone used to attach emailToken, so the results page showed
+// "email me a copy" even when ALERT_SMTP_URL was unset and the send failed
+// with SMTP_NOT_CONFIGURED. The token is issued only when SMTP is configured.
+
+const EMAIL_ENV_KEYS = ["EMAIL_TOKEN_SECRET", "SESSION_SECRET", "ALERT_SMTP_URL"] as const;
+
+function withEmailEnv(
+  values: Partial<Record<(typeof EMAIL_ENV_KEYS)[number], string | undefined>>,
+  run: () => Promise<void>,
+): Promise<void> {
+  const previous: Record<string, string | undefined> = {};
+  for (const key of EMAIL_ENV_KEYS) {
+    previous[key] = process.env[key];
+  }
+  for (const [key, value] of Object.entries(values)) {
+    if (value === undefined) delete process.env[key];
+    else process.env[key] = value;
+  }
+  return run().finally(() => {
+    for (const key of EMAIL_ENV_KEYS) {
+      if (previous[key] === undefined) delete process.env[key];
+      else process.env[key] = previous[key];
+    }
+  });
+}
+
+const DEALER_TEXT = "OTD $35,000, APR 4.9%, 60 months. CA dealer.";
+
+describe("POST /api/analyze emailToken gate", () => {
+  it("omits emailToken when ALERT_SMTP_URL is unset, even with EMAIL_TOKEN_SECRET", async () => {
+    await withEmailEnv(
+      { EMAIL_TOKEN_SECRET: "test-secret", SESSION_SECRET: undefined, ALERT_SMTP_URL: undefined },
+      async () => {
+        mockOpenAiSuccess();
+        const res = await request(app).post("/api/analyze").send({ dealerText: DEALER_TEXT });
+        expect(res.status).toBe(200);
+        expect(res.body.emailToken).toBeUndefined();
+      },
+    );
+  });
+
+  it("omits emailToken when ALERT_SMTP_URL is blank or whitespace and only SESSION_SECRET is set", async () => {
+    await withEmailEnv(
+      { EMAIL_TOKEN_SECRET: "", SESSION_SECRET: "session-secret", ALERT_SMTP_URL: "  \t" },
+      async () => {
+        mockOpenAiSuccess();
+        const res = await request(app).post("/api/analyze").send({ dealerText: DEALER_TEXT });
+        expect(res.status).toBe(200);
+        expect(res.body.emailToken).toBeUndefined();
+      },
+    );
+  });
+
+  it("omits emailToken when SMTP is set but no signing secret is set", async () => {
+    await withEmailEnv(
+      { EMAIL_TOKEN_SECRET: "", SESSION_SECRET: "", ALERT_SMTP_URL: "smtp://127.0.0.1:2525" },
+      async () => {
+        mockOpenAiSuccess();
+        const res = await request(app).post("/api/analyze").send({ dealerText: DEALER_TEXT });
+        expect(res.status).toBe(200);
+        expect(res.body.emailToken).toBeUndefined();
+      },
+    );
+  });
+
+  it("issues emailToken when ALERT_SMTP_URL and a signing secret are set", async () => {
+    await withEmailEnv(
+      {
+        EMAIL_TOKEN_SECRET: undefined,
+        SESSION_SECRET: "session-secret",
+        ALERT_SMTP_URL: "  smtp://127.0.0.1:2525  ",
+      },
+      async () => {
+        mockOpenAiSuccess();
+        const res = await request(app).post("/api/analyze").send({ dealerText: DEALER_TEXT });
+        expect(res.status).toBe(200);
+        expect(typeof res.body.emailToken).toBe("string");
+        const signed = verifyEmailToken(res.body.emailToken);
+        expect(signed).not.toBeNull();
+        expect(signed?.goNoGo).toBe(res.body.goNoGo);
+        expect(signed?.verdictLabel).toBe(res.body.verdictLabel);
+        expect(signed?.confidenceLevel).toBe(res.body.confidenceLevel);
+      },
+    );
   });
 });

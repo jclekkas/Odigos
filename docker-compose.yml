@@ -17,6 +17,8 @@ services:
       # Blank is the same as unset: the email-a-copy button stays hidden.
       EMAIL_TOKEN_SECRET: ${EMAIL_TOKEN_SECRET:-}
       SESSION_SECRET: ${SESSION_SECRET:-}
+      # Blank or whitespace is the same as unset: no emailToken, form stays hidden.
+      ALERT_SMTP_URL: ${ALERT_SMTP_URL:-}
     restart: unless-stopped
 
   db:
