@@ -19,9 +19,11 @@ import {
 } from "../shared/windowSticker.js";
 import {
   classifyDocFee,
+  classifySeparateFilingCharges,
   detectDocFeeAmount,
   type DocFeeAssessment,
   type RegulatoryStateInput,
+  type SeparateFilingAssessment,
 } from "./regulatoryClassification.js";
 import { buildConstrainedReply } from "./replyConstraint.js";
 import { isDocFeeName } from "./docFeeName.js";
@@ -80,6 +82,7 @@ export interface RuleEngineResult {
   msrpComparison?: MsrpComparison;
   mathematicalDerivation?: string[];
   docFeeAssessment?: DocFeeAssessment | null;
+  separateFilingAssessments?: SeparateFilingAssessment[];
 }
 
 export interface DocFeeCapResult {
@@ -104,8 +107,8 @@ interface StateData {
   };
 }
 
-function detectDocFee(fees: Fee[], stateAbbreviation?: string | null): number | null {
-  return detectDocFeeAmount(fees, stateAbbreviation);
+function detectDocFee(fees: Fee[], stateAbbreviation?: string | null, dealerText?: string | null): number | null {
+  return detectDocFeeAmount(fees, stateAbbreviation, dealerText);
 }
 
 function getEffectiveCapAmount(stateData: StateData): number | null {
@@ -115,7 +118,7 @@ function getEffectiveCapAmount(stateData: StateData): number | null {
   return stateData.docFeeCapAmount;
 }
 
-export function checkDocFeeCap(fees: Fee[], stateData: StateData): DocFeeCapResult | null {
+export function checkDocFeeCap(fees: Fee[], stateData: StateData, dealerText?: string | null): DocFeeCapResult | null {
   if (!stateData.docFeeCap) {
     return null;
   }
@@ -123,7 +126,7 @@ export function checkDocFeeCap(fees: Fee[], stateData: StateData): DocFeeCapResu
   if (capAmount === null) {
     return null;
   }
-  const chargedAmount = detectDocFee(fees, stateData.abbreviation);
+  const chargedAmount = detectDocFee(fees, stateData.abbreviation, dealerText);
   if (chargedAmount === null) {
     return null;
   }
@@ -332,6 +335,7 @@ function finishVerdict(
     fields: DetectedFields;
     benchmark: MarketBenchmark;
     docFee: DocFeeAssessment | null;
+    separateFilingAssessments?: SeparateFilingAssessment[];
     derivation: string[];
     dimensions: AnalysisDimensions;
     marketVerified: boolean;
@@ -373,6 +377,7 @@ function finishVerdict(
     msrpComparison: extras.msrpComparison,
     mathematicalDerivation: extras.derivation,
     docFeeAssessment: extras.docFee,
+    separateFilingAssessments: extras.separateFilingAssessments ?? [],
   };
 }
 
@@ -391,8 +396,14 @@ export function applyRuleEngine(
     ? classifyDocFee(fees, options.stateData, partner, integrator, {
         vehicleCashPrice: fields.salePrice,
         electronicTransaction: options.electronicTransaction ?? null,
+        dealerText: options.dealerText,
       })
     : null;
+  const separateFilingAssessments = classifySeparateFilingCharges(
+    fees,
+    options?.stateData,
+    options?.dealerText,
+  );
   const supplied = options?.marketBenchmark ?? null;
   const anchored =
     supplied != null &&
@@ -516,11 +527,15 @@ export function applyRuleEngine(
       : (!leaseQuote && fields.outTheDoorPrice != null && (lines.statedTax == null || !govFeesStated))
         ? "Tax or government fees were not itemized, so the out-the-door total was not fully reconciled."
         : "The itemized lines reconcile to the stated out-the-door price.";
-  const regulatorySummary = docFee?.summary ?? (
-    docFeeCapResult?.violated
-      ? `Documentation fee exceeds the supplied cap of $${docFeeCapResult.capAmount}.`
-      : "No verified documentation-fee violation was established."
-  );
+  const filingNote = separateFilingAssessments.map((item) => item.summary).join(" ");
+  const regulatorySummary = [
+    docFee?.summary ?? (
+      docFeeCapResult?.violated
+        ? `Documentation fee exceeds the supplied cap of $${docFeeCapResult.capAmount}.`
+        : "No verified documentation-fee violation was established."
+    ),
+    filingNote,
+  ].filter((part) => part.trim() !== "").join(" ");
   const negotiation: string[] = [];
   if (hasMarketAdj) negotiation.push("An explicit market adjustment is negotiable dealer markup.");
   if (highCostAddOnCount > 0) negotiation.push("High-cost dealer add-ons can be removed.");
@@ -597,7 +612,17 @@ export function applyRuleEngine(
   const notes = [options?.vinMismatchNote, options?.buyerReportedExplanation].filter(
     (note): note is string => !!note && note.trim() !== "",
   );
-  const context = { fields, benchmark, docFee, derivation, dimensions, marketVerified, msrpComparison, notes };
+  const context = {
+    fields,
+    benchmark,
+    docFee,
+    separateFilingAssessments,
+    derivation,
+    dimensions,
+    marketVerified,
+    msrpComparison,
+    notes,
+  };
 
   const illegal =
     docFee?.classification === "illegal" || (!docFee && !!docFeeCapResult?.violated);

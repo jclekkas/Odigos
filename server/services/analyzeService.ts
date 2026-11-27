@@ -1075,7 +1075,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   const buyerRule = buyerReportedRuleOptions(buyerReported);
 
   const docFeeCapResult = stateData
-    ? checkDocFeeCap(llmResult.detectedFields.fees, stateData)
+    ? checkDocFeeCap(llmResult.detectedFields.fees, stateData, data.dealerText)
     : null;
 
   const capCheck = !!stateData;
