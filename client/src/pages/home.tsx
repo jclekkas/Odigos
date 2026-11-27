@@ -462,22 +462,28 @@ interface ExpectedNormalRangeCardProps {
   normalOtdMax: number | null | undefined;
   marketValueStatus?: "verified" | "unverified" | null;
   benchmarkKind?: "factory_msrp" | "market_transaction" | null;
+  msrpSummary?: string | null;
 }
 
-function ExpectedNormalRangeCard({ normalOtdMin, normalOtdMax, marketValueStatus, benchmarkKind }: ExpectedNormalRangeCardProps) {
-  if (benchmarkKind === "factory_msrp") {
+function ExpectedNormalRangeCard({ normalOtdMin, normalOtdMax, marketValueStatus, benchmarkKind, msrpSummary }: ExpectedNormalRangeCardProps) {
+  if (benchmarkKind === "factory_msrp" || msrpSummary) {
     return (
       <Card className="bg-muted/20 border-border/40" data-testid="expected-normal-range-card">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wider">
             <Target className="w-4 h-4" aria-hidden="true" />
-            Factory window sticker
+            Factory MSRP comparison
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
           <p className="text-base leading-relaxed text-foreground" data-testid="expected-normal-range-value">
-            {FACTORY_STICKER_COMPARISON}
+            {msrpSummary ?? FACTORY_STICKER_COMPARISON}
           </p>
+          {marketValueStatus !== "verified" && (
+            <p className="text-sm leading-relaxed text-muted-foreground" data-testid="expected-normal-range-market">
+              Independent market valuation is a separate check and is not verified. No market price range is shown.
+            </p>
+          )}
         </CardContent>
       </Card>
     );
@@ -1607,7 +1613,7 @@ export default function Home() {
     capture("analyze_page_viewed", { route: "/analyze" });
     setSeoMeta({
       title: "Analyze Your Car Deal | Odigos",
-      description: "Paste dealer texts, emails, or quotes into Odigos. The audit checks disclosure, math, and verified fee caps. Market value stays unverified unless you optionally enter a factory window sticker MSRP.",
+      description: "Paste dealer texts, emails, or quotes into Odigos. The audit checks disclosure, math, and verified fee caps. A factory window sticker MSRP does not verify market value. Independent market valuation stays unverified.",
       path: "/analyze",
     });
   }, []);
@@ -2069,7 +2075,7 @@ export default function Home() {
         <div className="max-w-2xl mx-auto mb-2" data-testid="section-analyzer-context">
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground" data-testid="text-analyzer-heading">Analyze Your Car Dealer Quote</h1>
             <p className="text-sm text-muted-foreground mt-2 leading-relaxed" data-testid="text-analyzer-description">
-            Paste a dealer quote, email, or text message. Odigos checks whether charges are disclosed, whether the totals reconcile, and whether a fee exceeds a verified state cap. An optional factory window sticker MSRP is compared with the selling price. That figure is not a live market transaction price.
+            Paste a dealer quote, email, or text message. Odigos checks whether charges are disclosed, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP is compared with the selling price and does not verify market value. That figure is not a live market transaction price.
           </p>
           <a
             href="/how-odigos-works"
@@ -2430,7 +2436,7 @@ export default function Home() {
                     />
                   </FormControl>
                   <FormDescription data-testid="text-factory-window-sticker-help">
-                    A manufacturer Monroney sticker MSRP works. A dealer-printed addendum is not the factory window sticker.
+                    A manufacturer Monroney sticker MSRP compares the selling price with that sticker. A dealer-printed addendum is not the factory window sticker. This does not verify market value. Independent market valuation is a separate check and stays unverified unless a third-party source is configured.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -2685,7 +2691,7 @@ export default function Home() {
               <li>Whether the charges in the quote are itemized</li>
               <li>Whether the out-the-door total and payment reconcile</li>
               <li>Whether a documentation fee exceeds a verified state cap</li>
-              <li>Without a factory window sticker MSRP, market value stays unverified</li>
+              <li>Factory MSRP comparison and independent market valuation are different. Entering a factory MSRP does not verify market value</li>
             </ul>
           </div>
         )}
@@ -2887,6 +2893,7 @@ export default function Home() {
                     normalOtdMax={result.estimatedNormalOtdMax}
                     marketValueStatus={result.marketValueStatus}
                     benchmarkKind={result.marketBenchmarkKind}
+                    msrpSummary={result.msrpComparison?.status === "compared" ? result.msrpComparison.summary : null}
                   />
 
                   <LeaseMathBlock leaseMath={result.leaseMath} />

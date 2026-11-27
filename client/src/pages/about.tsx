@@ -10,7 +10,7 @@ export default function About() {
     setSeoMeta({
       title: "About Odigos — Independent Dealer Quote Analyzer",
       description:
-        "Odigos is an independent dealer-quote auditor. It checks disclosure, math, and verified state fee caps. Market value stays unverified unless you optionally enter a factory window sticker MSRP.",
+        "Odigos is an independent dealer-quote auditor. It checks disclosure, math, and verified state fee caps. Factory MSRP comparison and independent market valuation are different. Entering a factory window sticker MSRP does not verify market value.",
       path: "/about",
     });
   }, []);
@@ -84,7 +84,7 @@ export default function About() {
             How it works
           </h2>
           <p className="text-muted-foreground mb-2">
-            The analysis is free. You get one of four verdicts — GO, PROCEED WITH CAUTION, INSUFFICIENT INFORMATION, or NO-GO — plus the math worksheet, any verified fee-cap finding, and a reply that stays inside those findings. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market transaction price. Without it, the result says market value is not verified.
+            The analysis is free. You get one of four verdicts — GO, PROCEED WITH CAUTION, INSUFFICIENT INFORMATION, or NO-GO — plus the math worksheet, any verified fee-cap finding, and a reply that stays inside those findings. Factory MSRP comparison and independent market valuation are different. You can optionally enter a factory window sticker MSRP to compare the selling price with that sticker. That comparison does not verify market value, and the sticker is not a live market transaction price. Independent market valuation stays unverified unless a separate third-party source is configured.
           </p>
           <p className="text-muted-foreground mb-2">
             No pass, payment, or subscription is required.

@@ -34,7 +34,7 @@ const HOW_IT_WORKS_STEPS = [
 const faqsSchema = [
   {
     q: "How does the analysis work?",
-    a: "Paste your dealer quote, email, or text message. Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That figure is not a live market transaction price. The verdict is GO, PROCEED WITH CAUTION, INSUFFICIENT INFORMATION, or NO-GO.",
+    a: "Paste your dealer quote, email, or text message. Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. That figure is not a live market transaction price. Independent market valuation stays unverified unless a separate third-party source is configured. The verdict is GO, PROCEED WITH CAUTION, INSUFFICIENT INFORMATION, or NO-GO.",
   },
   {
     q: "Is Odigos free?",
@@ -433,7 +433,7 @@ export default function Landing() {
   useEffect(() => {
     setSeoMeta({
       title: "Odigos \u2014 Dealer Quote Analyzer | Find What\u2019s Wrong With Your Quote",
-      description: "Paste your dealer quote. Odigos audits disclosure, math, and verified fee caps. Market value stays unverified unless you optionally enter a factory window sticker MSRP. Full analysis is free.",
+      description: "Paste your dealer quote. Odigos audits disclosure, math, and verified fee caps. A factory window sticker MSRP does not verify market value. Independent market valuation stays unverified. Full analysis is free.",
       path: "/",
     });
   }, []);

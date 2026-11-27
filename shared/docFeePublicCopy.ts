@@ -43,7 +43,7 @@ export interface PublicDocFeeClaim {
 }
 
 export const HONEST_ANALYSIS_BLURB =
-  "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Market value stays unverified unless you optionally enter a factory window sticker MSRP. That sticker is not a live market price, and an unverified fee range is not a legal limit.";
+  "Paste the quote and Odigos checks whether the charges are itemized, whether the totals reconcile, and whether a fee exceeds a verified state cap. Factory MSRP comparison and independent market valuation are different. An optional factory window sticker MSRP compares the selling price with that sticker and does not verify market value. Independent market valuation stays unverified unless a separate third-party source is configured. That sticker is not a live market price, and an unverified fee range is not a legal limit.";
 
 export function formatFeeMoney(amount: number): string {
   const hasCents = Math.round(amount * 100) % 100 !== 0;
