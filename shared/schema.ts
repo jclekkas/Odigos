@@ -46,6 +46,21 @@ export const analysisRequestSchema = z.object({
     (value) => (value == null ? undefined : value),
     buyerBookValueSchema.optional(),
   ),
+  /**
+   * Optional buyer confirmation. Null or omitted means the quote was not explicit.
+   * True only when the dealer is a California DMV private industry partner.
+   */
+  californiaDmvBusinessPartner: z.boolean().nullable().optional(),
+  /**
+   * Oregon only. True when the purchaser elects that the dealer use an integrator.
+   * False when the purchaser elects not to. Null or omitted means the election was not stated.
+   */
+  oregonIntegratorElection: z.boolean().nullable().optional(),
+  /**
+   * Pennsylvania only. True for electronic processing, false for non-electronic.
+   * Null or omitted means the quote did not say.
+   */
+  pennsylvaniaElectronicProcessing: z.boolean().nullable().optional(),
   /** A second dealer quote, compared line by line. Not a market valuation. */
   competingQuoteText: z.preprocess(
     (value) => (typeof value === "string" && value.trim() === "" ? undefined : value),

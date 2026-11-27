@@ -70,11 +70,28 @@ const ca = getStateFeeData("CA");
 const prices = [20000, 28000, 35000, 45000, 60000, 100000];
 const benchmark = {
   status: "verified" as const,
-  source: "test-fixture",
+  source: "example-licensed-book",
+  kind: "market_transaction" as const,
   low: 26000,
   high: 30000,
-  reason: "Fixture range supplied by the test, not by the asking price.",
+  reason: "Licensed independent valuation for a 2025 Toyota Camry LE.",
+  sourceQuality: "licensed_independent" as const,
+  provenance: {
+    sourceId: "example-licensed-book",
+    retrievedAt: "2026-11-27T15:00:00.000Z",
+    reference: "https://example.com/valuations/2025-toyota-camry-le",
+  },
+  vehicleMatch: {
+    year: 2025,
+    make: "Toyota",
+    model: "Camry",
+    trim: "LE",
+    condition: "new" as const,
+    mileageMin: 0,
+    mileageMax: 100,
+  },
 };
+const camryMatch = { condition: "new" as const, mileage: 12, trim: "LE" };
 
 const cases: Adjudicated[] = [];
 
@@ -553,7 +570,7 @@ cases.push({
   category: "independent-benchmark",
   fields: reconciledInsideBenchmark,
   purchaseType: "cash",
-  options: { stateData: ca, marketBenchmark: benchmark, privateIndustryPartner: true },
+  options: { stateData: ca, marketBenchmark: benchmark, privateIndustryPartner: true, ...camryMatch },
   expected: "GO",
   label: /INDEPENDENT BENCHMARK/,
   critical: false,
@@ -564,7 +581,7 @@ cases.push({
   category: "independent-benchmark",
   fields: money(45000, [], 70),
   purchaseType: "cash",
-  options: { stateData: ca, marketBenchmark: benchmark },
+  options: { stateData: ca, marketBenchmark: benchmark, ...camryMatch },
   expected: "NO-GO",
   label: /ABOVE INDEPENDENT BENCHMARK/,
   critical: true,

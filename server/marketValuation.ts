@@ -35,6 +35,45 @@ export interface MarketBenchmarkInput {
 
 export type MarketBenchmarkKind = "factory_msrp" | "market_transaction";
 
+/**
+ * licensed_independent and government_record can verify a price.
+ * buyer_reported and unspecified cannot, even when a range is attached.
+ */
+export type ValuationSourceQuality =
+  | "licensed_independent"
+  | "government_record"
+  | "buyer_reported"
+  | "unspecified";
+
+/** Independently auditable retrieval of a benchmark. Buyer-typed notes are not this. */
+export interface ValuationProvenance {
+  sourceId: string;
+  /** ISO-8601 time the benchmark was retrieved from the source. */
+  retrievedAt: string;
+  /** Public URL or other reference a reviewer can open. */
+  reference: string;
+}
+
+/** The vehicle the benchmark actually covers. All of these must match the quote. */
+export interface ValuationVehicleMatch {
+  year: number;
+  make: string;
+  model: string;
+  trim: string;
+  condition: "new" | "used";
+  mileageMin: number;
+  mileageMax: number;
+}
+
+export interface QuotedVehicle {
+  year?: number | null;
+  make?: string | null;
+  model?: string | null;
+  trim?: string | null;
+  condition?: "new" | "used" | "unknown" | null;
+  mileage?: number | null;
+}
+
 export interface MsrpComparison {
   status: "compared" | "not_provided" | "rejected";
   source: string | null;
@@ -68,6 +107,9 @@ export interface MarketBenchmark {
    * "market_transaction" and its own band.
    */
   kind?: MarketBenchmarkKind;
+  sourceQuality?: ValuationSourceQuality | null;
+  provenance?: ValuationProvenance | null;
+  vehicleMatch?: ValuationVehicleMatch | null;
 }
 
 const UNVERIFIED_REASON =
@@ -187,26 +229,206 @@ export function independentMarketBenchmark(input: MarketBenchmarkInput = {}): Ma
   );
 }
 
-/** A verified market valuation requires an independent source, never a buyer-entered MSRP. */
-export function toMarketValuation(benchmark: MarketBenchmark): MarketValuation {
-  const independent =
-    benchmark.status === "verified" &&
-    benchmark.kind !== "factory_msrp" &&
-    benchmark.source !== BUYER_WINDOW_STICKER_SOURCE &&
-    benchmark.low != null &&
-    benchmark.high != null;
-  if (!independent) {
+const BUYER_SOURCE_IDS = new Set([
+  "buyer_window_sticker_msrp",
+  "buyer-reported",
+  "buyer_reported",
+  "buyer_comparables",
+  "buyer_book_value",
+  "buyer_book",
+]);
+
+const TRIM_TOKENS = [
+  "ex-l", "xle", "xse", "sr5", "trd", "limited", "platinum", "touring", "premium",
+  "luxury", "sport", "hybrid", "lariat", "sel", "xlt", "le", "se", "lx", "ex",
+  "sr", "sv", "sl", "lt", "ls", "base",
+];
+
+function unverifiedValuation(reason: string): MarketValuation {
+  return {
+    status: "unverified",
+    source: null,
+    low: null,
+    high: null,
+    reason,
+    kind: null,
+  };
+}
+
+export function isBuyerReportedSource(source: string | null | undefined): boolean {
+  if (!source) return false;
+  const key = source.trim().toLowerCase().replace(/\s+/g, "_");
+  if (BUYER_SOURCE_IDS.has(key)) return true;
+  return key.includes("buyer_reported") || key.includes("buyer-reported") || key.includes("window_sticker");
+}
+
+function normalizeName(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "");
+}
+
+function splitModelAndTrim(model: string | null | undefined, explicitTrim?: string | null): { model: string; trim: string | null } {
+  const rawModel = (model ?? "").trim();
+  const explicit = explicitTrim?.trim() ?? "";
+  if (explicit) {
+    const pattern = new RegExp(`\\b${explicit.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
+    const stripped = rawModel.replace(pattern, " ").replace(/\s+/g, " ").trim();
+    return { model: stripped || rawModel, trim: explicit };
+  }
+  let spaced = ` ${rawModel.toLowerCase().replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ")} `;
+  const ordered = [...TRIM_TOKENS].sort((a, b) => b.length - a.length);
+  for (const token of ordered) {
+    const needle = ` ${token.replace(/-/g, " ")} `;
+    if (spaced.includes(needle)) {
+      spaced = spaced.replace(needle, " ");
+      return { model: spaced.replace(/\s+/g, " ").trim(), trim: token };
+    }
+  }
+  return { model: rawModel, trim: null };
+}
+
+function isRetrievalTime(value: string | null | undefined): boolean {
+  if (!value || !value.trim()) return false;
+  const parsed = Date.parse(value);
+  if (!Number.isFinite(parsed)) return false;
+  if (parsed < Date.parse("1990-01-01T00:00:00Z")) return false;
+  if (parsed > Date.now() + 24 * 60 * 60 * 1000) return false;
+  return true;
+}
+
+function isAuditableReference(value: string | null | undefined): boolean {
+  const reference = value?.trim() ?? "";
+  if (!reference) return false;
+  if (/buyer|self-reported|typed by the buyer/i.test(reference)) return false;
+  if (/^https?:\/\/\S+$/i.test(reference)) return true;
+  return reference.length >= 12;
+}
+
+export function benchmarkQualifiesAsVerified(
+  benchmark: MarketBenchmark,
+  quote: QuotedVehicle,
+): { ok: true } | { ok: false; reason: string } {
+  if (benchmark.kind === "factory_msrp" || isBuyerReportedSource(benchmark.source) || benchmark.sourceQuality === "buyer_reported") {
+    return { ok: false, reason: "A buyer-reported input cannot verify market value." };
+  }
+  if (benchmark.sourceQuality !== "licensed_independent" && benchmark.sourceQuality !== "government_record") {
     return {
-      status: "unverified",
-      source: null,
-      low: null,
-      high: null,
-      reason: benchmark.kind === "factory_msrp" || benchmark.source === BUYER_WINDOW_STICKER_SOURCE
-        ? "A buyer-supplied factory MSRP is not an independent market valuation. No independent valuation source is configured."
-        : benchmark.reason,
-      kind: null,
+      ok: false,
+      reason: "The valuation source is not an independent licensed or government record, so it was not treated as verified.",
     };
   }
+  const provenance = benchmark.provenance;
+  if (!provenance?.sourceId?.trim() || isBuyerReportedSource(provenance.sourceId)) {
+    return { ok: false, reason: "This valuation has no independent source id, so it was not treated as verified." };
+  }
+  if (!isRetrievalTime(provenance.retrievedAt)) {
+    return { ok: false, reason: "This valuation has no auditable retrieval time, so it was not treated as verified." };
+  }
+  if (!isAuditableReference(provenance.reference)) {
+    return { ok: false, reason: "This valuation has no auditable URL or reference, so it was not treated as verified." };
+  }
+  const low = benchmark.low;
+  const high = benchmark.high;
+  if (low == null || high == null || !Number.isFinite(low) || !Number.isFinite(high) || low <= 0 || high <= 0 || low > high) {
+    return {
+      ok: false,
+      reason: "The valuation range is not a finite positive range with the low price at or below the high price, so it was not treated as verified.",
+    };
+  }
+  const match = benchmark.vehicleMatch;
+  if (!match || match.condition !== "new" && match.condition !== "used") {
+    return { ok: false, reason: "This valuation does not name the vehicle it covers, so it was not treated as verified." };
+  }
+  if (!match.trim?.trim() || !match.make?.trim() || !match.model?.trim() || !Number.isInteger(match.year)) {
+    return {
+      ok: false,
+      reason: "This valuation does not name the year, make, model, and trim it covers, so it was not treated as verified.",
+    };
+  }
+  if (
+    !Number.isFinite(match.mileageMin) ||
+    !Number.isFinite(match.mileageMax) ||
+    match.mileageMin < 0 ||
+    match.mileageMax < match.mileageMin
+  ) {
+    return { ok: false, reason: "This valuation does not include a mileage band, so it was not treated as verified." };
+  }
+  if (quote.year == null || !Number.isInteger(quote.year) || quote.year !== match.year) {
+    return { ok: false, reason: "This valuation does not match the quote's year, so it was not treated as verified." };
+  }
+  if (!quote.make?.trim() || normalizeName(quote.make) !== normalizeName(match.make)) {
+    return { ok: false, reason: "This valuation does not match the quote's make, so it was not treated as verified." };
+  }
+  const quoteParts = splitModelAndTrim(quote.model, quote.trim);
+  const benchParts = splitModelAndTrim(match.model, match.trim);
+  if (!quoteParts.model || normalizeName(quoteParts.model) !== normalizeName(benchParts.model)) {
+    return { ok: false, reason: "This valuation does not match the quote's model, so it was not treated as verified." };
+  }
+  const quoteTrim = quoteParts.trim;
+  const benchmarkTrim = benchParts.trim;
+  if (!quoteTrim || !benchmarkTrim || normalizeName(quoteTrim) !== normalizeName(benchmarkTrim)) {
+    return { ok: false, reason: "This valuation does not match the quote's trim, so it was not treated as verified." };
+  }
+  if (quote.condition !== "new" && quote.condition !== "used") {
+    return { ok: false, reason: "This valuation cannot be matched until the quote says whether the vehicle is new or used." };
+  }
+  if (quote.condition !== match.condition) {
+    return { ok: false, reason: "This valuation is for a different new-or-used condition, so it was not treated as verified." };
+  }
+  if (quote.mileage == null || !Number.isFinite(quote.mileage) || quote.mileage < 0) {
+    return { ok: false, reason: "This valuation cannot be matched until the quote includes mileage." };
+  }
+  if (quote.mileage < match.mileageMin || quote.mileage > match.mileageMax) {
+    return { ok: false, reason: "The quote's mileage is outside this valuation's mileage band, so it was not treated as verified." };
+  }
+  return { ok: true };
+}
+
+/**
+ * A caller-supplied benchmark counts only when it is independently auditable
+ * and matches the quoted vehicle. Buyer-reported inputs never pass.
+ */
+export function acceptIndependentBenchmark(
+  supplied: MarketBenchmark | null | undefined,
+  quote: QuotedVehicle,
+  submittedSalePrice: number | null | undefined,
+  submittedOutTheDoor: number | null | undefined,
+): MarketBenchmark {
+  const fallback = independentMarketBenchmark({
+    submittedSalePrice,
+    submittedOutTheDoor,
+    vehicleYear: quote.year,
+    vehicleMake: quote.make,
+    vehicleModel: quote.model,
+  });
+  if (!supplied || supplied.status !== "verified") return fallback;
+  if (
+    supplied.kind === "factory_msrp" ||
+    supplied.source === BUYER_WINDOW_STICKER_SOURCE ||
+    isBuyerReportedSource(supplied.source) ||
+    supplied.sourceQuality === "buyer_reported"
+  ) {
+    return unverified("A buyer-reported input cannot verify market value.");
+  }
+  if (benchmarkCopiesSubmittedPrice(supplied, submittedSalePrice, submittedOutTheDoor)) return fallback;
+  const check = benchmarkQualifiesAsVerified(supplied, quote);
+  if (!check.ok) return unverified(check.reason);
+  return { ...supplied, status: "verified", kind: "market_transaction" };
+}
+
+/** A verified market valuation requires auditable provenance and a matching vehicle, never a buyer-entered price. */
+export function toMarketValuation(benchmark: MarketBenchmark, quote?: QuotedVehicle): MarketValuation {
+  if (benchmark.status !== "verified" || benchmark.kind === "factory_msrp" || isBuyerReportedSource(benchmark.source)) {
+    return unverifiedValuation(
+      benchmark.kind === "factory_msrp" || isBuyerReportedSource(benchmark.source) || benchmark.source === BUYER_WINDOW_STICKER_SOURCE
+        ? "A buyer-supplied factory MSRP is not an independent market valuation. No independent valuation source is configured."
+        : benchmark.reason,
+    );
+  }
+  if (!quote) {
+    return unverifiedValuation("Vehicle identity was not available to confirm this valuation, so it was not treated as verified.");
+  }
+  const check = benchmarkQualifiesAsVerified(benchmark, quote);
+  if (!check.ok) return unverifiedValuation(check.reason);
   return {
     status: "verified",
     source: benchmark.source,

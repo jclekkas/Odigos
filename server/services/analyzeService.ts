@@ -17,10 +17,11 @@ import { buildBuyerReported, buyerReportedHasInput, buyerReportedRuleOptions } f
 import { checkVin, unavailableVinCheck, withQuoteIdentity } from "../nhtsaVin.js";
 import { FACTORY_STICKER_COMPARISON } from "../../shared/windowSticker.js";
 import { isSyntheticSubmission } from "../syntheticGuard.js";
+import { recordAnalysisEvent } from "../analysisTelemetry.js";
+import { resolveConditionalFeeFacts } from "../conditionalFeeFacts.js";
 import { rankSignals } from "../signalRanker.js";
 import { runLeaseMath } from "../leaseMathEngine.js";
 import { detectStateFromText, getStateFeeData, getAmbiguousCityOptions } from "../stateFeeLookup.js";
-import { trackEvent } from "../events.js";
 import { openai, isOpenAIConfigured, OpenAIConfigurationError, parseOpenAIError, type ParsedOpenAIError } from "../openaiClient.js";
 import { enqueueSubmission } from "../ingestor.js";
 import { storage } from "../storage.js";
@@ -329,11 +330,11 @@ export async function runAnalysis(data: AnalyzeInput): Promise<AnalyzeServiceRes
   // gpt-4o-mini classifier only when zero dealer keywords are found.
   const validation = await validateDealerContent(data.dealerText);
   if (!validation.isRelevant) {
-    trackEvent("content_validation", {
+    recordAnalysisEvent(data, "content_validation", {
       isRelevant: false,
       category: validation.category,
       method: validation.method,
-    }).catch(err => logger.error("content_validation event failed", { source: "tracking", error: String(err) }));
+    });
     throw new AnalyzeServiceError(422, {
       error: "content_not_relevant",
       message: validation.rejectionReason
@@ -355,10 +356,10 @@ export async function runAnalysis(data: AnalyzeInput): Promise<AnalyzeServiceRes
     logger.warn("State not found in reference JSON, skipping injection", { source: "stateDetection", state: stateDetection.state });
   }
 
-  trackEvent("state_detection", {
+  recordAnalysisEvent(data, "state_detection", {
     method: stateDetection.method ?? undefined,
     state: stateDetection.state ?? undefined,
-  }).catch(err => logger.error("state_detection event failed", { source: "tracking", error: String(err) }));
+  });
 
   let stateFeeSection = "";
   const effectiveCap = stateData?.cpiIndexing?.isIndexed ? stateData.cpiIndexing.currentAmount : stateData?.docFeeCapAmount ?? null;
@@ -460,7 +461,7 @@ When state is unknown: omit all state-specific fee characterizations.`;
     feedbackInjected,
     ...(feedbackInjected ? { count: marketContext!.feedbackCount, agreementPct: Math.round(marketContext!.feedbackAgreementPct! * 100) } : {}),
   });
-  trackEvent("feedback_signal", {
+  recordAnalysisEvent(data, "feedback_signal", {
     dealerExtracted: preLlmDealerName != null,
     feedbackInjected,
   });
@@ -1087,11 +1088,11 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     capCheck,
     overage: docFeeCapResult?.overage ?? 0,
   });
-  trackEvent("state_detection", {
+  recordAnalysisEvent(data, "state_detection", {
     method: stateDetection.method ?? undefined,
     state: stateDetection.state ?? undefined,
     capViolation,
-  }).catch(err => logger.error("state_detection event failed", { source: "tracking", error: String(err) }));
+  });
 
   if (!stateDetection.state) {
     const missingInfoArr = Array.isArray(llmResult.missingInfo) ? [...llmResult.missingInfo] : [];
@@ -1132,6 +1133,12 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   }
 
   const leaseMathResult = runLeaseMath(llmResult.detectedFields, data.purchaseType);
+  const feeFacts = resolveConditionalFeeFacts({
+    dealerText: data.dealerText,
+    californiaDmvBusinessPartner: data.californiaDmvBusinessPartner,
+    oregonIntegratorElection: data.oregonIntegratorElection,
+    pennsylvaniaElectronicProcessing: data.pennsylvaniaElectronicProcessing,
+  });
 
   const ruleEngineAdjustments = applyRuleEngine(
     llmResult,
@@ -1141,6 +1148,9 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     leaseMathResult,
     {
       stateData: stateData ?? null,
+      privateIndustryPartner: feeFacts.privateIndustryPartner,
+      electronicIntegrator: feeFacts.electronicIntegrator,
+      electronicTransaction: feeFacts.electronicTransaction,
       condition: data.condition,
       dealerText: data.dealerText,
       mileage: quoteFacts.mileage,
@@ -1151,6 +1161,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
       buyerReportedExplanation: buyerRule.buyerReportedExplanation,
       quoteAboveAllBuyerComps: buyerRule.quoteAboveAllBuyerComps,
       vinMismatchNote: vinCheck.mismatches.length > 0 ? vinCheck.summary : null,
+      vinCheck,
     },
   );
 
@@ -1215,11 +1226,11 @@ Respond entirely in Spanish. All text fields in your JSON response — including
 
   logger.info("Analysis successful", { source: "analyze", dealScore: finalResult.dealScore, confidence: finalResult.confidenceLevel });
 
-  trackEvent("submission", {
+  recordAnalysisEvent(data, "submission", {
     vehicle: data.vehicle,
     zipCode: data.zipCode,
     sessionId: data.sessionId,
-  }).catch(err => logger.error("submission event failed", { source: "tracking", error: String(err) }));
+  });
 
   const synthetic = isSyntheticSubmission({
     synthetic: data.synthetic,
@@ -1380,14 +1391,14 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   payload.dealerPriorQuoteCount = dealerPriorQuoteCount;
   payload.dealerPatternSummary = dealerPatternSummary;
 
-  trackEvent("submission_score", {
+  recordAnalysisEvent(data, "submission_score", {
     dealScore: finalResult.dealScore,
     vehicle: data.vehicle,
     sessionId: data.sessionId,
     marketContextUsed,
     marketContextStrength: finalOverallStrength,
     marketSignalCount: marketSignals.length,
-  }).catch(err => logger.error("submission_score event failed", { source: "tracking", error: String(err) }));
+  });
 
   if (!synthetic) {
     enqueueSubmission({ request: data, result: finalResult, preSavedListingId: listingId });

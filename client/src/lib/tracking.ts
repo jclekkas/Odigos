@@ -1,3 +1,5 @@
+import { shouldEmitSubmissionAnalytics } from "@shared/syntheticSubmission";
+
 type EventType =
   | "page_view"
   | "cta_click"
@@ -98,6 +100,19 @@ export function trackOptionalDetailsExpanded(): void {
 
 export function trackAnalyzeStart(): void {
   track("analyze_start", { page: window.location.pathname });
+}
+
+export function trackSubmissionEvent(
+  submission: {
+    synthetic?: boolean | null;
+    dealerText?: string | null;
+    competingQuoteText?: string | null;
+  },
+  eventType: EventType,
+  metadata?: TrackingMetadata,
+): void {
+  if (!shouldEmitSubmissionAnalytics(submission)) return;
+  void track(eventType, metadata);
 }
 
 export function trackAnalysisComplete(properties?: TrackingMetadata): void {

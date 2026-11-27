@@ -70,6 +70,8 @@ export function buildConstrainedReply(facts: ReplyFacts): string {
     parts.push(
       `${facts.primaryIssue}. Please resolve that in writing with an itemized quote. I am not approving the vehicle price.`,
     );
+  } else if (facts.marketVerified) {
+    parts.push(`${facts.primaryIssue} I am not approving the vehicle price until that is resolved.`);
   } else {
     parts.push(
       `${facts.primaryIssue}. Market value is not verified, so I cannot accept the selling price from this quote alone.`,

@@ -11,21 +11,13 @@ import { drawScorecard } from "@/components/ShareCard";
 import {
   track,
   trackPageView,
-  trackFormStart,
-  trackFormFocus,
-  trackFileUploadFailed,
-  trackAnalysisFailed,
   trackCheckoutFailed,
-  trackScorecardDownloaded,
-  trackCopySummary,
-  trackOptionalDetailsExpanded,
-  trackAnalyzeStart,
-  trackAnalysisComplete,
+  trackSubmissionEvent,
   trackPaywallView,
   trackCheckoutInitiated,
   getSessionId,
 } from "@/lib/tracking";
-import { capture } from "@/lib/analytics";
+import { captureSubmissionEvent } from "@/lib/analytics";
 import { trackConversion, useExperiment } from "@/lib/experiments";
 import { tagFlow } from "@/lib/sentry";
 import {
@@ -191,6 +183,9 @@ const formSchema = z.object({
   buyerBookAmount: z.string().optional(),
   buyerBookSource: z.string().optional(),
   competingQuoteText: z.string().optional(),
+  californiaDmvBusinessPartner: z.enum(["unspecified", "yes", "no"]),
+  oregonIntegratorElection: z.enum(["unspecified", "yes", "no"]),
+  pennsylvaniaElectronicProcessing: z.enum(["unspecified", "yes", "no"]),
   comps: z.array(z.object({
     askingPrice: z.string(),
     source: z.string(),
@@ -269,6 +264,19 @@ type FormValues = z.infer<typeof formSchema>;
 
 /** Explicit state machine for image intake (camera capture and upload). */
 type ImageIntakeStatus = "idle" | "processing" | "success" | "partial" | "failed" | "invalid";
+
+function optionalBoolean(value: "unspecified" | "yes" | "no" | undefined): boolean | undefined {
+  if (value === "yes") return true;
+  if (value === "no") return false;
+  return undefined;
+}
+
+function submissionAnalyticsInput(data: { dealerText?: string; competingQuoteText?: string }) {
+  return {
+    dealerText: data.dealerText ?? "",
+    competingQuoteText: data.competingQuoteText ?? "",
+  };
+}
 
 function buyerRequestFields(data: FormValues): {
   vin?: string;
@@ -1724,7 +1732,7 @@ export default function Home() {
 
   useEffect(() => {
     trackPageView("/analyze");
-    capture("analyze_page_viewed", { route: "/analyze" });
+    captureIfReal("analyze_page_viewed", { route: "/analyze" });
     setSeoMeta({
       title: "Analyze Your Car Deal | Odigos",
       description: "Paste dealer texts, emails, or quotes into Odigos. The audit checks disclosure, math, and verified fee caps. A factory window sticker MSRP does not verify market value. Independent market valuation stays unverified.",
@@ -1732,13 +1740,6 @@ export default function Home() {
     });
   }, []);
 
-
-  const handleFormStart = () => {
-    if (!formStartTracked) {
-      trackFormStart("/analyze");
-      setFormStartTracked(true);
-    }
-  };
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -1756,11 +1757,29 @@ export default function Home() {
       buyerBookAmount: "",
       buyerBookSource: "",
       competingQuoteText: "",
+      californiaDmvBusinessPartner: "unspecified",
+      oregonIntegratorElection: "unspecified",
+      pennsylvaniaElectronicProcessing: "unspecified",
       comps: [],
       source: "paste",
     },
   });
   const listingFields = useFieldArray({ control: form.control, name: "comps" });
+  const captureIfReal = (eventName: string, properties?: Record<string, unknown>) => {
+    captureSubmissionEvent(submissionAnalyticsInput(form.getValues()), eventName, properties);
+  };
+  const trackIfReal = (
+    eventType: Parameters<typeof trackSubmissionEvent>[1],
+    metadata?: Parameters<typeof trackSubmissionEvent>[2],
+  ) => {
+    trackSubmissionEvent(submissionAnalyticsInput(form.getValues()), eventType, metadata);
+  };
+  const handleFormStart = () => {
+    if (!formStartTracked) {
+      trackIfReal("form_start", { page: "/analyze" });
+      setFormStartTracked(true);
+    }
+  };
 
   /**
    * Shared image-ingestion pipeline used by both camera capture and file upload.
@@ -1774,8 +1793,8 @@ export default function Home() {
     if (!ALLOWED_UPLOAD_TYPES.includes(file.type)) {
       const reason = "unsupported_file_type";
       setUploadError("That file type isn't supported. Please upload a PNG, JPG, WEBP, or PDF.");
-      capture("file_upload_failed", { reason, file_type: file.type, input_method: source });
-      trackFileUploadFailed(reason);
+      captureIfReal("file_upload_failed", { reason, file_type: file.type, input_method: source });
+      trackIfReal("file_upload_failed", { reason });
       setImageIntakeStatus("invalid");
       return;
     }
@@ -1783,15 +1802,15 @@ export default function Home() {
     if (file.size > maxBytes) {
       const reason = "file_too_large";
       setUploadError(`That file is too large to process. Please use a file under ${formatSizeCopy(maxBytes)}.`);
-      capture("file_upload_failed", { reason, file_size_bytes: file.size, input_method: source });
-      trackFileUploadFailed(reason);
+      captureIfReal("file_upload_failed", { reason, file_size_bytes: file.size, input_method: source });
+      trackIfReal("file_upload_failed", { reason });
       setImageIntakeStatus("invalid");
       return;
     }
 
     if (!inputStartedRef.current) {
       inputStartedRef.current = true;
-      capture("analysis_input_started", { input_method: source });
+      captureIfReal("analysis_input_started", { input_method: source });
     }
 
     setUploadLoading(true);
@@ -1802,7 +1821,7 @@ export default function Home() {
         const result = await uploadFileForExtraction(file);
         extractedText = result.text ?? "";
         if (result.compressed) {
-          capture("file_upload_compressed", {
+          captureIfReal("file_upload_compressed", {
             original_bytes: result.compressed.originalBytes,
             compressed_bytes: result.compressed.compressedBytes,
             input_method: source,
@@ -1812,24 +1831,24 @@ export default function Home() {
         if (err instanceof ContentNotRelevantError) {
           const reason = "content_not_relevant";
           setUploadError(err.message);
-          capture("file_upload_failed", { reason, documentType: err.documentType, input_method: source });
-          trackFileUploadFailed(reason);
+          captureIfReal("file_upload_failed", { reason, documentType: err.documentType, input_method: source });
+          trackIfReal("file_upload_failed", { reason });
           setImageIntakeStatus("invalid");
           return;
         }
         if (err instanceof FileTooLargeError) {
           const reason = "file_too_large";
           setUploadError(`That file is too large to process. Please use a file under ${formatSizeCopy(err.cap)}.`);
-          capture("file_upload_failed", { reason, file_size_bytes: file.size, input_method: source });
-          trackFileUploadFailed(reason);
+          captureIfReal("file_upload_failed", { reason, file_size_bytes: file.size, input_method: source });
+          trackIfReal("file_upload_failed", { reason });
           setImageIntakeStatus("invalid");
           return;
         }
         if (err instanceof UploadExtractionError) {
           const reason = err.reason || "server_error";
           setUploadError(err.message);
-          capture("file_upload_failed", { reason, status: err.status, input_method: source });
-          trackFileUploadFailed(reason);
+          captureIfReal("file_upload_failed", { reason, status: err.status, input_method: source });
+          trackIfReal("file_upload_failed", { reason });
           setImageIntakeStatus("failed");
           return;
         }
@@ -1837,8 +1856,8 @@ export default function Home() {
       }
       if (!extractedText.trim()) {
         setUploadError("We couldn't read any text from that image. Try a clearer, well-lit photo, or paste the quote manually.");
-        capture("file_upload_failed", { reason: "empty_ocr_result", input_method: source });
-        trackFileUploadFailed("empty_ocr_result");
+        captureIfReal("file_upload_failed", { reason: "empty_ocr_result", input_method: source });
+        trackIfReal("file_upload_failed", { reason: "empty_ocr_result" });
         setImageIntakeStatus("failed");
         return;
       }
@@ -1877,8 +1896,8 @@ export default function Home() {
     } catch {
       const reason = "network_error";
       setUploadError("Something went wrong. Please try again or paste the text manually.");
-      capture("file_upload_failed", { reason, input_method: source });
-      trackFileUploadFailed(reason);
+      captureIfReal("file_upload_failed", { reason, input_method: source });
+      trackIfReal("file_upload_failed", { reason });
       setImageIntakeStatus("failed");
     } finally {
       setUploadLoading(false);
@@ -1914,7 +1933,7 @@ export default function Home() {
       const data = await response.json();
       if (!response.ok) {
         setUrlError(data.message ?? "We couldn't process that URL. Please try pasting the text directly.");
-        capture("url_extract_failed", { reason: data.message ?? "server_error", status: response.status });
+        captureIfReal("url_extract_failed", { reason: data.message ?? "server_error", status: response.status });
         return;
       }
       form.setValue("dealerText", data.text);
@@ -1923,7 +1942,7 @@ export default function Home() {
       setUrlInput("");
     } catch {
       setUrlError("Something went wrong. Please try again or paste the text manually.");
-      capture("url_extract_failed", { reason: "network_error" });
+      captureIfReal("url_extract_failed", { reason: "network_error" });
     } finally {
       setUrlLoading(false);
     }
@@ -2023,7 +2042,7 @@ export default function Home() {
         const pass = savePass(productKey);
         setActivePass(pass);
         setUnlockTier("active");
-        capture("paid_conversion", { product: productKey, selected_pass: productKey });
+        captureIfReal("paid_conversion", { product: productKey, selected_pass: productKey });
         trackConversion("paid_conversion");
 
         const productInfo = PASS_PRODUCTS[productKey];
@@ -2126,6 +2145,9 @@ export default function Home() {
         termMonths: data.termMonths ? parseInt(data.termMonths) : undefined,
         downPayment: data.downPayment ? parseFloat(data.downPayment) : undefined,
         factoryWindowStickerMsrp: parseFactoryWindowStickerMsrp(data.factoryWindowStickerMsrp),
+        californiaDmvBusinessPartner: optionalBoolean(data.californiaDmvBusinessPartner),
+        oregonIntegratorElection: optionalBoolean(data.oregonIntegratorElection),
+        pennsylvaniaElectronicProcessing: optionalBoolean(data.pennsylvaniaElectronicProcessing),
         ...buyerRequestFields(data),
         sessionId: getSessionId(),
         language: "en" as "en" | "es",
@@ -2139,8 +2161,9 @@ export default function Home() {
       setTimeout(() => setShowDoneState(false), 1500);
       if (!resultFiredRef.current) {
         resultFiredRef.current = true;
-        capture("analysis_completed", { result_available: true });
-        trackAnalysisComplete({
+        const submission = submissionAnalyticsInput(form.getValues());
+        captureSubmissionEvent(submission, "analysis_completed", { result_available: true });
+        trackSubmissionEvent(submission, "analysis_complete", {
           dealScore: data.verdictLabel,
           confidence: String(data.confidenceLevel ?? ""),
         });
@@ -2148,8 +2171,9 @@ export default function Home() {
     },
     onError: (error) => {
       const errorMessage = error instanceof Error ? error.message : "unknown_error";
-      capture("analysis_failed", { errorMessage });
-      trackAnalysisFailed(errorMessage);
+      const submission = submissionAnalyticsInput(form.getValues());
+      captureSubmissionEvent(submission, "analysis_failed", { errorMessage });
+      trackSubmissionEvent(submission, "analysis_failed", { errorMessage });
 
       // The apiRequest helper throws errors with format "STATUS: JSON_BODY".
       // Parse the body to detect content-relevance rejections and show a
@@ -2177,8 +2201,9 @@ export default function Home() {
     setResult(null);
     setShowDoneState(false);
     resultFiredRef.current = false;
-    trackAnalyzeStart();
-    capture("analysis_submitted", {
+    const submission = submissionAnalyticsInput(data);
+    trackSubmissionEvent(submission, "analyze_start");
+    captureSubmissionEvent(submission, "analysis_submitted", {
       input_mode: data.source ?? "paste",
       input_length_bucket: getInputLengthBucket(data.dealerText.length),
     });
@@ -2291,13 +2316,13 @@ export default function Home() {
                               onInput={() => {
                                 if (!inputStartedRef.current) {
                                   inputStartedRef.current = true;
-                                  capture("analysis_input_started", { input_method: "typing" });
+                                  captureIfReal("analysis_input_started", { input_method: "typing" });
                                 }
                               }}
                               onPaste={() => {
                                 if (!inputStartedRef.current) {
                                   inputStartedRef.current = true;
-                                  capture("analysis_input_started", { input_method: "paste" });
+                                  captureIfReal("analysis_input_started", { input_method: "paste" });
                                 }
                               }}
                               placeholder="Paste the dealer's email, text message, or quote — any format works"
@@ -2434,13 +2459,13 @@ export default function Home() {
                                 onInput={() => {
                                   if (!inputStartedRef.current) {
                                     inputStartedRef.current = true;
-                                    capture("analysis_input_started", { input_method: "typing" });
+                                    captureIfReal("analysis_input_started", { input_method: "typing" });
                                   }
                                 }}
                                 onPaste={() => {
                                   if (!inputStartedRef.current) {
                                     inputStartedRef.current = true;
-                                    capture("analysis_input_started", { input_method: "paste" });
+                                    captureIfReal("analysis_input_started", { input_method: "paste" });
                                   }
                                 }}
                                 placeholder="Paste the dealer's email, text message, or quote — any format works"
@@ -2553,7 +2578,7 @@ export default function Home() {
                       inputMode="decimal"
                       placeholder="e.g., 28700"
                       data-testid="input-factory-window-sticker-msrp"
-                      onFocus={() => trackFormFocus("factory_window_sticker_msrp")}
+                      onFocus={() => trackIfReal("form_focus", { fieldName: "factory_window_sticker_msrp" })}
                     />
                   </FormControl>
                   <FormDescription data-testid="text-factory-window-sticker-help">
@@ -2587,7 +2612,7 @@ export default function Home() {
                           spellCheck={false}
                           placeholder="17 characters, no I, O, or Q"
                           data-testid="input-vin"
-                          onFocus={() => trackFormFocus("vin")}
+                          onFocus={() => trackIfReal("form_focus", { fieldName: "vin" })}
                         />
                       </FormControl>
                       <FormDescription>
@@ -2739,8 +2764,8 @@ export default function Home() {
               onOpenChange={(open) => {
                 setIsOptionalOpen(open);
                 if (open) {
-                  capture("optional_details_expanded");
-                  trackOptionalDetailsExpanded();
+                  captureIfReal("optional_details_expanded");
+                  trackIfReal("optional_details_expanded");
                 }
               }}
             >
@@ -2797,7 +2822,7 @@ export default function Home() {
                                 {...field}
                                 placeholder="e.g., 2024 Toyota Camry XLE"
                                 data-testid="input-vehicle"
-                                onFocus={() => trackFormFocus("vehicle")}
+                                onFocus={() => trackIfReal("form_focus", { fieldName: "vehicle" })}
                               />
                             </FormControl>
                           </FormItem>
@@ -2816,7 +2841,7 @@ export default function Home() {
                                 placeholder="e.g., 90210"
                                 maxLength={5}
                                 data-testid="input-zip"
-                                onFocus={() => trackFormFocus("zip_code")}
+                                onFocus={() => trackIfReal("form_focus", { fieldName: "zip_code" })}
                               />
                             </FormControl>
                           </FormItem>
@@ -2847,6 +2872,73 @@ export default function Home() {
                       />
                     </div>
 
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="californiaDmvBusinessPartner"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>California DMV business partner</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger data-testid="select-ca-dmv-partner">
+                                  <SelectValue placeholder="Not stated" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="unspecified">Not stated</SelectItem>
+                                <SelectItem value="yes">Yes, the dealer is a partner</SelectItem>
+                                <SelectItem value="no">No</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>Only if the quote or the dealer said so. Odigos does not guess.</FormDescription>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="oregonIntegratorElection"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Oregon integrator election</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger data-testid="select-or-integrator">
+                                  <SelectValue placeholder="Not stated" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="unspecified">Not stated</SelectItem>
+                                <SelectItem value="yes">Purchaser elects an integrator</SelectItem>
+                                <SelectItem value="no">Purchaser elects no integrator</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="pennsylvaniaElectronicProcessing"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Pennsylvania electronic processing</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger data-testid="select-pa-electronic">
+                                  <SelectValue placeholder="Not stated" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="unspecified">Not stated</SelectItem>
+                                <SelectItem value="yes">Electronic</SelectItem>
+                                <SelectItem value="no">Not electronic</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
                     {purchaseType === "finance" && (
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                         <FormField
@@ -2862,7 +2954,7 @@ export default function Home() {
                                   step="0.01"
                                   placeholder="e.g., 5.99"
                                   data-testid="input-apr"
-                                  onFocus={() => trackFormFocus("apr")}
+                                  onFocus={() => trackIfReal("form_focus", { fieldName: "apr" })}
                                 />
                               </FormControl>
                             </FormItem>
@@ -2881,7 +2973,7 @@ export default function Home() {
                                   type="number"
                                   placeholder="e.g., 60"
                                   data-testid="input-term"
-                                  onFocus={() => trackFormFocus("term_months")}
+                                  onFocus={() => trackIfReal("form_focus", { fieldName: "term_months" })}
                                 />
                               </FormControl>
                             </FormItem>
@@ -2900,7 +2992,7 @@ export default function Home() {
                                   type="number"
                                   placeholder="e.g., 5000"
                                   data-testid="input-down-payment"
-                                  onFocus={() => trackFormFocus("down_payment")}
+                                  onFocus={() => trackIfReal("form_focus", { fieldName: "down_payment" })}
                                 />
                               </FormControl>
                             </FormItem>
@@ -3096,8 +3188,8 @@ export default function Home() {
                     navigator.clipboard.writeText(text).then(() => {
                       setSummaryCopied("success");
                       setTimeout(() => setSummaryCopied("idle"), 2000);
-                      capture("copy_summary", { verdict: result.goNoGo });
-                      trackCopySummary();
+                      captureIfReal("copy_summary", { verdict: result.goNoGo });
+                      trackIfReal("copy_summary");
                     }).catch(() => {
                       setSummaryCopied("failed");
                       setTimeout(() => setSummaryCopied("idle"), 2000);
@@ -3138,8 +3230,8 @@ export default function Home() {
                       link.download = "odigos-deal-scorecard.png";
                       link.href = dataUrl;
                       link.click();
-                      capture("scorecard_downloaded", { verdict: result.goNoGo });
-                      trackScorecardDownloaded();
+                      captureIfReal("scorecard_downloaded", { verdict: result.goNoGo });
+                      trackIfReal("scorecard_downloaded");
                     } catch {
                       toast({
                         title: "Download failed",

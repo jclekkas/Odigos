@@ -5,6 +5,7 @@ import { applyRuleEngine } from "../../server/ruleEngine.js";
 import { getStateFeeData } from "../../server/stateFeeLookup.js";
 import { buildBuyerReported, buyerReportedRuleOptions } from "../../server/buyerReportedValuation.js";
 import { factoryMarkup } from "../../server/marketValuation.js";
+import { auditedCamryBenchmark } from "./auditedBenchmark.js";
 import type { AnalysisResponse, DetectedFields } from "../../shared/schema.js";
 
 /**
@@ -166,14 +167,10 @@ describe("GO decision integrity", () => {
       }),
       {
         stateData,
-        marketBenchmark: {
-          status: "verified",
-          source: "licensed-valuation",
-          kind: "market_transaction",
-          low: 26000,
-          high: 30000,
-          reason: "Fixture valuation that does not copy the asking price.",
-        },
+        marketBenchmark: auditedCamryBenchmark(),
+        condition: "new",
+        mileage: 12,
+        trim: "LE",
       },
     );
     expect(result.goNoGo).not.toBe("GO");
@@ -194,14 +191,10 @@ describe("GO decision integrity", () => {
       }),
       {
         stateData,
-        marketBenchmark: {
-          status: "verified",
-          source: "licensed-valuation",
-          kind: "market_transaction",
-          low: 26000,
-          high: 30000,
-          reason: "Fixture valuation that does not copy the asking price.",
-        },
+        marketBenchmark: auditedCamryBenchmark(),
+        condition: "new",
+        mileage: 12,
+        trim: "LE",
       },
     );
     expect(result.goNoGo).toBe("GO");

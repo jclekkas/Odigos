@@ -192,6 +192,38 @@ describe("Home page form interaction", () => {
       );
     });
   });
+
+  it("shows optional California, Oregon, and Pennsylvania fee confirmations", async () => {
+    const user = userEvent.setup();
+    renderHome();
+    await user.click(await screen.findByText("Optional Details"));
+    expect(await screen.findByTestId("select-ca-dmv-partner")).toBeInTheDocument();
+    expect(screen.getByTestId("select-or-integrator")).toBeInTheDocument();
+    expect(screen.getByTestId("select-pa-electronic")).toBeInTheDocument();
+    expect(screen.getByText("California DMV business partner")).toBeInTheDocument();
+    expect(screen.getByText("Oregon integrator election")).toBeInTheDocument();
+    expect(screen.getByText("Pennsylvania electronic processing")).toBeInTheDocument();
+  });
+
+  it("does not send analytics for an ODIGOS_SYNTHETIC_QA submission", async () => {
+    const user = userEvent.setup();
+    renderHome();
+    const textarea = await screen.findByTestId("input-dealer-text");
+    await user.click(textarea);
+    const fetchMock = vi.mocked(fetch);
+    fetchMock.mockClear();
+    await user.type(textarea, "ODIGOS_SYNTHETIC_QA selling price $28,000 doc fee $70");
+    await user.click(await screen.findByTestId("button-analyze"));
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        expect.stringContaining("/api/analyze"),
+        expect.objectContaining({ method: "POST" }),
+      );
+    });
+    const tracked = fetchMock.mock.calls.filter((call) => String(call[0]).includes("/api/track"));
+    const bodies = tracked.map((call) => String((call[1] as RequestInit | undefined)?.body ?? ""));
+    expect(bodies.join("\n")).not.toMatch(/analyze_start|analysis_complete|analysis_failed|analysis_submitted/);
+  });
 });
 
 // ─── Free / paid boundary ─────────────────────────────────────────────────────

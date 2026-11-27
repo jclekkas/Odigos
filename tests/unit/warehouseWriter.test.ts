@@ -122,6 +122,23 @@ describe("writeSubmissionToWarehouse — success path", () => {
   it("resolves without error on first attempt", async () => {
     await expect(writeSubmissionToWarehouse(BASE_PAYLOAD)).resolves.toBeUndefined();
   });
+
+  it("does not write synthetic QA submissions to the warehouse", async () => {
+    mockInsert.mockClear();
+    mockExecute.mockClear();
+    mockSelect.mockClear();
+    await writeSubmissionToWarehouse({
+      ...BASE_PAYLOAD,
+      request: makeRequest({ synthetic: true, dealerText: "Selling price $28,000." }),
+    });
+    await writeSubmissionToWarehouse({
+      ...BASE_PAYLOAD,
+      request: makeRequest({ dealerText: "ODIGOS_SYNTHETIC_QA selling price $28,000" }),
+    });
+    expect(mockInsert).not.toHaveBeenCalled();
+    expect(mockExecute).not.toHaveBeenCalled();
+    expect(mockSelect).not.toHaveBeenCalled();
+  });
 });
 
 // ─── Dedup: first submission → non-duplicate ─────────────────────────────────

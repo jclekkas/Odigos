@@ -2,6 +2,7 @@ import { createHash } from "crypto";
 import type { Express } from "express";
 import { trackEvent } from "../events.js";
 import { getExperimentStats } from "../analytics.js";
+import { isSyntheticTrackingPayload } from "../syntheticGuard.js";
 
 function hashIp(req: { ip?: string; headers: Record<string, string | string[] | undefined> }): string {
   const forwarded = req.headers["x-forwarded-for"];
@@ -22,6 +23,9 @@ export function registerTrackingRoutes(app: Express): void {
       ];
       if (!eventType || !validTypes.includes(eventType)) {
         return res.status(400).json({ error: "Invalid event type" });
+      }
+      if (isSyntheticTrackingPayload(req.body)) {
+        return res.json({ success: true, recorded: false });
       }
       await trackEvent(eventType, {
         ...metadata,
