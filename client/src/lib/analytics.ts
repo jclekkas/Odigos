@@ -1,4 +1,20 @@
 import posthog from "posthog-js";
+import { shouldEmitSubmissionAnalytics } from "@shared/syntheticSubmission";
+
+export interface SubmissionAnalyticsInput {
+  synthetic?: boolean | null;
+  dealerText?: string | null;
+  competingQuoteText?: string | null;
+}
+
+export function captureSubmissionEvent(
+  submission: SubmissionAnalyticsInput,
+  eventName: string,
+  properties?: Record<string, unknown>,
+): void {
+  if (!shouldEmitSubmissionAnalytics(submission)) return;
+  capture(eventName, properties);
+}
 
 let initialized = false;
 
