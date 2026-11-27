@@ -81,9 +81,9 @@ On a custom base URL the app does not fall back to `gpt-4o-mini` unless you set 
 
 The results page can mail the verdict to an address the visitor types. That path is not an open relay. `/api/analyze` signs the verdict, and `/api/email-preview` sends only the text inside that signature.
 
-`EMAIL_TOKEN_SECRET` is the HMAC key. If it is unset or blank, the server uses `SESSION_SECRET`. If both are unset or blank, the server does not sign a token, the email button stays hidden, and `POST /api/email-preview` returns 503. The repository does not contain a fallback key. Set `ALERT_SMTP_URL` as well, or there is still no mail transport.
+`EMAIL_TOKEN_SECRET` is the HMAC key. If it is unset or blank, the server uses `SESSION_SECRET`. `ALERT_SMTP_URL` is the mail transport. The form is shown only when both are set: a signing secret, and `ALERT_SMTP_URL` as a non-blank URL (whitespace counts as unset). If either is missing, `/api/analyze` does not issue an `emailToken` and the form stays hidden. A direct `POST /api/email-preview` still returns 503 — `SMTP_NOT_CONFIGURED` when the secret is set but SMTP is not, and `EMAIL_NOT_CONFIGURED` when no signing secret is set. The repository does not contain a fallback key. Setting `ALERT_SMTP_URL` and a signing secret makes the form appear again with no code change.
 
-Docker Compose passes `EMAIL_TOKEN_SECRET` and `SESSION_SECRET` through from `.env`. A self-hosted server is reached at `http://localhost:5000`, including when `NODE_ENV=production`. `GET /api/health` stays unauthenticated and returns `status` for that process and for Docker or CI probes. On the hosted site, where `VERCEL` is set, a localhost browser origin is not accepted.
+Docker Compose passes `EMAIL_TOKEN_SECRET`, `SESSION_SECRET`, and `ALERT_SMTP_URL` through from `.env`. A self-hosted server is reached at `http://localhost:5000`, including when `NODE_ENV=production`. `GET /api/health` stays unauthenticated and returns `status` for that process and for Docker or CI probes. On the hosted site, where `VERCEL` is set, a localhost browser origin is not accepted.
 
 ## Development
 

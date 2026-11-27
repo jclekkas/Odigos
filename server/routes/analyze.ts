@@ -9,6 +9,7 @@ import { trackEvent } from "../events.js";
 import { extractTextFromFile, extractTextFromUrl, IrrelevantContentError } from "../extractText.js";
 import { storage } from "../storage.js";
 import { writeAuditEvent } from "../audit.js";
+import { isAlertSmtpConfigured } from "../alerts.js";
 import { signEmailPayload } from "../emailPreviewToken.js";
 import { runAnalysis, AnalyzeServiceError } from "../services/analyzeService.js";
 import {
@@ -52,16 +53,20 @@ export function registerAnalyzeRoutes(app: Express): void {
       const result = await runAnalysis(parseResult.data);
       // Sign the fields the "email me this" feature is allowed to send, so the
       // email route can prove the content came from here rather than from a
-      // caller who made it up. Null when no signing secret is configured —
-      // the client then simply hides the email option.
-      const emailToken = signEmailPayload({
-        goNoGo: result.payload.goNoGo,
-        verdictLabel: result.payload.verdictLabel,
-        confidenceLevel: result.payload.confidenceLevel,
-        missingInfo: result.payload.missingInfo,
-        detectedFields: result.payload.detectedFields,
-        summary: result.payload.summary,
-      });
+      // caller who made it up. Skip signing when there is no mail transport:
+      // a token without ALERT_SMTP_URL would show a form that can only fail
+      // with SMTP_NOT_CONFIGURED. Null also when no signing secret is set.
+      // The client hides the email option whenever the token is absent.
+      const emailToken = isAlertSmtpConfigured()
+        ? signEmailPayload({
+            goNoGo: result.payload.goNoGo,
+            verdictLabel: result.payload.verdictLabel,
+            confidenceLevel: result.payload.confidenceLevel,
+            missingInfo: result.payload.missingInfo,
+            detectedFields: result.payload.detectedFields,
+            summary: result.payload.summary,
+          })
+        : null;
       res.json(emailToken ? { ...result.payload, emailToken } : result.payload);
       writeAuditEvent(req, "analyze", "success", {
         route: req.originalUrl, method: req.method, statusCode: 200,

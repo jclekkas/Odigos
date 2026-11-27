@@ -258,8 +258,18 @@ async function sendWebhookAlert(rule: AlertRule, value: number): Promise<void> {
   }
 }
 
+/** Non-blank SMTP URL, or null when unset, empty, or whitespace. */
+function configuredSmtpUrl(): string | null {
+  const smtpUrl = process.env.ALERT_SMTP_URL?.trim();
+  return smtpUrl ? smtpUrl : null;
+}
+
+export function isAlertSmtpConfigured(): boolean {
+  return configuredSmtpUrl() !== null;
+}
+
 async function sendEmailAlert(rule: AlertRule, value: number): Promise<void> {
-  const smtpUrl = process.env.ALERT_SMTP_URL;
+  const smtpUrl = configuredSmtpUrl();
   const emailTo = process.env.ALERT_EMAIL_TO;
   if (!smtpUrl || !emailTo) return;
 
@@ -284,7 +294,7 @@ async function sendAlert(rule: AlertRule, value: number): Promise<void> {
 }
 
 export async function createSmtpTransport(): Promise<import("nodemailer").Transporter | null> {
-  const smtpUrl = process.env.ALERT_SMTP_URL;
+  const smtpUrl = configuredSmtpUrl();
   if (!smtpUrl) return null;
   const nodemailer = await import("nodemailer");
   return nodemailer.default.createTransport(smtpUrl);
@@ -377,7 +387,7 @@ export async function getAlertsStatus(): Promise<{
     rules,
     recentFired: state.recentFired.slice(-20).reverse(),
     webhookConfigured: !!webhookUrl,
-    smtpConfigured: !!(process.env.ALERT_SMTP_URL && process.env.ALERT_EMAIL_TO),
+    smtpConfigured: !!(isAlertSmtpConfigured() && process.env.ALERT_EMAIL_TO),
     webhookUrlMasked,
   };
 }
