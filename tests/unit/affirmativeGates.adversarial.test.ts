@@ -3,9 +3,9 @@ import { applyRuleEngine } from "../../server/ruleEngine.js";
 import { getStateFeeData } from "../../server/stateFeeLookup.js";
 import { classifyDocFee } from "../../server/regulatoryClassification.js";
 import { checkVin, vinPositivelyAgrees } from "../../server/nhtsaVin.js";
+import { createTestTrustedValuationAdapter, withValuationAdapters } from "../../server/valuationAdapters.js";
 import type { AnalysisResponse, DetectedFields } from "../../shared/schema.js";
 import type { VinCheck } from "../../shared/buyerReported.js";
-import { auditedCamryBenchmark } from "./auditedBenchmark.js";
 
 /**
  * Positive-GO attempts that use incomplete or forged evidence.
@@ -57,15 +57,14 @@ function run(
   detected: DetectedFields,
   options: NonNullable<Parameters<typeof applyRuleEngine>[5]> = {},
 ) {
-  return applyRuleEngine(llm, detected, null, "cash", null, {
+  return withValuationAdapters([createTestTrustedValuationAdapter()], () => applyRuleEngine(llm, detected, null, "cash", null, {
     stateData: getStateFeeData("CA"),
-    marketBenchmark: auditedCamryBenchmark(),
     condition: "new",
     mileage: 12,
     trim: "LE",
     dealerText: "Cash purchase. Not a loan.",
     ...options,
-  });
+  }));
 }
 
 function decodedVin(overrides: Partial<NonNullable<VinCheck["decoded"]>> = {}): NonNullable<VinCheck["decoded"]> {
