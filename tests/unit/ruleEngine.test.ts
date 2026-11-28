@@ -295,32 +295,34 @@ describe("checkDocFeeCap delegates to the classifier", () => {
 // ─── Lease-specific rules ─────────────────────────────────────────────────────
 
 describe("applyRuleEngine — lease-specific rules", () => {
-  it("returns YELLOW/PAUSE when lease has high acquisition fee (> $1000)", () => {
+  it("does not treat an unsourced acquisition-fee level as a verdict", () => {
     const fields = makeFields({
       outTheDoorPrice: 30000,
       acquisitionFee: 1200,
       moneyFactor: 0.00125,
       residualValue: 18000,
       mileageAllowance: 12000,
+      termMonths: 36,
     });
     const result = applyRuleEngine(makeLlm(), fields, null, "lease");
-    expect(result.dealScore).toBe("YELLOW");
-    expect(result.goNoGo).toBe("PROCEED-WITH-CAUTION");
-    expect(result.verdictLabel).toMatch(/ACQUISITION/i);
+    expect(result.verdictLabel).not.toMatch(/ACQUISITION|MARKUP/i);
+    expect(result.goNoGo).toBe("INSUFFICIENT-INFORMATION");
+    expect(result.dealScore).not.toBe("GREEN");
   });
 
-  it("returns YELLOW/PAUSE when lease has excessive mileage rate (> $0.30/mile)", () => {
+  it("does not treat an unsourced excess-mileage cutoff as a verdict", () => {
     const fields = makeFields({
       outTheDoorPrice: 30000,
       moneyFactor: 0.00125,
       residualValue: 18000,
       mileageAllowance: 10000,
       excessMileageRate: 0.35,
+      termMonths: 36,
     });
     const result = applyRuleEngine(makeLlm(), fields, null, "lease");
-    expect(result.dealScore).toBe("YELLOW");
-    expect(result.goNoGo).toBe("PROCEED-WITH-CAUTION");
-    expect(result.verdictLabel).toMatch(/MILEAGE/i);
+    expect(result.verdictLabel).not.toMatch(/MILEAGE PENALTY/i);
+    expect(result.goNoGo).toBe("INSUFFICIENT-INFORMATION");
+    expect(result.dealScore).not.toBe("GREEN");
   });
 
   it("returns YELLOW/PAUSE when lease is missing key terms (money factor, residual, mileage)", () => {
@@ -387,11 +389,11 @@ describe("applyRuleEngine — lease-specific rules", () => {
     expect(result.verdictLabel).toMatch(/DOC FEE/i);
   });
 
-  it("high acquisition fee takes priority over missing lease terms", () => {
+  it("missing lease terms outrank an unsourced acquisition-fee level", () => {
     const fields = makeFields({ acquisitionFee: 1200 });
-    // Missing money factor, residual, mileage — but acquisition fee is checked first
     const result = applyRuleEngine(makeLlm(), fields, null, "lease");
-    expect(result.verdictLabel).toMatch(/ACQUISITION/i);
+    expect(result.verdictLabel).toMatch(/LEASE TERMS/i);
+    expect(result.goNoGo).not.toBe("GO");
   });
 });
 

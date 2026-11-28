@@ -417,8 +417,8 @@ cases.push({
     monthlyPayment: leasePayment(40000, 22000, 0.002, 36),
   }),
   purchaseType: "lease",
-  expected: "PROCEED-WITH-CAUTION",
-  label: /RATE MARKUP/,
+  expected: "INSUFFICIENT-INFORMATION",
+  label: /MARKET VALUE NOT VERIFIED/,
   critical: false,
 });
 

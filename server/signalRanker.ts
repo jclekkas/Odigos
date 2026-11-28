@@ -236,50 +236,76 @@ function buildInfoGapSignals(
 
 function buildLeaseSignals(leaseMath: LeaseMathResult, fields: DetectedFields): RankedSignal[] {
   const signals: RankedSignal[] = [];
+  const sheet = leaseMath.worksheet;
 
-  if (leaseMath.acquisitionFeeBenchmark?.isMarkedUp) {
-    const bench = leaseMath.acquisitionFeeBenchmark;
-    signals.push({
-      priority: 4,
-      category: "line_item",
-      label: "Acquisition fee marked up",
-      detail: `The acquisition fee of $${bench.charged} is $${bench.overage} above the lender standard of $${bench.brandStandard}.`,
-      action: `Tell the dealer: "The standard acquisition fee for this brand is $${bench.brandStandard}. Please adjust to the standard rate."`,
-      severity: "warning",
-    });
-  }
-
-  if (leaseMath.rateMarkup && leaseMath.rateMarkup.totalMarkupDollars > 1500) {
+  if (leaseMath.rateMarkup && sheet?.disclosedMarkup) {
     const rm = leaseMath.rateMarkup;
     signals.push({
       priority: 4,
       category: "line_item",
-      label: "Lease rate markup detected",
-      detail: `The dealer APR of ${rm.dealerAPR.toFixed(1)}% is marked up from the buy rate of ${rm.buyRateAPR.toFixed(1)}%, costing you $${rm.totalMarkupDollars.toLocaleString()} over the lease term.`,
-      action: `Ask the dealer: "Can you offer the base money factor from ${leaseMath.brandMatched ?? 'the manufacturer'}? I'm seeing a rate markup."`,
+      label: "Money factor above the buy rate printed on the quote",
+      detail: `The quote prints a buy-rate APR equivalent of ${rm.buyRateAPR.toFixed(2)}% and a contract APR equivalent of ${rm.dealerAPR.toFixed(2)}%.`,
+      action: `Ask the dealer: "Why is the contract money factor higher than the buy rate printed on this quote?"`,
       severity: "warning",
     });
   }
 
-  if (leaseMath.residualCheck?.status === "low") {
-    signals.push({
-      priority: 4,
-      category: "line_item",
-      label: "Low residual value",
-      detail: `The residual is ${leaseMath.residualCheck.residualPercent}%, which is below the expected range for this brand. This increases your monthly payment.`,
-      action: `Ask the dealer: "What residual percentage are you using? The typical range for this brand is ${leaseMath.residualCheck.brandRange[0]}%–${leaseMath.residualCheck.brandRange[1]}%."`,
-      severity: "warning",
-    });
-  }
-
-  if (fields.excessMileageRate != null && fields.excessMileageRate > 0.30) {
+  const benchmarkGap = leaseMath.buyerBenchmark;
+  const moneyGap = benchmarkGap?.moneyFactorDifference;
+  const feeGap = benchmarkGap?.acquisitionFeeDifference;
+  if (benchmarkGap && ((moneyGap != null && moneyGap !== 0) || (feeGap != null && feeGap !== 0))) {
     signals.push({
       priority: 5,
       category: "info_gap",
-      label: "High excess mileage rate",
-      detail: `The excess mileage rate of $${fields.excessMileageRate.toFixed(2)}/mile is above the typical $0.15–$0.25 range.`,
-      action: `Ask the dealer: "Can the excess mileage rate be reduced to $0.25/mile or below?"`,
+      label: "Unverified buyer benchmark",
+      detail: benchmarkGap.note,
+      action: `Ask the dealer: "What buy-rate money factor and acquisition fee does the captive lender publish for this term and credit tier?"`,
       severity: "info",
+    });
+  }
+
+  if (sheet?.advertisedPaymentIsNotFullCost) {
+    const effective = sheet.effectiveMonthlyCost != null ? ` Effective monthly cost is $${sheet.effectiveMonthlyCost.toFixed(2)}.` : "";
+    signals.push({
+      priority: 4,
+      category: "line_item",
+      label: "Advertised payment is not the full cost",
+      detail: `Due at signing is $${sheet.dueAtSigning.stated ?? "unitemized"}.${effective}`,
+      action: `Ask the dealer: "Please itemize the amount due at signing next to the monthly payment."`,
+      severity: "warning",
+    });
+  }
+
+  if (sheet?.residualContradiction) {
+    signals.push({
+      priority: 4,
+      category: "line_item",
+      label: "Residual percent does not match residual dollars",
+      detail: "The residual percentage and the residual dollars do not describe the same MSRP.",
+      action: `Ask the dealer: "Which residual is in the contract, and which MSRP was it multiplied by?"`,
+      severity: "warning",
+    });
+  }
+
+  if (fields.excessMileageRate != null) {
+    signals.push({
+      priority: 5,
+      category: "info_gap",
+      label: "Excess mileage charge",
+      detail: `The quote states $${fields.excessMileageRate.toFixed(2)} per excess mile. No official excess-mileage benchmark is on file (needs_source).`,
+      action: `Ask the dealer: "What is the excess-mileage charge, and is it the amount required by 12 CFR 1013.4(h)(3)?"`,
+      severity: "info",
+    });
+  }
+
+  if (sheet?.missingTerm) {
+    signals.push({
+      priority: 4,
+      category: "info_gap",
+      label: "Lease term missing",
+      detail: "The term was not stated. A 36-month term was not assumed.",
+      action: `Ask the dealer: "How many months is this lease?"`,
+      severity: "warning",
     });
   }
 

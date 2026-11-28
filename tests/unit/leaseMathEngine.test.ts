@@ -67,74 +67,29 @@ describe("convertMFtoAPR", () => {
 // ---------------------------------------------------------------------------
 
 describe("detectRateMarkup", () => {
-  it("detects zero markup when MF matches buy rate", () => {
-    const bmw = lookupBrand("BMW")!;
-    const fields = makeFields({
-      moneyFactor: 0.00120,
-      salePrice: 52000,
-      residualValue: 31900,
-      termMonths: 36,
-    });
-    const result = detectRateMarkup(fields, bmw);
-    expect(result).not.toBeNull();
-    expect(result!.totalMarkupDollars).toBe(0);
-    expect(result!.markupAPR).toBeCloseTo(0, 1);
-  });
-
-  it("charges rate markup on the cap cost after the down payment", () => {
+  it("does not turn an unverified benchmark into a markup", () => {
     const honda = lookupBrand("Honda")!;
+    expect(honda.canUnlockGo).toBe(false);
+    expect(honda.verification).toBe("unverified");
     const fields = makeFields({
-      moneyFactor: 0.00180,
-      salePrice: 31000,
-      residualValue: 17600,
-      downPayment: 10000,
-      termMonths: 36,
-    });
-    const result = detectRateMarkup(fields, honda);
-    // (21000 + 17600) * 0.00110 * 36 = 1528.56, rounded to 1529.
-    // Using the pre-down-payment price would have been about $1,925.
-    expect(result!.totalMarkupDollars).toBe(1529);
-  });
-
-  it("detects dealer markup above buy rate", () => {
-    const honda = lookupBrand("Honda")!;
-    const fields = makeFields({
+      vehicle_make: "Honda",
       moneyFactor: 0.00180,
       salePrice: 31000,
       residualValue: 17600,
       termMonths: 36,
     });
-    const result = detectRateMarkup(fields, honda);
-    expect(result).not.toBeNull();
-    expect(result!.dealerAPR).toBeCloseTo(4.32, 1);
-    expect(result!.buyRateAPR).toBeCloseTo(1.68, 1);
-    expect(result!.markupAPR).toBeCloseTo(2.64, 1);
-    expect(result!.totalMarkupDollars).toBeGreaterThan(0);
+    expect(detectRateMarkup()).toBeNull();
+    const result = runLeaseMath(fields, "lease");
+    expect(result?.rateMarkup).toBeNull();
+    expect(result?.buyerBenchmark?.canUnlockGo).toBe(false);
+    expect(result?.buyerBenchmark?.moneyFactorDifference).toBeCloseTo(0.00110, 5);
+    expect(result?.buyerBenchmark?.note).not.toMatch(/markup/i);
   });
 
   it("returns null when money factor is missing", () => {
-    const bmw = lookupBrand("BMW")!;
-    const fields = makeFields({ salePrice: 52000, residualValue: 31900 });
-    expect(detectRateMarkup(fields, bmw)).toBeNull();
-  });
-
-  it("returns null when cap cost is missing", () => {
-    const bmw = lookupBrand("BMW")!;
-    const fields = makeFields({ moneyFactor: 0.00120, residualValue: 31900 });
-    expect(detectRateMarkup(fields, bmw)).toBeNull();
-  });
-
-  it("resolves residual from percent when residualValue is missing", () => {
-    const honda = lookupBrand("Honda")!;
-    const fields = makeFields({
-      moneyFactor: 0.00180,
-      msrp: 32000,
-      residualPercent: 55,
-      termMonths: 36,
-    });
-    const result = detectRateMarkup(fields, honda);
-    expect(result).not.toBeNull();
-    expect(result!.totalMarkupDollars).toBeGreaterThan(0);
+    const fields = makeFields({ vehicle_make: "BMW", salePrice: 52000, residualValue: 31900 });
+    expect(detectRateMarkup()).toBeNull();
+    expect(runLeaseMath(fields, "lease")?.buyerBenchmark?.moneyFactorDifference).toBeNull();
   });
 });
 
@@ -151,6 +106,11 @@ describe("validateMonthlyPayment", () => {
       moneyFactor: 0.00120,
       termMonths: 36,
       downPayment: 3000,
+      rebates: 0,
+      acquisitionFee: 0,
+      acquisitionFeeCapitalized: false,
+      feesItemized: true,
+      paymentIncludesTax: false,
       monthlyPayment: 658, // close to expected
     });
     const result = validateMonthlyPayment(fields);
@@ -169,6 +129,12 @@ describe("validateMonthlyPayment", () => {
       residualValue: 16500,
       moneyFactor: 0.00100,
       termMonths: 36,
+      downPayment: 0,
+      rebates: 0,
+      acquisitionFee: 0,
+      acquisitionFeeCapitalized: false,
+      feesItemized: true,
+      paymentIncludesTax: false,
       monthlyPayment: 500, // well above expected
     });
     const result = validateMonthlyPayment(fields);
@@ -187,6 +153,12 @@ describe("validateMonthlyPayment", () => {
       residualValue: 16500,
       moneyFactor: 0.00100,
       termMonths: 36,
+      downPayment: 0,
+      rebates: 0,
+      acquisitionFee: 0,
+      acquisitionFeeCapitalized: false,
+      feesItemized: true,
+      paymentIncludesTax: false,
       monthlyPayment: 430, // close to expected ~421.50
     });
     const result = validateMonthlyPayment(fields);
@@ -221,7 +193,11 @@ describe("validateMonthlyPayment", () => {
       downPayment: 2000,
       rebates: 1000,
       tradeInValue: 5000,
-      fees: [{ name: "Acquisition Fee", amount: 650 }],
+      acquisitionFee: 650,
+      acquisitionFeeCapitalized: true,
+      feesItemized: true,
+      tradePayoff: 0,
+      paymentIncludesTax: false,
       monthlyPayment: 300,
     });
     const result = validateMonthlyPayment(fields);
@@ -281,14 +257,10 @@ describe("checkResidualReasonableness", () => {
     expect(result!.status).toBe("normal");
   });
 
-  it("falls back to 36-month range for non-standard terms", () => {
+  it("does not borrow the 36-month band for a term the benchmark does not list", () => {
     const honda = lookupBrand("Honda")!;
-    const fields = makeFields({ residualPercent: 56, termMonths: 42 });
-    const result = checkResidualReasonableness(fields, honda);
-    expect(result).not.toBeNull();
-    // Falls back to 36mo range [53, 60]
-    expect(result!.brandRange).toEqual([53, 60]);
-    expect(result!.status).toBe("normal");
+    const fields = makeFields({ residualPercent: 56, termMonths: 42, msrp: 32000 });
+    expect(checkResidualReasonableness(fields, honda)).toBeNull();
   });
 
   it("returns null when residual data is missing", () => {
@@ -308,7 +280,9 @@ describe("benchmarkAcquisitionFee", () => {
     const fields = makeFields({ acquisitionFee: 795 });
     const result = benchmarkAcquisitionFee(fields, honda);
     expect(result).not.toBeNull();
-    expect(result!.isMarkedUp).toBe(true);
+    expect(result!.isMarkedUp).toBe(false);
+    expect(result!.classification).toBe("unverified_difference");
+    expect(result!.canUnlockGo).toBe(false);
     expect(result!.overage).toBe(200); // 795 - 595
     expect(result!.brandStandard).toBe(595);
   });
@@ -420,6 +394,9 @@ describe("runLeaseMath", () => {
       residualValue: 31900,
       termMonths: 36,
       acquisitionFee: 925,
+      acquisitionFeeCapitalized: false,
+      rebates: 0,
+      paymentIncludesTax: false,
       downPayment: 3000,
       monthlyPayment: 575,
       mileageAllowance: 10000,
@@ -432,10 +409,9 @@ describe("runLeaseMath", () => {
     expect(result!.apr).toBeCloseTo(2.88, 1);
     expect(result!.brandMatched).toBe("BMW");
 
-    // No rate markup
-    expect(result!.rateMarkup).not.toBeNull();
-    expect(result!.rateMarkup!.totalMarkupDollars).toBe(0);
-    expect(result!.rateMarkup!.markupAPR).toBeCloseTo(0, 1);
+    expect(result!.rateMarkup).toBeNull();
+    expect(result!.buyerBenchmark?.moneyFactorDifference).toBe(0);
+    expect(result!.buyerBenchmark?.canUnlockGo).toBe(false);
 
     // Residual normal (58% in BMW 36mo range [55,63])
     expect(result!.residualCheck).not.toBeNull();
@@ -473,14 +449,13 @@ describe("runLeaseMath", () => {
     expect(result!.apr).toBeCloseTo(4.32, 1);
     expect(result!.brandMatched).toBe("Honda");
 
-    // Significant rate markup
-    expect(result!.rateMarkup).not.toBeNull();
-    expect(result!.rateMarkup!.markupAPR).toBeCloseTo(2.64, 1);
-    expect(result!.rateMarkup!.totalMarkupDollars).toBeGreaterThan(500);
+    expect(result!.rateMarkup).toBeNull();
+    expect(result!.buyerBenchmark?.moneyFactorDifference).toBeCloseTo(0.00110, 5);
+    expect(result!.buyerBenchmark?.note).not.toMatch(/markup/i);
 
-    // Acquisition fee marked up ($795 vs $595 standard)
     expect(result!.acquisitionFeeBenchmark).not.toBeNull();
-    expect(result!.acquisitionFeeBenchmark!.isMarkedUp).toBe(true);
+    expect(result!.acquisitionFeeBenchmark!.isMarkedUp).toBe(false);
+    expect(result!.acquisitionFeeBenchmark!.classification).toBe("unverified_difference");
     expect(result!.acquisitionFeeBenchmark!.overage).toBe(200);
 
     // Residual 55% is normal for Honda (range [53, 60])
@@ -521,15 +496,13 @@ describe("runLeaseMath", () => {
     expect(result!.acquisitionFeeBenchmark).not.toBeNull();
     expect(result!.acquisitionFeeBenchmark!.isMarkedUp).toBe(false);
 
-    // Payment validation — the quoted $480 should differ from computed
-    expect(result!.paymentValidation).not.toBeNull();
+    // Tax basis was not stated, so the quoted payment is not compared with the pre-tax figure.
+    expect(result!.paymentValidation).toBeNull();
+    expect(result!.worksheet?.paymentComparison.compared).toBe(false);
     // adjustedCapCost = 34000 + 0 - 2500 - 0 - 0 = 31500
     // depreciation = (31500 - 14700) / 36 = 466.67
     // rentCharge = (31500 + 14700) * 0.00125 = 57.75
     // expected ≈ 524.42
-    // discrepancy = 480 - 524.42 = -44.42
-    // In this case the quoted payment is LOWER than expected (unusual)
-    expect(result!.paymentValidation!.isSignificant).toBe(true);
   });
 });
 
@@ -550,7 +523,7 @@ describe("rule engine with lease math", () => {
     reasoning: "Test",
   });
 
-  it("rate markup > $1500 triggers YELLOW verdict", () => {
+  it("an unverified benchmark difference does not become a rate-markup verdict", () => {
     const fields = makeFields({
       vehicle_make: "Honda",
       moneyFactor: 0.00200,
@@ -561,25 +534,34 @@ describe("rule engine with lease math", () => {
       mileageAllowance: 12000,
     });
     const leaseMath = runLeaseMath(fields, "lease");
-    // Verify markup is significant enough
-    expect(leaseMath?.rateMarkup?.totalMarkupDollars).toBeGreaterThan(1500);
+    expect(leaseMath?.rateMarkup).toBeNull();
+    expect(leaseMath?.buyerBenchmark?.canUnlockGo).toBe(false);
 
     const result = applyRuleEngine(makeLlm(), fields, null, "lease", leaseMath);
     expect(result.dealScore).toBe("YELLOW");
-    expect(result.verdictLabel).toMatch(/RATE MARKUP/i);
+    expect(result.verdictLabel).not.toMatch(/markup/i);
+    expect(result.goNoGo).not.toBe("GO");
   });
 
-  it("payment discrepancy > $50 triggers YELLOW verdict", () => {
+  it("payment discrepancy > $50 triggers YELLOW verdict on a stated pre-tax payment", () => {
     const fields = makeFields({
       moneyFactor: 0.00100,
       salePrice: 30000,
       residualValue: 16500,
       outTheDoorPrice: 32000,
       termMonths: 36,
-      monthlyPayment: 500, // ~$78 above expected
+      downPayment: 0,
+      rebates: 0,
+      acquisitionFee: 0,
+      acquisitionFeeCapitalized: false,
+      feesItemized: true,
+      paymentIncludesTax: false,
+      mileageAllowance: 12000,
+      monthlyPayment: 500,
     });
     const leaseMath = runLeaseMath(fields, "lease");
     expect(leaseMath?.paymentValidation?.isSignificant).toBe(true);
+    expect(leaseMath?.paymentValidation?.basis).toBe("pre_tax");
     expect(Math.abs(leaseMath!.paymentValidation!.discrepancy)).toBeGreaterThan(50);
 
     const result = applyRuleEngine(makeLlm(), fields, null, "lease", leaseMath);
@@ -587,24 +569,27 @@ describe("rule engine with lease math", () => {
     expect(result.verdictLabel).toMatch(/PAYMENT/i);
   });
 
-  it("low residual triggers YELLOW verdict", () => {
+  it("an unverified residual band does not by itself change the verdict", () => {
     const fields = makeFields({
       vehicle_make: "Hyundai",
       moneyFactor: 0.00100,
       residualPercent: 42,
       msrp: 35000,
+      salePrice: 34000,
       outTheDoorPrice: 36000,
       termMonths: 36,
+      mileageAllowance: 12000,
     });
     const leaseMath = runLeaseMath(fields, "lease");
     expect(leaseMath?.residualCheck?.status).toBe("low");
+    expect(leaseMath?.residualCheck?.verification).toBe("unverified");
 
     const result = applyRuleEngine(makeLlm(), fields, null, "lease", leaseMath);
-    expect(result.dealScore).toBe("YELLOW");
-    expect(result.verdictLabel).toMatch(/RESIDUAL/i);
+    expect(result.verdictLabel).not.toMatch(/RESIDUAL/i);
+    expect(result.goNoGo).not.toBe("GO");
   });
 
-  it("acquisition fee marked up triggers YELLOW verdict", () => {
+  it("an unverified acquisition-fee difference is not called a markup", () => {
     const fields = makeFields({
       vehicle_make: "Honda",
       moneyFactor: 0.00070,
@@ -616,11 +601,12 @@ describe("rule engine with lease math", () => {
       mileageAllowance: 12000,
     });
     const leaseMath = runLeaseMath(fields, "lease");
-    expect(leaseMath?.acquisitionFeeBenchmark?.isMarkedUp).toBe(true);
+    expect(leaseMath?.acquisitionFeeBenchmark?.isMarkedUp).toBe(false);
+    expect(leaseMath?.acquisitionFeeBenchmark?.classification).toBe("unverified_difference");
 
     const result = applyRuleEngine(makeLlm(), fields, null, "lease", leaseMath);
-    expect(result.dealScore).toBe("YELLOW");
-    expect(result.verdictLabel).toMatch(/ACQUISITION/i);
+    expect(result.verdictLabel).not.toMatch(/ACQUISITION|MARKUP/i);
+    expect(result.goNoGo).not.toBe("GO");
   });
 
   it("clean lease with no issues passes through to general rules", () => {
@@ -635,11 +621,14 @@ describe("rule engine with lease math", () => {
       mileageAllowance: 10000,
       outTheDoorPrice: 55000,
       downPayment: 3000,
-      monthlyPayment: 572, // matches expected: dep 475 + rent 97.08
+      rebates: 0,
+      acquisitionFeeCapitalized: false,
+      paymentIncludesTax: false,
+      monthlyPayment: 572,
     });
     const leaseMath = runLeaseMath(fields, "lease");
-    // Payment should not be flagged as significant
     expect(leaseMath?.paymentValidation?.isSignificant).toBe(false);
+    expect(leaseMath?.buyerBenchmark?.canUnlockGo).toBe(false);
 
     const result = applyRuleEngine(makeLlm(), fields, null, "lease", leaseMath);
     expect(result.goNoGo).toBe("INSUFFICIENT-INFORMATION");

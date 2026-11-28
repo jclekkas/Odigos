@@ -38,10 +38,10 @@ function getHeroItems(lm: LeaseMathResult): HeroItem[] {
     });
   }
 
-  if (lm.rateMarkup && lm.rateMarkup.totalMarkupDollars > 0) {
+  if (lm.rateMarkup && lm.rateMarkup.totalMarkupDollars > 0 && lm.worksheet?.disclosedMarkup) {
     items.push({
       icon: TrendingUp,
-      text: `Dealer rate markup may cost you ${fmt(lm.rateMarkup.totalMarkupDollars)} over this lease`,
+      text: `The quote's own buy rate is lower. Extra rent is about ${fmt(lm.rateMarkup.totalMarkupDollars)} over this lease`,
       priority: 2,
     });
   }
@@ -54,11 +54,11 @@ function getHeroItems(lm: LeaseMathResult): HeroItem[] {
     });
   }
 
-  if (lm.acquisitionFeeBenchmark?.isMarkedUp) {
+  if (lm.buyerBenchmark && lm.buyerBenchmark.canUnlockGo === false) {
     items.push({
-      icon: AlertTriangle,
-      text: `Acquisition fee appears marked up by ${fmt(lm.acquisitionFeeBenchmark.overage)}`,
-      priority: 4,
+      icon: Info,
+      text: "Buyer benchmark only. It is not a confirmed lender program and cannot support a GO.",
+      priority: 5,
     });
   }
 
@@ -86,10 +86,10 @@ function RateMarkupCard({ rateMarkup }: { rateMarkup: NonNullable<LeaseMathResul
     <div className="flex items-start gap-3 p-3 rounded-md bg-muted/50">
       <DollarSign className="mt-0.5 h-4 w-4 text-amber-600 dark:text-amber-500 flex-shrink-0" />
       <div className="text-sm">
-        <p className="font-medium">Rate Markup</p>
+        <p className="font-medium">Buy rate printed on the quote</p>
         <p className="text-muted-foreground">
-          Dealer APR: <strong>{fmtPct(rateMarkup.dealerAPR)}</strong> vs.
-          lender base: <strong>{fmtPct(rateMarkup.buyRateAPR)}</strong>
+          Contract APR equivalent: <strong>{fmtPct(rateMarkup.dealerAPR)}</strong> vs.
+          printed buy rate: <strong>{fmtPct(rateMarkup.buyRateAPR)}</strong>
         </p>
         <p className="text-muted-foreground">
           Markup: {fmt(Math.abs(rateMarkup.markupPerMonth))}/mo ({fmt(Math.abs(rateMarkup.totalMarkupDollars))} total)
@@ -108,7 +108,7 @@ function PaymentCard({ pv }: { pv: NonNullable<LeaseMathResult["paymentValidatio
         <p className="font-medium">Payment Validation</p>
         <p className="text-muted-foreground">
           Quoted: <strong>{fmt(pv.quotedPayment)}</strong>/mo vs.
-          expected: <strong>{fmt(Math.round(pv.expectedPaymentPreTax))}</strong>/mo (pre-tax)
+          expected: <strong>{fmt(Math.round(pv.expectedPaymentPreTax))}</strong>/mo ({pv.basis === "after_tax" ? "tax-inclusive" : "pre-tax"})
         </p>
         <p className="text-muted-foreground">
           {fmt(Math.abs(Math.round(pv.discrepancy)))}/mo {dir} than expected
@@ -132,6 +132,7 @@ function ResidualCard({ rc }: { rc: NonNullable<LeaseMathResult["residualCheck"]
           Your residual: <strong>{fmtPct(rc.residualPercent, 1)}</strong> — brand range: {fmtPct(rc.brandRange[0], 0)}-{fmtPct(rc.brandRange[1], 0)}
         </p>
         <p className={statusColor}>{statusLabel}</p>
+        <p className="text-muted-foreground">Unverified buyer band (needs_source). It is not a lender residual.</p>
       </div>
     </div>
   );
@@ -146,12 +147,9 @@ function AcqFeeCard({ af }: { af: NonNullable<LeaseMathResult["acquisitionFeeBen
         <p className="text-muted-foreground">
           Charged: <strong>{fmt(af.charged)}</strong> — lender standard: <strong>{fmt(af.brandStandard)}</strong>
         </p>
-        {af.isMarkedUp && (
-          <p className="text-amber-600 dark:text-amber-500">Marked up by {fmt(af.overage)}</p>
-        )}
-        {!af.isMarkedUp && (
-          <p className="text-green-600 dark:text-green-500">At or below standard</p>
-        )}
+        <p className="text-muted-foreground">
+          Unverified buyer benchmark (needs_source). This difference is not a confirmed lender-program charge and cannot support a GO.
+        </p>
       </div>
     </div>
   );
@@ -163,8 +161,11 @@ function AcqFeeCard({ af }: { af: NonNullable<LeaseMathResult["acquisitionFeeBen
 
 function getActionItems(lm: LeaseMathResult): string[] {
   const items: string[] = [];
-  if (lm.rateMarkup && lm.rateMarkup.totalMarkupDollars > 0) {
-    items.push("Ask the dealer for the buy rate money factor from the captive lender");
+  if (lm.rateMarkup && lm.worksheet?.disclosedMarkup) {
+    items.push("Ask why the contract money factor is higher than the buy rate printed on this quote");
+  }
+  if (lm.buyerBenchmark) {
+    items.push("Ask for the captive lender's current buy-rate money factor. A stored buyer benchmark is not that rate");
   }
   if (lm.paymentValidation?.isSignificant) {
     items.push("Request a full lease worksheet showing how the payment is calculated");
@@ -172,8 +173,8 @@ function getActionItems(lm: LeaseMathResult): string[] {
   if (lm.residualCheck?.status === "low") {
     items.push("Ask which bank set the residual and whether a higher residual is available");
   }
-  if (lm.acquisitionFeeBenchmark?.isMarkedUp) {
-    items.push("Ask if the acquisition fee matches the lender's base fee");
+  if (lm.worksheet?.advertisedPaymentIsNotFullCost) {
+    items.push("Ask for the amount due at signing itemized next to the monthly payment");
   }
   return items.slice(0, 4);
 }
@@ -192,7 +193,9 @@ export default function LeaseMathBlock({ leaseMath }: { leaseMath: LeaseMathResu
     leaseMath.rateMarkup != null ||
     leaseMath.paymentValidation != null ||
     leaseMath.residualCheck != null ||
-    leaseMath.acquisitionFeeBenchmark != null;
+    leaseMath.acquisitionFeeBenchmark != null ||
+    leaseMath.worksheet != null ||
+    leaseMath.buyerBenchmark != null;
 
   if (!hasAnyCard && heroItems.length === 0) return null;
 
