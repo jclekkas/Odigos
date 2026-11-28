@@ -163,6 +163,8 @@ export type AnalysisDimensions = z.infer<typeof analysisDimensionsSchema>;
 export const feeSchema = z.object({
   name: z.string(),
   amount: z.number().nullable(),
+  /** True when the quote says the fee is capitalized. False when it is paid upfront. Null when unstated. */
+  capitalized: z.boolean().nullable().optional(),
 });
 
 export type Fee = z.infer<typeof feeSchema>;
@@ -212,6 +214,33 @@ export const detectedFieldsSchema = z.object({
   dispositionFee: z.number().nullable().optional(),
   mileageAllowance: z.number().int().nullable().optional(),
   excessMileageRate: z.number().nullable().optional(),
+  /**
+   * Lease worksheet figures. Every one is optional and null unless the quote
+   * printed it. A missing value is not zero, and a money factor of 0 is real.
+   */
+  grossCapCost: z.number().nullable().optional(),
+  adjustedCapCost: z.number().nullable().optional(),
+  capCostReduction: z.number().nullable().optional(),
+  dueAtSigning: z.number().nullable().optional(),
+  buyRateMoneyFactor: z.number().nullable().optional(),
+  moneyFactorReduction: z.number().nullable().optional(),
+  securityDepositCount: z.number().int().nullable().optional(),
+  securityDepositAmount: z.number().nullable().optional(),
+  paymentIncludesTax: z.boolean().nullable().optional(),
+  monthlyTax: z.number().nullable().optional(),
+  upfrontTax: z.number().nullable().optional(),
+  firstPaymentInDueAtSigning: z.boolean().nullable().optional(),
+  acquisitionFeeCapitalized: z.boolean().nullable().optional(),
+  /** True only when the quote itemizes fees and an omitted acquisition fee means there is none. */
+  feesItemized: z.boolean().nullable().optional(),
+  tradePayoff: z.number().nullable().optional(),
+  rateLimitationNotice: z.boolean().nullable().optional(),
+  conditionalIncentives: z.array(z.object({
+    name: z.string(),
+    amount: z.number(),
+    condition: z.string(),
+    eligible: z.boolean().nullable(),
+  })).optional(),
 });
 
 export type DetectedFields = z.infer<typeof detectedFieldsSchema>;
@@ -297,6 +326,7 @@ export const paymentValidationResultSchema = z.object({
   quotedPayment: z.number(),
   discrepancy: z.number(),
   isSignificant: z.boolean(),
+  basis: z.enum(["pre_tax", "after_tax"]).optional(),
 });
 
 export const residualCheckResultSchema = z.object({
@@ -310,7 +340,13 @@ export const acqFeeBenchmarkResultSchema = z.object({
   charged: z.number(),
   brandStandard: z.number(),
   overage: z.number(),
+  /** True only when the quote itself shows a fee above a stated lender fee. Never true for an unsourced benchmark. */
   isMarkedUp: z.boolean(),
+  verification: z.enum(["unverified", "quote"]).optional(),
+  classification: z.enum(["unverified_difference", "no_difference", "markup"]).optional(),
+  informationalOnly: z.boolean().optional(),
+  canUnlockGo: z.boolean().optional(),
+  sourceStatus: z.enum(["needs_source", "sourced"]).optional(),
 });
 
 export const leaseMathResultSchema = z.object({
@@ -320,7 +356,86 @@ export const leaseMathResultSchema = z.object({
   residualCheck: residualCheckResultSchema.nullable(),
   acquisitionFeeBenchmark: acqFeeBenchmarkResultSchema.nullable(),
   brandMatched: z.string().nullable(),
+  /** Buyer benchmarks are informational. They are not lender-program evidence and cannot support a GO. */
+  buyerBenchmark: z.object({
+    verification: z.literal("unverified"),
+    sourceStatus: z.literal("needs_source"),
+    informationalOnly: z.literal(true),
+    canUnlockGo: z.literal(false),
+    moneyFactorDifference: z.number().nullable(),
+    acquisitionFeeDifference: z.number().nullable(),
+    note: z.string(),
+  }).nullable().optional(),
+  worksheet: z.custom<LeaseWorksheetPublic>().nullable().optional(),
+  comparison: z.custom<LeaseComparisonPublic>().nullable().optional(),
 });
+
+export interface LeaseWorksheetPublic {
+  baseMonthlyPayment: number | null;
+  afterTaxMonthlyPayment: number | null;
+  effectiveMonthlyCost: number | null;
+  totalContractualCost: number | null;
+  grossCapCost: number | null;
+  adjustedCapCost: number | null;
+  depreciationMonthly: number | null;
+  rentChargeMonthly: number | null;
+  moneyFactor: number | null;
+  aprEquivalent: number | null;
+  residualPercent: number | null;
+  residualDollars: number | null;
+  termMonths: number | null;
+  annualMileage: number | null;
+  dispositionFee: number | null;
+  excessMileageRate: number | null;
+  advertisedPaymentIsNotFullCost: boolean;
+  residualContradiction: boolean;
+  capCostContradiction: boolean;
+  missingTerm: boolean;
+  undisclosedCapCost: boolean;
+  conditionalIncentiveUnconfirmed: boolean;
+  negativeEquity: number | null;
+  tradeEquity: number | null;
+  dealerQuestions: string[];
+  taxTreatment: { method: string; sourceStatus: string; statement: string };
+  dueAtSigning: { stated: number | null; computed: number | null; reconciles: boolean | null };
+  securityDeposits: {
+    count: number | null;
+    total: number | null;
+    refundable: boolean | null;
+    statedMoneyFactorReduction: number | null;
+    reductionApplied: boolean;
+    note: string;
+  };
+  disclosedMarkup: {
+    chargedMoneyFactor: number;
+    buyRateMoneyFactor: number;
+    extraRentOverTerm: number | null;
+  } | null;
+  paymentComparison: {
+    compared: boolean;
+    basis: "pre_tax" | "after_tax" | null;
+    expected: number | null;
+    quoted: number | null;
+    discrepancy: number | null;
+    reason: string;
+  };
+}
+
+export interface LeaseOfferPublic {
+  label: string;
+  effectiveMonthly: number | null;
+  totalCost: number | null;
+  mileageAllowance: number | null;
+  upfront: number | null;
+  advertisedPayment: number | null;
+  dispositionFee: number | null;
+  excessMileageRate: number | null;
+}
+
+export interface LeaseComparisonPublic {
+  offers: LeaseOfferPublic[];
+  note: string;
+}
 
 export type LeaseMathResult = z.infer<typeof leaseMathResultSchema>;
 
@@ -349,6 +464,8 @@ export const fieldProvenanceSchema = z.object({
   start: z.number().int().nonnegative().optional(),
   end: z.number().int().nonnegative().optional(),
   raw: z.string().optional(),
+  /** Distinguishes a money factor (0.00125) from a percent, a dollar amount, or mileage. */
+  kind: z.enum(["money_factor", "percent", "dollars", "mileage", "count", "months"]).optional(),
 });
 
 export type FieldProvenanceRecord = z.infer<typeof fieldProvenanceSchema>;

@@ -1118,7 +1118,11 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     llmResult.missingInfo = missingInfoArr;
   }
 
-  const leaseMathResult = runLeaseMath(llmResult.detectedFields, data.purchaseType);
+  const leaseMathResult = runLeaseMath(llmResult.detectedFields, data.purchaseType, {
+    state: stateDetection.state,
+    dealerText: data.dealerText,
+    competingText: data.competingQuoteText,
+  });
   const feeFacts = resolveConditionalFeeFacts({
     dealerText: data.dealerText,
     californiaDmvBusinessPartner: data.californiaDmvBusinessPartner,

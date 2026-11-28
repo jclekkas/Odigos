@@ -23,6 +23,8 @@ export interface FieldProvenance {
   start?: number;
   end?: number;
   raw?: string;
+  /** Money factors, percents, dollars, and mileage are not interchangeable. */
+  kind?: "money_factor" | "percent" | "dollars" | "mileage" | "count" | "months";
 }
 
 const NUMERIC_FIELDS = [
@@ -46,6 +48,17 @@ const NUMERIC_FIELDS = [
   "dispositionFee",
   "mileageAllowance",
   "excessMileageRate",
+  "grossCapCost",
+  "adjustedCapCost",
+  "capCostReduction",
+  "dueAtSigning",
+  "buyRateMoneyFactor",
+  "moneyFactorReduction",
+  "securityDepositCount",
+  "securityDepositAmount",
+  "monthlyTax",
+  "upfrontTax",
+  "tradePayoff",
 ] as const;
 
 type NumericField = (typeof NUMERIC_FIELDS)[number];
@@ -66,7 +79,9 @@ export function inventedFieldsStillInUse(fields: DetectedFields, provenance: Fie
   return provenance.filter((row) => {
     if (row.origin !== "model" || row.verified || row.amount == null) return false;
     const live = readNumeric(fields, row.field);
-    return live != null && Math.abs(live - row.amount) < 0.01;
+    if (live == null) return false;
+    const tolerance = row.kind === "money_factor" ? 1e-8 : row.kind === "percent" ? 0.05 : 0.01;
+    return Math.abs(live - row.amount) <= tolerance;
   });
 }
 

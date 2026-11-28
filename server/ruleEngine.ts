@@ -34,6 +34,7 @@ import { scanVins } from "./vinIdentity.js";
 import { vinPositivelyAgrees } from "./nhtsaVin.js";
 import { thresholdDateForAnalysis } from "./quoteDate.js";
 import { stateUsesDatedCeiling } from "./transactionDate.js";
+import { joinSentences } from "./sentenceJoin.js";
 
 export interface RuleEngineOptions {
   stateData?: RegulatoryStateInput | null;
@@ -268,18 +269,31 @@ function isMissingLeaseTerms(fields: DetectedFields): boolean {
   const hasPrice =
     (fields.salePrice !== null && fields.salePrice !== undefined) ||
     (fields.msrp !== null && fields.msrp !== undefined) ||
-    (fields.outTheDoorPrice !== null && fields.outTheDoorPrice !== undefined);
-  // Missing if any of the core lease terms are absent. A payment with no
-  // capitalized-cost basis cannot be checked.
-  return !hasMoneyFactor || !hasResidual || !hasMileage || !hasPrice;
+    (fields.outTheDoorPrice !== null && fields.outTheDoorPrice !== undefined) ||
+    (fields.adjustedCapCost !== null && fields.adjustedCapCost !== undefined) ||
+    (fields.grossCapCost !== null && fields.grossCapCost !== undefined);
+  const hasTerm = fields.termMonths !== null && fields.termMonths !== undefined && fields.termMonths > 0;
+  // A missing term is not filled with 36 months. A money factor of 0 still counts.
+  return !hasMoneyFactor || !hasResidual || !hasMileage || !hasPrice || !hasTerm;
 }
 
-function hasExcessiveMileageRate(fields: DetectedFields): boolean {
-  return fields.excessMileageRate !== null && fields.excessMileageRate !== undefined && fields.excessMileageRate > 0.30;
-}
-
-function hasHighAcquisitionFee(fields: DetectedFields): boolean {
-  return fields.acquisitionFee !== null && fields.acquisitionFee !== undefined && fields.acquisitionFee > 1000;
+function leaseGapSentence(fields: DetectedFields): string {
+  const gaps: string[] = [];
+  if (fields.moneyFactor == null) gaps.push("money factor");
+  if (fields.residualValue == null && fields.residualPercent == null) gaps.push("residual");
+  if (fields.mileageAllowance == null) gaps.push("annual mileage allowance");
+  if (
+    fields.salePrice == null &&
+    fields.msrp == null &&
+    fields.outTheDoorPrice == null &&
+    fields.adjustedCapCost == null &&
+    fields.grossCapCost == null
+  ) {
+    gaps.push("selling price or capitalized cost");
+  }
+  if (fields.termMonths == null || fields.termMonths <= 0) gaps.push("lease term");
+  const list = gaps.length > 0 ? gaps.join(", ") : "a required lease term";
+  return `The quote is missing the ${list}. Ask the dealer to put each missing figure on the lease worksheet`;
 }
 
 function isPaymentOnlyQuote(fields: DetectedFields): boolean {
@@ -304,12 +318,12 @@ interface VerdictDraft {
 }
 
 function appendContextNotes(summary: string, notes: string[]): string {
-  let next = summary;
+  const parts = [summary];
   for (const note of notes) {
-    if (!note || next.includes(note)) continue;
-    next = `${next} ${note}`;
+    if (!note || parts.some((part) => part.includes(note))) continue;
+    parts.push(note);
   }
-  return next;
+  return joinSentences(parts);
 }
 
 function distinctPrices(values: number[] | undefined): number[] {
@@ -1054,67 +1068,99 @@ export function applyRuleEngine(
   }
 
   if (leaseQuote) {
-    if (leaseMath?.acquisitionFeeBenchmark?.isMarkedUp) {
-      findingsPush(cautionFinding(
-        FINDING_RANK.leaseAcquisitionMarkup,
-        "lease-acquisition",
-        "PROCEED WITH CAUTION — ACQUISITION FEE ABOVE LENDER STANDARD",
-        "Acquisition fee is above the lender benchmark",
-        "Please reduce the acquisition fee to the lender standard.",
-      ));
+    const sheet = leaseMath?.worksheet ?? null;
+    const leaseCaution = (
+      rank: number,
+      id: string,
+      verdictLabel: string,
+      primaryIssue: string,
+      dealerAsk: string,
+    ) => findingsPush(cautionFinding(
+      rank,
+      id,
+      verdictLabel,
+      primaryIssue,
+      dealerAsk,
+      joinSentences([primaryIssue, dealerAsk]),
+    ));
+    if (sheet?.capCostContradiction) {
+      leaseCaution(
+        FINDING_RANK.leaseCapContradiction,
+        "lease-cap",
+        "PROCEED WITH CAUTION — CAP COST DOES NOT RECONCILE",
+        "The adjusted capitalized cost does not match the selling price, fees, rebates, and trade",
+        "Ask the dealer to reconcile the adjusted capitalized cost on the lease worksheet.",
+      );
     }
-    if (!leaseMath?.acquisitionFeeBenchmark && hasHighAcquisitionFee(fields)) {
-      findingsPush(cautionFinding(
-        FINDING_RANK.leaseHighAcquisition,
-        "lease-acquisition-high",
-        "PROCEED WITH CAUTION — HIGH ACQUISITION FEE",
-        "Acquisition fee is above $1,000 and no lender benchmark was available",
-        "Please explain the acquisition fee. It is above $1,000.",
-      ));
+    if (sheet?.residualContradiction) {
+      leaseCaution(
+        FINDING_RANK.leaseResidual,
+        "lease-residual",
+        "PROCEED WITH CAUTION — RESIDUAL DOES NOT MATCH",
+        "The residual percent does not match the residual dollars",
+        "Ask the dealer which residual is in the contract and which MSRP it was multiplied by.",
+      );
     }
-    if (leaseMath?.rateMarkup && leaseMath.rateMarkup.totalMarkupDollars > 1500) {
-      findingsPush(cautionFinding(
+    if (sheet?.disclosedMarkup) {
+      leaseCaution(
         FINDING_RANK.leaseRateMarkup,
         "lease-rate",
-        "PROCEED WITH CAUTION — RATE MARKUP DETECTED",
-        "The lease money factor is marked up versus the stored buy rate",
-        "Please offer the base money factor and show the markup in dollars.",
-      ));
+        "PROCEED WITH CAUTION — MONEY FACTOR MARKED UP ON THE QUOTE",
+        "The quote prints a buy-rate money factor and a higher money factor",
+        "Ask the dealer why the contract money factor is higher than the buy rate printed on this quote.",
+      );
     }
-    if (leaseMath?.paymentValidation?.isSignificant && Math.abs(leaseMath.paymentValidation.discrepancy) > 50) {
-      findingsPush(cautionFinding(
+    const sameBasisPayment = leaseMath?.paymentValidation;
+    if (sameBasisPayment && Math.abs(sameBasisPayment.discrepancy) > 50) {
+      const basis = sameBasisPayment.basis === "after_tax" ? "tax-inclusive" : "pre-tax";
+      leaseCaution(
         FINDING_RANK.leasePayment,
         "lease-payment",
         "PROCEED WITH CAUTION — PAYMENT DOESN'T MATCH",
-        "The lease payment does not match the money-factor formula",
-        "Please show the money factor, residual, and payment math.",
-      ));
+        `The ${basis} lease payment does not match the money-factor formula`,
+        "Ask the dealer for the gross capitalized cost, adjusted capitalized cost, residual, money factor, and term.",
+      );
     }
-    if (leaseMath?.residualCheck?.status === "low") {
-      findingsPush(cautionFinding(
-        FINDING_RANK.leaseResidual,
-        "lease-residual",
-        "PROCEED WITH CAUTION — LOW RESIDUAL VALUE",
-        "The residual is below the stored brand band",
-        "Please confirm the residual percentage in writing.",
-      ));
+    if (sheet?.conditionalIncentiveUnconfirmed) {
+      leaseCaution(
+        FINDING_RANK.leaseConditionalIncentive,
+        "lease-incentive",
+        "PROCEED WITH CAUTION — CONDITIONAL INCENTIVE",
+        "A loyalty or conquest incentive was kept out of the capitalized cost because eligibility was not confirmed",
+        "Ask the dealer which incentives require loyalty, conquest, or financing, and which ones the buyer qualifies for.",
+      );
     }
-    if (hasExcessiveMileageRate(fields)) {
-      findingsPush(cautionFinding(
-        FINDING_RANK.leaseMileagePenalty,
-        "lease-mileage-rate",
-        "PROCEED WITH CAUTION — HIGH MILEAGE PENALTY",
-        "The excess-mileage rate is above $0.30 per mile",
-        "Please reduce the excess-mileage rate or explain it in writing.",
-      ));
+    if (sheet?.advertisedPaymentIsNotFullCost) {
+      const advertised = fields.monthlyPayment;
+      const due = sheet.dueAtSigning.stated;
+      const effective = sheet.effectiveMonthlyCost;
+      const detail = effective != null
+        ? `The advertised payment is $${advertised} and the effective monthly cost is $${effective.toFixed(2)} with $${due} due at signing`
+        : `The advertised payment is $${advertised} with $${due} due at signing, and the drive-off is not itemized so an effective monthly cost was not invented`;
+      leaseCaution(
+        FINDING_RANK.leaseAdvertisedPayment,
+        "lease-advertised",
+        "PROCEED WITH CAUTION — ADVERTISED PAYMENT IS NOT THE FULL COST",
+        detail,
+        "Ask the dealer to itemize the amount due at signing next to the monthly payment.",
+      );
     }
-    if (isMissingLeaseTerms(fields)) {
+    if ((leaseMath?.comparison?.offers.length ?? 0) >= 2) {
+      leaseCaution(
+        FINDING_RANK.competingOffers,
+        "lease-competing",
+        "PROCEED WITH CAUTION — COMPETING LEASE OFFERS",
+        leaseMath?.comparison?.note ?? "The message contains more than one lease offer",
+        "Ask the dealer to put effective monthly cost, total cost, mileage allowance, amount due at signing, and end-of-lease charges side by side.",
+      );
+    }
+    if (isMissingLeaseTerms(fields) && (leaseMath?.comparison?.offers.length ?? 0) < 2) {
       findingsPush(insufficientFinding(
         FINDING_RANK.leaseMissingTerms,
         "lease-terms",
         "INSUFFICIENT INFORMATION — GET LEASE TERMS",
-        "Money factor, residual, mileage allowance, or price is missing",
-        "Please send the money factor, residual, mileage allowance, and capitalized cost.",
+        leaseGapSentence(fields),
+        "Please send the money factor, residual, term, mileage allowance, and capitalized cost.",
       ));
     }
   }
@@ -1478,10 +1524,14 @@ export function applyRuleEngine(
 
   findings.sort((a, b) => a.rank - b.rank || a.order - b.order);
   const winner = findings[0];
-  const summary = findings.map((finding) => {
-    if (finding.id === "market" && finding !== winner) return "Market value not verified.";
-    return finding.summary;
-  }).join(" ");
+  const summaryParts: string[] = [];
+  for (const finding of findings) {
+    const piece = finding.id === "market" && finding !== winner ? "Market value not verified." : finding.summary;
+    if (!piece.trim()) continue;
+    if (summaryParts.some((existing) => existing.includes(piece.trim()))) continue;
+    summaryParts.push(piece);
+  }
+  const summary = joinSentences(summaryParts);
   const extraAsks = findings
     .map((finding) => finding.dealerAsk.trim())
     .filter((ask) => ask !== "" && !winner.primaryIssue.includes(ask));
@@ -1516,6 +1566,7 @@ export function applyRuleEngine(
     verdictLabel: string,
     primaryIssue: string,
     dealerAsk: string,
+    summary?: string,
   ): Omit<MaterialFinding, "order"> {
     return {
       id,
@@ -1525,7 +1576,7 @@ export function applyRuleEngine(
       verdictLabel,
       goNoGo: "PROCEED-WITH-CAUTION",
       primaryIssue,
-      summary: primaryIssue,
+      summary: summary ?? primaryIssue,
       dealerAsk,
     };
   }
@@ -1558,9 +1609,10 @@ export function applyRuleEngine(
     dealerAsk: string,
   ): Omit<MaterialFinding, "order"> {
     const low = usedWithoutMileage || paymentOnly || !vehicleNamed;
-    const summary = id === "market" || !marketVerified
-      ? `${primaryIssue} Market value not verified.`
-      : primaryIssue;
+    const alreadySaysUnverified = /market value (?:is )?not verified/i.test(primaryIssue);
+    const summary = alreadySaysUnverified || marketVerified
+      ? primaryIssue
+      : joinSentences([primaryIssue, "Market value not verified."]);
     return {
       id,
       rank,

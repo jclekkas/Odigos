@@ -1,23 +1,31 @@
 /**
  * Reference data for the top 15 lease brands in the US market.
  *
- * Buy-rate money factors are representative well-qualified-buyer base rates.
- * They vary by model, term, credit tier, and region — treat as benchmarks,
- * not exact quotes.
+ * These figures are buyer benchmarks only. No captive-finance program sheet
+ * was fetched for them, so each one is unverified (needs_source). A difference
+ * from a stored figure is not a markup, and matching one can never unlock GO.
  */
 
 export interface LeaseBrandInfo {
   brand: string;
   captiveLender: string;
-  /** Base money factor from the captive lender (well-qualified buyer). */
+  /**
+   * Stored buyer benchmark. Not a captive-finance program sheet.
+   * A difference from this figure is not a markup.
+   */
   buyRateMF: number;
-  /** Standard acquisition fee charged by the captive lender. */
+  /** Stored buyer benchmark for the acquisition fee. Not a published lender fee. */
   standardAcquisitionFee: number;
-  /** Typical residual-value percentage ranges by lease term (months). */
+  /** Unverified residual-percent bands by term. Missing terms are not filled from 36 months. */
   typicalResidualPct: Record<number, [number, number]>;
+  verification: "unverified";
+  sourceStatus: "needs_source";
+  informationalOnly: true;
+  /** Buyer benchmarks can never authorize a GO. */
+  canUnlockGo: false;
 }
 
-const LEASE_BRAND_DATA: Record<string, LeaseBrandInfo> = {
+const RAW_LEASE_BRAND_DATA: Record<string, Omit<LeaseBrandInfo, "verification" | "sourceStatus" | "informationalOnly" | "canUnlockGo">> = {
   toyota: {
     brand: "Toyota",
     captiveLender: "Toyota Financial Services",
@@ -124,6 +132,23 @@ const LEASE_BRAND_DATA: Record<string, LeaseBrandInfo> = {
     typicalResidualPct: { 24: [52, 60], 36: [45, 53], 39: [42, 50] },
   },
 };
+
+/**
+ * No captive-finance program was fetched for these figures.
+ * They stay unverified. They are informational only and cannot unlock a GO.
+ */
+const LEASE_BRAND_DATA: Record<string, LeaseBrandInfo> = Object.fromEntries(
+  Object.entries(RAW_LEASE_BRAND_DATA).map(([key, info]) => [
+    key,
+    {
+      ...info,
+      verification: "unverified" as const,
+      sourceStatus: "needs_source" as const,
+      informationalOnly: true as const,
+      canUnlockGo: false as const,
+    },
+  ]),
+);
 
 /** Common aliases for fuzzy brand matching. */
 const BRAND_ALIASES: Record<string, string> = {

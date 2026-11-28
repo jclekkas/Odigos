@@ -9,6 +9,7 @@
 import type { DetectedFields, Fee } from "../shared/schema.js";
 import { matchesExtractedDocFeeLabel, matchesExtractedFilingLabel } from "../shared/feeVocabulary.js";
 import type { FieldProvenance } from "./fieldProvenance.js";
+import { applyParsedLeaseFields, leaseFieldKind, leaseFieldSpan, lineIsInstruction, withoutInstructionLines } from "./leaseQuoteParse.js";
 import { prepareQuoteText, scanMoney } from "./ocrMoney.js";
 import { parseGovernmentLines, selectGovernmentLines } from "./governmentCharges.js";
 import { classifyFeeBucket, roundCents, splitFees } from "./quoteMath.js";
@@ -182,6 +183,7 @@ const MILEAGE_NUMBER = String.raw`(\d{1,3}(?:,\d{3})+|\d{1,7})(?!\d)(?!\.\d)`;
  * never states mileage stays null — the figure is not invented.
  */
 function parseMileage(text: string): number | null {
+  const source = withoutInstructionLines(text);
   const labeled = new RegExp(
     String.raw`(?<!\b(?:annual|excess|overage|allowed|lease)\s+)\b(?:odometer|odo|mileage)\b(?!\s+(?:allowance|limit|penalty|rate|charge|overage)\b)(?:\s+(?:reading|is|of|shows|showing))?\s*[:#-]?\s*${MILEAGE_NUMBER}(?!\s*(?:per|\/|a year|annually|allowance|%))`,
     "i",
@@ -190,7 +192,7 @@ function parseMileage(text: string): number | null {
     String.raw`\b${MILEAGE_NUMBER}\s*(?:miles|mi)\b(?!\s*(?:per|\/|a year|annually|allowance))(?!\s+\d{5}\b)`,
     "i",
   );
-  const match = labeled.exec(text) ?? suffixed.exec(text);
+  const match = labeled.exec(source) ?? suffixed.exec(source);
   const raw = match?.[1];
   if (!raw) return null;
   const value = Number(raw.replace(/,/g, ""));
@@ -211,7 +213,7 @@ const TERM_PATTERNS = [
 ];
 
 function parseApr(text: string): number | null {
-  for (const line of text.split("\n")) {
+  for (const line of withoutInstructionLines(text).split("\n")) {
     const value = firstNumber(line, APR_PATTERNS);
     if (value == null || value < 0 || value > 40) continue;
     return value;
@@ -220,7 +222,7 @@ function parseApr(text: string): number | null {
 }
 
 function parseTerm(text: string): number | null {
-  for (const line of text.split("\n")) {
+  for (const line of withoutInstructionLines(text).split("\n")) {
     const value = firstNumber(line, TERM_PATTERNS);
     if (value == null || value < 12 || value > 96) continue;
     return value;
@@ -261,25 +263,6 @@ function reconcile(current: number | null | undefined, labeled: number[]): numbe
   if (found.length > 1) {
     if (current != null && found.some((value) => Math.abs(value - current) < 0.01)) return current;
     return null;
-  }
-  return null;
-}
-
-const LEASE_LABELS: { field: keyof DetectedFields; label: RegExp }[] = [
-  { field: "moneyFactor", label: /money\s*factor/i },
-  { field: "residualValue", label: /residual/i },
-  { field: "residualPercent", label: /residual/i },
-  { field: "acquisitionFee", label: /acquisition/i },
-  { field: "dispositionFee", label: /disposition/i },
-  { field: "mileageAllowance", label: /mileage\s+allowance|miles\s+per\s+year|annual\s+mileage/i },
-  { field: "excessMileageRate", label: /excess\s+mileage/i },
-];
-
-function keepLabeledMoney(current: number | null | undefined, text: string, label: RegExp): number | null {
-  if (current == null || !Number.isFinite(current)) return null;
-  for (const line of text.split("\n")) {
-    if (!label.test(line)) continue;
-    if (lineHasAmount(line, current)) return current;
   }
   return null;
 }
@@ -391,6 +374,7 @@ export function parseDealerQuoteFacts(dealerText: string): DealerQuoteFacts {
   };
 
   for (const [lineIndex, line] of normalizedText.split(/\r?\n/).entries()) {
+    if (lineIsInstruction(line)) continue;
     const pieces = segments(line);
     for (const segment of pieces) {
       const label = segment.label;
@@ -523,13 +507,23 @@ export function applyDealerQuoteFacts(fields: DetectedFields, facts: DealerQuote
     registrationFee: split.sawRegistration ? split.registrationFee : null,
     govFees: split.sawGov ? split.govFees : null,
   };
-  for (const lease of LEASE_LABELS) {
-    const key = lease.field;
-    const current = fields[key];
-    const value = typeof current === "number" ? current : null;
-    (next as Record<string, unknown>)[key] = keepLabeledMoney(value, facts.normalizedText, lease.label);
-  }
-  return next;
+  return tagCapitalizedFees(applyParsedLeaseFields(next, facts.normalizedText), facts.normalizedText);
+}
+
+function tagCapitalizedFees(fields: DetectedFields, text: string): DetectedFields {
+  const fees = (fields.fees ?? []).map((fee) => {
+    if (fee.amount == null || !Number.isFinite(fee.amount)) return fee;
+    const amount = fee.amount.toFixed(0);
+    const line = text.split(/\r?\n/).find((item) => {
+      if (lineIsInstruction(item)) return false;
+      return item.toLowerCase().includes(fee.name.toLowerCase()) && (item.includes(amount) || item.includes(`$${amount}`));
+    });
+    if (!line || fee.capitalized != null) return fee;
+    if (/\bcapitalized\b/i.test(line)) return { ...fee, capitalized: true };
+    if (/\b(up[\s-]?front|due at signing)\b/i.test(line)) return { ...fee, capitalized: false };
+    return fee;
+  });
+  return { ...fields, fees };
 }
 
 const FIELD_LINE_LABEL: Record<string, RegExp> = {
@@ -602,6 +596,8 @@ function spanForPattern(text: string, patterns: RegExp[], value: number): Pick<F
 }
 
 function locateField(text: string, field: string, amount: number): Pick<FieldProvenance, "start" | "end" | "raw"> | undefined {
+  const leaseSpan = leaseFieldSpan(text, field, amount);
+  if (leaseSpan) return leaseSpan;
   const patterns = field === "apr" ? APR_PATTERNS : field === "termMonths" ? TERM_PATTERNS : null;
   if (patterns) {
     let offset = 0;
@@ -632,18 +628,21 @@ function pushNumberProvenance(
   kept: number | null | undefined,
   text: string,
 ): void {
+  const kind = leaseFieldKind(field);
+  const tolerance = kind === "money_factor" ? 1e-8 : kind === "percent" ? 0.05 : 0.01;
   if (typeof kept === "number" && Number.isFinite(kept)) {
     out.push({
       field,
       origin: "dealer_text",
       verified: true,
       amount: kept,
+      kind,
       ...locateField(text, field, kept),
     });
-    return;
   }
   if (typeof modelValue === "number" && Number.isFinite(modelValue)) {
-    out.push({ field, origin: "model", verified: false, amount: modelValue });
+    const same = typeof kept === "number" && Math.abs(modelValue - kept) <= tolerance;
+    if (!same) out.push({ field, origin: "model", verified: false, amount: modelValue, kind });
   }
 }
 
