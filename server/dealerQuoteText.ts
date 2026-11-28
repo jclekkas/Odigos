@@ -104,12 +104,27 @@ function firstNumber(text: string, patterns: RegExp[]): number | null {
   return null;
 }
 
+const MILEAGE_NUMBER = String.raw`(\d{1,3}(?:,\d{3})+|\d{1,7})(?!\d)(?!\.\d)`;
+
+/**
+ * An explicit odometer, including a new car with fewer than 100 miles.
+ * Lease allowances and per-mile rates are not an odometer. A quote that
+ * never states mileage stays null — the figure is not invented.
+ */
 function parseMileage(text: string): number | null {
-  const value = firstNumber(text, [
-    /\b(?:mileage|odometer)\b\s*[:#-]?\s*(\d{1,3}(?:,\d{3})+|\d{2,7})\b/i,
-    /\b(\d{1,3}(?:,\d{3})+|\d{4,6})\s*(?:miles|mi)\b(?!\s*(?:per|\/|a year|allowance))/i,
-  ]);
-  if (value == null || value < 100 || value > 2_000_000) return null;
+  const labeled = new RegExp(
+    String.raw`(?<!\b(?:annual|excess|overage|allowed|lease)\s+)\b(?:odometer|odo|mileage)\b(?!\s+(?:allowance|limit|penalty|rate|charge|overage)\b)(?:\s+(?:reading|is|of|shows|showing))?\s*[:#-]?\s*${MILEAGE_NUMBER}(?!\s*(?:per|\/|a year|annually|allowance|%))`,
+    "i",
+  );
+  const suffixed = new RegExp(
+    String.raw`\b${MILEAGE_NUMBER}\s*(?:miles|mi)\b(?!\s*(?:per|\/|a year|annually|allowance))(?!\s+\d{5}\b)`,
+    "i",
+  );
+  const match = labeled.exec(text) ?? suffixed.exec(text);
+  const raw = match?.[1];
+  if (!raw) return null;
+  const value = Number(raw.replace(/,/g, ""));
+  if (!Number.isFinite(value) || value < 0 || value > 2_000_000) return null;
   return Math.round(value);
 }
 

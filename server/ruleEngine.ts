@@ -707,7 +707,9 @@ export function applyRuleEngine(
     !!options?.buyerState &&
     !!options?.dealerState &&
     options.buyerState.toUpperCase() !== options.dealerState.toUpperCase();
-  const usedWithoutMileage = options?.condition === "used" && (options.mileage == null || options.mileage <= 0);
+  // Zero is a real odometer reading. Only a missing or negative figure is "not provided".
+  const mileageProvided = options?.mileage != null && Number.isFinite(options.mileage) && options.mileage >= 0;
+  const usedWithoutMileage = options?.condition === "used" && !mileageProvided;
   const vehicleNamed = !!(fields.vehicle_make || fields.vehicle_model || fields.vehicle_year);
   const negativeEquity = worksheet?.ok && (worksheet.negativeEquity ?? 0) > 0;
   const conditionalRebate = worksheet?.ok && worksheet.conditionalRebateExcluded != null;

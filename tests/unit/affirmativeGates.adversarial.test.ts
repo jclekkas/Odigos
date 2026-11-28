@@ -162,7 +162,8 @@ describe("affirmative VIN agreement", () => {
       },
     });
     expect(hybrid.goNoGo).not.toBe("GO");
-    expect(hybrid.summary).toMatch(/model/i);
+    expect(hybrid.summary).toMatch(/powertrain/i);
+    expect(hybrid.summary).toMatch(/hybrid/i);
     expect(trim.goNoGo).not.toBe("GO");
     expect(trim.summary).toMatch(/trim/i);
     expect(vinPositivelyAgrees(

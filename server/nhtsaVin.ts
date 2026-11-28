@@ -12,7 +12,8 @@
  * Flat-format result keys, confirmed against a live DecodeVinValues response
  * and the vPIC Analytical User's Manual (DOT HS 813 795):
  *   Results[0].ModelYear, Make, Model, Trim, Trim2, Series,
- *   BasePrice, ErrorCode, ErrorText
+ *   BasePrice, ErrorCode, ErrorText, EngineCylinders, EngineConfiguration,
+ *   FuelTypePrimary, FuelTypeSecondary, ElectrificationLevel
  *
  * BasePrice (manual): "Base price of the vehicle is the cost of a new vehicle
  * with only the standard equipment and factory warranty. It is the cost
@@ -111,6 +112,11 @@ interface DecodedIdentity {
   basePrice: number | null;
   errorCode: string;
   errorText: string;
+  engineCylinders?: string | null;
+  engineConfiguration?: string | null;
+  fuelTypePrimary?: string | null;
+  fuelTypeSecondary?: string | null;
+  electrificationLevel?: string | null;
 }
 
 export function vpicDecodeVinValuesUrl(vin: string): string {
@@ -267,16 +273,132 @@ function displayMake(value: string): string {
     .replace(/\b[a-z]/g, (letter) => letter.toUpperCase());
 }
 
-function trimTokensIn(value: string): string[] {
-  const normalized = value.toLowerCase().replace(/[^a-z0-9]+/g, " ");
+type Powertrain = "hybrid" | "plug-in hybrid" | "electric" | "fuel cell";
+
+const NOT_STATED = "not stated";
+
+/** Longest phrase first so "plug-in hybrid" is not also counted as "hybrid" plus "electric". */
+const POWERTRAIN_RULES: { phrase: string; value: Powertrain }[] = [
+  { phrase: "plug in hybrid electric vehicle", value: "plug-in hybrid" },
+  { phrase: "plug in hybrid electric", value: "plug-in hybrid" },
+  { phrase: "plug in hybrid", value: "plug-in hybrid" },
+  { phrase: "plugin hybrid", value: "plug-in hybrid" },
+  { phrase: "battery electric vehicle", value: "electric" },
+  { phrase: "battery electric", value: "electric" },
+  { phrase: "fuel cell", value: "fuel cell" },
+  { phrase: "hybrid electric vehicle", value: "hybrid" },
+  { phrase: "hybrid electric", value: "hybrid" },
+  { phrase: "strong hev", value: "hybrid" },
+  { phrase: "mild hev", value: "hybrid" },
+  { phrase: "plug in", value: "plug-in hybrid" },
+  { phrase: "plugin", value: "plug-in hybrid" },
+  { phrase: "phev", value: "plug-in hybrid" },
+  { phrase: "fcev", value: "fuel cell" },
+  { phrase: "prime", value: "plug-in hybrid" },
+  { phrase: "hev", value: "hybrid" },
+  { phrase: "hybrid", value: "hybrid" },
+  { phrase: "bev", value: "electric" },
+  { phrase: "electric", value: "electric" },
+  { phrase: "ev", value: "electric" },
+];
+
+const ENGINE_TOKENS = ["v12", "v10", "v8", "v6", "v4", "w12", "w8", "i6", "i5", "i4", "i3", "l6", "l4", "h6", "h4"];
+
+function space(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
+}
+
+/** "V-6" and "V 6" are the same engine token as "V6". */
+function collapseEngine(spaced: string): string {
+  return spaced
+    .replace(/\bv\s+(\d{1,2})\b/g, "v$1")
+    .replace(/\bi\s+(\d{1,2})\b/g, "i$1")
+    .replace(/\bl\s+(\d{1,2})\b/g, "l$1")
+    .replace(/\bh\s+(\d{1,2})\b/g, "h$1")
+    .replace(/\bw\s+(\d{1,2})\b/g, "w$1");
+}
+
+function padded(value: string): string {
+  const collapsed = collapseEngine(space(value));
+  return collapsed ? ` ${collapsed} ` : " ";
+}
+
+function consumePowertrains(value: string): Powertrain[] {
+  let rest = padded(value);
+  const found: Powertrain[] = [];
+  let progressed = true;
+  while (progressed) {
+    progressed = false;
+    for (const rule of POWERTRAIN_RULES) {
+      const needle = ` ${rule.phrase} `;
+      if (!rest.includes(needle)) continue;
+      if (!found.includes(rule.value)) found.push(rule.value);
+      rest = rest.split(needle).join(" ");
+      progressed = true;
+      break;
+    }
+  }
+  return found;
+}
+
+function classifyPowertrain(value: string): { value: Powertrain | null; ambiguous: boolean } {
+  const found = consumePowertrains(value);
+  if (found.length > 1) return { value: null, ambiguous: true };
+  return { value: found[0] ?? null, ambiguous: false };
+}
+
+function displayPowertrain(value: Powertrain | null, ambiguous: boolean): string {
+  if (ambiguous) return "ambiguous";
+  return value ?? NOT_STATED;
+}
+
+function enginesIn(value: string): string[] {
   const found: string[] = [];
-  let rest = ` ${normalized} `;
+  const rest = padded(value);
+  for (const token of ENGINE_TOKENS) {
+    if (rest.includes(` ${token} `) && !found.includes(token)) found.push(token);
+  }
+  return found;
+}
+
+function singleEngine(value: string): { value: string | null; ambiguous: boolean } {
+  const found = enginesIn(value);
+  if (found.length > 1) return { value: null, ambiguous: true };
+  return { value: found[0] ?? null, ambiguous: false };
+}
+
+function displayEngine(value: string | null, ambiguous: boolean): string {
+  if (ambiguous) return "ambiguous";
+  if (!value) return NOT_STATED;
+  return value.toUpperCase();
+}
+
+function configurationLetter(config: string | null | undefined): string | null {
+  const spaced = space(config ?? "");
+  if (!spaced) return null;
+  if (/\bv shaped\b/.test(spaced)) return "v";
+  if (/\bin line\b|\binline\b/.test(spaced)) return "i";
+  if (/\bhorizontal\b|\bflat\b|\bboxer\b/.test(spaced)) return "h";
+  if (/\bw shaped\b/.test(spaced)) return "w";
+  return null;
+}
+
+function cylinderCount(raw: string | null | undefined): number | null {
+  if (!raw) return null;
+  const count = Number(raw);
+  if (!Number.isInteger(count) || count < 1 || count > 16) return null;
+  return count;
+}
+
+function trimTokensIn(value: string): string[] {
+  const found: string[] = [];
+  let rest = padded(value);
   const ordered = [...TRIM_TOKENS].sort((a, b) => b.length - a.length);
   for (const token of ordered) {
     const needle = ` ${token.replace(/-/g, " ")} `;
     if (rest.includes(needle)) {
       found.push(lettersOnly(token));
-      rest = rest.replace(needle, " ");
+      rest = rest.split(needle).join(" ");
     }
   }
   return found;
@@ -296,9 +418,37 @@ function decodedLabel(decoded: DecodedIdentity): string {
     decoded.model ?? "",
     decoded.trim ?? "",
   ].filter(Boolean);
-  return parts.join(" ") || "an unidentified vehicle";
+  let label = parts.join(" ") || "an unidentified vehicle";
+  const power = decodePowertrain(decoded);
+  const powerWord = power.unspecified ? "electrified" : power.value;
+  if (powerWord && !labelMentions(label, powerWord)) label = `${label} ${powerWord}`;
+  const engine = singleEngine(decodedDescriptor(decoded));
+  if (engine.value && !labelMentions(label, engine.value)) label = `${label} ${engine.value.toUpperCase()}`;
+  return label;
 }
 
+function labelMentions(label: string, term: string): boolean {
+  const haystack = padded(label);
+  if (term === "plug-in hybrid") return haystack.includes(" plug in ") || haystack.includes(" phev ") || haystack.includes(" prime ");
+  if (term === "electrified") return haystack.includes(" electrified ") || haystack.includes(" electric ") || haystack.includes(" hybrid ");
+  return haystack.includes(` ${term} `);
+}
+
+function quoteDescriptor(identity: QuoteVehicleIdentity): string {
+  return [identity.model, identity.vehicleText].filter(Boolean).join(" ");
+}
+
+function decodedDescriptor(decoded: DecodedIdentity): string {
+  return [decoded.model, decoded.trim, decoded.trim2].filter(Boolean).join(" ");
+}
+
+/**
+ * Model family, trim, engine, and powertrain are compared separately.
+ * "Accord EX-V6" is model Accord, trim EX, engine V6 — not a different model
+ * from NHTSA's Model "Accord" and Trim "EX-V6".
+ * "Camry" does not match "Camry Hybrid". A missing trim, or a powertrain the
+ * quote does not state when the decode names one, is not agreement.
+ */
 export function compareDecodedVin(decoded: DecodedIdentity, identity: QuoteVehicleIdentity): VinMismatch[] {
   const mismatches: VinMismatch[] = [];
   const quoteText = [identity.vehicleText, identity.make, identity.model].filter(Boolean).join(" ");
@@ -320,33 +470,132 @@ export function compareDecodedVin(decoded: DecodedIdentity, identity: QuoteVehic
   if (quoteModel && decoded.model) {
     const quoteCore = modelCore(quoteModel);
     const decodedCore = modelCore(decoded.model);
-    const quoteVariants = variantTokensIn(`${quoteModel} ${identity.vehicleText ?? ""}`);
-    const decodedVariants = variantTokensIn(`${decoded.model} ${decoded.trim ?? ""} ${decoded.trim2 ?? ""}`);
-    const coresEqual = quoteCore.length > 0 && quoteCore === decodedCore;
-    const variantsEqual = sameStringSet(quoteVariants, decodedVariants);
-    // "Camry" does not affirmatively match "Camry Hybrid". A shorter name
-    // contained in a longer one is ambiguous, not a match.
-    if (!coresEqual || !variantsEqual) {
+    if (!quoteCore || !decodedCore || quoteCore !== decodedCore) {
       mismatches.push({
         field: "model",
-        quoteValue: quoteModel,
-        decodedValue: [decoded.model, decoded.trim, decoded.trim2].filter(Boolean).join(" "),
+        quoteValue: displayModelFamily(quoteModel),
+        decodedValue: displayModelFamily(decoded.model),
       });
     }
   }
 
-  const quoteTrims = trimTokensIn(`${quoteModel} ${identity.vehicleText ?? ""}`);
-  const decodedTrims = trimTokensIn(`${decoded.trim ?? ""} ${decoded.trim2 ?? ""}`);
+  const quoteTrims = trimTokensIn(quoteDescriptor(identity));
+  const decodedTrims = trimTokensIn(decodedDescriptor(decoded));
   // One side naming a trim the other does not is ambiguity, not a match.
-  // "XLE" does not count as "LE".
+  // "XLE" does not count as "LE". "EX" does not count as "EX-L".
   if (!sameStringSet(quoteTrims, decodedTrims)) {
     mismatches.push({
       field: "trim",
-      quoteValue: quoteTrims.join(", ").toUpperCase() || "not stated",
-      decodedValue: decodedTrims.join(", ").toUpperCase() || "not stated",
+      quoteValue: quoteTrims.join(", ").toUpperCase() || NOT_STATED,
+      decodedValue: decodedTrims.join(", ").toUpperCase() || NOT_STATED,
     });
   }
+
+  const engineMismatch = compareEngines(decoded, identity);
+  if (engineMismatch) mismatches.push(engineMismatch);
+
+  const powertrainMismatch = comparePowertrains(decoded, identity);
+  if (powertrainMismatch) mismatches.push(powertrainMismatch);
   return mismatches;
+}
+
+function displayModelFamily(value: string): string {
+  let rest = padded(value);
+  for (const rule of POWERTRAIN_RULES) {
+    rest = rest.split(` ${rule.phrase} `).join(" ");
+  }
+  rest = stripEngineTokens(rest);
+  const ordered = [...TRIM_TOKENS].sort((a, b) => b.length - a.length);
+  for (const token of ordered) {
+    rest = rest.split(` ${token.replace(/-/g, " ")} `).join(" ");
+  }
+  const words = rest.trim();
+  if (!words) return value.trim() || NOT_STATED;
+  return words.replace(/\b[a-z0-9]/g, (letter) => letter.toUpperCase());
+}
+
+function compareEngines(decoded: DecodedIdentity, identity: QuoteVehicleIdentity): VinMismatch | null {
+  const quoteEngine = singleEngine(quoteDescriptor(identity));
+  const decodedName = singleEngine(decodedDescriptor(decoded));
+  if (quoteEngine.ambiguous || decodedName.ambiguous) {
+    return {
+      field: "engine",
+      quoteValue: displayEngine(quoteEngine.value, quoteEngine.ambiguous),
+      decodedValue: displayEngine(decodedName.value, decodedName.ambiguous),
+    };
+  }
+
+  const specCylinders = cylinderCount(decoded.engineCylinders);
+  const specLetter = configurationLetter(decoded.engineConfiguration);
+  if (decodedName.value && specCylinders != null) {
+    const namedCylinders = Number(decodedName.value.replace(/\D/g, ""));
+    const namedLetter = decodedName.value[0] ?? "";
+    const cylindersDisagree = namedCylinders !== specCylinders;
+    const configDisagrees = specLetter != null && namedLetter !== specLetter;
+    if (cylindersDisagree || configDisagrees) {
+      return {
+        field: "engine",
+        quoteValue: displayEngine(quoteEngine.value, false),
+        decodedValue: "ambiguous",
+      };
+    }
+  }
+
+  let decodedValue = decodedName.value;
+  if (!decodedValue && quoteEngine.value && specCylinders != null) {
+    const namedCylinders = Number(quoteEngine.value.replace(/\D/g, ""));
+    const namedLetter = quoteEngine.value[0] ?? "";
+    const cylindersAgree = namedCylinders === specCylinders;
+    const configAgrees = specLetter == null || namedLetter === specLetter;
+    if (cylindersAgree && configAgrees) decodedValue = quoteEngine.value;
+    else decodedValue = specLetter ? `${specLetter}${specCylinders}` : `${specCylinders}-cyl`;
+  }
+
+  if (quoteEngine.value === decodedValue) return null;
+  if (!quoteEngine.value && !decodedValue) return null;
+  return {
+    field: "engine",
+    quoteValue: displayEngine(quoteEngine.value, false),
+    decodedValue: displayEngine(decodedValue, false),
+  };
+}
+
+function decodePowertrain(decoded: DecodedIdentity): { value: Powertrain | null; ambiguous: boolean; unspecified: boolean } {
+  const level = decoded.electrificationLevel?.trim() ?? "";
+  if (level) {
+    const classified = classifyPowertrain(level);
+    if (classified.ambiguous || classified.value) return { ...classified, unspecified: false };
+  }
+  const named = classifyPowertrain(decodedDescriptor(decoded));
+  if (named.ambiguous || named.value) return { ...named, unspecified: false };
+  const primary = space(decoded.fuelTypePrimary ?? "");
+  const secondary = space(decoded.fuelTypeSecondary ?? "");
+  if (/\belectric\b/.test(primary) && !/\b(?:gasoline|diesel)\b/.test(primary)) {
+    return { value: "electric", ambiguous: false, unspecified: false };
+  }
+  // Secondary electric fuel, with no electrification level and no name, says
+  // the VIN is electrified without saying which kind. That is not agreement.
+  if (/\belectric\b/.test(secondary)) return { value: null, ambiguous: false, unspecified: true };
+  return { value: null, ambiguous: false, unspecified: false };
+}
+
+function comparePowertrains(decoded: DecodedIdentity, identity: QuoteVehicleIdentity): VinMismatch | null {
+  const quote = classifyPowertrain(quoteDescriptor(identity));
+  const decodedPower = decodePowertrain(decoded);
+  if (quote.ambiguous || decodedPower.ambiguous || decodedPower.unspecified) {
+    return {
+      field: "powertrain",
+      quoteValue: displayPowertrain(quote.value, quote.ambiguous),
+      decodedValue: decodedPower.unspecified ? "electrified" : displayPowertrain(decodedPower.value, decodedPower.ambiguous),
+    };
+  }
+  if (quote.value === decodedPower.value) return null;
+  if (!quote.value && !decodedPower.value) return null;
+  return {
+    field: "powertrain",
+    quoteValue: displayPowertrain(quote.value, false),
+    decodedValue: displayPowertrain(decodedPower.value, false),
+  };
 }
 
 function yearInText(text: string | null | undefined): number | null {
@@ -364,41 +613,32 @@ function makeInText(text: string, decodedMake: string | null): string | null {
   return null;
 }
 
-function stripTrimTokens(value: string): string {
-  let rest = ` ${value.toLowerCase().replace(/[^a-z0-9]+/g, " ")} `;
-  const ordered = [...TRIM_TOKENS].sort((a, b) => b.length - a.length);
-  for (const token of ordered) {
-    rest = rest.replace(` ${token.replace(/-/g, " ")} `, " ");
-  }
-  return rest.trim();
-}
-
 function sameStringSet(left: string[], right: string[]): boolean {
   if (left.length !== right.length) return false;
   const sortedRight = [...right].sort();
   return [...left].sort().every((token, index) => token === sortedRight[index]);
 }
 
-/** Powertrain words that make "Camry" and "Camry Hybrid" different vehicles. */
-function variantTokensIn(value: string): string[] {
-  const spaced = ` ${value.toLowerCase().replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim()} `;
-  const found: string[] = [];
-  if (spaced.includes(" plug in ") || spaced.includes(" plugin ") || spaced.includes(" phev ")) found.push("plugin");
-  if (spaced.includes(" hybrid ")) found.push("hybrid");
-  if (spaced.includes(" prime ")) found.push("prime");
-  return found;
-}
-
-function stripVariants(value: string): string {
-  let rest = ` ${value.toLowerCase().replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim()} `;
-  for (const token of ["plug in", "plugin", "phev", "hybrid", "prime"]) {
+function stripEngineTokens(paddedText: string): string {
+  let rest = paddedText;
+  for (const token of ENGINE_TOKENS) {
     rest = rest.split(` ${token} `).join(" ");
   }
-  return rest.trim();
+  return rest;
 }
 
+/** Model family only. Trim, engine, and powertrain words are other dimensions. */
 function modelCore(value: string): string {
-  return lettersOnly(stripTrimTokens(stripVariants(value)));
+  let rest = padded(value);
+  for (const rule of POWERTRAIN_RULES) {
+    rest = rest.split(` ${rule.phrase} `).join(" ");
+  }
+  rest = stripEngineTokens(rest);
+  const ordered = [...TRIM_TOKENS].sort((a, b) => b.length - a.length);
+  for (const token of ordered) {
+    rest = rest.split(` ${token.replace(/-/g, " ")} `).join(" ");
+  }
+  return lettersOnly(rest);
 }
 
 function dollars(amount: number): string {
@@ -420,6 +660,7 @@ export function withQuoteIdentity(check: VinCheck, identity: QuoteVehicleIdentit
       basePrice: check.basePrice?.amount ?? null,
       errorCode: check.errorCode ?? (check.errorText && !check.errorText.startsWith("0 ") ? "1" : "0"),
       errorText: check.errorText ?? "",
+      ...specFromDecoded(check.decoded),
     },
     identity,
     check.provenance,
@@ -484,6 +725,7 @@ function checkFromDecoded(
       trim: decoded.trim,
       trim2: decoded.trim2,
       series: decoded.series,
+      ...specFromDecoded(decoded),
     },
     mismatches,
     basePrice: decoded.basePrice != null ? basePriceBlock(decoded.basePrice) : null,
@@ -513,6 +755,27 @@ function parseResultRow(row: Record<string, unknown>): DecodedIdentity | null {
     basePrice: parseBasePrice(asText(row.BasePrice)),
     errorCode: asText(row.ErrorCode),
     errorText: asText(row.ErrorText),
+    engineCylinders: asText(row.EngineCylinders) || null,
+    engineConfiguration: asText(row.EngineConfiguration) || null,
+    fuelTypePrimary: asText(row.FuelTypePrimary) || null,
+    fuelTypeSecondary: asText(row.FuelTypeSecondary) || null,
+    electrificationLevel: asText(row.ElectrificationLevel) || null,
+  };
+}
+
+function specFromDecoded(decoded: {
+  engineCylinders?: string | null;
+  engineConfiguration?: string | null;
+  fuelTypePrimary?: string | null;
+  fuelTypeSecondary?: string | null;
+  electrificationLevel?: string | null;
+}): Pick<DecodedIdentity, "engineCylinders" | "engineConfiguration" | "fuelTypePrimary" | "fuelTypeSecondary" | "electrificationLevel"> {
+  return {
+    engineCylinders: decoded.engineCylinders ?? null,
+    engineConfiguration: decoded.engineConfiguration ?? null,
+    fuelTypePrimary: decoded.fuelTypePrimary ?? null,
+    fuelTypeSecondary: decoded.fuelTypeSecondary ?? null,
+    electrificationLevel: decoded.electrificationLevel ?? null,
   };
 }
 
@@ -711,11 +974,14 @@ export function vinPositivelyAgrees(
       basePrice: null,
       errorCode: check.errorCode ?? "",
       errorText: check.errorText ?? "",
+      ...specFromDecoded(check.decoded),
     },
     identity,
   );
   if (mismatches.length > 0) {
-    const fields = mismatches.map((item) => item.field).join(", ");
+    const fields = mismatches
+      .map((item) => `${item.field} (quote ${item.quoteValue}, VIN ${item.decodedValue})`)
+      .join("; ");
     return {
       affirmative: false,
       reason: `The VIN does not affirmatively match the quote on ${fields}. A partial, ambiguous, or conflicting vehicle name is not a confirmed match.`,

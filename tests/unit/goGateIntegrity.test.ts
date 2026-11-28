@@ -208,6 +208,71 @@ describe("vehicle identification required for GO", () => {
     expect(result.goNoGo).not.toBe("GO");
   });
 
+  it("does not GO when the decode is a hybrid and the quote never says so", () => {
+    const result = run(blank({}), {
+      vinCheck: {
+        status: "decoded",
+        vin: "1G4AH59H45G118341",
+        mismatches: [],
+        summary: "The VIN matches the quote.",
+        decoded: {
+          year: 2025,
+          make: "TOYOTA",
+          model: "Camry",
+          trim: "LE",
+          trim2: null,
+          series: null,
+          fuelTypePrimary: "Gasoline",
+          fuelTypeSecondary: "Electric",
+          electrificationLevel: "Strong HEV (Hybrid Electric Vehicle)",
+        },
+        errorCode: "0",
+        errorText: "0 - VIN decoded clean. Check Digit (9th position) is correct",
+      },
+    });
+    expect(result.goNoGo).not.toBe("GO");
+    expect(result.verdictLabel).toMatch(/VIN NOT CONFIRMED/);
+    expect(result.summary).toMatch(/powertrain/i);
+    expect(result.summary).toMatch(/hybrid/i);
+  });
+
+  it("does not GO when the quote trim and the VIN trim are different", () => {
+    const result = run(blank({ vehicle_model: "Camry LE" }), {
+      trim: null,
+      vinCheck: {
+        status: "decoded",
+        vin: "1G4AH59H45G118341",
+        mismatches: [],
+        summary: "The VIN matches the quote.",
+        decoded: {
+          year: 2025,
+          make: "TOYOTA",
+          model: "Camry",
+          trim: "XLE",
+          trim2: null,
+          series: null,
+        },
+        errorCode: "0",
+        errorText: "0 - VIN decoded clean. Check Digit (9th position) is correct",
+      },
+    });
+    expect(result.goNoGo).not.toBe("GO");
+    expect(result.verdictLabel).toMatch(/VIN NOT CONFIRMED/);
+    expect(result.summary).toMatch(/trim/i);
+  });
+
+  it("treats an odometer of 0 or 12 as provided and still asks when mileage is absent", () => {
+    for (const mileage of [0, 12]) {
+      const provided = run(blank({}), { condition: "used", mileage });
+      expect(provided.verdictLabel, String(mileage)).not.toMatch(/MILEAGE NOT PROVIDED/);
+      expect(provided.dimensions?.informationCompleteness.summary, String(mileage)).not.toMatch(/no mileage/i);
+    }
+    const absent = run(blank({}), { condition: "used", mileage: null });
+    expect(absent.verdictLabel).toMatch(/MILEAGE NOT PROVIDED/);
+    expect(absent.goNoGo).not.toBe("GO");
+    expect(absent.dimensions?.informationCompleteness.summary).toMatch(/no mileage/i);
+  });
+
   it("allows GO when the VIN decode matches the quote", () => {
     const result = run(blank({}), {
       vinCheck: {
