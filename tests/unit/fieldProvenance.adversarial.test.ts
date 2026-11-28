@@ -9,6 +9,7 @@ import {
 import { blockGoWhenInventedFieldsRemain } from "../../server/fieldProvenance.js";
 import type { AnalysisResponse, DetectedFields } from "../../shared/schema.js";
 import { auditedCamryBenchmark } from "./auditedBenchmark.js";
+import { createTestTrustedValuationAdapter, withValuationAdapters } from "../../server/valuationAdapters.js";
 
 const llm = {
   dealScore: "GREEN",
@@ -148,29 +149,31 @@ describe("field provenance rejects model-invented money", () => {
         { name: "Registration", amount: 400 },
       ],
     });
-    const withInvention = applyRuleEngine(llm, invented, null, "finance", null, {
+    const trusted = [createTestTrustedValuationAdapter()];
+    const withInvention = withValuationAdapters(trusted, () => applyRuleEngine(llm, invented, null, "finance", null, {
       stateData: ca,
-      marketBenchmark: auditedCamryBenchmark(),
       condition: "new",
       mileage: 12,
       trim: "LE",
-      dealerText: "Cash purchase. Not a loan.",
-    });
+      dealerText: `Amount financed: $${amountFinanced.toFixed(2)}`,
+    }));
     expect(withInvention.goNoGo).toBe("GO");
 
     const applied = applyDealerQuoteFactsWithProvenance(invented, parseDealerQuoteFacts(text));
     expect(applied.fields.apr).toBeNull();
     expect(applied.fields.termMonths).toBeNull();
-    const result = applyRuleEngine(llm, applied.fields, null, "finance", null, {
+    const result = withValuationAdapters(trusted, () => applyRuleEngine(llm, applied.fields, null, "finance", null, {
       stateData: ca,
-      marketBenchmark: auditedCamryBenchmark(),
       condition: "new",
       mileage: 12,
       trim: "LE",
       dealerText: text,
-    });
+    }));
     expect(result.goNoGo).not.toBe("GO");
     expect(result.verdictLabel).toMatch(/FINANCING TERMS NEEDED/);
+    expect(result.suggestedReply).toMatch(/APR/);
+    expect(result.suggestedReply).toMatch(/term/i);
+    expect(result.suggestedReply).toMatch(/amount financed/i);
   });
 
   it("blocks GO when invented financing figures are still on the worksheet", () => {

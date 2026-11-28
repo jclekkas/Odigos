@@ -375,6 +375,8 @@ export const analysisResponseSchema = z.object({
     high: z.number().nullable(),
     reason: z.string(),
     kind: z.enum(["market_transaction"]).nullable(),
+    /** Adapter reference for a verified valuation. Null when market value is unverified. */
+    reference: z.string().nullable().optional(),
   }).optional(),
   msrpComparison: z.object({
     status: z.enum(["compared", "not_provided", "rejected"]),
