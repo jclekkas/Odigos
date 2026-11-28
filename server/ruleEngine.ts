@@ -1,6 +1,6 @@
 import type { AnalysisDimensions, AnalysisResponse, DetectedFields, Fee, GoNoGo } from "../shared/schema.js";
 import type { LeaseMathResult } from "./leaseMathEngine.js";
-import { amortizingPayment, computePurchase, type PurchaseMath } from "./quoteMath.js";
+import { amortizingPayment, computePurchase, roundCents, type PurchaseMath } from "./quoteMath.js";
 import { resolvePurchaseLines } from "./governmentCharges.js";
 import { disclosedAmountFinanced } from "./financingDisclosure.js";
 import { resolveTrustedBenchmark } from "./valuationAdapters.js";
@@ -113,6 +113,10 @@ export interface RuleEngineResult {
   mathematicalDerivation?: string[];
   docFeeAssessment?: DocFeeAssessment | null;
   separateFilingAssessments?: SeparateFilingAssessment[];
+  /** Odometer printed on the quote. Null when none was stated. Zero is a real reading. */
+  statedMileage?: number | null;
+  /** Questions the engine itself requires. Merged into the analysis missingInfo list. */
+  missingInfo?: { field: string; question: string }[];
 }
 
 export interface DocFeeCapResult {
@@ -360,6 +364,8 @@ function finishVerdict(
     notes?: string[];
     extraAsks?: string[];
     financingAsk?: string | null;
+    statedMileage?: number | null;
+    missingInfo?: { field: string; question: string }[];
   },
 ): RuleEngineResult {
   const askForVehicleEvidence = !extras.marketVerified || draft.goNoGo !== "GO";
@@ -402,6 +408,8 @@ function finishVerdict(
     mathematicalDerivation: extras.derivation,
     docFeeAssessment: extras.docFee,
     separateFilingAssessments: extras.separateFilingAssessments ?? [],
+    statedMileage: extras.statedMileage ?? null,
+    missingInfo: extras.missingInfo ?? [],
   };
 }
 
@@ -741,6 +749,7 @@ export function applyRuleEngine(
     options.buyerState.toUpperCase() !== options.dealerState.toUpperCase();
   // Zero is a real odometer reading. Only a missing or negative figure is "not provided".
   const mileageProvided = options?.mileage != null && Number.isFinite(options.mileage) && options.mileage >= 0;
+  const statedMileageValue = mileageProvided ? Math.round(options!.mileage!) : null;
   const usedWithoutMileage = options?.condition === "used" && !mileageProvided;
   const vehicleNamed = !!(fields.vehicle_make || fields.vehicle_model || fields.vehicle_year);
   const negativeEquity = worksheet?.ok && (worksheet.negativeEquity ?? 0) > 0;
@@ -872,7 +881,10 @@ export function applyRuleEngine(
     },
     informationCompleteness: {
       status: missing.length > 1 || usedWithoutMileage || paymentOnly ? "insufficient" : missing.length === 1 ? "concern" : "clear",
-      summary: missing.length > 0 ? missing.join(" ") : "The quote includes the vehicle, price, and terms needed for this audit.",
+      summary: joinSentences([
+        missing.length > 0 ? missing.join(" ") : "The quote includes the vehicle, price, and terms needed for this audit.",
+        mileageProvided ? `The quote states ${options!.mileage!.toLocaleString("en-US")} miles.` : "",
+      ]),
     },
   };
 
@@ -943,6 +955,7 @@ export function applyRuleEngine(
   const notes = [options?.buyerReportedExplanation].filter(
     (note): note is string => !!note && note.trim() !== "",
   );
+  const engineMissingInfo: { field: string; question: string }[] = [];
   // Ohio and Pennsylvania ceilings change on a calendar date. Show the ceiling and the date used
   // even when another finding owns the headline. The summary carries the date line.
   if (stateUsesDatedCeiling(options?.stateData?.abbreviation) && docFee?.summary) {
@@ -950,6 +963,9 @@ export function applyRuleEngine(
   }
   if (options?.marketBenchmark?.status === "verified" && !marketVerified && benchmark.reason) {
     notes.push(benchmark.reason);
+  }
+  if (mileageProvided) {
+    notes.push(`The quote states ${options!.mileage!.toLocaleString("en-US")} miles.`);
   }
   if (scannedVins.lowercaseRaw.length > 0) {
     notes.push(
@@ -1430,6 +1446,24 @@ export function applyRuleEngine(
     ));
   }
 
+  if (!leaseQuote && fields.outTheDoorPrice != null && fields.salePrice != null && worksheet?.ok && worksheet.outTheDoor != null) {
+    const unexplained = roundCents(fields.outTheDoorPrice - worksheet.outTheDoor);
+    const taxAndRegistrationMissing = lines.statedTax == null && !lines.sawRegistration && !lines.sawTitle && !lines.sawGov;
+    const alreadyItemizedMismatch = taxKnown && otdGap >= 0.01;
+    if (!alreadyItemizedMismatch && unexplained >= 50) {
+      const ask = "Please send an itemized out-the-door breakdown, including tax, title, and registration.";
+      const issue = `The out-the-door price of ${formatUsd(fields.outTheDoorPrice)} is ${formatUsd(unexplained)} above the selling price of ${formatUsd(fields.salePrice)} plus the itemized lines.${taxAndRegistrationMissing ? " Tax, title, and registration are not itemized." : ""} ${ask}`;
+      engineMissingInfo.push({ field: "Out-the-door breakdown", question: ask });
+      findingsPush(insufficientFinding(
+        FINDING_RANK.incompleteOtdBreakdown,
+        "incomplete-otd",
+        "INSUFFICIENT INFORMATION — ITEMIZED OTD BREAKDOWN MISSING",
+        issue,
+        ask,
+      ));
+    }
+  }
+
   const leaseDiscrepancy = findings.some((finding) => finding.id.startsWith("lease-"));
   if (!marketVerified) {
     const stickerNote = msrpComparison.status === "compared" && msrpComparison.relation === "at_or_below"
@@ -1508,6 +1542,8 @@ export function applyRuleEngine(
       msrpComparison,
       notes,
       extraAsks: lowercaseAsk ? [lowercaseAsk] : [],
+      statedMileage: statedMileageValue,
+      missingInfo: engineMissingInfo,
     };
     return finishVerdict(
       {
@@ -1557,6 +1593,8 @@ export function applyRuleEngine(
       msrpComparison,
       notes,
       extraAsks,
+      statedMileage: statedMileageValue,
+      missingInfo: engineMissingInfo,
     },
   );
 

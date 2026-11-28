@@ -727,7 +727,9 @@ describe("lease provenance, prompt injection, and sentence joining", () => {
     const result = applyRuleEngine(llm, fields, null, "cash", null, {
       buyerReportedExplanation: "Market value not verified.",
     });
-    expect(result.summary).toMatch(/itemized explanation\. Market value not verified\./);
+    expect(result.summary).toMatch(/itemized explanation\./);
+    expect(result.summary).toMatch(/Market value not verified\./);
+    expect(result.summary).not.toMatch(/explanation Market value/);
   });
 });
 

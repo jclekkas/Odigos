@@ -544,6 +544,11 @@ export const analysisResponseSchema = z.object({
   dealerPriorQuoteCount: z.number().nullable().optional(),
   dealerPatternSummary: z.string().nullable().optional(),
   fieldProvenance: z.array(fieldProvenanceSchema).optional(),
+  /**
+   * Odometer printed on the quote. Null when the quote does not state one.
+   * Zero is a real reading. This is never filled in from a guess.
+   */
+  statedMileage: z.number().int().nonnegative().nullable().optional(),
 });
 
 export type AnalysisResponse = z.infer<typeof analysisResponseSchema>;

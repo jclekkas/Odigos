@@ -10,6 +10,7 @@ import {
   type MarketSignal,
   type FlaggedItemEvidence,
   type Fee,
+  type MissingInfo,
 } from "../../shared/schema.js";
 import { applyRuleEngine } from "../ruleEngine.js";
 import { docFeeSurfaceCopy } from "../../shared/docFeeSurfaceCopy.js";
@@ -310,6 +311,16 @@ export class AnalyzeServiceError extends Error {
 const AI_MAX_RETRIES = 1;
 const AI_ATTEMPT_TIMEOUT_MS = 22_000;
 const AI_TOTAL_BUDGET_MS = 25_000;
+
+/** Keep engine-required questions. A model list cannot drop them. */
+export function mergeMissingInfo(existing: MissingInfo[], extra: MissingInfo[] | undefined): MissingInfo[] {
+  const out = [...existing];
+  for (const item of extra ?? []) {
+    if (out.some((row) => row.field === item.field || row.question === item.question)) continue;
+    out.push(item);
+  }
+  return out;
+}
 
 export async function runAnalysis(data: AnalyzeInput): Promise<AnalyzeServiceResult> {
   // The synthetic flag is locked from the request that arrived. Model output
@@ -1049,6 +1060,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   // choose field provenance. Both are decided from the request and the quote.
   delete rawResult.synthetic;
   delete rawResult.fieldProvenance;
+  delete rawResult.statedMileage;
 
   // Normalize financialImpactConfidence to lowercase enum (the model
   // occasionally returns HIGH/MEDIUM/LOW from habit).
@@ -1239,6 +1251,8 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     docFeeCapCheck,
     leaseMath: leaseMathResult,
     rankedSignals,
+    statedMileage: ruleEngineAdjustments.statedMileage ?? null,
+    missingInfo: mergeMissingInfo(llmResult.missingInfo ?? [], ruleEngineAdjustments.missingInfo),
   };
   finalResult = alignOutputsWithVerdict(
     blockGoWhenInventedFieldsRemain(finalResult, llmResult.detectedFields, fieldProvenance),

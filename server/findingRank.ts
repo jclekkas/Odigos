@@ -53,6 +53,8 @@ export const FINDING_RANK = {
   buyerComps: 260,
   reconciliationIncomplete: 310,
   priceNotInsideValuation: 320,
+  /** A stated out-the-door total that the itemized lines do not explain. */
+  incompleteOtdBreakdown: 390,
   leaseMarketUnverified: 398,
   marketUnverified: 400,
   regulatoryUnknown: 410,
