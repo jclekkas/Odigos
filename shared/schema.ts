@@ -320,6 +320,23 @@ export const rankedSignalSchema = z.object({
 
 export type RankedSignal = z.infer<typeof rankedSignalSchema>;
 
+/**
+ * One extracted money or financing figure.
+ * `dealer_text` was printed on the quote (`start`/`end`/`raw` locate it).
+ * `model` was not printed. Unverified model figures cannot support GO.
+ */
+export const fieldProvenanceSchema = z.object({
+  field: z.string(),
+  origin: z.enum(["dealer_text", "model"]),
+  verified: z.boolean(),
+  amount: z.number().nullable(),
+  start: z.number().int().nonnegative().optional(),
+  end: z.number().int().nonnegative().optional(),
+  raw: z.string().optional(),
+});
+
+export type FieldProvenanceRecord = z.infer<typeof fieldProvenanceSchema>;
+
 // Analysis response schema
 export const analysisResponseSchema = z.object({
   dealScore: z.enum(["GREEN", "YELLOW", "RED"]),
@@ -393,6 +410,7 @@ export const analysisResponseSchema = z.object({
   dealerSeenBefore: z.boolean().optional(),
   dealerPriorQuoteCount: z.number().nullable().optional(),
   dealerPatternSummary: z.string().nullable().optional(),
+  fieldProvenance: z.array(fieldProvenanceSchema).optional(),
 });
 
 export type AnalysisResponse = z.infer<typeof analysisResponseSchema>;

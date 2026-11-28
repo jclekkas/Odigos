@@ -81,7 +81,10 @@ export interface UploadForExtractionResult {
  * downstream failure modes into typed errors so callers don't need to
  * special-case the individual paths.
  */
-export async function uploadFileForExtraction(file: File): Promise<UploadForExtractionResult> {
+export async function uploadFileForExtraction(
+  file: File,
+  options?: { synthetic?: boolean },
+): Promise<UploadForExtractionResult> {
   const cap = maxUploadBytesFor(file.type);
   if (file.size > cap) {
     throw new FileTooLargeError(cap, file.type);
@@ -116,19 +119,20 @@ export async function uploadFileForExtraction(file: File): Promise<UploadForExtr
 
   // Step 2: inline multipart if the payload fits; otherwise Blob.
   if (uploadFile.size <= VERCEL_SAFE_UPLOAD_BYTES) {
-    const text = await postMultipartExtraction(uploadFile);
+    const text = await postMultipartExtraction(uploadFile, options?.synthetic === true);
     return { text, compressed };
   }
 
-  const text = await postBlobExtraction(uploadFile);
+  const text = await postBlobExtraction(uploadFile, options?.synthetic === true);
   return { text, compressed };
 }
 
 /** Inline multipart POST to /api/extract-text with 413-aware error handling. */
-async function postMultipartExtraction(uploadFile: File): Promise<string> {
+async function postMultipartExtraction(uploadFile: File, synthetic: boolean): Promise<string> {
   tagFlow("extract-text", "/api/extract-text");
   const formData = new FormData();
   formData.append("file", uploadFile);
+  if (synthetic) formData.append("synthetic", "true");
   const response = await fetch("/api/extract-text", {
     method: "POST",
     body: formData,
@@ -170,7 +174,7 @@ async function postMultipartExtraction(uploadFile: File): Promise<string> {
  * Blob direct-upload path.  Dynamic-imports @vercel/blob/client so the SDK
  * stays out of the initial JS bundle for users who never hit the fallback.
  */
-async function postBlobExtraction(uploadFile: File): Promise<string> {
+async function postBlobExtraction(uploadFile: File, synthetic: boolean): Promise<string> {
   tagFlow("extract-text-from-blob", "/api/extract-text-from-blob");
 
   const { upload } = await import("@vercel/blob/client");
@@ -195,7 +199,7 @@ async function postBlobExtraction(uploadFile: File): Promise<string> {
   const extractResponse = await fetch("/api/extract-text-from-blob", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ blobUrl, contentType: uploadFile.type }),
+    body: JSON.stringify({ blobUrl, contentType: uploadFile.type, ...(synthetic ? { synthetic: true } : {}) }),
   });
   const extractData = await extractResponse.json().catch(() => ({}));
   if (!extractResponse.ok) {
