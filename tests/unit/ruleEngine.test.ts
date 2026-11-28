@@ -200,6 +200,7 @@ describe("applyRuleEngine", () => {
     expect(result.dealScore).toBe("YELLOW");
     expect(result.goNoGo).toBe("INSUFFICIENT-INFORMATION");
     expect(result.verdictLabel).toMatch(/MARKET VALUE NOT VERIFIED/i);
+    expect(result.summary).toMatch(/year, make, and model/i);
     expect(result.marketBenchmark?.low).toBeNull();
   });
 

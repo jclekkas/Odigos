@@ -286,13 +286,45 @@ function splitModelAndTrim(model: string | null | undefined, explicitTrim?: stri
   return { model: rawModel, trim: null };
 }
 
-function isRetrievalTime(value: string | null | undefined): boolean {
-  if (!value || !value.trim()) return false;
-  const parsed = Date.parse(value);
-  if (!Number.isFinite(parsed)) return false;
-  if (parsed < Date.parse("1990-01-01T00:00:00Z")) return false;
-  if (parsed > Date.now() + 24 * 60 * 60 * 1000) return false;
-  return true;
+/** Default maximum age of an independent valuation, in hours. Override with ODIGOS_VALUATION_MAX_AGE_HOURS. */
+export const DEFAULT_VALUATION_MAX_AGE_HOURS = 72;
+
+export function valuationMaxAgeHours(env: NodeJS.ProcessEnv = process.env): number {
+  const raw = env.ODIGOS_VALUATION_MAX_AGE_HOURS;
+  if (raw == null || raw.trim() === "") return DEFAULT_VALUATION_MAX_AGE_HOURS;
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed) || parsed <= 0) return DEFAULT_VALUATION_MAX_AGE_HOURS;
+  return parsed;
+}
+
+/**
+ * A valuation counts as fresh only inside the maximum-age window.
+ * A missing time, a time before 1990, a future time, and a time older than
+ * the window are all rejected. A future timestamp is not treated as fresh.
+ */
+export function assessRetrievalFreshness(
+  retrievedAt: string | null | undefined,
+  nowMs: number = Date.now(),
+  maxAgeHours: number = valuationMaxAgeHours(),
+): { ok: true } | { ok: false; reason: string } {
+  if (!retrievedAt || !retrievedAt.trim()) {
+    return { ok: false, reason: "This valuation has no auditable retrieval time, so it was not treated as verified." };
+  }
+  const parsed = Date.parse(retrievedAt);
+  if (!Number.isFinite(parsed) || parsed < Date.parse("1990-01-01T00:00:00Z")) {
+    return { ok: false, reason: "This valuation has no auditable retrieval time, so it was not treated as verified." };
+  }
+  if (parsed > nowMs) {
+    return { ok: false, reason: "This valuation's retrieval time is in the future, so it was not treated as verified." };
+  }
+  const ageHours = (nowMs - parsed) / (60 * 60 * 1000);
+  if (ageHours > maxAgeHours) {
+    return {
+      ok: false,
+      reason: `This valuation was retrieved ${ageHours.toFixed(1)} hours ago, which is outside the ${maxAgeHours}-hour freshness window, so it was not treated as verified.`,
+    };
+  }
+  return { ok: true };
 }
 
 function isAuditableReference(value: string | null | undefined): boolean {
@@ -320,9 +352,8 @@ export function benchmarkQualifiesAsVerified(
   if (!provenance?.sourceId?.trim() || isBuyerReportedSource(provenance.sourceId)) {
     return { ok: false, reason: "This valuation has no independent source id, so it was not treated as verified." };
   }
-  if (!isRetrievalTime(provenance.retrievedAt)) {
-    return { ok: false, reason: "This valuation has no auditable retrieval time, so it was not treated as verified." };
-  }
+  const freshness = assessRetrievalFreshness(provenance.retrievedAt);
+  if (!freshness.ok) return freshness;
   if (!isAuditableReference(provenance.reference)) {
     return { ok: false, reason: "This valuation has no auditable URL or reference, so it was not treated as verified." };
   }

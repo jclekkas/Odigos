@@ -5,6 +5,7 @@
 import type { DocFeeAssessment } from "./regulatoryClassification.js";
 import type { MarketBenchmarkKind } from "./marketValuation.js";
 import { FACTORY_STICKER_COMPARISON } from "../shared/windowSticker.js";
+import { normalizeGeneratedPunctuation } from "./findingRank.js";
 
 export type ReplyVerdict =
   | "GO"
@@ -23,6 +24,8 @@ export interface ReplyFacts {
   benchmarkKind?: MarketBenchmarkKind | null;
   /** True only when the selling price exceeds a buyer-supplied factory MSRP. */
   msrpMarkup?: boolean;
+  /** Questions for material findings that are not already the headline. */
+  extraAsks?: string[];
 }
 
 const ENDORSEMENT =
@@ -87,11 +90,22 @@ export function buildConstrainedReply(facts: ReplyFacts): string {
   }
 
   if (facts.derivation.length > 0 && facts.verdict !== "GO") {
-    const mismatch = facts.derivation.find((line) => /difference/i.test(line) && !/difference \$0\.00/i.test(line));
+    const mismatch = facts.derivation.find((line) => /difference/i.test(line) && !/\$0\.00\b/.test(line));
     if (mismatch) parts.push(`My worksheet shows: ${mismatch}.`);
   }
 
-  const reply = parts.join(" ");
+  if (facts.verdict !== "GO" && !facts.marketVerified && !parts.some((part) => /market value is not verified/i.test(part))) {
+    parts.push("Market value is not verified, so I am not accepting the selling price from this quote.");
+  }
+
+  for (const ask of facts.extraAsks ?? []) {
+    const trimmed = ask.trim();
+    if (!trimmed) continue;
+    if (parts.some((part) => part.includes(trimmed))) continue;
+    parts.push(trimmed);
+  }
+
+  const reply = normalizeGeneratedPunctuation(parts.join(" "));
   if (facts.verdict !== "GO" && ENDORSEMENT.test(reply)) {
     throw new Error("Constrained reply endorsed a price the decision did not approve");
   }

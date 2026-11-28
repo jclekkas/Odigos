@@ -10,7 +10,8 @@
  * support a GO.
  */
 
-import type { DetectedFields } from "../shared/schema.js";
+import type { AnalysisDimensions, DetectedFields } from "../shared/schema.js";
+import { alignOutputsWithVerdict } from "./verdictOutputs.js";
 
 export type FieldOrigin = "dealer_text" | "model";
 
@@ -76,6 +77,9 @@ type GoShape = {
   dealScore: string;
   confidenceLevel: string;
   primaryIssue?: string | null;
+  suggestedReply?: string | null;
+  reasoning?: string | null;
+  dimensions?: AnalysisDimensions | null;
 };
 
 /**
@@ -93,7 +97,8 @@ export function blockGoWhenInventedFieldsRemain<T extends GoShape>(
   if (blockers.length === 0) return result;
   const names = blockers.map((row) => row.field).join(", ");
   const reason = `A financing or money figure was not printed on the dealer quote (${names}) and cannot support a GO.`;
-  return {
+  const reply = `${reason} I am not approving this quote or the selling price. Please send the APR, the term in months, and the amount financed only when they are printed on the quote.`;
+  return alignOutputsWithVerdict({
     ...result,
     dealScore: "YELLOW",
     confidenceLevel: "MEDIUM",
@@ -101,5 +106,7 @@ export function blockGoWhenInventedFieldsRemain<T extends GoShape>(
     verdictLabel: "INSUFFICIENT INFORMATION — UNVERIFIED EXTRACTED TERMS",
     primaryIssue: reason,
     summary: reason,
-  };
+    suggestedReply: reply,
+    reasoning: reason,
+  });
 }
