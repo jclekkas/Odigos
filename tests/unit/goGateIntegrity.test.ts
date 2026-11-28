@@ -5,6 +5,7 @@ import { applyRuleEngine, regulatoryGoDecision } from "../../server/ruleEngine.j
 import { getStateFeeData } from "../../server/stateFeeLookup.js";
 import { amortizingPayment } from "../../server/quoteMath.js";
 import { benchmarkQualifiesAsVerified } from "../../server/marketValuation.js";
+import { createTestTrustedValuationAdapter, withValuationAdapters } from "../../server/valuationAdapters.js";
 import { resolveConditionalFeeFacts } from "../../server/conditionalFeeFacts.js";
 import { classifyDocFee } from "../../server/regulatoryClassification.js";
 import type { AnalysisResponse, DetectedFields } from "../../shared/schema.js";
@@ -51,15 +52,17 @@ function run(
   fields: DetectedFields,
   options: (NonNullable<Parameters<typeof applyRuleEngine>[5]> & { purchaseType?: string }) = {},
 ) {
+  const forgedBenchmark = Object.prototype.hasOwnProperty.call(options, "marketBenchmark");
   const { purchaseType, ...rest } = options;
-  return applyRuleEngine(llm, fields, null, purchaseType ?? "cash", null, {
+  const execute = () => applyRuleEngine(llm, fields, null, purchaseType ?? "cash", null, {
     stateData: ca,
-    marketBenchmark: auditedCamryBenchmark(),
     condition: "new",
     mileage: 12,
     trim: "LE",
     ...rest,
   });
+  if (forgedBenchmark) return execute();
+  return withValuationAdapters([createTestTrustedValuationAdapter()], execute);
 }
 
 describe("valuation provenance required before GO", () => {
@@ -154,11 +157,14 @@ describe("financing intent without a complete loan", () => {
     expect(result.goNoGo).toBe("GO");
   });
 
-  it("approves when the stated payment matches the APR, term, and amount financed", () => {
+  it("approves when the stated payment matches the APR, term, and disclosed amount financed", () => {
     const amountFinanced = 28000 + 70 + 1000 + 400;
     const payment = amortizingPayment(amountFinanced, 4.9, 60);
     expect(payment).not.toBeNull();
-    const result = run(blank({ apr: 4.9, termMonths: 60, monthlyPayment: payment }), { purchaseType: "finance" });
+    const result = run(blank({ apr: 4.9, termMonths: 60, monthlyPayment: payment }), {
+      purchaseType: "finance",
+      dealerText: `Amount financed: $${amountFinanced.toFixed(2)}`,
+    });
     expect(result.goNoGo).toBe("GO");
     expect(result.summary).toMatch(/financed payment reconcile/i);
   });
@@ -202,13 +208,88 @@ describe("vehicle identification required for GO", () => {
     expect(result.goNoGo).not.toBe("GO");
   });
 
+  it("does not GO when the decode is a hybrid and the quote never says so", () => {
+    const result = run(blank({}), {
+      vinCheck: {
+        status: "decoded",
+        vin: "1G4AH59H45G118341",
+        mismatches: [],
+        summary: "The VIN matches the quote.",
+        decoded: {
+          year: 2025,
+          make: "TOYOTA",
+          model: "Camry",
+          trim: "LE",
+          trim2: null,
+          series: null,
+          fuelTypePrimary: "Gasoline",
+          fuelTypeSecondary: "Electric",
+          electrificationLevel: "Strong HEV (Hybrid Electric Vehicle)",
+        },
+        errorCode: "0",
+        errorText: "0 - VIN decoded clean. Check Digit (9th position) is correct",
+      },
+    });
+    expect(result.goNoGo).not.toBe("GO");
+    expect(result.verdictLabel).toMatch(/VIN NOT CONFIRMED/);
+    expect(result.summary).toMatch(/powertrain/i);
+    expect(result.summary).toMatch(/hybrid/i);
+  });
+
+  it("does not GO when the quote trim and the VIN trim are different", () => {
+    const result = run(blank({ vehicle_model: "Camry LE" }), {
+      trim: null,
+      vinCheck: {
+        status: "decoded",
+        vin: "1G4AH59H45G118341",
+        mismatches: [],
+        summary: "The VIN matches the quote.",
+        decoded: {
+          year: 2025,
+          make: "TOYOTA",
+          model: "Camry",
+          trim: "XLE",
+          trim2: null,
+          series: null,
+        },
+        errorCode: "0",
+        errorText: "0 - VIN decoded clean. Check Digit (9th position) is correct",
+      },
+    });
+    expect(result.goNoGo).not.toBe("GO");
+    expect(result.verdictLabel).toMatch(/VIN NOT CONFIRMED/);
+    expect(result.summary).toMatch(/trim/i);
+  });
+
+  it("treats an odometer of 0 or 12 as provided and still asks when mileage is absent", () => {
+    for (const mileage of [0, 12]) {
+      const provided = run(blank({}), { condition: "used", mileage });
+      expect(provided.verdictLabel, String(mileage)).not.toMatch(/MILEAGE NOT PROVIDED/);
+      expect(provided.dimensions?.informationCompleteness.summary, String(mileage)).not.toMatch(/no mileage/i);
+    }
+    const absent = run(blank({}), { condition: "used", mileage: null });
+    expect(absent.verdictLabel).toMatch(/MILEAGE NOT PROVIDED/);
+    expect(absent.goNoGo).not.toBe("GO");
+    expect(absent.dimensions?.informationCompleteness.summary).toMatch(/no mileage/i);
+  });
+
   it("allows GO when the VIN decode matches the quote", () => {
     const result = run(blank({}), {
       vinCheck: {
         status: "decoded",
-        vin: "4T1G11AK5NU123456",
+        vin: "1G4AH59H45G118341",
         mismatches: [],
         summary: "The VIN matches the quote.",
+        decoded: {
+          year: 2025,
+          make: "TOYOTA",
+          model: "Camry",
+          trim: "LE",
+          trim2: null,
+          series: null,
+        },
+        errorCode: "0",
+        errorText: "0 - VIN decoded clean. Check Digit (9th position) is correct",
       },
     });
     expect(result.goNoGo).toBe("GO");

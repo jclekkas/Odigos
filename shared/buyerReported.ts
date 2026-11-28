@@ -44,7 +44,7 @@ export const vinInputSchema = z
 export const citationStatusSchema = z.enum(["sourced", "needs_source"]);
 
 export const vinMismatchSchema = z.object({
-  field: z.enum(["year", "make", "model", "trim"]),
+  field: z.enum(["year", "make", "model", "trim", "engine", "powertrain"]),
   quoteValue: z.string(),
   decodedValue: z.string(),
 });
@@ -70,11 +70,25 @@ export const vinCheckSchema = z.object({
       trim: z.string().nullable(),
       trim2: z.string().nullable(),
       series: z.string().nullable(),
+      /** NHTSA EngineCylinders. Used only to compare an engine the quote or trim actually names. */
+      engineCylinders: z.string().nullable().optional(),
+      /** NHTSA EngineConfiguration, such as "V-Shaped" or "In-Line". */
+      engineConfiguration: z.string().nullable().optional(),
+      /** NHTSA FuelTypePrimary. Gasoline alone is not an electrified powertrain. */
+      fuelTypePrimary: z.string().nullable().optional(),
+      /** NHTSA FuelTypeSecondary. Electric here means the VIN is electrified. */
+      fuelTypeSecondary: z.string().nullable().optional(),
+      /** NHTSA ElectrificationLevel, such as "Strong HEV (Hybrid Electric Vehicle)". */
+      electrificationLevel: z.string().nullable().optional(),
     })
     .nullable(),
   mismatches: z.array(vinMismatchSchema),
   basePrice: vinBasePriceSchema.nullable(),
   errorText: z.string().nullable(),
+  /** NHTSA ErrorCode. Only a clean "0" can support an affirmative match. */
+  errorCode: z.string().nullable().optional(),
+  /** Distinct VINs found on the quote when more than one was present. */
+  conflictingVins: z.array(z.string()).max(8).optional(),
   summary: z.string(),
 });
 

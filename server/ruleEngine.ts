@@ -1,9 +1,10 @@
 import type { AnalysisDimensions, AnalysisResponse, DetectedFields, Fee, GoNoGo } from "../shared/schema.js";
 import type { LeaseMathResult } from "./leaseMathEngine.js";
-import { computePurchase, type PurchaseMath } from "./quoteMath.js";
+import { amortizingPayment, computePurchase, type PurchaseMath } from "./quoteMath.js";
 import { resolvePurchaseLines } from "./governmentCharges.js";
+import { disclosedAmountFinanced } from "./financingDisclosure.js";
+import { resolveTrustedBenchmark } from "./valuationAdapters.js";
 import {
-  acceptIndependentBenchmark,
   compareFactoryMsrp,
   formatUsd,
   toMarketValuation,
@@ -28,6 +29,8 @@ import { docFeeSurfaceCopy } from "../shared/docFeeSurfaceCopy.js";
 import { buildConstrainedReply } from "./replyConstraint.js";
 import { isDocFeeName } from "./docFeeName.js";
 import type { VinCheck } from "../shared/buyerReported.js";
+import { vinPositivelyAgrees } from "./nhtsaVin.js";
+import { thresholdDateForAnalysis } from "./quoteDate.js";
 
 export interface RuleEngineOptions {
   stateData?: RegulatoryStateInput | null;
@@ -42,8 +45,18 @@ export interface RuleEngineOptions {
   electronicTransaction?: boolean | null;
   /** Quote or analysis date used to choose a dated statutory ceiling. */
   asOf?: string | Date | null;
-  /** A caller-supplied benchmark. Ignored when it merely copies the submitted price. */
+  /**
+   * Ignored as evidence. A request may still carry a benchmark-shaped object.
+   * Only a trusted server-side valuation adapter can verify market value.
+   */
   marketBenchmark?: MarketBenchmark | null;
+  /**
+   * Server-side freshness window in milliseconds. Not read from the request.
+   * Omitted calls use ODIGOS_VALUATION_MAX_AGE_HOURS or the 72-hour default.
+   */
+  valuationMaxAgeMs?: number;
+  /** Clock for freshness checks. Omitted calls use the current time. */
+  valuationNow?: Date;
   condition?: "new" | "used" | "unknown" | null;
   mileage?: number | null;
   alternateSalePrices?: number[];
@@ -56,7 +69,7 @@ export interface RuleEngineOptions {
   dealerText?: string | null;
   /**
    * Monroney MSRP the buyer typed. Not the MSRP extracted from the dealer quote.
-   * A licensed valuation can still be passed as marketBenchmark later.
+   * It never verifies market value.
    */
   buyerWindowStickerMsrp?: number | null;
   /**
@@ -72,9 +85,12 @@ export interface RuleEngineOptions {
   trim?: string | null;
   /**
    * NHTSA decode for a VIN on the quote. Absent or not_provided means no VIN.
-   * A present VIN must decode consistently before GO.
+   * A present VIN must be an affirmative NHTSA match before GO. An empty
+   * mismatch list is not that match.
    */
-  vinCheck?: Pick<VinCheck, "status" | "vin" | "mismatches" | "summary"> | null;
+  vinCheck?: (Pick<VinCheck, "status" | "vin" | "mismatches" | "summary"> & Partial<Pick<VinCheck, "decoded" | "errorText" | "errorCode" | "conflictingVins">>) | null;
+  /** Whether `asOf` is the quote date, the analysis date, or a conflict. */
+  asOfSource?: "quote" | "analysis" | "conflict" | null;
 }
 
 export interface RuleEngineResult {
@@ -325,6 +341,7 @@ function finishVerdict(
     marketValuation: MarketValuation;
     msrpComparison: MsrpComparison;
     notes?: string[];
+    financingAsk?: string | null;
   },
 ): RuleEngineResult {
   const askForVehicleEvidence = !extras.marketVerified || draft.goNoGo !== "GO";
@@ -337,6 +354,7 @@ function finishVerdict(
     askForVehicleEvidence,
     benchmarkKind: extras.benchmark.kind ?? null,
     msrpMarkup: extras.msrpComparison.relation === "above",
+    financingAsk: extras.financingAsk,
   });
   const summary = appendContextNotes(draft.summary, extras.notes ?? []);
   const reasoning = [
@@ -368,6 +386,9 @@ function finishVerdict(
 const FINANCING_TERMS_ASK =
   "A monthly payment or financing language is on this quote, but the financing payment could not be calculated. That unavailable calculation was not treated as a reconciled payment. Please provide the APR, the term in months, and the amount financed.";
 
+const FINANCING_MISMATCH_ASK =
+  "The disclosed amount financed does not match the computed principal (price, fees, tax, down payment, and trade) or the stated monthly payment at the stated APR and term. Please correct the APR, the term in months, and the amount financed.";
+
 const FINANCING_LANGUAGE = [
   /\bmonthly\s+payment\b/i,
   /\bamount\s+financed\b/i,
@@ -379,10 +400,25 @@ const FINANCING_LANGUAGE = [
 
 export type RegulatoryGoStatus = "validated" | "unknown" | "ineligible";
 
+/** A filing line participates in GO only when every condition on it is confirmed. */
+export function separateFilingAllowsGo(item: SeparateFilingAssessment): boolean {
+  return item.classification === "permissible" && item.unconfirmed.length === 0;
+}
+
+function unresolvedFilings(filings: SeparateFilingAssessment[]): SeparateFilingAssessment[] {
+  return filings.filter((item) => !separateFilingAllowsGo(item));
+}
+
 export function regulatoryGoDecision(
   docFee: DocFeeAssessment | null,
   stateKnown: boolean,
+  filings: SeparateFilingAssessment[] = [],
 ): { status: RegulatoryGoStatus; reason: string } {
+  const blocking = unresolvedFilings(filings);
+  const filingReason = blocking.map((item) => item.summary).join(" ");
+  const filingClause = filingReason
+    ? `${filingReason} An unresolved, needs-source, or over-cap charge blocks approval even when a documentation fee is within its cap.`
+    : "";
   if (!stateKnown) {
     return {
       status: "unknown",
@@ -392,19 +428,31 @@ export function regulatoryGoDecision(
   if (!docFee) {
     return {
       status: "unknown",
-      reason: "No regulatory check was completed, so this quote cannot be approved.",
+      reason: filingClause || "No regulatory check was completed, so this quote cannot be approved.",
+    };
+  }
+  if (docFee.feeNameAmbiguity) {
+    return {
+      status: "unknown",
+      reason: `${docFee.feeNameAmbiguity} ${filingClause}`.trim(),
     };
   }
   if (docFee.classification === "needs_source") {
     return {
       status: "unknown",
-      reason: `${docFee.summary} A cap that needs a source was not treated as a validated check.`,
+      reason: `${docFee.summary} A cap that needs a source was not treated as a validated check. ${filingClause}`.trim(),
     };
   }
   if (docFee.classification === "potentially_noncompliant") {
     return {
       status: "unknown",
-      reason: `${docFee.summary} A conditional rule that was not confirmed was not treated as a validated check.`,
+      reason: `${docFee.summary} A conditional rule that was not confirmed was not treated as a validated check. ${filingClause}`.trim(),
+    };
+  }
+  if (blocking.length > 0) {
+    return {
+      status: blocking.some((item) => item.classification === "illegal") ? "ineligible" : "unknown",
+      reason: filingClause,
     };
   }
   if (docFee.classification === "permissible") {
@@ -451,18 +499,43 @@ function hasFinancingIntent(
   return quoteShowsFinancingLanguage(dealerText);
 }
 
-function financingPaymentReconciled(
+interface FinancingAssessment {
+  reconciled: boolean;
+  /** Set when APR, term, or the disclosed amount financed is missing. */
+  missingTerms: boolean;
+  /** Dealer-reply sentence when financing blocks approval. */
+  ask: string | null;
+  disclosed: number | null;
+}
+
+function assessFinancing(
   fields: DetectedFields,
   worksheet: PurchaseMath | null,
   financingIntent: boolean,
   paymentGap: number,
-): boolean {
-  if (!financingIntent) return true;
-  if (!worksheet?.ok) return false;
-  if (fields.apr == null || fields.termMonths == null) return false;
-  if (worksheet.monthlyPayment == null || worksheet.amountFinanced == null) return false;
-  if (fields.monthlyPayment == null) return false;
-  return paymentGap < 0.01;
+  dealerText: string | null | undefined,
+): FinancingAssessment {
+  if (!financingIntent) return { reconciled: true, missingTerms: false, ask: null, disclosed: null };
+  const disclosed = disclosedAmountFinanced(dealerText);
+  const missingTerms =
+    fields.apr == null ||
+    fields.termMonths == null ||
+    fields.monthlyPayment == null ||
+    disclosed == null ||
+    !worksheet?.ok ||
+    worksheet.monthlyPayment == null ||
+    worksheet.amountFinanced == null;
+  if (missingTerms) {
+    return { reconciled: false, missingTerms: true, ask: FINANCING_TERMS_ASK, disclosed };
+  }
+  const principalGap = Math.abs(disclosed! - worksheet!.amountFinanced!);
+  const paymentFromDisclosed = amortizingPayment(Math.max(0, disclosed!), fields.apr!, fields.termMonths!);
+  const disclosedPaymentGap =
+    paymentFromDisclosed == null ? Number.POSITIVE_INFINITY : Math.abs(fields.monthlyPayment! - paymentFromDisclosed);
+  if (principalGap >= 0.01 || disclosedPaymentGap >= 0.01 || paymentGap >= 0.01) {
+    return { reconciled: false, missingTerms: false, ask: FINANCING_MISMATCH_ASK, disclosed };
+  }
+  return { reconciled: true, missingTerms: false, ask: null, disclosed };
 }
 
 function yearMakeModelPresent(fields: DetectedFields): boolean {
@@ -472,9 +545,18 @@ function yearMakeModelPresent(fields: DetectedFields): boolean {
     !!fields.vehicle_model?.trim();
 }
 
+function quoteModelForVin(fields: DetectedFields, trim: string | null | undefined): string {
+  const model = fields.vehicle_model?.trim() ?? "";
+  const namedTrim = trim?.trim() ?? "";
+  if (!namedTrim) return model;
+  if (model.toLowerCase().includes(namedTrim.toLowerCase())) return model;
+  return `${model} ${namedTrim}`.trim();
+}
+
 function vehicleIdentityForGo(
   fields: DetectedFields,
   vinCheck: RuleEngineOptions["vinCheck"],
+  trim: string | null | undefined,
 ): { ok: boolean; vinProblem: boolean; reason: string } {
   if (!yearMakeModelPresent(fields)) {
     return {
@@ -483,18 +565,27 @@ function vehicleIdentityForGo(
       reason: "Year, make, and model are required before this quote can be approved.",
     };
   }
+  if (vinCheck?.conflictingVins && vinCheck.conflictingVins.length > 1) {
+    return {
+      ok: false,
+      vinProblem: true,
+      reason: vinCheck.summary?.trim()
+        || "The quote contains more than one VIN, so none of them is a confirmed vehicle match.",
+    };
+  }
   if (!vinCheck || vinCheck.status === "not_provided" || !vinCheck.vin) {
     return { ok: true, vinProblem: false, reason: "" };
   }
-  if (vinCheck.status === "decoded" && vinCheck.mismatches.length === 0) {
-    return { ok: true, vinProblem: false, reason: "" };
-  }
+  const agreement = vinPositivelyAgrees(vinCheck, {
+    year: fields.vehicle_year,
+    make: fields.vehicle_make,
+    model: quoteModelForVin(fields, trim),
+  });
+  if (agreement.affirmative) return { ok: true, vinProblem: false, reason: "" };
   return {
     ok: false,
     vinProblem: true,
-    reason: vinCheck.summary?.trim()
-      ? vinCheck.summary
-      : "A VIN is present, but the VIN decoder did not confirm the year, make, and model, so this quote cannot be approved.",
+    reason: agreement.reason,
   };
 }
 
@@ -509,12 +600,19 @@ export function applyRuleEngine(
   const fees = fields.fees || [];
   const partner = options?.privateIndustryPartner ?? null;
   const integrator = options?.electronicIntegrator ?? null;
+  const thresholdDate = thresholdDateForAnalysis({
+    dealerText: options?.dealerText,
+    asOf: options?.asOf,
+    asOfSource: options?.asOfSource,
+  });
   const docFee = options?.stateData
     ? classifyDocFee(fees, options.stateData, partner, integrator, {
         vehicleCashPrice: fields.salePrice,
         electronicTransaction: options.electronicTransaction ?? null,
         dealerText: options.dealerText,
-        asOf: options.asOf ?? new Date(),
+        asOf: thresholdDate.asOf,
+        asOfSource: thresholdDate.asOfSource,
+        asOfConflictDates: thresholdDate.asOfConflictDates,
       })
     : null;
   const separateFilingAssessments = classifySeparateFilingCharges(
@@ -530,13 +628,19 @@ export function applyRuleEngine(
     condition: options?.condition === "new" || options?.condition === "used" ? options.condition : options?.condition ?? null,
     mileage: options?.mileage,
   };
-  const benchmark: MarketBenchmark = acceptIndependentBenchmark(
-    options?.marketBenchmark,
-    quoteVehicle,
-    fields.salePrice,
-    fields.outTheDoorPrice,
-  );
-  const marketValuation = toMarketValuation(benchmark, quoteVehicle);
+  const valuationClock = {
+    nowMs: options?.valuationNow?.getTime(),
+    maxAgeMs: options?.valuationMaxAgeMs,
+  };
+  const benchmark: MarketBenchmark = resolveTrustedBenchmark({
+    quote: quoteVehicle,
+    submittedSalePrice: fields.salePrice,
+    submittedOutTheDoor: fields.outTheDoorPrice,
+    callerSupplied: options?.marketBenchmark,
+    now: options?.valuationNow,
+    maxAgeMs: options?.valuationMaxAgeMs,
+  });
+  const marketValuation = toMarketValuation(benchmark, quoteVehicle, valuationClock);
   const marketVerified = marketValuation.status === "verified";
   const msrpComparison = compareFactoryMsrp({
     submittedSalePrice: fields.salePrice,
@@ -603,7 +707,9 @@ export function applyRuleEngine(
     !!options?.buyerState &&
     !!options?.dealerState &&
     options.buyerState.toUpperCase() !== options.dealerState.toUpperCase();
-  const usedWithoutMileage = options?.condition === "used" && (options.mileage == null || options.mileage <= 0);
+  // Zero is a real odometer reading. Only a missing or negative figure is "not provided".
+  const mileageProvided = options?.mileage != null && Number.isFinite(options.mileage) && options.mileage >= 0;
+  const usedWithoutMileage = options?.condition === "used" && !mileageProvided;
   const vehicleNamed = !!(fields.vehicle_make || fields.vehicle_model || fields.vehicle_year);
   const negativeEquity = worksheet?.ok && (worksheet.negativeEquity ?? 0) > 0;
   const conditionalRebate = worksheet?.ok && worksheet.conditionalRebateExcluded != null;
@@ -614,7 +720,17 @@ export function applyRuleEngine(
   const mathMismatch = (worksheet?.ok && otdGap >= 0.01) || paymentGap >= 0.01;
   const govFeesStated = lines.sawTitle || lines.sawRegistration || lines.sawGov;
   const financingIntent = hasFinancingIntent(fields, purchaseType, options?.dealerText, leaseQuote);
-  const financingReconciled = financingPaymentReconciled(fields, worksheet, financingIntent, paymentGap);
+  const financing = assessFinancing(fields, worksheet, financingIntent, paymentGap, options?.dealerText);
+  const financingReconciled = financing.reconciled;
+  if (financing.disclosed != null && worksheet?.ok && worksheet.amountFinanced != null) {
+    const disclosedGap = Math.round((financing.disclosed - worksheet.amountFinanced) * 100) / 100;
+    derivation.push(`Disclosed amount financed $${financing.disclosed.toFixed(2)}`);
+    if (Math.abs(disclosedGap) >= 0.01) {
+      derivation.push(`Amount financed difference (disclosed minus computed) $${disclosedGap.toFixed(2)}`);
+    }
+  }
+  const valuationReference = marketVerified ? benchmark.provenance?.reference?.trim() || "" : "";
+  const referenceNote = valuationReference ? ` Source: ${valuationReference}.` : "";
   const priceAboveBenchmark =
     marketVerified &&
     fields.salePrice != null &&
@@ -695,9 +811,13 @@ export function applyRuleEngine(
     },
     regulatoryCompliance: {
       status:
-        docFee?.classification === "illegal"
+        docFee?.classification === "illegal" ||
+        separateFilingAssessments.some((item) => item.classification === "illegal")
           ? "fail"
-          : docFee?.classification === "potentially_noncompliant" || docFee?.classification === "needs_source"
+          : docFee?.classification === "potentially_noncompliant" ||
+              docFee?.classification === "needs_source" ||
+              !!docFee?.feeNameAmbiguity ||
+              unresolvedFilings(separateFilingAssessments).length > 0
             ? "concern"
             : docFee
               ? "clear"
@@ -711,8 +831,8 @@ export function applyRuleEngine(
           ? `${msrpComparison.summary} Independent market value is not verified.`
           : "Market value not verified. Factory MSRP comparison and independent market valuation are different checks."
         : priceAboveBenchmark
-          ? `Selling price $${fields.salePrice} is above the independent benchmark of $${benchmark.low}–$${benchmark.high} (${benchmark.source ?? "independent source"}).`
-          : `Selling price is compared with an independent benchmark of $${benchmark.low}–$${benchmark.high}. The submitted price did not set that range.`,
+          ? `Selling price $${fields.salePrice} is above the independent benchmark of $${benchmark.low}–$${benchmark.high} (${benchmark.source ?? "independent source"}).${referenceNote}`
+          : `Selling price is compared with an independent benchmark of $${benchmark.low}–$${benchmark.high}.${referenceNote} The submitted price did not set that range.`,
     },
     negotiationOpportunities: {
       status: negotiation[0].startsWith("No dealer charge") ? "not_checked" : "concern",
@@ -738,6 +858,7 @@ export function applyRuleEngine(
     marketValuation,
     msrpComparison,
     notes,
+    financingAsk: financing.ask,
   };
 
   const illegal = docFee?.classification === "illegal";
@@ -868,8 +989,11 @@ export function applyRuleEngine(
   if (priceAboveBenchmark) {
     return noGo(
       "NO-GO — PRICE ABOVE INDEPENDENT BENCHMARK",
-      `The selling price is above the independent benchmark of $${benchmark.low}–$${benchmark.high}`,
+      `The selling price is above the independent benchmark of $${benchmark.low}–$${benchmark.high}.${referenceNote}`
     );
+  }
+  if (docFee?.feeNameAmbiguity) {
+    return caution("PROCEED WITH CAUTION — AMBIGUOUS FEE NAMES", docFee.feeNameAmbiguity);
   }
   if (docFee?.classification === "potentially_noncompliant") {
     return caution("PROCEED WITH CAUTION — CONDITIONAL DOC FEE", docFee.summary);
@@ -931,10 +1055,15 @@ export function applyRuleEngine(
   }
 
   if (financingIntent && !financingReconciled) {
-    return insufficient("INSUFFICIENT INFORMATION — FINANCING TERMS NEEDED", FINANCING_TERMS_ASK);
+    return insufficient(
+      financing.missingTerms
+        ? "INSUFFICIENT INFORMATION — FINANCING TERMS NEEDED"
+        : "INSUFFICIENT INFORMATION — FINANCING DOES NOT RECONCILE",
+      financing.ask ?? FINANCING_TERMS_ASK,
+    );
   }
 
-  const identity = vehicleIdentityForGo(fields, options?.vinCheck);
+  const identity = vehicleIdentityForGo(fields, options?.vinCheck, options?.trim);
   if (!identity.ok) {
     return insufficient(
       identity.vinProblem
@@ -944,7 +1073,7 @@ export function applyRuleEngine(
     );
   }
 
-  const regulatory = regulatoryGoDecision(docFee, !!options?.stateData);
+  const regulatory = regulatoryGoDecision(docFee, !!options?.stateData, separateFilingAssessments);
   if (regulatory.status === "unknown") {
     return insufficient("INSUFFICIENT INFORMATION — REGULATORY STATUS UNKNOWN", regulatory.reason);
   }
@@ -964,7 +1093,7 @@ export function applyRuleEngine(
         verdictLabel: "GO — PRICE INSIDE INDEPENDENT BENCHMARK",
         goNoGo: "GO",
         primaryIssue: "Price is inside an independent market valuation and the applicable math, disclosure, and fee checks are complete",
-        summary: `The selling price is inside the independent market valuation of $${benchmark.low}–$${benchmark.high}. ${reconciliation.summary} Factory MSRP comparison is a separate check and was not used as this valuation.`,
+        summary: `The selling price is inside the independent market valuation of $${benchmark.low}–$${benchmark.high}.${referenceNote} ${reconciliation.summary} Factory MSRP comparison is a separate check and was not used as this valuation.`,
       },
       context,
     );
@@ -1051,9 +1180,9 @@ export function applyRuleEngine(
     }
     if (financingIntent && !financingReconciled) {
       return {
-        completed: false,
+        completed: !financing.missingTerms,
         successful: false,
-        summary: FINANCING_TERMS_ASK,
+        summary: financing.ask ?? FINANCING_TERMS_ASK,
       };
     }
     const otdOk = otdGap < 0.01;
@@ -1085,7 +1214,7 @@ export function applyRuleEngine(
   }
 
   function regulatoryAllowsGo(): boolean {
-    return regulatoryGoDecision(docFee, !!options?.stateData).status === "validated";
+    return regulatoryGoDecision(docFee, !!options?.stateData, separateFilingAssessments).status === "validated";
   }
 
   function insufficient(verdictLabel: string, primaryIssue: string): RuleEngineResult {
@@ -1096,7 +1225,11 @@ export function applyRuleEngine(
         verdictLabel,
         goNoGo: "INSUFFICIENT-INFORMATION",
         primaryIssue,
-        summary: marketVerified ? primaryIssue : `${primaryIssue} Market value not verified.`,
+        summary: (() => {
+          const financingNote =
+            financing.ask && !primaryIssue.toLowerCase().includes("amount financed") ? ` ${financing.ask}` : "";
+          return marketVerified ? `${primaryIssue}${financingNote}` : `${primaryIssue}${financingNote} Market value not verified.`;
+        })(),
       },
       context,
     );

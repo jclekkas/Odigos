@@ -7,9 +7,10 @@
  * stays unverified.
  *
  * A buyer-supplied factory window sticker MSRP is not an independent market
- * value. compareFactoryMsrp records that sticker comparison. A later
- * bring-your-own-key provider can return its own MarketBenchmark
- * (kind "market_transaction", with a low and a high that do not copy the quote).
+ * value. compareFactoryMsrp records that sticker comparison. A GO-eligible
+ * market value comes only from a trusted server-side adapter, which signs
+ * the result in this process. A licensed or government label, or a URL,
+ * supplied by the caller does not verify the price.
  */
 
 import {
@@ -19,6 +20,14 @@ import {
   FACTORY_MSRP_TOLERANCE_DOLLARS,
   FACTORY_STICKER_COMPARISON,
 } from "../shared/windowSticker.js";
+import {
+  attestationIsAuthentic,
+  isInformationalValuationClaim,
+  isServerValuation,
+  payloadFromBenchmark,
+  valuationFreshness,
+  valuationMaxAgeMs,
+} from "./valuationAttestation.js";
 
 export interface MarketBenchmarkInput {
   submittedSalePrice?: number | null;
@@ -45,13 +54,15 @@ export type ValuationSourceQuality =
   | "buyer_reported"
   | "unspecified";
 
-/** Independently auditable retrieval of a benchmark. Buyer-typed notes are not this. */
+/** Retrieval record produced by a server-side adapter. Buyer-typed notes are not this. */
 export interface ValuationProvenance {
   sourceId: string;
-  /** ISO-8601 time the benchmark was retrieved from the source. */
+  /** ISO-8601 time the adapter retrieved the benchmark. */
   retrievedAt: string;
-  /** Public URL or other reference a reviewer can open. */
+  /** Reference the adapter says a reviewer can open. A caller-supplied URL is not this. */
   reference: string;
+  /** HMAC the server adds when the adapter returns. Absent on request JSON. */
+  attestation?: string;
 }
 
 /** The vehicle the benchmark actually covers. All of these must match the quote. */
@@ -92,6 +103,8 @@ export interface MarketValuation {
   high: number | null;
   reason: string;
   kind: "market_transaction" | null;
+  /** Adapter reference shown with a verified result. Null when unverified. */
+  reference?: string | null;
 }
 
 export interface MarketBenchmark {
@@ -252,6 +265,7 @@ function unverifiedValuation(reason: string): MarketValuation {
     high: null,
     reason,
     kind: null,
+    reference: null,
   };
 }
 
@@ -286,29 +300,39 @@ function splitModelAndTrim(model: string | null | undefined, explicitTrim?: stri
   return { model: rawModel, trim: null };
 }
 
-function isRetrievalTime(value: string | null | undefined): boolean {
-  if (!value || !value.trim()) return false;
-  const parsed = Date.parse(value);
-  if (!Number.isFinite(parsed)) return false;
-  if (parsed < Date.parse("1990-01-01T00:00:00Z")) return false;
-  if (parsed > Date.now() + 24 * 60 * 60 * 1000) return false;
-  return true;
-}
-
-function isAuditableReference(value: string | null | undefined): boolean {
-  const reference = value?.trim() ?? "";
-  if (!reference) return false;
-  if (/buyer|self-reported|typed by the buyer/i.test(reference)) return false;
-  if (/^https?:\/\/\S+$/i.test(reference)) return true;
-  return reference.length >= 12;
-}
-
 export function benchmarkQualifiesAsVerified(
   benchmark: MarketBenchmark,
   quote: QuotedVehicle,
+  clock?: { nowMs?: number; maxAgeMs?: number },
 ): { ok: true } | { ok: false; reason: string } {
-  if (benchmark.kind === "factory_msrp" || isBuyerReportedSource(benchmark.source) || benchmark.sourceQuality === "buyer_reported") {
-    return { ok: false, reason: "A buyer-reported input cannot verify market value." };
+  if (
+    benchmark.kind === "factory_msrp" ||
+    isBuyerReportedSource(benchmark.source) ||
+    benchmark.sourceQuality === "buyer_reported" ||
+    isInformationalValuationClaim(
+      benchmark.source,
+      benchmark.provenance?.sourceId,
+      benchmark.provenance?.reference,
+      benchmark.reason,
+    )
+  ) {
+    return {
+      ok: false,
+      reason: "A buyer-reported input, factory MSRP, book value, competing quote, or NHTSA base price cannot verify market value.",
+    };
+  }
+  if (!isServerValuation(benchmark)) {
+    return {
+      ok: false,
+      reason: "This valuation was not produced by a trusted server-side adapter, so it was not treated as verified.",
+    };
+  }
+  const payload = payloadFromBenchmark(benchmark);
+  if (!payload || !attestationIsAuthentic(payload, benchmark.provenance?.attestation)) {
+    return {
+      ok: false,
+      reason: "This valuation's provenance is not authenticated, so it was not treated as verified.",
+    };
   }
   if (benchmark.sourceQuality !== "licensed_independent" && benchmark.sourceQuality !== "government_record") {
     return {
@@ -320,11 +344,24 @@ export function benchmarkQualifiesAsVerified(
   if (!provenance?.sourceId?.trim() || isBuyerReportedSource(provenance.sourceId)) {
     return { ok: false, reason: "This valuation has no independent source id, so it was not treated as verified." };
   }
-  if (!isRetrievalTime(provenance.retrievedAt)) {
-    return { ok: false, reason: "This valuation has no auditable retrieval time, so it was not treated as verified." };
+  const freshness = provenance.retrievedAt
+    ? valuationFreshness(
+        provenance.retrievedAt,
+        clock?.nowMs ?? Date.now(),
+        valuationMaxAgeMs(clock?.maxAgeMs, process.env.ODIGOS_VALUATION_MAX_AGE_HOURS),
+      )
+    : "unusable";
+  if (freshness === "stale") {
+    return {
+      ok: false,
+      reason: "This valuation is older than the configured freshness limit, so it was not treated as verified.",
+    };
   }
-  if (!isAuditableReference(provenance.reference)) {
-    return { ok: false, reason: "This valuation has no auditable URL or reference, so it was not treated as verified." };
+  if (freshness !== "fresh") {
+    return { ok: false, reason: "This valuation has no usable retrieval time, so it was not treated as verified." };
+  }
+  if (!provenance.reference?.trim()) {
+    return { ok: false, reason: "This valuation has no source reference, so it was not treated as verified." };
   }
   const low = benchmark.low;
   const high = benchmark.high;
@@ -384,8 +421,9 @@ export function benchmarkQualifiesAsVerified(
 }
 
 /**
- * A caller-supplied benchmark counts only when it is independently auditable
- * and matches the quoted vehicle. Buyer-reported inputs never pass.
+ * Caller-supplied benchmarks are not a valuation source. The rule engine asks
+ * the adapter registry instead. This remains so a direct call cannot promote
+ * a request body into a verified price.
  */
 export function acceptIndependentBenchmark(
   supplied: MarketBenchmark | null | undefined,
@@ -400,23 +438,27 @@ export function acceptIndependentBenchmark(
     vehicleMake: quote.make,
     vehicleModel: quote.model,
   });
-  if (!supplied || supplied.status !== "verified") return fallback;
+  if (!supplied) return fallback;
   if (
     supplied.kind === "factory_msrp" ||
     supplied.source === BUYER_WINDOW_STICKER_SOURCE ||
     isBuyerReportedSource(supplied.source) ||
-    supplied.sourceQuality === "buyer_reported"
+    supplied.sourceQuality === "buyer_reported" ||
+    isInformationalValuationClaim(supplied.source, supplied.provenance?.sourceId, supplied.provenance?.reference, supplied.reason)
   ) {
-    return unverified("A buyer-reported input cannot verify market value.");
+    return unverified("A buyer-reported input, factory MSRP, book value, competing quote, or NHTSA base price cannot verify market value.");
   }
-  if (benchmarkCopiesSubmittedPrice(supplied, submittedSalePrice, submittedOutTheDoor)) return fallback;
-  const check = benchmarkQualifiesAsVerified(supplied, quote);
-  if (!check.ok) return unverified(check.reason);
-  return { ...supplied, status: "verified", kind: "market_transaction" };
+  return unverified(
+    "A caller-supplied valuation label, URL, or provenance was not used. Market value stays unverified unless a trusted server-side adapter produces it.",
+  );
 }
 
-/** A verified market valuation requires auditable provenance and a matching vehicle, never a buyer-entered price. */
-export function toMarketValuation(benchmark: MarketBenchmark, quote?: QuotedVehicle): MarketValuation {
+/** A verified market valuation requires a server-produced adapter result and a matching vehicle. */
+export function toMarketValuation(
+  benchmark: MarketBenchmark,
+  quote?: QuotedVehicle,
+  clock?: { nowMs?: number; maxAgeMs?: number },
+): MarketValuation {
   if (benchmark.status !== "verified" || benchmark.kind === "factory_msrp" || isBuyerReportedSource(benchmark.source)) {
     return unverifiedValuation(
       benchmark.kind === "factory_msrp" || isBuyerReportedSource(benchmark.source) || benchmark.source === BUYER_WINDOW_STICKER_SOURCE
@@ -427,7 +469,7 @@ export function toMarketValuation(benchmark: MarketBenchmark, quote?: QuotedVehi
   if (!quote) {
     return unverifiedValuation("Vehicle identity was not available to confirm this valuation, so it was not treated as verified.");
   }
-  const check = benchmarkQualifiesAsVerified(benchmark, quote);
+  const check = benchmarkQualifiesAsVerified(benchmark, quote, clock);
   if (!check.ok) return unverifiedValuation(check.reason);
   return {
     status: "verified",
@@ -436,6 +478,7 @@ export function toMarketValuation(benchmark: MarketBenchmark, quote?: QuotedVehi
     high: benchmark.high,
     reason: benchmark.reason,
     kind: "market_transaction",
+    reference: benchmark.provenance?.reference?.trim() || null,
   };
 }
 

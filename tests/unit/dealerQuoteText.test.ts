@@ -97,6 +97,21 @@ describe("raw-text fee extraction", () => {
     expect(collapsed[0].condition).toBe("with dealer financing");
   });
 
+  it("reads an explicit odometer below 100 miles, including zero", () => {
+    expect(parseDealerQuoteFacts("12 miles\nSelling price: $28,000").mileage).toBe(12);
+    expect(parseDealerQuoteFacts("Odometer: 7\nSelling price: $28,000").mileage).toBe(7);
+    expect(parseDealerQuoteFacts("0 mi\nSelling price: $28,000").mileage).toBe(0);
+    expect(parseDealerQuoteFacts("Mileage: 12").mileage).toBe(12);
+    expect(parseDealerQuoteFacts("Odometer: 42,150 miles").mileage).toBe(42150);
+  });
+
+  it("does not invent mileage when the quote does not state an odometer", () => {
+    expect(parseDealerQuoteFacts("Selling price: $28,000\nDoc fee: $70\n12").mileage).toBeNull();
+    expect(parseDealerQuoteFacts("Excess mileage: $0.25 per mile").mileage).toBeNull();
+    expect(parseDealerQuoteFacts("Mileage allowance: 10,000 miles per year").mileage).toBeNull();
+    expect(parseDealerQuoteFacts("12,000 miles per year").mileage).toBeNull();
+  });
+
   it("extracts an electronic filing line separately from the doc fee", () => {
     const facts = parseDealerQuoteFacts("Doc fee: $70\nElectronic filing fee: $25");
     expect(facts.docFees.map((fee) => fee.amount)).toEqual([70]);

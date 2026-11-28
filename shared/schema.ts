@@ -270,6 +270,12 @@ export const docFeeAssessmentSchema = z.object({
   effectiveDate: z.string(),
   lastVerificationDate: z.string(),
   summary: z.string(),
+  /** Calendar day used for a date-based fee limit, YYYY-MM-DD. */
+  evaluatedAsOf: z.string().optional(),
+  /** Whether that day came from the quote, the analysis, or a date conflict. */
+  evaluatedAsOfSource: z.enum(["quote", "analysis", "conflict"]).optional(),
+  /** Set when two different fee names could be the same regulated charge. */
+  feeNameAmbiguity: z.string().nullable().optional(),
 });
 
 export type DocFeeAssessmentPublic = z.infer<typeof docFeeAssessmentSchema>;
@@ -385,6 +391,8 @@ export const analysisResponseSchema = z.object({
     high: z.number().nullable(),
     reason: z.string(),
     kind: z.enum(["market_transaction"]).nullable(),
+    /** Adapter reference for a verified valuation. Null when market value is unverified. */
+    reference: z.string().nullable().optional(),
   }).optional(),
   msrpComparison: z.object({
     status: z.enum(["compared", "not_provided", "rejected"]),

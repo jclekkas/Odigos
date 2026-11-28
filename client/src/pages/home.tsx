@@ -3106,6 +3106,7 @@ export default function Home() {
                 financialSummary={result.financialSummary}
                 marketValueStatus={result.marketValueStatus}
                 benchmarkKind={result.marketBenchmarkKind}
+                sourceReference={result.marketValueStatus === "verified" ? result.marketValuation?.reference ?? null : null}
                 fallbackSummary={
                   result.marketValueStatus === "unverified"
                     ? "Market value not verified. Savings are not estimated."

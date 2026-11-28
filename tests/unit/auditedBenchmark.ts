@@ -1,6 +1,9 @@
 import type { MarketBenchmark } from "../../server/marketValuation.js";
 
-/** A valuation that meets the GO provenance, range, and vehicle-match rules. */
+/**
+ * A caller-shaped valuation. It is not registered as a server adapter and
+ * must not unlock GO, even though the label says licensed.
+ */
 export function auditedCamryBenchmark(overrides: Partial<MarketBenchmark> = {}): MarketBenchmark {
   return {
     status: "verified",
