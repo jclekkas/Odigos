@@ -19,6 +19,7 @@ import {
   getSessionId,
 } from "@/lib/tracking";
 import { captureSubmissionEvent } from "@/lib/analytics";
+import { isSyntheticSubmission } from "@shared/syntheticSubmission";
 import { trackConversion, useExperiment } from "@/lib/experiments";
 import { tagFlow } from "@/lib/sentry";
 import {
@@ -272,8 +273,9 @@ function optionalBoolean(value: "unspecified" | "yes" | "no" | undefined): boole
   return undefined;
 }
 
-function submissionAnalyticsInput(data: { dealerText?: string; competingQuoteText?: string }) {
+function submissionAnalyticsInput(data: { dealerText?: string; competingQuoteText?: string; synthetic?: boolean }) {
   return {
+    synthetic: data.synthetic,
     dealerText: data.dealerText ?? "",
     competingQuoteText: data.competingQuoteText ?? "",
   };
@@ -1730,14 +1732,23 @@ export default function Home() {
     },
   });
   const listingFields = useFieldArray({ control: form.control, name: "comps" });
-  const captureIfReal = (eventName: string, properties?: Record<string, unknown>) => {
-    captureSubmissionEvent(submissionAnalyticsInput(form.getValues()), eventName, properties);
+  const captureIfReal = (eventName: string, properties?: Record<string, unknown>, extraText?: string) => {
+    const values = form.getValues();
+    captureSubmissionEvent(submissionAnalyticsInput({
+      dealerText: `${values.dealerText ?? ""}\n${extraText ?? ""}`,
+      competingQuoteText: values.competingQuoteText ?? "",
+    }), eventName, properties);
   };
   const trackIfReal = (
     eventType: Parameters<typeof trackSubmissionEvent>[1],
     metadata?: Parameters<typeof trackSubmissionEvent>[2],
+    extraText?: string,
   ) => {
-    trackSubmissionEvent(submissionAnalyticsInput(form.getValues()), eventType, metadata);
+    const values = form.getValues();
+    trackSubmissionEvent(submissionAnalyticsInput({
+      dealerText: `${values.dealerText ?? ""}\n${extraText ?? ""}`,
+      competingQuoteText: values.competingQuoteText ?? "",
+    }), eventType, metadata);
   };
   const handleFormStart = () => {
     if (!formStartTracked) {
@@ -1781,39 +1792,45 @@ export default function Home() {
     setUploadLoading(true);
     setImageIntakeStatus("processing");
     try {
-      let extractedText: string;
+      let extractedText = "";
       try {
-        const result = await uploadFileForExtraction(file);
+        const currentQuote = form.getValues();
+        const result = await uploadFileForExtraction(file, {
+          synthetic: isSyntheticSubmission({
+            dealerText: currentQuote.dealerText,
+            competingQuoteText: currentQuote.competingQuoteText,
+          }),
+        });
         extractedText = result.text ?? "";
         if (result.compressed) {
           captureIfReal("file_upload_compressed", {
             original_bytes: result.compressed.originalBytes,
             compressed_bytes: result.compressed.compressedBytes,
             input_method: source,
-          });
+          }, extractedText);
         }
       } catch (err) {
         if (err instanceof ContentNotRelevantError) {
           const reason = "content_not_relevant";
           setUploadError(err.message);
-          captureIfReal("file_upload_failed", { reason, documentType: err.documentType, input_method: source });
-          trackIfReal("file_upload_failed", { reason });
+          captureIfReal("file_upload_failed", { reason, documentType: err.documentType, input_method: source }, extractedText);
+          trackIfReal("file_upload_failed", { reason }, extractedText);
           setImageIntakeStatus("invalid");
           return;
         }
         if (err instanceof FileTooLargeError) {
           const reason = "file_too_large";
           setUploadError(`That file is too large to process. Please use a file under ${formatSizeCopy(err.cap)}.`);
-          captureIfReal("file_upload_failed", { reason, file_size_bytes: file.size, input_method: source });
-          trackIfReal("file_upload_failed", { reason });
+          captureIfReal("file_upload_failed", { reason, file_size_bytes: file.size, input_method: source }, extractedText);
+          trackIfReal("file_upload_failed", { reason }, extractedText);
           setImageIntakeStatus("invalid");
           return;
         }
         if (err instanceof UploadExtractionError) {
           const reason = err.reason || "server_error";
           setUploadError(err.message);
-          captureIfReal("file_upload_failed", { reason, status: err.status, input_method: source });
-          trackIfReal("file_upload_failed", { reason });
+          captureIfReal("file_upload_failed", { reason, status: err.status, input_method: source }, extractedText);
+          trackIfReal("file_upload_failed", { reason }, extractedText);
           setImageIntakeStatus("failed");
           return;
         }
@@ -1821,8 +1838,8 @@ export default function Home() {
       }
       if (!extractedText.trim()) {
         setUploadError("We couldn't read any text from that image. Try a clearer, well-lit photo, or paste the quote manually.");
-        captureIfReal("file_upload_failed", { reason: "empty_ocr_result", input_method: source });
-        trackIfReal("file_upload_failed", { reason: "empty_ocr_result" });
+        captureIfReal("file_upload_failed", { reason: "empty_ocr_result", input_method: source }, extractedText);
+        trackIfReal("file_upload_failed", { reason: "empty_ocr_result" }, extractedText);
         setImageIntakeStatus("failed");
         return;
       }
@@ -1890,15 +1907,22 @@ export default function Home() {
     setUrlError(null);
     setUrlLoading(true);
     try {
+      const currentQuote = form.getValues();
       const response = await fetch("/api/extract-url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: urlInput.trim() }),
+        body: JSON.stringify({
+          url: urlInput.trim(),
+          ...(isSyntheticSubmission({
+            dealerText: currentQuote.dealerText,
+            competingQuoteText: currentQuote.competingQuoteText,
+          }) ? { synthetic: true } : {}),
+        }),
       });
       const data = await response.json();
       if (!response.ok) {
         setUrlError(data.message ?? "We couldn't process that URL. Please try pasting the text directly.");
-        captureIfReal("url_extract_failed", { reason: data.message ?? "server_error", status: response.status });
+        captureIfReal("url_extract_failed", { reason: data.message ?? "server_error", status: response.status }, typeof data.text === "string" ? data.text : undefined);
         return;
       }
       form.setValue("dealerText", data.text);
@@ -2125,6 +2149,10 @@ export default function Home() {
         ...buyerRequestFields(data),
         sessionId: getSessionId(),
         language: "en" as "en" | "es",
+        ...(isSyntheticSubmission({
+          dealerText: data.dealerText,
+          competingQuoteText: data.competingQuoteText,
+        }) ? { synthetic: true as const } : {}),
       };
       const response = await apiRequest("POST", "/api/analyze", payload);
       return response.json() as Promise<AnalysisResponseWithExtras>;
@@ -3070,6 +3098,7 @@ export default function Home() {
                 financialSummary={result.financialSummary}
                 marketValueStatus={result.marketValueStatus}
                 benchmarkKind={result.marketBenchmarkKind}
+                sourceReference={result.marketValueStatus === "verified" ? result.marketValuation?.reference ?? null : null}
                 fallbackSummary={
                   result.marketValueStatus === "unverified"
                     ? "Market value not verified. Savings are not estimated."

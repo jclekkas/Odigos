@@ -6,7 +6,7 @@
 import type { EventMetadata, EventType } from "./events.js";
 import { trackEvent } from "./events.js";
 import { logger } from "./logger.js";
-import { shouldEmitSubmissionAnalytics } from "./syntheticGuard.js";
+import { isSealedSynthetic, shouldEmitSubmissionAnalytics, syntheticSealLocked } from "./syntheticGuard.js";
 
 export function recordAnalysisEvent(
   submission: {
@@ -17,7 +17,13 @@ export function recordAnalysisEvent(
   eventType: EventType,
   metadata?: EventMetadata,
 ): void {
-  if (!shouldEmitSubmissionAnalytics(submission)) return;
+  // A locked seal is the only answer for this request. Reading the quote
+  // again would let a later edit or the model flip the decision.
+  if (syntheticSealLocked()) {
+    if (isSealedSynthetic()) return;
+  } else if (!shouldEmitSubmissionAnalytics(submission)) {
+    return;
+  }
   trackEvent(eventType, metadata).catch((err) =>
     logger.error("analysis event failed", { source: "tracking", eventType, error: String(err) }),
   );

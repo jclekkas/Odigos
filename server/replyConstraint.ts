@@ -23,6 +23,12 @@ export interface ReplyFacts {
   benchmarkKind?: MarketBenchmarkKind | null;
   /** True only when the selling price exceeds a buyer-supplied factory MSRP. */
   msrpMarkup?: boolean;
+  /**
+   * Set when financing is involved and APR, term, or the disclosed amount
+   * financed is missing, or those figures do not reconcile. Included even
+   * when the verdict headline is about unverified market value.
+   */
+  financingAsk?: string | null;
 }
 
 const ENDORSEMENT =
@@ -86,6 +92,10 @@ export function buildConstrainedReply(facts: ReplyFacts): string {
     parts.push(
       "Please send the VIN, the window sticker, and a breakdown of factory equipment and any market adjustments.",
     );
+  }
+
+  if (facts.financingAsk && !parts.join(" ").toLowerCase().includes("amount financed")) {
+    parts.push(facts.financingAsk);
   }
 
   if (facts.derivation.length > 0 && facts.verdict !== "GO") {

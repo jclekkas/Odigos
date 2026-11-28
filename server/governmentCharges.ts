@@ -11,7 +11,7 @@
  */
 
 import type { DetectedFields, Fee } from "../shared/schema.js";
-import { normalizeOcrMoney, stitchWrappedAmounts } from "./ocrMoney.js";
+import { prepareQuoteText } from "./ocrMoney.js";
 import { classifyFeeBucket, roundCents, splitFees, type ExtractedMoney } from "./quoteMath.js";
 
 export type ParsedKind = "tax" | "title" | "registration" | "titleReg" | "gov";
@@ -77,7 +77,7 @@ const OTHER_LABELS: RegExp[] = [
   /\bdue\s+at\s+signing\b/gi,
 ];
 
-const DOLLAR = /\$\s*(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d{2}))?/g;
+const DOLLAR = /\$\s*(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d{1,2}))?(?!\d)(?!\.\d)/g;
 
 const BRIDGE =
   /^[\s:=–\-]*(?:of\s+)?(?:rate[\s:=–\-]*)?(?:\(\s*(?:estimated|est\.?|approx\.?)?\s*\d+(?:\.\d+)?\s*%\s*\)[\s:=–\-]*)?$/i;
@@ -124,10 +124,10 @@ export function coerceMoney(value: unknown): number | null | undefined {
   const trimmed = value.trim();
   if (!trimmed) return null;
   if (/%|percent/i.test(trimmed) && !/\$/.test(trimmed)) return null;
-  const match = trimmed.match(/^\$?\s*(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d{2}))?$/);
+  const match = trimmed.match(/^\$?\s*(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d{1,2}))?$/);
   if (!match) return null;
   const dollars = Number(match[1].replace(/,/g, ""));
-  const cents = match[2] ? Number(match[2]) / 100 : 0;
+  const cents = match[2] ? (match[2].length === 1 ? Number(match[2]) / 10 : Number(match[2]) / 100) : 0;
   return roundCents(dollars + cents);
 }
 
@@ -266,8 +266,10 @@ function collectDollars(line: string): DollarSpan[] {
     const end = start + match[0].length;
     const after = line.slice(end);
     if (/^\s*%/.test(after)) continue;
+    const before = line.slice(Math.max(0, start - 3), start);
+    if (/(?:^|[^0-9])-\s*$/.test(before) || /\(\s*$/.test(before)) continue;
     const dollars = Number(match[1].replace(/,/g, ""));
-    const cents = match[2] ? Number(match[2]) / 100 : 0;
+    const cents = match[2] ? (match[2].length === 1 ? Number(match[2]) / 10 : Number(match[2]) / 100) : 0;
     if (!Number.isFinite(dollars)) continue;
     out.push({ start, end, amount: roundCents(dollars + cents) });
   }
@@ -345,7 +347,7 @@ function parseLine(line: string): ParsedGovLine[] {
 
 /** Labeled government dollar lines. Percentages and unlabeled numbers are ignored. */
 export function parseGovernmentLines(text: string): ParsedGovLine[] {
-  const normalized = stitchWrappedAmounts(normalizeOcrMoney(text));
+  const normalized = prepareQuoteText(text);
   const lines = normalized.split(/\r?\n/);
   const found: ParsedGovLine[] = [];
   for (const line of lines) {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { applyRuleEngine, type RuleEngineOptions } from "../../server/ruleEngine.js";
+import { createTestTrustedValuationAdapter, withValuationAdapters } from "../../server/valuationAdapters.js";
 import { runLeaseMath } from "../../server/leaseMathEngine.js";
 import { getStateFeeData } from "../../server/stateFeeLookup.js";
 import type { AnalysisResponse, DetectedFields, Fee, GoNoGo } from "../../shared/schema.js";
@@ -64,6 +65,8 @@ interface Adjudicated {
   critical: boolean;
   calc?: boolean;
   regulatory?: boolean;
+  /** When set, the case uses the test-only server adapter instead of a caller benchmark. */
+  useTrustedAdapter?: boolean;
 }
 
 const ca = getStateFeeData("CA");
@@ -570,21 +573,33 @@ cases.push({
   category: "independent-benchmark",
   fields: reconciledInsideBenchmark,
   purchaseType: "cash",
-  options: { stateData: ca, marketBenchmark: benchmark, privateIndustryPartner: true, ...camryMatch },
+  options: { stateData: ca, privateIndustryPartner: true, ...camryMatch },
   expected: "GO",
   label: /INDEPENDENT BENCHMARK/,
   critical: false,
+  useTrustedAdapter: true,
+});
+
+cases.push({
+  id: "forged-licensed-benchmark",
+  category: "independent-benchmark",
+  fields: reconciledInsideBenchmark,
+  purchaseType: "cash",
+  options: { stateData: ca, marketBenchmark: benchmark, privateIndustryPartner: true, ...camryMatch },
+  expected: "INSUFFICIENT-INFORMATION",
+  critical: true,
 });
 
 cases.push({
   id: "above-benchmark",
   category: "independent-benchmark",
-  fields: money(45000, [], 70),
+  fields: money(45000, [{ name: "Registration", amount: 400 }], 70),
   purchaseType: "cash",
-  options: { stateData: ca, marketBenchmark: benchmark, ...camryMatch },
+  options: { stateData: ca, ...camryMatch },
   expected: "NO-GO",
   label: /ABOVE INDEPENDENT BENCHMARK/,
   critical: true,
+  useTrustedAdapter: true,
 });
 
 cases.push({
@@ -613,10 +628,13 @@ describe("adversarial quote suite", () => {
 
   const results = cases.map((item) => {
     const leaseMath = item.purchaseType === "lease" ? runLeaseMath(item.fields, "lease") : null;
-    const result = applyRuleEngine(llm, item.fields, null, item.purchaseType, leaseMath, {
+    const run = () => applyRuleEngine(llm, item.fields, null, item.purchaseType, leaseMath, {
       ...item.options,
       asOf: item.options?.asOf ?? "2026-11-27",
     });
+    const result = item.useTrustedAdapter
+      ? withValuationAdapters([createTestTrustedValuationAdapter()], run)
+      : run();
     return { item, result };
   });
 

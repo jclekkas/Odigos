@@ -5,7 +5,7 @@ import { applyRuleEngine } from "../../server/ruleEngine.js";
 import { getStateFeeData } from "../../server/stateFeeLookup.js";
 import { buildBuyerReported, buyerReportedRuleOptions } from "../../server/buyerReportedValuation.js";
 import { factoryMarkup } from "../../server/marketValuation.js";
-import { auditedCamryBenchmark } from "./auditedBenchmark.js";
+import { createTestTrustedValuationAdapter, withValuationAdapters } from "../../server/valuationAdapters.js";
 import type { AnalysisResponse, DetectedFields } from "../../shared/schema.js";
 
 /**
@@ -159,7 +159,7 @@ describe("GO decision integrity", () => {
   });
 
   it("does not GO from an independent benchmark when tax and registration are absent", () => {
-    const result = run(
+    const result = withValuationAdapters([createTestTrustedValuationAdapter()], () => run(
       blank({
         salePrice: 28000,
         outTheDoorPrice: 40000,
@@ -167,19 +167,18 @@ describe("GO decision integrity", () => {
       }),
       {
         stateData,
-        marketBenchmark: auditedCamryBenchmark(),
         condition: "new",
         mileage: 12,
         trim: "LE",
       },
-    );
+    ));
     expect(result.goNoGo).not.toBe("GO");
     expect(result.verdictLabel).toMatch(/FINANCIAL RECONCILIATION INCOMPLETE/i);
     expect(result.marketValuation?.status).toBe("verified");
   });
 
   it("still permits GO when independent valuation, tax, registration, and the out-the-door total all reconcile", () => {
-    const result = run(
+    const result = withValuationAdapters([createTestTrustedValuationAdapter()], () => run(
       blank({
         salePrice: 28000,
         outTheDoorPrice: 28000 + 70 + 1000 + 400,
@@ -191,12 +190,11 @@ describe("GO decision integrity", () => {
       }),
       {
         stateData,
-        marketBenchmark: auditedCamryBenchmark(),
         condition: "new",
         mileage: 12,
         trim: "LE",
       },
-    );
+    ));
     expect(result.goNoGo).toBe("GO");
     expect(result.marketValuation?.status).toBe("verified");
     expect(result.marketValuation?.kind).toBe("market_transaction");
