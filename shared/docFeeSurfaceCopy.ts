@@ -12,6 +12,8 @@ export interface SurfaceAssessment {
   jurisdiction: string;
   statutoryReference: string;
   summary: string;
+  /** Plain-language question when two fee names might be the same charge. */
+  feeNameAmbiguity?: string | null;
 }
 
 export interface SurfaceCapCheck {
@@ -62,10 +64,48 @@ function citationOf(assessment: SurfaceAssessment): string | null {
   return assessment.statutoryReference;
 }
 
+export function thresholdDateLine(assessment: {
+  evaluatedAsOf?: string | null;
+  evaluatedAsOfSource?: "quote" | "analysis" | "conflict" | null;
+} | null | undefined): string | null {
+  if (!assessment?.evaluatedAsOf || !assessment.evaluatedAsOfSource) return null;
+  const day = assessment.evaluatedAsOf;
+  if (assessment.evaluatedAsOfSource === "quote") {
+    return `Date used for fee limits: the quote date ${day}.`;
+  }
+  if (assessment.evaluatedAsOfSource === "analysis") {
+    return `Date used for fee limits: the analysis date ${day}. The quote did not state a transaction date.`;
+  }
+  return `The quote states more than one transaction date, so no quote date was used for fee limits. The analysis date ${day} is shown, and a date-based cap was not treated as confirmed.`;
+}
+
 export function docFeeSurfaceCopy(assessment: SurfaceAssessment): DocFeeSurfaceCopy {
   const charged = assessment.chargedAmount;
   const ceiling = ceilingOf(assessment);
   const citation = citationOf(assessment);
+
+  if (assessment.feeNameAmbiguity) {
+    const ask = assessment.feeNameAmbiguity;
+    return {
+      capCheck: null,
+      signal: {
+        priority: 2,
+        category: "info_gap",
+        label: "Fee names need an explanation",
+        detail: ask,
+        action: ask,
+        severity: "warning",
+      },
+      callout: {
+        tone: "conditional",
+        title: "Fee names are ambiguous",
+        body: ask,
+        action: "Ask the dealer, in writing, whether these are one charge or two.",
+      },
+      scorecardLine: ask,
+      marketMessage: null,
+    };
+  }
 
   if (assessment.classification === "illegal" && charged != null && ceiling != null) {
     const overage = Math.round((charged - ceiling) * 100) / 100;

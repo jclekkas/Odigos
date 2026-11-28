@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { normalizeOcrMoney, scanMoney } from "../../server/ocrMoney.js";
-import { parseGovernmentLines } from "../../server/governmentCharges.js";
+import { normalizeOcrMoney, prepareQuoteText, scanMoney } from "../../server/ocrMoney.js";
+import { enrichDetectedFields, parseGovernmentLines } from "../../server/governmentCharges.js";
 import { applyDealerQuoteFacts, parseDealerQuoteFacts } from "../../server/dealerQuoteText.js";
+import { classifyFeeBucket, computePurchase, splitFees } from "../../server/quoteMath.js";
+import { matchesExtractedDocFeeLabel } from "../../shared/feeVocabulary.js";
 import type { DetectedFields } from "../../shared/schema.js";
 
 function amounts(text: string): number[] {
@@ -97,6 +99,105 @@ describe("raw-text money formats", () => {
     expect(parsed.apr).toBeNull();
     expect(parsed.termMonths).toBeNull();
     expect(parsed.salePrice).toBe(28000);
+  });
+
+  it("computes the same out-the-door price and principal for every money format", () => {
+    const parts = { sale: 28000, doc: 70, tax: 2170, title: 15, reg: 400, down: 2000 };
+    const expectedOtd = 28000 + 70 + 2170 + 15 + 400;
+    const expectedPrincipal = expectedOtd - 2000;
+    const decimal = { sale: 28000.5, doc: 70.5, tax: 2170.5, title: 15.5, reg: 400.5, down: 2000.5 };
+    const expectedDecimalOtd = 28000.5 + 70.5 + 2170.5 + 15.5 + 400.5;
+    const expectedDecimalPrincipal = expectedDecimalOtd - 2000.5;
+
+    function ocr(amount: number): string {
+      const body = amount.toLocaleString("en-US").replace(/0/g, "O").replace(/1/g, "l");
+      return `S${body}`;
+    }
+
+    function quote(fmt: (amount: number) => string, values: typeof parts): string {
+      return [
+        `Selling price: ${fmt(values.sale)}`,
+        `Doc fee: ${fmt(values.doc)}`,
+        `Sales tax: ${fmt(values.tax)}`,
+        `Title fee: ${fmt(values.title)}`,
+        `Registration: ${fmt(values.reg)}`,
+        `Down payment: ${fmt(values.down)}`,
+        `Amount financed: ${fmt(values.sale + values.doc + values.tax + values.title + values.reg - values.down)}`,
+      ].join("\n");
+    }
+
+    function wrapped(values: typeof parts): string {
+      const row = (label: string, amount: number) => `${label}\t"$\n${amount}"`;
+      const principal = values.sale + values.doc + values.tax + values.title + values.reg - values.down;
+      return [
+        row("Selling price", values.sale),
+        row("Doc fee", values.doc),
+        row("Sales tax", values.tax),
+        row("Title fee", values.title),
+        row("Registration", values.reg),
+        row("Down payment", values.down),
+        row("Amount financed", principal),
+      ].join("\n");
+    }
+
+    function outcome(text: string) {
+      const enriched = enrichDetectedFields(fields(), text);
+      const applied = applyDealerQuoteFacts(enriched, parseDealerQuoteFacts(text));
+      const split = splitFees(applied.fees ?? [], (name) => matchesExtractedDocFeeLabel(name));
+      const math = computePurchase({
+        vehiclePrice: applied.salePrice,
+        rebates: applied.rebates,
+        docFee: split.docFee,
+        addOns: split.addOns,
+        titleFee: split.titleFee,
+        registrationFee: split.registrationFee,
+        govFees: split.govFees,
+        salesTaxAmount: split.statedTax,
+        downPayment: applied.downPayment,
+      });
+      return { applied, split, math };
+    }
+
+    const integerQuotes = [
+      quote((amount) => `$${amount.toLocaleString("en-US")}`, parts),
+      quote((amount) => `USD ${amount}`, parts),
+      quote((amount) => String(amount), parts),
+      quote(ocr, parts),
+      wrapped(parts),
+    ];
+    for (const text of integerQuotes) {
+      const result = outcome(text);
+      expect(result.math.ok, text).toBe(true);
+      expect(result.math.outTheDoor, text).toBe(expectedOtd);
+      expect(result.math.amountFinanced, text).toBe(expectedPrincipal);
+      expect(result.applied.taxes, text).toBe(2170);
+      expect(result.applied.titleFee, text).toBe(15);
+      expect(result.applied.registrationFee, text).toBe(400);
+      expect(result.split.docFee, text).toBe(70);
+      expect(result.split.addOns, text).toBe(0);
+      expect(classifyFeeBucket("Sales tax")).toBe("tax");
+      expect(classifyFeeBucket("Title fee")).toBe("title");
+      expect(classifyFeeBucket("Registration")).toBe("registration");
+      expect(result.applied.fees.some((fee) => /financed|principal/i.test(fee.name)), text).toBe(false);
+      const financedLine = prepareQuoteText(text).split("\n").find((line) => /financed/i.test(line));
+      expect(financedLine, text).toBeTruthy();
+      expect(scanMoney(financedLine ?? "").map((span) => span.amount), text).toEqual([expectedPrincipal]);
+    }
+
+    const decimalQuotes = [
+      quote((amount) => `$${amount.toLocaleString("en-US")}`, decimal),
+      quote((amount) => `USD ${amount}`, decimal),
+      quote((amount) => String(amount), decimal),
+      quote(ocr, decimal),
+      wrapped(decimal),
+    ];
+    for (const text of decimalQuotes) {
+      const result = outcome(text);
+      expect(result.math.ok, text).toBe(true);
+      expect(result.math.outTheDoor, text).toBe(expectedDecimalOtd);
+      expect(result.math.amountFinanced, text).toBe(expectedDecimalPrincipal);
+      expect(result.split.addOns, text).toBe(0);
+    }
   });
 
   it("still drops an AI amount the quote never states", () => {

@@ -12,6 +12,8 @@ export interface FinancialImpactHeroProps {
   fallbackSummary: string;
   marketValueStatus?: "verified" | "unverified" | null;
   benchmarkKind?: "factory_msrp" | "market_transaction" | null;
+  /** Shown only for a verified adapter valuation. */
+  sourceReference?: string | null;
 }
 
 export default function FinancialImpactHero({
@@ -22,6 +24,7 @@ export default function FinancialImpactHero({
   fallbackSummary,
   marketValueStatus,
   benchmarkKind,
+  sourceReference,
 }: FinancialImpactHeroProps) {
   const range = formatCurrencyRange(overpaymentMin, overpaymentMax);
   const hasRange = range != null && marketValueStatus !== "unverified";
@@ -100,6 +103,11 @@ export default function FinancialImpactHero({
       >
         {financialSummary ?? fallbackSummary}
       </p>
+      {sourceReference ? (
+        <p className="text-sm leading-relaxed text-foreground" data-testid="valuation-source-reference">
+          Valuation source: {sourceReference}
+        </p>
+      ) : null}
       {confidence && (
         <div className="flex flex-wrap items-center gap-2 pt-1">
           <span

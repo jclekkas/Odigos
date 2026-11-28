@@ -14,6 +14,8 @@
 export const FINDING_RANK = {
   illegalDocFee: 10,
   declinedAddOn: 20,
+  /** The disclosed amount financed, the computed principal, and the stated payment do not reconcile. */
+  financingMismatch: 25,
   amountFinancedMismatch: 30,
   rebateExplainsOtd: 35,
   otdMismatch: 40,
@@ -32,6 +34,7 @@ export const FINDING_RANK = {
   singleAddOn: 110,
   factoryMsrpMarkup: 120,
   priceAboveBenchmark: 130,
+  ambiguousFeeNames: 139,
   conditionalDocFee: 140,
   unresolvedFiling: 145,
   conditionalRebate: 150,

@@ -4,6 +4,7 @@ import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
 import "./index.css";
 import { initAnalytics } from "./lib/analytics";
+import { syntheticTelemetrySuppressed } from "./lib/syntheticLatch";
 
 const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN as string | undefined;
 const IS_PRODUCTION = import.meta.env.MODE === "production";
@@ -21,6 +22,7 @@ if (SENTRY_DSN && (IS_PRODUCTION || SENTRY_ENABLED)) {
     integrations: [Sentry.browserTracingIntegration()],
     tracesSampleRate: 0.1,
     beforeSend(event) {
+      if (syntheticTelemetrySuppressed()) return null;
       if (event.request) {
         delete event.request.data;
         if (event.request.headers) {

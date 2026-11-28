@@ -82,6 +82,12 @@ describe("parseGovernmentLines", () => {
       { line: "License/Registration: $400", kind: "titleReg", amount: 400 },
       { line: "DMV Fees: $400", kind: "gov", amount: 400 },
       { line: "License fee: $55", kind: "registration", amount: 55 },
+      { line: "Sales tax: 3500", kind: "tax", amount: 3500 },
+      { line: "Sales Tax 2170", kind: "tax", amount: 2170 },
+      { line: "Sales tax: USD 2,170", kind: "tax", amount: 2170 },
+      { line: "Sales tax S2,17O", kind: "tax", amount: 2170 },
+      { line: "Title fee 15.5", kind: "title", amount: 15.5 },
+      { line: "Registration: USD 400", kind: "registration", amount: 400 },
     ];
     for (const item of cases) {
       const parsed = parseGovernmentLines(item.line);
@@ -107,12 +113,11 @@ describe("parseGovernmentLines", () => {
     expect(taxes.map((line) => line.amount).sort((a, b) => a - b)).toEqual([500, 2000]);
   });
 
-  it("does not read a tax rate, a bare number, or an unlabeled price as a government charge", () => {
+  it("does not read a tax rate or an unlabeled price as a government charge", () => {
     const silent = [
       "Tax rate: 7.75%",
       "Estimated sales tax rate 7.75 percent",
       "Sales tax 7.25%",
-      "Sales tax: 3500",
       "Tax: 7.75",
       "Selling price: $45,000",
       "Doc fee: $70",

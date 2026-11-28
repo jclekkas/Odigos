@@ -26,6 +26,13 @@ export interface ReplyFacts {
   msrpMarkup?: boolean;
   /** Questions for material findings that are not already the headline. */
   extraAsks?: string[];
+
+  /**
+   * Set when financing is involved and APR, term, or the disclosed amount
+   * financed is missing, or those figures do not reconcile. Included even
+   * when the verdict headline is about unverified market value.
+   */
+  financingAsk?: string | null;
 }
 
 const ENDORSEMENT =
@@ -64,6 +71,8 @@ export function buildConstrainedReply(facts: ReplyFacts): string {
     if (facts.docFee?.classification === "potentially_noncompliant") {
       parts.push(`${facts.docFee.summary} I am not treating that documentation charge as confirmed.`);
     }
+  } else if (facts.docFee?.feeNameAmbiguity) {
+    parts.push(`${facts.docFee.feeNameAmbiguity} I am not approving the vehicle price.`);
   } else if (facts.docFee?.classification === "potentially_noncompliant") {
     const ask = conditionalDocFeeAsk(facts.docFee);
     parts.push(`${facts.docFee.summary} ${ask} I am not approving the vehicle price.`);
@@ -87,6 +96,10 @@ export function buildConstrainedReply(facts: ReplyFacts): string {
     parts.push(
       "Please send the VIN, the window sticker, and a breakdown of factory equipment and any market adjustments.",
     );
+  }
+
+  if (facts.financingAsk && !parts.join(" ").toLowerCase().includes("amount financed")) {
+    parts.push(facts.financingAsk);
   }
 
   if (facts.derivation.length > 0 && facts.verdict !== "GO") {

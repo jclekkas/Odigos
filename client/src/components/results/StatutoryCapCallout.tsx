@@ -2,7 +2,7 @@ import { useState } from "react";
 import { AlertTriangle, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { DocFeeAssessmentPublic, DocFeeCapCheck } from "@shared/schema";
-import { docFeeSurfaceCopy } from "@shared/docFeeSurfaceCopy";
+import { docFeeSurfaceCopy, thresholdDateLine } from "@shared/docFeeSurfaceCopy";
 
 export interface StatutoryCapCalloutProps {
   docFeeCapCheck?: DocFeeCapCheck | null;
@@ -13,6 +13,7 @@ export default function StatutoryCapCallout({ docFeeCapCheck, docFeeAssessment }
   const [copied, setCopied] = useState(false);
   const projected = docFeeAssessment ? docFeeSurfaceCopy(docFeeAssessment) : null;
   const callout = projected?.callout ?? null;
+  const dateLine = thresholdDateLine(docFeeAssessment);
 
   if (callout) {
     const unverified = callout.tone !== "violation";
@@ -32,6 +33,7 @@ export default function StatutoryCapCallout({ docFeeCapCheck, docFeeAssessment }
         }
         data-testid={unverified ? "statutory-cap-unverified" : "statutory-cap-callout"}
       >
+        {dateLine ? <p data-testid="threshold-date-used" className="text-sm text-muted-foreground">{dateLine}</p> : null}
         <div className="flex items-center gap-2">
           <AlertTriangle
             className={unverified ? "w-5 h-5 text-amber-700 dark:text-amber-400 flex-shrink-0" : "w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0"}
@@ -67,7 +69,10 @@ export default function StatutoryCapCallout({ docFeeCapCheck, docFeeAssessment }
     );
   }
 
-  if (!docFeeCapCheck?.violated) return null;
+  if (!docFeeCapCheck?.violated) {
+    if (!dateLine) return null;
+    return <p data-testid="threshold-date-used" className="text-sm text-muted-foreground">{dateLine}</p>;
+  }
 
   const { chargedAmount, capAmount, overage, stateName, statuteCitation } = docFeeCapCheck;
   const actionText = statuteCitation
@@ -87,6 +92,7 @@ export default function StatutoryCapCallout({ docFeeCapCheck, docFeeAssessment }
       className="rounded-xl border-2 border-red-500/40 bg-red-500/10 p-5 sm:p-6 space-y-3 shadow-sm"
       data-testid="statutory-cap-callout"
     >
+      {dateLine ? <p data-testid="threshold-date-used" className="text-sm text-muted-foreground">{dateLine}</p> : null}
       <div className="flex items-center gap-2">
         <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" aria-hidden="true" />
         <span className="text-xs font-semibold uppercase tracking-wider text-red-700 dark:text-red-400">

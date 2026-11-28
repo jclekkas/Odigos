@@ -1139,6 +1139,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
       electronicIntegrator: feeFacts.electronicIntegrator,
       electronicTransaction: feeFacts.electronicTransaction,
       asOf: analyzedAt,
+      asOfSource: "analysis",
       condition: data.condition,
       dealerText: data.dealerText,
       mileage: quoteFacts.mileage,
@@ -1186,6 +1187,8 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   const marketValuation = ruleEngineAdjustments.marketValuation;
   const msrpComparison = ruleEngineAdjustments.msrpComparison;
   const marketVerified = marketValuation?.status === "verified" && benchmark?.low != null && benchmark.high != null;
+  const sourceReference = marketVerified ? marketValuation?.reference?.trim() || null : null;
+  const sourceSentence = sourceReference ? ` Source: ${sourceReference}.` : "";
   const sale = llmResult.detectedFields.salePrice;
   const overpaymentMin = marketVerified && sale != null ? Math.max(0, Math.round((sale - benchmark!.high!) * 100) / 100) : null;
   const overpaymentMax = marketVerified && sale != null ? Math.max(0, Math.round((sale - benchmark!.low!) * 100) / 100) : null;
@@ -1210,12 +1213,12 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     estimatedNormalOtdMax: marketVerified ? benchmark!.high : null,
     financialImpactConfidence: marketVerified ? "high" : null,
     financialSummary: (marketVerified
-      ? `Independent market valuation $${benchmark!.low}–$${benchmark!.high}. Any dollar gap is only the difference between the selling price and that valuation.`
+      ? `Independent market valuation $${benchmark!.low}–$${benchmark!.high}.${sourceSentence} Any dollar gap is only the difference between the selling price and that valuation.`
       : stickerCompared
         ? msrpComparison!.summary
         : "Market value not verified. Factory MSRP comparison and independent market valuation are different. Savings and a normal price range are not estimated.") + buyerHeroNote,
     marketComparison: marketVerified
-      ? `Independent market valuation $${benchmark!.low}–$${benchmark!.high} from ${benchmark!.source ?? "an independent source"}.`
+      ? `Independent market valuation $${benchmark!.low}–$${benchmark!.high} from ${benchmark!.source ?? "an independent source"}.${sourceSentence}`
       : stickerCompared
         ? `${FACTORY_STICKER_COMPARISON} ${msrpComparison!.relation === "above" && msrpComparison!.markupDollars != null ? `The sticker markup is ${formatUsd(msrpComparison!.markupDollars)} (${msrpComparison!.markupPercent}), which is not estimated market overpayment or guaranteed savings.` : "A price at or below that sticker is not estimated savings."}`
         : "Market value not verified. No independent vehicle pricing source is configured, so this quote was not compared with a market range.",

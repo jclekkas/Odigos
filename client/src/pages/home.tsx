@@ -20,6 +20,7 @@ import {
 } from "@/lib/tracking";
 import { captureSubmissionEvent } from "@/lib/analytics";
 import { isSyntheticSubmission } from "@shared/syntheticSubmission";
+import { holdSyntheticSubmission, latchedSyntheticSubmission } from "@/lib/syntheticLatch";
 import { trackConversion, useExperiment } from "@/lib/experiments";
 import { tagFlow } from "@/lib/sentry";
 import {
@@ -2129,11 +2130,17 @@ export default function Home() {
     return "600+";
   }
 
+  const syntheticRef = useRef<ReturnType<typeof holdSyntheticSubmission> | null>(null);
+
   const analyzeMutation = useMutation({
     mutationFn: async (data: FormValues) => {
+      const submission = syntheticRef.current ?? holdSyntheticSubmission(null, {
+        dealerText: data.dealerText,
+        competingQuoteText: data.competingQuoteText,
+      });
       tagFlow("analyze", "/api/analyze");
       const payload = {
-        dealerText: data.dealerText,
+        dealerText: submission.dealerText,
         condition: data.condition,
         vehicle: data.vehicle || undefined,
         zipCode: data.zipCode || undefined,
@@ -2146,13 +2153,13 @@ export default function Home() {
         californiaDmvBusinessPartner: optionalBoolean(data.californiaDmvBusinessPartner),
         oregonIntegratorElection: optionalBoolean(data.oregonIntegratorElection),
         pennsylvaniaElectronicProcessing: optionalBoolean(data.pennsylvaniaElectronicProcessing),
-        ...buyerRequestFields(data),
+        ...buyerRequestFields({ ...data, competingQuoteText: submission.competingQuoteText }),
         sessionId: getSessionId(),
         language: "en" as "en" | "es",
-        ...(isSyntheticSubmission({
-          dealerText: data.dealerText,
-          competingQuoteText: data.competingQuoteText,
-        }) ? { synthetic: true as const } : {}),
+        ...(submission.competingQuoteText
+          ? { competingQuoteText: submission.competingQuoteText }
+          : {}),
+        ...(submission.synthetic ? { synthetic: true as const } : {}),
       };
       const response = await apiRequest("POST", "/api/analyze", payload);
       return response.json() as Promise<AnalysisResponseWithExtras>;
@@ -2163,7 +2170,7 @@ export default function Home() {
       setTimeout(() => setShowDoneState(false), 1500);
       if (!resultFiredRef.current) {
         resultFiredRef.current = true;
-        const submission = submissionAnalyticsInput(form.getValues());
+        const submission = syntheticRef.current ?? latchedSyntheticSubmission() ?? submissionAnalyticsInput(form.getValues());
         captureSubmissionEvent(submission, "analysis_completed", { result_available: true });
         trackSubmissionEvent(submission, "analysis_complete", {
           dealScore: data.verdictLabel,
@@ -2173,7 +2180,7 @@ export default function Home() {
     },
     onError: (error) => {
       const errorMessage = error instanceof Error ? error.message : "unknown_error";
-      const submission = submissionAnalyticsInput(form.getValues());
+      const submission = syntheticRef.current ?? latchedSyntheticSubmission() ?? submissionAnalyticsInput(form.getValues());
       captureSubmissionEvent(submission, "analysis_failed", { errorMessage });
       trackSubmissionEvent(submission, "analysis_failed", { errorMessage });
 
@@ -2203,7 +2210,8 @@ export default function Home() {
     setResult(null);
     setShowDoneState(false);
     resultFiredRef.current = false;
-    const submission = submissionAnalyticsInput(data);
+    const submission = holdSyntheticSubmission(null, data);
+    syntheticRef.current = submission;
     trackSubmissionEvent(submission, "analyze_start");
     captureSubmissionEvent(submission, "analysis_submitted", {
       input_mode: data.source ?? "paste",
@@ -3098,6 +3106,7 @@ export default function Home() {
                 financialSummary={result.financialSummary}
                 marketValueStatus={result.marketValueStatus}
                 benchmarkKind={result.marketBenchmarkKind}
+                sourceReference={result.marketValueStatus === "verified" ? result.marketValuation?.reference ?? null : null}
                 fallbackSummary={
                   result.marketValueStatus === "unverified"
                     ? "Market value not verified. Savings are not estimated."

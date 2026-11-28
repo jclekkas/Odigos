@@ -20,6 +20,7 @@ import {
   enterRequestSeal,
   isSealedSynthetic,
   noteUploadedSynthetic,
+  syntheticSentryEvent,
   withLockedSyntheticAnalysis,
 } from "../../server/syntheticGuard.js";
 
@@ -85,6 +86,40 @@ describe("synthetic QA stays sealed and quiet", () => {
     expect(insertAuditLog).toHaveBeenCalledTimes(1);
     expect(insertAuditLog.mock.calls[0][0].eventType).toBe("rate_limit_breach");
     expect(execute).not.toHaveBeenCalled();
+  });
+
+  it("stays quiet on errors, retries, and timeouts, and still records a rate limit", async () => {
+    const submission = {
+      synthetic: true as boolean,
+      dealerText: "ODIGOS_SYNTHETIC_QA selling price $28,000",
+      competingQuoteText: "",
+    };
+    await withLockedSyntheticAnalysis(submission, async () => {
+      expect(() => {
+        submission.synthetic = false;
+      }).toThrow(TypeError);
+      const retry = { synthetic: false as boolean, dealerText: "Selling price $28,000", competingQuoteText: "" };
+      withLockedSyntheticAnalysis(retry, () => {
+        expect(isSealedSynthetic()).toBe(true);
+        expect(retry.synthetic).toBe(true);
+        expect(() => {
+          retry.synthetic = false;
+        }).toThrow(TypeError);
+      });
+      await writeAuditEvent(req, "analyze", "failure", { reason: "error" });
+      await writeAuditEvent(req, "analyze", "failure", { reason: "timeout" });
+      await trackEvent("api_error", { errorMessage: "AI attempt 1 timed out after 22000ms" });
+      await trackEvent("api_error", { errorMessage: "retry" });
+      await trackEvent("analysis_failed", { errorMessage: "timeout" });
+      recordAnalysisEvent(retry, "submission", { vehicle: "Camry" });
+      await writeAuditEvent(req, "rate_limit_breach", "failure", { route: "/api/analyze", rateLimitBucket: "analyze" });
+      await trackEvent("rate_limit_breach", { endpoint: "/api/analyze" });
+      expect(syntheticSentryEvent({ message: "timeout" })).toBeNull();
+      expect(syntheticSentryEvent({ message: "retry" })).toBeNull();
+    });
+    expect(insertAuditLog).toHaveBeenCalledTimes(1);
+    expect(insertAuditLog.mock.calls[0][0].eventType).toBe("rate_limit_breach");
+    expect(execute).toHaveBeenCalledTimes(2);
   });
 
   it("still writes an analysis audit row for a normal quote", async () => {

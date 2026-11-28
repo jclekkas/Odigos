@@ -69,14 +69,19 @@ export function withLockedSyntheticAnalysis<T>(
   const existing = seals.getStore();
   if (existing) {
     if (!existing.locked) {
-      existing.synthetic = synthetic;
+      // A request that already arrived as synthetic stays synthetic.
+      // A retry, timeout, or model edit cannot clear the flag.
+      if (synthetic) existing.synthetic = true;
       existing.locked = true;
+      freezeSeal(existing);
     }
     freezeSyntheticProperty(input, existing.synthetic);
     return fn();
   }
+  const created: SyntheticSeal = { synthetic, locked: true };
+  freezeSeal(created);
   freezeSyntheticProperty(input, synthetic);
-  return seals.run({ synthetic, locked: true }, fn);
+  return seals.run(created, fn);
 }
 
 /**
@@ -127,4 +132,29 @@ function freezeSyntheticProperty(input: object, synthetic: boolean): void {
   } catch {
     // Already sealed on this object.
   }
+}
+
+function freezeSeal(seal: SyntheticSeal): void {
+  Object.defineProperty(seal, "synthetic", {
+    value: seal.synthetic,
+    writable: false,
+    enumerable: true,
+    configurable: false,
+  });
+  Object.defineProperty(seal, "locked", {
+    value: true,
+    writable: false,
+    enumerable: true,
+    configurable: false,
+  });
+}
+
+/**
+ * Sentry and other external error reporters call this before sending.
+ * A synthetic submission produces no external event. Rate-limit rows are
+ * written through the audit and metrics paths, not through this filter.
+ */
+export function syntheticSentryEvent<T>(event: T): T | null {
+  if (isSealedSynthetic()) return null;
+  return event;
 }

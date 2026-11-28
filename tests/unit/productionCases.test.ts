@@ -164,7 +164,8 @@ describe("live-run production cases", () => {
     });
     assertScorecard(result, "INSUFFICIENT INFORMATION — MARKET VALUE NOT VERIFIED");
     expect(result.marketValuation?.status).toBe("unverified");
-    expect(result.summary).toMatch(/future/i);
+    // A caller-supplied valuation is never trusted, so the future timestamp is not even reached.
+    expect(result.summary).toMatch(/caller-supplied valuation|trusted server-side adapter/i);
     expect(result.suggestedReply).toMatch(/cannot accept|not approving/i);
     const aged = run(fields, {
       stateData: ca,
@@ -182,7 +183,7 @@ describe("live-run production cases", () => {
     });
     expect(aged.goNoGo).not.toBe("GO");
     expect(aged.marketValuation?.status).toBe("unverified");
-    expect(aged.summary).toMatch(/72-hour freshness window/);
+    expect(aged.summary).toMatch(/caller-supplied valuation|trusted server-side adapter/i);
   });
 
   it("$450 a month with no APR, term, or amount financed asks for those terms", () => {
@@ -410,8 +411,7 @@ describe("live-run production cases", () => {
       },
     );
     assertScorecard(result, "NO-GO — DOC FEE EXCEEDS STATE CAP");
-    expect(result.summary).toMatch(/December 15, 2026/);
-    expect(result.summary).toMatch(/printed on the quote/);
+    expect(result.summary).toMatch(/quote date 2026-12-15/);
     expect(result.summary).toMatch(/\$398|\$400/);
     expect(result.suggestedReply).toMatch(/\$400/);
   });
@@ -430,8 +430,7 @@ describe("live-run production cases", () => {
       },
     );
     assertScorecard(result, "INSUFFICIENT INFORMATION — MARKET VALUE NOT VERIFIED");
-    expect(result.summary).toMatch(/January 15, 2027/);
-    expect(result.summary).toMatch(/printed on the quote/);
+    expect(result.summary).toMatch(/quote date 2027-01-15/);
     expect(result.summary).toMatch(/\$412/);
     expect(result.verdictLabel).not.toMatch(/DOC FEE EXCEEDS/);
     expect(result.dimensions?.regulatoryCompliance.status).not.toBe("fail");
