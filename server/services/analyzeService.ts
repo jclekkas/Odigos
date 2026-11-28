@@ -45,6 +45,7 @@ import {
   parseDealerQuoteFacts,
 } from "../dealerQuoteText.js";
 import { blockGoWhenInventedFieldsRemain } from "../fieldProvenance.js";
+import { alignOutputsWithVerdict } from "../verdictOutputs.js";
 
 export type AnalyzeInput = z.infer<typeof analysisRequestSchema>;
 
@@ -1235,7 +1236,9 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     leaseMath: leaseMathResult,
     rankedSignals,
   };
-  finalResult = blockGoWhenInventedFieldsRemain(finalResult, llmResult.detectedFields, fieldProvenance);
+  finalResult = alignOutputsWithVerdict(
+    blockGoWhenInventedFieldsRemain(finalResult, llmResult.detectedFields, fieldProvenance),
+  );
   finalResult.fieldProvenance = fieldProvenance;
 
   logger.info("Analysis successful", { source: "analyze", dealScore: finalResult.dealScore, confidence: finalResult.confidenceLevel });

@@ -300,6 +300,29 @@ function splitModelAndTrim(model: string | null | undefined, explicitTrim?: stri
   return { model: rawModel, trim: null };
 }
 
+/**
+ * Readable freshness check for a valuation's retrieval time. It delegates to the
+ * same `valuationFreshness` rule the verification gate uses, so a missing time,
+ * a time before 1990, a future time, and a time past the window all fail.
+ */
+export function assessRetrievalFreshness(
+  retrievedAt: string | null | undefined,
+  nowMs: number = Date.now(),
+  maxAgeMs: number = valuationMaxAgeMs(undefined, process.env.ODIGOS_VALUATION_MAX_AGE_HOURS),
+): { ok: true } | { ok: false; reason: string } {
+  if (!retrievedAt || !retrievedAt.trim()) {
+    return { ok: false, reason: "This valuation has no usable retrieval time, so it was not treated as verified." };
+  }
+  const freshness = valuationFreshness(retrievedAt, nowMs, maxAgeMs);
+  if (freshness === "stale") {
+    return { ok: false, reason: "This valuation is older than the configured freshness limit, so it was not treated as verified." };
+  }
+  if (freshness !== "fresh") {
+    return { ok: false, reason: "This valuation has no usable retrieval time, so it was not treated as verified." };
+  }
+  return { ok: true };
+}
+
 export function benchmarkQualifiesAsVerified(
   benchmark: MarketBenchmark,
   quote: QuotedVehicle,

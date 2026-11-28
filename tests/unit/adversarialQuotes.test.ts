@@ -81,7 +81,7 @@ const benchmark = {
   sourceQuality: "licensed_independent" as const,
   provenance: {
     sourceId: "example-licensed-book",
-    retrievedAt: "2026-11-27T15:00:00.000Z",
+    retrievedAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
     reference: "https://example.com/valuations/2025-toyota-camry-le",
   },
   vehicleMatch: {
