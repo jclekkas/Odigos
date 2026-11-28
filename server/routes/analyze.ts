@@ -20,6 +20,7 @@ import {
 import { CircuitOpenError } from "../lib/circuitBreaker.js";
 import { AI_PRIMARY_MODEL } from "../config/aiModel.js";
 import { logger } from "../logger.js";
+import { lockSyntheticSeal, noteUploadedSynthetic } from "../syntheticGuard.js";
 
 // OpenAI base URL configured via AI_INTEGRATIONS_OPENAI_BASE_URL env var
 
@@ -36,6 +37,17 @@ const PDF_BLOB_CAP = 100 * 1024 * 1024;
 const BLOB_HOST_SUFFIX = ".public.blob.vercel-storage.com";
 const BLOB_PATH_PREFIX = "dealer-quotes/";
 const BLOB_FETCH_TIMEOUT_MS = 25_000;
+
+function noteExtractedSubmission(req: Request, text?: string): void {
+  const body = (req.body ?? {}) as { synthetic?: unknown };
+  const flagged = body.synthetic === true || body.synthetic === "true";
+  const bytes = req.file?.buffer?.toString("utf8") ?? "";
+  noteUploadedSynthetic({
+    synthetic: flagged ? true : null,
+    dealerText: text ? `${bytes}\n${text}` : bytes,
+  });
+  if (text) lockSyntheticSeal();
+}
 
 function runUploadMiddleware(req: Request, res: Response): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -182,6 +194,7 @@ export function registerAnalyzeRoutes(app: Express): void {
       });
     }
     try {
+      noteExtractedSubmission(req);
       if (!req.file) {
         trackEvent("file_processing", { fileSuccess: false, fileFailReason: "no_file" });
         return res.status(400).json({ message: "No file uploaded." });
@@ -214,6 +227,7 @@ export function registerAnalyzeRoutes(app: Express): void {
       let text: string;
       try {
         text = await extractTextFromFile(buffer, mimetype);
+        noteExtractedSubmission(req, text);
       } catch (err) {
         // ── Error classification ──────────────────────────────────────
         // Distinguish real OCR-short-text from OpenAI failures, PDF
@@ -450,6 +464,7 @@ export function registerAnalyzeRoutes(app: Express): void {
       return res.status(400).json({ message: "Invalid request." });
     }
     const { blobUrl, contentType } = parseResult.data;
+    noteExtractedSubmission(req);
 
     // SSRF guard: only accept Vercel Blob storage hostnames over HTTPS.
     let parsedUrl: URL;
@@ -517,6 +532,7 @@ export function registerAnalyzeRoutes(app: Express): void {
       let text: string;
       try {
         text = await extractTextFromFile(buffer, contentType);
+        noteExtractedSubmission(req, text);
       } catch (err) {
         if (err instanceof IrrelevantContentError) {
           trackEvent("file_processing", {
@@ -569,10 +585,12 @@ export function registerAnalyzeRoutes(app: Express): void {
         return res.status(400).json({ message: "Please enter a valid URL." });
       }
       const { url } = parseResult.data;
+      noteExtractedSubmission(req);
 
       let text: string;
       try {
         text = await extractTextFromUrl(url);
+        noteExtractedSubmission(req, text);
       } catch (err) {
         console.error("URL extraction error:", err);
         const reason = err instanceof Error ? err.message.slice(0, 100) : "extraction_error";

@@ -1,5 +1,7 @@
 import { db } from "../db.js";
 import { sql } from "drizzle-orm";
+import { isSecurityTelemetryEvent } from "../../shared/syntheticSubmission.js";
+import { isSealedSynthetic } from "../syntheticGuard.js";
 
 export type EventType = 
   | "submission"
@@ -109,6 +111,9 @@ export async function loadMetrics(): Promise<{ events: StoredEvent[]; nextId: nu
 }
 
 export async function trackEvent(eventType: EventType, metadata?: EventMetadata): Promise<void> {
+  // Synthetic QA skips product metrics. Rate-limit abuse still counts.
+  // See docs/SYNTHETIC_QA.md.
+  if (isSealedSynthetic() && !isSecurityTelemetryEvent(eventType)) return;
   try {
     await db.execute(sql`
       INSERT INTO metrics_events (event_type, created_at, metadata)

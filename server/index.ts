@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/node";
 import crypto from "node:crypto";
+import { AsyncLocalStorage } from "node:async_hooks";
 import express, { type Request, Response, NextFunction } from "express";
 import helmet from "helmet";
 import cors from "cors";
@@ -9,6 +10,7 @@ import Redis from "ioredis";
 import { registerRoutes } from "./routes.js";
 import { serveStatic } from "./static.js";
 import { trackEvent } from "./metrics.js";
+import { enterRequestSeal, isSealedSynthetic, requestBodyIsSynthetic } from "./syntheticGuard.js";
 import { db } from "./db.js";
 import { writeAuditEvent } from "./audit.js";
 import { logger } from "./logger.js";
@@ -319,51 +321,57 @@ export function buildApiLogLine(
 }
 
 app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
+  enterRequestSeal(requestBodyIsSynthetic(req.body), () => {
+    const start = Date.now();
+    const path = req.path;
+    let capturedJsonResponse: Record<string, any> | undefined = undefined;
 
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
+    const originalResJson = res.json;
+    res.json = function (bodyJson, ...args) {
+      capturedJsonResponse = bodyJson;
+      return originalResJson.apply(res, [bodyJson, ...args]);
+    };
 
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      const logLine = buildApiLogLine(req.method, path, res.statusCode, duration, capturedJsonResponse);
+    res.on("finish", AsyncLocalStorage.bind(() => {
+      const duration = Date.now() - start;
+      if (path.startsWith("/api")) {
+        const logLine = buildApiLogLine(req.method, path, res.statusCode, duration, capturedJsonResponse);
 
-      log(logLine);
+        log(logLine);
 
-      const trackedEndpoints = ["/api/analyze", "/api/extract-text", "/api/track", "/api/metrics", "/api/checkout"];
-      const matchedEndpoint = trackedEndpoints.find(e => path === e || path.startsWith(e + "/"));
-      if (matchedEndpoint) {
-        const statusCode = res.statusCode;
-        if (statusCode >= 400) {
-          const errorMessage = capturedJsonResponse
-            ? (capturedJsonResponse.message || capturedJsonResponse.error || undefined)
-            : undefined;
-          trackEvent("api_error", {
-            endpoint: matchedEndpoint,
-            method: req.method,
-            statusCode,
-            responseTimeMs: duration,
-            errorMessage: typeof errorMessage === "string" ? errorMessage : undefined,
-          });
-        } else {
-          trackEvent("api_request", {
-            endpoint: matchedEndpoint,
-            method: req.method,
-            statusCode,
-            responseTimeMs: duration,
-          });
+        // Synthetic QA does not add API counters. The request line above is
+        // operational output, not the metrics table. See docs/SYNTHETIC_QA.md.
+        if (isSealedSynthetic()) return;
+
+        const trackedEndpoints = ["/api/analyze", "/api/extract-text", "/api/track", "/api/metrics", "/api/checkout"];
+        const matchedEndpoint = trackedEndpoints.find(e => path === e || path.startsWith(e + "/"));
+        if (matchedEndpoint) {
+          const statusCode = res.statusCode;
+          if (statusCode >= 400) {
+            const errorMessage = capturedJsonResponse
+              ? (capturedJsonResponse.message || capturedJsonResponse.error || undefined)
+              : undefined;
+            trackEvent("api_error", {
+              endpoint: matchedEndpoint,
+              method: req.method,
+              statusCode,
+              responseTimeMs: duration,
+              errorMessage: typeof errorMessage === "string" ? errorMessage : undefined,
+            });
+          } else {
+            trackEvent("api_request", {
+              endpoint: matchedEndpoint,
+              method: req.method,
+              statusCode,
+              responseTimeMs: duration,
+            });
+          }
         }
       }
-    }
-  });
+    }));
 
-  next();
+    next();
+  });
 });
 
 // Always-available diagnostic endpoint. Registered synchronously at module
