@@ -260,6 +260,12 @@ export const docFeeAssessmentSchema = z.object({
   effectiveDate: z.string(),
   lastVerificationDate: z.string(),
   summary: z.string(),
+  /** Calendar day used for a date-based fee limit, YYYY-MM-DD. */
+  evaluatedAsOf: z.string().optional(),
+  /** Whether that day came from the quote, the analysis, or a date conflict. */
+  evaluatedAsOfSource: z.enum(["quote", "analysis", "conflict"]).optional(),
+  /** Set when two different fee names could be the same regulated charge. */
+  feeNameAmbiguity: z.string().nullable().optional(),
 });
 
 export type DocFeeAssessmentPublic = z.infer<typeof docFeeAssessmentSchema>;

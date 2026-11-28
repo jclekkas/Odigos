@@ -75,6 +75,10 @@ export const vinCheckSchema = z.object({
   mismatches: z.array(vinMismatchSchema),
   basePrice: vinBasePriceSchema.nullable(),
   errorText: z.string().nullable(),
+  /** NHTSA ErrorCode. Only a clean "0" can support an affirmative match. */
+  errorCode: z.string().nullable().optional(),
+  /** Distinct VINs found on the quote when more than one was present. */
+  conflictingVins: z.array(z.string()).max(8).optional(),
   summary: z.string(),
 });
 

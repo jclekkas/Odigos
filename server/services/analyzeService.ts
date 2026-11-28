@@ -1138,6 +1138,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
       electronicIntegrator: feeFacts.electronicIntegrator,
       electronicTransaction: feeFacts.electronicTransaction,
       asOf: analyzedAt,
+      asOfSource: "analysis",
       condition: data.condition,
       dealerText: data.dealerText,
       mileage: quoteFacts.mileage,

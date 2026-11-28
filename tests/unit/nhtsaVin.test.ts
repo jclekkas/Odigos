@@ -2,8 +2,10 @@ import { describe, expect, it, vi } from "vitest";
 import {
   NHTSA_VPIC_ORIGIN,
   checkVin,
+  compareDecodedVin,
   findVin,
   isPlausibleVin,
+  vinCheckDigitIsValid,
   vpicDecodeVinValuesUrl,
   type NhtsaFetch,
 } from "../../server/nhtsaVin.js";
@@ -180,5 +182,40 @@ describe("NHTSA vPIC VIN check", () => {
     expect(result.status).toBe("invalid");
     expect(result.provenance).toBe("buyer-reported");
     expect(findVin(undefined, `see ${VIN} here`).vin).toBe(VIN);
+  });
+
+  it("finds a lowercase VIN and uppercases it", () => {
+    const located = findVin(undefined, "vin 4t1g11ak5nu123456 is on the quote");
+    expect(located.vin).toBe(VIN);
+    expect(located.provenance).toBe("quote");
+    expect(located.conflictingVins).toEqual([]);
+  });
+
+  it("does not pick one VIN when the quote contains two", () => {
+    const other = "1G4AH59H45G118341";
+    const located = findVin(undefined, `VIN ${VIN} or vin ${other.toLowerCase()}`);
+    expect(located.vin).toBeNull();
+    expect(located.conflictingVins).toEqual([VIN, other]);
+  });
+
+  it("uses the check digit from 49 CFR 565.15 and does not treat Camry as Camry Hybrid", () => {
+    expect(vinCheckDigitIsValid("1G4AH59H45G118341")).toBe(true);
+    expect(vinCheckDigitIsValid("1G4AH59H55G118341")).toBe(false);
+    expect(vinCheckDigitIsValid(VIN)).toBe(false);
+    const ambiguous = compareDecodedVin(
+      {
+        year: 2023,
+        make: "TOYOTA",
+        model: "Camry Hybrid",
+        trim: "LE",
+        trim2: null,
+        series: null,
+        basePrice: null,
+        errorCode: "0",
+        errorText: "0 - VIN decoded clean. Check Digit (9th position) is correct",
+      },
+      { year: 2023, make: "Toyota", model: "Camry" },
+    );
+    expect(ambiguous.map((item) => item.field)).toContain("model");
   });
 });
