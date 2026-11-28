@@ -37,4 +37,17 @@ describe("StatutoryCapCallout", () => {
     expect(callout.textContent ?? "").not.toMatch(/\billegal\b|exceeds the legal cap/i);
     expect(screen.queryByTestId("statutory-cap-callout")).not.toBeInTheDocument();
   });
+
+  it("shows the date used for a fee limit", () => {
+    const assessment = classifyDocFee(
+      [{ name: "doc fee", amount: 398 }],
+      getStateFeeData("OH"),
+      null,
+      null,
+      { asOf: "2026-11-28", asOfSource: "analysis", vehicleCashPrice: 32000 },
+    );
+    render(<StatutoryCapCallout docFeeAssessment={assessment} />);
+    expect(screen.getByTestId("threshold-date-used")).toHaveTextContent("analysis date 2026-11-28");
+    expect(screen.getByTestId("threshold-date-used")).toHaveTextContent("did not state a transaction date");
+  });
 });

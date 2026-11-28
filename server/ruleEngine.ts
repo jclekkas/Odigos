@@ -28,6 +28,8 @@ import { docFeeSurfaceCopy } from "../shared/docFeeSurfaceCopy.js";
 import { buildConstrainedReply } from "./replyConstraint.js";
 import { isDocFeeName } from "./docFeeName.js";
 import type { VinCheck } from "../shared/buyerReported.js";
+import { vinPositivelyAgrees } from "./nhtsaVin.js";
+import { thresholdDateForAnalysis } from "./quoteDate.js";
 
 export interface RuleEngineOptions {
   stateData?: RegulatoryStateInput | null;
@@ -72,9 +74,12 @@ export interface RuleEngineOptions {
   trim?: string | null;
   /**
    * NHTSA decode for a VIN on the quote. Absent or not_provided means no VIN.
-   * A present VIN must decode consistently before GO.
+   * A present VIN must be an affirmative NHTSA match before GO. An empty
+   * mismatch list is not that match.
    */
-  vinCheck?: Pick<VinCheck, "status" | "vin" | "mismatches" | "summary"> | null;
+  vinCheck?: (Pick<VinCheck, "status" | "vin" | "mismatches" | "summary"> & Partial<Pick<VinCheck, "decoded" | "errorText" | "errorCode" | "conflictingVins">>) | null;
+  /** Whether `asOf` is the quote date, the analysis date, or a conflict. */
+  asOfSource?: "quote" | "analysis" | "conflict" | null;
 }
 
 export interface RuleEngineResult {
@@ -379,10 +384,25 @@ const FINANCING_LANGUAGE = [
 
 export type RegulatoryGoStatus = "validated" | "unknown" | "ineligible";
 
+/** A filing line participates in GO only when every condition on it is confirmed. */
+export function separateFilingAllowsGo(item: SeparateFilingAssessment): boolean {
+  return item.classification === "permissible" && item.unconfirmed.length === 0;
+}
+
+function unresolvedFilings(filings: SeparateFilingAssessment[]): SeparateFilingAssessment[] {
+  return filings.filter((item) => !separateFilingAllowsGo(item));
+}
+
 export function regulatoryGoDecision(
   docFee: DocFeeAssessment | null,
   stateKnown: boolean,
+  filings: SeparateFilingAssessment[] = [],
 ): { status: RegulatoryGoStatus; reason: string } {
+  const blocking = unresolvedFilings(filings);
+  const filingReason = blocking.map((item) => item.summary).join(" ");
+  const filingClause = filingReason
+    ? `${filingReason} An unresolved, needs-source, or over-cap charge blocks approval even when a documentation fee is within its cap.`
+    : "";
   if (!stateKnown) {
     return {
       status: "unknown",
@@ -392,19 +412,31 @@ export function regulatoryGoDecision(
   if (!docFee) {
     return {
       status: "unknown",
-      reason: "No regulatory check was completed, so this quote cannot be approved.",
+      reason: filingClause || "No regulatory check was completed, so this quote cannot be approved.",
+    };
+  }
+  if (docFee.feeNameAmbiguity) {
+    return {
+      status: "unknown",
+      reason: `${docFee.feeNameAmbiguity} ${filingClause}`.trim(),
     };
   }
   if (docFee.classification === "needs_source") {
     return {
       status: "unknown",
-      reason: `${docFee.summary} A cap that needs a source was not treated as a validated check.`,
+      reason: `${docFee.summary} A cap that needs a source was not treated as a validated check. ${filingClause}`.trim(),
     };
   }
   if (docFee.classification === "potentially_noncompliant") {
     return {
       status: "unknown",
-      reason: `${docFee.summary} A conditional rule that was not confirmed was not treated as a validated check.`,
+      reason: `${docFee.summary} A conditional rule that was not confirmed was not treated as a validated check. ${filingClause}`.trim(),
+    };
+  }
+  if (blocking.length > 0) {
+    return {
+      status: blocking.some((item) => item.classification === "illegal") ? "ineligible" : "unknown",
+      reason: filingClause,
     };
   }
   if (docFee.classification === "permissible") {
@@ -472,9 +504,18 @@ function yearMakeModelPresent(fields: DetectedFields): boolean {
     !!fields.vehicle_model?.trim();
 }
 
+function quoteModelForVin(fields: DetectedFields, trim: string | null | undefined): string {
+  const model = fields.vehicle_model?.trim() ?? "";
+  const namedTrim = trim?.trim() ?? "";
+  if (!namedTrim) return model;
+  if (model.toLowerCase().includes(namedTrim.toLowerCase())) return model;
+  return `${model} ${namedTrim}`.trim();
+}
+
 function vehicleIdentityForGo(
   fields: DetectedFields,
   vinCheck: RuleEngineOptions["vinCheck"],
+  trim: string | null | undefined,
 ): { ok: boolean; vinProblem: boolean; reason: string } {
   if (!yearMakeModelPresent(fields)) {
     return {
@@ -483,18 +524,27 @@ function vehicleIdentityForGo(
       reason: "Year, make, and model are required before this quote can be approved.",
     };
   }
+  if (vinCheck?.conflictingVins && vinCheck.conflictingVins.length > 1) {
+    return {
+      ok: false,
+      vinProblem: true,
+      reason: vinCheck.summary?.trim()
+        || "The quote contains more than one VIN, so none of them is a confirmed vehicle match.",
+    };
+  }
   if (!vinCheck || vinCheck.status === "not_provided" || !vinCheck.vin) {
     return { ok: true, vinProblem: false, reason: "" };
   }
-  if (vinCheck.status === "decoded" && vinCheck.mismatches.length === 0) {
-    return { ok: true, vinProblem: false, reason: "" };
-  }
+  const agreement = vinPositivelyAgrees(vinCheck, {
+    year: fields.vehicle_year,
+    make: fields.vehicle_make,
+    model: quoteModelForVin(fields, trim),
+  });
+  if (agreement.affirmative) return { ok: true, vinProblem: false, reason: "" };
   return {
     ok: false,
     vinProblem: true,
-    reason: vinCheck.summary?.trim()
-      ? vinCheck.summary
-      : "A VIN is present, but the VIN decoder did not confirm the year, make, and model, so this quote cannot be approved.",
+    reason: agreement.reason,
   };
 }
 
@@ -509,12 +559,19 @@ export function applyRuleEngine(
   const fees = fields.fees || [];
   const partner = options?.privateIndustryPartner ?? null;
   const integrator = options?.electronicIntegrator ?? null;
+  const thresholdDate = thresholdDateForAnalysis({
+    dealerText: options?.dealerText,
+    asOf: options?.asOf,
+    asOfSource: options?.asOfSource,
+  });
   const docFee = options?.stateData
     ? classifyDocFee(fees, options.stateData, partner, integrator, {
         vehicleCashPrice: fields.salePrice,
         electronicTransaction: options.electronicTransaction ?? null,
         dealerText: options.dealerText,
-        asOf: options.asOf ?? new Date(),
+        asOf: thresholdDate.asOf,
+        asOfSource: thresholdDate.asOfSource,
+        asOfConflictDates: thresholdDate.asOfConflictDates,
       })
     : null;
   const separateFilingAssessments = classifySeparateFilingCharges(
@@ -695,9 +752,13 @@ export function applyRuleEngine(
     },
     regulatoryCompliance: {
       status:
-        docFee?.classification === "illegal"
+        docFee?.classification === "illegal" ||
+        separateFilingAssessments.some((item) => item.classification === "illegal")
           ? "fail"
-          : docFee?.classification === "potentially_noncompliant" || docFee?.classification === "needs_source"
+          : docFee?.classification === "potentially_noncompliant" ||
+              docFee?.classification === "needs_source" ||
+              !!docFee?.feeNameAmbiguity ||
+              unresolvedFilings(separateFilingAssessments).length > 0
             ? "concern"
             : docFee
               ? "clear"
@@ -871,6 +932,9 @@ export function applyRuleEngine(
       `The selling price is above the independent benchmark of $${benchmark.low}–$${benchmark.high}`,
     );
   }
+  if (docFee?.feeNameAmbiguity) {
+    return caution("PROCEED WITH CAUTION — AMBIGUOUS FEE NAMES", docFee.feeNameAmbiguity);
+  }
   if (docFee?.classification === "potentially_noncompliant") {
     return caution("PROCEED WITH CAUTION — CONDITIONAL DOC FEE", docFee.summary);
   }
@@ -934,7 +998,7 @@ export function applyRuleEngine(
     return insufficient("INSUFFICIENT INFORMATION — FINANCING TERMS NEEDED", FINANCING_TERMS_ASK);
   }
 
-  const identity = vehicleIdentityForGo(fields, options?.vinCheck);
+  const identity = vehicleIdentityForGo(fields, options?.vinCheck, options?.trim);
   if (!identity.ok) {
     return insufficient(
       identity.vinProblem
@@ -944,7 +1008,7 @@ export function applyRuleEngine(
     );
   }
 
-  const regulatory = regulatoryGoDecision(docFee, !!options?.stateData);
+  const regulatory = regulatoryGoDecision(docFee, !!options?.stateData, separateFilingAssessments);
   if (regulatory.status === "unknown") {
     return insufficient("INSUFFICIENT INFORMATION — REGULATORY STATUS UNKNOWN", regulatory.reason);
   }
@@ -1085,7 +1149,7 @@ export function applyRuleEngine(
   }
 
   function regulatoryAllowsGo(): boolean {
-    return regulatoryGoDecision(docFee, !!options?.stateData).status === "validated";
+    return regulatoryGoDecision(docFee, !!options?.stateData, separateFilingAssessments).status === "validated";
   }
 
   function insufficient(verdictLabel: string, primaryIssue: string): RuleEngineResult {

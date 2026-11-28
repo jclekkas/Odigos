@@ -40,7 +40,8 @@ export const BASE_PRICE_CITATION =
   "NHTSA Product Information Catalog and Vehicle Listing (vPIC), DecodeVinValues field BasePrice. DOT HS 813 795, Product Information Catalog and Vehicle Listing (vPIC) Analytical User's Manual, 2024.";
 
 const VIN_CHARS = /^[A-HJ-NPR-Z0-9]{17}$/;
-const VIN_IN_TEXT = /\b[A-HJ-NPR-Z0-9]{17}\b/g;
+// Case-insensitive so a lowercase VIN in the quote is still found, then uppercased.
+const VIN_IN_TEXT = /\b[A-HJ-NPR-Z0-9]{17}\b/gi;
 
 const TRIM_TOKENS = [
   "ex-l",
@@ -54,7 +55,6 @@ const TRIM_TOKENS = [
   "premium",
   "luxury",
   "sport",
-  "hybrid",
   "lariat",
   "sel",
   "xlt",
@@ -125,22 +125,92 @@ export function isPlausibleVin(vin: string): boolean {
   return VIN_CHARS.test(vin) && /[A-HJ-NPR-Z]/.test(vin);
 }
 
+/**
+ * Check digit in VIN position 9.
+ * 49 CFR § 565.15(c), fetched from
+ * https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-565
+ * The worked example there is 1G4AH59H45G118341 (check digit 4).
+ */
+const VIN_CHECK_WEIGHTS = [8, 7, 6, 5, 4, 3, 2, 10, 0, 9, 8, 7, 6, 5, 4, 3, 2];
+const VIN_LETTER_VALUES: Record<string, number> = {
+  A: 1, B: 2, C: 3, D: 4, E: 5, F: 6, G: 7, H: 8,
+  J: 1, K: 2, L: 3, M: 4, N: 5, P: 7, R: 9,
+  S: 2, T: 3, U: 4, V: 5, W: 6, X: 7, Y: 8, Z: 9,
+};
+
+export const VIN_CHECK_DIGIT_CITATION =
+  "49 CFR § 565.15(c). Fetched from https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-565.";
+
+export function vinCheckDigitIsValid(vin: string): boolean {
+  const normalized = normalizeVin(vin);
+  if (!isPlausibleVin(normalized)) return false;
+  let sum = 0;
+  for (let index = 0; index < 17; index += 1) {
+    const character = normalized[index];
+    const value = /[0-9]/.test(character) ? Number(character) : VIN_LETTER_VALUES[character];
+    if (value == null || !Number.isFinite(value)) return false;
+    sum += value * VIN_CHECK_WEIGHTS[index];
+  }
+  const remainder = sum % 11;
+  const expected = remainder === 10 ? "X" : String(remainder);
+  return normalized[8] === expected;
+}
+
+/** NHTSA ErrorCode is clean only when the sole code is 0 and the text says so. */
+export function nhtsaDecodeIsClean(errorCode: string | null | undefined, errorText: string | null | undefined): boolean {
+  const text = errorText?.trim() ?? "";
+  // vPIC's clean result starts with error code 0 and says the VIN decoded clean.
+  if (!text.startsWith("0") || !/vin decoded clean/i.test(text)) return false;
+  if (/does not calculate/i.test(text)) return false;
+  const code = (errorCode ?? "").trim() || "0";
+  const parts = code.split(/[^0-9]+/).filter(Boolean);
+  return parts.length === 1 && parts[0] === "0";
+}
+
+export function vinsInText(dealerText: string | null | undefined): string[] {
+  if (!dealerText) return [];
+  const found: string[] = [];
+  for (const token of dealerText.match(VIN_IN_TEXT) ?? []) {
+    const vin = token.toUpperCase();
+    if (!isPlausibleVin(vin) || found.includes(vin)) continue;
+    found.push(vin);
+  }
+  return found;
+}
+
 export function findVin(explicit: string | null | undefined, dealerText: string | null | undefined): {
   vin: string | null;
   provenance: "buyer-reported" | "quote" | null;
   invalidExplicit: boolean;
+  conflictingVins: string[];
 } {
+  const textVins = vinsInText(dealerText);
   const typed = explicit?.trim() ? normalizeVin(explicit) : "";
   if (typed) {
+    const distinct = new Set<string>(textVins);
+    if (isPlausibleVin(typed)) distinct.add(typed);
+    if (distinct.size > 1) {
+      return {
+        vin: null,
+        provenance: "buyer-reported",
+        invalidExplicit: false,
+        conflictingVins: [...distinct],
+      };
+    }
     return {
       vin: typed,
       provenance: "buyer-reported",
       invalidExplicit: !isPlausibleVin(typed),
+      conflictingVins: [],
     };
   }
-  const found = dealerText?.match(VIN_IN_TEXT)?.find((token) => isPlausibleVin(token.toUpperCase()));
-  if (!found) return { vin: null, provenance: null, invalidExplicit: false };
-  return { vin: found.toUpperCase(), provenance: "quote", invalidExplicit: false };
+  if (textVins.length > 1) {
+    return { vin: null, provenance: "quote", invalidExplicit: false, conflictingVins: textVins };
+  }
+  if (textVins.length === 1) {
+    return { vin: textVins[0], provenance: "quote", invalidExplicit: false, conflictingVins: [] };
+  }
+  return { vin: null, provenance: null, invalidExplicit: false, conflictingVins: [] };
 }
 
 function asText(value: unknown): string {
@@ -174,6 +244,8 @@ function emptyCheck(
     mismatches: [],
     basePrice: null,
     errorText,
+    errorCode: null,
+    conflictingVins: [],
     summary,
   };
 }
@@ -239,37 +311,40 @@ export function compareDecodedVin(decoded: DecodedIdentity, identity: QuoteVehic
   if (quoteMake && decoded.make) {
     const left = normalizeMake(quoteMake);
     const right = normalizeMake(decoded.make);
-    const makeAgrees = left === right || left.includes(right) || right.includes(left);
-    if (!makeAgrees) {
+    if (left !== right) {
       mismatches.push({ field: "make", quoteValue: quoteMake, decodedValue: displayMake(decoded.make) });
     }
   }
 
   const quoteModel = identity.model?.trim() || "";
   if (quoteModel && decoded.model) {
-    const quoteModelKey = lettersOnly(stripTrimTokens(quoteModel));
-    const decodedModelKey = lettersOnly(decoded.model);
-    const textKey = lettersOnly(stripTrimTokens(quoteText));
-    const modelAgrees =
-      (decodedModelKey.length > 0 && (quoteModelKey.includes(decodedModelKey) || textKey.includes(decodedModelKey))) ||
-      (quoteModelKey.length > 0 && decodedModelKey.includes(quoteModelKey));
-    if (!modelAgrees) {
-      mismatches.push({ field: "model", quoteValue: quoteModel, decodedValue: decoded.model });
+    const quoteCore = modelCore(quoteModel);
+    const decodedCore = modelCore(decoded.model);
+    const quoteVariants = variantTokensIn(`${quoteModel} ${identity.vehicleText ?? ""}`);
+    const decodedVariants = variantTokensIn(`${decoded.model} ${decoded.trim ?? ""} ${decoded.trim2 ?? ""}`);
+    const coresEqual = quoteCore.length > 0 && quoteCore === decodedCore;
+    const variantsEqual = sameStringSet(quoteVariants, decodedVariants);
+    // "Camry" does not affirmatively match "Camry Hybrid". A shorter name
+    // contained in a longer one is ambiguous, not a match.
+    if (!coresEqual || !variantsEqual) {
+      mismatches.push({
+        field: "model",
+        quoteValue: quoteModel,
+        decodedValue: [decoded.model, decoded.trim, decoded.trim2].filter(Boolean).join(" "),
+      });
     }
   }
 
   const quoteTrims = trimTokensIn(`${quoteModel} ${identity.vehicleText ?? ""}`);
-  const decodedTrims = [decoded.trim, decoded.trim2].filter((value): value is string => !!value).map(lettersOnly);
-  if (quoteTrims.length > 0 && decodedTrims.length > 0) {
-    // Exact trim token only. "XLE" must not count as "LE".
-    const agrees = quoteTrims.some((token) => decodedTrims.some((decodedTrim) => decodedTrim === token));
-    if (!agrees) {
-      mismatches.push({
-        field: "trim",
-        quoteValue: quoteTrims.join(", ").toUpperCase(),
-        decodedValue: [decoded.trim, decoded.trim2].filter(Boolean).join(" / "),
-      });
-    }
+  const decodedTrims = trimTokensIn(`${decoded.trim ?? ""} ${decoded.trim2 ?? ""}`);
+  // One side naming a trim the other does not is ambiguity, not a match.
+  // "XLE" does not count as "LE".
+  if (!sameStringSet(quoteTrims, decodedTrims)) {
+    mismatches.push({
+      field: "trim",
+      quoteValue: quoteTrims.join(", ").toUpperCase() || "not stated",
+      decodedValue: decodedTrims.join(", ").toUpperCase() || "not stated",
+    });
   }
   return mismatches;
 }
@@ -298,14 +373,43 @@ function stripTrimTokens(value: string): string {
   return rest.trim();
 }
 
+function sameStringSet(left: string[], right: string[]): boolean {
+  if (left.length !== right.length) return false;
+  const sortedRight = [...right].sort();
+  return [...left].sort().every((token, index) => token === sortedRight[index]);
+}
+
+/** Powertrain words that make "Camry" and "Camry Hybrid" different vehicles. */
+function variantTokensIn(value: string): string[] {
+  const spaced = ` ${value.toLowerCase().replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim()} `;
+  const found: string[] = [];
+  if (spaced.includes(" plug in ") || spaced.includes(" plugin ") || spaced.includes(" phev ")) found.push("plugin");
+  if (spaced.includes(" hybrid ")) found.push("hybrid");
+  if (spaced.includes(" prime ")) found.push("prime");
+  return found;
+}
+
+function stripVariants(value: string): string {
+  let rest = ` ${value.toLowerCase().replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim()} `;
+  for (const token of ["plug in", "plugin", "phev", "hybrid", "prime"]) {
+    rest = rest.split(` ${token} `).join(" ");
+  }
+  return rest.trim();
+}
+
+function modelCore(value: string): string {
+  return lettersOnly(stripTrimTokens(stripVariants(value)));
+}
+
 function dollars(amount: number): string {
   const rounded = Math.round(amount);
   return `$${rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
 }
 
 export function withQuoteIdentity(check: VinCheck, identity: QuoteVehicleIdentity): VinCheck {
+  if (check.conflictingVins && check.conflictingVins.length > 1) return check;
   if (check.status !== "decoded" || !check.decoded || !check.vin) return check;
-  return checkFromDecoded(
+  const next = checkFromDecoded(
     {
       year: check.decoded.year,
       make: check.decoded.make,
@@ -314,13 +418,14 @@ export function withQuoteIdentity(check: VinCheck, identity: QuoteVehicleIdentit
       trim2: check.decoded.trim2,
       series: check.decoded.series,
       basePrice: check.basePrice?.amount ?? null,
-      errorCode: check.errorText && !check.errorText.startsWith("0 ") ? "1" : "0",
+      errorCode: check.errorCode ?? (check.errorText && !check.errorText.startsWith("0 ") ? "1" : "0"),
       errorText: check.errorText ?? "",
     },
     identity,
     check.provenance,
     check.vin,
   );
+  return { ...next, conflictingVins: check.conflictingVins ?? [] };
 }
 
 function basePriceBlock(amount: number): VinCheck["basePrice"] {
@@ -351,14 +456,21 @@ function checkFromDecoded(
       ? ` NHTSA lists a base price of ${dollars(decoded.basePrice)} for standard equipment and the factory warranty, without optional packages. That is not the MSRP with options and it is not a market value.`
       : "";
   const compared = identity.year != null || !!identity.make?.trim() || !!identity.model?.trim();
+  const partial = decoded.year == null || !decoded.make || !decoded.model;
+  const checkDigitNote = vinCheckDigitIsValid(vin)
+    ? ""
+    : " The check digit in position 9 does not match 49 CFR § 565.15(c), so this is not a confirmed vehicle match.";
+  const partialNote = partial
+    ? " NHTSA did not return a year, make, and model, so this is not a confirmed vehicle match."
+    : "";
   let summary: string;
   if (mismatches.length > 0) {
     const fields = mismatches.map((item) => item.field).join(", ");
-    summary = `The quote says ${quote}, but the VIN decodes to a ${vehicle}. The mismatch is on ${fields}. This is a vehicle identity check from NHTSA, not a market value.${warning}${priceNote}`;
+    summary = `The quote says ${quote}, but the VIN decodes to a ${vehicle}. The mismatch is on ${fields}. This is a vehicle identity check from NHTSA, not a market value.${warning}${partialNote}${checkDigitNote}${priceNote}`;
   } else if (compared) {
-    summary = `The VIN matches the quote (${vehicle}). NHTSA decoded this VIN. This is a vehicle identity check, not a market value.${warning}${priceNote}`;
+    summary = `The VIN matches the quote (${vehicle}). NHTSA decoded this VIN. This is a vehicle identity check, not a market value.${warning}${partialNote}${checkDigitNote}${priceNote}`;
   } else {
-    summary = `NHTSA decodes this VIN as ${vehicle}. The quote did not name a year, make, and model to compare. This is not a market value.${warning}${priceNote}`;
+    summary = `NHTSA decodes this VIN as ${vehicle}. The quote did not name a year, make, and model to compare. This is not a market value.${warning}${partialNote}${checkDigitNote}${priceNote}`;
   }
   return {
     status: "decoded",
@@ -376,6 +488,8 @@ function checkFromDecoded(
     mismatches,
     basePrice: decoded.basePrice != null ? basePriceBlock(decoded.basePrice) : null,
     errorText: decoded.errorText || null,
+    errorCode: decoded.errorCode || null,
+    conflictingVins: [],
     summary,
   };
 }
@@ -431,6 +545,17 @@ export async function checkVin(input: {
   timeoutMs?: number;
 }): Promise<VinCheck> {
   const located = findVin(input.explicitVin, input.dealerText);
+  if (located.conflictingVins.length > 1) {
+    return {
+      ...emptyCheck(
+        "failed",
+        `The quote contains more than one VIN (${located.conflictingVins.join(", ")}). They are not the same, so none of them is a confirmed vehicle match.`,
+        located.provenance,
+        null,
+      ),
+      conflictingVins: located.conflictingVins,
+    };
+  }
   if (!located.vin) {
     return emptyCheck(
       "not_provided",
@@ -521,4 +646,80 @@ export async function checkVin(input: {
   } finally {
     clearTimeout(timer);
   }
+}
+
+/**
+ * GO may rely on a VIN only when NHTSA returned a clean, complete decode
+ * that affirmatively matches the quote. An empty mismatch list is not enough.
+ */
+export function vinPositivelyAgrees(
+  check: {
+    status: VinCheck["status"];
+    vin: string | null;
+    decoded?: VinCheck["decoded"];
+    errorText?: string | null;
+    errorCode?: string | null;
+    conflictingVins?: string[];
+  },
+  identity: QuoteVehicleIdentity,
+): { affirmative: boolean; reason: string } {
+  if (check.conflictingVins && check.conflictingVins.length > 1) {
+    return {
+      affirmative: false,
+      reason: `The quote contains more than one VIN (${check.conflictingVins.join(", ")}). They are not the same, so none of them is a confirmed vehicle match.`,
+    };
+  }
+  if (check.status !== "decoded" || !check.vin) {
+    return {
+      affirmative: false,
+      reason: "This VIN was not confirmed by a completed NHTSA decode, so it cannot approve the quote.",
+    };
+  }
+  if (!vinCheckDigitIsValid(check.vin)) {
+    return {
+      affirmative: false,
+      reason: `The VIN ${check.vin} fails the check digit in position 9 under 49 CFR § 565.15(c). A failed check digit is not a confirmed vehicle match.`,
+    };
+  }
+  if (!nhtsaDecodeIsClean(check.errorCode, check.errorText)) {
+    const detail = check.errorText?.trim() ? ` NHTSA reported: ${check.errorText.trim()}.` : "";
+    return {
+      affirmative: false,
+      reason: `NHTSA did not report a clean decode for this VIN.${detail} An error code or an incomplete NHTSA result is not a confirmed vehicle match.`,
+    };
+  }
+  if (check.decoded?.year == null || !check.decoded.make || !check.decoded.model) {
+    return {
+      affirmative: false,
+      reason: "NHTSA did not return a year, make, and model for this VIN. A partial decode is not a confirmed vehicle match.",
+    };
+  }
+  if (identity.year == null || !identity.make?.trim() || !identity.model?.trim()) {
+    return {
+      affirmative: false,
+      reason: "The quote does not name a year, make, and model to compare with the VIN, so the decode is not a confirmed match.",
+    };
+  }
+  const mismatches = compareDecodedVin(
+    {
+      year: check.decoded.year,
+      make: check.decoded.make,
+      model: check.decoded.model,
+      trim: check.decoded.trim,
+      trim2: check.decoded.trim2,
+      series: check.decoded.series,
+      basePrice: null,
+      errorCode: check.errorCode ?? "",
+      errorText: check.errorText ?? "",
+    },
+    identity,
+  );
+  if (mismatches.length > 0) {
+    const fields = mismatches.map((item) => item.field).join(", ");
+    return {
+      affirmative: false,
+      reason: `The VIN does not affirmatively match the quote on ${fields}. A partial, ambiguous, or conflicting vehicle name is not a confirmed match.`,
+    };
+  }
+  return { affirmative: true, reason: "" };
 }

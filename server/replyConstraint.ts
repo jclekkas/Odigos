@@ -61,6 +61,8 @@ export function buildConstrainedReply(facts: ReplyFacts): string {
     if (facts.docFee?.classification === "potentially_noncompliant") {
       parts.push(`${facts.docFee.summary} I am not treating that documentation charge as confirmed.`);
     }
+  } else if (facts.docFee?.feeNameAmbiguity) {
+    parts.push(`${facts.docFee.feeNameAmbiguity} I am not approving the vehicle price.`);
   } else if (facts.docFee?.classification === "potentially_noncompliant") {
     const ask = conditionalDocFeeAsk(facts.docFee);
     parts.push(`${facts.docFee.summary} ${ask} I am not approving the vehicle price.`);

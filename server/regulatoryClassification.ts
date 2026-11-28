@@ -1,4 +1,5 @@
-import { activeThresholds, type StatutoryThreshold } from "./statutoryThresholds.js";
+import { activeThresholds, utcDateOnly, type StatutoryThreshold } from "./statutoryThresholds.js";
+import { thresholdDateLine } from "../shared/docFeeSurfaceCopy.js";
 
 /**
  * Doc-fee classification.
@@ -57,6 +58,11 @@ export interface DocFeeAssessment {
   effectiveDate: string;
   lastVerificationDate: string;
   summary: string;
+  /** Calendar day used for a date-based fee limit, when one was chosen. */
+  evaluatedAsOf?: string;
+  evaluatedAsOfSource?: "quote" | "analysis" | "conflict";
+  /** Set when a second, differently named charge might be the same fee. */
+  feeNameAmbiguity?: string | null;
 }
 
 /** Quote facts a conditional ceiling can use. Missing facts are not guessed. */
@@ -72,6 +78,10 @@ export interface DocFeeQuoteContext {
   dealerText?: string | null;
   /** Quote or analysis date. Dated ceilings are chosen against this day. */
   asOf?: string | Date | null;
+  /** Where `asOf` came from. Omitted when the caller did not label it. */
+  asOfSource?: "quote" | "analysis" | "conflict" | null;
+  /** The disagreeing quote dates, when `asOfSource` is conflict. */
+  asOfConflictDates?: string[] | null;
 }
 
 const CA_SOURCE =
@@ -166,7 +176,9 @@ function isSeparateGovernmentFee(name: string, stateAbbreviation?: string | null
  *
  * Vehicle Code § 4456.5(a)(1) and Civil Code § 2982(a)(1)(B) describe one
  * document processing charge. An exact documentation alias is that charge.
- * A broader administrative alias is not added on top of it. When no exact
+ * A broader administrative alias is not added into that amount. When both
+ * names are present, the classifier flags the second name as ambiguous
+ * instead of treating it as part of the fee or as exempt. When no exact
  * line is present, the broader alias is the amount that is checked.
  *
  * The same printed line extracted twice counts once. Two printed lines with
@@ -178,15 +190,15 @@ function isSeparateGovernmentFee(name: string, stateAbbreviation?: string | null
  * electronic transfer fee are not included. A separate government title,
  * registration, or tax line is not included.
  */
-export function detectDocFeeAmount(
+function collectDocFeeLines(
   fees: FeeLine[],
   stateAbbreviation?: string | null,
   dealerText?: string | null,
-): number | null {
+): { exact: FeeLine[]; broad: FeeLine[] } {
   const printed = dealerText ? printedDocFeeLines(dealerText) : [];
   const source = printed.length > 0 ? printed : fees;
-  const exact: number[] = [];
-  const broad: number[] = [];
+  const exact: FeeLine[] = [];
+  const broad: FeeLine[] = [];
   const seen = new Set<string>();
   for (const fee of source) {
     if (fee.amount == null || !Number.isFinite(fee.amount) || fee.amount < 0) continue;
@@ -201,12 +213,21 @@ export function detectDocFeeAmount(
       : `${bucket}|${normalizeFeeIdentity(name)}|${fee.amount}|${fee.sourceLine}|${fee.sourceOffset ?? 0}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    if (bucket === "exact") exact.push(fee.amount);
-    else broad.push(fee.amount);
+    if (bucket === "exact") exact.push(fee);
+    else broad.push(fee);
   }
+  return { exact, broad };
+}
+
+export function detectDocFeeAmount(
+  fees: FeeLine[],
+  stateAbbreviation?: string | null,
+  dealerText?: string | null,
+): number | null {
+  const { exact, broad } = collectDocFeeLines(fees, stateAbbreviation, dealerText);
   const candidates = exact.length > 0 ? exact : broad;
   if (candidates.length === 0) return null;
-  return roundMoney(candidates.reduce((sum, amount) => sum + amount, 0));
+  return roundMoney(candidates.reduce((sum, fee) => sum + (fee.amount ?? 0), 0));
 }
 
 function printedDocFeeLines(dealerText: string): FeeLine[] {
@@ -257,7 +278,7 @@ function capIsVerified(state: RegulatoryStateInput): boolean {
   return state.docFeeCap === true && state.docFeeCapAmount != null;
 }
 
-export function classifyDocFee(
+function classifyDocFeeCore(
   fees: FeeLine[],
   state: RegulatoryStateInput | null | undefined,
   privateIndustryPartner: boolean | null = null,
@@ -392,6 +413,88 @@ export function classifyDocFee(
     lastVerificationDate: "needs_source",
     summary: `The $${charged} documentation fee is at or under the verified ${jurisdiction} ceiling of $${state.docFeeCapAmount}.`,
   };
+}
+
+function lineList(lines: FeeLine[]): string {
+  return lines.map((fee) => `${fee.name} (${moneyLabel(fee.amount ?? 0)})`).join(", ");
+}
+
+function ambiguousFeeAsk(exact: FeeLine[], broad: FeeLine[]): string {
+  const broadNames = broad.map((fee) => fee.name).join(" and ");
+  return `The quote lists ${lineList(exact)} and ${lineList(broad)}. These are different names, so this audit does not treat the second charge as part of the documentation fee and does not treat it as exempt. Ask the dealer, in writing, whether ${broadNames} is included in the documentation fee or is a separate charge.`;
+}
+
+function exceedsEveryDatedDollarCap(state: RegulatoryStateInput, charged: number): boolean {
+  const amounts = (state.statutoryThresholds ?? [])
+    .map((threshold) => threshold.amount)
+    .filter((amount): amount is number => amount != null && amount > 0);
+  if (amounts.length === 0) return false;
+  return amounts.every((amount) => exceeds(charged, amount));
+}
+
+function finishDocFeeAssessment(
+  assessment: DocFeeAssessment,
+  fees: FeeLine[],
+  state: RegulatoryStateInput | null | undefined,
+  quote: DocFeeQuoteContext | null,
+): DocFeeAssessment {
+  const lines = collectDocFeeLines(fees, state?.abbreviation, quote?.dealerText);
+  const mixed = lines.exact.length > 0 && lines.broad.length > 0;
+  let next = assessment;
+  if (mixed && next.classification === "illegal") {
+    const note = `A differently named charge is also on the quote: ${lineList(lines.broad)}. It was not added into the documentation fee, and it was not treated as exempt.`;
+    next = { ...next, summary: `${next.summary} ${note}` };
+  } else if (mixed) {
+    const ask = ambiguousFeeAsk(lines.exact, lines.broad);
+    next = {
+      ...next,
+      classification: "potentially_noncompliant",
+      chargedAmount: null,
+      exceedsStoredCap: false,
+      summary: ask,
+      feeNameAmbiguity: ask,
+    };
+  }
+
+  const dated = (state?.statutoryThresholds?.length ?? 0) > 0;
+  if (quote?.asOfSource === "conflict" && dated && next.chargedAmount != null) {
+    const overEveryCap = exceedsEveryDatedDollarCap(state ?? {}, next.chargedAmount);
+    if (!(overEveryCap && next.classification === "illegal")) {
+      const listed = (quote.asOfConflictDates ?? []).join(" and ");
+      const summary = `The quote states more than one transaction date${listed ? ` (${listed})` : ""}. No single date was used to choose a date-based fee limit, so this charge is not treated as within a cap or over a cap. Ask the dealer which date applies.`;
+      next = {
+        ...needsSource(summary, next.jurisdiction, next.chargedAmount),
+        feeNameAmbiguity: next.feeNameAmbiguity ?? null,
+        summary: next.feeNameAmbiguity ? `${next.feeNameAmbiguity} ${summary}` : summary,
+      };
+    }
+  }
+
+  if (!quote?.asOfSource || quote.asOf == null) return next;
+  const day = utcDateOnly(quote.asOf);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return next;
+  const line = thresholdDateLine({ evaluatedAsOf: day, evaluatedAsOfSource: quote.asOfSource });
+  return {
+    ...next,
+    evaluatedAsOf: day,
+    evaluatedAsOfSource: quote.asOfSource,
+    summary: line && !next.summary.includes(line) ? `${next.summary} ${line}` : next.summary,
+  };
+}
+
+export function classifyDocFee(
+  fees: FeeLine[],
+  state: RegulatoryStateInput | null | undefined,
+  privateIndustryPartner: boolean | null = null,
+  electronicIntegrator: boolean | null = null,
+  quote: DocFeeQuoteContext | null = null,
+): DocFeeAssessment {
+  return finishDocFeeAssessment(
+    classifyDocFeeCore(fees, state, privateIndustryPartner, electronicIntegrator, quote),
+    fees,
+    state,
+    quote,
+  );
 }
 
 function classifyCalifornia(charged: number | null, partner: boolean | null): DocFeeAssessment {

@@ -308,7 +308,7 @@ describe("aggregated documentation charges", () => {
     expect(result.classification).toBe("permissible");
   });
 
-  it("does not add a separate broad dealer fee on top of an itemized documentation fee", () => {
+  it("does not treat a dealer fee next to an itemized documentation fee as the same charge or as exempt", () => {
     const result = classifyDocFee(
       [
         { name: "doc fee", amount: 50 },
@@ -317,8 +317,10 @@ describe("aggregated documentation charges", () => {
       ca,
       false,
     );
-    expect(result.chargedAmount).toBe(50);
-    expect(result.classification).toBe("permissible");
+    expect(result.classification).not.toBe("permissible");
+    expect(result.classification).not.toBe("illegal");
+    expect(result.feeNameAmbiguity).toMatch(/dealer fee/i);
+    expect(result.feeNameAmbiguity).toMatch(/ask the dealer/i);
   });
 });
 
@@ -470,21 +472,21 @@ describe("Pennsylvania, Rhode Island, Minnesota, and Ohio conditional rules", ()
   });
 });
 
-describe("exact documentation aliases take precedence over administrative aliases", () => {
+describe("a documentation fee plus a differently named administrative charge", () => {
   const ca = getStateFeeData("CA")!;
 
-  it("measures the $60 doc fee and does not add a $60 administrative processing charge for the same service", () => {
+  it("flags a documentation fee plus a differently named administrative charge as ambiguous", () => {
     const fees = [
       { name: "doc fee", amount: 60 },
       { name: "administrative processing charge", amount: 60 },
     ];
     const result = classifyDocFee(fees, ca, false);
-    // Vehicle Code § 4456.5(a)(1) authorizes one document processing charge.
-    // Civil Code § 2982(a)(1)(B) itemizes that charge on its own line.
-    // The exact "doc fee" line is the charge compared with the ceiling.
-    // The broader administrative alias names the same service and is not added again.
-    expect(result.chargedAmount).toBe(60);
-    expect(result.classification).toBe("permissible");
+    // The exact line is not added to the administrative line, and the
+    // administrative line is not dropped. The two names are ambiguous.
+    expect(result.classification).not.toBe("permissible");
+    expect(result.classification).not.toBe("illegal");
+    expect(result.feeNameAmbiguity).toMatch(/administrative processing charge/i);
+    expect(result.feeNameAmbiguity).toMatch(/ask the dealer/i);
     expect(result.summary.toLowerCase()).not.toContain("illegal");
 
     const onlyBroad = classifyDocFee([{ name: "administrative processing charge", amount: 120 }], ca, true);

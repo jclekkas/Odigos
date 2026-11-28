@@ -206,9 +206,19 @@ describe("vehicle identification required for GO", () => {
     const result = run(blank({}), {
       vinCheck: {
         status: "decoded",
-        vin: "4T1G11AK5NU123456",
+        vin: "1G4AH59H45G118341",
         mismatches: [],
         summary: "The VIN matches the quote.",
+        decoded: {
+          year: 2025,
+          make: "TOYOTA",
+          model: "Camry",
+          trim: "LE",
+          trim2: null,
+          series: null,
+        },
+        errorCode: "0",
+        errorText: "0 - VIN decoded clean. Check Digit (9th position) is correct",
       },
     });
     expect(result.goNoGo).toBe("GO");
