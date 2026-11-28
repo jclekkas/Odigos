@@ -1,9 +1,10 @@
 import type { AnalysisDimensions, AnalysisResponse, DetectedFields, Fee, GoNoGo } from "../shared/schema.js";
 import type { LeaseMathResult } from "./leaseMathEngine.js";
-import { computePurchase, type PurchaseMath } from "./quoteMath.js";
+import { amortizingPayment, computePurchase, type PurchaseMath } from "./quoteMath.js";
 import { resolvePurchaseLines } from "./governmentCharges.js";
+import { disclosedAmountFinanced } from "./financingDisclosure.js";
+import { resolveTrustedBenchmark } from "./valuationAdapters.js";
 import {
-  acceptIndependentBenchmark,
   compareFactoryMsrp,
   formatUsd,
   toMarketValuation,
@@ -42,8 +43,18 @@ export interface RuleEngineOptions {
   electronicTransaction?: boolean | null;
   /** Quote or analysis date used to choose a dated statutory ceiling. */
   asOf?: string | Date | null;
-  /** A caller-supplied benchmark. Ignored when it merely copies the submitted price. */
+  /**
+   * Ignored as evidence. A request may still carry a benchmark-shaped object.
+   * Only a trusted server-side valuation adapter can verify market value.
+   */
   marketBenchmark?: MarketBenchmark | null;
+  /**
+   * Server-side freshness window in milliseconds. Not read from the request.
+   * Omitted calls use ODIGOS_VALUATION_MAX_AGE_HOURS or the 72-hour default.
+   */
+  valuationMaxAgeMs?: number;
+  /** Clock for freshness checks. Omitted calls use the current time. */
+  valuationNow?: Date;
   condition?: "new" | "used" | "unknown" | null;
   mileage?: number | null;
   alternateSalePrices?: number[];
@@ -56,7 +67,7 @@ export interface RuleEngineOptions {
   dealerText?: string | null;
   /**
    * Monroney MSRP the buyer typed. Not the MSRP extracted from the dealer quote.
-   * A licensed valuation can still be passed as marketBenchmark later.
+   * It never verifies market value.
    */
   buyerWindowStickerMsrp?: number | null;
   /**
@@ -325,6 +336,7 @@ function finishVerdict(
     marketValuation: MarketValuation;
     msrpComparison: MsrpComparison;
     notes?: string[];
+    financingAsk?: string | null;
   },
 ): RuleEngineResult {
   const askForVehicleEvidence = !extras.marketVerified || draft.goNoGo !== "GO";
@@ -337,6 +349,7 @@ function finishVerdict(
     askForVehicleEvidence,
     benchmarkKind: extras.benchmark.kind ?? null,
     msrpMarkup: extras.msrpComparison.relation === "above",
+    financingAsk: extras.financingAsk,
   });
   const summary = appendContextNotes(draft.summary, extras.notes ?? []);
   const reasoning = [
@@ -367,6 +380,9 @@ function finishVerdict(
 
 const FINANCING_TERMS_ASK =
   "A monthly payment or financing language is on this quote, but the financing payment could not be calculated. That unavailable calculation was not treated as a reconciled payment. Please provide the APR, the term in months, and the amount financed.";
+
+const FINANCING_MISMATCH_ASK =
+  "The disclosed amount financed does not match the computed principal (price, fees, tax, down payment, and trade) or the stated monthly payment at the stated APR and term. Please correct the APR, the term in months, and the amount financed.";
 
 const FINANCING_LANGUAGE = [
   /\bmonthly\s+payment\b/i,
@@ -451,18 +467,43 @@ function hasFinancingIntent(
   return quoteShowsFinancingLanguage(dealerText);
 }
 
-function financingPaymentReconciled(
+interface FinancingAssessment {
+  reconciled: boolean;
+  /** Set when APR, term, or the disclosed amount financed is missing. */
+  missingTerms: boolean;
+  /** Dealer-reply sentence when financing blocks approval. */
+  ask: string | null;
+  disclosed: number | null;
+}
+
+function assessFinancing(
   fields: DetectedFields,
   worksheet: PurchaseMath | null,
   financingIntent: boolean,
   paymentGap: number,
-): boolean {
-  if (!financingIntent) return true;
-  if (!worksheet?.ok) return false;
-  if (fields.apr == null || fields.termMonths == null) return false;
-  if (worksheet.monthlyPayment == null || worksheet.amountFinanced == null) return false;
-  if (fields.monthlyPayment == null) return false;
-  return paymentGap < 0.01;
+  dealerText: string | null | undefined,
+): FinancingAssessment {
+  if (!financingIntent) return { reconciled: true, missingTerms: false, ask: null, disclosed: null };
+  const disclosed = disclosedAmountFinanced(dealerText);
+  const missingTerms =
+    fields.apr == null ||
+    fields.termMonths == null ||
+    fields.monthlyPayment == null ||
+    disclosed == null ||
+    !worksheet?.ok ||
+    worksheet.monthlyPayment == null ||
+    worksheet.amountFinanced == null;
+  if (missingTerms) {
+    return { reconciled: false, missingTerms: true, ask: FINANCING_TERMS_ASK, disclosed };
+  }
+  const principalGap = Math.abs(disclosed! - worksheet!.amountFinanced!);
+  const paymentFromDisclosed = amortizingPayment(Math.max(0, disclosed!), fields.apr!, fields.termMonths!);
+  const disclosedPaymentGap =
+    paymentFromDisclosed == null ? Number.POSITIVE_INFINITY : Math.abs(fields.monthlyPayment! - paymentFromDisclosed);
+  if (principalGap >= 0.01 || disclosedPaymentGap >= 0.01 || paymentGap >= 0.01) {
+    return { reconciled: false, missingTerms: false, ask: FINANCING_MISMATCH_ASK, disclosed };
+  }
+  return { reconciled: true, missingTerms: false, ask: null, disclosed };
 }
 
 function yearMakeModelPresent(fields: DetectedFields): boolean {
@@ -530,13 +571,19 @@ export function applyRuleEngine(
     condition: options?.condition === "new" || options?.condition === "used" ? options.condition : options?.condition ?? null,
     mileage: options?.mileage,
   };
-  const benchmark: MarketBenchmark = acceptIndependentBenchmark(
-    options?.marketBenchmark,
-    quoteVehicle,
-    fields.salePrice,
-    fields.outTheDoorPrice,
-  );
-  const marketValuation = toMarketValuation(benchmark, quoteVehicle);
+  const valuationClock = {
+    nowMs: options?.valuationNow?.getTime(),
+    maxAgeMs: options?.valuationMaxAgeMs,
+  };
+  const benchmark: MarketBenchmark = resolveTrustedBenchmark({
+    quote: quoteVehicle,
+    submittedSalePrice: fields.salePrice,
+    submittedOutTheDoor: fields.outTheDoorPrice,
+    callerSupplied: options?.marketBenchmark,
+    now: options?.valuationNow,
+    maxAgeMs: options?.valuationMaxAgeMs,
+  });
+  const marketValuation = toMarketValuation(benchmark, quoteVehicle, valuationClock);
   const marketVerified = marketValuation.status === "verified";
   const msrpComparison = compareFactoryMsrp({
     submittedSalePrice: fields.salePrice,
@@ -614,7 +661,17 @@ export function applyRuleEngine(
   const mathMismatch = (worksheet?.ok && otdGap >= 0.01) || paymentGap >= 0.01;
   const govFeesStated = lines.sawTitle || lines.sawRegistration || lines.sawGov;
   const financingIntent = hasFinancingIntent(fields, purchaseType, options?.dealerText, leaseQuote);
-  const financingReconciled = financingPaymentReconciled(fields, worksheet, financingIntent, paymentGap);
+  const financing = assessFinancing(fields, worksheet, financingIntent, paymentGap, options?.dealerText);
+  const financingReconciled = financing.reconciled;
+  if (financing.disclosed != null && worksheet?.ok && worksheet.amountFinanced != null) {
+    const disclosedGap = Math.round((financing.disclosed - worksheet.amountFinanced) * 100) / 100;
+    derivation.push(`Disclosed amount financed $${financing.disclosed.toFixed(2)}`);
+    if (Math.abs(disclosedGap) >= 0.01) {
+      derivation.push(`Amount financed difference (disclosed minus computed) $${disclosedGap.toFixed(2)}`);
+    }
+  }
+  const valuationReference = marketVerified ? benchmark.provenance?.reference?.trim() || "" : "";
+  const referenceNote = valuationReference ? ` Source: ${valuationReference}.` : "";
   const priceAboveBenchmark =
     marketVerified &&
     fields.salePrice != null &&
@@ -711,8 +768,8 @@ export function applyRuleEngine(
           ? `${msrpComparison.summary} Independent market value is not verified.`
           : "Market value not verified. Factory MSRP comparison and independent market valuation are different checks."
         : priceAboveBenchmark
-          ? `Selling price $${fields.salePrice} is above the independent benchmark of $${benchmark.low}–$${benchmark.high} (${benchmark.source ?? "independent source"}).`
-          : `Selling price is compared with an independent benchmark of $${benchmark.low}–$${benchmark.high}. The submitted price did not set that range.`,
+          ? `Selling price $${fields.salePrice} is above the independent benchmark of $${benchmark.low}–$${benchmark.high} (${benchmark.source ?? "independent source"}).${referenceNote}`
+          : `Selling price is compared with an independent benchmark of $${benchmark.low}–$${benchmark.high}.${referenceNote} The submitted price did not set that range.`,
     },
     negotiationOpportunities: {
       status: negotiation[0].startsWith("No dealer charge") ? "not_checked" : "concern",
@@ -738,6 +795,7 @@ export function applyRuleEngine(
     marketValuation,
     msrpComparison,
     notes,
+    financingAsk: financing.ask,
   };
 
   const illegal = docFee?.classification === "illegal";
@@ -868,7 +926,7 @@ export function applyRuleEngine(
   if (priceAboveBenchmark) {
     return noGo(
       "NO-GO — PRICE ABOVE INDEPENDENT BENCHMARK",
-      `The selling price is above the independent benchmark of $${benchmark.low}–$${benchmark.high}`,
+      `The selling price is above the independent benchmark of $${benchmark.low}–$${benchmark.high}.${referenceNote}`
     );
   }
   if (docFee?.classification === "potentially_noncompliant") {
@@ -931,7 +989,12 @@ export function applyRuleEngine(
   }
 
   if (financingIntent && !financingReconciled) {
-    return insufficient("INSUFFICIENT INFORMATION — FINANCING TERMS NEEDED", FINANCING_TERMS_ASK);
+    return insufficient(
+      financing.missingTerms
+        ? "INSUFFICIENT INFORMATION — FINANCING TERMS NEEDED"
+        : "INSUFFICIENT INFORMATION — FINANCING DOES NOT RECONCILE",
+      financing.ask ?? FINANCING_TERMS_ASK,
+    );
   }
 
   const identity = vehicleIdentityForGo(fields, options?.vinCheck);
@@ -964,7 +1027,7 @@ export function applyRuleEngine(
         verdictLabel: "GO — PRICE INSIDE INDEPENDENT BENCHMARK",
         goNoGo: "GO",
         primaryIssue: "Price is inside an independent market valuation and the applicable math, disclosure, and fee checks are complete",
-        summary: `The selling price is inside the independent market valuation of $${benchmark.low}–$${benchmark.high}. ${reconciliation.summary} Factory MSRP comparison is a separate check and was not used as this valuation.`,
+        summary: `The selling price is inside the independent market valuation of $${benchmark.low}–$${benchmark.high}.${referenceNote} ${reconciliation.summary} Factory MSRP comparison is a separate check and was not used as this valuation.`,
       },
       context,
     );
@@ -1051,9 +1114,9 @@ export function applyRuleEngine(
     }
     if (financingIntent && !financingReconciled) {
       return {
-        completed: false,
+        completed: !financing.missingTerms,
         successful: false,
-        summary: FINANCING_TERMS_ASK,
+        summary: financing.ask ?? FINANCING_TERMS_ASK,
       };
     }
     const otdOk = otdGap < 0.01;
@@ -1096,7 +1159,11 @@ export function applyRuleEngine(
         verdictLabel,
         goNoGo: "INSUFFICIENT-INFORMATION",
         primaryIssue,
-        summary: marketVerified ? primaryIssue : `${primaryIssue} Market value not verified.`,
+        summary: (() => {
+          const financingNote =
+            financing.ask && !primaryIssue.toLowerCase().includes("amount financed") ? ` ${financing.ask}` : "";
+          return marketVerified ? `${primaryIssue}${financingNote}` : `${primaryIssue}${financingNote} Market value not verified.`;
+        })(),
       },
       context,
     );

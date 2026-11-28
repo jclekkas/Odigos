@@ -5,6 +5,7 @@ import { applyRuleEngine, regulatoryGoDecision } from "../../server/ruleEngine.j
 import { getStateFeeData } from "../../server/stateFeeLookup.js";
 import { amortizingPayment } from "../../server/quoteMath.js";
 import { benchmarkQualifiesAsVerified } from "../../server/marketValuation.js";
+import { createTestTrustedValuationAdapter, withValuationAdapters } from "../../server/valuationAdapters.js";
 import { resolveConditionalFeeFacts } from "../../server/conditionalFeeFacts.js";
 import { classifyDocFee } from "../../server/regulatoryClassification.js";
 import type { AnalysisResponse, DetectedFields } from "../../shared/schema.js";
@@ -51,15 +52,17 @@ function run(
   fields: DetectedFields,
   options: (NonNullable<Parameters<typeof applyRuleEngine>[5]> & { purchaseType?: string }) = {},
 ) {
+  const forgedBenchmark = Object.prototype.hasOwnProperty.call(options, "marketBenchmark");
   const { purchaseType, ...rest } = options;
-  return applyRuleEngine(llm, fields, null, purchaseType ?? "cash", null, {
+  const execute = () => applyRuleEngine(llm, fields, null, purchaseType ?? "cash", null, {
     stateData: ca,
-    marketBenchmark: auditedCamryBenchmark(),
     condition: "new",
     mileage: 12,
     trim: "LE",
     ...rest,
   });
+  if (forgedBenchmark) return execute();
+  return withValuationAdapters([createTestTrustedValuationAdapter()], execute);
 }
 
 describe("valuation provenance required before GO", () => {
@@ -154,11 +157,14 @@ describe("financing intent without a complete loan", () => {
     expect(result.goNoGo).toBe("GO");
   });
 
-  it("approves when the stated payment matches the APR, term, and amount financed", () => {
+  it("approves when the stated payment matches the APR, term, and disclosed amount financed", () => {
     const amountFinanced = 28000 + 70 + 1000 + 400;
     const payment = amortizingPayment(amountFinanced, 4.9, 60);
     expect(payment).not.toBeNull();
-    const result = run(blank({ apr: 4.9, termMonths: 60, monthlyPayment: payment }), { purchaseType: "finance" });
+    const result = run(blank({ apr: 4.9, termMonths: 60, monthlyPayment: payment }), {
+      purchaseType: "finance",
+      dealerText: `Amount financed: $${amountFinanced.toFixed(2)}`,
+    });
     expect(result.goNoGo).toBe("GO");
     expect(result.summary).toMatch(/financed payment reconcile/i);
   });
