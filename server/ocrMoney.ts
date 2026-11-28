@@ -27,7 +27,7 @@ const MARKED_SOURCE =
   String.raw`(?:(?:USD|US\$)\s*(${NUMBER})|\$\s*(${NUMBER})|(${NUMBER})\s*(?:USD|US\$))`;
 
 const BARE_LABEL =
-  /(?:out[\s-]*the[\s-]*door|o\.?t\.?d\.?|fee|fees|charge|charges|price|cost|payment|payoff|rebate|rebates|allowance|msrp|tax|title|registration|license|tag|plate|plates|handling|deposit|down|credit)/i;
+  /(?:out[\s-]*the[\s-]*door|o\.?t\.?d\.?|fee|fees|charge|charges|price|cost|payment|payoff|rebate|rebates|allowance|msrp|tax|title|registration|license|tag|plate|plates|handling|deposit|down|credit|amount\s+financed|principal\s+balance)/i;
 
 const CREDIT_WORD =
   /\bcredit\b(?!\s+(?:score|card|report|application|check|approval)\b)/i;
@@ -279,6 +279,26 @@ function parseTokenAmount(token: string): number | null {
   const parts = splitNumber(token);
   if (!parts) return null;
   return amountFromParts(parts.whole, parts.cents);
+}
+
+/**
+ * One money figure from a field or a short string.
+ * Uses the same token rules as `scanMoney`: `$`, `USD`, a single decimal
+ * digit, and OCR repairs. A percent with no currency marker is not money.
+ * Returns null when the string contains more than one amount.
+ */
+export function parseLooseMoney(raw: string): number | null {
+  const prepared = normalizeOcrMoney(raw.trim());
+  if (!prepared) return null;
+  if (/%|percent/i.test(prepared) && !/\$|USD|US\$/i.test(prepared)) return null;
+  const spans = scanMoney(prepared);
+  if (spans.length === 1) return spans[0].amount;
+  if (spans.length > 1) return null;
+  const match = prepared.match(
+    /^(?:(?:USD|US\$)\s*|\$\s*)?(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d{1,2}))?\s*(?:USD|US\$)?$/i,
+  );
+  if (!match) return null;
+  return amountFromParts(match[1], match[2]);
 }
 
 function endOfMinus(text: string, end: number): number {

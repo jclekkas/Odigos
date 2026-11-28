@@ -10,7 +10,7 @@ import Redis from "ioredis";
 import { registerRoutes } from "./routes.js";
 import { serveStatic } from "./static.js";
 import { trackEvent } from "./metrics.js";
-import { enterRequestSeal, isSealedSynthetic, requestBodyIsSynthetic } from "./syntheticGuard.js";
+import { enterRequestSeal, isSealedSynthetic, requestBodyIsSynthetic, syntheticSentryEvent } from "./syntheticGuard.js";
 import { db } from "./db.js";
 import { writeAuditEvent } from "./audit.js";
 import { logger } from "./logger.js";
@@ -50,7 +50,10 @@ if (sentryEnabled) {
     environment: process.env.NODE_ENV || "development",
     integrations: [Sentry.expressIntegration()],
     tracesSampleRate: 0.1,
-    beforeSend: sanitizeEvent,
+    beforeSend(event) {
+      if (syntheticSentryEvent(event) == null) return null;
+      return sanitizeEvent(event);
+    },
   });
 
   process.on("unhandledRejection", (reason) => {

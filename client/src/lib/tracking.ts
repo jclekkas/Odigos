@@ -1,4 +1,5 @@
 import { shouldEmitSubmissionAnalytics } from "@shared/syntheticSubmission";
+import { syntheticTelemetrySuppressed } from "@/lib/syntheticLatch";
 
 type EventType =
   | "page_view"
@@ -40,6 +41,7 @@ export function getSessionId(): string {
 }
 
 export async function track(eventType: EventType, metadata?: TrackingMetadata): Promise<void> {
+  if (syntheticTelemetrySuppressed()) return;
   try {
     await fetch("/api/track", {
       method: "POST",
@@ -111,6 +113,7 @@ export function trackSubmissionEvent(
   eventType: EventType,
   metadata?: TrackingMetadata,
 ): void {
+  if (syntheticTelemetrySuppressed()) return;
   if (!shouldEmitSubmissionAnalytics(submission)) return;
   void track(eventType, metadata);
 }
