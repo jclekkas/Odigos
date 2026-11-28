@@ -2,6 +2,8 @@ import crypto from "node:crypto";
 import type { Request } from "express";
 import { insertAuditLog } from "./storage.js";
 import type { AuditEventType, AuditOutcome } from "./storage.js";
+import { isSecurityAuditEvent } from "../shared/syntheticSubmission.js";
+import { isSealedSynthetic } from "./syntheticGuard.js";
 
 export function sha256Hex(value: string): string {
   return crypto.createHash("sha256").update(value).digest("hex");
@@ -34,6 +36,9 @@ export async function writeAuditEvent(
   outcome: AuditOutcome,
   meta: Record<string, unknown>,
 ) {
+  // Synthetic analysis is not an audit row. Rate-limit breaches still are:
+  // they are the security exception documented in docs/SYNTHETIC_QA.md.
+  if (isSealedSynthetic() && !isSecurityAuditEvent(eventType)) return;
   try {
     const { ipHash, userAgentHash } = hashRequestContext(req);
     await insertAuditLog({

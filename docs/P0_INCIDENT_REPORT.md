@@ -59,7 +59,7 @@ Until a licensed valuation source is configured, `independentMarketBenchmark` re
 
 Unsupported overpayment ranges and "normal" out-the-door ranges from the model are dropped. The screen says "Market value not verified" instead of a dollar range. Dealer replies are rebuilt from the findings. They ask for the VIN, the window sticker, and an equipment or market-adjustment breakdown. They do not endorse a price or request purchase paperwork unless the verdict is GO.
 
-Synthetic submissions (`synthetic: true` or the marker `ODIGOS_SYNTHETIC_QA`) are not written to `dealer_submissions` and are not sent to the warehouse, so they cannot enter listing or stats tables.
+Synthetic submissions (`synthetic: true` or the marker `ODIGOS_SYNTHETIC_QA`) are not written to `dealer_submissions` and are not sent to the warehouse, so they cannot enter listing or stats tables. The same flag also skips analysis audit rows, file and URL processing events, and the other analytics around that submission. Rate-limit abuse logs still record. The flag is fixed when the request arrives. See `docs/SYNTHETIC_QA.md`.
 
 ## Before and after
 

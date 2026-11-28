@@ -296,7 +296,7 @@ describe("POST /api/analyze", () => {
     const res = await request(app)
       .post("/api/analyze")
       .send({
-        dealerText: "OTD $35,000 from our California dealership.",
+        dealerText: "OTD $35,000 from our California dealership. Doc fee: $500.",
         zipCode: "90210",
       });
     expect(res.status).toBe(200);

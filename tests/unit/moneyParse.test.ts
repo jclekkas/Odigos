@@ -71,6 +71,34 @@ describe("raw-text money formats", () => {
     expect(parsed.fees).toEqual([expect.objectContaining({ amount: 85 })]);
   });
 
+  it("reads a bare amount, a single decimal, credits, and a wrapped spreadsheet cell", () => {
+    expect(amounts("Doc fee 85")).toEqual([85]);
+    expect(amounts("Selling price 28000")).toContain(28000);
+    expect(amounts("Balance $450.5")).toEqual([450.5]);
+    expect(amounts("Rebate -$500")).toEqual([-500]);
+    expect(amounts("Rebate ($500)")).toEqual([-500]);
+    expect(amounts("credit 500")).toEqual([-500]);
+    expect(amounts("500-")).toEqual([-500]);
+    expect(amounts("credit score 750")).toEqual([]);
+    expect(amounts("Tax rate: 7.75%")).toEqual([]);
+    const wrapped = "Doc fee\t\"$\n450.5\"";
+    expect(amounts(wrapped)).toEqual([450.5]);
+    const quoted = "\"Selling price\"\t\"$28,000\"";
+    expect(amounts(quoted)).toContain(28000);
+  });
+
+  it("keeps a printed credit and drops a credit the model invented", () => {
+    const text = "Selling price: $28,000\nRebate: ($500)\nDoc fee: $70";
+    const parsed = applyDealerQuoteFacts(
+      fields({ salePrice: 28000, rebates: 9000, apr: 3.9, termMonths: 72 }),
+      parseDealerQuoteFacts(text),
+    );
+    expect(parsed.rebates).toBe(500);
+    expect(parsed.apr).toBeNull();
+    expect(parsed.termMonths).toBeNull();
+    expect(parsed.salePrice).toBe(28000);
+  });
+
   it("still drops an AI amount the quote never states", () => {
     const text = "We can do $399 per month. No other figures on this pencil.";
     const parsed = applyDealerQuoteFacts(

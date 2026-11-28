@@ -17,7 +17,7 @@ import { formatUsd } from "../marketValuation.js";
 import { buildBuyerReported, buyerReportedHasInput, buyerReportedRuleOptions } from "../buyerReportedValuation.js";
 import { checkVin, unavailableVinCheck, withQuoteIdentity } from "../nhtsaVin.js";
 import { FACTORY_STICKER_COMPARISON } from "../../shared/windowSticker.js";
-import { isSyntheticSubmission } from "../syntheticGuard.js";
+import { isSealedSynthetic, withLockedSyntheticAnalysis } from "../syntheticGuard.js";
 import { recordAnalysisEvent } from "../analysisTelemetry.js";
 import { resolveConditionalFeeFacts } from "../conditionalFeeFacts.js";
 import { rankSignals } from "../signalRanker.js";
@@ -40,10 +40,11 @@ import {
   governmentChargeExtractionRules,
 } from "../governmentCharges.js";
 import {
-  applyDealerQuoteFacts,
+  applyDealerQuoteFactsWithProvenance,
   buyerStickerCopiesInflatedMsrp,
   parseDealerQuoteFacts,
 } from "../dealerQuoteText.js";
+import { blockGoWhenInventedFieldsRemain } from "../fieldProvenance.js";
 
 export type AnalyzeInput = z.infer<typeof analysisRequestSchema>;
 
@@ -310,6 +311,12 @@ const AI_ATTEMPT_TIMEOUT_MS = 22_000;
 const AI_TOTAL_BUDGET_MS = 25_000;
 
 export async function runAnalysis(data: AnalyzeInput): Promise<AnalyzeServiceResult> {
+  // The synthetic flag is locked from the request that arrived. Model output
+  // and later stages cannot flip it. See docs/SYNTHETIC_QA.md.
+  return withLockedSyntheticAnalysis(data, () => runAnalysisSealed(data));
+}
+
+async function runAnalysisSealed(data: AnalyzeInput): Promise<AnalyzeServiceResult> {
   logger.info("New submission", { source: "analyze", textLength: data.dealerText?.length ?? 0 });
 
   // Pre-flight: fail fast with an actionable message if the AI service is not
@@ -1037,6 +1044,10 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   delete rawResult.buyerReported;
   delete rawResult.docFeeAssessment;
   delete rawResult.docFeeCapCheck;
+  // The model does not choose whether this run is synthetic, and it does not
+  // choose field provenance. Both are decided from the request and the quote.
+  delete rawResult.synthetic;
+  delete rawResult.fieldProvenance;
 
   // Normalize financialImpactConfidence to lowercase enum (the model
   // occasionally returns HIGH/MEDIUM/LOW from habit).
@@ -1057,7 +1068,9 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   const llmResult = validationResult.data;
   llmResult.detectedFields = enrichDetectedFields(llmResult.detectedFields, data.dealerText);
   const quoteFacts = parseDealerQuoteFacts(data.dealerText);
-  llmResult.detectedFields = applyDealerQuoteFacts(llmResult.detectedFields, quoteFacts);
+  const quoted = applyDealerQuoteFactsWithProvenance(llmResult.detectedFields, quoteFacts);
+  llmResult.detectedFields = quoted.fields;
+  const fieldProvenance = quoted.provenance;
   const requestedSticker = data.factoryWindowStickerMsrp ?? null;
   const buyerWindowStickerMsrp = buyerStickerCopiesInflatedMsrp(requestedSticker, quoteFacts, data.condition)
     ? null
@@ -1179,7 +1192,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
   const buyerHeroNote = buyerReportedHasInput(buyerReported)
     ? " Numbers you typed are buyer-reported and are not a verified market value. They are not estimated savings."
     : "";
-  const finalResult: AnalysisResponse = {
+  let finalResult: AnalysisResponse = {
     ...llmResult,
     dealScore: ruleEngineAdjustments.dealScore,
     confidenceLevel: ruleEngineAdjustments.confidenceLevel,
@@ -1219,6 +1232,8 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     leaseMath: leaseMathResult,
     rankedSignals,
   };
+  finalResult = blockGoWhenInventedFieldsRemain(finalResult, llmResult.detectedFields, fieldProvenance);
+  finalResult.fieldProvenance = fieldProvenance;
 
   logger.info("Analysis successful", { source: "analyze", dealScore: finalResult.dealScore, confidence: finalResult.confidenceLevel });
 
@@ -1228,11 +1243,7 @@ Respond entirely in Spanish. All text fields in your JSON response — including
     sessionId: data.sessionId,
   });
 
-  const synthetic = isSyntheticSubmission({
-    synthetic: data.synthetic,
-    dealerText: data.dealerText,
-    competingQuoteText: data.competingQuoteText,
-  });
+  const synthetic = isSealedSynthetic();
   let listingId: string | null = null;
   if (synthetic) {
     logger.info("Synthetic submission skipped persistence", { source: "analyze" });
