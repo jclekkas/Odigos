@@ -1,5 +1,6 @@
 import posthog from "posthog-js";
 import { shouldEmitSubmissionAnalytics } from "@shared/syntheticSubmission";
+import { syntheticTelemetrySuppressed } from "@/lib/syntheticLatch";
 
 export interface SubmissionAnalyticsInput {
   synthetic?: boolean | null;
@@ -12,6 +13,7 @@ export function captureSubmissionEvent(
   eventName: string,
   properties?: Record<string, unknown>,
 ): void {
+  if (syntheticTelemetrySuppressed()) return;
   if (!shouldEmitSubmissionAnalytics(submission)) return;
   capture(eventName, properties);
 }
@@ -32,6 +34,7 @@ export function initAnalytics(): void {
 }
 
 export function capture(eventName: string, properties?: Record<string, unknown>): void {
+  if (syntheticTelemetrySuppressed()) return;
   if (!initialized) return;
   posthog.capture(eventName, properties);
 }

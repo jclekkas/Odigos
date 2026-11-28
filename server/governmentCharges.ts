@@ -11,7 +11,7 @@
  */
 
 import type { DetectedFields, Fee } from "../shared/schema.js";
-import { prepareQuoteText } from "./ocrMoney.js";
+import { parseLooseMoney, prepareQuoteText, scanMoney } from "./ocrMoney.js";
 import { classifyFeeBucket, roundCents, splitFees, type ExtractedMoney } from "./quoteMath.js";
 
 export type ParsedKind = "tax" | "title" | "registration" | "titleReg" | "gov";
@@ -56,6 +56,8 @@ const LABEL_PATTERNS: { kind: ParsedKind; re: RegExp }[] = [
   { kind: "title", re: /\btitle\b/gi },
 ];
 
+const DOLLAR_MARKER = /\$|USD|US\$/i;
+
 const OTHER_LABELS: RegExp[] = [
   /\bout[\s-]*the[\s-]*door(?:\s+price)?\b/gi,
   /\bo\.?t\.?d\.?(?:\s+price)?\b/gi,
@@ -76,8 +78,6 @@ const OTHER_LABELS: RegExp[] = [
   /\bextended\s+warranty\b/gi,
   /\bdue\s+at\s+signing\b/gi,
 ];
-
-const DOLLAR = /\$\s*(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d{1,2}))?(?!\d)(?!\.\d)/g;
 
 const BRIDGE =
   /^[\s:=–\-]*(?:of\s+)?(?:rate[\s:=–\-]*)?(?:\(\s*(?:estimated|est\.?|approx\.?)?\s*\d+(?:\.\d+)?\s*%\s*\)[\s:=–\-]*)?$/i;
@@ -121,14 +121,9 @@ export function coerceMoney(value: unknown): number | null | undefined {
     return roundCents(value);
   }
   if (typeof value !== "string") return null;
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-  if (/%|percent/i.test(trimmed) && !/\$/.test(trimmed)) return null;
-  const match = trimmed.match(/^\$?\s*(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d{1,2}))?$/);
-  if (!match) return null;
-  const dollars = Number(match[1].replace(/,/g, ""));
-  const cents = match[2] ? (match[2].length === 1 ? Number(match[2]) / 10 : Number(match[2]) / 100) : 0;
-  return roundCents(dollars + cents);
+  const parsed = parseLooseMoney(value);
+  if (parsed == null || parsed < 0) return null;
+  return parsed;
 }
 
 function readFeeArray(value: unknown): Fee[] {
@@ -258,20 +253,27 @@ function collectSpans(line: string, patterns: { kind: ParsedKind; re: RegExp }[]
   return kept;
 }
 
+function currencyMarked(line: string, span: DollarSpan): boolean {
+  return DOLLAR_MARKER.test(line.slice(Math.max(0, span.start - 8), span.end + 8));
+}
+
+/**
+ * A bare fractional tax under $100 with no currency marker is a rate
+ * written without a percent sign ("Tax: 7.75"), not a dollar charge.
+ * "Sales tax 2170" and "Sales tax $7.75" stay dollars.
+ */
+function bareTaxRate(line: string, span: DollarSpan): boolean {
+  if (currencyMarked(line, span)) return false;
+  if (span.amount >= 100) return false;
+  return !Number.isInteger(span.amount);
+}
+
+/** Positive money spans from the shared parser. Credits stay out of tax and title. */
 function collectDollars(line: string): DollarSpan[] {
   const out: DollarSpan[] = [];
-  const re = new RegExp(DOLLAR.source, "g");
-  for (const match of line.matchAll(re)) {
-    const start = match.index ?? 0;
-    const end = start + match[0].length;
-    const after = line.slice(end);
-    if (/^\s*%/.test(after)) continue;
-    const before = line.slice(Math.max(0, start - 3), start);
-    if (/(?:^|[^0-9])-\s*$/.test(before) || /\(\s*$/.test(before)) continue;
-    const dollars = Number(match[1].replace(/,/g, ""));
-    const cents = match[2] ? (match[2].length === 1 ? Number(match[2]) / 10 : Number(match[2]) / 100) : 0;
-    if (!Number.isFinite(dollars)) continue;
-    out.push({ start, end, amount: roundCents(dollars + cents) });
+  for (const span of scanMoney(line)) {
+    if (span.amount <= 0) continue;
+    out.push({ start: span.start, end: span.end, amount: span.amount });
   }
   return out;
 }
@@ -334,6 +336,10 @@ function parseLine(line: string): ParsedGovLine[] {
     const dollar = claimForward(line, label.end, next, dollars, claimed)
       ?? claimBackward(line, label.start, prev, dollars, claimed);
     if (!dollar) return;
+    if (label.kind === "tax" && bareTaxRate(line, dollar)) {
+      claimed.add(dollar);
+      return;
+    }
     // "Out the door including tax: $48,970" binds the only dollars to the
     // price, not to the word tax. A government label keeps its dollar when
     // it comes first or when the price label has a dollar of its own.

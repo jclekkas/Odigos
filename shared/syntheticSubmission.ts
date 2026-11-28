@@ -64,6 +64,28 @@ export function shouldEmitSubmissionAnalytics(input: {
   return !isSyntheticSubmission(input);
 }
 
+export interface FrozenSyntheticSubmission {
+  readonly synthetic: boolean;
+  readonly dealerText: string;
+  readonly competingQuoteText: string;
+}
+
+/**
+ * The synthetic decision for one submission. Later callbacks receive this
+ * object and cannot flip the flag or replace the quote text it was made from.
+ */
+export function freezeSyntheticSubmission(input: {
+  synthetic?: boolean | string | null;
+  dealerText?: string | null;
+  competingQuoteText?: string | null;
+}): FrozenSyntheticSubmission {
+  return Object.freeze({
+    synthetic: isSyntheticSubmission(input),
+    dealerText: input.dealerText ?? "",
+    competingQuoteText: input.competingQuoteText ?? "",
+  });
+}
+
 export function isSyntheticTrackingPayload(body: {
   metadata?: Record<string, unknown> | null;
   synthetic?: boolean | string | null;

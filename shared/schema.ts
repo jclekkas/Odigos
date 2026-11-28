@@ -167,11 +167,21 @@ export const feeSchema = z.object({
 
 export type Fee = z.infer<typeof feeSchema>;
 
+/** One printed rebate or credit. The rebates number is the sum of these lines. */
+export const rebateLineSchema = z.object({
+  name: z.string(),
+  amount: z.number(),
+  condition: z.string().nullable(),
+});
+
+export type RebateLineItem = z.infer<typeof rebateLineSchema>;
+
 // Detected fields from analysis
 export const detectedFieldsSchema = z.object({
   salePrice: z.number().nullable(),
   msrp: z.number().nullable(),
   rebates: z.number().nullable(),
+  rebateLines: z.array(rebateLineSchema).optional(),
   fees: z.array(feeSchema),
   taxes: z.number().nullable().optional().describe(
     "Dollar amount of sales, use, or excise tax printed on the quote. Null when no tax dollars are stated. Never a tax-rate percentage.",

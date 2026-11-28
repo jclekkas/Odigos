@@ -9,7 +9,7 @@
 import type { DetectedFields, Fee } from "../shared/schema.js";
 import { matchesExtractedDocFeeLabel, matchesExtractedFilingLabel } from "../shared/feeVocabulary.js";
 import type { FieldProvenance } from "./fieldProvenance.js";
-import { prepareQuoteText, scanMoney, textContainsAmount } from "./ocrMoney.js";
+import { prepareQuoteText, scanMoney } from "./ocrMoney.js";
 import { parseGovernmentLines, selectGovernmentLines } from "./governmentCharges.js";
 import { classifyFeeBucket, roundCents, splitFees } from "./quoteMath.js";
 
@@ -20,6 +20,16 @@ export interface LocatedFee extends Fee {
   sourceOffset?: number;
 }
 
+/** One printed rebate or credit. Same raw position means the same line was read twice. */
+export interface RebateLine {
+  name: string;
+  amount: number;
+  /** Eligibility text printed with the line, such as "with dealer financing". */
+  condition: string | null;
+  sourceLine: number;
+  sourceOffset: number;
+}
+
 export interface DealerQuoteFacts {
   normalizedText: string;
   salePrices: number[];
@@ -27,7 +37,7 @@ export interface DealerQuoteFacts {
   monthlyPayments: number[];
   apr: number | null;
   termMonths: number | null;
-  rebates: number[];
+  rebateLines: RebateLine[];
   tradeAllowances: number[];
   tradePayoffs: number[];
   downPayments: number[];
@@ -47,7 +57,10 @@ const TRADE_LABEL = /\btrade(?:-|\s)?in\b/i;
 const OTD_LABEL = /\bout[\s-]*the[\s-]*door\b|\bo\.?t\.?d\.?\b/i;
 const SALE_LABEL = /\b(?:selling|sale|purchase|vehicle|cash|internet|asking|advertised)\s+price\b/i;
 const PAYMENT_LABEL = /\bmonthly(?:\s+payment)?\b|\bper month\b|\/\s*mo\b|\ba month\b/i;
-const REBATE_LABEL = /\brebates?\b/i;
+const REBATE_LABEL = /\brebates?\b|\bloyalty\b|\bincentive\b/i;
+const ELIGIBILITY = /\b(?:with|if|when|only with|contingent on|requires?)\s+[^|\n.]{2,80}/i;
+const AMOUNT_FINANCED_NAME = /\b(?:amount\s+financed|principal\s+balance|loan\s+principal)\b/i;
+const GENERIC_FEE_TOKENS = new Set(["fee", "fees", "charge", "charges", "amount", "total", "price", "cost", "and", "the"]);
 const DOWN_LABEL = /\bdown\s+payment\b/i;
 const INFLATED_MSRP_LABEL =
   /\b(?:adjusted|dealer|total)\s+msrp\b|\bmsrp\b[^\n]{0,80}(?:addendum|market adjustment)|\b(?:addendum|market adjustment)[^\n]{0,80}\bmsrp\b/i;
@@ -77,8 +90,8 @@ export function feeIdentity(name: string, amount: number): string {
   return `${normalized}|${amount}`;
 }
 
-function segments(line: string): { label: string; amount: number; offset: number }[] {
-  const out: { label: string; amount: number; offset: number }[] = [];
+function segments(line: string): { label: string; amount: number; offset: number; end: number }[] {
+  const out: { label: string; amount: number; offset: number; end: number }[] = [];
   const spans = scanMoney(line);
   let previous = 0;
   for (const span of spans) {
@@ -86,10 +99,67 @@ function segments(line: string): { label: string; amount: number; offset: number
       label: line.slice(previous, span.start),
       amount: span.amount,
       offset: span.start,
+      end: span.end,
     });
     previous = span.end;
   }
   return out;
+}
+
+function eligibilityCondition(text: string): string | null {
+  const match = text.match(ELIGIBILITY);
+  if (!match) return null;
+  return match[0].replace(/\s+/g, " ").trim();
+}
+
+function describeRebate(before: string, after: string): { name: string; condition: string | null } {
+  const combined = `${before} ${after}`;
+  const condition = eligibilityCondition(combined);
+  const stripped = condition ? combined.replace(ELIGIBILITY, " ") : combined;
+  const name = cleanLabel(stripped);
+  return { name: name || "Credit", condition };
+}
+
+/** Same source line and amount offset is one printed line seen twice. */
+export function collapseRebateLines(lines: RebateLine[]): RebateLine[] {
+  const seen = new Set<string>();
+  const out: RebateLine[] = [];
+  for (const line of lines) {
+    const key = `${line.sourceLine}:${line.sourceOffset}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(line);
+  }
+  return out;
+}
+
+function pushRebate(lines: RebateLine[], line: RebateLine): void {
+  lines.push(line);
+}
+
+function feeTokens(name: string): string[] {
+  return name.toLowerCase().split(/[^a-z0-9]+/).filter((token) => token.length >= 3 && !GENERIC_FEE_TOKENS.has(token));
+}
+
+/** The fee's own name and its amount must sit on the same printed line. */
+function feePrintedWithAmount(text: string, name: string, amount: number): boolean {
+  if (AMOUNT_FINANCED_NAME.test(name)) return false;
+  const tokens = feeTokens(name);
+  return text.split("\n").some((line) => {
+    const lower = line.toLowerCase();
+    if (tokens.length > 0) {
+      if (!tokens.some((token) => lower.includes(token))) return false;
+    } else if (!lower.includes(name.toLowerCase().trim())) {
+      return false;
+    }
+    return scanMoney(line).some((span) => span.amount >= 0 && Math.abs(span.amount - amount) < 0.01);
+  });
+}
+
+function lineHasAmount(line: string, amount: number): boolean {
+  if (scanMoney(line).some((span) => Math.abs(Math.abs(span.amount) - Math.abs(amount)) < 0.01)) return true;
+  const plain = String(amount).replace(".", "\\.");
+  return new RegExp(String.raw`(?<![\d.])${plain}(?![\d.])`).test(line.replace(/,/g, ""));
 }
 
 function firstNumber(text: string, patterns: RegExp[]): number | null {
@@ -113,58 +183,70 @@ function parseMileage(text: string): number | null {
   return Math.round(value);
 }
 
+const APR_PATTERNS = [
+  /\bapr\s*(?:of|is|:)?\s*(\d{1,2}(?:\.\d+)?)\s*%/i,
+  /\b(\d{1,2}(?:\.\d+)?)\s*%\s*apr\b/i,
+  /\binterest\s+rate\s*(?:of|is|:)?\s*(\d{1,2}(?:\.\d+)?)\s*%/i,
+];
+
+const TERM_PATTERNS = [
+  /\bterm\s*[:#-]?\s*(\d{2,3})\s*months?\b/i,
+  /\bfor\s+(\d{2,3})\s*months?\b/i,
+  /\b(\d{2,3})\s*months?\b/i,
+];
+
 function parseApr(text: string): number | null {
-  const value = firstNumber(text, [
-    /\bapr\s*(?:of|is|:)?\s*(\d{1,2}(?:\.\d+)?)\s*%/i,
-    /\b(\d{1,2}(?:\.\d+)?)\s*%\s*apr\b/i,
-  ]);
-  if (value == null || value < 0 || value > 40) return null;
-  return value;
+  for (const line of text.split("\n")) {
+    const value = firstNumber(line, APR_PATTERNS);
+    if (value == null || value < 0 || value > 40) continue;
+    return value;
+  }
+  return null;
 }
 
 function parseTerm(text: string): number | null {
-  const value = firstNumber(text, [
-    /\bterm\s*[:#-]?\s*(\d{2,3})\s*months?\b/i,
-    /\bfor\s+(\d{2,3})\s*months?\b/i,
-    /\b(\d{2,3})\s*months?\b/i,
-  ]);
-  if (value == null || value < 12 || value > 96) return null;
-  return value;
+  for (const line of text.split("\n")) {
+    const value = firstNumber(line, TERM_PATTERNS);
+    if (value == null || value < 12 || value > 96) continue;
+    return value;
+  }
+  return null;
 }
 
 function paymentAmounts(text: string): number[] {
   const amounts: number[] = [];
   const trailing = /(?:\$\s*|USD\s*|US\$\s*)?(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d{1,2}))?\s*(?:USD\s*)?(?:\/\s*mo\b|per month\b|a month\b)/gi;
-  for (const match of text.matchAll(trailing)) {
-    const start = match.index ?? 0;
-    if (/%\s*$/.test(text.slice(Math.max(0, start - 6), start))) continue;
-    const dollars = Number(match[1].replace(/,/g, ""));
-    const cents = match[2] ? (match[2].length === 1 ? Number(match[2]) / 10 : Number(match[2]) / 100) : 0;
-    if (!Number.isFinite(dollars)) continue;
-    amounts.push(roundCents(dollars + cents));
+  for (const line of text.split("\n")) {
+    for (const match of line.matchAll(trailing)) {
+      const start = match.index ?? 0;
+      if (/%\s*$/.test(line.slice(Math.max(0, start - 6), start))) continue;
+      const dollars = Number(match[1].replace(/,/g, ""));
+      const cents = match[2] ? (match[2].length === 1 ? Number(match[2]) / 10 : Number(match[2]) / 100) : 0;
+      if (!Number.isFinite(dollars)) continue;
+      amounts.push(roundCents(dollars + cents));
+    }
   }
   return amounts;
-}
-
-function appears(text: string, amount: number): boolean {
-  return textContainsAmount(text, amount);
-}
-
-function reconcile(current: number | null | undefined, labeled: number[], text: string): number | null {
-  const found = unique(labeled);
-  if (found.length === 1) return found[0];
-  if (found.length > 1) {
-    if (current != null && found.some((value) => Math.abs(value - current) < 0.01)) return current;
-    return null;
-  }
-  if (current != null && !appears(text, current)) return null;
-  return current ?? null;
 }
 
 /** A printed label wins. A model number with no printed label is dropped. */
 function onlyPrinted(labeled: number[]): number | null {
   const found = unique(labeled);
   if (found.length === 1) return found[0];
+  return null;
+}
+
+/**
+ * A labeled line wins. When the quote has no label for this field, the model
+ * number is dropped even if that number appears on a different line.
+ */
+function reconcile(current: number | null | undefined, labeled: number[]): number | null {
+  const found = unique(labeled);
+  if (found.length === 1) return found[0];
+  if (found.length > 1) {
+    if (current != null && found.some((value) => Math.abs(value - current) < 0.01)) return current;
+    return null;
+  }
   return null;
 }
 
@@ -180,12 +262,10 @@ const LEASE_LABELS: { field: keyof DetectedFields; label: RegExp }[] = [
 
 function keepLabeledMoney(current: number | null | undefined, text: string, label: RegExp): number | null {
   if (current == null || !Number.isFinite(current)) return null;
-  if (!label.test(text)) return null;
-  const printed = scanMoney(text).some((span) => Math.abs(Math.abs(span.amount) - Math.abs(current)) < 0.01);
-  if (printed) return current;
-  const plain = String(current).replace(".", "\\.");
-  const haystack = text.replace(/,/g, "");
-  if (new RegExp(String.raw`(?<![\d.])${plain}(?![\d.])`).test(haystack)) return current;
+  for (const line of text.split("\n")) {
+    if (!label.test(line)) continue;
+    if (lineHasAmount(line, current)) return current;
+  }
   return null;
 }
 
@@ -282,7 +362,7 @@ export function parseDealerQuoteFacts(dealerText: string): DealerQuoteFacts {
     monthlyPayments: paymentAmounts(normalizedText),
     apr: parseApr(normalizedText),
     termMonths: parseTerm(normalizedText),
-    rebates: [],
+    rebateLines: [],
     tradeAllowances: [],
     tradePayoffs: [],
     downPayments: [],
@@ -305,7 +385,14 @@ export function parseDealerQuoteFacts(dealerText: string): DealerQuoteFacts {
       const located: LocatedFee = { name, amount, sourceLine: lineIndex, sourceOffset: segment.offset };
       if (amount < 0) {
         if (!SALE_LABEL.test(scope) && !OTD_LABEL.test(scope) && !PAYMENT_LABEL.test(scope) && !MSRP_LABEL.test(scope)) {
-          facts.rebates.push(Math.abs(amount));
+          const described = describeRebate(label, line.slice(segment.end));
+          pushRebate(facts.rebateLines, {
+            name: described.name,
+            amount: Math.abs(amount),
+            condition: described.condition,
+            sourceLine: lineIndex,
+            sourceOffset: segment.offset,
+          });
         }
         continue;
       }
@@ -325,8 +412,17 @@ export function parseDealerQuoteFacts(dealerText: string): DealerQuoteFacts {
         facts.msrpAmounts.push(amount);
       } else if (PAYMENT_LABEL.test(scope)) {
         facts.monthlyPayments.push(amount);
-      } else if (REBATE_LABEL.test(scope)) {
-        facts.rebates.push(amount);
+      } else if (REBATE_LABEL.test(scope) || REBATE_LABEL.test(line.slice(segment.end))) {
+        const described = describeRebate(label, line.slice(segment.end));
+        pushRebate(facts.rebateLines, {
+          name: described.name,
+          amount,
+          condition: described.condition,
+          sourceLine: lineIndex,
+          sourceOffset: segment.offset,
+        });
+      } else if (AMOUNT_FINANCED_NAME.test(scope)) {
+        // Amount financed is the loan principal, not a charge added to the price.
       } else if (DOWN_LABEL.test(scope)) {
         facts.downPayments.push(amount);
       } else if (matchesExtractedFilingLabel(scope)) {
@@ -342,7 +438,7 @@ export function parseDealerQuoteFacts(dealerText: string): DealerQuoteFacts {
   facts.salePrices = unique(facts.salePrices);
   facts.outTheDoorPrices = unique(facts.outTheDoorPrices);
   facts.monthlyPayments = unique(facts.monthlyPayments);
-  facts.rebates = unique(facts.rebates);
+  facts.rebateLines = collapseRebateLines(facts.rebateLines);
   facts.tradeAllowances = unique(facts.tradeAllowances);
   facts.tradePayoffs = unique(facts.tradePayoffs);
   facts.downPayments = unique(facts.downPayments);
@@ -387,20 +483,24 @@ export function applyDealerQuoteFacts(fields: DetectedFields, facts: DealerQuote
   fees = fees.filter((fee) => {
     const amount = fee.amount;
     if (amount == null || !Number.isFinite(amount)) return true;
-    return scanMoney(facts.normalizedText).some((span) => span.amount >= 0 && Math.abs(span.amount - amount) < 0.01);
+    return feePrintedWithAmount(facts.normalizedText, fee.name, amount);
   });
 
   const split = splitFees(fees, () => false);
+  const rebateTotal = facts.rebateLines.length === 0
+    ? null
+    : roundCents(facts.rebateLines.reduce((sum, line) => sum + line.amount, 0));
   const next: DetectedFields = {
     ...fields,
     fees,
-    salePrice: reconcile(fields.salePrice, facts.salePrices, facts.normalizedText),
+    salePrice: reconcile(fields.salePrice, facts.salePrices),
     msrp: onlyPrinted(facts.msrpAmounts),
-    outTheDoorPrice: reconcile(fields.outTheDoorPrice, facts.outTheDoorPrices, facts.normalizedText),
-    monthlyPayment: reconcile(fields.monthlyPayment, facts.monthlyPayments, facts.normalizedText),
+    outTheDoorPrice: reconcile(fields.outTheDoorPrice, facts.outTheDoorPrices),
+    monthlyPayment: reconcile(fields.monthlyPayment, facts.monthlyPayments),
     apr: facts.apr,
     termMonths: facts.termMonths,
-    rebates: onlyPrinted(facts.rebates),
+    rebates: rebateTotal,
+    rebateLines: facts.rebateLines.map(({ name, amount, condition }) => ({ name, amount, condition })),
     tradeInValue: onlyPrinted(facts.tradeAllowances),
     downPayment: onlyPrinted(facts.downPayments),
     taxes: split.sawTax ? split.statedTax : null,
@@ -417,11 +517,57 @@ export function applyDealerQuoteFacts(fields: DetectedFields, facts: DealerQuote
   return next;
 }
 
-function spanForAmount(text: string, amount: number): Pick<FieldProvenance, "start" | "end" | "raw"> | undefined {
-  const spans = scanMoney(text).filter((span) => Math.abs(Math.abs(span.amount) - Math.abs(amount)) < 0.01);
-  const span = spans[0];
-  if (!span) return undefined;
-  return { start: span.start, end: span.end, raw: text.slice(span.start, span.end) };
+const FIELD_LINE_LABEL: Record<string, RegExp> = {
+  salePrice: SALE_LABEL,
+  msrp: MSRP_LABEL,
+  taxes: /\btax/i,
+  titleFee: /\btitle\b/i,
+  registrationFee: /\b(?:registration|license|tag|plate)\b/i,
+  govFees: /\b(?:dmv|government|gov\.?\s+fees?|title|registration|license)\b/i,
+  outTheDoorPrice: OTD_LABEL,
+  monthlyPayment: PAYMENT_LABEL,
+  tradeInValue: TRADE_LABEL,
+  downPayment: DOWN_LABEL,
+  moneyFactor: /money\s*factor/i,
+  residualValue: /residual/i,
+  residualPercent: /residual/i,
+  acquisitionFee: /acquisition/i,
+  dispositionFee: /disposition/i,
+  mileageAllowance: /mileage\s+allowance|miles\s+per\s+year|annual\s+mileage/i,
+  excessMileageRate: /excess\s+mileage/i,
+};
+
+/** Amount span only on a line that also contains the field's label. */
+function spanOnLabeledLine(
+  text: string,
+  label: RegExp,
+  amount: number,
+): Pick<FieldProvenance, "start" | "end" | "raw"> | undefined {
+  let offset = 0;
+  for (const line of text.split("\n")) {
+    if (label.test(line)) {
+      const local = scanMoney(line).find((span) => Math.abs(Math.abs(span.amount) - Math.abs(amount)) < 0.01);
+      if (local) {
+        const start = offset + local.start;
+        const end = offset + local.end;
+        return { start, end, raw: text.slice(start, end) };
+      }
+    }
+    offset += line.length + 1;
+  }
+  return undefined;
+}
+
+function spanForFee(
+  text: string,
+  name: string,
+  amount: number,
+): Pick<FieldProvenance, "start" | "end" | "raw"> | undefined {
+  const tokens = feeTokens(name);
+  const label = tokens.length > 0
+    ? new RegExp(tokens.map((token) => token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"), "i")
+    : new RegExp(name.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+  return spanOnLabeledLine(text, label, amount);
 }
 
 function spanForPattern(text: string, patterns: RegExp[], value: number): Pick<FieldProvenance, "start" | "end" | "raw"> | undefined {
@@ -441,21 +587,27 @@ function spanForPattern(text: string, patterns: RegExp[], value: number): Pick<F
 }
 
 function locateField(text: string, field: string, amount: number): Pick<FieldProvenance, "start" | "end" | "raw"> | undefined {
-  if (field === "apr") {
-    return spanForPattern(text, [
-      /\bapr\s*(?:of|is|:)?\s*(\d{1,2}(?:\.\d+)?)\s*%/i,
-      /\b(\d{1,2}(?:\.\d+)?)\s*%\s*apr\b/i,
-      /\binterest\s+rate\s*(?:of|is|:)?\s*(\d{1,2}(?:\.\d+)?)\s*%/i,
-    ], amount);
+  const patterns = field === "apr" ? APR_PATTERNS : field === "termMonths" ? TERM_PATTERNS : null;
+  if (patterns) {
+    let offset = 0;
+    for (const line of text.split("\n")) {
+      const found = spanForPattern(line, patterns, amount);
+      if (found && found.start != null && found.end != null) {
+        return { start: offset + found.start, end: offset + found.end, raw: found.raw };
+      }
+      offset += line.length + 1;
+    }
+    return undefined;
   }
-  if (field === "termMonths") {
-    return spanForPattern(text, [
-      /\bterm\s*[:#-]?\s*(\d{2,3})\s*months?\b/i,
-      /\bfor\s+(\d{2,3})\s*months?\b/i,
-      /\b(\d{2,3})\s*months?\b/i,
-    ], amount);
-  }
-  return spanForAmount(text, amount);
+  const label = FIELD_LINE_LABEL[field];
+  if (!label) return undefined;
+  return spanOnLabeledLine(text, label, amount);
+}
+
+function rebateProvenanceRaw(lines: RebateLine[]): string {
+  return lines
+    .map((line) => (line.condition ? `${line.name} ${line.amount} ${line.condition}` : `${line.name} ${line.amount}`))
+    .join("; ");
 }
 
 function pushNumberProvenance(
@@ -516,6 +668,18 @@ export function applyDealerQuoteFactsWithProvenance(
   for (const key of numericKeys) {
     const modelValue = fields[key];
     const kept = next[key];
+    if (key === "rebates" && typeof kept === "number" && facts.rebateLines.length > 0) {
+      const single = facts.rebateLines.length === 1 ? facts.rebateLines[0] : null;
+      provenance.push({
+        field: "rebates",
+        origin: "dealer_text",
+        verified: true,
+        amount: kept,
+        ...(single ? spanOnLabeledLine(text, REBATE_LABEL, single.amount) : {}),
+        raw: rebateProvenanceRaw(facts.rebateLines),
+      });
+      continue;
+    }
     pushNumberProvenance(
       provenance,
       key,
@@ -535,7 +699,7 @@ export function applyDealerQuoteFactsWithProvenance(
         origin: "dealer_text",
         verified: true,
         amount,
-        ...spanForAmount(text, amount),
+        ...spanForFee(text, fee.name, amount),
       });
     } else {
       provenance.push({ field: `fee:${fee.name}`, origin: "model", verified: false, amount });
@@ -551,7 +715,7 @@ export function applyDealerQuoteFactsWithProvenance(
       origin: "dealer_text",
       verified: true,
       amount,
-      ...spanForAmount(text, amount),
+      ...spanForFee(text, fee.name, amount),
     });
   }
   return { fields: next, provenance };

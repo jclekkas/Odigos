@@ -116,10 +116,59 @@ describe("field provenance rejects model-invented money", () => {
       trim: "LE",
       dealerText: text,
     });
+    expect(applied.fields.salePrice).toBe(28000);
+    expect(applied.fields.rebates).toBeNull();
+    expect(applied.fields.taxes).toBe(1000);
+    expect(applied.fields.registrationFee).toBe(400);
+    expect(applied.fields.fees.find((fee) => /doc fee/i.test(fee.name))?.amount).toBe(70);
+    expect(applied.fields.fees.find((fee) => /nitrogen|rebate/i.test(fee.name))).toBeUndefined();
     expect(result.goNoGo).not.toBe("GO");
+    expect(result.mathematicalDerivation).toEqual(expect.arrayContaining([
+      "Sales tax (government, as stated or computed) $1000.00",
+      "Registration (government) $400.00",
+      "Doc fee (dealer) $70.00",
+      "Computed out-the-door $29470.00",
+    ]));
+    expect(result.mathematicalDerivation?.join("\n") ?? "").not.toMatch(/Rebates subtracted/);
     expect(applied.provenance).toEqual(expect.arrayContaining([
       expect.objectContaining({ field: "rebates", origin: "model", verified: false, amount: 2000 }),
     ]));
+  });
+
+  it("does not authenticate an APR from a percent printed on another line", () => {
+    const text = [
+      "2025 Toyota Camry LE",
+      "Selling price: $28,000",
+      "Sales tax 4.9%",
+      "APR available on request",
+      "Doc fee: $70",
+      "Monthly payment: $499",
+    ].join("\n");
+    const applied = applyDealerQuoteFactsWithProvenance(
+      blank({
+        salePrice: 499,
+        apr: 4.9,
+        monthlyPayment: 499,
+        fees: [
+          { name: "Doc fee", amount: 70 },
+          { name: "Nitrogen", amount: 70 },
+        ],
+      }),
+      parseDealerQuoteFacts(text),
+    );
+    expect(applied.fields.apr).toBeNull();
+    expect(applied.fields.salePrice).toBe(28000);
+    expect(applied.fields.monthlyPayment).toBe(499);
+    expect(applied.fields.fees.map((fee) => fee.name)).toEqual(["Doc fee"]);
+    const apr = applied.provenance.find((row) => row.field === "apr");
+    expect(apr).toMatchObject({ origin: "model", verified: false, amount: 4.9 });
+    expect(apr?.start).toBeUndefined();
+    expect(apr?.raw).toBeUndefined();
+    const doc = applied.provenance.find((row) => row.field === "fee:Doc fee");
+    expect(doc).toMatchObject({ origin: "dealer_text", verified: true, amount: 70 });
+    expect(doc?.raw).toMatch(/70/);
+    const nitrogen = applied.provenance.find((row) => row.field === "fee:Nitrogen");
+    expect(nitrogen).toMatchObject({ origin: "model", verified: false, amount: 70 });
   });
 
   it("does not GO when a model-invented APR and term would make the payment match", () => {
